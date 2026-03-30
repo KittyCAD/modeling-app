@@ -2,7 +2,6 @@ import type {
   ApiConstraint,
   FixedPoint,
   ApiObject,
-  SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -455,18 +454,45 @@ export function pointToCoords2d(point: PointSegment): Coords2d {
 }
 
 /**
- * Utility to get the other scene graph IDs that are coincident with
- * the passed-in one, if any.
+ * Returns all points that are in the same coincident constraint as the given point,
+ * or points that are in a coincident constraint with those point transitively.
+ * Eg. coincident constraints:
+ * [1, 2], [2, 3], [3, 5]
+ * for param: 1 it will return: 1, 2, 3, 5
+ * 
+ * Result includes the given point as well.
  */
-export function getOtherCoincidentIdsByPointId(
-  targetId: number,
-  sceneGraph: SceneGraph
+export function getCoincidentCluster(
+  pointId: number,
+  objects: ApiObject[]
 ): number[] {
-  const constraints: CoincidentConstraint[] = sceneGraph.objects
-    .filter((obj) => isConstraint(obj, 'Coincident'))
-    .filter((obj) => obj.kind.constraint.segments.includes(targetId))
+  const connectedPointIds = new Set<number>([pointId])
+  const pendingPointIds = [pointId]
 
-  return constraints.flatMap((c) =>
-    c.kind.constraint.segments.filter((id) => id !== targetId)
-  )
+  while (pendingPointIds.length > 0) {
+    const currentPointId = pendingPointIds.pop()
+    if (currentPointId === undefined) {
+      continue
+    }
+
+    const coincidentPointIds = objects
+      .filter(
+        (obj): obj is CoincidentConstraint =>
+          isConstraint(obj, 'Coincident') &&
+          obj.kind.constraint.segments.includes(currentPointId)
+      )
+      .flatMap((obj) => obj.kind.constraint.segments)
+
+    coincidentPointIds.forEach((coincidentPointId) => {
+      if (
+        !connectedPointIds.has(coincidentPointId) &&
+        isPointSegment(objects[coincidentPointId])
+      ) {
+        connectedPointIds.add(coincidentPointId)
+        pendingPointIds.push(coincidentPointId)
+      }
+    })
+  }
+
+  return [...connectedPointIds]
 }

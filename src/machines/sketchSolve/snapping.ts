@@ -20,17 +20,13 @@ export function allowSnapping(mouseEvent: MouseEvent) {
 
 export function getSnappingCandidates(
   mousePosition: Coords2d,
-  {
-    objects,
-    sceneInfra,
-  }: {
-    objects: ApiObject[]
-    sceneInfra: SceneInfra
-  }
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
 ): SnappingCandidate[] {
   return findClosestApiObjects(mousePosition, objects, sceneInfra).flatMap(
     (candidate) => {
       if (!isPointSegment(candidate.apiObject)) {
+        // Only snapping to points for now
         return []
       }
 

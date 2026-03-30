@@ -147,11 +147,11 @@ function getBestSnappingCandidate({
   )
 
   return (
-    getSnappingCandidates(mousePosition, {
-      objects: currentSketchObjects,
-      sceneInfra: context.sceneInfra,
-    }).find((candidate) => !excludedPointIds.has(candidate.apiObject.id)) ??
-    null
+    getSnappingCandidates(
+      mousePosition,
+      currentSketchObjects,
+      context.sceneInfra
+    ).find((candidate) => !excludedPointIds.has(candidate.apiObject.id)) ?? null
   )
 }
 

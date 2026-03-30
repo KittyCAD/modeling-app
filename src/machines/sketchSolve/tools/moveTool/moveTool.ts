@@ -28,7 +28,7 @@ import {
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import {
-  getOtherCoincidentIdsByPointId,
+  getCoincidentCluster,
   isConstraint,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -188,23 +188,20 @@ function getDragPointSnappingCandidate({
     return null
   }
 
-  const coincidentPointIds = getOtherCoincidentIdsByPointId(
+  const coincidentPointIds = getCoincidentCluster(
     draggedEntityId,
-    sceneGraphDelta.new_graph
+    sceneGraphDelta.new_graph.objects
   )
 
   const currentSketchObjects = getCurrentSketchObjectsById(
     sceneGraphDelta.new_graph.objects,
     sketchId
   )
+  // Find the closest point to snap to which is not already in the same
+  // coincident point cluster as the dragged point.
   const candidate =
-    getSnappingCandidates(mousePosition, {
-      objects: currentSketchObjects,
-      sceneInfra,
-    }).find(
-      (candidate) =>
-        candidate.apiObject.id !== draggedEntityId &&
-        !coincidentPointIds.includes(candidate.apiObject.id)
+    getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
+      (candidate) => !coincidentPointIds.includes(candidate.apiObject.id)
     ) ?? null
 
   return candidate
@@ -587,11 +584,11 @@ export function createOnDragCallback({
     }
 
     const entityUnderCursorId = getDraggedEntityId()
-    const entitiesCoincidentWithUnderCursor =
+    const coincidentClusterPointIds =
       entityUnderCursorId !== null
-        ? getOtherCoincidentIdsByPointId(
+        ? getCoincidentCluster(
             entityUnderCursorId,
-            sceneGraphDelta.new_graph
+            sceneGraphDelta.new_graph.objects
           )
         : []
 
@@ -624,19 +621,11 @@ export function createOnDragCallback({
 
       // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
-      if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
-        idsToEdit.add(entityUnderCursorId)
-      }
-
-      entitiesCoincidentWithUnderCursor.forEach((id) => {
-        if (!Number.isNaN(id)) {
-          idsToEdit.add(id)
-        }
+      coincidentClusterPointIds.forEach((id) => {
+        idsToEdit.add(id)
       })
       selectedIds.forEach((id) => {
-        if (!Number.isNaN(id)) {
-          idsToEdit.add(id)
-        }
+        idsToEdit.add(id)
       })
 
       // Build ctors for each segment with drag applied

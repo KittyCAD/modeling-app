@@ -7,6 +7,7 @@ import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import {
+  getCoincidentCluster,
   getArcPoints,
   getLinePoints,
   isArcLikeSegment,
@@ -125,7 +126,7 @@ export function findInvisibleConstraintsForSegment(
   objects: ApiObject[]
 ): number[] {
   if (isPointSegment(segment)) {
-    const coincidentPointIds = getCoincidentClusterPointIds(segment.id, objects)
+    const coincidentPointIds = getCoincidentCluster(segment.id, objects)
 
     return objects
       .filter(
@@ -226,7 +227,7 @@ export function isConstrainingSegment(
   if (isPointSegment(segment)) {
     return isConstrainingCoincidentPointCluster(
       constraint,
-      getCoincidentClusterPointIds(segment.id, objects)
+      getCoincidentCluster(segment.id, objects)
     )
   }
 
@@ -262,35 +263,6 @@ function isConstrainingCoincidentPointCluster(
   }
 
   return constraint.kind.constraint.segments.some((id) => pointIds.includes(id))
-}
-
-function getCoincidentClusterPointIds(pointId: number, objects: ApiObject[]) {
-  const connectedPointIds = new Set<number>([pointId])
-  const pendingPointIds = [pointId]
-
-  while (pendingPointIds.length > 0) {
-    const currentPointId = pendingPointIds.pop()
-    if (currentPointId === undefined) {
-      continue
-    }
-
-    const coincidentPointIds = objects
-      .filter((obj) => isConstraint(obj, 'Coincident'))
-      .filter((obj) => obj.kind.constraint.segments.includes(currentPointId))
-      .flatMap((obj) => obj.kind.constraint.segments)
-
-    coincidentPointIds.forEach((coincidentPointId) => {
-      if (
-        !connectedPointIds.has(coincidentPointId) &&
-        isPointSegment(objects[coincidentPointId])
-      ) {
-        connectedPointIds.add(coincidentPointId)
-        pendingPointIds.push(coincidentPointId)
-      }
-    })
-  }
-
-  return [...connectedPointIds]
 }
 
 function getObjectAnchor(
