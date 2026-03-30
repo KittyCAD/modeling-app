@@ -1407,8 +1407,8 @@ describe('createOnClickCallback', () => {
     } as unknown as SceneInfra
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
-    const pointA = createPointApiObject({ id: 1, x: 0, y: 0 })
-    const pointB = createPointApiObject({ id: 2, x: 20, y: 0 })
+    const pointA = createPointApiObject({ id: 1, x: -20, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 40, y: 0 })
     const constraint = createConstraintApiObject({ id: 20, type: 'Distance' })
 
     const callback = createOnClickCallback({
