@@ -558,10 +558,9 @@ sketch001 = sketch(on = XZ) {
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
       )
-      // TODO: enable after https://github.com/KittyCAD/modeling-app/issues/10612
-      // await expect(
-      //   page.locator('.cm-lint-marker-error').first()
-      // ).not.toBeInViewport()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeInViewport()
     })
   })
 
