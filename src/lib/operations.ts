@@ -2114,7 +2114,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Holes',
     icon: 'hole',
   },
-  join: {
+  joinSurfaces: {
     label: 'Join Surfaces',
     icon: 'joinSurfaces',
     supportsAppearance: true,
