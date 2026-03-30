@@ -3,6 +3,7 @@ import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
@@ -12,7 +13,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
-import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -70,6 +71,41 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
         ast,
         artifactGraph,
         surface,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addJoinSurfaces', () => {
+    it('should add a simple join call on body selections', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [-0.2, 0], radius = 0.1)
+profile002 = circle(sketch001, center = [0.2, 0], radius = 0.1)
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)
+extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
+      const expectedNewLine = `surface001 = joinSurfaces([extrude001, extrude002])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const pathArtifacts = [...artifactGraph.values()].filter(
+        (n) => n.type === 'path'
+      )
+      const selection = createSelectionFromPathArtifact(
+        pathArtifacts,
+        artifactGraph
+      )
+      const result = addJoinSurfaces({
+        ast,
+        artifactGraph,
+        selection,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result

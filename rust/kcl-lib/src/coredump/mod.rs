@@ -6,11 +6,7 @@ pub mod local;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
-use std::path::Path;
-
 use anyhow::Result;
-use base64::Engine;
-use kittycad::Client;
 use serde::Deserialize;
 use serde::Serialize;
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
@@ -19,11 +15,6 @@ use uuid::Uuid;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
-    /// Return the authentication token.
-    fn token(&self) -> Result<String>;
-
-    fn base_api_url(&self) -> Result<String>;
-
     fn version(&self) -> Result<String>;
 
     fn kcl_code(&self) -> Result<String>;
@@ -36,48 +27,14 @@ pub trait CoreDump: Clone {
 
     async fn get_client_state(&self) -> Result<JValue>;
 
-    /// Return a screenshot of the app.
-    async fn screenshot(&self) -> Result<String>;
-
-    /// Get a screenshot of the app and upload it to public cloud storage.
-    async fn upload_screenshot(&self, coredump_id: &Uuid, zoo_client: &Client) -> Result<String> {
-        let screenshot = self.screenshot().await?;
-        let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
-
-        // Base64 decode the screenshot.
-        let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
-        // Upload the screenshot.
-        let links = zoo_client
-            .meta()
-            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
-                name: "".to_string(),
-                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#).into()),
-                content_type: Some("image/png".to_string()),
-                data,
-            }])
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        if links.is_empty() {
-            anyhow::bail!("Failed to upload screenshot");
-        }
-
-        Ok(links[0].clone())
-    }
-
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
-        // Create the zoo client.
-        let mut zoo_client = kittycad::Client::new(self.token()?);
-        zoo_client.set_base_url(&self.base_api_url()?);
-
         let coredump_id = uuid::Uuid::new_v4();
         let client_state = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os()?;
-        let screenshot_url = self.upload_screenshot(&coredump_id, &zoo_client).await?;
 
-        let mut core_dump_info = CoreDumpInfo {
+        let core_dump_info = CoreDumpInfo {
             id: coredump_id,
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
@@ -86,33 +43,10 @@ pub trait CoreDump: Clone {
             kcl_code: self.kcl_code()?,
             os,
             webrtc_stats,
-            github_issue_url: None,
             client_state,
         };
 
         // pretty-printed JSON byte vector of the coredump.
-        let data = serde_json::to_vec_pretty(&core_dump_info)?;
-
-        // Upload the coredump.
-        let links = zoo_client
-            .meta()
-            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
-                name: "".to_string(),
-                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}.json"#).into()),
-                content_type: Some("application/json".to_string()),
-                data,
-            }])
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        if links.is_empty() {
-            anyhow::bail!("Failed to upload coredump");
-        }
-
-        let coredump_url = &links[0];
-
-        core_dump_info.set_github_issue_url(&screenshot_url, coredump_url, &coredump_id)?;
-
         Ok(core_dump_info)
     }
 }
@@ -138,70 +72,10 @@ pub struct CoreDumpInfo {
     pub os: OsInfo,
     /// The webrtc stats.
     pub webrtc_stats: WebrtcStats,
-    /// A GitHub issue url to report the core dump.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub github_issue_url: Option<String>,
     /// The kcl code the user is using.
     pub kcl_code: String,
     /// The client state (singletons and xstate).
     pub client_state: JValue,
-}
-
-impl CoreDumpInfo {
-    /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_url: &str, coredump_id: &Uuid) -> Result<()> {
-        let coredump_filename = Path::new(coredump_url).file_name().unwrap().to_str().unwrap();
-        let desktop_or_browser_label = if self.desktop { "desktop-app" } else { "browser" };
-        let labels = ["coredump", "bug", desktop_or_browser_label];
-        let mut body = format!(
-            r#"[Add a title above and insert a description of the issue here]
-
-![Screenshot]({screenshot_url})
-
-> _Note: If you are capturing from a browser there is limited support for screenshots, only captures the modeling scene.
-  If you are on MacOS native screenshots may be disabled by default. To enable native screenshots add Zoo Design Studio to System Settings -> Screen & SystemAudio Recording for native screenshots._
-
-<details>
-<summary><b>Core Dump</b></summary>
-
-[{coredump_filename}]({coredump_url})
-
-Reference ID: {coredump_id}
-</details>
-"#
-        );
-
-        // Add the kcl code if it exists.
-        if !self.kcl_code.trim().is_empty() {
-            body.push_str(&format!(
-                r#"
-<details>
-<summary><b>KCL Code</b></summary>
-
-```kcl
-{}
-```
-</details>
-"#,
-                self.kcl_code
-            ));
-        }
-
-        let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
-
-        // Note that `github_issue_url` is not included in the coredump file.
-        // It has already been encoded and uploaded at this point.
-        // The `github_issue_url` is used in openWindow in wasm.ts.
-        self.github_issue_url = Some(format!(
-            r#"https://github.com/{}/{}/issues/new?body={}&labels={}"#,
-            "KittyCAD",
-            "modeling-app",
-            urlencoded,
-            labels.join(",")
-        ));
-
-        Ok(())
-    }
 }
 
 /// The os info structure.

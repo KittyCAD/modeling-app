@@ -9,7 +9,7 @@ import type {
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
 
-const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
