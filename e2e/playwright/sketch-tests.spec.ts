@@ -244,7 +244,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await test.step('Click Start Sketch button again', async () => {
         await toolbar.startSketchBtn.click()
         await expect(
-          page.getByRole('button', { name: 'Exit Sketch' })
+          page.getByRole('button', { name: 'Cancel Sketch' })
         ).toBeVisible()
       })
 
