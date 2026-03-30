@@ -412,8 +412,7 @@ export const getCoreDumpSupportContact = (user?: UserResponse) => {
   return {
     firstName:
       trimmedFirstName || nameParts[0] || emailFallback || 'Zoo Design Studio',
-    lastName:
-      trimmedLastName || nameParts.slice(1).join(' ') || 'User',
+    lastName: trimmedLastName || nameParts.slice(1).join(' ') || 'User',
   }
 }
 
