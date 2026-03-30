@@ -1828,7 +1828,7 @@ export fn blend(
 
 /// Join multiple surfaces together into one body, or join together the results of a split into one body
 @(impl = std_rust, feature_tree = true)
-export fn join(
+export fn joinSurfaces(
   /// The bodies to join together
   @selection: [Solid; 1+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
