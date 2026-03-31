@@ -574,7 +574,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  coincident: createConstraintIcon('coincident'),
+  coincident: createConstraintIcon('Coincident'),
   concentric: (
     <svg
       viewBox="0 0 20 20"
@@ -712,7 +712,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  equal: createConstraintIcon('equal'),
+  equal: createConstraintIcon('LinesEqualLength'),
   exclamationMark: (
     <svg
       viewBox="0 0 20 20"
@@ -1069,7 +1069,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  horizontal: createConstraintIcon('horizontal'),
+  horizontal: createConstraintIcon('Horizontal'),
   horizontalDash: (
     <svg
       viewBox="0 0 20 20"
@@ -1534,7 +1534,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  parallel: createConstraintIcon('parallel'),
+  parallel: createConstraintIcon('Parallel'),
   patternCircular2d: (
     <svg
       viewBox="0 0 20 20"
@@ -1607,7 +1607,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  perpendicular: createConstraintIcon('perpendicular'),
+  perpendicular: createConstraintIcon('Perpendicular'),
   person: (
     <svg
       viewBox="0 0 20 20"
@@ -1937,7 +1937,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  tangent: createConstraintIcon('tangent'),
+  tangent: createConstraintIcon('Tangent'),
   text: (
     <svg
       viewBox="0 0 20 20"
@@ -1995,7 +1995,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  vertical: createConstraintIcon('vertical'),
+  vertical: createConstraintIcon('Vertical'),
   verticalDimension: (
     <svg
       viewBox="0 0 20 20"
