@@ -1,6 +1,7 @@
 // The Origin Private File System. Used for browser environments.
 import type { IZooDesignStudioFS, IStat } from '@src/lib/fs-zds/interface'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { reportOPFSClientError } from '@src/lib/fs-zds/opfsClientErrors'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWrite.worker.ts?worker'
 import path from 'path'
 
@@ -387,7 +388,37 @@ const writeFile = async (
     await writer.write(new Blob([data], { type: 'application/octet-stream' }))
     await writer.close()
   } else {
-    await writeFileViaWorker(targetPath, data)
+    void reportOPFSClientError({
+      code: 'opfs_missing_create_writable',
+      errorName: 'MissingBrowserFeature',
+      message:
+        'FileSystemFileHandle.createWritable is unavailable for OPFS writes; using the worker fallback.',
+      extra: {
+        fileExtension: path.extname(targetPath),
+        hasCreateWritable: false,
+        hasWorkerFallback: true,
+      },
+    })
+
+    try {
+      await writeFileViaWorker(targetPath, data)
+    } catch (error: unknown) {
+      if (error === 'OPFS_WRITE_UNSUPPORTED') {
+        void reportOPFSClientError({
+          code: 'opfs_write_unsupported',
+          errorName: 'MissingBrowserFeature',
+          message:
+            'OPFS writes are unsupported because both createWritable and worker write fallbacks are unavailable.',
+          extra: {
+            fileExtension: path.extname(targetPath),
+            hasCreateWritable: false,
+            hasWorkerFallback: false,
+          },
+        })
+      }
+
+      throw error
+    }
   }
 
   // Update parent directory's metadata, since OPFS doesn't support tracking it.
