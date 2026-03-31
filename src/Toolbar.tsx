@@ -604,9 +604,7 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">
-              {filterEscHotkey(itemConfig.hotkey)}
-            </kbd>
+            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
