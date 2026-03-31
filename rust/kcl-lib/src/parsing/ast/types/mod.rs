@@ -3176,14 +3176,6 @@ impl TagDeclarator {
             digest: None,
         })
     }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    #[allow(dead_code)]
-    fn rename(&mut self, old_name: &str, new_name: &str) {
-        if self.name == old_name {
-            self.name = new_name.to_string();
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
