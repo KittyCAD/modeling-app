@@ -30,19 +30,58 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
-    let tags = args.kw_arg_edge_array_and_source("tags")?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     // TODO: custom profiles not ready yet
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    super::fillet::validate_unique(&tags)?;
-    let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
-    Ok(KclValue::Solid { value })
+    let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
+    let tags_result = args.kw_arg_edge_array_and_source("tags");
+
+    match (edge_refs, tags_result) {
+        (Some(edge_refs), Ok(tags_with_source)) => {
+            // Both provided: merge tags and edges into one list and use the edges engine path.
+            super::fillet::validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
+            let edge_refs_parsed =
+                super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+            let mut all_refs = tags_as_refs;
+            all_refs.extend(edge_refs_parsed);
+            let value =
+                inner_chamfer_with_engine_refs(solid, length, all_refs, second_length, angle, tag, exec_state, args)
+                    .await?;
+            Ok(KclValue::Solid { value })
+        }
+        (Some(edge_refs), Err(_)) => {
+            let value = inner_chamfer_with_edge_refs(
+                solid,
+                length,
+                edge_refs,
+                second_length,
+                angle,
+                None,
+                tag,
+                exec_state,
+                args,
+            )
+            .await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Ok(tags_with_source)) => {
+            super::fillet::validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
+            "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
+            vec![args.source_range],
+        ))),
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -154,6 +193,131 @@ async fn inner_chamfer(
                 }));
             }
         }
+    }
+
+    Ok(solid)
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_chamfer_with_edge_refs(
+    solid: Box<Solid>,
+    length: TyF64,
+    edge_refs: Vec<KclValue>,
+    second_length: Option<TyF64>,
+    angle: Option<TyF64>,
+    _custom_profile: Option<Sketch>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    if tag.is_some() && edge_refs.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each edgeRef.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    if angle.is_some() && second_length.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let edge_references = super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+    inner_chamfer_with_engine_refs(
+        solid,
+        length,
+        edge_references,
+        second_length,
+        angle,
+        tag,
+        exec_state,
+        args,
+    )
+    .await
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_chamfer_with_engine_refs(
+    solid: Box<Solid>,
+    length: TyF64,
+    edge_references: Vec<kcmc::shared::EdgeSpecifier>,
+    second_length: Option<TyF64>,
+    angle: Option<TyF64>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    if tag.is_some() && edge_references.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each edgeRef.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    if angle.is_some() && second_length.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let strategy = if second_length.is_some() || angle.is_some() {
+        CutStrategy::Csg
+    } else {
+        Default::default()
+    };
+
+    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    if let Some(angle) = angle
+        && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The angle of a chamfer must be greater than zero and less than 90 degrees.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let cut_type = CutTypeV2::Chamfer {
+        distance: LengthUnit(length.to_mm()),
+        second_distance,
+        angle,
+        swap: false,
+    };
+
+    let id = exec_state.next_uuid();
+    let mut extra_face_ids = Vec::new();
+    let num_extra_ids = edge_references.len().saturating_sub(1);
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+
+    let mut solid = solid.clone();
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
+                object_id: solid.id,
+                edges_references: edge_references,
+                cut_type,
+                tolerance: LengthUnit(DEFAULT_TOLERANCE),
+                strategy,
+                extra_face_ids,
+            }),
+        )
+        .await?;
+
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(solid)

@@ -8,16 +8,19 @@ layout: manual
 Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or tagged edges to use the full edge span.
 
 ```kcl
-blend(@edges: [BoundedEdge | TaggedEdge; 2]): Solid
+blend(@edges: [BoundedEdge | TaggedEdge | any; 2]): Solid
 ```
 
 Or blend the full edges directly with tagged edges (no `getBoundedEdge`):
+
+You can also pass edge specifier objects instead of tagged edges or bounded edges.
+Sketch block tags work too:
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 2] | The two edges that will be blended. Tagged edges blend the full edge length. | Yes |
+| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`any`](/docs/kcl-std/types/std-types-any); 2] | The two edges that will be blended. Tagged edges blend the full edge length. Edge specifier objects: `{ sideFaces = [...], endFaces? = [...], index? = 0 }`. | Yes |
 
 ### Returns
 

@@ -28,6 +28,7 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
+use crate::std::edge;
 use crate::std::sketch::FaceTag;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
@@ -234,6 +235,7 @@ pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::Primitive(PrimitiveType::BoundedEdge),
                 RuntimeType::tagged_edge(),
+                RuntimeType::Primitive(PrimitiveType::Any),
             ])),
             ArrayLen::Known(2),
         ),
@@ -258,13 +260,25 @@ async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &A
             let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
             Ok(BoundedEdge {
                 face_id: tagged_edge.geometry.id(),
-                edge_id: tagged_edge.id,
+                edge_id: Some(tagged_edge.id),
+                edge_specifier: None,
+                lower_bound: 0.0,
+                upper_bound: 1.0,
+            })
+        }
+        KclValue::Object { value: obj, .. } => {
+            let spec = edge::parse_edge_specifier_object(&obj, args)?;
+            let face_id = edge::face_id_from_first_side_face(&spec, exec_state, args)?;
+            Ok(BoundedEdge {
+                face_id,
+                edge_id: None,
+                edge_specifier: Some(spec),
                 lower_bound: 0.0,
                 upper_bound: 1.0,
             })
         }
         _ => Err(KclError::new_internal(KclErrorDetails::new(
-            "Unexpected edge value while preparing blend edges.".to_owned(),
+            "Unexpected edge value while preparing blend edges. Expected BoundedEdge, tagged edge, or edge specifier object (e.g. { sideFaces = [...], endFaces = [...], index = 0 }).".to_owned(),
             vec![args.source_range],
         ))),
     }
@@ -273,21 +287,34 @@ async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &A
 async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
     let id = exec_state.next_uuid();
 
-    let surface_refs: Vec<SurfaceEdgeReference> = edges
-        .iter()
-        .map(|edge| {
+    let mut surface_refs = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let fraction = if let Some(eid) = edge.edge_id {
+            FractionOfEdge::builder()
+                .edge_id(eid)
+                .lower_bound(edge.lower_bound)
+                .upper_bound(edge.upper_bound)
+                .build()
+        } else if let Some(ref spec) = edge.edge_specifier {
+            let resolved = edge::resolve_unresolved_edge_specifier(edge.face_id, spec, exec_state, &args).await?;
+            FractionOfEdge::builder()
+                .edge_specifier(resolved)
+                .lower_bound(edge.lower_bound)
+                .upper_bound(edge.upper_bound)
+                .build()
+        } else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "BoundedEdge must have edge_id or edge_specifier".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        surface_refs.push(
             SurfaceEdgeReference::builder()
                 .object_id(edge.face_id)
-                .edges(vec![
-                    FractionOfEdge::builder()
-                        .edge_id(edge.edge_id)
-                        .lower_bound(edge.lower_bound)
-                        .upper_bound(edge.upper_bound)
-                        .build(),
-                ])
-                .build()
-        })
-        .collect();
+                .edges(vec![fraction])
+                .build(),
+        );
+    }
 
     exec_state
         .batch_modeling_cmd(

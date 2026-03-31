@@ -1,0 +1,23 @@
+// Test variant 6: fillet bottom edge using index 0
+// Shape has an edge split into two edges that share the same two faces.
+
+startX = 2
+plane = startSketchOn(XY)
+sk = startProfile(plane, at = [startX, 0])
+  |> line(end = [5, 6], tag = $yoyo)
+  |> line(end = [0, 6])
+  |> line(endAbsolute = [startX, 0], tag = $hi)
+  |> close()
+myExtrude = extrude(sk, length = 5, tagEnd = $endCap, tagStart = $startCap)
+yodawg = getCommonEdge(faces = [hi, yoyo])
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-3.29, 4.75])
+  |> line(end = [5.32, -2.31], tag = $myDisambigutator)
+  |> line(end = [-5.52, -2.13], tag = $myDisambigutator2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+fillet(solid001, radius = 0.1, edges = [{ sideFaces = [hi, yoyo], index = 0 }])

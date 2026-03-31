@@ -10,7 +10,7 @@ Rotate a sketch around some provided axis, creating a solid from its extent.
 ```kcl
 revolve(
   @sketches: [Sketch; 1+],
-  axis: Axis2d | Edge,
+  axis?: Axis2d | Edge | any,
   angle?: number(Angle),
   tolerance?: number(Length),
   symmetric?: bool,
@@ -37,7 +37,7 @@ revolved around the same axis.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be revolved | Yes |
-| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis of revolution. | Yes |
+| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | Axis of revolution. Can be an Axis2d, an Edge, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2] }`). | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |

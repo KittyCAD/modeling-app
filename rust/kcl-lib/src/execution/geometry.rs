@@ -736,14 +736,19 @@ pub struct Face {
 }
 
 /// A bounded edge.
+/// Carries either `edge_id` (resolved) or `edge_specifier` (payload passed through for resolution in blend).
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BoundedEdge {
     /// The id of the face this edge belongs to.
     pub face_id: uuid::Uuid,
-    /// The id of the edge.
-    pub edge_id: uuid::Uuid,
+    /// The id of the edge (when resolved from a tag or UUID). Mutually exclusive with `edge_specifier`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_id: Option<uuid::Uuid>,
+    /// Edge specifier payload (sideFaces, endFaces, index) when not resolved. Resolved in blend().
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_specifier: Option<crate::std::edge::UnresolvedEdgeSpecifier>,
     /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
     /// Range (0, 1)
     pub lower_bound: f32,

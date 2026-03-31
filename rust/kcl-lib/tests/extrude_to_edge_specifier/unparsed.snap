@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing extrude_to_edge_specifier.kcl
+---
+// Extrude circle to edge via sideFaces object (same edge as getCommonEdge(faces = [...]))
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [2, 2])
+  |> yLine(length = 1)
+  |> xLine(length = 1)
+  |> yLine(length = -1, tag = $facetag0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
+  |> close()
+cube = extrude(profile001, length = 1)
+
+sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
+cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
+yo = extrude(cylinder3, to = { sideFaces = [facetag0, facetag1] })
