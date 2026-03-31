@@ -43,6 +43,7 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
+  const isEngineStreamVisible = modelingMachineState.context.showEngineStream
   const projectIORef = project?.projectIORefSignal.value
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
@@ -418,7 +419,9 @@ export const ConnectionStream = (props: {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
+          isEngineStreamVisible ? 'opacity-100' : 'opacity-0'
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />

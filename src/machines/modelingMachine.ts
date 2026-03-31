@@ -368,6 +368,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'toggle non-visual constraints' }
+  | { type: 'toggle engine visibility' }
   | {
       type: 'show non-visual constraints changed'
       data: { value: boolean }
@@ -7788,6 +7789,15 @@ export const modelingMachine = setup({
         if (event.type !== 'show non-visual constraints changed') return {}
         return {
           showNonVisualConstraints: event.data.value,
+        }
+      }),
+    },
+    'toggle engine visibility': {
+      reenter: false,
+      actions: assign(({ context, event }) => {
+        if (event.type !== 'toggle engine visibility') return {}
+        return {
+          showEngineStream: !context.showEngineStream,
         }
       }),
     },

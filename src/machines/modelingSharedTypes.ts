@@ -242,6 +242,7 @@ export type ModelingMachineInternalContext = {
   // This is duplicated state from sketch-solve for now,
   // long term plan is to have sketchSolve machine a sibling of modelingMachine
   showNonVisualConstraints: boolean
+  showEngineStream: boolean
   toastId: string | null
   selection: string[]
   selectionRanges: Selections

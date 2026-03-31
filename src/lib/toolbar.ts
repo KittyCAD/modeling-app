@@ -1863,6 +1863,20 @@ export const useToolbarConfig = () => {
               state.matches('sketchSolveMode') &&
               state.context.showNonVisualConstraints,
           },
+          {
+            id: 'show-engine',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'toggle engine visibility',
+              }),
+            icon: 'eyeOpen',
+            status: 'available',
+            title: 'Show Engine',
+            description:
+              'Toggle the engine video stream visibility behind the client-side scene.',
+            links: [],
+            isActive: (state) => state.context.showEngineStream,
+          },
         ],
       },
     }),
