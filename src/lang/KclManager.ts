@@ -537,8 +537,8 @@ export class File extends EventTarget {
     read: (path: string) => fsZds.readFile(path, 'utf8'),
     write: (path: string, content: string) =>
       fsZds.writeFile(path, File.encoder.encode(content)),
-    watch: window.electron?.watchFileOn || (() => {}),
-    unwatch: window.electron?.watchFileOff || (() => {}),
+    watch: window.electron?.watchFileOn || (() => { }),
+    unwatch: window.electron?.watchFileOff || (() => { }),
   }
   static encoder = new TextEncoder()
 }
@@ -572,7 +572,7 @@ export class KclManager extends File {
     return this._wasmInstance
   }
   readonly systemDeps: SystemDeps
-  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => { }
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
   // CORE STATE
@@ -726,10 +726,10 @@ export class KclManager extends File {
     If this value isn't `null`, don't watch for file system writes it was probably us!
    */
   public writingPromise = signal<Promise<unknown> | null>(null)
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => { }
   /** Values merged in from former EditorManager and CodeManager classes */
   private _convertToVariableEnabled: boolean = false
-  private _convertToVariableCallback: () => void = () => {}
+  private _convertToVariableCallback: () => void = () => { }
 
   // CONFIGURATION
 
@@ -902,6 +902,22 @@ export class KclManager extends File {
   })
 
   /**
+   * code mirror extension that clears modeling selection state when the document is empty
+   */
+  private clearSelectionsOnEmptyDoc = EditorView.updateListener.of((update) => {
+    const newCode = update.view.state.doc.toString()
+    // The doc changed and the new code is the empty string
+    if (update.docChanged && newCode === '') {
+      this.sendModelingEvent({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      })
+
+    }
+  })
+
+
+  /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
    * then fires (and forgets) an execution with a debounce.
@@ -1021,6 +1037,7 @@ export class KclManager extends File {
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
       this.writeToFileListener,
+      this.clearSelectionsOnEmptyDoc
     ]
   }
   private createEditorView(initialCode = '') {
@@ -2229,7 +2246,7 @@ export class KclManager extends File {
       annotations: [
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
-            !resolvedOptions.shouldClearHistory
+          !resolvedOptions.shouldClearHistory
         ),
       ],
       effects: [
