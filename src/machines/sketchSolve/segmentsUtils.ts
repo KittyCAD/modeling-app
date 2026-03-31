@@ -5,9 +5,15 @@ import {
   SKETCH_SELECTION_COLOR,
   SKETCH_SELECTION_RGB,
 } from '@src/lib/constants'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 
-// TODO get this from theme or CSS?
-const TEXT_COLOR = 0xffffff
+export const DARK_CONSTRAINED_COLOR = 0x000000
+export const LIGHT_CONSTRAINED_COLOR = 0xffffff
+
+const CONSTRAINED_COLOR = {
+  [Themes.Dark]: DARK_CONSTRAINED_COLOR,
+  [Themes.Light]: LIGHT_CONSTRAINED_COLOR,
+} as const
 
 // Brand blue for unconstrained segments - KCL_DEFAULT_COLOR is "#3c73ff" which is 0x3c73ff
 const UNCONSTRAINED_COLOR = 0x3c73ff
@@ -114,7 +120,7 @@ export function deriveSegmentFreedom(
  * 2. Hover color (priority 2) - lighter version of selection color
  * 3. Select color (priority 3) - SKETCH_SELECTION_COLOR
  * 4. Conflict color (priority 4) - CONFLICT_COLOR (red)
- * 5. Constrained color (priority 5) - TEXT_COLOR (white)
+ * 5. Constrained color (priority 5) - theme-aware for sketch scene contrast
  * 6. Unconstrained color (priority 6) - UNCONSTRAINED_COLOR (brand blue)
  * 7. Default color (lowest priority) - UNCONSTRAINED_COLOR
  */
@@ -123,11 +129,13 @@ export function getSegmentColor({
   isHovered,
   isSelected,
   freedom,
+  theme,
 }: {
   isDraft?: boolean
   isHovered?: boolean
   isSelected?: boolean
   freedom?: Freedom | null
+  theme: Themes
 }): number {
   // Priority 1: Draft color
   if (isDraft) {
@@ -158,9 +166,9 @@ export function getSegmentColor({
     return UNCONSTRAINED_COLOR
   }
 
-  // Priority 6: Constrained color (white) - Fixed or null (default to constrained)
+  // Priority 6: Constrained color (theme-aware) - Fixed or null (default to constrained)
   if (freedom === 'Fixed') {
-    return TEXT_COLOR
+    return CONSTRAINED_COLOR[getResolvedTheme(theme)]
   }
 
   // Default: unconstrained color (blue) for null/unknown
