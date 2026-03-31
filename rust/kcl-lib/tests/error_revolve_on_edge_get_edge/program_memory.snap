@@ -201,7 +201,29 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -500,8 +522,8 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
