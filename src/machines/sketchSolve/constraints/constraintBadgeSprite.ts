@@ -1,7 +1,10 @@
 import type { Texture } from 'three'
 import { SRGBColorSpace, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
-import { constraintIconPaths } from '@src/components/constraintIconPaths'
+import {
+  constraintIconPaths,
+  type ConstraintIconName,
+} from '@src/components/constraintIconPaths'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
 
@@ -29,7 +32,7 @@ export function getConstraintBadgeTexture({
   theme,
   sizePx = CONSTRAINT_BADGE_SIZE_PX,
 }: {
-  badgeType: keyof typeof constraintIconPaths
+  badgeType: ConstraintIconName
   badgeState: ConstraintBadgeState
   theme: Themes
   sizePx?: number
@@ -53,13 +56,15 @@ export function getConstraintBadgeTexture({
   return texture
 }
 
+// Draws the constraint texture by constructing an svg, based on the current
+// theme, constraint type, and the state (hovered/selected/default).
 function createConstraintBadgeSvgDataUrl({
   badgeType,
   badgeState,
   theme,
   sizePx,
 }: {
-  badgeType: ConstraintBadgeType
+  badgeType: ConstraintIconName
   badgeState: ConstraintBadgeState
   theme: Themes
   sizePx: number
