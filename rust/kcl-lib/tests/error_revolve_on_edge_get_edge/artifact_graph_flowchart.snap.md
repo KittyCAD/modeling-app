@@ -50,9 +50,23 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  29["Sweep RevolveAboutEdge<br>[367, 406, 0]<br>Consumed: false"]
+  29["Sweep RevolveAboutEdge<br>[367, 407, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  30["StartSketchOnFace<br>[203, 241, 0]"]
+  30[Wall]
+    %% face_code_ref=Missing NodePath
+  31[Wall]
+    %% face_code_ref=Missing NodePath
+  32[Wall]
+    %% face_code_ref=Missing NodePath
+  33["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  34["Cap End"]
+    %% face_code_ref=Missing NodePath
+  35["SweepEdge Opposite"]
+  36["SweepEdge Adjacent"]
+  37["SweepEdge Opposite"]
+  38["SweepEdge Opposite"]
+  39["StartSketchOnFace<br>[203, 241, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -98,7 +112,7 @@ flowchart LR
   10 --- 18
   20 <--x 10
   10 --- 23
-  10 <--x 30
+  10 <--x 39
   11 --- 19
   11 --- 20
   22 <--x 11
@@ -115,4 +129,32 @@ flowchart LR
   23 --- 27
   23 --- 28
   23 ---- 29
+  24 --- 30
+  24 x--> 34
+  24 --- 35
+  24 x--> 36
+  26 --- 31
+  26 x--> 34
+  26 --- 37
+  27 --- 32
+  27 x--> 34
+  27 --- 36
+  27 --- 38
+  29 --- 30
+  29 --- 31
+  29 --- 32
+  29 --- 33
+  29 --- 34
+  29 --- 35
+  29 --- 36
+  29 --- 37
+  29 --- 38
+  30 --- 35
+  30 x--> 36
+  31 --- 37
+  32 x--> 36
+  32 --- 38
+  35 <--x 33
+  37 <--x 33
+  38 <--x 33
 ```
