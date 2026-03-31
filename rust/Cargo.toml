@@ -28,10 +28,10 @@ kittycad = { version = "0.4.8", default-features = false, features = [
   "js",
   "requests",
 ] }
-# From deleted git branch ben/face_api; pinned to the previously locked commit for
+# Pinned to the latest ben/face_api commit for
 # EdgeReference, RevolveAboutEdgeReference, Solid3dCutEdgeReferences,
 # EntityMakeHelixFromEdge::edge_reference (not in crates.io 0.2.169).
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "75799ae4ebf639361415542204f913ec2aa67062", features = [
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "70c08656f6ea7c48679bb6f795c1b65a25d99034", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -87,5 +87,5 @@ debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "75799ae4ebf639361415542204f913ec2aa67062" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "70c08656f6ea7c48679bb6f795c1b65a25d99034" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
