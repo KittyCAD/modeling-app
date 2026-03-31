@@ -447,7 +447,7 @@ const Toolbar_ = memo(
           {props.state.matches('Sketch no face') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Select a plane or face to start sketching
+                Select a plane or face to start sketching.
               </p>
             </div>
           )}
