@@ -317,6 +317,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bstr"
+version = "1.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "63044e1ae8e69f3b5a92c736ca6269b8d12fa7efe39bf34ddb06d102cf0e2cab"
+dependencies = [
+ "memchr",
+ "serde",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1565,6 +1575,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19fc433e8437a212d1b6f1e68c7824af3aed907da60afa994e7f542d18d12aa9"
 
 [[package]]
+name = "globset"
+version = "0.4.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52dfc19153a48bde0cbd630453615c8151bce3a5adfac7a0aebfbf0a1e1f57e3"
+dependencies = [
+ "aho-corasick",
+ "bstr",
+ "log",
+ "regex-automata",
+ "regex-syntax 0.8.8",
+]
+
+[[package]]
 name = "gloo-utils"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1992,6 +2015,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ignore"
+version = "0.4.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3d782a365a015e0f5c04902246139249abf769125006fbe7649e2ee88169b4a"
+dependencies = [
+ "crossbeam-deque",
+ "globset",
+ "log",
+ "memchr",
+ "regex-automata",
+ "same-file",
+ "walkdir",
+ "winapi-util",
+]
+
+[[package]]
 name = "image"
 version = "0.25.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2185,7 +2224,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.135"
+version = "0.1.136"
 dependencies = [
  "anyhow",
  "clap",
@@ -2196,7 +2235,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.135"
+version = "0.2.136"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2205,7 +2244,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.135"
+version = "0.1.136"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2215,7 +2254,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.135"
+version = "0.2.136"
 dependencies = [
  "miette",
  "serde",
@@ -2225,7 +2264,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.135"
+version = "0.2.136"
 dependencies = [
  "anyhow",
  "clap",
@@ -2246,7 +2285,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.135"
+version = "0.1.136"
 dependencies = [
  "anyhow",
  "clap",
@@ -2266,7 +2305,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.135"
+version = "0.2.136"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2293,6 +2332,7 @@ dependencies = [
  "gltf-json",
  "handlebars",
  "http 1.4.0",
+ "ignore",
  "image",
  "indexmap 2.13.0",
  "insta",
@@ -2349,7 +2389,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.135"
+version = "0.3.136"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2365,7 +2405,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.135"
+version = "0.2.136"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2378,7 +2418,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.135"
+version = "0.1.136"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2392,7 +2432,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.135"
+version = "0.1.136"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2423,9 +2463,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.7"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "890ab946c7ea266317c75861e8c138e428acc6ecc1b78cb738e64e1b40c817ca"
+checksum = "d14071a649404c083dd875d1e8013955163656686b5b2f65e5154c8387de50dd"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2460,9 +2500,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.181"
+version = "0.2.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fb90d2f798f871567117824eeacc8617cc5372fec477d54805d0529b7cc127f"
+checksum = "3f9b59f6f84ad425b02dc4a4f5d7ec03ba9760777eaab8b1a0b770c6ae8ea7fe"
 dependencies = [
  "anyhow",
  "bon",
