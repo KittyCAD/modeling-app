@@ -350,8 +350,12 @@ export const ModelingMachineProvider = ({
     // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
     const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
     const selections =
-      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
-        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
+      modelingState.context.selectionRanges.graphSelections.filter(
+        (
+          sel
+        ): sel is typeof sel & { codeRef: NonNullable<typeof sel.codeRef> } =>
+          sel.codeRef != null &&
+          segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
     // Order selections by how late they are used in the codebase, as later nodes are less likely to be referenced than
     // earlier ones. This could be further refined as this is just a simple heuristic.

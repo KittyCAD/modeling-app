@@ -38,6 +38,7 @@ import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   TutorialRequestToast,
@@ -74,13 +75,15 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor } = useApp()
+  const { auth, billing, settings, layout, project, systemIOActor, commands } =
+    useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
+  const commandBarState = commands.useState()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
@@ -93,6 +96,24 @@ export function OpenedProject() {
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+  const statusBarSelection = useMemo(() => {
+    const currentArgument = commandBarState.context.currentArgument
+    if (currentArgument?.inputType !== 'selectionMixed') {
+      return modelingState.context.selectionRanges
+    }
+
+    return (
+      coerceSelectionsForBodyOnlySelectionTypes(
+        modelingState.context.selectionRanges,
+        currentArgument.selectionTypes,
+        kclManager.artifactGraph
+      ) ?? modelingState.context.selectionRanges
+    )
+  }, [
+    commandBarState.context.currentArgument,
+    modelingState.context.selectionRanges,
+    kclManager.artifactGraph,
+  ])
 
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
@@ -417,7 +438,8 @@ export function OpenedProject() {
               label:
                 getSelectionTypeDisplayText(
                   kclManager.astSignal.value,
-                  modelingState.context.selectionRanges
+                  statusBarSelection,
+                  kclManager.artifactGraph
                 ) ?? 'No selection',
               toolTip: {
                 children: 'Currently selected geometry',

@@ -249,7 +249,7 @@ describe('findClosestApiObjects', () => {
   it('includes circles when the mouse is within the circle stroke threshold', () => {
     const center = createPointApiObject({ id: 1, x: 0, y: 0 })
     const start = createPointApiObject({ id: 2, x: 30, y: 0 })
-    const circle = createCircleApiObject({ id: 3, center: 1, start: 2 })
+    const circle = createCircleApiObject({ id: 3, start: 2 })
 
     const result = findClosestApiObjects(
       [0, 22],

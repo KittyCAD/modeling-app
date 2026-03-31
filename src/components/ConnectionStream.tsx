@@ -10,8 +10,16 @@ import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sendSelectEventToEngine } from '@src/lib/selections'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import {
+  normalizeEntityReference,
+  sendQueryEntityTypeWithPoint,
+} from '@src/lib/selections'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+} from '@src/lang/std/artifactGraph'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -72,7 +80,7 @@ export const ConnectionStream = (props: {
       if (sceneInfra.camControls.wasDragging === true) return
 
       if (btnName(e.nativeEvent).left) {
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         }).catch(reportRejection)
       }
@@ -101,32 +109,105 @@ export const ConnectionStream = (props: {
         ) {
           return
         }
-
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         })
           .then((result) => {
             if (!result) {
               return
             }
-            const { entity_id } = result
-            if (!entity_id) {
-              // No entity selected. This is benign
+            // Support both legacy entity_id and Face API reference response
+            let entityId: string | undefined = (
+              result as { entity_id?: string }
+            ).entity_id
+            if (!entityId && (result as { reference?: unknown }).reference) {
+              const entityRef = normalizeEntityReference(
+                (result as { reference: unknown }).reference
+              )
+              if (entityRef) {
+                if (entityRef.type === 'plane') entityId = entityRef.plane_id
+                else if (entityRef.type === 'face') entityId = entityRef.face_id
+                else if (entityRef.type === 'solid2d')
+                  entityId = entityRef.solid2d_id
+                else if (entityRef.type === 'solid3d')
+                  entityId = entityRef.solid3d_id
+                else if (entityRef.type === 'solid2d_edge')
+                  entityId = entityRef.edge_id
+                else if (entityRef.type === 'segment')
+                  entityId = entityRef.segment_id
+                else if (
+                  entityRef.type === 'edge' &&
+                  entityRef.side_faces.length > 0
+                ) {
+                  entityId = entityRef.side_faces[0]
+                } else if (
+                  entityRef.type === 'vertex' &&
+                  entityRef.side_faces.length > 0
+                ) {
+                  entityId = entityRef.side_faces[0]
+                }
+              }
+              // Fallback: engine may return path or segment with different shape; use raw ref for artifact lookup
+              if (!entityId && (result as { reference?: unknown }).reference) {
+                const ref = (result as { reference: unknown })
+                  .reference as Record<string, unknown>
+                const refType = String(ref?.type).toLowerCase()
+                if (refType === 'path') {
+                  const pathId = ref.path_id ?? ref.pathId
+                  if (typeof pathId === 'string') entityId = pathId
+                } else if (refType === 'segment') {
+                  const segmentId = ref.segment_id ?? ref.segmentId
+                  if (typeof segmentId === 'string') entityId = segmentId
+                } else if (refType === 'helix') {
+                  const helixId = ref.helix_id ?? ref.helixId ?? ref.id
+                  if (typeof helixId === 'string') entityId = helixId
+                }
+              }
+            }
+            if (!entityId) {
               return
             }
-            const path = getArtifactOfTypes(
+            const artifactResult = getArtifactOfTypes(
               {
-                key: entity_id,
+                key: entityId,
                 types: ['path', 'solid2d', 'segment', 'helix'],
               },
               kclManager.artifactGraph
             )
-            if (err(path)) {
-              return path
+            if (err(artifactResult)) {
+              return artifactResult
             }
+            const artifact = artifactResult
+            // Build entityRef so the machine can resolve the selection (Enter sketch uses selection)
+            const pathIdForSegment =
+              artifact.type === 'segment'
+                ? (artifact as { pathId: string }).pathId
+                : undefined
+            let entityRef: EntityReference | undefined = artifactToEntityRef(
+              artifact.type,
+              entityId,
+              pathIdForSegment
+            )
+            if (!entityRef) {
+              if (artifact.type === 'path') {
+                entityRef = { type: 'solid2d', solid2d_id: String(artifact.id) }
+              } else if (artifact.type === 'helix') {
+                entityRef = {
+                  type: 'solid2d_edge',
+                  edge_id: String(artifact.id),
+                }
+              }
+            }
+            if (!entityRef) return
+            const codeRef = getCodeRefsByArtifactId(
+              entityId,
+              kclManager.artifactGraph
+            )?.[0]
             sceneInfra.modelingSend({ type: 'Enter sketch' })
           })
-          .catch(reportRejection)
+          .catch((e) => {
+            reportRejection(e)
+          })
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [

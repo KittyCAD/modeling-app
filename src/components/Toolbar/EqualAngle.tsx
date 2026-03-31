@@ -29,7 +29,7 @@ export function equalAngleInfo({
     }
   | Error {
   const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodePathFromSourceRange(kclManager.ast, codeRef.range)
+    getNodePathFromSourceRange(kclManager.ast, codeRef?.range ?? [0, 0, 0])
   )
   const _nodes = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)

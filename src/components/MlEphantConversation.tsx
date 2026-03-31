@@ -201,7 +201,8 @@ const MlCopilotSelectionsContext = (props: {
   const { kclManager } = useSingletons()
   const selectionText = getSelectionTypeDisplayText(
     kclManager.astSignal.value,
-    props.selections.data
+    props.selections.data,
+    kclManager.artifactGraph
   )
   return selectionText ? (
     <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">

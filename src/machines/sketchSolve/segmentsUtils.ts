@@ -73,12 +73,8 @@ export function deriveSegmentFreedom(
     }
   } else if (segmentData.type === 'Circle') {
     const startPoint = getObjById(segmentData.start)
-    const centerPoint = getObjById(segmentData.center)
     if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
-    }
-    if (isPointSegment(centerPoint)) {
-      pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
     }
   }
 

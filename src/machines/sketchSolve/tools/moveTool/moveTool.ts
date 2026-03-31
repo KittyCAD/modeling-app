@@ -149,7 +149,6 @@ function buildSegmentCtorWithDrag({
       type: 'Circle',
       center: newCenter,
       start: newStart,
-      construction: baseCtor.construction,
     }
   }
 

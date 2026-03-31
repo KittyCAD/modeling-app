@@ -1,6 +1,8 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
+  exprToNumber,
+  isArcSegment,
   isArcLikeSegment,
   isDiameterConstraint,
   isPointSegment,
@@ -9,7 +11,7 @@ import {
   type DiameterConstraint,
   type RadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import type { Group } from 'three'
+import { type Group, Vector3 } from 'three'
 import {
   createDimensionLine,
   updateDimensionLine,
@@ -38,12 +40,26 @@ export class RadiusConstraintBuilder {
   ) {
     const arc = objects[obj.kind.constraint.arc]
     if (isArcLikeSegment(arc)) {
-      const centerObject = objects[arc.kind.segment.center]
       const startObject = objects[arc.kind.segment.start]
+      const center = isArcSegment(arc)
+        ? (() => {
+            const centerObject = objects[arc.kind.segment.center]
+            return isPointSegment(centerObject)
+              ? pointToVec3(centerObject)
+              : null
+          })()
+        : arc.kind.segment.ctor.type === 'Circle'
+          ? (() => {
+              const centerX = exprToNumber(arc.kind.segment.ctor.center.x)
+              const centerY = exprToNumber(arc.kind.segment.ctor.center.y)
+              return centerX !== null && centerY !== null
+                ? new Vector3(centerX, centerY, 0)
+                : null
+            })()
+          : null
 
-      if (isPointSegment(centerObject) && isPointSegment(startObject)) {
+      if (center && isPointSegment(startObject)) {
         const start = pointToVec3(startObject)
-        const center = pointToVec3(centerObject)
         const lineEnd = isRadiusConstraint(obj)
           ? center
           : center.sub(start.clone().sub(center))

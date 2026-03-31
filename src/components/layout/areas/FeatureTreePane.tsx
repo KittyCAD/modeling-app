@@ -8,13 +8,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
+  artifactToEntityRef,
   findOperationArtifact,
   findOperationPlaneArtifact,
   isOffsetPlane,
   type StdLibCallOp,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
   getHideOpByArtifactId,
@@ -38,7 +42,7 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import { base64Decode, type Artifact, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -136,11 +140,13 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   const selectOperation = useCallback(
-    (sourceRange: SourceRange) => {
+    (sourceRange: SourceRange, preferredArtifactType?: Artifact['type']) => {
+      // Pass raw range so getArtifactFromRange can match artifact graph (byte offsets); sendSelectionEvent uses UTF-16 only for codeRef
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        sourceRange,
         kclManager,
         modelingSend,
+        preferredArtifactType,
       })
     },
     [modelingSend, kclManager]
@@ -531,7 +537,10 @@ interface OperationProps {
   systemDeps: SystemDeps
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
-  onSelect: (sourceRange: SourceRange) => void
+  onSelect: (
+    sourceRange: SourceRange,
+    preferredArtifactType?: Artifact['type']
+  ) => void
   size?: 'default' | 'sm'
 }
 /**
@@ -603,7 +612,14 @@ const OperationItem = ({
         if (item.type === 'GroupEnd') {
           return
         }
-        onSelect(sourceRangeFromRust(item.sourceRange))
+        const preferredType =
+          item.type === 'SketchSolve'
+            ? 'sketchBlock'
+            : item.type === 'StdLibCall' &&
+                (item as { name?: string }).name?.toLowerCase() === 'helix'
+              ? 'helix'
+              : undefined
+        onSelect(sourceRangeFromRust(item.sourceRange), preferredType)
       }
     },
     [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
@@ -618,14 +634,40 @@ const OperationItem = ({
       const artifact =
         getArtifactFromRange(
           item.sourceRange,
-          systemDeps.kclManager.artifactGraph
-        ) ?? undefined
+          systemDeps.kclManager.artifactGraph,
+          item.type === 'SketchSolve' ? 'sketchBlock' : undefined
+        ) ??
+        (item.type === 'StdLibCall'
+          ? (findOperationArtifact(item, systemDeps.kclManager.artifactGraph) ??
+            undefined)
+          : undefined)
+      if (
+        item.type === 'StdLibCall' &&
+        item.name === 'startSketchOn' &&
+        artifact
+      ) {
+        const codeRef = getFaceCodeRef(artifact)
+        if (codeRef) {
+          const entityRef = artifactToEntityRef(artifact.type, artifact.id)
+          systemDeps.sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+              selection: {
+                ...(entityRef && { entityRef }),
+                codeRef,
+              },
+            },
+          })
+        }
+      }
 
       void selectOperation()
         .then(async () => {
           const op = item as {
             type: string
             name?: string
+            labeledArgs?: { tags?: unknown; edgeRefs?: unknown }
             sourceRange?: unknown
           }
           const needsZ0006FixBeforeEdit =
@@ -634,7 +676,6 @@ const OperationItem = ({
               op.name === 'chamfer' ||
               op.name === 'revolve' ||
               op.name === 'helix')
-
           let operationToEdit: typeof item = item
           if (needsZ0006FixBeforeEdit) {
             const applied =
@@ -651,7 +692,6 @@ const OperationItem = ({
               }
             }
           }
-
           const opToEdit = operationToEdit as {
             sourceRange?: unknown
             type?: string
@@ -683,21 +723,25 @@ const OperationItem = ({
                   return undefined
                 })()
               : artifact
-
           return prepareEditCommand({
             artifactGraph: systemDeps.kclManager.artifactGraph,
             code: systemDeps.kclManager.code,
             commandBarActor,
             operation: operationToEdit,
             rustContext: systemDeps.rustContext,
-            artifact: artifactForEdit,
+            artifact: artifactForEdit ?? undefined,
           })
         })
-        .catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+        .catch((e) => {
+          console.error('[enterEditFlow] prepareEditCommand failed', e)
+          const message = err(e) ? e.message : JSON.stringify(e)
+          toast.error(message)
+        })
     }
   }, [
     item,
     commandBarActor,
+    systemDeps.sceneInfra,
     selectOperation,
     systemDeps.kclManager,
     systemDeps.rustContext,
@@ -1041,7 +1085,7 @@ const OperationItem = ({
       onContextMenu={() => {
         void selectOperation()
       }}
-      onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      onDoubleClick={sketchNoFace ? undefined : enterEditFlow}
       isSelected={isSelected}
       errors={errors}
       disabled={!enabled}

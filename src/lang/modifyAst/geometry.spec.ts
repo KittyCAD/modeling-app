@@ -1,6 +1,7 @@
 import { assertParse, recast } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -210,7 +211,7 @@ helix001 = helix(
       const edge: Selections = {
         graphSelections: [
           {
-            artifact: segment,
+            entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
           },
         ],
@@ -251,7 +252,7 @@ helix001 = helix(
       const edge: Selections = {
         graphSelections: [
           {
-            artifact: segment,
+            entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
           },
         ],
@@ -313,7 +314,7 @@ helix001 = helix(
       const cylinder: Selections = {
         graphSelections: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],
@@ -349,7 +350,7 @@ helix001 = helix(
       const cylinder: Selections = {
         graphSelections: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],

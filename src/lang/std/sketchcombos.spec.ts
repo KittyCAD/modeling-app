@@ -186,7 +186,7 @@ function makeSelections(
   graphSelections: Selections['graphSelections']
 ): Selections {
   return {
-    graphSelections: graphSelections,
+    graphSelections,
     otherSelections: [],
   }
 }

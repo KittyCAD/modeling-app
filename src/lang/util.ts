@@ -105,10 +105,15 @@ export function isCursorInSketchCommandRange(
       predicate: (artifact) => {
         const codeRefRange = getFaceCodeRef(artifact)?.range
         return selectionRanges.graphSelections.some(
-          (selection) =>
-            isArray(selection?.codeRef?.range) &&
-            isArray(codeRefRange) &&
-            isOverlap(selection?.codeRef?.range, codeRefRange)
+          (selection: { codeRef?: { range?: [number, number, number] } }) => {
+            const selRange = selection?.codeRef?.range
+            return (
+              isArray(selRange) &&
+              selRange.length >= 3 &&
+              isArray(codeRefRange) &&
+              isOverlap(selRange, codeRefRange)
+            )
+          }
         )
       },
     },

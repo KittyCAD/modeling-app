@@ -20,7 +20,14 @@ export function usePreviousVariables({
   const selectionFromContext =
     context.selectionRanges.graphSelections[0]?.codeRef?.range
   const selectionRange = useMemo(
-    () => selectionFromContext || [code.length, code.length],
+    (): [number, number, number] =>
+      selectionFromContext
+        ? [
+            selectionFromContext[0],
+            selectionFromContext[1],
+            selectionFromContext[2] ?? 0,
+          ]
+        : [code.length, code.length, 0],
     [selectionFromContext, code]
   )
   const [previousVariablesInfo, setPreviousVariablesInfo] = useState<

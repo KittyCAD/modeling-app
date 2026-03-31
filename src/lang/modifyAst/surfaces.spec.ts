@@ -12,6 +12,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 let instanceInThisFile: ModuleType = null!
@@ -59,7 +60,7 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
       const surface: Selections = {
         graphSelections: [
           {
-            artifact: artifact,
+            entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,
           },
         ],
@@ -97,7 +98,10 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
       const pathArtifacts = [...artifactGraph.values()].filter(
         (n) => n.type === 'path'
       )
-      const selection = createSelectionFromPathArtifact(pathArtifacts)
+      const selection = createSelectionFromPathArtifact(
+        pathArtifacts,
+        artifactGraph
+      )
       const result = addJoinSurfaces({
         ast,
         artifactGraph,

@@ -181,7 +181,7 @@ export fn helix(
   /// Axis to use for the helix. Can be an Axis3d, an Edge, or an edge reference object
   /// (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) when not using a cylinder.
   @(includeInSnippet = true)
-  axis?: Axis3d | Edge,
+  axis?: Axis3d | Edge | any,
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
   /// Radius of the helix.

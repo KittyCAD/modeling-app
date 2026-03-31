@@ -25,9 +25,12 @@ export function angleLengthInfo({
     }
   | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, wasmInstance, [
-      'CallExpressionKw',
-    ])
+    getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef?.pathToNode ?? [],
+      wasmInstance,
+      ['CallExpressionKw']
+    )
   )
   const _err1 = nodes.find(err)
   if (_err1 instanceof Error) return _err1

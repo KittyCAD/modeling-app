@@ -17,16 +17,19 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  artifactToEntityRef,
+  getEdgeCutMeta,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
   getCapCodeRef,
+  getCapForPathId,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepFromSuspectedSweepSurface,
@@ -49,11 +52,17 @@ import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type {
-  EnginePrimitiveSelection,
-  Selection,
   Selections,
+  Selection,
+  EdgeCutInfo,
+  EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
+import {
+  modifyAstWithTagForCapFace,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 
 export function addShell({
   ast,
@@ -189,7 +198,7 @@ export function addDeleteFace({
     if (err(result)) return result
     solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
 
-    facesExprs.push(...result.faceExprs)
+    facesExprs.push(...(result.faceExprs as typeof facesExprs))
   }
 
   const solidsExpr = createVariableExpressionsArray(solidsExprs)
@@ -739,12 +748,11 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
+  const hasFaceToOffset = plane.graphSelections.some((sel) => {
+    const resolved = resolveToCodeRef(sel, artifactGraph)
+    const t = resolved?.artifact?.type
+    return t === 'cap' || t === 'wall' || t === 'edgeCut'
+  })
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
@@ -802,39 +810,24 @@ export function addOffsetPlane({
   }
 }
 
-// Utilities
-
-function getSolidSelectionsFromFaceSelections(
-  faces: Selections,
-  artifactGraph: ArtifactGraph
-): Selections {
-  return {
-    graphSelections: faces.graphSelections.flatMap((face) => {
-      if (!face.artifact) {
-        return []
-      }
-      const sweep = getSweepFromSuspectedSweepSurface(
-        face.artifact.id,
-        artifactGraph
-      )
-      if (err(sweep) || !sweep) {
-        return []
-      }
-
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }),
-    otherSelections: [],
-  }
-}
-
 export function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph
-): Selection | null {
-  const parentArtifact = artifactGraph.get(parentEntityId)
+): ResolvedGraphSelection | null {
+  let parentArtifact = artifactGraph.get(parentEntityId)
+  // Engine topology parent_id may be a constituent sweep id after shell/boolean; the editable
+  // body is often a compositeSolid whose solidIds includes that id (graph may not key parentId).
+  if (!parentArtifact) {
+    for (const [, artifact] of artifactGraph) {
+      if (artifact.type === 'compositeSolid') {
+        const solidIds = (artifact as { solidIds?: string[] }).solidIds ?? []
+        if (solidIds.includes(parentEntityId)) {
+          parentArtifact = artifact
+          break
+        }
+      }
+    }
+  }
   if (!parentArtifact) {
     return null
   }
@@ -896,25 +889,79 @@ export function getFacesExprsFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ) {
-  let modifiedAst = structuredClone(ast)
-  const exprs: Expr[] = []
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  for (const faceSelection of faceSelections) {
-    const res = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(res)) {
-      return res
+  return faces.graphSelections.flatMap((v2Sel) => {
+    const resolved = resolveToCodeRef(v2Sel, artifactGraph)
+    if (!resolved?.artifact) {
+      console.warn('No artifact found for face', v2Sel)
+      return []
     }
-    modifiedAst = res.modifiedAst
-    exprs.push(res.exprs[0])
-  }
-  return { modifiedAst, exprs }
+    let artifact = resolved.artifact
+    if (artifact.type === 'path') {
+      const capForPath = getCapForPathId(artifact.id, artifactGraph)
+      if (err(capForPath)) return []
+      artifact = capForPath
+    }
+    if (artifact.type === 'cap') {
+      // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
+      const tagResult = modifyAstWithTagForCapFace(
+        ast,
+        artifact,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        console.warn('Failed to add cap tag to extrude', tagResult)
+        return []
+      }
+      return [createLocalName(tagResult.tag)]
+    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
+      let targetArtifact: Artifact | undefined
+      let edgeCutMeta: EdgeCutInfo | null = null
+      if (artifact.type === 'wall') {
+        const key = artifact.segId
+        const segmentArtifact = getArtifactOfTypes(
+          { key, types: ['segment'] },
+          artifactGraph
+        )
+        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
+          console.warn('No segment found for face', v2Sel)
+          return []
+        }
+
+        targetArtifact = segmentArtifact
+      } else {
+        targetArtifact = artifact
+        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
+      }
+
+      const codeRef =
+        targetArtifact && 'codeRef' in targetArtifact
+          ? targetArtifact.codeRef
+          : undefined
+      if (!codeRef) {
+        console.warn('No codeRef for target artifact')
+        return []
+      }
+      const tagResult = mutateAstWithTagForSketchSegment(
+        ast,
+        codeRef.pathToNode,
+        wasmInstance,
+        edgeCutMeta
+      )
+      if (err(tagResult)) {
+        console.warn(
+          'Failed to mutate ast with tag for sketch segment',
+          tagResult
+        )
+        return []
+      }
+
+      return [createLocalName(tagResult.tag)]
+    } else {
+      console.warn('Face was not a cap or wall or chamfer', v2Sel)
+      return []
+    }
+  })
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)
@@ -938,14 +985,25 @@ export function retrieveFaceSelectionsFromOpArgs(
     return solids
   }
 
-  const sweepIds = solids.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'sweep' ? s.artifact.id : []
-  )
-  if (sweepIds.length === 0) {
+  // Collect sweep IDs from all solids (shell can have multiple solids e.g. [thing1, thing2])
+  const sweepIdsSet = new Set<string>()
+  for (const sel of solids.graphSelections) {
+    const resolved = resolveToCodeRef(sel, artifactGraph)
+    const artifact = resolved?.artifact
+    if (artifact?.type === 'sweep') {
+      sweepIdsSet.add(artifact.id)
+    }
+  }
+  if (sweepIdsSet.size === 0) {
     return new Error('No sweep artifact found in solids selection')
   }
-  const sweepIdsSet = new Set(sweepIds)
-  const candidates: Map<string, Selection> = new Map()
+  const candidates = new Map<
+    string,
+    {
+      artifact: Artifact
+      codeRef: { pathToNode: PathToNode; range: [number, number, number] }
+    }
+  >()
   for (const artifact of artifactGraph.values()) {
     if (
       artifact.type === 'cap' &&
@@ -957,14 +1015,9 @@ export function retrieveFaceSelectionsFromOpArgs(
         return codeRef
       }
 
-      candidates.set(artifact.subType, {
-        artifact,
-        codeRef,
-      })
-      candidates.set(artifact.id, {
-        artifact,
-        codeRef,
-      })
+      const entry = { artifact, codeRef }
+      candidates.set(artifact.subType, entry)
+      candidates.set(artifact.id, entry)
     } else if (
       artifact.type === 'wall' &&
       sweepIdsSet.has(artifact.sweepId) &&
@@ -979,14 +1032,12 @@ export function retrieveFaceSelectionsFromOpArgs(
       }
 
       const { codeRef } = segArtifact
-      candidates.set(artifact.segId, {
-        artifact,
-        codeRef,
-      })
+      const entry = { artifact, codeRef }
+      candidates.set(artifact.segId, entry)
+      candidates.set(artifact.id, entry)
     }
   }
 
-  // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
   const faceValues: OpKclValue[] = []
   if (facesArg.value.type === 'Array') {
     faceValues.push(...facesArg.value.value)
@@ -998,7 +1049,13 @@ export function retrieveFaceSelectionsFromOpArgs(
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
       const result = candidates.get(v.value)
       if (result) {
-        graphSelections.push(result)
+        graphSelections.push({
+          entityRef: artifactToEntityRef(
+            result.artifact.type,
+            result.artifact.id
+          ),
+          codeRef: result.codeRef,
+        })
       } else {
         console.warn(
           'retrieveFaceSelectionsFromOpArgs result is missing and not a selection'
@@ -1011,19 +1068,35 @@ export function retrieveFaceSelectionsFromOpArgs(
     ) {
       const result = candidates.get(v.artifact_id)
       if (result) {
-        graphSelections.push(result)
+        graphSelections.push({
+          entityRef: artifactToEntityRef(
+            result.artifact.type,
+            result.artifact.id
+          ),
+          codeRef: result.codeRef,
+        })
       } else {
         console.warn(
-          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
+          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection',
+          { artifact_id: v.artifact_id, candidatesKeys: [...candidates.keys()] }
         )
       }
     } else {
-      console.warn('Face value is not a String or TagIdentifier', v)
+      console.warn('Face value is not a String or TagIdentifier', v, {
+        type: v.type,
+        ...(v.type === 'TagIdentifier' && {
+          artifact_id: v.artifact_id,
+          inCandidates: v.artifact_id != null && candidates.has(v.artifact_id),
+        }),
+      })
       continue
     }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces: Selections = {
+    graphSelections,
+    otherSelections: [],
+  }
   return { solids, faces }
 }
 
@@ -1052,7 +1125,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     return {
       graphSelections: [
         {
-          artifact: planeArtifact,
+          entityRef: artifactToEntityRef('plane', planeArtifact.id),
           codeRef: planeArtifact.codeRef,
         },
       ],
@@ -1075,7 +1148,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     return {
       graphSelections: [
         {
-          artifact: faceArtifact,
+          entityRef: artifactToEntityRef(faceArtifact.type, faceArtifact.id),
           codeRef,
         },
       ],
@@ -1099,10 +1172,9 @@ export function buildSolidsAndFacesExprs(
 ) {
   let modifiedAst = structuredClone(ast)
   const { lastChildLookup = true, artifactTypeFilter = ['sweep'] } = options
-  const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph)
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
-    solids,
+    faces,
     artifactGraph,
     modifiedAst,
     wasmInstance,
@@ -1118,21 +1190,19 @@ export function buildSolidsAndFacesExprs(
 
   const pathIfPipe = vars.pathIfPipe
 
-  // Build face expressions
-  const result = getFacesExprsFromSelection(
+  // Build face expressions (getFacesExprsFromSelection mutates modifiedAst in place)
+  const taggedFacesExprs = getFacesExprsFromSelection(
     modifiedAst,
     faces,
     artifactGraph,
     wasmInstance
   )
-  if (err(result)) return result
-  modifiedAst = result.modifiedAst
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const facesExpr = createVariableExpressionsArray(result.exprs)
+  const facesExpr = createVariableExpressionsArray(taggedFacesExprs)
   return {
     solidsExprs: vars.exprs,
-    facesExprs: result.exprs,
+    facesExprs: taggedFacesExprs,
     solidsExpr,
     facesExpr,
     pathIfPipe,
@@ -1189,9 +1259,22 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
       )
     }
 
+    const art = bodySelection.artifact
+    const pathId =
+      art?.type === 'segment' ? (art as { pathId?: string }).pathId : undefined
+    const entityRef = artifactToEntityRef(
+      art?.type ?? 'sweep',
+      art?.id ?? '',
+      pathId
+    )
+    if (!entityRef) {
+      return new Error(
+        'Delete Face could not build entity ref for body selection.'
+      )
+    }
     const bodyVars = getVariableExprsFromSelection(
       {
-        graphSelections: [bodySelection],
+        graphSelections: [{ entityRef, codeRef: bodySelection.codeRef }],
         otherSelections: [],
       },
       artifactGraph,

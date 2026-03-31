@@ -209,6 +209,8 @@ export class CmdBarFixture {
       commandName: commandName || '',
     }
   }
+  getState = async (): Promise<CmdBarSerialised> => this._serialiseCmdBar()
+
   expectState = async (expected: CmdBarSerialised) => {
     if (expected.stage === 'review') {
       await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })

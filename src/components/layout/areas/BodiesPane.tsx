@@ -88,14 +88,11 @@ function BodyItem({
     kclManager.editorState.selection.main.to <=
       toUtf16(sourceRange[1], kclManager.code)
   const onSelect = () =>
-    sendSelectionEvent(
-      {
-        sourceRange,
-        kclManager,
-        modelingSend,
-      },
-      true
-    )
+    sendSelectionEvent({
+      sourceRange,
+      kclManager,
+      modelingSend,
+    })
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">

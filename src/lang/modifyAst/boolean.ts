@@ -254,7 +254,8 @@ export function addSplit({
 
   const hasTools = Boolean(
     tools &&
-      (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
+      ((tools.graphSelections?.length ?? 0) > 0 ||
+        (tools.otherSelections?.length ?? 0) > 0)
   )
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
   let pathIfNewPipe = vars.pathIfPipe

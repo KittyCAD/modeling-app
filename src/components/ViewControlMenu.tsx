@@ -108,10 +108,7 @@ export function useViewControlMenuItems() {
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: firstValidSelection.artifact,
-                  codeRef: firstValidSelection.codeRef,
-                },
+                selection: firstValidSelection,
                 scrollIntoView: true,
               },
             })

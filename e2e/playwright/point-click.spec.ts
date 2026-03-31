@@ -437,8 +437,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     cmdBar,
   }) => {
-    page.on('console', console.log)
-
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -474,7 +472,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
@@ -909,7 +907,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 edge`,
+          Edge: '1 edge',
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
@@ -922,7 +920,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 edge`,
+          Edge: '1 edge',
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
@@ -939,7 +937,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = { sideFaces = [seg01, capEnd001] },
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -1012,7 +1010,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = { sideFaces = [seg01, capEnd001] },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1293,8 +1291,8 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,capEnd001]}], radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[seg01,capStart001]}], radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1418,6 +1416,11 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 2: Command bar flow without preselected edges
     await test.step(`Open fillet UI without selecting edges`, async () => {
+      await page.waitForTimeout(100)
+      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clearSelection()
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
       await expect
@@ -1581,6 +1584,268 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     })
   })
 
+  test('Should automatically fix fillet kwargs that are incompatible with P&C upon edit', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    // Initial KCL has mixed deprecated tags and edges. Auto-fix merges to edges only;
+    // edit-only path must preserve all edges when updating radius.
+    const initialCode = `sketchPlane = startSketchOn(XY)
+profile = startProfile(sketchPlane, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+myExtrude = extrude(profile, length = 5, tagStart = $capStart001)
+myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edges = [{ sideFaces = [e1, capStart001]}])
+`
+
+    await test.step('Initial test setup', async () => {
+      await context.addInitScript((code: string) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Edit fillet via feature tree (triggers auto-fix then edit)', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await page.waitForTimeout(300)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'myFillet',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      // Auto-fix converts tags to edgeRefs and re-runs; wait for cmd bar to show Fillet (allow time for fix + re-run)
+      await expect
+        .poll(
+          async () => {
+            const state = await cmdBar.getState()
+            return (
+              state.stage === 'arguments' &&
+              state.commandName === 'Fillet' &&
+              state.currentArgKey === 'radius'
+            )
+          },
+          { timeout: 20_000 }
+        )
+        .toBe(true)
+      await cmdBar.expectState({
+        commandName: 'Fillet',
+        currentArgKey: 'radius',
+        currentArgValue: '1',
+        headerArguments: {
+          Radius: '1',
+        },
+        highlightedHeaderArg: 'radius',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Radius: '2',
+        },
+        commandName: 'Fillet',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+    })
+
+    await test.step('Confirm code has edges preserved and radius updated', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      const code = await editor.getCurrentCode()
+      expect(code).toContain('edges')
+      // The existing edge ref (sideFaces = [e1, capStart001]) must be preserved by auto-fix and edit-only path
+      expect(code).toContain('sideFaces = [e1, capStart001]')
+      expect(code).toContain('radius = 2')
+      // Deprecated tags syntax should be removed by auto-fix
+      expect(code).not.toContain('tags = [getOppositeEdge')
+    })
+  })
+
+  test('Should automatically fix revolve axis that is incompatible with P&C upon edit', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0], tag = $seg02)
+  |> close()
+
+extrude001 = extrude(profile, length = 3, tagEnd = $capEnd001)
+sketch002 = startSketchOn(extrude001, face = capEnd001)
+profile001 = circle(sketch002, center = [-3.44, -2.23], radius = 1.64)
+revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
+`
+
+    await test.step('Initial test setup', async () => {
+      await context.addInitScript((code: string) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Edit revolve via feature tree (triggers auto-fix then edit)', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await page.waitForTimeout(300)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'revolve001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      // Auto-fix converts axis to edgeRef and re-runs; wait for cmd bar to show Revolve
+      await expect
+        .poll(
+          async () => {
+            const state = await cmdBar.getState()
+            return (
+              state.stage === 'arguments' &&
+              state.commandName === 'Revolve' &&
+              (state.currentArgKey === 'angle' ||
+                state.currentArgKey === 'sketches')
+            )
+          },
+          { timeout: 20_000 }
+        )
+        .toBe(true)
+      const cmdStateBeforeAngleEdit = await cmdBar.getState()
+      if (
+        !('currentArgKey' in cmdStateBeforeAngleEdit) ||
+        cmdStateBeforeAngleEdit.currentArgKey !== 'angle'
+      ) {
+        await cmdBar.clickHeaderArgument('angle')
+      }
+      await page.keyboard.type('180deg', { delay: 50 })
+      await cmdBar.progressCmdBar()
+      await expect
+        .poll(async () => (await cmdBar.getState()).stage === 'review', {
+          timeout: 5000,
+        })
+        .toBe(true)
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+    })
+
+    await test.step('Confirm code has sideFaces edge reference payload and angle updated', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      const code = await editor.getCurrentCode()
+      expect(code).toContain('axis = { sideFaces = [')
+      expect(code).toContain('180deg')
+      expect(code).not.toContain('axis = getOppositeEdge')
+    })
+  })
+
+  test('Should automatically fix helix axis that is incompatible with P&C upon edit', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sk = startSketchOn(XY)
+profile = startProfile(sk, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $seg01)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+ex = extrude(profile, length = 5, tagEnd = $capEnd001)
+helix001 = helix(
+  axis = getOppositeEdge(seg01),
+  revolutions = 1,
+  angleStart = 360deg,
+  radius = 5,
+)
+`
+
+    await test.step('Initial test setup', async () => {
+      await context.addInitScript((code: string) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Edit helix via feature tree (triggers auto-fix then edit)', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await page.waitForTimeout(300)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'helix001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await expect
+        .poll(
+          async () => {
+            const state = await cmdBar.getState()
+            return (
+              state.stage === 'arguments' &&
+              state.commandName === 'Helix' &&
+              (state.currentArgKey === 'radius' ||
+                state.currentArgKey === 'revolutions' ||
+                state.currentArgKey === 'mode' ||
+                ('currentArgKey' in state &&
+                  state.currentArgKey === 'angleStart'))
+            )
+          },
+          { timeout: 20_000 }
+        )
+        .toBe(true)
+      const cmdStateBeforeRadiusEdit = await cmdBar.getState()
+      if (
+        'currentArgKey' in cmdStateBeforeRadiusEdit &&
+        cmdStateBeforeRadiusEdit.currentArgKey !== 'radius'
+      ) {
+        await cmdBar.clickHeaderArgument('radius')
+      }
+      await page.keyboard.type('2', { delay: 50 })
+      await cmdBar.progressCmdBar()
+      await expect
+        .poll(async () => (await cmdBar.getState()).stage === 'review', {
+          timeout: 5000,
+        })
+        .toBe(true)
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+    })
+
+    await test.step('Confirm code has sideFaces edge reference payload and radius updated', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      const code = await editor.getCurrentCode()
+      expect(code).toContain('axis = { sideFaces = [')
+      expect(code).toContain('radius = 2')
+      expect(code).not.toContain('axis = getOppositeEdge')
+    })
+  })
+
   test(`Fillet point-and-click delete`, async ({
     context,
     page,
@@ -1720,9 +1985,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 5)
 `
-    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
-    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
+    // Tags are assigned in profile order: first segment seg01, second seg02
+    const taggedSegment1 = `yLine(length = -1, tag = $seg02)`
+    const taggedSegment2 = `xLine(length = -10, tag = $seg01)`
+    const filletExpression = `fillet001 = fillet(extrude001, edges = [{ sideFaces = [seg01, seg02] }], radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1818,8 +2084,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[seg01,capEnd001]}], length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[seg01,capStart001]}], length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1902,14 +2168,15 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1.1: Edit sweep
     async function editChamfer(
-      featureTreeIndex: number,
+      operationName: string,
       oldValue: string,
       newValue: string
     ) {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await page.waitForTimeout(300)
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        featureTreeIndex
+        operationName,
+        0
       )
       await operationButton.dblclick({ button: 'left' })
       await cmdBar.expectState({
@@ -1936,16 +2203,15 @@ extrude001 = extrude(sketch001, length = -12)
     }
 
     await test.step('Edit chamfer via feature tree selection works', async () => {
-      const firstChamferFeatureTreeIndex = 0
       const editedLength = '1'
-      await editChamfer(firstChamferFeatureTreeIndex, '5', editedLength)
+      await editChamfer('chamfer001', '5', editedLength)
       await editor.expectEditor.toContain(
         firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
         { shouldNormalise: true }
       )
 
-      // Edit back to original radius
-      await editChamfer(firstChamferFeatureTreeIndex, editedLength, '5')
+      // Edit back to original length
+      await editChamfer('chamfer001', editedLength, '5')
       await editor.expectEditor.toContain(firstChamferDeclaration, {
         shouldNormalise: true,
       })
@@ -2021,16 +2287,15 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 2.1: Edit chamfer (edgeSweep type)
     await test.step('Edit chamfer via feature tree selection works', async () => {
-      const secondChamferFeatureTreeIndex = 1
       const editedLength = '2'
-      await editChamfer(secondChamferFeatureTreeIndex, '5', editedLength)
+      await editChamfer('chamfer002', '5', editedLength)
       await editor.expectEditor.toContain(
         secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
         { shouldNormalise: true }
       )
 
       // Edit back to original length
-      await editChamfer(secondChamferFeatureTreeIndex, editedLength, '5')
+      await editChamfer('chamfer002', editedLength, '5')
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
@@ -2044,8 +2309,8 @@ extrude001 = extrude(sketch001, length = -12)
     })
     await test.step('Delete chamfer via feature tree selection', async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        1
+        'chamfer002',
+        0
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -2210,8 +2475,23 @@ extrude001 = extrude(sketch001, length = 30)`
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+    const shellDeclaration2 =
+      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
     const editedShellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+    const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
+profile001 = startProfile(sketch001, at = [-219, 25])
+  |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 472)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 500)`
+    const secondaryShellClickPoint = {
+      x: 0.4935,
+      y: 0.5159,
+      format: 'ratio' as const,
+    }
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2303,6 +2583,68 @@ extrude001 = extrude(sketch001, length = 30)`
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(shellDeclaration)
+    })
+    await test.step('Replace modeling code with secondary shell snippet', async () => {
+      await editor.openPane()
+      await editor.replaceCode('', secondaryShellCode)
+      await scene.settled(cmdBar)
+      await editor.closePane()
+    })
+
+    await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
+      const [clickOnDebugCap] = scene.makeMouseHelpers(
+        secondaryShellClickPoint.x,
+        secondaryShellClickPoint.y,
+        { format: secondaryShellClickPoint.format ?? undefined }
+      )
+      await toolbar.shellButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'faces',
+        currentArgValue: '',
+        headerArguments: {
+          Faces: '',
+          Thickness: '',
+        },
+        highlightedHeaderArg: 'faces',
+        commandName: 'Shell',
+      })
+
+      await clickOnDebugCap()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'thickness',
+        currentArgValue: '5',
+        headerArguments: {
+          Faces: '1 face',
+          Thickness: '',
+        },
+        highlightedHeaderArg: 'thickness',
+        commandName: 'Shell',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Faces: '1 face',
+          Thickness: '5',
+        },
+        commandName: 'Shell',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Confirm secondary shell code exists without diagnostics', async () => {
+      await editor.openPane()
+      await editor.expectEditor.toContain(shellDeclaration2)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [shellDeclaration2],
+        highlightedCode: '',
+      })
+      await editor.closePane()
     })
   })
 
@@ -2686,6 +3028,9 @@ profile002 = startProfile(sketch002, at = [-1, 0])
 
     await test.step('Select two edges through the command bar flow', async () => {
       await selectEdgesFromBothSurfaces()
+      await expect(toolbar.selectionStatus).toContainText(
+        /2 (?:segments?|edges)/
+      )
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -2776,7 +3121,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Surface: '1 sweep',
+          Surface: '1 path',
         },
         commandName: 'Flip Surface',
       })
@@ -2924,7 +3269,7 @@ extrude001 = extrude(profile001, length = 1)`
         currentArgKey: 'color',
         currentArgValue: '',
         headerArguments: {
-          Objects: '1 sweep',
+          Objects: '1 path',
           Color: '',
         },
         highlightedHeaderArg: 'color',
@@ -2935,7 +3280,7 @@ extrude001 = extrude(profile001, length = 1)`
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
-          Objects: '1 sweep',
+          Objects: '1 path',
           Color: '#ff0000',
         },
         stage: 'review',
@@ -3059,7 +3404,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '',
               Axis: '',
               Center: '',
@@ -3078,7 +3423,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: '',
               Center: '',
@@ -3096,7 +3441,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'center',
             currentArgValue: '[0, 0, 0]',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '',
@@ -3113,7 +3458,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3131,7 +3476,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'arcDegrees',
             currentArgValue: '360deg',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3147,7 +3492,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3164,7 +3509,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'rotateDuplicates',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3180,7 +3525,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3198,7 +3543,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3215,7 +3560,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3575,7 +3920,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '',
               Distance: '',
               Axis: '',
@@ -3594,7 +3939,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'distance',
             currentArgValue: KCL_DEFAULT_LENGTH,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '',
               Axis: '',
@@ -3613,7 +3958,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: '',
@@ -3632,7 +3977,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3647,7 +3992,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3661,7 +4006,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',

@@ -7,10 +7,13 @@ import {
 import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   isLinesParallelAndConstrained,
+  resolveToCodeRef,
 } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
@@ -24,7 +27,7 @@ import {
   type Program,
   type VariableDeclarator,
 } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -54,36 +57,71 @@ export function intersectInfo({
     }
   }
 
-  const previousSegment =
-    selectionRanges.graphSelections.length > 1 &&
-    isLinesParallelAndConstrained(
-      kclManager.ast,
-      kclManager.artifactGraph,
-      kclManager.variables,
-      selectionRanges.graphSelections[0],
-      selectionRanges.graphSelections[1],
-      wasmInstance
-    )
+  const primaryResolved = resolveToCodeRef(
+    selectionRanges.graphSelections[0],
+    kclManager.artifactGraph
+  )
+  const secondaryResolved = resolveToCodeRef(
+    selectionRanges.graphSelections[1],
+    kclManager.artifactGraph
+  )
+  if (!primaryResolved || !secondaryResolved) {
+    return {
+      enabled: false,
+      transforms: [],
+      forcedSelectionRanges: { ...selectionRanges },
+    }
+  }
+
+  const previousSegment = isLinesParallelAndConstrained(
+    kclManager.ast,
+    kclManager.artifactGraph,
+    kclManager.variables,
+    primaryResolved,
+    secondaryResolved,
+    wasmInstance
+  )
 
   if (err(previousSegment)) return previousSegment
 
-  const artifact = selectionRanges.graphSelections[1]?.artifact
+  const artifact = secondaryResolved.artifact
   const shouldUsePreviousSegment =
     (!artifact || artifact.type === 'segment') &&
     previousSegment &&
     previousSegment.isParallelAndConstrained
 
+  const selectionToV2 = (sel: {
+    artifact?: { type: string; id: string }
+    codeRef?: CodeRef
+  }): Selection | null =>
+    sel.artifact && sel.codeRef
+      ? {
+          entityRef: artifactToEntityRef(
+            sel.artifact.type as Parameters<typeof artifactToEntityRef>[0],
+            sel.artifact.id
+          ),
+          codeRef: sel.codeRef,
+        }
+      : sel.codeRef
+        ? { codeRef: sel.codeRef }
+        : null
+
+  const secondV2: Selection | null | undefined =
+    shouldUsePreviousSegment && previousSegment.selection
+      ? selectionToV2(previousSegment.selection)
+      : selectionRanges.graphSelections[1]
   const _forcedSelectionRanges: typeof selectionRanges = {
     ...selectionRanges,
-    graphSelections: [
-      selectionRanges.graphSelections?.[0],
-      shouldUsePreviousSegment && previousSegment.selection
-        ? previousSegment.selection
-        : selectionRanges.graphSelections?.[1],
-    ],
+    graphSelections: [selectionRanges.graphSelections[0], secondV2].filter(
+      (s): s is Selection => s != null
+    ),
   }
 
-  const _nodes = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
+  const withCodeRef = _forcedSelectionRanges.graphSelections.filter(
+    (s): s is typeof s & { codeRef: NonNullable<typeof s.codeRef> } =>
+      s.codeRef != null
+  )
+  const _nodes = withCodeRef.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
       codeRef.pathToNode,
@@ -96,7 +134,7 @@ export function intersectInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
+  const _varDecs = withCodeRef.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef.pathToNode,
@@ -131,7 +169,13 @@ export function intersectInfo({
     wasmInstance
   )
 
-  const forcedArtifact = _forcedSelectionRanges?.graphSelections?.[1]?.artifact
+  const forcedResolved = _forcedSelectionRanges?.graphSelections?.[1]
+    ? resolveToCodeRef(
+        _forcedSelectionRanges.graphSelections[1],
+        kclManager.artifactGraph
+      )
+    : null
+  const forcedArtifact = forcedResolved?.artifact
   const _enableEqual =
     secondaryVarDecs.length === 1 &&
     isAllTooltips &&

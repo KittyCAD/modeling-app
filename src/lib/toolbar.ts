@@ -110,7 +110,8 @@ export const useToolbarConfig = () => {
               editorHasFocus,
             }) => {
               const isSketchBlock = isSketchBlockSelected(
-                modelingState.context.selectionRanges
+                modelingState.context.selectionRanges,
+                modelingState.context.kclManager.artifactGraph
               )
 
               // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
@@ -128,7 +129,8 @@ export const useToolbarConfig = () => {
             status: 'available',
             title: ({ editorHasFocus, sketchPathId, modelingState }) => {
               const isSketchBlock = isSketchBlockSelected(
-                modelingState.context.selectionRanges
+                modelingState.context.selectionRanges,
+                modelingState.context.kclManager.artifactGraph
               )
 
               if ((editorHasFocus && sketchPathId) || isSketchBlock) {

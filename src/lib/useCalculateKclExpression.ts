@@ -61,10 +61,10 @@ export function useCalculateKclExpression({
     selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
   // If we don't memoize this, we risk an infinite set/read state loop
-  const endingSourceRange = useMemo(
-    () => sourceRange || selectionRange || [code.length, code.length],
-    [code, selectionRange, sourceRange]
-  )
+  const endingSourceRange = useMemo((): SourceRange => {
+    const r = sourceRange || selectionRange || [code.length, code.length, 0]
+    return r.length === 3 ? r : [r[0] ?? 0, r[1] ?? 0, 0]
+  }, [code, selectionRange, sourceRange])
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

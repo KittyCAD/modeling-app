@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import {
-  coerceSelectionsToBody,
+  getArtifactFromRange,
   getSweepArtifactFromSelection,
   type Artifact,
+  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 
 describe('getSweepArtifactFromSelection', () => {
   it('should return sweep from edgeCut -> segment selection', () => {
@@ -46,6 +46,7 @@ describe('getSweepArtifactFromSelection', () => {
       pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
+      edgeCutId: 'edge-cut-1',
       codeRef: {
         range: [0, 0, 0],
         pathToNode: [],
@@ -71,7 +72,7 @@ describe('getSweepArtifactFromSelection', () => {
     artifactGraph.set('segment-1', segment)
     artifactGraph.set('edge-cut-1', edgeCut)
 
-    const selection: Selection = {
+    const selection: ResolvedGraphSelection = {
       artifact: edgeCut,
       codeRef: { range: [0, 0, 0], pathToNode: [] },
     }
@@ -85,175 +86,83 @@ describe('getSweepArtifactFromSelection', () => {
     }
   })
 
-  it('should return sweep from edgeCut -> sweepEdge selection', () => {
-    const artifactGraph: ArtifactGraph = new Map()
-
-    // Create sweep -> sweepEdge -> edgeCut chain
-    const sweep: Artifact = {
-      type: 'sweep',
-      id: 'sweep-1',
-      codeRef: {
-        range: [0, 0, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-      pathId: 'path-1',
-      subType: 'extrusion',
-      surfaceIds: [],
-      edgeIds: ['sweep-edge-1'],
-      method: 'merge',
-      trajectoryId: null,
-      consumed: false,
-    }
-
-    const sweepEdge: Artifact = {
-      type: 'sweepEdge',
-      id: 'sweep-edge-1',
-      subType: 'opposite',
-      sweepId: 'sweep-1',
-      segId: 'segment-1',
-      cmdId: 'cmd-1',
-      commonSurfaceIds: [],
-    }
-
-    const edgeCut: Artifact = {
-      type: 'edgeCut',
-      id: 'edge-cut-1',
-      consumedEdgeId: 'sweep-edge-1', // Points to sweepEdge, not segment
-      subType: 'fillet',
-      edgeIds: [],
-      codeRef: {
-        range: [0, 0, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-    }
-
-    artifactGraph.set('sweep-1', sweep)
-    artifactGraph.set('sweep-edge-1', sweepEdge)
-    artifactGraph.set('edge-cut-1', edgeCut)
-
-    const selection: Selection = {
-      artifact: edgeCut,
-      codeRef: { range: [0, 0, 0], pathToNode: [] },
-    }
-
-    const result = getSweepArtifactFromSelection(selection, artifactGraph)
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect('type' in result ? result.type : undefined).toBe('sweep')
-      expect(result.id).toBe('sweep-1')
-    }
-  })
+  // sweepEdge was removed from the artifact graph / selectionsV2; edgeCut now resolves via
+  // segment or via entityRef (edge). A test for edge selection → sweep could use an edge
+  // entityRef payload instead of the legacy edgeCut -> sweepEdge chain.
 })
 
-describe('coerceSelectionsToBody', () => {
-  it('should pass through path artifact unchanged', () => {
+describe('getArtifactFromRange', () => {
+  it('prefers the requested sketchBlock over a same-range path match', () => {
     const artifactGraph: ArtifactGraph = new Map()
+    const range: [number, number, number] = [10, 40, 0]
 
     const path: Artifact = {
       type: 'path',
       id: 'path-1',
-      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
       planeId: 'plane-1',
       segIds: [],
       trajectorySweepId: null,
       consumed: false,
     }
-    artifactGraph.set('path-1', path)
 
-    const selections: Selections = {
-      graphSelections: [
-        {
-          artifact: path,
-          codeRef: { range: [0, 100, 0], pathToNode: [] },
-        },
-      ],
-      otherSelections: [],
+    const sketchBlock: Artifact = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      sketchId: 1,
     }
 
-    const result = coerceSelectionsToBody(selections, artifactGraph)
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sketchBlock.id, sketchBlock)
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
-    }
+    expect(getArtifactFromRange(range, artifactGraph, 'sketchBlock')).toEqual(
+      sketchBlock
+    )
   })
 
-  it('should coerce edgeCut selection to parent path', () => {
+  it('prefers sketchBlock over a same-range path match without a preferred type', () => {
     const artifactGraph: ArtifactGraph = new Map()
+    const range: [number, number, number] = [10, 40, 0]
 
     const path: Artifact = {
       type: 'path',
       id: 'path-1',
-      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
-      planeId: 'plane-1',
-      segIds: ['segment-1'],
-      sweepId: 'sweep-1',
-      trajectorySweepId: null,
-      consumed: true,
-    }
-
-    const sweep: Artifact = {
-      type: 'sweep',
-      id: 'sweep-1',
       codeRef: {
-        range: [100, 200, 0],
+        range,
         pathToNode: [],
         nodePath: { steps: [] },
       },
-      pathId: 'path-1',
-      subType: 'extrusion',
-      surfaceIds: [],
-      edgeIds: [],
-      method: 'merge',
-      trajectoryId: null,
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
       consumed: false,
     }
 
-    const segment: Artifact = {
-      type: 'segment',
-      id: 'segment-1',
-      pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
-      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    const sketchBlock: Artifact = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      sketchId: 1,
     }
 
-    const edgeCut: Artifact = {
-      type: 'edgeCut',
-      id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
-      subType: 'chamfer',
-      edgeIds: [],
-      codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
-    }
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sketchBlock.id, sketchBlock)
 
-    artifactGraph.set('path-1', path)
-    artifactGraph.set('sweep-1', sweep)
-    artifactGraph.set('segment-1', segment)
-    artifactGraph.set('edge-cut-1', edgeCut)
-
-    const selections: Selections = {
-      graphSelections: [
-        {
-          artifact: edgeCut,
-          codeRef: { range: [90, 95, 0], pathToNode: [] },
-        },
-      ],
-      otherSelections: [],
-    }
-
-    const result = coerceSelectionsToBody(selections, artifactGraph)
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
-    }
+    expect(getArtifactFromRange(range, artifactGraph)).toEqual(sketchBlock)
   })
 })

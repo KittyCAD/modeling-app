@@ -89,7 +89,7 @@ async function getAstAndSketchSelectionsEngineless(
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
+  const sketches = createSelectionFromPathArtifact(artifacts, artifactGraph)
   return { artifactGraph, ast, sketches }
 }
 
@@ -855,8 +855,11 @@ profile002 = startProfile(sketch002, at = [0, 0])
         throw new Error('Artifact not found in the graph')
       }
 
-      const sketches = createSelectionFromPathArtifact([artifact1])
-      const path = createSelectionFromPathArtifact([artifact2])
+      const sketches = createSelectionFromPathArtifact(
+        [artifact1],
+        artifactGraph
+      )
+      const path = createSelectionFromPathArtifact([artifact2], artifactGraph)
       return { ast, artifactGraph, sketches, path }
     }
 
@@ -1095,11 +1098,14 @@ profile003 = startProfile(sketch002, at = [0, 0])
         throw new Error('Artifacts not found in the graph')
       }
 
-      const sketches = createSelectionFromPathArtifact([
-        artifacts[0],
-        artifacts[1],
-      ])
-      const path = createSelectionFromPathArtifact([artifacts[2]])
+      const sketches = createSelectionFromPathArtifact(
+        [artifacts[0], artifacts[1]],
+        artifactGraph
+      )
+      const path = createSelectionFromPathArtifact(
+        [artifacts[2]],
+        artifactGraph
+      )
       const result = addSweep({
         ast,
         artifactGraph,
@@ -1649,10 +1655,16 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
       if (!circleArtifact) throw new Error('Circle artifact not found in graph')
-      const sketches = createSelectionFromPathArtifact([circleArtifact])
+      const sketches = createSelectionFromPathArtifact(
+        [circleArtifact],
+        artifactGraph
+      )
       const edgeArtifact = artifacts.find((a) => a.type === 'segment')
       if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
-      const edge = createSelectionFromPathArtifact([edgeArtifact])
+      const edge = createSelectionFromPathArtifact(
+        [edgeArtifact],
+        artifactGraph
+      )
       const angle = await getKclCommandValue(
         '20',
         instanceInThisFile,
@@ -1697,10 +1709,16 @@ sketch002 = startSketchOn(XY)
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
       if (!circleArtifact) throw new Error('Circle artifact not found in graph')
-      const sketches = createSelectionFromPathArtifact([circleArtifact])
+      const sketches = createSelectionFromPathArtifact(
+        [circleArtifact],
+        artifactGraph
+      )
       const edgeArtifact = artifacts.findLast((a) => a.type === 'segment')
       if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
-      const edge = createSelectionFromPathArtifact([edgeArtifact])
+      const edge = createSelectionFromPathArtifact(
+        [edgeArtifact],
+        artifactGraph
+      )
       const angle = await getKclCommandValue(
         '360',
         instanceInThisFile,
@@ -1801,12 +1819,16 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const edgeArtifact = [...artifactGraph.values()].find(
         (a) => a.type === 'segment'
       )
-      const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
+      const edge: Selections = createSelectionFromPathArtifact(
+        [edgeArtifact!],
+        artifactGraph
+      )
       const result = getAxisExpressionAndIndex(
         undefined,
         edge,
         ast,
-        instanceInThisFile
+        instanceInThisFile,
+        artifactGraph
       )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')

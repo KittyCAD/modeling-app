@@ -22,6 +22,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -50,6 +51,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import {
   CONSTRAINT_TYPE,
   isCircleSegment,
@@ -292,6 +294,11 @@ export function buildSegmentCtorFromObject(
       end: endPoint,
     }
   } else if (isCircleSegment(obj)) {
+    const ctor = obj.kind.segment.ctor
+    if (ctor.type !== 'Circle') {
+      console.error('Failed to find circle ctor for Circle segment', obj)
+      return null
+    }
     const centerPoint = getLinkedPoint({
       objects,
       pointId: obj.kind.segment.center,
@@ -308,7 +315,6 @@ export function buildSegmentCtorFromObject(
       type: 'Circle',
       center: centerPoint,
       start: startPoint,
-      construction: obj.kind.segment.construction,
     }
   }
   return null
@@ -1092,8 +1098,14 @@ export async function deleteDraftEntitiesPromise({
   }
 }
 
-export function isSketchBlockSelected(selectionRanges: Selections): boolean {
-  const artifact = selectionRanges.graphSelections[0]?.artifact
+export function isSketchBlockSelected(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  const first = selectionRanges.graphSelections[0]
+  if (!first) return false
+  const resolved = resolveToCodeRef(first, artifactGraph)
+  const artifact = resolved?.artifact
   return (
     artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
   )

@@ -120,7 +120,6 @@ function codeRangeToIds(
   const selections = {
     graphSelections: [
       {
-        artifact: {},
         codeRef: {
           range: range,
         },
