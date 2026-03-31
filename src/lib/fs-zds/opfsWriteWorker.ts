@@ -99,7 +99,7 @@ const writeWithHandle = async (
     return
   }
 
-  throw new Error('OPFS_WRITE_UNSUPPORTED')
+  return Promise.reject('OPFS_WRITE_UNSUPPORTED')
 }
 
 const writeFile = async (
@@ -109,8 +109,8 @@ const writeFile = async (
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
-  if (handle === undefined) throw new Error('ENOENT')
-  if (handle instanceof FileSystemFileHandle) throw new Error('EISFILE')
+  if (handle === undefined) return Promise.reject('ENOENT')
+  if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
 
   const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,

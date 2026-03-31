@@ -18,20 +18,20 @@ vi.mock('@kittycad/lib', () => ({
 }))
 
 import {
-  reportOPFSClientError,
-  resetReportedOPFSClientErrorsForTests,
-} from '@src/lib/fs-zds/opfsClientErrors'
+  reportClientError,
+  resetReportedClientErrorsForTests,
+} from '@src/lib/clientErrors'
 
-describe('reportOPFSClientError', () => {
+describe('reportClientError', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    resetReportedOPFSClientErrorsForTests()
+    resetReportedClientErrorsForTests()
     Object.defineProperty(globalThis, '__APP_VERSION__', {
       configurable: true,
       value: 'test-version',
     })
     window.history.replaceState({}, '', '/modeling?foo=1#editor')
-    ;(window as Window & { app?: unknown }).app = {
+    ;(window as Window & { app?: any }).app = {
       auth: {
         actor: {
           getSnapshot: () => ({
@@ -44,8 +44,8 @@ describe('reportOPFSClientError', () => {
     }
   })
 
-  it('posts the missing feature report through the kittycad client', async () => {
-    await reportOPFSClientError({
+  it('posts a normalized client error through the kittycad client', async () => {
+    await reportClientError({
       code: 'opfs_missing_create_writable',
       errorName: 'MissingBrowserFeature',
       message: 'missing createWritable',
@@ -67,23 +67,55 @@ describe('reportOPFSClientError', () => {
         stack: expect.any(String),
       },
     })
-    expect(
-      JSON.parse(mockState.reportUserClientError.mock.calls[0][0].body.stack)
-    ).toMatchObject({
+    const firstArg = mockState.reportUserClientError.mock.calls
+      .flatMap((call) => call)
+      .at(0) as { body: { stack: string } } | undefined
+    if (!firstArg) {
+      throw new Error('Expected report_user_client_error args to be present')
+    }
+    expect(JSON.parse(firstArg.body.stack)).toMatchObject({
       hasCreateWritable: false,
     })
   })
 
-  it('deduplicates the same feature report within a session', async () => {
-    await reportOPFSClientError({
-      code: 'opfs_missing_create_writable',
-      errorName: 'MissingBrowserFeature',
-      message: 'missing createWritable',
+  it('derives name, message, and stack from an Error object', async () => {
+    const error = new Error('boom')
+    error.name = 'BoomError'
+
+    await reportClientError({
+      error,
+      code: 'generic_error',
     })
-    await reportOPFSClientError({
+
+    expect(mockState.reportUserClientError).toHaveBeenCalledWith({
+      client: { mocked: true },
+      body: expect.objectContaining({
+        code: 'generic_error',
+        error_name: 'BoomError',
+        message: 'boom',
+      }),
+    })
+    const firstArg = mockState.reportUserClientError.mock.calls
+      .flatMap((call) => call)
+      .at(0) as { body: { stack: string } } | undefined
+    if (!firstArg) {
+      throw new Error('Expected report_user_client_error args to be present')
+    }
+    expect(JSON.parse(firstArg.body.stack)).toMatchObject({
+      runtimeStack: expect.any(String),
+    })
+  })
+
+  it('deduplicates reports when given a dedupe key', async () => {
+    await reportClientError({
       code: 'opfs_missing_create_writable',
-      errorName: 'MissingBrowserFeature',
       message: 'missing createWritable',
+      dedupeKey: 'opfs_missing_create_writable',
+    })
+    await reportClientError({
+      code: 'opfs_missing_create_writable',
+      message: 'missing createWritable',
+      dedupeKey: 'opfs_missing_create_writable',
     })
 
     expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
