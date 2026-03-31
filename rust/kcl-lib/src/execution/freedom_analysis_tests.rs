@@ -36,7 +36,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         }
     }
     // Sort by object ID for consistent ordering
-    point_freedoms.sort_by_key(|(id, _)| id.0);
+    point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
     point_freedoms
 }

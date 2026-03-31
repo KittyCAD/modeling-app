@@ -1214,8 +1214,7 @@ t = sketch(on = plane001) {
         (op) => op.type === 'StdLibCall' && op.name === 'loft'
       )
       if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
-      // TODO: change to false once we https://github.com/KittyCAD/modeling-app/issues/10363 is fixed
-      expect(loft.isError).toBe(true)
+      expect(loft.isError).toBe(undefined)
     })
 
     it('should edit a loft call from a sketch region selection', async () => {

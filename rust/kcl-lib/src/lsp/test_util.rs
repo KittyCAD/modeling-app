@@ -38,7 +38,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
-        can_send_telemetry: true,
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),

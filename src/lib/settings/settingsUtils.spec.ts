@@ -10,6 +10,7 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
+  formatSettingsLabel,
   getChangedSettingsAtLevel,
   getAllCurrentSettings,
   hiddenOnPlatform,
@@ -213,5 +214,14 @@ describe('project settings serialization regression', () => {
     expect(settings.app.showDebugPanel.user).toBe(true)
     expect(settings.app.showDebugPanel.project).toBe(false)
     expect(settings.app.showDebugPanel.current).toBe(false)
+  })
+})
+
+describe('formatSettingsLabel', () => {
+  it('capitalizes known initialisms', () => {
+    expect(formatSettingsLabel('machineApi')).toBe('machine API')
+    expect(formatSettingsLabel('siteUrl')).toBe('site URL')
+    expect(formatSettingsLabel('projectId')).toBe('project ID')
+    expect(formatSettingsLabel('showUi')).toBe('show UI')
   })
 })

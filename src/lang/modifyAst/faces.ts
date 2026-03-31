@@ -912,8 +912,7 @@ export function getFacesExprsFromSelection(
       return res
     }
     modifiedAst = res.modifiedAst
-    const expr = createLocalName(res.tags[0])
-    exprs.push(expr)
+    exprs.push(res.exprs[0])
   }
   return { modifiedAst, exprs }
 }

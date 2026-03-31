@@ -6,7 +6,10 @@ import type {
   SourceDelta,
   Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import {
+  segmentUtilsMap,
+  type SegmentRenderState,
+} from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import { Group } from 'three'
 import type {
@@ -49,14 +52,20 @@ import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
-  isArcSegment,
   isCircleSegment,
   isConstraint,
-  isLineSegment,
+  isConstruction as isConstructionSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  findSegmentsForInvisibleConstraint,
+  isInvisibleConstraintObject,
+  type ConstraintHoverPopup,
+} from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { StateEffect } from '@codemirror/state'
+import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -79,6 +88,7 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Fixed'
         | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
@@ -90,13 +100,21 @@ export type SketchSolveMachineEvent =
         | 'VerticalDistance'
         | 'construction'
     }
+  | { type: 'toggle non-visual constraints' }
   | {
       type: 'update selected ids'
-      data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
+      data: {
+        selectedIds?: Array<number>
+        duringAreaSelectIds?: Array<number>
+        replaceExistingSelection?: boolean
+      }
     }
   | {
       type: 'update hovered id'
-      data: { hoveredId: number | null }
+      data: {
+        hoveredId: number | null
+        constraintHoverPopups?: ConstraintHoverPopup[]
+      }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | UpdateSketchOutcomeEvent
@@ -166,6 +184,7 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
+  constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -175,6 +194,7 @@ export type SketchSolveContext = {
     constraintIds: Array<number>
   }
   editingConstraintId?: number
+  showNonVisualConstraints: boolean
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchId: number
   // Dependencies passed from parent
@@ -301,64 +321,35 @@ export function buildSegmentCtorFromObject(
 export function updateSegmentGroup({
   group,
   input,
-  selectedIds,
-  hoveredId,
+  state,
   scale,
   theme,
-  draftEntityIds,
   objects,
 }: {
   group: Group
   input: SegmentCtor
-  selectedIds: Array<number>
-  hoveredId: number | null
+  state: SegmentRenderState
   scale: number
   theme: Themes
-  draftEntityIds?: Array<number>
-  objects?: Array<ApiObject>
+  objects: ApiObject[]
 }): void {
   const idNum = Number(group.name)
   if (Number.isNaN(idNum)) {
     return
   }
 
-  // Determine isDraft and isConstruction separately
-  const isDraft = draftEntityIds?.includes(idNum) ?? false
-  let isConstruction = false
-  if (objects) {
-    const segmentObj = objects[idNum]
-    if (
-      isLineSegment(segmentObj) ||
-      isArcSegment(segmentObj) ||
-      isCircleSegment(segmentObj)
-    ) {
-      isConstruction = segmentObj.kind.segment.construction === true
-    }
-  }
-
-  // Derive freedom from segment freedom
-  let freedomResult: Freedom | null = null
-  if (objects) {
-    const segmentObj = objects[idNum]
-    if (segmentObj) {
-      freedomResult = deriveSegmentFreedom(segmentObj, objects)
-    }
-  }
-
-  // Store freedom in userData for immediate use (not as a cache - Rust handles that)
-  group.userData.freedom = freedomResult
+  const segmentObj = objects[idNum]
+  const freedomResult: Freedom | null = segmentObj
+    ? deriveSegmentFreedom(segmentObj, objects)
+    : null
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
       input,
       theme,
       scale,
-      id: idNum,
       group,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
+      state,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -366,12 +357,8 @@ export function updateSegmentGroup({
       input,
       theme,
       scale,
-      id: idNum,
       group,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
+      state,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -379,12 +366,8 @@ export function updateSegmentGroup({
       input,
       theme,
       scale,
-      id: idNum,
       group,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
+      state,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -392,12 +375,8 @@ export function updateSegmentGroup({
       input,
       theme,
       scale,
-      id: idNum,
       group,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
+      state,
       freedom: freedomResult,
     })
   }
@@ -409,88 +388,43 @@ export function updateSegmentGroup({
  */
 function initSegmentGroup({
   input,
-  theme,
-  scale,
   id,
-  isDraft,
   objects,
 }: {
   input: SegmentCtor
-  theme: Themes
-  scale: number
   id: number
-  isDraft?: boolean
-  objects?: Array<ApiObject>
+  objects: ApiObject[]
 }): Group | Error {
-  // Determine isDraft and isConstruction separately
-  const isDraftValue = isDraft ?? false
-  let isConstruction = false
-  if (objects) {
-    const segmentObj = objects[id]
-    if (
-      segmentObj?.kind?.type === 'Segment' &&
-      (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc' ||
-        segmentObj.kind.segment.type === 'Circle')
-    ) {
-      isConstruction = segmentObj.kind.segment.construction === true
-    }
-  }
-
-  // Derive freedom from segment freedom
-  let freedomResult: Freedom | null = null
-  if (objects) {
-    const segmentObj = objects[id]
-    if (segmentObj) {
-      freedomResult = deriveSegmentFreedom(segmentObj, objects)
-    }
-  }
+  const segmentObj = objects[id]
+  const isConstruction = isConstructionSegment(segmentObj)
 
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft: isDraftValue,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft: isDraftValue,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft: isDraftValue,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft: isDraftValue,
       isConstruction,
-      freedom: freedomResult,
     })
   }
   if (group instanceof Group) {
-    // Store freedom in userData for immediate use (not as a cache - Rust handles that)
-    group.userData.freedom = freedomResult
     return group
   }
   return new Error(`Unknown input type: ${(input as any).type}`)
@@ -521,20 +455,23 @@ export function updateSceneGraphFromDelta({
     context.sketchId
   )
   const factor = getSketchSolveScaleFactor(context)
-  const sketchSegments = context.sceneInfra.scene.children.find(
-    ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
-  )
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+
+  const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const draftEntityIds = context.draftEntities?.segmentIds
 
   // If invalidates_ids is true, we need to delete everything and start fresh
   // because the old IDs can't be trusted
-  if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
-    disposeGroupChildren(sketchSegments)
+  if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
+    disposeGroupChildren(sketchSolveGroup)
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
     // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
-    const invalidateScene = sketchSegments?.children.some((child) => {
+    const invalidateScene = sketchSolveGroup?.children.some((child) => {
       const childId = Number(child.name)
       // check if number
       if (Number.isNaN(childId)) {
@@ -543,9 +480,13 @@ export function updateSceneGraphFromDelta({
       // check id is not greater than new_graph.objects length
       return childId >= sceneGraphDelta.new_graph.objects.length
     })
-    if (invalidateScene && sketchSegments instanceof Group) {
-      disposeGroupChildren(sketchSegments)
+    if (invalidateScene && sketchSolveGroup instanceof Group) {
+      disposeGroupChildren(sketchSolveGroup)
     }
+  }
+
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
   }
 
   currentSketchObjects.forEach((obj) => {
@@ -569,12 +510,10 @@ export function updateSceneGraphFromDelta({
       if (!constraintGroup) {
         constraintGroup = segmentUtilsMap.Constraint.init(obj)
         if (constraintGroup) {
-          const sketchSceneGroup =
-            context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-          if (sketchSceneGroup) {
+          if (sketchSolveGroup) {
             constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
             constraintGroup.layers.set(SKETCH_LAYER)
-            sketchSceneGroup.add(constraintGroup)
+            sketchSolveGroup.add(constraintGroup)
           }
         }
       }
@@ -585,62 +524,56 @@ export function updateSceneGraphFromDelta({
           objects,
           factor,
           context.sceneInfra,
-          selectedIds,
-          context.hoveredId
+          allSelectedIds,
+          context.hoveredId,
+          getInvisibleConstraintDisplayState(context)
         )
       }
       return
     }
-    const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+    let group = context.sceneInfra.scene.getObjectByName(String(obj.id))
     const ctor = buildSegmentCtorFromObject(obj, objects)
+    const state = getSegmentRenderState(
+      obj.id,
+      selectedIds,
+      duringAreaSelectIds,
+      context.hoveredId,
+      hoveredSegmentIds,
+      draftEntityIds,
+      objects
+    )
     if (!(group instanceof Group)) {
       if (!ctor) {
         return
       }
-      // Check if this segment is a draft entity
-      const isDraft =
-        context.draftEntities?.segmentIds.includes(obj.id) ?? false
-
       const newGroup = initSegmentGroup({
         input: ctor,
-        theme: context.sceneInfra.theme,
-        scale: factor,
         id: obj.id,
-        isDraft,
         objects,
       })
       if (newGroup instanceof Error) {
         console.error('Failed to init segment group for object', obj.id)
         return
       }
-      const sketchSceneGroup =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (sketchSceneGroup) {
+      if (sketchSolveGroup) {
         newGroup.traverse((child) => {
           child.layers.set(SKETCH_LAYER)
         })
         newGroup.layers.set(SKETCH_LAYER)
-        sketchSceneGroup.add(newGroup)
+        sketchSolveGroup.add(newGroup)
       }
+      group = newGroup
+    }
+    if (!(group instanceof Group) || !ctor) {
       return
     }
-    if (!ctor) {
-      return
-    }
-
-    // Get draft entity IDs from context
-    const draftEntityIds = context.draftEntities
-      ? [...context.draftEntities.segmentIds]
-      : undefined
 
     updateSegmentGroup({
       group,
       input: ctor,
-      selectedIds: allSelectedIds,
-      hoveredId: context.hoveredId,
+      state,
       scale: factor,
       theme: context.sceneInfra.theme,
-      draftEntityIds,
       objects,
     })
   })
@@ -735,6 +668,8 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
     // If empty array is provided, clear the selection
     if (event.data.selectedIds.length === 0) {
       updates.selectedIds = []
+    } else if (event.data.replaceExistingSelection) {
+      updates.selectedIds = event.data.selectedIds
     } else {
       const first = event.data.selectedIds[0]
       if (
@@ -769,6 +704,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     context.sketchId
   )
   const factor = getSketchSolveScaleFactor(context)
+  const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
@@ -776,9 +712,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   )
 
   // Get draft entity IDs from context
-  const draftEntityIds = context.draftEntities
-    ? [...context.draftEntities.segmentIds]
-    : undefined
+  const draftEntityIds = context.draftEntities?.segmentIds
 
   currentSketchObjects.forEach((obj) => {
     if (obj.kind.type === 'Sketch') {
@@ -798,7 +732,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId
+          context.hoveredId,
+          getInvisibleConstraintDisplayState(context)
         )
       }
     } else {
@@ -813,11 +748,17 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       updateSegmentGroup({
         group,
         input: ctor,
-        selectedIds: allSelectedIds,
-        hoveredId: context.hoveredId,
+        state: getSegmentRenderState(
+          obj.id,
+          context.selectedIds,
+          context.duringAreaSelectIds,
+          context.hoveredId,
+          hoveredSegmentIds,
+          draftEntityIds,
+          objects
+        ),
         scale: factor,
         theme: context.sceneInfra.theme,
-        draftEntityIds,
         objects,
       })
     }
@@ -857,7 +798,10 @@ export function initializeInitialSceneGraph({
 export function refreshSketchSolveScale(context: SketchSolveContext): void {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+  if (
+    !(sketchSolveGroup instanceof Group) ||
+    !context.sketchExecOutcome?.sceneGraphDelta
+  ) {
     return
   }
 
@@ -867,13 +811,14 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     context.sketchId
   )
   const scaleFactor = getSketchSolveScaleFactor(context)
+  const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
 
   const allSelectedIds = Array.from(
     new Set([...context.selectedIds, ...context.duringAreaSelectIds])
   )
-  const draftEntityIds = context.draftEntities
-    ? [...context.draftEntities.segmentIds]
-    : undefined
+  const draftEntityIds = context.draftEntities?.segmentIds
+
+  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {
@@ -893,11 +838,17 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     updateSegmentGroup({
       group,
       input: ctor,
-      selectedIds: allSelectedIds,
-      hoveredId: context.hoveredId,
+      state: getSegmentRenderState(
+        obj.id,
+        context.selectedIds,
+        context.duringAreaSelectIds,
+        context.hoveredId,
+        hoveredSegmentIds,
+        draftEntityIds,
+        objects
+      ),
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
-      draftEntityIds,
       objects,
     })
   })
@@ -915,11 +866,50 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         objects,
         scaleFactor,
         context.sceneInfra,
-        context.selectedIds,
-        context.hoveredId
+        allSelectedIds,
+        context.hoveredId,
+        getInvisibleConstraintDisplayState(context)
       )
     }
   })
+}
+
+function getInvisibleConstraintDisplayState(
+  context: SketchSolveContext
+): InvisibleConstraintDisplayState {
+  return {
+    showNonVisualConstraints: context.showNonVisualConstraints,
+    constraintHoverPopups: context.constraintHoverPopups,
+  }
+}
+
+function getHoveredSegmentIds(
+  hoveredId: number | null,
+  objects: ApiObject[]
+): number[] {
+  const hoveredObject = hoveredId !== null ? objects[hoveredId] : null
+  return isInvisibleConstraintObject(hoveredObject)
+    ? findSegmentsForInvisibleConstraint(hoveredObject, objects)
+    : []
+}
+
+function getSegmentRenderState(
+  segmentId: number,
+  selectedIds: Array<number>,
+  duringAreaSelectIds: Array<number>,
+  hoveredId: number | null,
+  hoveredSegmentIds: Array<number>,
+  draftEntityIds: Array<number> | undefined,
+  objects: ApiObject[]
+): SegmentRenderState {
+  return {
+    selected:
+      selectedIds.includes(segmentId) ||
+      duringAreaSelectIds.includes(segmentId),
+    hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    draft: draftEntityIds?.includes(segmentId) ?? false,
+    construction: isConstructionSegment(objects[segmentId]),
+  }
 }
 
 function getSketchSolveScaleFactor(context: SketchSolveContext): number {

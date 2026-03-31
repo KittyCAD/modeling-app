@@ -1,6 +1,6 @@
 import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
-import { closestPointOnRay } from '@src/lib/utils2d'
+import { closestPointOnRay, lerp2d } from '@src/lib/utils2d'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { expect, describe, test } from 'vitest'
@@ -88,5 +88,11 @@ describe('test closestPointOnRay', () => {
     expect(result.closestPoint[0]).toBeCloseTo(3.5)
     expect(result.closestPoint[1]).toBeCloseTo(3.5)
     expect(result.t).toBeCloseTo(4.95, 1)
+  })
+})
+
+describe('test lerp2d', () => {
+  test('interpolates between two points', () => {
+    expect(lerp2d([0, 0], [10, 20], 0.7)).toEqual([7, 14])
   })
 })

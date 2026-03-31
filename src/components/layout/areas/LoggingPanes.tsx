@@ -15,7 +15,7 @@ export function LogsPane(props: AreaTypeComponentProps) {
       <LayoutPanelHeader
         id={props.layout.id}
         icon="logs"
-        title={props.layout.id}
+        title={props.layout.label}
         Menu={null}
         onClose={props.onClose}
       />

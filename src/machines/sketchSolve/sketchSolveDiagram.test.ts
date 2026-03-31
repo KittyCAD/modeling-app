@@ -7,6 +7,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   buildAngleConstraintInput,
+  buildFixedConstraintInput,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -48,7 +49,7 @@ describe('buildAngleConstraintInput', () => {
     })
   })
 
-  it('builds a 225deg angle constraint when one line direction is inverted', () => {
+  it('flips line order to keep the smaller angle when one line direction is inverted', () => {
     const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
     const up = createPointApiObject({ id: 2, x: 0, y: 10 })
     const diag = createPointApiObject({ id: 3, x: 10, y: 10 })
@@ -75,9 +76,9 @@ describe('buildAngleConstraintInput', () => {
 
     expect(constraint).toEqual({
       type: 'Angle',
-      lines: [11, 12],
-      angle: { value: 225, units: 'Deg' },
-      source: { expr: '225deg', is_literal: true },
+      lines: [12, 11],
+      angle: { value: 135, units: 'Deg' },
+      source: { expr: '135deg', is_literal: true },
     })
   })
 })
@@ -152,5 +153,56 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
+  })
+})
+
+describe('buildFixedConstraintInput', () => {
+  it('builds a fixed-point input for one selected point', () => {
+    const point = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const objects = createObjectsArray([point])
+
+    expect(buildFixedConstraintInput([10], objects)).toEqual([
+      {
+        point: 10,
+        position: {
+          x: { value: 3, units: 'Mm' },
+          y: { value: 4, units: 'Mm' },
+        },
+      },
+    ])
+  })
+
+  it('builds fixed-point inputs for multiple selected points', () => {
+    const point1 = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const point2 = createPointApiObject({ id: 11, x: 5, y: 6 })
+    const objects = createObjectsArray([point1, point2])
+
+    expect(buildFixedConstraintInput([10, 11], objects)).toEqual([
+      {
+        point: 10,
+        position: {
+          x: { value: 3, units: 'Mm' },
+          y: { value: 4, units: 'Mm' },
+        },
+      },
+      {
+        point: 11,
+        position: {
+          x: { value: 5, units: 'Mm' },
+          y: { value: 6, units: 'Mm' },
+        },
+      },
+    ])
+  })
+
+  it('returns null unless the selection is one or more points', () => {
+    const point1 = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const point2 = createPointApiObject({ id: 11, x: 5, y: 6 })
+    const line = createLineApiObject({ id: 12, start: 10, end: 11 })
+    const objects = createObjectsArray([point1, point2, line])
+
+    expect(buildFixedConstraintInput([], objects)).toBeNull()
+    expect(buildFixedConstraintInput([12], objects)).toBeNull()
+    expect(buildFixedConstraintInput([10, 12], objects)).toBeNull()
   })
 })

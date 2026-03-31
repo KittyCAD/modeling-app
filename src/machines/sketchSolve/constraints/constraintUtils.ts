@@ -1,7 +1,7 @@
 import type {
   ApiConstraint,
+  FixedPoint,
   ApiObject,
-  SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -66,6 +66,14 @@ export function isArcLikeSegment(
 ): obj is ArcSegment | CircleSegment {
   return isArcSegment(obj) || isCircleSegment(obj)
 }
+
+export function isConstruction(obj: ApiObject | undefined | null): boolean {
+  return (
+    (isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)) &&
+    obj.kind.segment.construction === true
+  )
+}
+
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -181,12 +189,18 @@ export function buildAngleConstraintInput(
     return null
   }
 
+  const shouldFlipLineOrder = angle > 180
+  const constraintLines = shouldFlipLineOrder
+    ? [line2.id, line1.id]
+    : [line1.id, line2.id]
+  const constraintAngle = shouldFlipLineOrder ? roundOff(360 - angle) : angle
+
   return {
     type: 'Angle' as const,
-    lines: [line1.id, line2.id],
-    angle: { value: angle, units: 'Deg' as const },
+    lines: constraintLines,
+    angle: { value: constraintAngle, units: 'Deg' as const },
     source: {
-      expr: `${angle}deg`,
+      expr: `${constraintAngle}deg`,
       is_literal: true as const,
     },
   }
@@ -223,6 +237,31 @@ export function buildTangentConstraintInput(
 
   return null
 }
+
+export function buildFixedConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+): FixedPoint[] | null {
+  if (selectedIds.length === 0) {
+    return null
+  }
+
+  const fixedPoints: FixedPoint[] = []
+  for (const id of selectedIds) {
+    const point = objects[id]
+    if (!isPointSegment(point)) {
+      return null
+    }
+
+    fixedPoints.push({
+      point: point.id,
+      position: point.kind.segment.position,
+    })
+  }
+
+  return fixedPoints
+}
+
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
@@ -377,6 +416,17 @@ export function getSelectedTangentConstraintInput(
   return buildTangentConstraintInput(selectedIds, objects)
 }
 
+export function getSelectedFixedConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildFixedConstraintInput(selectedIds, objects)
+}
+
 export type SpriteLabel = Sprite & {
   userData: {
     type: typeof DISTANCE_CONSTRAINT_LABEL
@@ -404,18 +454,45 @@ export function pointToCoords2d(point: PointSegment): Coords2d {
 }
 
 /**
- * Utility to get the other scene graph IDs that are coincident with
- * the passed-in one, if any.
+ * Returns all points that are in the same coincident constraint as the given point,
+ * or points that are in a coincident constraint with those point transitively.
+ * Eg. coincident constraints:
+ * [1, 2], [2, 3], [3, 5]
+ * for param: 1 it will return: 1, 2, 3, 5
+ *
+ * Result includes the given point as well.
  */
-export function getOtherCoincidentIdsByPointId(
-  targetId: number,
-  sceneGraph: SceneGraph
+export function getCoincidentCluster(
+  pointId: number,
+  objects: ApiObject[]
 ): number[] {
-  const constraints: CoincidentConstraint[] = sceneGraph.objects
-    .filter((obj) => isConstraint(obj, 'Coincident'))
-    .filter((obj) => obj.kind.constraint.segments.includes(targetId))
+  const connectedPointIds = new Set<number>([pointId])
+  const pendingPointIds = [pointId]
 
-  return constraints.flatMap((c) =>
-    c.kind.constraint.segments.filter((id) => id !== targetId)
-  )
+  while (pendingPointIds.length > 0) {
+    const currentPointId = pendingPointIds.pop()
+    if (currentPointId === undefined) {
+      continue
+    }
+
+    const coincidentPointIds = objects
+      .filter(
+        (obj): obj is CoincidentConstraint =>
+          isConstraint(obj, 'Coincident') &&
+          obj.kind.constraint.segments.includes(currentPointId)
+      )
+      .flatMap((obj) => obj.kind.constraint.segments)
+
+    coincidentPointIds.forEach((coincidentPointId) => {
+      if (
+        !connectedPointIds.has(coincidentPointId) &&
+        isPointSegment(objects[coincidentPointId])
+      ) {
+        connectedPointIds.add(coincidentPointId)
+        pendingPointIds.push(coincidentPointId)
+      }
+    })
+  }
+
+  return [...connectedPointIds]
 }

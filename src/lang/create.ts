@@ -16,6 +16,7 @@ import {
   type Identifier,
   type LabeledArg,
   type Literal,
+  type MemberExpression,
   type NumericSuffix,
   type ObjectExpression,
   type PipeExpression,
@@ -36,7 +37,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function createLiteral(
   value: number | string | boolean,
   wasmInstance: ModuleType,
-  suffix?: NumericSuffix
+  suffix?: NumericSuffix,
+  decimals?: number
 ): Node<Literal> {
   return {
     type: 'Literal',
@@ -47,7 +49,7 @@ export function createLiteral(
       typeof value === 'number'
         ? { value, suffix: suffix ? suffix : 'None' }
         : value,
-    raw: createRawStr(value, wasmInstance, suffix),
+    raw: createRawStr(value, wasmInstance, suffix, decimals),
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
@@ -57,7 +59,8 @@ export function createLiteral(
 function createRawStr(
   value: number | string | boolean,
   wasmInstance: ModuleType,
-  suffix?: NumericSuffix
+  suffix?: NumericSuffix,
+  decimals?: number
 ): string {
   // For strings, include double quotes in raw so they're preserved during unparse
   // Escape backslashes and double quotes to create valid KCL string literals
@@ -71,7 +74,7 @@ function createRawStr(
     return `${value}`
   }
 
-  const formatted = formatNumberLiteral(value, suffix, wasmInstance)
+  const formatted = formatNumberLiteral(value, suffix, wasmInstance, decimals)
   if (err(formatted)) {
     return `${value}`
   }
@@ -396,4 +399,22 @@ export function findUniqueName(
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
   return { label: createIdentifier(label), arg, type: 'LabeledArg' }
+}
+
+export function createMemberExpression(
+  parent: string | Expr,
+  propertyName: string
+): Node<MemberExpression> {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    object: typeof parent === 'string' ? createLocalName(parent) : parent,
+    property: createLocalName(propertyName),
+    computed: false,
+  }
 }

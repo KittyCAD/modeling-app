@@ -56,7 +56,7 @@ import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -769,14 +769,22 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(ast, selection)
   if (selectionsByType === 'none') return null
 
-  return [...selectionsByType.entries()]
-    .map(
-      // Hack for showing "face" instead of "extrude-wall" in command bar text
-      ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
-        }`
-    )
+  const semanticSelectionsByType = [...selectionsByType.entries()].reduce(
+    (semanticSelectionsByType, [type, count]) => {
+      const semanticType =
+        type === 'other' ? undefined : getSemanticEntityForSelectionType(type)
+      const displayType = semanticType ?? type
+      semanticSelectionsByType.set(
+        displayType,
+        (semanticSelectionsByType.get(displayType) || 0) + count
+      )
+      return semanticSelectionsByType
+    },
+    new Map<string, number>()
+  )
+
+  return [...semanticSelectionsByType.entries()]
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
     .join(', ')
 }
 
@@ -1087,16 +1095,25 @@ const semanticEntityNames: {
   plane: ['defaultPlane'],
 }
 
+function getSemanticEntityForSelectionType(
+  selectionType: CommandSelectionType | 'defaultPlane'
+): string | undefined {
+  for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+    if (entityTypes.includes(selectionType)) {
+      return entity
+    }
+  }
+}
+
 /** Convert selections to a human-readable format */
 export function getSemanticSelectionType(
   selectionType: CommandSelectionType[]
 ) {
-  const semanticSelectionType = new Set()
+  const semanticSelectionType = new Set<string>()
   for (const type of selectionType) {
-    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
-      if (entityTypes.includes(type)) {
-        semanticSelectionType.add(entity)
-      }
+    const semanticType = getSemanticEntityForSelectionType(type)
+    if (semanticType) {
+      semanticSelectionType.add(semanticType)
     }
   }
 
@@ -1186,34 +1203,50 @@ export async function getPlaneDataFromSketchBlock(
   systemDeps: {
     rustContext: RustContext
     sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+    ast: Node<Program>
+    execState: ExecState
+    wasmInstance: ModuleType
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
-  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
-  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
-  // XY no matter what for now
-
-  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact.
   if (!sketchBlock.planeId) {
     return null
   }
 
-  // Try to get the artifact from the graph
-  const _artifact = artifactGraph.get(sketchBlock.planeId)
+  // @pierremtb At the time of writing, this isn't working yet,
+  // so we always go to the next step and treat default planes as offset planes.
+  const defaultResult = getDefaultSketchPlaneData(
+    sketchBlock.planeId,
+    systemDeps
+  )
+  if (!err(defaultResult) && defaultResult) {
+    return defaultResult
+  }
 
-  // Use the default XY plane.
-  // This is a temporary solution while we determine the proper approach for default planes
-  if (true) {
-    const defaultPlanes = systemDeps.rustContext.defaultPlanes
-    if (defaultPlanes?.xy) {
-      const defaultResult = getDefaultSketchPlaneData(
-        defaultPlanes.xy,
-        systemDeps
-      )
-      if (!err(defaultResult) && defaultResult) {
-        return defaultResult
-      }
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const offsetResult = await getOffsetSketchPlaneData(artifact, {
+    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+    sceneInfra: systemDeps.sceneInfra,
+  })
+  if (!isErr(offsetResult) && offsetResult) {
+    return offsetResult
+  }
+
+  const sweepFaceSelected = await selectionBodyFace(
+    sketchBlock.planeId,
+    artifactGraph,
+    systemDeps.ast,
+    systemDeps.execState,
+    {
+      wasmInstance: systemDeps.wasmInstance,
+      rustContext: systemDeps.rustContext,
+      sceneInfra: systemDeps.sceneInfra,
+      sceneEntitiesManager: systemDeps.sceneEntitiesManager,
     }
-    return null
+  )
+  if (sweepFaceSelected) {
+    return sweepFaceSelected
   }
 
   return null
@@ -1306,8 +1339,7 @@ export async function getOffsetSketchPlaneData(
       pathToNode: artifact.codeRef.pathToNode,
       negated,
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
     return new Error('Error getting face details')
   }
 }
@@ -1321,7 +1353,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result) || result === false) return result
+  if (isErr(result) || result === false) return result
 
   try {
     sceneInfra.modelingSend({
@@ -1352,7 +1384,7 @@ export async function selectionBodyFace(
     planeOrFaceId,
     systemDeps
   )
-  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+  if (!isErr(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
@@ -1361,7 +1393,7 @@ export async function selectionBodyFace(
     artifact,
     systemDeps
   )
-  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+  if (!isErr(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
 

@@ -26,6 +26,7 @@ use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
 
+pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.

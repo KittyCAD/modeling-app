@@ -103,7 +103,7 @@ export function addFlatnessGdt({
     modifiedAst = tagResult.modifiedAst
 
     // Create expression from the first tag (faces have one tag)
-    facesExprs.push(createLocalName(tagResult.tags[0]))
+    facesExprs.push(tagResult.exprs[0])
   }
 
   if (facesExprs.length === 0) {
@@ -290,7 +290,7 @@ export function addDatumGdt({
   modifiedAst = tagResult.modifiedAst
 
   // Create expression from the first tag
-  const faceExpr = createLocalName(tagResult.tags[0])
+  const faceExpr = tagResult.exprs[0]
 
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({

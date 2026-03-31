@@ -12,6 +12,8 @@ pub use artifact::ArtifactCommand;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::ArtifactGraph;
 #[cfg(feature = "artifact-graph")]
+pub use artifact::CapSubType;
+#[cfg(feature = "artifact-graph")]
 pub use artifact::CodeRef;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlock;
@@ -275,6 +277,7 @@ pub struct ExecOutcome {
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
+    /// TODO: Rename this since it's confusing that it contains warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
@@ -299,6 +302,11 @@ impl ExecOutcome {
             let _ = id;
             None
         }
+    }
+
+    /// Returns non-fatal errors. Warnings are not included.
+    pub fn actual_errors(&self) -> impl Iterator<Item = &CompilationError> {
+        self.errors.iter().filter(|error| error.is_err())
     }
 }
 
@@ -386,6 +394,20 @@ impl TagIdentifier {
     /// Get the most recent tag info for this tag.
     pub fn get_cur_info(&self) -> Option<&TagEngineInfo> {
         self.info.last().map(|i| &i.1)
+    }
+
+    /// Get all tag info entries at the most recent epoch.
+    /// For region-mapped tags, this returns multiple entries (one per region segment).
+    pub fn get_all_cur_info(&self) -> Vec<&TagEngineInfo> {
+        let Some(cur_epoch) = self.info.last().map(|(e, _)| *e) else {
+            return vec![];
+        };
+        self.info
+            .iter()
+            .rev()
+            .take_while(|(e, _)| *e == cur_epoch)
+            .map(|(_, info)| info)
+            .collect()
     }
 
     /// Add info from a different instance of this tag.
@@ -1964,6 +1986,76 @@ yo2 = hmm([identifierGuy + 5])"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_sketch_blocks_do_not_reuse_on_cache_name() {
+        let code = r#"@settings(experimentalFeatures = allow)
+firstProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
+  edge3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
+  edge4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+secondProfile = sketch(on = offsetPlane(XY, offset = 6mm)) {
+  edge5 = line(start = [var 1mm, var 1mm], end = [var 5mm, var 1mm])
+  edge6 = line(start = [var 5mm, var 1mm], end = [var 5mm, var 4mm])
+  edge7 = line(start = [var 5mm, var 4mm], end = [var 1mm, var 4mm])
+  edge8 = line(start = [var 1mm, var 4mm], end = [var 1mm, var 1mm])
+  coincident([edge5.end, edge6.start])
+  coincident([edge6.end, edge7.start])
+  coincident([edge7.end, edge8.start])
+  coincident([edge8.end, edge5.start])
+}
+
+firstSolid = extrude(region(point = [2mm, 1mm], sketch = firstProfile), length = 2mm)
+secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length = 2mm)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.exec_state.errors().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn issue_10639_blend_example_with_two_sketch_blocks_executes() {
+        let code = r#"@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.9mm, var 2.8mm])
+  line4 = line(start = [var 4.1mm, var 3mm], end = [var 4.5mm, var -0.2mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+sketch002 = sketch(on = -XZ) {
+  line5 = line(start = [var -5.3mm, var -0.1mm], end = [var -3.5mm, var -0.1mm])
+  line6 = line(start = [var -3.5mm, var -0.1mm], end = [var -3.5mm, var 3.1mm])
+  line7 = line(start = [var -3.5mm, var 4.5mm], end = [var -5.4mm, var 4.5mm])
+  line8 = line(start = [var -5.3mm, var 3.1mm], end = [var -5.3mm, var -0.1mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+}
+
+region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
+region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
+
+myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.exec_state.errors().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"myVar = 3
 part001 = startSketchOn(XY)
@@ -2891,6 +2983,40 @@ w = f() + f()
         ctx2.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_then_add_extrude_then_mock_again() {
+        let code = "@settings(experimentalFeatures = allow)
+    
+s = sketch(on = XY) {
+    line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
+    line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [0.92, 4.67], end = [0.05, 0.05])
+    coincident([line2.end, line3.start])
+    coincident([line1.start, line3.end])
+}
+    ";
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+
+        let code2 = code.to_owned()
+            + "
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)
+    ";
+        let program2 = crate::Program::parse_no_errs(&code2).unwrap();
+        let result = ctx.run_mock(&program2, &MockConfig::default()).await.unwrap();
+        assert!(
+            result.variables.contains_key("region001"),
+            "actual: {:?}",
+            &result.variables
+        );
+
+        ctx.close().await;
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
@@ -3069,4 +3195,33 @@ answer = inc(5)
         let errors = result.exec_state.errors();
         assert_eq!(errors.len(), 0);
     }
+
+    // START Mock Execution tests
+    // Ideally, we would do this as part of all sim tests and delete these one-off tests.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_arc_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_arc/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_arc_arc_math_only_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_arc_arc_math_only/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_circle_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_circle/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_circle_circle_native_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_circle_circle_native/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    // END Mock Execution tests
 }

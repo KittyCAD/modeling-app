@@ -104,6 +104,10 @@ export function lerp(start: number, end: number, t: number): number {
   return start + (end - start) * t
 }
 
+export function lerp2d(start: Coords2d, end: Coords2d, t: number): Coords2d {
+  return [lerp(start[0], end[0], t), lerp(start[1], end[1], t)]
+}
+
 export function intersectRanges(
   a: Coords2d,
   b: Coords2d

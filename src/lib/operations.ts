@@ -39,7 +39,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import { isArray, stripQuotes } from '@src/lib/utils'
+import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
@@ -2114,6 +2114,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Holes',
     icon: 'hole',
   },
+  joinSurfaces: {
+    label: 'Join Surfaces',
+    icon: 'joinSurfaces',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
@@ -2380,13 +2386,13 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
     case 'TagDeclarator':
       return op.name
     case 'SketchVar':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'String':
       return op.value
     case 'Bool':
       return String(op.value)
     case 'Number':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     default:
       return op.type
   }

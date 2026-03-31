@@ -36,6 +36,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
+import { modelingMachineStateToToolbarModeName } from '@src/lib/toolbar'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -176,9 +177,12 @@ export const ModelingMachineProvider = ({
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
 
+  const toolbarConfigurationName =
+    modelingMachineStateToToolbarModeName(modelingState)
+
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
-    modelingState.context.currentMode,
+    toolbarConfigurationName,
     overallState,
     kclManager.isExecutingSignal.value,
     isStreamReady,

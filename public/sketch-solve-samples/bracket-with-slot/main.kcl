@@ -88,7 +88,7 @@ slotProfile = sketch(on = slotSketch) {
   coincident([line1.end, arc2.end])
   line3 = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
   coincident([arc2.start, line3.start])
-  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var -0mm])
+  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var 0mm])
   coincident([line3.end, arc4.end])
   horizontal(line1)
 }
