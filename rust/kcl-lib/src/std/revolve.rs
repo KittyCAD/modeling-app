@@ -18,7 +18,6 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::Path;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::types::ArrayLen;
@@ -219,7 +218,7 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
-            if matches!(path, Path::ToPoint { .. }) {
+            if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
                 continue;
             }
 
