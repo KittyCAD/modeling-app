@@ -266,16 +266,16 @@ export const AllSettingsFields = forwardRef(
               Don't see the feature you want? Check to see if it's on{' '}
               <a
                 onClick={openExternalBrowserIfDesktop(
-                  'https://github.com/KittyCAD/modeling-app/discussions'
+                  'https://zoo.dev/roadmap'
                 )}
-                href="https://github.com/KittyCAD/modeling-app/discussions"
+                href="https://zoo.dev/roadmap"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 our roadmap
-              </a>
-              , and start a discussion if you don't see it! Your feedback will
-              help us prioritize what to build next.
+              </a>{' '}
+              or reach out. Your feedback will help us prioritize what to build
+              next.
             </p>
           </div>
         </div>
