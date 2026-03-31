@@ -905,9 +905,10 @@ export class KclManager extends File {
    * code mirror extension that clears modeling selection state when the document is empty
    */
   private clearSelectionsOnEmptyDoc = EditorView.updateListener.of((update) => {
-    const newCode = update.view.state.doc.toString()
     // The doc changed and the new code is the empty string
-    if (update.docChanged && newCode === '') {
+    if (update.docChanged) {
+        const newCode = update.view.state.doc.toString()
+        if (newCode === '') {
       this.sendModelingEvent({
         type: 'Set selection',
         data: { selection: undefined, selectionType: 'singleCodeCursor' },
