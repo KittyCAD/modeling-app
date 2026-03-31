@@ -18,11 +18,35 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
+export type ToolbarModeName =
+  | 'modeling'
+  | 'sketching'
+  | 'sketchSolve'
+  | 'onlyCancel'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
   items: (ToolbarItem | ToolbarDropdown | 'break')[]
+}
+
+// Load bearing logic for determining the items in the toolbar
+// Based on the state of the modeling machine determine what toolbar should be rendered
+export const modelingMachineStateToToolbarModeName = (
+  state: StateFrom<typeof modelingMachine>
+): ToolbarModeName => {
+  let toolbarConfigurationName: ToolbarModeName = 'modeling'
+  if (state.matches('Sketch no face')) {
+    toolbarConfigurationName = 'onlyCancel'
+  } else if (
+    state.matches('sketchSolveMode') ||
+    state.matches('animating to sketch solve mode')
+  ) {
+    // Gotcha: match on the animating state otherwise you see a different toolbar
+    toolbarConfigurationName = 'sketchSolve'
+  } else if (state.matches('Sketch')) {
+    toolbarConfigurationName = 'sketching'
+  }
+  return toolbarConfigurationName
 }
 
 export type ToolbarDropdown = {
@@ -91,6 +115,30 @@ export const useToolbarConfig = () => {
   const { commands } = useApp()
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
+      onlyCancel: {
+        check: (state) => !state.matches('Sketch no face'),
+        items: [
+          {
+            id: 'sketch-exit',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Cancel',
+              }),
+            disableHotkey: (state) =>
+              !(
+                state.matches({ Sketch: 'SketchIdle' }) ||
+                state.matches('Sketch no face')
+              ),
+            icon: 'arrowShortLeft',
+            status: 'available',
+            title: 'Cancel Sketch',
+            showTitle: true,
+            hotkey: 'Esc',
+            description: 'Cancel the current sketch.',
+            links: [],
+          },
+        ],
+      },
       modeling: {
         check: (state) =>
           !(
@@ -850,10 +898,10 @@ export const useToolbarConfig = () => {
               ),
             icon: 'arrowShortLeft',
             status: 'available',
-            title: 'Exit sketch',
+            title: 'Exit Sketch',
             showTitle: true,
             hotkey: 'Esc',
-            description: 'Exit the current sketch',
+            description: 'Exit the current sketch.',
             links: [],
           },
           'break',
@@ -1393,9 +1441,9 @@ export const useToolbarConfig = () => {
               }),
             icon: 'arrowShortLeft',
             status: 'available',
-            title: 'Exit sketch',
+            title: 'Exit Sketch',
             showTitle: true,
-            description: 'Exit the current sketch',
+            description: 'Exit the current sketch.',
             links: [],
           },
           'break',
