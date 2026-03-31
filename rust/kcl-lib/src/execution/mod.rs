@@ -65,6 +65,7 @@ use uuid::Uuid;
 use crate::CompilationError;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
+use crate::NodePath;
 use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
 use crate::collections::AhashIndexSet;
@@ -537,15 +538,16 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> crate::front::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
             return crate::front::SourceRef::Simple {
                 range: meta.source_range,
+                node_path,
             };
         }
         crate::front::SourceRef::BackTrace {
-            ranges: meta.iter().map(|m| m.source_range).collect(),
+            ranges: meta.iter().map(|m| (m.source_range, node_path.clone())).collect(),
         }
     }
 }

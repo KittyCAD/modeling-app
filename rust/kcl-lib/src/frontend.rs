@@ -3425,7 +3425,7 @@ impl FrontendState {
             msg: format!("Object not found: {object_id:?}"),
         })?;
         match &sketch_object.source {
-            SourceRef::Simple { range } => mutate_ast_node_by_source_range(ast, *range, command),
+            SourceRef::Simple { range, node_path: _ } => mutate_ast_node_by_source_range(ast, *range, command),
             SourceRef::BackTrace { .. } => Err(Error {
                 msg: "BackTrace source refs not supported yet".to_owned(),
             }),
@@ -3435,7 +3435,7 @@ impl FrontendState {
 
 fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange> {
     match source_ref {
-        SourceRef::Simple { range } => Ok(*range),
+        SourceRef::Simple { range, node_path: _ } => Ok(*range),
         SourceRef::BackTrace { ranges } => {
             if ranges.len() != 1 {
                 return Err(Error {
@@ -3445,7 +3445,7 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
                     ),
                 });
             }
-            Ok(ranges[0])
+            Ok(ranges[0].0)
         }
     }
 }
@@ -3553,8 +3553,15 @@ fn sketch_face_of_scene_object_ast_expr(
                     ),
                 });
             };
-            let sweep_ref =
-                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *sweep_range }, "solid", None)?;
+            let sweep_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
+                    range: sweep_range.0,
+                    node_path: sweep_range.1.clone(),
+                },
+                "solid",
+                None,
+            )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
@@ -3565,8 +3572,15 @@ fn sketch_face_of_scene_object_ast_expr(
             };
             let solid_name = solid_name_expr.name.name.clone();
             let solid_expr = ast_name_expr(solid_name.clone());
-            let segment_ref =
-                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *segment_range }, "line", None)?;
+            let segment_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
+                    range: segment_range.0,
+                    node_path: segment_range.1.clone(),
+                },
+                "line",
+                None,
+            )?;
 
             let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
@@ -3597,7 +3611,15 @@ fn sketch_face_of_scene_object_ast_expr(
                     ),
                 });
             };
-            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *range }, "solid", None)?;
+            let sweep_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
+                    range: range.0,
+                    node_path: range.1.clone(),
+                },
+                "solid",
+                None,
+            )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
@@ -3661,7 +3683,13 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     comments: Default::default(),
                     artifact_id: wall.id,
                     source: SourceRef::BackTrace {
-                        ranges: vec![sweep.code_ref.range, source_segment.code_ref.range],
+                        ranges: vec![
+                            (sweep.code_ref.range, Some(sweep.code_ref.node_path.clone())),
+                            (
+                                source_segment.code_ref.range,
+                                Some(source_segment.code_ref.node_path.clone()),
+                            ),
+                        ],
                     },
                 });
                 existing_artifact_ids.insert(wall.id);
@@ -3689,7 +3717,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     comments: Default::default(),
                     artifact_id: cap.id,
                     source: SourceRef::BackTrace {
-                        ranges: vec![sweep.code_ref.range],
+                        ranges: vec![(sweep.code_ref.range, Some(sweep.code_ref.node_path.clone()))],
                     },
                 });
                 existing_artifact_ids.insert(cap.id);
