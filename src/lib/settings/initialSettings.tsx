@@ -165,7 +165,7 @@ let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
  * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
  * @returns An async function that resolves to the hideOnPlatform value
  */
-function hideWithoutFeatureFlag(
+function _hideWithoutFeatureFlag(
   featureFlagId: UserFeatureEntry['id'],
   defaultHide: HideOnPlatformValue = 'both'
 ): () => Promise<HideOnPlatformValue | null> {
@@ -543,13 +543,11 @@ export function createSettings() {
       /**
        * Determines if new sketches should use the experimental solver-based sketch mode.
        * On staging, this setting cannot be disabled except by Playwright tests.
-       * On production, the 'new_sketch_mode' feature flag controls visibility.
+       * On production, users can opt in but classic sketch mode remains the default.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG
-          ? 'both'
-          : hideWithoutFeatureFlag('new_sketch_mode', 'both'),
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? 'both' : undefined,
         defaultValue: IS_STAGING_OR_DEBUG && !isPlaywright(),
         description:
           'Default to the experimental solver-based sketch mode for all new sketches.',
