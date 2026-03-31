@@ -131,7 +131,7 @@ export const useToolbarConfig = () => {
               ),
             icon: 'arrowShortLeft',
             status: 'available',
-            title: 'Cancel sketch',
+            title: 'Cancel Sketch',
             showTitle: true,
             hotkey: 'Esc',
             description: 'Cancel the current sketch.',
