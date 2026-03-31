@@ -36,7 +36,6 @@ describe('getSweepArtifactFromSelection', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -46,8 +45,7 @@ describe('getSweepArtifactFromSelection', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
+      edgeCutId: 'edge-cut-1',
       codeRef: {
         range: [0, 0, 0],
         pathToNode: [],
@@ -58,9 +56,7 @@ describe('getSweepArtifactFromSelection', () => {
     const edgeCut = {
       type: 'edgeCut',
       id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
       subType: 'chamfer',
-      edgeIds: [],
       codeRef: {
         range: [0, 0, 0],
         pathToNode: [],
@@ -235,7 +231,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -245,17 +240,14 @@ describe('coerceSelectionsToBody', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
+      edgeCutId: 'edge-cut-1',
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     } as Artifact
 
     const edgeCut = {
       type: 'edgeCut',
       id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
       subType: 'chamfer',
-      edgeIds: [],
       codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
     } as Artifact
 
@@ -313,7 +305,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -323,8 +314,6 @@ describe('coerceSelectionsToBody', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
@@ -367,7 +356,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -422,7 +410,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,

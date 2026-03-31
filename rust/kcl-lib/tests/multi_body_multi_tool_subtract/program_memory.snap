@@ -32,6 +32,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 383,
             "end": 404,
@@ -40,27 +61,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
           "type": "extrudePlane"
         }
       ],
@@ -99,6 +99,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "sourceRange": []
             },
             "from": [
+              -1.2499999999999998,
+              1.25
+            ],
+            "tag": null,
+            "to": [
+              -1.25,
+              -1.25
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
               1.25,
               -1.25
             ],
@@ -123,23 +140,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "to": [
               -1.2499999999999998,
               1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.2499999999999998,
-              1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -311,6 +311,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
                 "tag": {
                   "commentStart": 383,
                   "end": 404,
@@ -319,27 +340,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
                 "type": "extrudePlane"
               }
             ],
@@ -378,6 +378,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "sourceRange": []
                   },
                   "from": [
+                    -1.2499999999999998,
+                    1.25
+                  ],
+                  "tag": null,
+                  "to": [
+                    -1.25,
+                    -1.25
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
                     1.25,
                     -1.25
                   ],
@@ -402,23 +419,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "to": [
                     -1.2499999999999998,
                     1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.2499999999999998,
-                    1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -525,6 +525,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 1265,
             "end": 1286,
@@ -533,13 +540,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
           "type": "extrudePlane"
         },
         {
@@ -592,6 +592,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "sourceRange": []
             },
             "from": [
+              -1.2499999999999998,
+              1.25
+            ],
+            "tag": null,
+            "to": [
+              -1.25,
+              -1.25
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
               1.25,
               -1.25
             ],
@@ -616,23 +633,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "to": [
               -1.2499999999999998,
               1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.2499999999999998,
-              1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -757,6 +757,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
                       "tag": {
                         "commentStart": 383,
                         "end": 404,
@@ -765,27 +786,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [],
-                      "tag": null,
                       "type": "extrudePlane"
                     }
                   ],
@@ -824,6 +824,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "sourceRange": []
                         },
                         "from": [
+                          -1.2499999999999998,
+                          1.25
+                        ],
+                        "tag": null,
+                        "to": [
+                          -1.25,
+                          -1.25
+                        ],
+                        "type": "ToPoint",
+                        "units": "in"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "from": [
                           1.25,
                           -1.25
                         ],
@@ -848,23 +865,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "to": [
                           -1.2499999999999998,
                           1.25
-                        ],
-                        "type": "ToPoint",
-                        "units": "in"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -1.2499999999999998,
-                          1.25
-                        ],
-                        "tag": null,
-                        "to": [
-                          -1.25,
-                          -1.25
                         ],
                         "type": "ToPoint",
                         "units": "in"
@@ -1004,6 +1004,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 1756,
             "end": 1777,
@@ -1012,27 +1033,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
           "type": "extrudePlane"
         }
       ],
@@ -1071,6 +1071,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "sourceRange": []
             },
             "from": [
+              -1.2499999999999998,
+              1.25
+            ],
+            "tag": null,
+            "to": [
+              -1.25,
+              -1.25
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
               1.25,
               -1.25
             ],
@@ -1095,23 +1112,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "to": [
               -1.2499999999999998,
               1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.2499999999999998,
-              1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1144,6 +1144,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
                 "tag": {
                   "commentStart": 1265,
                   "end": 1286,
@@ -1152,13 +1159,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
                 "type": "extrudePlane"
               },
               {
@@ -1211,6 +1211,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "sourceRange": []
                   },
                   "from": [
+                    -1.2499999999999998,
+                    1.25
+                  ],
+                  "tag": null,
+                  "to": [
+                    -1.25,
+                    -1.25
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
                     1.25,
                     -1.25
                   ],
@@ -1235,23 +1252,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "to": [
                     -1.2499999999999998,
                     1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.2499999999999998,
-                    1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1376,6 +1376,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          },
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          },
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          },
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [],
                             "tag": {
                               "commentStart": 383,
                               "end": 404,
@@ -1384,27 +1405,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "type": "TagDeclarator",
                               "value": "rectangleSegmentA001"
                             },
-                            "type": "extrudePlane"
-                          },
-                          {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [],
-                            "tag": null,
-                            "type": "extrudePlane"
-                          },
-                          {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [],
-                            "tag": null,
-                            "type": "extrudePlane"
-                          },
-                          {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [],
-                            "tag": null,
                             "type": "extrudePlane"
                           }
                         ],
@@ -1443,6 +1443,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "sourceRange": []
                               },
                               "from": [
+                                -1.2499999999999998,
+                                1.25
+                              ],
+                              "tag": null,
+                              "to": [
+                                -1.25,
+                                -1.25
+                              ],
+                              "type": "ToPoint",
+                              "units": "in"
+                            },
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": []
+                              },
+                              "from": [
                                 1.25,
                                 -1.25
                               ],
@@ -1467,23 +1484,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "to": [
                                 -1.2499999999999998,
                                 1.25
-                              ],
-                              "type": "ToPoint",
-                              "units": "in"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -1.2499999999999998,
-                                1.25
-                              ],
-                              "tag": null,
-                              "to": [
-                                -1.25,
-                                -1.25
                               ],
                               "type": "ToPoint",
                               "units": "in"
@@ -1748,6 +1748,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
                 "tag": {
                   "commentStart": 1756,
                   "end": 1777,
@@ -1756,27 +1777,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA003"
                 },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
                 "type": "extrudePlane"
               }
             ],
@@ -1815,6 +1815,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "sourceRange": []
                   },
                   "from": [
+                    -1.2499999999999998,
+                    1.25
+                  ],
+                  "tag": null,
+                  "to": [
+                    -1.25,
+                    -1.25
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
                     1.25,
                     -1.25
                   ],
@@ -1839,23 +1856,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "to": [
                     -1.2499999999999998,
                     1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.2499999999999998,
-                    1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1888,6 +1888,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
                       "tag": {
                         "commentStart": 1265,
                         "end": 1286,
@@ -1896,13 +1903,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA002"
                       },
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [],
-                      "tag": null,
                       "type": "extrudePlane"
                     },
                     {
@@ -1955,6 +1955,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "sourceRange": []
                         },
                         "from": [
+                          -1.2499999999999998,
+                          1.25
+                        ],
+                        "tag": null,
+                        "to": [
+                          -1.25,
+                          -1.25
+                        ],
+                        "type": "ToPoint",
+                        "units": "in"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "from": [
                           1.25,
                           -1.25
                         ],
@@ -1979,23 +1996,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "to": [
                           -1.2499999999999998,
                           1.25
-                        ],
-                        "type": "ToPoint",
-                        "units": "in"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -1.2499999999999998,
-                          1.25
-                        ],
-                        "tag": null,
-                        "to": [
-                          -1.25,
-                          -1.25
                         ],
                         "type": "ToPoint",
                         "units": "in"
@@ -2120,6 +2120,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "faceId": "[uuid]",
                                   "id": "[uuid]",
                                   "sourceRange": [],
+                                  "tag": null,
+                                  "type": "extrudePlane"
+                                },
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [],
+                                  "tag": null,
+                                  "type": "extrudePlane"
+                                },
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [],
+                                  "tag": null,
+                                  "type": "extrudePlane"
+                                },
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [],
                                   "tag": {
                                     "commentStart": 383,
                                     "end": 404,
@@ -2128,27 +2149,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "type": "TagDeclarator",
                                     "value": "rectangleSegmentA001"
                                   },
-                                  "type": "extrudePlane"
-                                },
-                                {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [],
-                                  "tag": null,
-                                  "type": "extrudePlane"
-                                },
-                                {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [],
-                                  "tag": null,
-                                  "type": "extrudePlane"
-                                },
-                                {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [],
-                                  "tag": null,
                                   "type": "extrudePlane"
                                 }
                               ],
@@ -2187,6 +2187,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                       "sourceRange": []
                                     },
                                     "from": [
+                                      -1.2499999999999998,
+                                      1.25
+                                    ],
+                                    "tag": null,
+                                    "to": [
+                                      -1.25,
+                                      -1.25
+                                    ],
+                                    "type": "ToPoint",
+                                    "units": "in"
+                                  },
+                                  {
+                                    "__geoMeta": {
+                                      "id": "[uuid]",
+                                      "sourceRange": []
+                                    },
+                                    "from": [
                                       1.25,
                                       -1.25
                                     ],
@@ -2211,23 +2228,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "to": [
                                       -1.2499999999999998,
                                       1.25
-                                    ],
-                                    "type": "ToPoint",
-                                    "units": "in"
-                                  },
-                                  {
-                                    "__geoMeta": {
-                                      "id": "[uuid]",
-                                      "sourceRange": []
-                                    },
-                                    "from": [
-                                      -1.2499999999999998,
-                                      1.25
-                                    ],
-                                    "tag": null,
-                                    "to": [
-                                      -1.25,
-                                      -1.25
                                     ],
                                     "type": "ToPoint",
                                     "units": "in"
@@ -2490,6 +2490,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 383,
                       "end": 404,
@@ -2498,27 +2519,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   }
                 ],
@@ -2557,6 +2557,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -2581,23 +2598,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -2721,280 +2721,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "ccw": true,
                 "center": [
                   -0.8125,
-                  0.8125
-                ],
-                "from": [
-                  -0.625,
-                  0.8125
-                ],
-                "radius": 0.1875,
-                "tag": null,
-                "to": [
-                  -0.625,
-                  0.8125
-                ],
-                "type": "Circle",
-                "units": "in"
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 5,
-              "value": "end",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": {
-                      "commentStart": 383,
-                      "end": 404,
-                      "moduleId": 0,
-                      "start": 383,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA001"
-                    },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "creatorType": "sketch",
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "tag": {
-                        "commentStart": 383,
-                        "end": 404,
-                        "moduleId": 0,
-                        "start": 383,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentA001"
-                      },
-                      "to": [
-                        1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        1.25,
-                        -1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        1.2500000000000002,
-                        1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        1.2500000000000002,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    }
-                  ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "kind": "YZ",
-                    "objectId": 0,
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": "mm"
-                    },
-                    "type": "plane",
-                    "xAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": null
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": null
-                    },
-                    "zAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": null
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      -1.25,
-                      -1.25
-                    ],
-                    "to": [
-                      -1.25,
-                      -1.25
-                    ],
-                    "units": "in",
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "tags": {
-                    "rectangleSegmentA001": {
-                      "type": "TagIdentifier",
-                      "value": "rectangleSegmentA001"
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
-                },
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": "in",
-                "sectional": false
-              },
-              "units": "in"
-            },
-            "start": {
-              "from": [
-                -0.625,
-                0.8125
-              ],
-              "to": [
-                -0.625,
-                0.8125
-              ],
-              "units": "in",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "in",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "creatorType": "sketch",
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.8125,
                   -0.8125
                 ],
                 "from": [
@@ -3038,6 +2764,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 383,
                       "end": 404,
@@ -3046,27 +2793,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   }
                 ],
@@ -3105,6 +2831,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -3129,23 +2872,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -3312,6 +3038,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 383,
                       "end": 404,
@@ -3320,27 +3067,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   }
                 ],
@@ -3379,6 +3105,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -3403,23 +3146,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -3514,6 +3240,280 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "units": "in",
           "sectional": false
         }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "creatorType": "sketch",
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.8125,
+                  0.8125
+                ],
+                "from": [
+                  -0.625,
+                  0.8125
+                ],
+                "radius": 0.1875,
+                "tag": null,
+                "to": [
+                  -0.625,
+                  0.8125
+                ],
+                "type": "Circle",
+                "units": "in"
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "objectId": 5,
+              "value": "end",
+              "xAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": {
+                      "commentStart": 383,
+                      "end": 404,
+                      "moduleId": 0,
+                      "start": 383,
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentA001"
+                    },
+                    "type": "extrudePlane"
+                  }
+                ],
+                "sketch": {
+                  "creatorType": "sketch",
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "tag": {
+                        "commentStart": 383,
+                        "end": 404,
+                        "moduleId": 0,
+                        "start": 383,
+                        "type": "TagDeclarator",
+                        "value": "rectangleSegmentA001"
+                      },
+                      "to": [
+                        1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
+                        1.25,
+                        -1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        1.2500000000000002,
+                        1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
+                        1.2500000000000002,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": "mm"
+                    },
+                    "type": "plane",
+                    "xAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": null
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": null
+                    },
+                    "zAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": null
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      -1.25,
+                      -1.25
+                    ],
+                    "to": [
+                      -1.25,
+                      -1.25
+                    ],
+                    "units": "in",
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "tags": {
+                    "rectangleSegmentA001": {
+                      "type": "TagIdentifier",
+                      "value": "rectangleSegmentA001"
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": "in"
+                },
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": "in",
+                "sectional": false
+              },
+              "units": "in"
+            },
+            "start": {
+              "from": [
+                -0.625,
+                0.8125
+              ],
+              "to": [
+                -0.625,
+                0.8125
+              ],
+              "units": "in",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "in"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "in",
+          "sectional": false
+        }
       }
     ]
   },
@@ -3580,6 +3580,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "sourceRange": []
           },
           "from": [
+            -1.2499999999999998,
+            1.25
+          ],
+          "tag": null,
+          "to": [
+            -1.25,
+            -1.25
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
             1.25,
             -1.25
           ],
@@ -3604,23 +3621,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "to": [
             -1.2499999999999998,
             1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.2499999999999998,
-            1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3741,6 +3741,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -3749,27 +3770,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -3808,6 +3808,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -3832,23 +3849,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4021,6 +4021,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -4029,27 +4050,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -4088,6 +4088,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -4112,23 +4129,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4255,6 +4255,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "sourceRange": []
           },
           "from": [
+            -1.2499999999999998,
+            1.25
+          ],
+          "tag": null,
+          "to": [
+            -1.25,
+            -1.25
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
             1.25,
             -1.25
           ],
@@ -4279,23 +4296,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "to": [
             -1.2499999999999998,
             1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.2499999999999998,
-            1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4420,6 +4420,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 383,
                       "end": 404,
@@ -4428,27 +4449,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   }
                 ],
@@ -4487,6 +4487,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -4511,23 +4528,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -4687,6 +4687,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "sourceRange": []
           },
           "from": [
+            -1.2499999999999998,
+            1.25
+          ],
+          "tag": null,
+          "to": [
+            -1.25,
+            -1.25
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
             1.25,
             -1.25
           ],
@@ -4711,23 +4728,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "to": [
             -1.2499999999999998,
             1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.2499999999999998,
-            1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4760,6 +4760,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 1265,
                 "end": 1286,
@@ -4768,13 +4775,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             },
             {
@@ -4827,6 +4827,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -4851,23 +4868,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4992,6 +4992,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [],
+                          "tag": null,
+                          "type": "extrudePlane"
+                        },
+                        {
+                          "faceId": "[uuid]",
+                          "id": "[uuid]",
+                          "sourceRange": [],
+                          "tag": null,
+                          "type": "extrudePlane"
+                        },
+                        {
+                          "faceId": "[uuid]",
+                          "id": "[uuid]",
+                          "sourceRange": [],
+                          "tag": null,
+                          "type": "extrudePlane"
+                        },
+                        {
+                          "faceId": "[uuid]",
+                          "id": "[uuid]",
+                          "sourceRange": [],
                           "tag": {
                             "commentStart": 383,
                             "end": 404,
@@ -5000,27 +5021,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "type": "TagDeclarator",
                             "value": "rectangleSegmentA001"
                           },
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
                           "type": "extrudePlane"
                         }
                       ],
@@ -5059,6 +5059,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "sourceRange": []
                             },
                             "from": [
+                              -1.2499999999999998,
+                              1.25
+                            ],
+                            "tag": null,
+                            "to": [
+                              -1.25,
+                              -1.25
+                            ],
+                            "type": "ToPoint",
+                            "units": "in"
+                          },
+                          {
+                            "__geoMeta": {
+                              "id": "[uuid]",
+                              "sourceRange": []
+                            },
+                            "from": [
                               1.25,
                               -1.25
                             ],
@@ -5083,23 +5100,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "to": [
                               -1.2499999999999998,
                               1.25
-                            ],
-                            "type": "ToPoint",
-                            "units": "in"
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              -1.2499999999999998,
-                              1.25
-                            ],
-                            "tag": null,
-                            "to": [
-                              -1.25,
-                              -1.25
                             ],
                             "type": "ToPoint",
                             "units": "in"
@@ -5313,6 +5313,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 1756,
                 "end": 1777,
@@ -5321,27 +5342,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -5380,6 +5380,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -5404,23 +5421,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -5453,6 +5453,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 1265,
                       "end": 1286,
@@ -5461,13 +5468,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -5520,6 +5520,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -5544,23 +5561,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -5685,6 +5685,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
                                 "tag": {
                                   "commentStart": 383,
                                   "end": 404,
@@ -5693,27 +5714,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "type": "TagDeclarator",
                                   "value": "rectangleSegmentA001"
                                 },
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
                                 "type": "extrudePlane"
                               }
                             ],
@@ -5752,6 +5752,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "sourceRange": []
                                   },
                                   "from": [
+                                    -1.2499999999999998,
+                                    1.25
+                                  ],
+                                  "tag": null,
+                                  "to": [
+                                    -1.25,
+                                    -1.25
+                                  ],
+                                  "type": "ToPoint",
+                                  "units": "in"
+                                },
+                                {
+                                  "__geoMeta": {
+                                    "id": "[uuid]",
+                                    "sourceRange": []
+                                  },
+                                  "from": [
                                     1.25,
                                     -1.25
                                   ],
@@ -5776,23 +5793,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "to": [
                                     -1.2499999999999998,
                                     1.25
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": "in"
-                                },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": []
-                                  },
-                                  "from": [
-                                    -1.2499999999999998,
-                                    1.25
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    -1.25,
-                                    -1.25
                                   ],
                                   "type": "ToPoint",
                                   "units": "in"
@@ -6058,6 +6058,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 1756,
                 "end": 1777,
@@ -6066,27 +6087,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -6125,6 +6125,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -6149,23 +6166,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -6198,6 +6198,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
                     "tag": {
                       "commentStart": 1265,
                       "end": 1286,
@@ -6206,13 +6213,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -6265,6 +6265,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "sourceRange": []
                       },
                       "from": [
+                        -1.2499999999999998,
+                        1.25
+                      ],
+                      "tag": null,
+                      "to": [
+                        -1.25,
+                        -1.25
+                      ],
+                      "type": "ToPoint",
+                      "units": "in"
+                    },
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "from": [
                         1.25,
                         -1.25
                       ],
@@ -6289,23 +6306,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "to": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.2499999999999998,
-                        1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
                       ],
                       "type": "ToPoint",
                       "units": "in"
@@ -6430,6 +6430,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
+                                "tag": null,
+                                "type": "extrudePlane"
+                              },
+                              {
+                                "faceId": "[uuid]",
+                                "id": "[uuid]",
+                                "sourceRange": [],
                                 "tag": {
                                   "commentStart": 383,
                                   "end": 404,
@@ -6438,27 +6459,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "type": "TagDeclarator",
                                   "value": "rectangleSegmentA001"
                                 },
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
-                                "type": "extrudePlane"
-                              },
-                              {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [],
-                                "tag": null,
                                 "type": "extrudePlane"
                               }
                             ],
@@ -6497,6 +6497,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "sourceRange": []
                                   },
                                   "from": [
+                                    -1.2499999999999998,
+                                    1.25
+                                  ],
+                                  "tag": null,
+                                  "to": [
+                                    -1.25,
+                                    -1.25
+                                  ],
+                                  "type": "ToPoint",
+                                  "units": "in"
+                                },
+                                {
+                                  "__geoMeta": {
+                                    "id": "[uuid]",
+                                    "sourceRange": []
+                                  },
+                                  "from": [
                                     1.25,
                                     -1.25
                                   ],
@@ -6521,23 +6538,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "to": [
                                     -1.2499999999999998,
                                     1.25
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": "in"
-                                },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": []
-                                  },
-                                  "from": [
-                                    -1.2499999999999998,
-                                    1.25
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    -1.25,
-                                    -1.25
                                   ],
                                   "type": "ToPoint",
                                   "units": "in"
@@ -6778,6 +6778,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -6786,27 +6807,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -6845,6 +6845,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -6869,23 +6886,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -7033,6 +7033,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -7041,27 +7062,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -7100,6 +7100,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -7124,23 +7141,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -7288,6 +7288,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -7296,27 +7317,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -7355,6 +7355,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -7379,23 +7396,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -7543,6 +7543,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": {
                 "commentStart": 383,
                 "end": 404,
@@ -7551,27 +7572,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
               "type": "extrudePlane"
             }
           ],
@@ -7610,6 +7610,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "sourceRange": []
                 },
                 "from": [
+                  -1.2499999999999998,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  -1.25,
+                  -1.25
+                ],
+                "type": "ToPoint",
+                "units": "in"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
                   1.25,
                   -1.25
                 ],
@@ -7634,23 +7651,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "to": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.2499999999999998,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -7844,6 +7844,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
             "tag": {
               "commentStart": 383,
               "end": 404,
@@ -7852,27 +7873,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
             "type": "extrudePlane"
           }
         ],
@@ -7911,6 +7911,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "sourceRange": []
               },
               "from": [
+                -1.2499999999999998,
+                1.25
+              ],
+              "tag": null,
+              "to": [
+                -1.25,
+                -1.25
+              ],
+              "type": "ToPoint",
+              "units": "in"
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
                 1.25,
                 -1.25
               ],
@@ -7935,23 +7952,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "to": [
                 -1.2499999999999998,
                 1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.2499999999999998,
-                1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
               ],
               "type": "ToPoint",
               "units": "in"
@@ -8142,6 +8142,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "faceId": "[uuid]",
                   "id": "[uuid]",
                   "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudePlane"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudePlane"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudePlane"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
                   "tag": {
                     "commentStart": 383,
                     "end": 404,
@@ -8150,27 +8171,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
-                  "type": "extrudePlane"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudePlane"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudePlane"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
                   "type": "extrudePlane"
                 }
               ],
@@ -8209,6 +8209,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "sourceRange": []
                     },
                     "from": [
+                      -1.2499999999999998,
+                      1.25
+                    ],
+                    "tag": null,
+                    "to": [
+                      -1.25,
+                      -1.25
+                    ],
+                    "type": "ToPoint",
+                    "units": "in"
+                  },
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "from": [
                       1.25,
                       -1.25
                     ],
@@ -8233,23 +8250,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "to": [
                       -1.2499999999999998,
                       1.25
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.2499999999999998,
-                      1.25
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.25,
-                      -1.25
                     ],
                     "type": "ToPoint",
                     "units": "in"
@@ -8375,6 +8375,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
             "tag": {
               "commentStart": 1265,
               "end": 1286,
@@ -8383,13 +8390,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
             "type": "extrudePlane"
           },
           {
@@ -8442,6 +8442,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "sourceRange": []
               },
               "from": [
+                -1.2499999999999998,
+                1.25
+              ],
+              "tag": null,
+              "to": [
+                -1.25,
+                -1.25
+              ],
+              "type": "ToPoint",
+              "units": "in"
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
                 1.25,
                 -1.25
               ],
@@ -8466,23 +8483,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "to": [
                 -1.2499999999999998,
                 1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.2499999999999998,
-                1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
               ],
               "type": "ToPoint",
               "units": "in"
@@ -8607,6 +8607,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "faceId": "[uuid]",
                         "id": "[uuid]",
                         "sourceRange": [],
+                        "tag": null,
+                        "type": "extrudePlane"
+                      },
+                      {
+                        "faceId": "[uuid]",
+                        "id": "[uuid]",
+                        "sourceRange": [],
+                        "tag": null,
+                        "type": "extrudePlane"
+                      },
+                      {
+                        "faceId": "[uuid]",
+                        "id": "[uuid]",
+                        "sourceRange": [],
+                        "tag": null,
+                        "type": "extrudePlane"
+                      },
+                      {
+                        "faceId": "[uuid]",
+                        "id": "[uuid]",
+                        "sourceRange": [],
                         "tag": {
                           "commentStart": 383,
                           "end": 404,
@@ -8615,27 +8636,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "type": "TagDeclarator",
                           "value": "rectangleSegmentA001"
                         },
-                        "type": "extrudePlane"
-                      },
-                      {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [],
-                        "tag": null,
-                        "type": "extrudePlane"
-                      },
-                      {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [],
-                        "tag": null,
-                        "type": "extrudePlane"
-                      },
-                      {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [],
-                        "tag": null,
                         "type": "extrudePlane"
                       }
                     ],
@@ -8674,6 +8674,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "sourceRange": []
                           },
                           "from": [
+                            -1.2499999999999998,
+                            1.25
+                          ],
+                          "tag": null,
+                          "to": [
+                            -1.25,
+                            -1.25
+                          ],
+                          "type": "ToPoint",
+                          "units": "in"
+                        },
+                        {
+                          "__geoMeta": {
+                            "id": "[uuid]",
+                            "sourceRange": []
+                          },
+                          "from": [
                             1.25,
                             -1.25
                           ],
@@ -8698,23 +8715,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "to": [
                             -1.2499999999999998,
                             1.25
-                          ],
-                          "type": "ToPoint",
-                          "units": "in"
-                        },
-                        {
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": []
-                          },
-                          "from": [
-                            -1.2499999999999998,
-                            1.25
-                          ],
-                          "tag": null,
-                          "to": [
-                            -1.25,
-                            -1.25
                           ],
                           "type": "ToPoint",
                           "units": "in"
@@ -8873,6 +8873,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
             "tag": {
               "commentStart": 1756,
               "end": 1777,
@@ -8881,27 +8902,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
             "type": "extrudePlane"
           }
         ],
@@ -8940,6 +8940,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "sourceRange": []
               },
               "from": [
+                -1.2499999999999998,
+                1.25
+              ],
+              "tag": null,
+              "to": [
+                -1.25,
+                -1.25
+              ],
+              "type": "ToPoint",
+              "units": "in"
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
                 1.25,
                 -1.25
               ],
@@ -8964,23 +8981,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "to": [
                 -1.2499999999999998,
                 1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.2499999999999998,
-                1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
               ],
               "type": "ToPoint",
               "units": "in"
@@ -9013,6 +9013,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "faceId": "[uuid]",
                   "id": "[uuid]",
                   "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudePlane"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
                   "tag": {
                     "commentStart": 1265,
                     "end": 1286,
@@ -9021,13 +9028,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
-                  "type": "extrudePlane"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
                   "type": "extrudePlane"
                 },
                 {
@@ -9080,6 +9080,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "sourceRange": []
                     },
                     "from": [
+                      -1.2499999999999998,
+                      1.25
+                    ],
+                    "tag": null,
+                    "to": [
+                      -1.25,
+                      -1.25
+                    ],
+                    "type": "ToPoint",
+                    "units": "in"
+                  },
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "from": [
                       1.25,
                       -1.25
                     ],
@@ -9104,23 +9121,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "to": [
                       -1.2499999999999998,
                       1.25
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.2499999999999998,
-                      1.25
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.25,
-                      -1.25
                     ],
                     "type": "ToPoint",
                     "units": "in"
@@ -9245,6 +9245,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "faceId": "[uuid]",
                               "id": "[uuid]",
                               "sourceRange": [],
+                              "tag": null,
+                              "type": "extrudePlane"
+                            },
+                            {
+                              "faceId": "[uuid]",
+                              "id": "[uuid]",
+                              "sourceRange": [],
+                              "tag": null,
+                              "type": "extrudePlane"
+                            },
+                            {
+                              "faceId": "[uuid]",
+                              "id": "[uuid]",
+                              "sourceRange": [],
+                              "tag": null,
+                              "type": "extrudePlane"
+                            },
+                            {
+                              "faceId": "[uuid]",
+                              "id": "[uuid]",
+                              "sourceRange": [],
                               "tag": {
                                 "commentStart": 383,
                                 "end": 404,
@@ -9253,27 +9274,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "type": "TagDeclarator",
                                 "value": "rectangleSegmentA001"
                               },
-                              "type": "extrudePlane"
-                            },
-                            {
-                              "faceId": "[uuid]",
-                              "id": "[uuid]",
-                              "sourceRange": [],
-                              "tag": null,
-                              "type": "extrudePlane"
-                            },
-                            {
-                              "faceId": "[uuid]",
-                              "id": "[uuid]",
-                              "sourceRange": [],
-                              "tag": null,
-                              "type": "extrudePlane"
-                            },
-                            {
-                              "faceId": "[uuid]",
-                              "id": "[uuid]",
-                              "sourceRange": [],
-                              "tag": null,
                               "type": "extrudePlane"
                             }
                           ],
@@ -9312,6 +9312,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "sourceRange": []
                                 },
                                 "from": [
+                                  -1.2499999999999998,
+                                  1.25
+                                ],
+                                "tag": null,
+                                "to": [
+                                  -1.25,
+                                  -1.25
+                                ],
+                                "type": "ToPoint",
+                                "units": "in"
+                              },
+                              {
+                                "__geoMeta": {
+                                  "id": "[uuid]",
+                                  "sourceRange": []
+                                },
+                                "from": [
                                   1.25,
                                   -1.25
                                 ],
@@ -9336,23 +9353,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "to": [
                                   -1.2499999999999998,
                                   1.25
-                                ],
-                                "type": "ToPoint",
-                                "units": "in"
-                              },
-                              {
-                                "__geoMeta": {
-                                  "id": "[uuid]",
-                                  "sourceRange": []
-                                },
-                                "from": [
-                                  -1.2499999999999998,
-                                  1.25
-                                ],
-                                "tag": null,
-                                "to": [
-                                  -1.25,
-                                  -1.25
                                 ],
                                 "type": "ToPoint",
                                 "units": "in"
@@ -9544,6 +9544,27 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": null,
+            "type": "extrudePlane"
+          },
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
             "tag": {
               "commentStart": 383,
               "end": 404,
@@ -9552,27 +9573,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [],
-            "tag": null,
             "type": "extrudePlane"
           }
         ],
@@ -9611,6 +9611,23 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "sourceRange": []
               },
               "from": [
+                -1.2499999999999998,
+                1.25
+              ],
+              "tag": null,
+              "to": [
+                -1.25,
+                -1.25
+              ],
+              "type": "ToPoint",
+              "units": "in"
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
                 1.25,
                 -1.25
               ],
@@ -9635,23 +9652,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "to": [
                 -1.2499999999999998,
                 1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.2499999999999998,
-                1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
               ],
               "type": "ToPoint",
               "units": "in"

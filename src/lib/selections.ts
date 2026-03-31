@@ -686,7 +686,7 @@ export async function getEventForQueryEntityTypeWithPoint(
         firstFace &&
         (firstFace.type === 'wall' || firstFace.type === 'cap')
       ) {
-        // Look for edges in the commonSurfaceIds
+        // Look for edges from the related face artifacts
         // This is not ideal but works for now
         entityId = firstFace.id
       }

@@ -1,5 +1,5 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helic `axis`, or extrude `to` argument.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, or extrude `to` argument.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;

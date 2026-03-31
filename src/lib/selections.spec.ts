@@ -117,10 +117,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [1, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-          'b9e275c1-5147-46f5-af49-b3d762933748',
-        ],
       },
     ],
     [
@@ -145,10 +141,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [2, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          'c30f705c-f778-48df-8e1d-33f07dcceb90',
-          'b9e275c1-5147-46f5-af49-b3d762933748',
-        ],
       },
     ],
     [
@@ -173,10 +165,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [3, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          '35628e3b-78d6-4de4-a43d-d96220004fe1',
-          'b9e275c1-5147-46f5-af49-b3d762933748',
-        ],
       },
     ],
     [
@@ -201,10 +189,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [4, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          '36584687-7151-4406-a51f-f07933ae1695',
-          'b9e275c1-5147-46f5-af49-b3d762933748',
-        ],
       },
     ],
     [
@@ -248,15 +232,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
           'b9e275c1-5147-46f5-af49-b3d762933748',
           'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
-        ],
-        edgeIds: [
-          '8ddb1c33-8519-4467-a50f-b3879f47ea03',
-          'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
-          'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
-          'b063089b-f929-4fe7-8df6-044f8b469990',
-          '6ddaad54-f49d-498a-8935-0af5e055f5fd',
-          '3315f045-caf3-46d6-9cb5-7b1c658ae562',
-          'f87a7e1e-a594-4c7d-bb06-e19b76092678',
         ],
         codeRef: {
           range: [292, 325, 0],
@@ -408,10 +383,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [1, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-        ],
       },
     ],
     [
@@ -436,10 +407,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [2, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          '79031810-43db-4b9f-a058-1b4f3b528796',
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-        ],
       },
     ],
     [
@@ -464,10 +431,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
             [3, 'index'],
           ],
         },
-        commonSurfaceIds: [
-          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-        ],
       },
     ],
     [
@@ -509,13 +472,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           '79031810-43db-4b9f-a058-1b4f3b528796',
           '02acb19d-cc92-4cae-9e55-d6dbefb78705',
           'eecb1d39-c251-449a-b815-c0fddeb31989',
-        ],
-        edgeIds: [
-          '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
-          '9ed007ff-3149-4a72-9b43-04f74c38a171',
-          '872ea68a-b67d-4568-84c1-b891cb68f602',
-          'e8691126-6320-40ee-ab78-c6033e9044a4',
-          '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
         ],
         codeRef: {
           range: [598, 631, 0],
@@ -583,111 +539,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           pathToNode: [],
         },
         cmdId: '467f144c-9023-5dca-8cde-52aa366a50f0',
-      },
-    ],
-    [
-      '8ddb1c33-8519-4467-a50f-b3879f47ea03',
-      {
-        type: 'sweepEdge',
-        id: '8ddb1c33-8519-4467-a50f-b3879f47ea03',
-        subType: 'opposite',
-        segId: 'f7861c82-8117-5bb5-af9c-be285026b0c6',
-        cmdId: 'fc48a210-666e-5981-9498-be796451c958',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '36584687-7151-4406-a51f-f07933ae1695',
-          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
-        ],
-      },
-    ],
-    [
-      'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
-      {
-        type: 'sweepEdge',
-        id: 'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
-        subType: 'adjacent',
-        segId: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
-        cmdId: 'eadced5f-a463-5a9e-bb11-44174fe799a8',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '36584687-7151-4406-a51f-f07933ae1695',
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-        ],
-      },
-    ],
-    [
-      'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
-      {
-        type: 'sweepEdge',
-        id: 'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
-        subType: 'opposite',
-        segId: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
-        cmdId: 'ddad9bdf-fa37-5479-8d16-1c3d898e9c05',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '35628e3b-78d6-4de4-a43d-d96220004fe1',
-          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
-        ],
-      },
-    ],
-    [
-      'b063089b-f929-4fe7-8df6-044f8b469990',
-      {
-        type: 'sweepEdge',
-        id: 'b063089b-f929-4fe7-8df6-044f8b469990',
-        subType: 'adjacent',
-        segId: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
-        cmdId: '4b3930b1-3abd-5f35-b000-e52afece5054',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '36584687-7151-4406-a51f-f07933ae1695',
-          '35628e3b-78d6-4de4-a43d-d96220004fe1',
-        ],
-      },
-    ],
-    [
-      '6ddaad54-f49d-498a-8935-0af5e055f5fd',
-      {
-        type: 'sweepEdge',
-        id: '6ddaad54-f49d-498a-8935-0af5e055f5fd',
-        subType: 'opposite',
-        segId: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
-        cmdId: '66bcc54e-e7b8-5cfc-b167-fadf8600ebd4',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          'c30f705c-f778-48df-8e1d-33f07dcceb90',
-          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
-        ],
-      },
-    ],
-    [
-      '3315f045-caf3-46d6-9cb5-7b1c658ae562',
-      {
-        type: 'sweepEdge',
-        id: '3315f045-caf3-46d6-9cb5-7b1c658ae562',
-        subType: 'adjacent',
-        segId: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
-        cmdId: '0d7c74ca-d669-596b-acc6-12bce78b5d00',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '35628e3b-78d6-4de4-a43d-d96220004fe1',
-          'c30f705c-f778-48df-8e1d-33f07dcceb90',
-        ],
-      },
-    ],
-    [
-      'f87a7e1e-a594-4c7d-bb06-e19b76092678',
-      {
-        type: 'sweepEdge',
-        id: 'f87a7e1e-a594-4c7d-bb06-e19b76092678',
-        subType: 'opposite',
-        segId: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
-        cmdId: '83a24ce2-6149-50fa-8a2e-05f52fbadc26',
-        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
-        commonSurfaceIds: [
-          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
-          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
-        ],
       },
     ],
     [
@@ -1039,81 +890,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       },
     ],
     [
-      '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
-      {
-        type: 'sweepEdge',
-        id: '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
-        subType: 'opposite',
-        segId: '184c29e4-fcc5-52de-8325-db46e621428a',
-        cmdId: '281c7b2f-b60b-5916-a22a-2f95550bfa02',
-        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
-        commonSurfaceIds: [
-          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
-          'eecb1d39-c251-449a-b815-c0fddeb31989',
-        ],
-      },
-    ],
-    [
-      '9ed007ff-3149-4a72-9b43-04f74c38a171',
-      {
-        type: 'sweepEdge',
-        id: '9ed007ff-3149-4a72-9b43-04f74c38a171',
-        subType: 'adjacent',
-        segId: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
-        cmdId: 'a202df40-568c-5004-b1ac-bee90c9270bd',
-        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
-        commonSurfaceIds: [
-          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
-          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
-        ],
-      },
-    ],
-    [
-      '872ea68a-b67d-4568-84c1-b891cb68f602',
-      {
-        type: 'sweepEdge',
-        id: '872ea68a-b67d-4568-84c1-b891cb68f602',
-        subType: 'opposite',
-        segId: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
-        cmdId: 'cbe914d4-4778-5956-956d-856cc2f84ae1',
-        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
-        commonSurfaceIds: [
-          '79031810-43db-4b9f-a058-1b4f3b528796',
-          'eecb1d39-c251-449a-b815-c0fddeb31989',
-        ],
-      },
-    ],
-    [
-      'e8691126-6320-40ee-ab78-c6033e9044a4',
-      {
-        type: 'sweepEdge',
-        id: 'e8691126-6320-40ee-ab78-c6033e9044a4',
-        subType: 'adjacent',
-        segId: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
-        cmdId: '05e502ad-9a39-5a1f-9dcb-c0bc86816bd1',
-        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
-        commonSurfaceIds: [
-          '79031810-43db-4b9f-a058-1b4f3b528796',
-          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
-        ],
-      },
-    ],
-    [
-      '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
-      {
-        type: 'sweepEdge',
-        id: '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
-        subType: 'opposite',
-        segId: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
-        cmdId: '86edfd76-987d-56c0-bd0c-5535d1bbc20a',
-        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
-        commonSurfaceIds: [
-          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
-          'eecb1d39-c251-449a-b815-c0fddeb31989',
-        ],
-      },
-    ],
-    [
       '87f9e2b6-7694-5281-97b0-9a4f7cbaa5c8',
       {
         type: 'startSketchOnFace',
@@ -1249,10 +1025,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           subType: 'extrusion',
           range: [294, 294, 0],
           singleIdsKeys: ['id', 'pathId'],
-          arrayIdsKeys: [
-            { key: 'surfaceIds', length: 6 },
-            { key: 'edgeIds', length: 7 },
-          ],
+          arrayIdsKeys: [{ key: 'surfaceIds', length: 6 }],
         },
       },
     ],

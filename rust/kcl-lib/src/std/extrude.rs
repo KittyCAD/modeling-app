@@ -656,26 +656,6 @@ pub(crate) async fn do_post_extrude<'a>(
         vec![]
     };
 
-    // Only do this if we need the artifact graph.
-    #[cfg(feature = "artifact-graph")]
-    {
-        // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
-        // any of these call will not just fail.
-        if !sectional {
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args(exec_state, args),
-                    ModelingCmd::from(
-                        mcmd::Solid3dGetAdjacencyInfo::builder()
-                            .object_id(sketch.id)
-                            .edge_id(any_edge_id)
-                            .build(),
-                    ),
-                )
-                .await?;
-        }
-    }
-
     let Faces {
         sides: mut face_id_map,
         start_cap_id,

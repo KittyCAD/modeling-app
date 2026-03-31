@@ -54,6 +54,7 @@ use crate::std::args::TyF64;
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[allow(clippy::large_enum_variant)]
 #[ts(export)]

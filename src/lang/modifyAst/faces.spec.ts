@@ -1507,7 +1507,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
   describe('Testing getEdgeCutMeta', () => {
     // getEdgeCutMeta returns the segment tag name and type so we can build face refs (e.g. planeOf(..., face = seg01)).
     // subType 'opposite'|'adjacent' referred to how the face appears in KCL (getOppositeEdge(tag), getNextAdjacentEdge(tag));
-    // that required artifact graph data we no longer store (see artifact.rs Solid3dGetAdjacencyInfo duplicate Walls).
+    // that depended on artifact-graph edge adjacency data we no longer store.
     // We only assert the still-supported output: type and tagName. subType is 'base' when we resolve via segment.
     it('should find the edge cut meta info on a wall-cap chamfer', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(

@@ -30,6 +30,7 @@ import {
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getEdgeCutConsumedCodeRef,
+  getSegmentForEdgeCut,
 } from '@src/lang/std/artifactGraph'
 import {
   type Program,
@@ -675,10 +676,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     (operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs) &&
     artifact?.type === 'edgeCut'
   ) {
-    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
-    const segId = edgeIds?.length
-      ? edgeIds[0]
-      : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    const segId = getSegmentForEdgeCut(artifact.id, artifactGraph)?.id
     if (segId) {
       const segResult = getArtifactOfTypes(
         { key: segId, types: ['segment'] },
@@ -699,7 +697,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
           )
           const faceIds = startCap
             ? [segResult.id, startCap.id]
-            : segResult.commonSurfaceIds.slice(0, 2)
+            : commonFaces.slice(0, 2).map((face) => face.id)
           if (faceIds.length >= 2) {
             selection = {
               graphSelections: [
