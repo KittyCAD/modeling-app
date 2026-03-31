@@ -1,11 +1,14 @@
 import { describe, it, expect } from 'vitest'
 
 import {
+  DARK_CONSTRAINED_COLOR,
   deriveSegmentFreedom,
   getSegmentColor,
+  LIGHT_CONSTRAINED_COLOR,
 } from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
+import { Themes } from '@src/lib/theme'
 
 // Helper to create a point object
 function createPointObject(id: number, freedom: Freedom): ApiObject {
@@ -427,8 +430,8 @@ describe('deriveSegmentFreedom', () => {
 describe('getSegmentColor', () => {
   const UNCONSTRAINED_COLOR = parseInt('#3c73ff'.replace('#', ''), 16) // Brand blue
   const CONFLICT_COLOR = 0xff5e5b // Coral red
-  const TEXT_COLOR = 0xffffff // White
   const DRAFT_COLOR = 0x888888 // Grey
+  const DARK_THEME = Themes.Dark
 
   it('should return draft color when mode is draft (highest priority)', () => {
     const color = getSegmentColor({
@@ -436,6 +439,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(DRAFT_COLOR)
@@ -447,6 +451,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     // Hover color is calculated from SKETCH_SELECTION_RGB at 70% brightness
@@ -455,7 +460,7 @@ describe('getSegmentColor', () => {
     expect(color).not.toBe(DRAFT_COLOR)
     expect(color).not.toBe(SKETCH_SELECTION_COLOR)
     expect(color).not.toBe(CONFLICT_COLOR)
-    expect(color).not.toBe(TEXT_COLOR)
+    expect(color).not.toBe(DARK_CONSTRAINED_COLOR)
     expect(color).not.toBe(UNCONSTRAINED_COLOR)
   })
 
@@ -465,6 +470,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(SKETCH_SELECTION_COLOR)
@@ -476,6 +482,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(CONFLICT_COLOR)
@@ -487,6 +494,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -498,9 +506,22 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
-    expect(color).toBe(TEXT_COLOR)
+    expect(color).toBe(DARK_CONSTRAINED_COLOR)
+  })
+
+  it('should return constrained color for light sketch theme', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      freedom: 'Fixed',
+      theme: Themes.Light,
+    })
+
+    expect(color).toBe(LIGHT_CONSTRAINED_COLOR)
   })
 
   it('should return unconstrained color when freedom is null (default)', () => {
@@ -509,6 +530,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: null,
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -519,6 +541,7 @@ describe('getSegmentColor', () => {
       isDraft: false,
       isHovered: false,
       isSelected: false,
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -530,6 +553,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     const color2 = getSegmentColor({
@@ -537,6 +561,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color1).toBe(DRAFT_COLOR)
@@ -549,6 +574,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     const selectionColor = getSegmentColor({
@@ -556,10 +582,11 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     expect(hoverColor).not.toBe(selectionColor)
-    expect(hoverColor).not.toBe(TEXT_COLOR)
+    expect(hoverColor).not.toBe(DARK_CONSTRAINED_COLOR)
   })
 
   it('should prioritize selection over freedom', () => {
@@ -568,6 +595,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     const unselectedColor = getSegmentColor({
@@ -575,6 +603,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
@@ -587,6 +616,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     const freeColor = getSegmentColor({
@@ -594,6 +624,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     const fixedColor = getSegmentColor({
@@ -601,10 +632,11 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     expect(conflictColor).toBe(CONFLICT_COLOR)
     expect(freeColor).toBe(UNCONSTRAINED_COLOR)
-    expect(fixedColor).toBe(TEXT_COLOR)
+    expect(fixedColor).toBe(DARK_CONSTRAINED_COLOR)
   })
 })
