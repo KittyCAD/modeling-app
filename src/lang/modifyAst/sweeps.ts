@@ -52,7 +52,10 @@ import {
   getFacesExprsFromSelection,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
-import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import {
+  getEdgeTagCall,
+  retrieveEdgeSelectionsFromSingleEdgeRef,
+} from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 import { isEngineRegionSelection } from '@src/lib/selections'
@@ -769,20 +772,33 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     }
   }
   if (axisValue.type === 'Object') {
-    // default axis casee
-    axisOrEdge = 'Axis'
     const direction = axisValue.value['direction']
-    if (!direction || direction.type !== 'Array') {
-      return new Error('No direction vector for axis')
-    }
-    if (nonZero(direction.value[0])) {
-      axis = 'X'
-    } else if (nonZero(direction.value[1])) {
-      axis = 'Y'
-    } else if (nonZero(direction.value[2])) {
-      axis = 'Z'
+    if (direction && direction.type === 'Array') {
+      axisOrEdge = 'Axis'
+      if (nonZero(direction.value[0])) {
+        axis = 'X'
+      } else if (nonZero(direction.value[1])) {
+        axis = 'Y'
+      } else if (nonZero(direction.value[2])) {
+        axis = 'Z'
+      } else {
+        return new Error('Bad direction vector for axis')
+      }
+    } else if (
+      'sideFaces' in axisValue.value ||
+      'side_faces' in axisValue.value
+    ) {
+      axisOrEdge = 'Edge'
+      const edgeSelection = retrieveEdgeSelectionsFromSingleEdgeRef(
+        opArg,
+        artifactGraph
+      )
+      if (err(edgeSelection)) {
+        return new Error("Couldn't retrieve edge selection from axis")
+      }
+      edge = edgeSelection
     } else {
-      return new Error('Bad direction vector for axis')
+      return new Error('No direction vector for axis')
     }
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case

@@ -1178,6 +1178,8 @@ impl FrontendState {
             source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions,
+            #[cfg(feature = "artifact-graph")]
+            refactor_metadata,
             filenames,
             default_planes,
             ..
@@ -1202,6 +1204,8 @@ impl FrontendState {
             source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions,
+            #[cfg(feature = "artifact-graph")]
+            refactor_metadata,
             errors: non_fatal,
             default_planes,
         })

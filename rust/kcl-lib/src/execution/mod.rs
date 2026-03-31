@@ -57,9 +57,19 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+#[cfg(feature = "artifact-graph")]
+pub use state::DirectTagFilletMeta;
+#[cfg(feature = "artifact-graph")]
+pub use state::DirectTagFilletTagEntry;
+#[cfg(feature = "artifact-graph")]
+pub use state::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+#[cfg(feature = "artifact-graph")]
+pub use state::RefactorMetadata;
 use uuid::Uuid;
 
 use crate::CompilationError;
@@ -276,6 +286,9 @@ pub struct ExecOutcome {
     #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Execution-backed metadata used by Z0006 and future auto-refactors.
+    #[cfg(feature = "artifact-graph")]
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Non-fatal errors and warnings.
     /// TODO: Rename this since it's confusing that it contains warnings.
     pub errors: Vec<CompilationError>,

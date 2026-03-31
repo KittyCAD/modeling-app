@@ -72,6 +72,8 @@ mod lsp;
 mod modules;
 mod parsing;
 mod project;
+#[cfg(feature = "artifact-graph")]
+pub mod refactor_edge_stdlib;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -99,6 +101,8 @@ pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
+#[cfg(feature = "artifact-graph")]
+pub use execution::EdgeRefactorMeta;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutorContext;
@@ -106,6 +110,8 @@ pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::Point2d;
+#[cfg(feature = "artifact-graph")]
+pub use execution::RefactorMetadata;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
 pub use execution::pre_execute_transpile;
@@ -122,6 +128,7 @@ pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use modules::ModuleId;
 pub use parsing::ast::types::FormatOptions;
 pub use parsing::ast::types::NodePath;
+pub use parsing::ast::types::Program as AstProgram;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
 pub use settings::types::Configuration;

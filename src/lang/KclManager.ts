@@ -10,6 +10,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -619,6 +620,11 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private _executionGeneration = 0
+  private _executionCompletionWaiters: {
+    afterGeneration: number
+    resolve: () => void
+  }[] = []
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -777,6 +783,60 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+
+  async applyZ0006FixBeforeEdit(): Promise<boolean> {
+    const execState = this.execState
+    const hasMeta =
+      (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
+      (execState.directTagFilletMetadata?.length ?? 0) > 0
+    if (!hasMeta || !this.artifactGraph?.size) return false
+
+    const instance = await this.wasmInstancePromise
+    const newSource = refactorZ0006Unified(
+      this.ast as Program,
+      execState.edgeRefactorMetadata ?? [],
+      execState.directTagFilletMetadata ?? [],
+      this.artifactGraph,
+      instance
+    )
+    if (err(newSource)) return false
+    const trimmed = newSource.trim()
+    if (!trimmed) return false
+
+    const generationBeforeDispatch = this._executionGeneration
+    this._editorView.dispatch({
+      changes: {
+        from: 0,
+        to: this._editorView.state.doc.length,
+        insert: trimmed,
+      },
+    })
+    await this.waitForExecutionGenerationAfter(generationBeforeDispatch)
+    return true
+  }
+
+  private waitForExecutionGenerationAfter(
+    afterGeneration: number
+  ): Promise<void> {
+    if (this._executionGeneration > afterGeneration) return Promise.resolve()
+    return new Promise((resolve) => {
+      this._executionCompletionWaiters.push({ afterGeneration, resolve })
+    })
+  }
+
+  private notifyExecutionCompletion(): void {
+    this._executionGeneration += 1
+    const generation = this._executionGeneration
+    this._executionCompletionWaiters = this._executionCompletionWaiters.filter(
+      (waiter) => {
+        if (waiter.afterGeneration < generation) {
+          waiter.resolve()
+          return false
+        }
+        return true
+      }
+    )
   }
 
   // Get the kcl version from the wasm module
@@ -1330,6 +1390,9 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
         })
       )
       if (this.sceneEntitiesManager) {
@@ -1347,6 +1410,8 @@ export class KclManager extends File {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion()
       return
     }
 
@@ -1399,6 +1464,7 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    this.notifyExecutionCompletion()
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
@@ -1418,6 +1484,7 @@ export class KclManager extends File {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
+    this.notifyExecutionCompletion()
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,

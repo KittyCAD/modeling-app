@@ -5,6 +5,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createObjectExpression,
   createArrayExpression,
   createTagDeclarator,
   createVariableDeclaration,
@@ -22,35 +23,65 @@ import {
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
   Artifact,
   ArtifactGraph,
   CallExpressionKw,
+  CodeRef,
+  DirectTagFilletMeta,
+  EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
+  MemberExpression,
+  Name,
   PathToNode,
   Program,
   VariableDeclarator,
 } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type {
-  EnginePrimitiveSelection,
-  Selections,
   Selection,
+  Selections,
+  EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { findKwArg } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
+
+function createMemberExpr(
+  object: Expr,
+  propertyName: string
+): Node<MemberExpression> {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    object,
+    property: createLocalName(propertyName),
+    computed: false,
+  }
+}
 
 export function addFillet({
   ast,
@@ -733,6 +764,1402 @@ export function retrieveEdgeSelectionsFromOpArgs(
   }
 
   return { graphSelections, otherSelections: [] }
+}
+
+type FilletEdgeRefPayload = {
+  side_faces: string[]
+  end_faces?: string[]
+  index?: number
+}
+
+export function createEdgeRefObjectExpression(
+  payload: FilletEdgeRefPayload,
+  wasmInstance: ModuleType,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  originalEdgeSelection?: Selection,
+  fallbackCodeRef?: CodeRef,
+  tagsBaseExpr?: Expr | null
+): { expr: Expr; modifiedAst: Node<Program> } | Error {
+  const faceTags: string[] = []
+  let currentAst = ast
+
+  for (const faceId of payload.side_faces) {
+    const faceArtifact = artifactGraph.get(faceId)
+    if (!faceArtifact) {
+      return new Error(
+        `Could not find artifact for face ${faceId} in edge reference`
+      )
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+    if (!codeRefs?.length) {
+      return new Error(
+        `Could not find codeRefs for face ${faceId} in edge reference`
+      )
+    }
+
+    if (faceArtifact.type === 'solid2d') {
+      let segmentPathToNode: PathToNode | undefined
+
+      if (
+        originalEdgeSelection?.artifact &&
+        originalEdgeSelection.artifact.type === 'segment'
+      ) {
+        segmentPathToNode = originalEdgeSelection.artifact.codeRef.pathToNode
+      } else if (fallbackCodeRef?.pathToNode) {
+        segmentPathToNode = fallbackCodeRef.pathToNode
+      } else if (codeRefs[0]?.pathToNode) {
+        segmentPathToNode = codeRefs[0].pathToNode
+      }
+
+      if (!segmentPathToNode?.length) {
+        return new Error(
+          `Cannot create tag for Solid2D edge ${faceId}: missing segment path`
+        )
+      }
+
+      const tagResult = mutateAstWithTagForSketchSegment(
+        currentAst,
+        segmentPathToNode,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for Solid2D edge ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      faceTags.push(tagResult.tag)
+      currentAst = tagResult.modifiedAst
+    } else {
+      const tagResult = modifyAstWithTagsForSelection(
+        currentAst,
+        {
+          artifact: faceArtifact,
+          codeRef: codeRefs[0],
+        },
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for face ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      const faceTagExpr = tagResult.exprs[0]
+      if (!faceTagExpr || faceTagExpr.type !== 'Name') {
+        return new Error(`Failed to extract tag name for face ${faceId}`)
+      }
+
+      faceTags.push(faceTagExpr.name?.name ?? '')
+      currentAst = tagResult.modifiedAst
+    }
+  }
+
+  const endFaceTags: string[] = []
+  if (payload.end_faces?.length) {
+    for (const faceId of payload.end_faces) {
+      const faceArtifact = artifactGraph.get(faceId)
+      if (!faceArtifact) continue
+      const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+      if (!codeRefs?.length) continue
+
+      const tagResult = modifyAstWithTagsForSelection(
+        currentAst,
+        {
+          artifact: faceArtifact,
+          codeRef: codeRefs[0],
+        },
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) continue
+
+      const endFaceTagExpr = tagResult.exprs[0]
+      if (!endFaceTagExpr || endFaceTagExpr.type !== 'Name') continue
+
+      endFaceTags.push(endFaceTagExpr.name?.name ?? '')
+      currentAst = tagResult.modifiedAst
+    }
+  }
+
+  const sideFacesExprs =
+    tagsBaseExpr != null
+      ? faceTags.map((tag) =>
+          createMemberExpr(createMemberExpr(tagsBaseExpr, 'tags'), tag)
+        )
+      : faceTags.map((tag) => createLocalName(tag))
+
+  const properties: Record<string, Expr> = {
+    sideFaces: createArrayExpression(sideFacesExprs),
+  }
+
+  if (endFaceTags.length > 0) {
+    properties.endFaces = createArrayExpression(
+      tagsBaseExpr != null
+        ? endFaceTags.map((tag) =>
+            createMemberExpr(createMemberExpr(tagsBaseExpr, 'tags'), tag)
+          )
+        : endFaceTags.map((tag) => createLocalName(tag))
+    )
+  }
+
+  if (payload.index !== undefined) {
+    properties.index = createLiteral(payload.index, wasmInstance)
+  }
+
+  return {
+    expr: createObjectExpression(properties),
+    modifiedAst: currentAst,
+  }
+}
+
+const DEPRECATED_EDGE_STDLIB = [
+  'getOppositeEdge',
+  'getNextAdjacentEdge',
+  'getPreviousAdjacentEdge',
+  'getCommonEdge',
+  'edgeId',
+] as const
+
+function isFilletOrChamfer(callee: string): boolean {
+  return callee === 'fillet' || callee === 'chamfer'
+}
+
+function isRevolveOrHelix(callee: string): boolean {
+  return callee === 'revolve' || callee === 'helix'
+}
+
+function isExtrude(callee: string): boolean {
+  return callee === 'extrude'
+}
+
+function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
+  const tagsArg = call.arguments?.find(
+    (a) => (a.label as { name?: string })?.name === 'tags'
+  )
+  if (!tagsArg?.arg) return null
+  if (tagsArg.arg.type === 'ArrayExpression') {
+    return tagsArg.arg.elements ?? null
+  }
+  return [tagsArg.arg]
+}
+
+function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
+  const edgeRefsArg = call.arguments?.find(
+    (a) =>
+      (a.label as { name?: string })?.name === 'edges' ||
+      (a.label as { name?: string })?.name === 'edgeRefs'
+  )
+  if (!edgeRefsArg?.arg || edgeRefsArg.arg.type !== 'ArrayExpression') {
+    return []
+  }
+  return edgeRefsArg.arg.elements ?? []
+}
+
+function getTagsBaseFromTagElement(el: Expr): Expr | null {
+  if (el.type !== 'CallExpressionKw') return null
+  const inner = el as Node<CallExpressionKw>
+  const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
+  if (
+    !calleeName ||
+    !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
+  ) {
+    return null
+  }
+
+  const firstArg = inner.unlabeled ?? null
+  if (!firstArg || firstArg.type !== 'MemberExpression') return null
+  const outerMember = firstArg as { object: Expr; property: Expr }
+  if (outerMember.object.type !== 'MemberExpression') return null
+  const innerMember = outerMember.object as { object: Expr; property: Expr }
+  const propName = (innerMember.property as { name?: { name?: string } }).name
+    ?.name
+  if (propName !== 'tags') return null
+  return innerMember.object
+}
+
+function callSourceRangeMatches(
+  meta: DirectTagFilletMeta,
+  start: number,
+  end: number,
+  moduleId: number
+): boolean {
+  const sr = meta.callSourceRange
+  if (isArray(sr)) {
+    return (
+      Number(sr[0]) === start &&
+      Number(sr[1]) === end &&
+      Number((sr as [number, number, number])[2] ?? 0) === moduleId
+    )
+  }
+  const sourceRange = sr as { start?: number; end?: number; moduleId?: number }
+  return (
+    Number(sourceRange.start ?? 0) === start &&
+    Number(sourceRange.end ?? 0) === end &&
+    Number(sourceRange.moduleId ?? 0) === moduleId
+  )
+}
+
+function sourceRangeMatch(
+  meta: EdgeRefactorMeta,
+  start: number,
+  end: number,
+  moduleId: number
+): boolean {
+  const sr = meta.sourceRange
+  const metaStart = isArray(sr)
+    ? sr[0]
+    : ((sr as { start?: number }).start ?? 0)
+  const metaEnd = isArray(sr) ? sr[1] : ((sr as { end?: number }).end ?? 0)
+  const metaModuleId = isArray(sr)
+    ? (sr[2] ?? 0)
+    : ((sr as { moduleId?: number }).moduleId ?? 0)
+  if (metaModuleId !== moduleId) return false
+  if (metaStart === start && metaEnd === end) return true
+  if (metaStart <= start && metaEnd >= end) return true
+  if (start <= metaEnd && end >= metaStart) return true
+  return false
+}
+
+interface ExprWalkOptions {
+  resolveWrappedCalls?: boolean
+  includeCallUnlabeled?: boolean
+}
+
+type ExprVisitor = (
+  expr: Expr,
+  pathPrefix: PathToNode | undefined,
+  walk: (expr: Expr, pathPrefix?: PathToNode) => void
+) => void
+
+function visitExpr(
+  expr: Expr,
+  visitor: ExprVisitor,
+  options: ExprWalkOptions,
+  pathPrefix?: PathToNode
+): void {
+  const walk = (nextExpr: Expr, nextPathPrefix = pathPrefix) =>
+    walkExpr(nextExpr, visitor, options, nextPathPrefix)
+  visitor(expr, pathPrefix, walk)
+}
+
+function walkExpr(
+  expr: Expr,
+  visitor: ExprVisitor,
+  options: ExprWalkOptions,
+  pathPrefix?: PathToNode
+): void {
+  if (!expr || typeof expr !== 'object') return
+
+  if (expr.type === 'PipeExpression') {
+    for (const bodyExpr of (expr as { body?: Expr[] }).body ?? []) {
+      visitExpr(bodyExpr, visitor, options, pathPrefix)
+    }
+    return
+  }
+
+  const callExpr = options.resolveWrappedCalls
+    ? getCallFromExpr(expr)
+    : expr.type === 'CallExpressionKw'
+      ? (expr as Node<CallExpressionKw>)
+      : null
+  if (callExpr) {
+    if (options.includeCallUnlabeled && callExpr.unlabeled) {
+      visitExpr(callExpr.unlabeled, visitor, options, pathPrefix)
+    }
+    for (const arg of callExpr.arguments ?? []) {
+      visitExpr(arg.arg, visitor, options, pathPrefix)
+    }
+    return
+  }
+
+  if (expr.type === 'BinaryExpression') {
+    if (expr.left) walkExpr(expr.left, visitor, options, pathPrefix)
+    if (expr.right) walkExpr(expr.right, visitor, options, pathPrefix)
+    return
+  }
+  if (expr.type === 'ArrayExpression') {
+    for (const element of expr.elements ?? []) {
+      walkExpr(element, visitor, options, pathPrefix)
+    }
+    return
+  }
+  if (expr.type === 'ObjectExpression') {
+    for (const property of expr.properties ?? []) {
+      walkExpr(property.value, visitor, options, pathPrefix)
+    }
+    return
+  }
+  if (expr.type === 'LabelledExpression') {
+    visitExpr(expr.expr, visitor, options, pathPrefix)
+  } else if (expr.type === 'AscribedExpression') {
+    visitExpr(expr.expr, visitor, options, pathPrefix)
+  } else if (expr.type === 'UnaryExpression') {
+    walkExpr(expr.argument, visitor, options, pathPrefix)
+  } else if (expr.type === 'MemberExpression') {
+    walkExpr(expr.object, visitor, options, pathPrefix)
+    walkExpr(expr.property, visitor, options, pathPrefix)
+  }
+}
+
+interface UnifiedCallToFix {
+  range: [number, number, number]
+  orderedFaceIds: [string, string][]
+  hasExistingEdgeRefs: boolean
+  tagsBaseExpr?: Expr | null
+}
+
+function findFilletChamferCallsToFixUnified(
+  program: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[]
+): UnifiedCallToFix[] {
+  const results: UnifiedCallToFix[] = []
+
+  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
+    if (expr.type !== 'CallExpressionKw') {
+      walk(expr)
+      return
+    }
+    const call = expr as Node<CallExpressionKw>
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isFilletOrChamfer(calleeName)) {
+      walk(expr)
+      return
+    }
+
+    const elements = getTagsElementsFromCall(call)
+    const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
+    const orderedFaceIds: [string, string][] = []
+    let tagsBaseExpr: Expr | null = null
+
+    if (elements?.length) {
+      for (const el of elements) {
+        if (tagsBaseExpr === null) {
+          tagsBaseExpr = getTagsBaseFromTagElement(el)
+        }
+
+        if (el.type === 'CallExpressionKw') {
+          const inner = el as Node<CallExpressionKw>
+          const innerCallee = (inner.callee as { name?: { name?: string } })
+            ?.name?.name
+          if (
+            innerCallee &&
+            (DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+          ) {
+            const meta = edgeRefactorMetadata.find((m) =>
+              sourceRangeMatch(
+                m,
+                inner.start,
+                inner.end,
+                (inner as { module_id?: number }).module_id ?? 0
+              )
+            )
+            if (meta) {
+              orderedFaceIds.push(meta.faceIds)
+            }
+          }
+        } else if (el.type === 'Name') {
+          const tagName = (el as Node<Name>).name?.name ?? ''
+          const moduleId = (call as { module_id?: number }).module_id ?? 0
+          const directMeta = directTagFilletMetadata.find((m) =>
+            callSourceRangeMatches(m, call.start, call.end, moduleId)
+          )
+          const tagEntry = directMeta?.tags?.find(
+            (t) => t.tagIdentifier === tagName
+          )
+          if (tagEntry) {
+            orderedFaceIds.push(tagEntry.faceIds)
+          }
+        }
+      }
+    }
+
+    if (orderedFaceIds.length > 0 || existingEdgeRefExprs.length > 0) {
+      const moduleId = (call as { module_id?: number }).module_id ?? 0
+      results.push({
+        range: [call.start, call.end, moduleId],
+        orderedFaceIds,
+        hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
+        tagsBaseExpr: tagsBaseExpr ?? undefined,
+      })
+    }
+
+    walk(expr)
+  }
+
+  for (const item of program.body ?? []) {
+    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
+      visitExpr(item.declaration.init, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    } else if (item.type === 'ExpressionStatement' && item.expression) {
+      visitExpr(item.expression, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    } else if (
+      item.type === 'ReturnStatement' &&
+      (item as { argument?: Expr }).argument
+    ) {
+      visitExpr((item as { argument: Expr }).argument, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    }
+  }
+
+  return results
+}
+
+function findFilletChamferCallsToFix(
+  program: Program,
+  metadata: EdgeRefactorMeta[]
+): { range: [number, number, number]; orderedMetas: EdgeRefactorMeta[] }[] {
+  const results: {
+    range: [number, number, number]
+    orderedMetas: EdgeRefactorMeta[]
+  }[] = []
+
+  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
+    if (expr.type !== 'CallExpressionKw') {
+      walk(expr)
+      return
+    }
+    const call = expr as Node<CallExpressionKw>
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isFilletOrChamfer(calleeName)) {
+      walk(expr)
+      return
+    }
+    const elements = getTagsElementsFromCall(call)
+    if (!elements?.length) {
+      walk(expr)
+      return
+    }
+
+    const deprecatedRanges: { start: number; end: number; moduleId: number }[] =
+      []
+    for (const el of elements) {
+      if (el.type !== 'CallExpressionKw') continue
+      const inner = el as Node<CallExpressionKw>
+      const innerCallee = (inner.callee as { name?: { name?: string } })?.name
+        ?.name
+      if (
+        !innerCallee ||
+        !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+      ) {
+        continue
+      }
+      deprecatedRanges.push({
+        start: inner.start,
+        end: inner.end,
+        moduleId: (inner as { module_id?: number }).module_id ?? 0,
+      })
+    }
+    if (deprecatedRanges.length === 0) {
+      walk(expr)
+      return
+    }
+
+    const orderedMetas: EdgeRefactorMeta[] = []
+    for (const range of deprecatedRanges) {
+      const meta = metadata.find((m) =>
+        sourceRangeMatch(m, range.start, range.end, range.moduleId)
+      )
+      if (!meta) {
+        walk(expr)
+        return
+      }
+      orderedMetas.push(meta)
+    }
+
+    const moduleId = (call as { module_id?: number }).module_id ?? 0
+    results.push({
+      range: [call.start, call.end, moduleId],
+      orderedMetas,
+    })
+    walk(expr)
+  }
+
+  for (const item of program.body ?? []) {
+    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
+      visitExpr(item.declaration.init, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    } else if (item.type === 'ExpressionStatement' && item.expression) {
+      visitExpr(item.expression, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    } else if (
+      item.type === 'ReturnStatement' &&
+      (item as { argument?: Expr }).argument
+    ) {
+      visitExpr((item as { argument: Expr }).argument, processExpr, {
+        includeCallUnlabeled: true,
+      })
+    }
+  }
+
+  return results
+}
+
+export function refactorFilletChamferTagsToEdgeRefs(
+  ast: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  if (!edgeRefactorMetadata?.length) {
+    return new Error('No edge refactor metadata')
+  }
+
+  let modifiedAst = structuredClone(ast)
+  const toFix = findFilletChamferCallsToFix(ast, edgeRefactorMetadata)
+  for (const { range, orderedMetas } of toFix) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const meta of orderedMetas) {
+      const result = createEdgeRefObjectExpression(
+        { side_faces: meta.faceIds },
+        wasmInstance,
+        modifiedAst,
+        artifactGraph
+      )
+      if (err(result)) continue
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    if (edgeRefExprs.length === 0) continue
+
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const tagsIndex = callNode.arguments?.findIndex(
+      (a) => (a.label as { name?: string })?.name === 'tags'
+    )
+    if (tagsIndex === undefined || tagsIndex < 0) continue
+
+    callNode.arguments[tagsIndex] = createLabeledArg(
+      'edges',
+      createArrayExpression(edgeRefExprs)
+    )
+  }
+
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+export function refactorFilletChamferTagsToEdgeRefsUnified(
+  ast: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const toFix = findFilletChamferCallsToFixUnified(
+    ast,
+    edgeRefactorMetadata,
+    directTagFilletMetadata
+  )
+  if (toFix.length === 0) {
+    return new Error('No fillet/chamfer calls with tags or edges to convert')
+  }
+
+  let modifiedAst = structuredClone(ast)
+  for (const {
+    range,
+    orderedFaceIds,
+    hasExistingEdgeRefs,
+    tagsBaseExpr,
+  } of toFix) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const faceIds of orderedFaceIds) {
+      const result = createEdgeRefObjectExpression(
+        { side_faces: faceIds },
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        undefined,
+        undefined,
+        tagsBaseExpr
+      )
+      if (err(result)) continue
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    if (hasExistingEdgeRefs) {
+      edgeRefExprs.push(...getExistingEdgeRefsFromCall(callNode))
+    }
+    if (edgeRefExprs.length === 0) continue
+
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) =>
+        (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edges' &&
+        (a.label as { name?: string })?.name !== 'edgeRefs'
+    )
+    newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
+    callNode.arguments = newArgs
+  }
+
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+interface RevolveHelixCallToFix {
+  range: [number, number, number]
+  faceIds: [string, string]
+  pathToCall?: PathToNode
+}
+
+interface ExtrudeToCallToFix {
+  range: [number, number, number]
+  faceIds: [string, string]
+  pathToCall?: PathToNode
+}
+
+function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
+  if (!expr || typeof expr !== 'object') return null
+  const objectValue = expr as Record<string, unknown>
+  if (objectValue.type === 'CallExpressionKw') {
+    return objectValue as Node<CallExpressionKw>
+  }
+  const wrapped = objectValue.CallExpressionKw
+  return wrapped && typeof wrapped === 'object'
+    ? (wrapped as Node<CallExpressionKw>)
+    : null
+}
+
+function getCallPathFromExpr(
+  expr: Expr,
+  pathPrefix?: PathToNode
+): PathToNode | undefined {
+  if (!pathPrefix?.length) return undefined
+  const objectValue = expr as Record<string, unknown>
+  if (objectValue.type === 'CallExpressionKw') return [...pathPrefix]
+  if (
+    objectValue.CallExpressionKw &&
+    typeof objectValue.CallExpressionKw === 'object'
+  ) {
+    return [...pathPrefix, ['CallExpressionKw', '']]
+  }
+  return undefined
+}
+
+export function findRevolveHelixCallsToFix(
+  program: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): RevolveHelixCallToFix[] {
+  const results: RevolveHelixCallToFix[] = []
+  const candidates: {
+    range: [number, number, number]
+    faceIds: [string, string]
+    metaIndex: number
+    pathToCall: PathToNode
+  }[] = []
+
+  function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    const call = getCallFromExpr(expr)
+    if (!call) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+
+    const callPath = getCallPathFromExpr(expr, pathPrefix)
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isRevolveOrHelix(calleeName)) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+
+    const axisArg = findKwArg('axis', call)
+    const inner = axisArg ? getCallFromExpr(axisArg) : null
+    if (!inner) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const innerCallee = (inner.callee as { name?: { name?: string } })?.name
+      ?.name
+    if (
+      !innerCallee ||
+      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+    ) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+
+    const innerStart = Number((inner as { start?: number }).start ?? 0)
+    const innerEnd = Number((inner as { end?: number }).end ?? 0)
+    const innerModuleId = (inner as { module_id?: number }).module_id ?? 0
+    const meta = edgeRefactorMetadata.find((m) =>
+      sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
+    )
+    const moduleId = (call as { module_id?: number }).module_id ?? 0
+    const callStart = Number((call as { start?: number }).start ?? 0)
+    const callEnd = Number((call as { end?: number }).end ?? 0)
+    if (meta) {
+      results.push({
+        range: [callStart, callEnd, moduleId],
+        faceIds: [meta.faceIds[0], meta.faceIds[1]],
+        pathToCall: callPath,
+      })
+    } else {
+      const metaIndex = edgeRefactorMetadata.findIndex((m) => {
+        const ids = isArray(m.faceIds)
+          ? m.faceIds
+          : (m as { faceIds?: unknown[] }).faceIds
+        return Boolean(ids && ids.length >= 2)
+      })
+      if (metaIndex >= 0 && callPath?.length) {
+        const metadata = edgeRefactorMetadata[metaIndex]
+        const faceIds = isArray(metadata.faceIds)
+          ? ([metadata.faceIds[0], metadata.faceIds[1]] as [string, string])
+          : ([
+              (metadata as { faceIds?: string[] }).faceIds?.[0],
+              (metadata as { faceIds?: string[] }).faceIds?.[1],
+            ].filter(Boolean) as [string, string])
+        if (faceIds.length === 2) {
+          candidates.push({
+            range: [callStart, callEnd, moduleId],
+            faceIds,
+            metaIndex,
+            pathToCall: callPath,
+          })
+        }
+      }
+    }
+    walkExpr(expr, pathPrefix)
+  }
+
+  function walkExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    if (expr.type === 'PipeExpression') {
+      for (const bodyExpr of (expr as { body?: Expr[] }).body ?? []) {
+        visitExpr(bodyExpr, pathPrefix)
+      }
+      return
+    }
+    const callExpr = getCallFromExpr(expr)
+    if (callExpr) {
+      if (callExpr.unlabeled) walkExpr(callExpr.unlabeled, pathPrefix)
+      for (const arg of callExpr.arguments ?? []) walkExpr(arg.arg, pathPrefix)
+      return
+    }
+    if (expr.type === 'BinaryExpression') {
+      if (expr.left) walkExpr(expr.left, pathPrefix)
+      if (expr.right) walkExpr(expr.right, pathPrefix)
+      return
+    }
+    if (expr.type === 'ArrayExpression') {
+      for (const element of expr.elements ?? []) walkExpr(element, pathPrefix)
+      return
+    }
+    if (expr.type === 'ObjectExpression') {
+      for (const property of expr.properties ?? []) {
+        walkExpr(property.value, pathPrefix)
+      }
+      return
+    }
+    if (expr.type === 'LabelledExpression') visitExpr(expr.expr, pathPrefix)
+    else if (expr.type === 'AscribedExpression')
+      visitExpr(expr.expr, pathPrefix)
+    else if (expr.type === 'UnaryExpression')
+      walkExpr(expr.argument, pathPrefix)
+    else if (expr.type === 'MemberExpression') {
+      walkExpr(expr.object, pathPrefix)
+      walkExpr(expr.property, pathPrefix)
+    }
+  }
+
+  const body = program.body ?? []
+  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
+    const item = body[statementIndex] as {
+      type?: string
+      declaration?: { init?: Expr }
+      expression?: Expr
+      argument?: Expr
+    }
+    const pathPrefix: PathToNode = [
+      ['body', ''],
+      [statementIndex, 'index'],
+    ]
+    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
+      visitExpr(item.declaration.init, [
+        ...pathPrefix,
+        ['declaration', 'VariableDeclaration'],
+        ['init', ''],
+      ])
+    } else if (item.type === 'ExpressionStatement' && item.expression) {
+      visitExpr(item.expression, [
+        ...pathPrefix,
+        ['expression', 'ExpressionStatement'],
+      ])
+    } else if (
+      item.type === 'ReturnStatement' &&
+      (item as { argument?: Expr }).argument
+    ) {
+      visitExpr((item as { argument: Expr }).argument, [
+        ...pathPrefix,
+        ['argument', 'ReturnStatement'],
+      ])
+    }
+  }
+
+  if (results.length === 0 && candidates.length > 0) {
+    const used = new Set<number>()
+    for (const candidate of candidates) {
+      if (used.has(candidate.metaIndex)) continue
+      used.add(candidate.metaIndex)
+      results.push({
+        range: candidate.range,
+        faceIds: candidate.faceIds,
+        pathToCall: candidate.pathToCall,
+      })
+      break
+    }
+  }
+
+  return results
+}
+
+function findToArg(call: Node<CallExpressionKw>): Expr | null {
+  const arg = call.arguments?.find(
+    (a) => (a.label as { name?: string })?.name === 'to'
+  )
+  return arg?.arg ?? null
+}
+
+export function findExtrudeToCallsToFix(
+  program: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): ExtrudeToCallToFix[] {
+  const results: ExtrudeToCallToFix[] = []
+  const candidates: {
+    range: [number, number, number]
+    faceIds: [string, string]
+    metaIndex: number
+    pathToCall: PathToNode
+  }[] = []
+
+  function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    const call = getCallFromExpr(expr)
+    if (!call) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const callPath = getCallPathFromExpr(expr, pathPrefix)
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isExtrude(calleeName)) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const toArg = findToArg(call)
+    const inner = toArg ? getCallFromExpr(toArg) : null
+    if (!inner) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const innerCallee = (inner.callee as { name?: { name?: string } })?.name
+      ?.name
+    if (
+      !innerCallee ||
+      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+    ) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+
+    const innerStart = Number((inner as { start?: number }).start ?? 0)
+    const innerEnd = Number((inner as { end?: number }).end ?? 0)
+    const innerModuleId = (inner as { module_id?: number }).module_id ?? 0
+    const meta = edgeRefactorMetadata.find((m) =>
+      sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
+    )
+    const moduleId = (call as { module_id?: number }).module_id ?? 0
+    const callStart = Number((call as { start?: number }).start ?? 0)
+    const callEnd = Number((call as { end?: number }).end ?? 0)
+    if (meta) {
+      results.push({
+        range: [callStart, callEnd, moduleId],
+        faceIds: [meta.faceIds[0], meta.faceIds[1]],
+        pathToCall: callPath,
+      })
+    } else {
+      const metaIndex = edgeRefactorMetadata.findIndex((m) => {
+        const ids = isArray(m.faceIds)
+          ? m.faceIds
+          : (m as { faceIds?: unknown[] }).faceIds
+        return Boolean(ids && ids.length >= 2)
+      })
+      if (metaIndex >= 0 && callPath?.length) {
+        const metadata = edgeRefactorMetadata[metaIndex]
+        const faceIds = isArray(metadata.faceIds)
+          ? ([metadata.faceIds[0], metadata.faceIds[1]] as [string, string])
+          : ([
+              (metadata as { faceIds?: string[] }).faceIds?.[0],
+              (metadata as { faceIds?: string[] }).faceIds?.[1],
+            ].filter(Boolean) as [string, string])
+        if (faceIds.length === 2) {
+          candidates.push({
+            range: [callStart, callEnd, moduleId],
+            faceIds,
+            metaIndex,
+            pathToCall: callPath,
+          })
+        }
+      }
+    }
+    walkExpr(expr, pathPrefix)
+  }
+
+  function walkExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    if (!expr || typeof expr !== 'object') return
+    const objectValue = expr as Record<string, unknown>
+    if (
+      objectValue.type === 'CallExpressionKw' ||
+      objectValue.CallExpressionKw
+    ) {
+      const call = getCallFromExpr(expr)
+      if (call?.arguments) {
+        for (const arg of call.arguments) visitExpr(arg.arg, pathPrefix)
+      }
+      return
+    }
+    if (objectValue.type === 'BinaryExpression') {
+      if ((expr as { left?: Expr }).left)
+        walkExpr((expr as { left: Expr }).left, pathPrefix)
+      if ((expr as { right?: Expr }).right)
+        walkExpr((expr as { right: Expr }).right, pathPrefix)
+      return
+    }
+    if (objectValue.type === 'ArrayExpression') {
+      for (const element of (expr as { elements?: Expr[] }).elements ?? []) {
+        walkExpr(element, pathPrefix)
+      }
+      return
+    }
+    if (objectValue.type === 'ObjectExpression') {
+      for (const property of (expr as { properties?: { value: Expr }[] })
+        .properties ?? []) {
+        walkExpr(property.value, pathPrefix)
+      }
+      return
+    }
+    if (objectValue.type === 'LabelledExpression') {
+      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
+    } else if (objectValue.type === 'AscribedExpression') {
+      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
+    } else if (objectValue.type === 'UnaryExpression') {
+      walkExpr((expr as { argument: Expr }).argument, pathPrefix)
+    } else if (objectValue.type === 'MemberExpression') {
+      walkExpr((expr as { object: Expr }).object, pathPrefix)
+      walkExpr((expr as { property: Expr }).property, pathPrefix)
+    }
+  }
+
+  const body = program.body ?? []
+  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
+    const item = body[statementIndex] as {
+      type?: string
+      declaration?: { init?: Expr }
+      expression?: Expr
+    }
+    const pathPrefix: PathToNode = [
+      ['body', ''],
+      [statementIndex, 'index'],
+    ]
+    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
+      visitExpr(item.declaration.init, [
+        ...pathPrefix,
+        ['declaration', 'VariableDeclaration'],
+        ['init', ''],
+      ])
+    } else if (item.type === 'ExpressionStatement' && item.expression) {
+      visitExpr(item.expression, [
+        ...pathPrefix,
+        ['expression', 'ExpressionStatement'],
+      ])
+    }
+  }
+
+  if (results.length === 0 && candidates.length > 0) {
+    const used = new Set<number>()
+    for (const candidate of candidates) {
+      if (used.has(candidate.metaIndex)) continue
+      used.add(candidate.metaIndex)
+      results.push({
+        range: candidate.range,
+        faceIds: candidate.faceIds,
+        pathToCall: candidate.pathToCall,
+      })
+      break
+    }
+  }
+
+  return results
+}
+
+function refactorRevolveHelixAxisToEdgeRefInPlace(
+  modifiedAst: Node<Program>,
+  toFix: RevolveHelixCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+  for (let index = 0; index < toFix.length; index++) {
+    const { faceIds, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    const result = createEdgeRefObjectExpression(
+      { side_faces: faceIds },
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+    modifiedAst = result.modifiedAst
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => (a.label as { name?: string })?.name !== 'axis'
+    )
+    newArgs.push(createLabeledArg('axis', result.expr))
+    callNode.arguments = newArgs
+  }
+  return modifiedAst
+}
+
+function refactorExtrudeToToEdgeSpecifierInPlace(
+  modifiedAst: Node<Program>,
+  toFix: ExtrudeToCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+  for (let index = 0; index < toFix.length; index++) {
+    const { faceIds, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    const result = createEdgeRefObjectExpression(
+      { side_faces: faceIds },
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+    modifiedAst = result.modifiedAst
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => (a.label as { name?: string })?.name !== 'to'
+    )
+    newArgs.push(createLabeledArg('to', result.expr))
+    callNode.arguments = newArgs
+  }
+  return modifiedAst
+}
+
+export function refactorZ0006Unified(
+  ast: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const toFixFilletChamfer = findFilletChamferCallsToFixUnified(
+    ast,
+    edgeRefactorMetadata,
+    directTagFilletMetadata
+  )
+  const toFixRevolveHelix = findRevolveHelixCallsToFix(
+    ast,
+    edgeRefactorMetadata
+  )
+  const toFixExtrudeTo = findExtrudeToCallsToFix(ast, edgeRefactorMetadata)
+  if (
+    toFixFilletChamfer.length === 0 &&
+    toFixRevolveHelix.length === 0 &&
+    toFixExtrudeTo.length === 0
+  ) {
+    return new Error('No Z0006 fixes to apply')
+  }
+
+  let modifiedAst = structuredClone(ast) as Node<Program>
+
+  for (const {
+    range,
+    orderedFaceIds,
+    hasExistingEdgeRefs,
+    tagsBaseExpr,
+  } of toFixFilletChamfer) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const faceIds of orderedFaceIds) {
+      const result = createEdgeRefObjectExpression(
+        { side_faces: faceIds },
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        undefined,
+        undefined,
+        tagsBaseExpr
+      )
+      if (err(result)) continue
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    if (hasExistingEdgeRefs) {
+      edgeRefExprs.push(...getExistingEdgeRefsFromCall(callNode))
+    }
+    if (edgeRefExprs.length === 0) continue
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) =>
+        (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edges' &&
+        (a.label as { name?: string })?.name !== 'edgeRefs'
+    )
+    newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
+    callNode.arguments = newArgs
+  }
+
+  modifiedAst = refactorRevolveHelixAxisToEdgeRefInPlace(
+    modifiedAst,
+    toFixRevolveHelix,
+    toFixRevolveHelix.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorExtrudeToToEdgeSpecifierInPlace(
+    modifiedAst,
+    toFixExtrudeTo,
+    toFixExtrudeTo.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+function callSourceRangeToTuple(
+  callSourceRange: DirectTagFilletMeta['callSourceRange']
+): [number, number, number] {
+  if (isArray(callSourceRange)) {
+    return [
+      Number(callSourceRange[0]),
+      Number(callSourceRange[1]),
+      Number((callSourceRange as [number, number, number])[2] ?? 0),
+    ]
+  }
+  const sourceRange = callSourceRange as {
+    start?: number
+    end?: number
+    moduleId?: number
+  }
+  return [
+    Number(sourceRange.start ?? 0),
+    Number(sourceRange.end ?? 0),
+    Number(sourceRange.moduleId ?? 0),
+  ]
+}
+
+export function refactorDirectTagFilletToEdgeRefs(
+  ast: Node<Program>,
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  if (!directTagFilletMetadata?.length) {
+    return new Error('No direct tag fillet metadata')
+  }
+
+  let modifiedAst = structuredClone(ast)
+  for (const meta of directTagFilletMetadata) {
+    if (!meta.tags?.length) continue
+    const path = getNodePathFromSourceRange(
+      modifiedAst,
+      callSourceRangeToTuple(meta.callSourceRange)
+    )
+    const edgeRefExprs: Expr[] = []
+    for (const tagEntry of meta.tags) {
+      const result = createEdgeRefObjectExpression(
+        { side_faces: tagEntry.faceIds },
+        wasmInstance,
+        modifiedAst,
+        artifactGraph
+      )
+      if (err(result)) continue
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    if (edgeRefExprs.length === 0) continue
+
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const tagsIndex = callNode.arguments?.findIndex(
+      (a) => (a.label as { name?: string })?.name === 'tags'
+    )
+    if (tagsIndex === undefined || tagsIndex < 0) continue
+    callNode.arguments[tagsIndex] = createLabeledArg(
+      'edges',
+      createArrayExpression(edgeRefExprs)
+    )
+  }
+
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+function faceRefToArtifactId(v: OpKclValue): string | null {
+  if (v.type === 'Uuid' && v.value) return v.value
+  if (v.type === 'TagIdentifier' && v.artifact_id) {
+    return v.artifact_id
+  }
+  return null
+}
+
+function findEdgeArtifactFromFaceIds(
+  faceIds: string[],
+  artifactGraph: ArtifactGraph
+): Artifact | null {
+  if (faceIds.length === 0) return null
+  const faceArtifacts: Artifact[] = []
+  for (const id of faceIds) {
+    const artifact = artifactGraph.get(id)
+    if (artifact) faceArtifacts.push(artifact)
+  }
+  if (faceArtifacts.length === 0) return null
+
+  const edgeType = (
+    artifact: Artifact
+  ): artifact is Artifact & { type: 'segment' | 'edgeCut' } =>
+    artifact.type === 'segment' || artifact.type === 'edgeCut'
+  const directEdge = faceArtifacts.find(edgeType)
+  if (directEdge) return directEdge
+
+  const faceIdSet = new Set(faceIds)
+  for (const [, artifact] of artifactGraph) {
+    if (artifact.type !== 'segment') continue
+    const commonIds = (artifact as { commonSurfaceIds?: string[] })
+      .commonSurfaceIds
+    if (!commonIds?.length) continue
+    const commonIdSet = new Set(commonIds)
+    if (
+      faceIdSet.size === commonIdSet.size &&
+      [...faceIdSet].every((id) => commonIdSet.has(id))
+    ) {
+      return artifact
+    }
+  }
+
+  return null
+}
+
+export function retrieveEdgeSelectionsFromEdgeRefs(
+  edgeRefsArg: OpArg,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  if (edgeRefsArg.value.type !== 'Array') {
+    return new Error('edges argument is not an array')
+  }
+
+  const graphSelections: Selection[] = []
+  for (const item of edgeRefsArg.value.value) {
+    if (item.type !== 'Object' || !item.value) continue
+    const facesProp = (item.value.sideFaces ?? item.value.side_faces) as
+      | OpKclValue
+      | undefined
+    if (!facesProp || facesProp.type !== 'Array') continue
+    const faceIds = facesProp.value
+      .map(faceRefToArtifactId)
+      .filter((id): id is string => Boolean(id))
+    if (faceIds.length < 2) continue
+
+    const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
+    if (!edgeArtifact) continue
+    const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
+    if (!codeRefs?.length) continue
+    graphSelections.push({
+      artifact: edgeArtifact,
+      codeRef: codeRefs[0],
+    })
+  }
+
+  return { graphSelections, otherSelections: [] }
+}
+
+export function retrieveEdgeSelectionsFromSingleEdgeRef(
+  edgeRefArg: OpArg,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
+    return new Error('edgeRef argument is not an object')
+  }
+
+  const facesProp = (edgeRefArg.value.value.sideFaces ??
+    edgeRefArg.value.value.side_faces) as OpKclValue | undefined
+  if (!facesProp || facesProp.type !== 'Array') {
+    return new Error('edgeRef has no sideFaces array')
+  }
+
+  const faceIds = facesProp.value
+    .map(faceRefToArtifactId)
+    .filter((id): id is string => Boolean(id))
+  if (faceIds.length < 2) {
+    return new Error('edgeRef sideFaces array needs at least 2 faces')
+  }
+
+  const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
+  if (!edgeArtifact) {
+    return new Error('Could not find edge from faces in artifact graph')
+  }
+  const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
+  if (!codeRefs?.length) {
+    return new Error('Edge artifact has no codeRef')
+  }
+
+  return {
+    graphSelections: [
+      {
+        artifact: edgeArtifact,
+        codeRef: codeRefs[0],
+      },
+    ],
+    otherSelections: [],
+  }
 }
 
 // Delete Edge Treatment

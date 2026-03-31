@@ -223,6 +223,15 @@ description: Artifact commands face_api_fillet_chamfer_tags_and_edge_refs.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
         "edges_references": [
@@ -429,6 +438,15 @@ description: Artifact commands face_api_fillet_chamfer_tags_and_edge_refs.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }

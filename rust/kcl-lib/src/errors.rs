@@ -23,6 +23,8 @@ use crate::execution::DefaultPlanes;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::Operation;
 #[cfg(feature = "artifact-graph")]
+use crate::execution::RefactorMetadata;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Number;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Object;
@@ -204,6 +206,8 @@ pub struct KclErrorWithOutputs {
     #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    #[cfg(feature = "artifact-graph")]
+    pub refactor_metadata: Vec<RefactorMetadata>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -222,6 +226,7 @@ impl KclErrorWithOutputs {
         #[cfg(feature = "artifact-graph")] scene_objects: Vec<Object>,
         #[cfg(feature = "artifact-graph")] source_range_to_object: BTreeMap<SourceRange, ObjectId>,
         #[cfg(feature = "artifact-graph")] var_solutions: Vec<(SourceRange, Number)>,
+        #[cfg(feature = "artifact-graph")] refactor_metadata: Vec<RefactorMetadata>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -242,6 +247,8 @@ impl KclErrorWithOutputs {
             source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions,
+            #[cfg(feature = "artifact-graph")]
+            refactor_metadata,
             scene_graph: Default::default(),
             filenames,
             source_files,
@@ -265,6 +272,8 @@ impl KclErrorWithOutputs {
             source_range_to_object: Default::default(),
             #[cfg(feature = "artifact-graph")]
             var_solutions: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            refactor_metadata: Default::default(),
             scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
