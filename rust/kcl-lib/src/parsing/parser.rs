@@ -97,6 +97,8 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
@@ -134,15 +136,25 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
         return (None, ctxt.errors).into();
     }
 
-    let result = match program.parse(i) {
-        Ok(result) => Some(result),
+    let ast = match program.parse(i) {
+        Ok(ast) => Some(ast),
         Err(e) => {
             ParseContext::err(error_from_winnow_error(e));
             None
         }
     };
+    #[cfg(feature = "artifact-graph")]
+    let ast = {
+        let mut ast = ast;
+        if let Some(ast) = &mut ast {
+            // Fill in NodePath on every AST node. We do this in the parser so
+            // that an AST never exists without NodePaths.
+            fill_node_paths(ast);
+        }
+        ast
+    };
     let ctxt = ParseContext::take();
-    (result, ctxt.errors).into()
+    (ast, ctxt.errors).into()
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
