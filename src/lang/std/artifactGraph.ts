@@ -29,7 +29,7 @@ import type {
 } from '@src/lang/wasm'
 /** Legacy shape for sweep-edge-like artifact (sweepEdge removed from artifact graph). */
 type SweepEdgeLike = { segId: string; sweepId?: string }
-/** Resolved graph selection (artifact + codeRef). SelectionV2 resolved via resolveSelectionV2. */
+/** Resolved graph selection (artifact + codeRef). SelectionV2 resolved via resolveToCodeRef. */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
 
@@ -664,17 +664,6 @@ function getPlaneFromWall(
 ): PlaneArtifact | WallArtifact | CapArtifact | Error {
   const sweep = getArtifactOfTypes(
     { key: wall.sweepId, types: ['sweep'] },
-    graph
-  )
-  if (err(sweep)) return sweep
-  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
-  if (err(path)) return path
-  return getPlaneFromPath(path, graph)
-}
-function _getPlaneFromSweepEdge(edge: SweepEdgeLike, graph: ArtifactGraph) {
-  if (edge.sweepId == null) return new Error('SweepEdgeLike has no sweepId')
-  const sweep = getArtifactOfTypes(
-    { key: edge.sweepId, types: ['sweep'] },
     graph
   )
   if (err(sweep)) return sweep

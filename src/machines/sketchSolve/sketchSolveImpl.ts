@@ -22,7 +22,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { resolveSelectionV2 } from '@src/lang/queryAst'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -1104,7 +1104,7 @@ export function isSketchBlockSelected(
 ): boolean {
   const first = selectionRanges.graphSelections[0]
   if (!first) return false
-  const resolved = resolveSelectionV2(first, artifactGraph)
+  const resolved = resolveToCodeRef(first, artifactGraph)
   const artifact = resolved?.artifact
   return (
     artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'

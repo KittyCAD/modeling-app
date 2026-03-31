@@ -100,17 +100,6 @@ export const ConnectionStream = (props: {
   const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> =
     useCallback(
       (e) => {
-        const log = (msg: string, data?: object) => {
-          const line = data ? `${msg} ${JSON.stringify(data)}` : msg
-          console.warn(`[double-click-edit] ${line}`)
-          if (
-            typeof window !== 'undefined' &&
-            (window as any).__doubleClickEditLog
-          ) {
-            ;(window as any).__doubleClickEditLog.push(line)
-          }
-        }
-        log('onDoubleClick fired')
         if (
           !isNetworkOkay ||
           !videoRef.current ||
@@ -118,23 +107,13 @@ export const ConnectionStream = (props: {
           sceneInfra.camControls.wasDragging === true ||
           !btnName(e.nativeEvent).left
         ) {
-          log('early return', {
-            isNetworkOkay,
-            hasVideoRef: !!videoRef.current,
-            matchesSketch: modelingMachineState.matches('Sketch'),
-            wasDragging: sceneInfra.camControls.wasDragging,
-            left: btnName(e.nativeEvent).left,
-          })
           return
         }
-
-        log('Sending query_entity_type_with_point')
         sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         })
           .then((result) => {
             if (!result) {
-              log('No result from query_entity_type_with_point')
               return
             }
             // Support both legacy entity_id and Face API reference response
@@ -186,10 +165,6 @@ export const ConnectionStream = (props: {
               }
             }
             if (!entityId) {
-              log('No entityId from result', {
-                keys: Object.keys(result),
-                hasReference: !!(result as { reference?: unknown }).reference,
-              })
               return
             }
             const artifactResult = getArtifactOfTypes(
@@ -200,10 +175,6 @@ export const ConnectionStream = (props: {
               kclManager.artifactGraph
             )
             if (err(artifactResult)) {
-              log('getArtifactOfTypes failed', {
-                error: String(artifactResult),
-                entityId,
-              })
               return artifactResult
             }
             const artifact = artifactResult
@@ -232,18 +203,9 @@ export const ConnectionStream = (props: {
               entityId,
               kclManager.artifactGraph
             )?.[0]
-            log('Setting selection and Enter sketch')
-            sceneInfra.modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: { entityRef, codeRef },
-              },
-            })
             sceneInfra.modelingSend({ type: 'Enter sketch' })
           })
           .catch((e) => {
-            log('Query/reason failed', { err: String(e) })
             reportRejection(e)
           })
       },

@@ -683,9 +683,9 @@ const OperationItem = ({
             if (applied) {
               const nextOp =
                 systemDeps.kclManager.lastSuccessfulOperations.find(
-                  (o: Operation) =>
-                    o.type === 'StdLibCall' &&
-                    (o as { name?: string }).name === op.name
+                  (candidate: Operation) =>
+                    candidate.type === 'StdLibCall' &&
+                    (candidate as { name?: string }).name === op.name
                 )
               if (nextOp) {
                 operationToEdit = nextOp as typeof item

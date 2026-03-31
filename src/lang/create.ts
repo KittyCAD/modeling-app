@@ -145,26 +145,6 @@ export function createName(path: [string], name: string): Node<Name> {
   }
 }
 
-/** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
-export function createMemberExpression(
-  parent: string | Expr,
-  propertyName: string
-): Node<MemberExpression> {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-
-    object: typeof parent === 'string' ? createLocalName(parent) : parent,
-    property: createLocalName(propertyName),
-    computed: false,
-  }
-}
-
 export function createPipeSubstitution(): Node<PipeSubstitution> {
   return {
     type: 'PipeSubstitution',
@@ -419,4 +399,24 @@ export function findUniqueName(
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
   return { label: createIdentifier(label), arg, type: 'LabeledArg' }
+}
+
+/** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
+export function createMemberExpression(
+  parent: string | Expr,
+  propertyName: string
+): Node<MemberExpression> {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+
+    object: typeof parent === 'string' ? createLocalName(parent) : parent,
+    property: createLocalName(propertyName),
+    computed: false,
+  }
 }

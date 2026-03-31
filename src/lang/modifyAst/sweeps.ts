@@ -24,7 +24,7 @@ import {
   artifactToEntityRef,
   getNodeFromPath,
   getVariableExprsFromSelection,
-  resolveSelectionV2,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -126,11 +126,11 @@ export function addExtrude({
     pathIfPipe?: PathToNode
   } = { exprs: [] }
   const faceSelections = normalizedSketches.graphSelections.filter((s) => {
-    const r = resolveSelectionV2(s, artifactGraph)
+    const r = resolveToCodeRef(s, artifactGraph)
     return r?.artifact != null && isFaceArtifact(r.artifact)
   })
   for (const faceSel of faceSelections) {
-    const resolved = resolveSelectionV2(faceSel, artifactGraph)
+    const resolved = resolveToCodeRef(faceSel, artifactGraph)
     if (!resolved) continue
     const res = modifyAstWithTagsForSelection(
       modifiedAst,
@@ -148,7 +148,7 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: normalizedSketches.graphSelections.filter((s) => {
-      const r = resolveSelectionV2(s, artifactGraph)
+      const r = resolveToCodeRef(s, artifactGraph)
       return !r?.artifact || !isFaceArtifact(r.artifact)
     }),
     otherSelections: normalizedSketches.otherSelections,
@@ -208,7 +208,7 @@ export function addExtrude({
     if (to.graphSelections.length !== 1) {
       return new Error('Extrude "to" argument must have exactly one selection.')
     }
-    const toResolved = resolveSelectionV2(to.graphSelections[0], artifactGraph)
+    const toResolved = resolveToCodeRef(to.graphSelections[0], artifactGraph)
     if (!toResolved) return new Error('Could not resolve "to" selection.')
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
@@ -402,10 +402,7 @@ export function addSweep({
 
   // Find the path declaration for the labeled argument
   // TODO: see if we can replace this with `getVariableExprsFromSelection`
-  const pathResolved = resolveSelectionV2(
-    path.graphSelections[0],
-    artifactGraph
-  )
+  const pathResolved = resolveToCodeRef(path.graphSelections[0], artifactGraph)
   if (!pathResolved?.codeRef)
     return new Error('Could not resolve path selection.')
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
@@ -634,7 +631,7 @@ export function addRevolve({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  // V2 command bar picks (entity refs) need to be normalized into graphSelections,
+  // Entity refs need to be normalized into graphSelections,
   // otherwise revolve() can be generated without its required first positional arg.
   // TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
   // and replace it with a different selection shape, so normalising to `graphSelections` is going to mean more refactoring
@@ -720,7 +717,7 @@ export function addRevolve({
       const payload = entityReferenceToEdgeRefPayload(entityRef)
       const originalEdgeSelection =
         edge.graphSelections[0] != null
-          ? resolveSelectionV2(edge.graphSelections[0], artifactGraph)
+          ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)
           : undefined
       // Note: fallbackCodeRef removed - Solid2dEdge should use legacy path, not edgeRefs
       const edgeRefResult = createEdgeRefObjectExpression(
@@ -742,7 +739,7 @@ export function addRevolve({
     if (firstEdgeSel?.entityRef?.type === 'edge') {
       const entityRef = firstEdgeSel.entityRef
       const payload = entityReferenceToEdgeRefPayload(entityRef)
-      const originalEdgeSelection = resolveSelectionV2(
+      const originalEdgeSelection = resolveToCodeRef(
         firstEdgeSel,
         artifactGraph
       )
@@ -907,15 +904,15 @@ export function getAxisExpressionAndIndex(
   artifactGraph?: ArtifactGraph
 ) {
   if (edge) {
-    const edgeResolved = resolveSelectionV2(
+    const edgeResolved = resolveToCodeRef(
       edge.graphSelections[0],
       artifactGraph
     )
     let axisSelection =
       edge?.graphSelections[0] != null
-        ? resolveSelectionV2(edge.graphSelections[0], artifactGraph)?.artifact
+        ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
         : undefined
-    // Fallback: resolveSelectionV2 returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
+    // Fallback: resolveToCodeRef returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
     // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
     const axisSelectionAny = axisSelection as any
     if (
@@ -923,10 +920,7 @@ export function getAxisExpressionAndIndex(
       edge?.graphSelections[0] != null &&
       artifactGraph
     ) {
-      const resolved = resolveSelectionV2(
-        edge.graphSelections[0],
-        artifactGraph
-      )
+      const resolved = resolveToCodeRef(edge.graphSelections[0], artifactGraph)
       if (resolved?.codeRef) {
         const byRange = getArtifactFromRange(
           resolved.codeRef.range,

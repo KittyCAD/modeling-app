@@ -22,7 +22,7 @@ import {
   getEdgeCutMeta,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
-  resolveSelectionV2,
+  resolveToCodeRef,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -749,7 +749,7 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
   const hasFaceToOffset = plane.graphSelections.some((sel) => {
-    const resolved = resolveSelectionV2(sel, artifactGraph)
+    const resolved = resolveToCodeRef(sel, artifactGraph)
     const t = resolved?.artifact?.type
     return t === 'cap' || t === 'wall' || t === 'edgeCut'
   })
@@ -890,7 +890,7 @@ export function getFacesExprsFromSelection(
   wasmInstance: ModuleType
 ) {
   return faces.graphSelections.flatMap((v2Sel) => {
-    const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+    const resolved = resolveToCodeRef(v2Sel, artifactGraph)
     if (!resolved?.artifact) {
       console.warn('No artifact found for face', v2Sel)
       return []
@@ -988,7 +988,7 @@ export function retrieveFaceSelectionsFromOpArgs(
   // Collect sweep IDs from all solids (shell can have multiple solids e.g. [thing1, thing2])
   const sweepIdsSet = new Set<string>()
   for (const sel of solids.graphSelections) {
-    const resolved = resolveSelectionV2(sel, artifactGraph)
+    const resolved = resolveToCodeRef(sel, artifactGraph)
     const artifact = resolved?.artifact
     if (artifact?.type === 'sweep') {
       sweepIdsSet.add(artifact.id)

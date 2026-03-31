@@ -10,7 +10,7 @@ import {
   artifactToEntityRef,
   getNodeFromPath,
   isLinesParallelAndConstrained,
-  resolveSelectionV2,
+  resolveToCodeRef,
 } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
@@ -57,11 +57,11 @@ export function intersectInfo({
     }
   }
 
-  const primaryResolved = resolveSelectionV2(
+  const primaryResolved = resolveToCodeRef(
     selectionRanges.graphSelections[0],
     kclManager.artifactGraph
   )
-  const secondaryResolved = resolveSelectionV2(
+  const secondaryResolved = resolveToCodeRef(
     selectionRanges.graphSelections[1],
     kclManager.artifactGraph
   )
@@ -170,7 +170,7 @@ export function intersectInfo({
   )
 
   const forcedResolved = _forcedSelectionRanges?.graphSelections?.[1]
-    ? resolveSelectionV2(
+    ? resolveToCodeRef(
         _forcedSelectionRanges.graphSelections[1],
         kclManager.artifactGraph
       )

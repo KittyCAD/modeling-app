@@ -14,7 +14,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getVariableExprsFromSelection,
-  resolveSelectionV2,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
@@ -463,7 +463,7 @@ export function addHide({
   // 2. Prepare unlabeled arguments
   const firstResolved =
     objects.graphSelections[0] != null
-      ? resolveSelectionV2(objects.graphSelections[0], artifactGraph)
+      ? resolveToCodeRef(objects.graphSelections[0], artifactGraph)
       : null
   const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(

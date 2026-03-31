@@ -16,11 +16,7 @@ import {
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getCapForPathId } from '@src/lang/std/artifactGraph'
-import {
-  resolveSelectionV2,
-  traverse,
-  valueOrVariable,
-} from '@src/lang/queryAst'
+import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -79,7 +75,7 @@ export function addFlatnessGdt({
   // Filter to only include face selections (resolve V2 to get artifact).
   // When the engine returns a path id for a cap face (edit flow), resolve path → cap.
   const resolved = faces.graphSelections.map((selV2) => {
-    const r = resolveSelectionV2(selV2, artifactGraph)
+    const r = resolveToCodeRef(selV2, artifactGraph)
     if (!r?.artifact) return r
     if (r.artifact.type === 'path') {
       const cap = getCapForPathId(r.artifact.id, artifactGraph)
@@ -265,7 +261,7 @@ export function addDatumGdt({
 
   // Filter to only include face selections (resolve V2 to get artifact)
   const faceSelections = faces.graphSelections
-    .map((selV2) => resolveSelectionV2(selV2, artifactGraph))
+    .map((selV2) => resolveToCodeRef(selV2, artifactGraph))
     .filter(
       (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)
     )

@@ -86,7 +86,7 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
+import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -1579,7 +1579,7 @@ export function codeToIdSelections(
         return []
       }
 
-      const resolved = resolveSelectionV2(selection, artifactGraph)
+      const resolved = resolveToCodeRef(selection, artifactGraph)
       if (resolved?.artifact?.id) {
         return [createSelectionToEngine(selection, resolved.artifact.id)]
       }
@@ -1753,9 +1753,7 @@ export function updateSelections(
     .map(([index, pathToNode]): Selection | undefined => {
       const previousV2 = prevSelectionRanges.graphSelections[Number(index)]
       const previousResolved =
-        previousV2 != null
-          ? resolveSelectionV2(previousV2, artifactGraph)
-          : null
+        previousV2 != null ? resolveToCodeRef(previousV2, artifactGraph) : null
       const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node

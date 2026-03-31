@@ -2,7 +2,7 @@ import type {
   SourceRange as ApiSourceRange,
   SourceRangePrompt,
 } from '@kittycad/lib'
-import { resolveSelectionV2 } from '@src/lang/queryAst'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import { parentPathRelativeToProject } from '@src/lib/paths'
@@ -106,7 +106,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   // Handle manual code selections and artifact selections differently
   const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
     (selV2) => {
-      const selection = resolveSelectionV2(selV2, artifactGraph)
+      const selection = resolveToCodeRef(selV2, artifactGraph)
       const artifact = selection?.artifact
       const execStateFileNamesIndex = selV2?.codeRef?.range?.[2]
       const file =

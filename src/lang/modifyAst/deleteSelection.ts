@@ -7,7 +7,7 @@ import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
-import { resolveSelectionV2 } from '@src/lang/queryAst'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -28,7 +28,7 @@ export async function deleteSelectionPromise({
   }
 }): Promise<Error | undefined> {
   const ast = systemDeps.kclManager.ast
-  const resolvedSelection = resolveSelectionV2(
+  const resolvedSelection = resolveToCodeRef(
     selection,
     systemDeps.kclManager.artifactGraph
   )

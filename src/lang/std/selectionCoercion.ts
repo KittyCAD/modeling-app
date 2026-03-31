@@ -1,4 +1,4 @@
-import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
+import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import {
   getArtifactFromRange,
@@ -30,7 +30,7 @@ export function coerceSelectionsToBody(
   const seenBodyIds = new Set<string>()
 
   for (const selV2 of selections.graphSelections) {
-    const resolvedSelection = resolveSelectionV2(selV2, artifactGraph)
+    const resolvedSelection = resolveToCodeRef(selV2, artifactGraph)
     const selection = resolvedSelection
       ? !resolvedSelection.artifact && resolvedSelection.codeRef.range
         ? {

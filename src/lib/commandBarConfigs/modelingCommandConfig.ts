@@ -1623,21 +1623,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           })),
         })
       }
-      // Trace: command bar validateArguments → Fillet.reviewValidation → addFillet (src/lang/modifyAst/edges.ts)
-      console.info(
-        '[Fillet reviewValidation] about to call addFillet codemod',
-        {
-          graphSelections: sel?.graphSelections?.length ?? 0,
-          otherSelections: sel?.otherSelections?.length ?? 0,
-          topologyNormalized: g0
-            ? getEngineTopologyFallbackNormalized(g0)
-            : null,
-          topologyRaw: g0?.engineTopologyFallback ?? null,
-          topologyRawSnake:
-            (g0 as { engine_topology_fallback?: unknown })
-              .engine_topology_fallback ?? null,
-        }
-      )
       const modRes = addFillet({
         ...filletArgs,
         selection: sel,
@@ -1652,9 +1637,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         )
         return modRes
       }
-      console.info(
-        '[Fillet reviewValidation] addFillet ok, running mockExecAstAndReportErrors'
-      )
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext

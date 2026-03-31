@@ -16,7 +16,7 @@ import {
 import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
-  resolveSelectionV2,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -102,7 +102,7 @@ export function addHelix({
         return new Error('Expected helix axis edgeRef to be an edge entityRef')
       }
       const payload = entityReferenceToEdgeRefPayload(entityRef)
-      const originalEdgeSelection = resolveSelectionV2(
+      const originalEdgeSelection = resolveToCodeRef(
         edge.graphSelections[0],
         artifactGraph
       )

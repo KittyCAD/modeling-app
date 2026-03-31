@@ -148,9 +148,7 @@ function DisplayObj({
         const entityRef = artifactToEntityRef(
           artifact.type,
           artifact.id,
-          artifact.type === 'segment'
-            ? (artifact as { pathId: string }).pathId
-            : undefined
+          artifact.type === 'segment' ? artifact.pathId : undefined
         )
         send({
           type: 'Set selection',

@@ -26,7 +26,7 @@ import {
   isNodeSafeToReplace,
   isOffsetPlane,
   retrieveSelectionsFromOpArg,
-  resolveSelectionV2,
+  resolveToCodeRef,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1312,7 +1312,7 @@ extrude001 = extrude(profile001, length = 1)
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(1)
     const selection = selections.graphSelections[0]
-    const resolved = resolveSelectionV2(selection, artifactGraph)
+    const resolved = resolveToCodeRef(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
@@ -1344,7 +1344,7 @@ extrude002 = extrude(capEnd001, length = 5)
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(1)
     const selection = selections.graphSelections[0]
-    const resolved = resolveSelectionV2(selection, artifactGraph)
+    const resolved = resolveToCodeRef(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
@@ -1376,19 +1376,18 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(2)
     if (
-      !resolveSelectionV2(selections.graphSelections[0], artifactGraph)
+      !resolveToCodeRef(selections.graphSelections[0], artifactGraph)
         ?.artifact ||
-      !resolveSelectionV2(selections.graphSelections[1], artifactGraph)
-        ?.artifact
+      !resolveToCodeRef(selections.graphSelections[1], artifactGraph)?.artifact
     ) {
       throw new Error('Artifact not found in the selection')
     }
     expect(
-      resolveSelectionV2(selections.graphSelections[0], artifactGraph)?.artifact
+      resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
         ?.type
     ).toEqual('path')
     expect(
-      resolveSelectionV2(selections.graphSelections[1], artifactGraph)?.artifact
+      resolveToCodeRef(selections.graphSelections[1], artifactGraph)?.artifact
         ?.type
     ).toEqual('path')
   })
@@ -1421,7 +1420,7 @@ appearance(extrude001, color = '#FF0000')`
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(1)
     const selection = selections.graphSelections[0]
-    const resolved = resolveSelectionV2(selection, artifactGraph)
+    const resolved = resolveToCodeRef(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
@@ -1456,7 +1455,7 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
     if (err(selections)) throw selections
 
     expect(selections.graphSelections).toHaveLength(1)
-    const resolved = resolveSelectionV2(
+    const resolved = resolveToCodeRef(
       selections.graphSelections[0],
       artifactGraph
     )

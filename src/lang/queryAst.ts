@@ -686,7 +686,7 @@ export function artifactIsPlaneWithPaths(
 ) {
   if (selectionRanges.graphSelections.length === 0) return false
   const first = selectionRanges.graphSelections[0]
-  const resolved = resolveSelectionV2(first, artifactGraph)
+  const resolved = resolveToCodeRef(first, artifactGraph)
   if (!resolved?.artifact) return false
   const artifact = resolved.artifact
   return (
@@ -1126,7 +1126,11 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
   }
 }
 
-/** Compare two EntityReferences (e.g. for shift+multi-select). */
+/**
+ * Compare two EntityReferences (e.g. for shift+multi-select).
+ * We want to verify if the engine has sent the same entity reference payload, i.e. the user
+ * is trying to deselect something by clicking it a second time.
+ */
 function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
   if (a.type !== b.type) return false
   switch (a.type) {
@@ -1167,7 +1171,7 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
   }
 }
 
-/** Compare two SelectionV2s (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
+/** Compare two entityReferences (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
 export function selectionV2Equals(a: Selection, b: Selection): boolean {
   if (a.entityRef && b.entityRef)
     return entityRefEquals(a.entityRef, b.entityRef)
@@ -1177,8 +1181,8 @@ export function selectionV2Equals(a: Selection, b: Selection): boolean {
   return false
 }
 
-/** Resolve SelectionV2 to codeRef and optional artifact for use in getVariableExprsFromSelection */
-export function resolveSelectionV2(
+/** Resolve entityRef to codeRef and optional artifact for use in getVariableExprsFromSelection */
+export function resolveToCodeRef(
   s: Selection,
   artifactGraph: ArtifactGraph | undefined
 ): { codeRef: CodeRef; artifact?: Artifact } | null {
@@ -1281,7 +1285,7 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
-    const resolved = resolveSelectionV2(s, artifactGraph)
+    const resolved = resolveToCodeRef(s, artifactGraph)
     if (!resolved) continue
     const { codeRef, artifact } = resolved
 
@@ -1405,7 +1409,10 @@ export function getVariableExprsFromSelection(
 }
 
 /** Build EntityReference from artifact type and id when the type maps to an entity ref.
- * For segment, pass pathId as third argument so the ref includes path_id and segment_id. */
+ * For segment, pass pathId as third argument so the ref includes path_id and segment_id.
+ * Cannot be done for things like edges
+ * TODO verify where this is used and if it's needed, might want ot pull of the bandaid
+ */
 export function artifactToEntityRef(
   artifactType: Artifact['type'],
   artifactId: string,

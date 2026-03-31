@@ -30,7 +30,7 @@ import type { StdLibCallOp } from '@src/lang/queryAst'
 import {
   artifactToEntityRef,
   getEdgeCutMeta,
-  resolveSelectionV2,
+  resolveToCodeRef,
 } from '@src/lang/queryAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -1065,7 +1065,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       if (err(selections)) throw selections
 
       expect(selections.solids.graphSelections).toHaveLength(1)
-      const solidResolved = resolveSelectionV2(
+      const solidResolved = resolveToCodeRef(
         selections.solids.graphSelections[0],
         artifactGraph
       )
@@ -1075,7 +1075,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(solidResolved.artifact.type).toEqual('sweep')
 
       expect(selections.faces.graphSelections).toHaveLength(1)
-      const faceResolved = resolveSelectionV2(
+      const faceResolved = resolveToCodeRef(
         selections.faces.graphSelections[0],
         artifactGraph
       )
@@ -1116,20 +1116,20 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
 
       expect(selections.solids.graphSelections).toHaveLength(2)
       expect(
-        resolveSelectionV2(selections.solids.graphSelections[0], artifactGraph)
+        resolveToCodeRef(selections.solids.graphSelections[0], artifactGraph)
           ?.artifact?.id
       ).toEqual(lastTwoSweeps[0].id)
       expect(
-        resolveSelectionV2(selections.solids.graphSelections[1], artifactGraph)
+        resolveToCodeRef(selections.solids.graphSelections[1], artifactGraph)
           ?.artifact?.id
       ).toEqual(lastTwoSweeps[1].id)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(
-        resolveSelectionV2(selections.faces.graphSelections[0], artifactGraph)
+        resolveToCodeRef(selections.faces.graphSelections[0], artifactGraph)
           ?.artifact?.type
       ).toEqual('cap')
       expect(
-        resolveSelectionV2(selections.faces.graphSelections[1], artifactGraph)
+        resolveToCodeRef(selections.faces.graphSelections[1], artifactGraph)
           ?.artifact?.type
       ).toEqual('cap')
     })
@@ -1153,7 +1153,7 @@ plane002 = offsetPlane(plane001, offset = 2)`
       )
       if (err(selections)) throw selections
       expect(selections.graphSelections).toHaveLength(1)
-      const firstResolved = resolveSelectionV2(
+      const firstResolved = resolveToCodeRef(
         selections.graphSelections[0],
         artifactGraph
       )
@@ -1182,15 +1182,15 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
       expect(selections.graphSelections).toHaveLength(1)
       expect(
-        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
-          ?.artifact?.type
+        resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+          ?.type
       ).toEqual('cap')
       const cap = [...artifactGraph.values()].find(
         (a) => a.type === 'cap' && a.subType === 'end'
       )
       expect(
-        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
-          ?.artifact?.id
+        resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+          ?.id
       ).toEqual(cap!.id)
     })
 
@@ -1211,8 +1211,8 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
       expect(selections.graphSelections).toHaveLength(1)
       expect(
-        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
-          ?.artifact?.type
+        resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+          ?.type
       ).toEqual('edgeCut')
     })
   })

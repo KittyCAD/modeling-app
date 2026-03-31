@@ -138,7 +138,7 @@ import {
   getNodeFromPath,
   isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
-  resolveSelectionV2,
+  resolveToCodeRef,
   selectionV2Equals,
   traverse,
   stringifyPathToNode,
@@ -480,7 +480,7 @@ export const modelingMachine = setup({
       }
       const firstResolved =
         selectionRanges.graphSelections[0] != null
-          ? resolveSelectionV2(
+          ? resolveToCodeRef(
               selectionRanges.graphSelections[0],
               kclManager.artifactGraph
             )
@@ -3361,7 +3361,7 @@ export const modelingMachine = setup({
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const firstResolved = selectionRanges.graphSelections[0]
-          ? resolveSelectionV2(
+          ? resolveToCodeRef(
               selectionRanges.graphSelections[0],
               kclManager.artifactGraph
             )
@@ -4390,7 +4390,7 @@ export const modelingMachine = setup({
             return
           }
           const firstResolved = selectionRanges.graphSelections[0]
-            ? resolveSelectionV2(
+            ? resolveToCodeRef(
                 selectionRanges.graphSelections[0],
                 systemDeps.kclManager.artifactGraph
               )
@@ -7701,7 +7701,7 @@ export const modelingMachine = setup({
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
             const firstResolved = context.selectionRanges.graphSelections[0]
-              ? resolveSelectionV2(
+              ? resolveToCodeRef(
                   context.selectionRanges.graphSelections[0],
                   context.kclManager.artifactGraph
                 )

@@ -61,13 +61,20 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // Set camera position for optimal edge viewing (zoomed in for first revolve)
+    // Set camera so that we can select what we need to.
     await scene.moveCameraTo(
       { x: -25.47, y: -19, z: -11 },
       { x: -2.5, y: -3.7, z: -19.5 }
     )
 
     await test.step('First revolve: profile and edge using ratio clicks', async () => {
+      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
+        format: 'ratio',
+      })
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.1907, 0.3477, {
+        format: 'ratio',
+        steps: 5,
+      })
       // Base state object that we'll mutate as we progress
       const state: CmdBarSerialised = {
         commandName: 'Revolve',
@@ -82,14 +89,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         stage: 'arguments',
       }
 
-      // Click revolve tool
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state as CmdBarSerialised)
 
-      // Click profile using ratio clicks
-      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
-        format: 'ratio',
-      })
       await clickProfile()
 
       // Update state after profile selection
@@ -107,11 +109,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       state.highlightedHeaderArg = 'edge'
       await cmdBar.expectState(state)
 
-      // Click edge using ratio clicks
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.1907, 0.3477, {
-        format: 'ratio',
-        steps: 5,
-      })
+      // select edge
       await mv()
       await clickEdge()
 
@@ -143,9 +141,16 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     })
 
     await test.step('Second revolve: profile and edge using ratio clicks', async () => {
+      const [clickProfile2] = scene.makeMouseHelpers(0.3343, 0.375, {
+        format: 'ratio',
+      })
+      const [clickEdge2] = scene.makeMouseHelpers(0.6671, 0.6136, {
+        format: 'ratio',
+      })
       // Remove the first revolve so only one revolve remains in the code. Two revolves
       // in the same file currently trigger an order-dependent lint error; this step
       // still exercises edge selection for the second revolve. See order-dependent bug.
+      // TODO this might get resolved soon so check if we can skip this step
       const codeAfterFirst = await editor.getCurrentCode()
       const start = codeAfterFirst.indexOf('revolve001 = revolve(')
       if (start !== -1) {
@@ -189,9 +194,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click profile using ratio clicks
-      const [clickProfile2] = scene.makeMouseHelpers(0.3343, 0.375, {
-        format: 'ratio',
-      })
       await clickProfile2()
 
       // Update state after profile selection
@@ -210,9 +212,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click edge using ratio clicks
-      const [clickEdge2] = scene.makeMouseHelpers(0.6671, 0.6136, {
-        format: 'ratio',
-      })
       await clickEdge2()
 
       // Update state after edge selection
@@ -256,6 +255,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
+    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
+      format: 'ratio',
+    })
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, testCode)
@@ -270,9 +272,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     )
 
     // Click on the split edge using ratio clicks to select it first
-    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
-      format: 'ratio',
-    })
     await clickEdge()
 
     // Base state object that we'll mutate as we progress

@@ -100,7 +100,6 @@ export function modifyAstWithTagsForSelection(
 
   // TODO: Add handling for VERTEX selections
 
-  // Handle EDGE selections (segment only). EdgeCut is a face (chamfer/fillet produce a face), not an edge.
   if (selection.artifact.type === 'segment') {
     return modifyAstWithTagsForEdgeSelection(
       ast,
@@ -111,7 +110,7 @@ export function modifyAstWithTagsForSelection(
     )
   }
 
-  // Handle FACE selections (wall, cap, edgeCut). EdgeCut = chamfer/fillet face.
+  // Handle FACE selections
   if (
     selection.artifact.type === 'wall' ||
     selection.artifact.type === 'cap' ||
@@ -177,7 +176,7 @@ export function createTagExpressions(
     // Body Entities
     // ----------------------------------------
 
-    // Handle EDGE selections (segment only). EdgeCut is a face.
+    // Handle EDGE selections
     if (artifact.type === 'segment') {
       // Default: get common edge of 2 faces scenario
       if (!tagMethods || !tagMethods.includes('oppositeAndAdjacentEdges')) {
@@ -192,7 +191,7 @@ export function createTagExpressions(
       return createLocalName(tags[0])
     }
 
-    // Handle FACE selections (wall, cap, edgeCut)
+    // Handle FACE selections
     else if (
       artifact.type === 'wall' ||
       artifact.type === 'cap' ||
@@ -373,7 +372,7 @@ function modifyAstWithTagForFaceSelection(
       expr,
     }
   }
-  // CASE 2: Handle cap face - tag the extrusion/sweep (mutates ast in place)
+  // CASE 2: Handle cap face - tag the extrusion/sweep
   else if (selection.artifact.type === 'cap') {
     const result = modifyAstWithTagForCapFace(
       ast,
@@ -493,7 +492,7 @@ function modifyAstWithTagForWallFace(
  * Handles both start and end caps with appropriate tag names (tagEnd/tagStart).
  * Mutates `ast`; use instead of END/START so edit flows can resolve the face.
  *
- * @param ast AST to modify in place
+ * @param ast AST to modify
  * @param capFace Cap face artifact
  * @param artifactGraph Artifact graph
  * @returns Created or existing tag name
