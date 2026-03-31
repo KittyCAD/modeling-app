@@ -2,8 +2,6 @@
 #![allow(dead_code)]
 
 use std::collections::HashMap;
-use std::io::Write;
-use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -11,7 +9,6 @@ use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
-use sha2::Digest;
 use tokio::sync::RwLock;
 use tower_lsp::Client;
 use tower_lsp::LanguageServer;
@@ -195,8 +192,6 @@ pub struct Backend {
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
-    /// If we can send telemetry for this user.
-    pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
     pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
@@ -212,15 +207,8 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(fs),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(fs), zoo_client)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -228,15 +216,8 @@ impl Backend {
         client: Client,
         executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(), zoo_client)
     }
 
     fn with_file_manager(
@@ -244,7 +225,6 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
@@ -260,7 +240,6 @@ impl Backend {
             stdlib_args,
             kcl_keywords,
             zoo_client,
-            can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
             executor_ctx: Arc::new(RwLock::new(executor_ctx)),
             workspace_folders: Default::default(),
@@ -889,88 +868,6 @@ impl Backend {
         modifier
     }
 
-    pub async fn create_zip(&self) -> Result<Vec<u8>> {
-        // Collect all the file data we know.
-        let mut buf = vec![];
-        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for code in self.code_map.iter() {
-            let entry = code.key();
-            let value = code.value();
-            let file_name = entry.replace("file://", "").to_string();
-
-            let options = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-            zip.start_file(file_name, options)?;
-            zip.write_all(value)?;
-        }
-        // Apply the changes you've made.
-        // Dropping the `ZipWriter` will have the same effect, but may silently fail
-        zip.finish()?;
-
-        Ok(buf)
-    }
-
-    pub async fn send_telemetry(&self) -> Result<()> {
-        // Get information about the user.
-        let user = self
-            .zoo_client
-            .users()
-            .get_self()
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        // Hash the user's id.
-        // Create a SHA-256 object
-        let mut hasher = sha2::Sha256::new();
-        // Write input message
-        hasher.update(user.id);
-        // Read hash digest and consume hasher
-        let result = hasher.finalize();
-        // Get the hash as a string.
-        let user_id_hash = format!("{result:x}");
-
-        // Get the workspace folders.
-        // The key of the workspace folder is the project name.
-        let workspace_folders = self.workspace_folders().await;
-        let project_names: Vec<&str> = workspace_folders.iter().map(|v| v.name.as_str()).collect::<Vec<_>>();
-        // Get the first name.
-        let project_name = project_names
-            .first()
-            .ok_or_else(|| anyhow::anyhow!("no project names"))?
-            .to_string();
-
-        // Send the telemetry data.
-        self.zoo_client
-            .meta()
-            .create_event(
-                vec![kittycad::types::multipart::Attachment {
-                    // Clean the URI part.
-                    name: "attachment".to_string(),
-                    filepath: Some("attachment.zip".into()),
-                    content_type: Some("application/x-zip".to_string()),
-                    data: self.create_zip().await?,
-                }],
-                &kittycad::types::Event {
-                    // This gets generated server side so leave empty for now.
-                    attachment_uri: None,
-                    created_at: chrono::Utc::now(),
-                    event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
-                    last_compiled_at: Some(chrono::Utc::now()),
-                    // We do not have project descriptions yet.
-                    project_description: None,
-                    project_name,
-                    // The UUID for the Design Studio.
-                    // We can unwrap here because we know it will not panic.
-                    source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
-                    type_: kittycad::types::Type::ModelingAppEvent,
-                    user_id: user_id_hash,
-                },
-            )
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        Ok(())
-    }
-
     pub async fn update_can_execute(
         &self,
         params: custom_notifications::UpdateCanExecuteParams,
@@ -1142,31 +1039,6 @@ impl LanguageServer for Backend {
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
         self.do_did_close(params).await;
-
-        // Inject telemetry if we can train on the user's code.
-        // Return early if we cannot.
-        if !self.can_send_telemetry {
-            return;
-        }
-
-        // In wasm this needs to be spawn_local since fucking reqwests doesn't implement Send for wasm.
-        #[cfg(target_arch = "wasm32")]
-        {
-            let be = self.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                if let Err(err) = be.send_telemetry().await {
-                    be.client
-                        .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
-                        .await;
-                }
-            });
-        }
-        #[cfg(not(target_arch = "wasm32"))]
-        if let Err(err) = self.send_telemetry().await {
-            self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
-                .await;
-        }
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<LspHover>> {
