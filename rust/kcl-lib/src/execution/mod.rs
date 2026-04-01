@@ -687,6 +687,26 @@ impl ExecutorSettings {
 }
 
 impl ExecutorContext {
+    /// Create a new live executor context from an engine and file manager.
+    pub fn new_with_engine_and_fs(
+        engine: Arc<Box<dyn EngineManager>>,
+        fs: Arc<FileManager>,
+        settings: ExecutorSettings,
+    ) -> Self {
+        ExecutorContext {
+            engine,
+            fs,
+            settings,
+            context_type: ContextType::Live,
+        }
+    }
+
+    /// Create a new live executor context from an engine using the local file manager.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new_with_engine(engine: Arc<Box<dyn EngineManager>>, settings: ExecutorSettings) -> Self {
+        Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
+    }
+
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
@@ -716,22 +736,12 @@ impl ExecutorContext {
         let engine: Arc<Box<dyn EngineManager>> =
             Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
 
-        Ok(Self {
-            engine,
-            fs: Arc::new(FileManager::new()),
-            settings,
-            context_type: ContextType::Live,
-        })
+        Ok(Self::new_with_engine(engine, settings))
     }
 
     #[cfg(target_arch = "wasm32")]
     pub fn new(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
-        ExecutorContext {
-            engine,
-            fs,
-            settings,
-            context_type: ContextType::Live,
-        }
+        Self::new_with_engine_and_fs(engine, fs, settings)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
