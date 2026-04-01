@@ -363,19 +363,16 @@ async function waitForAuthAndLsp(page: Page) {
 
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
-    if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+    let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+    if (secret) {
       await page.route('**/*', async (route, request) => {
         const url = request.url()
 
         // Only apply to Vercel preview domain
-        if (
-          new URL(url).hostname.endsWith('vercel.dev.zoo.dev') &&
-          process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-        ) {
+        if (new URL(url).hostname.endsWith('vercel.dev.zoo.dev')) {
           const headers = {
             ...request.headers(),
-            'X-Vercel-Protection-Bypass':
-              process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+            'X-Vercel-Protection-Bypass': secret,
           }
 
           await route.continue({ headers })
