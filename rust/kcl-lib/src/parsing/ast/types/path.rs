@@ -309,9 +309,9 @@ impl NodePath {
                     path.push(Step::IfExpressionThen);
                     return Self::from_body(&node.then_val.body, 0, range, path);
                 }
-                for else_if in &node.else_ifs {
+                for (i, else_if) in node.else_ifs.iter().enumerate() {
                     if else_if.contains_range(&range) {
-                        path.push(Step::IfExpressionElseIf { index: 0 });
+                        path.push(Step::IfExpressionElseIf { index: i });
                         if else_if.cond.contains_range(&range) {
                             path.push(Step::IfExpressionElseIfCond);
                             return Self::from_expr(&else_if.cond, range, path);
