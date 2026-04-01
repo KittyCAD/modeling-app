@@ -29,6 +29,7 @@ import {
 } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { patchSketchBlockMissingDeclarations } from './wasmWrappers'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -498,6 +499,65 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithChamfer)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add chamfer on opposite sweepEdge for sketch-block circle extrude', async () => {
+      const sketchBlockCircleExtrude = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 1.16mm, var 4.24mm], center = [var -1.81mm, var -0.5mm])
+}
+region001 = region(point = [-4.7787mm, -5.2379mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchBlockCircleExtrude,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const oppositeSweepEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+      )
+      expect(oppositeSweepEdge).toBeDefined()
+      if (!oppositeSweepEdge) {
+        throw new Error('Could not find opposite sweepEdge for test selection')
+      }
+
+      const selection = createSelectionFromArtifacts(
+        [oppositeSweepEdge],
+        artifactGraph
+      )
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const patchResult = patchSketchBlockMissingDeclarations(
+        kclManagerInThisFile.code,
+        instanceInThisFile
+      )
+      if (err(patchResult)) throw patchResult
+      const result = addChamfer({
+        ast: patchResult.ast,
+        artifactGraph,
+        selection,
+        length,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle001 = circle(start = [var 1.16mm, var 4.24mm], center = [var -1.81mm, var -0.5mm])
+}
+region001 = region(point = [-4.7787mm, -5.2379mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.circle001, capEnd001]), length = 1)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
