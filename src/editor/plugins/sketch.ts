@@ -1,6 +1,7 @@
 import { invertedEffects } from '@codemirror/commands'
 import {
   Compartment,
+  Transaction,
   type Extension,
   type StateEffect,
 } from '@codemirror/state'
@@ -43,5 +44,6 @@ export function toggleSketchExtension(ev: EditorView, active: boolean) {
     effects: sketchSceneGraphCompartment.reconfigure(
       active ? sketchGraphExtension() : []
     ),
+    annotations: Transaction.addToHistory.of(false),
   })
 }

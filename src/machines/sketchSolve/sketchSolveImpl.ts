@@ -64,7 +64,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { StateEffect } from '@codemirror/state'
+import { StateEffect, Transaction } from '@codemirror/state'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 
 export type EquipTool = keyof typeof equipTools
@@ -927,14 +927,22 @@ const debouncedEditorUpdate = deferredCallback(
     text,
     kclManager,
     shouldWriteToDisk,
+    spec,
   }: {
     text: string
     kclManager: KclManager
     shouldWriteToDisk: boolean
+    spec: { effects: StateEffect<unknown>[] }
   }) =>
-    kclManager.updateCodeEditor(text, {
-      shouldWriteToDisk,
-    }),
+    kclManager.updateCodeEditor(
+      text,
+      {
+        shouldWriteToDisk,
+        shouldAddToHistory: shouldWriteToDisk,
+        shouldExecute: false,
+      },
+      spec
+    ),
   200
 )
 
@@ -950,11 +958,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
-  // Update scene immediately - no delay, no flicker
-  // This is wired through a CodeMirror StateEffect so that
-  // an extension (in @src/editor/plugins/sketch.ts) can apply its
-  // effects while undoing as well.
-  context.kclManager.dispatch({
+  const additionalSpec = {
     effects: [
       updateSketchSceneGraphEffect.of({
         sceneGraphDelta: event.data.sceneGraphDelta,
@@ -963,7 +967,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         duringAreaSelectIds: context.duringAreaSelectIds,
       }),
     ],
-  })
+  }
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
   // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
@@ -978,15 +982,21 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
       shouldWriteToDisk: event.data.writeToDisk !== false,
+      spec: additionalSpec,
     })
   } else {
     const shouldWriteToDisk = event.data.writeToDisk !== false
 
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
-      shouldExecute: false,
-      shouldWriteToDisk,
-    })
+    context.kclManager.updateCodeEditor(
+      event.data.sourceDelta.text,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk,
+        shouldAddToHistory: shouldWriteToDisk,
+      },
+      additionalSpec
+    )
   }
 
   return {
@@ -1040,6 +1050,7 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
+          writeToDisk: false,
         },
       })
     }

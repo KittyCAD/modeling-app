@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback, uuidv4 } from '@src/lib/utils'
+import { deferredCallback, isArray, uuidv4 } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -67,9 +67,11 @@ import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
   Annotation,
+  ChangeSpec,
   Compartment,
   EditorSelection,
   EditorState,
+  StateEffect,
   Transaction,
   type TransactionSpec,
 } from '@codemirror/state'
@@ -2184,13 +2186,18 @@ export class KclManager extends File {
     shouldClearHistory: false,
     shouldAddToHistory: true,
   }
+  changes: ChangeSpec[] = []
   /**
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(
     code: string,
-    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions
+    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions,
+    additionalSpec?: {
+      annotations?: Annotation<unknown>[]
+      effects?: StateEffect<unknown>[]
+    }
   ): void {
     const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
@@ -2233,12 +2240,16 @@ export class KclManager extends File {
       this.clearLocalHistory()
     }
 
+    const changes: ChangeSpec = {
+      from: 0,
+      to: this.editorState.doc.length || 0,
+      insert: code,
+    }
+
+    this.changes.push(changes)
+
     this.editorView.dispatch({
-      changes: {
-        from: 0,
-        to: this.editorState.doc.length || 0,
-        insert: code,
-      },
+      changes,
       selection: EditorSelection.create(
         preservedRanges,
         currentSelection.mainIndex
@@ -2248,11 +2259,13 @@ export class KclManager extends File {
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
+        ...(additionalSpec?.annotations || []),
       ],
       effects: [
         requestSkipExecution.of(!resolvedOptions.shouldExecute),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+        ...(additionalSpec?.effects || []),
       ],
     })
   }
