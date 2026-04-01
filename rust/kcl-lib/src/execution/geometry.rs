@@ -802,6 +802,10 @@ pub struct Sketch {
     /// If the sketch is a clone of another sketch.
     #[serde(skip)]
     pub clone: Option<uuid::Uuid>,
+    /// Synthetic pen-jump paths inserted to replay disconnected segment selections.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub synthetic_jump_path_ids: Vec<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]

@@ -15,22 +15,33 @@ use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
 
 extern crate nalgebra_glm as glm;
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment()])),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
     let axis = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
@@ -46,7 +57,19 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
-    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let body_type: BodyType = args
+        .get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?
+        .unwrap_or_default();
+    let sketches = coerce_revolve_targets(
+        sketch_values,
+        body_type,
+        tag_start.as_ref(),
+        tag_end.as_ref(),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let value = inner_revolve(
         sketches,
@@ -75,11 +98,10 @@ async fn inner_revolve(
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
     bidirectional_angle: Option<f64>,
-    body_type: Option<BodyType>,
+    body_type: BodyType,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let body_type = body_type.unwrap_or_default();
     if let Some(angle) = angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -196,6 +218,10 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
+                continue;
+            }
+
             if !path.is_straight_line() {
                 edge_id = Some(path.get_id());
                 break;
@@ -234,4 +260,143 @@ async fn inner_revolve(
     }
 
     Ok(solids)
+}
+
+async fn coerce_revolve_targets(
+    sketch_values: Vec<KclValue>,
+    body_type: BodyType,
+    tag_start: Option<&TagNode>,
+    tag_end: Option<&TagNode>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: crate::SourceRange,
+) -> Result<Vec<Sketch>, KclError> {
+    let mut sketches = Vec::new();
+    let mut segments = Vec::new();
+
+    for value in sketch_values {
+        if let Some(segment) = value.clone().into_segment() {
+            segments.push(segment);
+            continue;
+        }
+
+        let Some(sketch) = Sketch::from_kcl_val(&value) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected sketches or solved sketch segments for revolve.".to_owned(),
+                vec![source_range],
+            )));
+        };
+        sketches.push(sketch);
+    }
+
+    if !segments.is_empty() && !sketches.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot revolve sketch segments together with sketches in the same call. Use separate `revolve()` calls."
+                .to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    if !segments.is_empty() {
+        if !matches!(body_type, BodyType::Surface) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Revolving sketch segments is only supported for surface revolves. Set `bodyType = SURFACE`."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if tag_start.is_some() || tag_end.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`tagStart` and `tagEnd` are not supported when revolving sketch segments. Segment surface revolves do not create start or end caps."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
+        return Ok(vec![synthetic_sketch]);
+    }
+
+    Ok(sketches)
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
+
+    use super::*;
+    use crate::execution::AbstractSegment;
+    use crate::execution::Plane;
+    use crate::execution::Segment;
+    use crate::execution::SegmentKind;
+    use crate::execution::SegmentRepr;
+    use crate::execution::SketchSurface;
+    use crate::execution::types::NumericType;
+    use crate::front::Expr;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+    use crate::front::PointCtor;
+    use crate::parsing::ast::types::TagDeclarator;
+    use crate::std::sketch::PlaneData;
+
+    fn point_expr(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        }
+    }
+
+    fn segment_value(exec_state: &mut ExecState) -> KclValue {
+        let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, exec_state).unwrap();
+        let segment = Segment {
+            id: exec_state.next_uuid(),
+            object_id: ObjectId(1),
+            kind: SegmentKind::Point {
+                position: [TyF64::new(0.0, NumericType::mm()), TyF64::new(0.0, NumericType::mm())],
+                ctor: Box::new(PointCtor {
+                    position: point_expr(0.0, 0.0),
+                }),
+                freedom: None,
+            },
+            surface: SketchSurface::Plane(Box::new(plane)),
+            sketch_id: exec_state.next_uuid(),
+            sketch: None,
+            tag: None,
+            meta: vec![],
+        };
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Solved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn segment_revolve_rejects_cap_tags() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let err = coerce_revolve_targets(
+            vec![segment_value(&mut exec_state)],
+            BodyType::Surface,
+            Some(&TagDeclarator::new("cap_start")),
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("`tagStart` and `tagEnd` are not supported when revolving sketch segments"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
 }
