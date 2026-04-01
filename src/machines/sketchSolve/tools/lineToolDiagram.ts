@@ -32,6 +32,10 @@ import {
   isPointSegment,
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isPointSnapTarget,
+  type SnapTarget,
+} from '@src/machines/sketchSolve/snapping'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -60,7 +64,7 @@ export const machine = setup({
       }: {
         input: {
           pointData: [number, number]
-          snapTargetId?: number
+          snapTarget?: SnapTarget
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
@@ -78,7 +82,7 @@ export const machine = setup({
             error: string
           }
       > => {
-        const { pointData, snapTargetId, rustContext, kclManager, sketchId } =
+        const { pointData, snapTarget, rustContext, kclManager, sketchId } =
           input
         const [x, y] = pointData
 
@@ -111,7 +115,7 @@ export const machine = setup({
             settings
           )
 
-          if (snapTargetId === undefined) {
+          if (!isPointSnapTarget(snapTarget)) {
             return result
           }
 
@@ -134,7 +138,7 @@ export const machine = setup({
             sketchId,
             {
               type: 'Coincident',
-              segments: [startPointId, snapTargetId],
+              segments: [startPointId, snapTarget.pointId],
             },
             settings
           )
@@ -181,7 +185,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           id: number
-          snapTargetId?: number
+          snapTarget?: SnapTarget
           isDoubleClick?: boolean
           rustContext: RustContext
           kclManager: KclManager
@@ -200,7 +204,7 @@ export const machine = setup({
         const {
           pointData,
           id,
-          snapTargetId,
+          snapTarget,
           isDoubleClick,
           rustContext,
           kclManager,
@@ -239,13 +243,13 @@ export const machine = setup({
           let latestSceneGraphDelta = result.sceneGraphDelta
           let snapConstraintNewObjects: Array<number> = []
 
-          if (snapTargetId !== undefined) {
+          if (isPointSnapTarget(snapTarget)) {
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
               {
                 type: 'Coincident',
-                segments: [id, snapTargetId],
+                segments: [id, snapTarget.pointId],
               },
               settings
             )
@@ -264,7 +268,7 @@ export const machine = setup({
               ],
             },
             lastPointId:
-              snapTargetId === undefined && isDoubleClick !== true
+              snapTarget === undefined && isDoubleClick !== true
                 ? id
                 : undefined,
           }
@@ -450,7 +454,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             id: event.id || 0,
-            snapTargetId: event.snapTargetId,
+            snapTarget: event.snapTarget,
             isDoubleClick: event.isDoubleClick,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -569,7 +573,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             pointData: event.data,
-            snapTargetId: event.snapTargetId,
+            snapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,

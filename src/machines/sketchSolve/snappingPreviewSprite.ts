@@ -12,9 +12,7 @@ import {
   createConstraintBadgeSprite,
   getConstraintBadgeTexture,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
-import {
-  type SnappingCandidate,
-} from '@src/machines/sketchSolve/snapping'
+import { type SnappingCandidate } from '@src/machines/sketchSolve/snapping'
 
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'

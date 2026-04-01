@@ -55,9 +55,7 @@ import {
   isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
-import {
-  updateSnappingPreviewSprite,
-} from '@src/machines/sketchSolve/snappingPreviewSprite'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 /**
  * Helper function to build a segment ctor with drag applied.
