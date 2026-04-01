@@ -52,6 +52,7 @@ import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGrap
 import {
   allowSnapping,
   getSnappingCandidates,
+  isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -201,7 +202,9 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) => !coincidentPointIds.includes(candidate.apiObject.id)
+      (candidate) =>
+        !isPointSnapTarget(candidate.target) ||
+        !coincidentPointIds.includes(candidate.target.pointId)
     ) ?? null
 
   return candidate
@@ -829,11 +832,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPoint: candidate?.apiObject ?? null,
+        targetPosition: candidate?.position ?? null,
       })
     }
 
-    sendHoveredState(candidate?.apiObject.id ?? null)
+    sendHoveredState(
+      isPointSnapTarget(candidate?.target) ? candidate.target.pointId : null
+    )
   }
 
   const clearConstraintHoverPopups = () => {
@@ -932,8 +937,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
+          console.log('move tool snap target', snappingCandidate?.target ?? null)
+          const pointSnapTargetId =
+            snappingCandidate && isPointSnapTarget(snappingCandidate.target)
+              ? snappingCandidate.target.pointId
+              : null
           const result =
-            snappingCandidate && draggedEntityId !== null
+            snappingCandidate &&
+            draggedEntityId !== null &&
+            pointSnapTargetId !== null
               ? await (async () => {
                   const units = baseUnitToNumericSuffix(
                     context.kclManager.fileSettings.defaultLengthUnit
@@ -971,10 +983,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [
-                        draggedEntityId,
-                        snappingCandidate.apiObject.id,
-                      ],
+                      segments: [draggedEntityId, pointSnapTargetId],
                     },
                     settings
                   )

@@ -3,9 +3,9 @@ import { Sprite } from 'three'
 
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
 import type { Themes } from '@src/lib/theme'
-import type { PointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import {
   CONSTRAINT_BADGE_SIZE_PX,
@@ -22,28 +22,26 @@ const SNAPPING_PREVIEW_OFFSET_Y_PX = 25
 export function updateSnappingPreviewSprite({
   sketchSolveGroup,
   sceneInfra,
-  targetPoint,
+  targetPosition,
 }: {
   sketchSolveGroup: Group
   sceneInfra: SceneInfra
-  targetPoint: PointSegment | null
+  targetPosition: Coords2d | null
 }) {
   const sprite = getSnappingPreviewSprite(
     sketchSolveGroup,
     getResolvedTheme(sceneInfra.theme)
   )
 
-  if (!targetPoint) {
+  if (!targetPosition) {
     sprite.visible = false
     return
   }
 
   const scale = sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
   sprite.position.set(
-    targetPoint.kind.segment.position.x.value +
-      SNAPPING_PREVIEW_OFFSET_X_PX * scale,
-    targetPoint.kind.segment.position.y.value +
-      SNAPPING_PREVIEW_OFFSET_Y_PX * scale,
+    targetPosition[0] + SNAPPING_PREVIEW_OFFSET_X_PX * scale,
+    targetPosition[1] + SNAPPING_PREVIEW_OFFSET_Y_PX * scale,
     0
   )
   sprite.scale.setScalar(CONSTRAINT_BADGE_SIZE_PX * scale)

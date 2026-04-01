@@ -4,18 +4,29 @@ import type { Coords2d } from '@src/lang/util'
 import {
   isPointSegment,
   pointToCoords2d,
-  type PointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 
+export type SnapTarget =
+  | { type: 'point'; pointId: number }
+  | { type: 'origin' }
+  | { type: 'x-axis' }
+  | { type: 'y-axis' }
+
 export type SnappingCandidate = {
-  apiObject: PointSegment
+  target: SnapTarget
   distance: number
   position: Coords2d
 }
 
 export function allowSnapping(mouseEvent: MouseEvent) {
   return !mouseEvent.shiftKey
+}
+
+export function isPointSnapTarget(
+  target: SnapTarget | null | undefined
+): target is Extract<SnapTarget, { type: 'point' }> {
+  return target?.type === 'point'
 }
 
 export function getSnappingCandidates(
@@ -32,7 +43,10 @@ export function getSnappingCandidates(
 
       return [
         {
-          apiObject: candidate.apiObject,
+          target: {
+            type: 'point',
+            pointId: candidate.apiObject.id,
+          },
           distance: candidate.distance,
           position: pointToCoords2d(candidate.apiObject),
         },

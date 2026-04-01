@@ -27,6 +27,7 @@ import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGrap
 import {
   allowSnapping,
   getSnappingCandidates,
+  isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   hideSnappingPreviewSprite,
@@ -155,7 +156,11 @@ function getBestSnappingCandidate({
       mousePosition,
       currentSketchObjects,
       context.sceneInfra
-    ).find((candidate) => !excludedPointIds.has(candidate.apiObject.id)) ?? null
+    ).find(
+      (candidate) =>
+        !isPointSnapTarget(candidate.target) ||
+        !excludedPointIds.has(candidate.target.pointId)
+    ) ?? null
   )
 }
 
@@ -175,7 +180,7 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    targetPoint: snappingCandidate?.apiObject ?? null,
+    targetPosition: snappingCandidate?.position ?? null,
   })
 }
 
@@ -195,7 +200,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+        sendHoveredId(
+          self,
+          isPointSnapTarget(snappingCandidate?.target)
+            ? snappingCandidate.target.pointId
+            : null
+        )
         updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
@@ -259,11 +269,14 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
+        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
           id: context.draftPointId,
-          snapTargetId: snappingCandidate?.apiObject.id,
+          snapTargetId: isPointSnapTarget(snappingCandidate?.target)
+            ? snappingCandidate.target.pointId
+            : undefined,
           isDoubleClick: args.mouseEvent.detail === 2,
         })
       }
@@ -287,10 +300,13 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
+        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
-          snapTargetId: snappingCandidate?.apiObject.id,
+          snapTargetId: isPointSnapTarget(snappingCandidate?.target)
+            ? snappingCandidate.target.pointId
+            : undefined,
         })
       }
     },
@@ -308,7 +324,12 @@ export function addPointListener({ self, context }: ToolActionArgs) {
         mousePosition: [twoD.x, twoD.y],
         mouseEvent: args.mouseEvent,
       })
-      sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+      sendHoveredId(
+        self,
+        isPointSnapTarget(snappingCandidate?.target)
+          ? snappingCandidate.target.pointId
+          : null
+      )
       updateSnappingPreview({ context, snappingCandidate })
     },
   })
