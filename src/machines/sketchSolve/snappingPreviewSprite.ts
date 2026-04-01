@@ -13,7 +13,6 @@ import {
   getConstraintBadgeTexture,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
 import {
-  isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 
@@ -23,6 +22,9 @@ export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
 const SNAPPING_PREVIEW_OFFSET_X_PX = -25
 const SNAPPING_PREVIEW_OFFSET_Y_PX = 25
 
+// Updates the badge icon during dragging a point / drawing new lines,
+// when the dragged point is about to create a constraint on click.
+// This badge helps showing what that constraint type is going to be.
 export function updateSnappingPreviewSprite({
   sketchSolveGroup,
   sceneInfra,
@@ -45,7 +47,7 @@ export function updateSnappingPreviewSprite({
     target?.target.type === 'origin' ? 'hovered' : 'default'
   )
 
-  if (!target || !isPointSnapTarget(target.target)) {
+  if (!target) {
     sprite.visible = false
     return
   }

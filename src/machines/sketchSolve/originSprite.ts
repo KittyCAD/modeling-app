@@ -74,9 +74,7 @@ function getOriginSprite(
 }
 
 function getOriginSpriteState(sprite: Sprite): OriginSpriteState {
-  return sprite.userData.originSpriteState === 'hovered'
-    ? 'hovered'
-    : 'default'
+  return sprite.userData.originSpriteState === 'hovered' ? 'hovered' : 'default'
 }
 
 function getOriginTexture(
