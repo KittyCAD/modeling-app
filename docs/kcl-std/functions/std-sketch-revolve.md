@@ -9,7 +9,7 @@ Rotate a sketch around some provided axis, creating a solid from its extent.
 
 ```kcl
 revolve(
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Segment; 1+],
   axis: Axis2d | Edge,
   angle?: number(Angle),
   tolerance?: number(Length),
@@ -36,7 +36,7 @@ revolved around the same axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be revolved | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve. | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis of revolution. | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
@@ -440,12 +440,33 @@ sketch001 = startSketchOn(XY)
 </model-viewer>
 
 ```kcl
-halfTorus = startSketchOn(XY)
-  |> circle(center = [15, 0], radius = 5)
-  |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
-closedTorus = startSketchOn(XY)
-  |> circle(center = [15, 0], radius = 5)
-  |> revolve(axis = Y, bodyType = SURFACE)
+@settings(experimentalFeatures = allow)
+
+shellProfile = sketch(on = XY) {
+  outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
+  connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
+  innerWall = line(start = [var 12mm, var 7mm], end = [var 15mm, var 6mm])
+  coincident([outerWall.end, connector.start])
+  coincident([connector.end, innerWall.start])
+}
+
+halfShell = revolve(
+  [
+    shellProfile.outerWall,
+    shellProfile.innerWall
+  ],
+  axis = Y,
+  bodyType = SURFACE,
+  angle = 180deg,
+)
+closedShell = revolve(
+       [
+         shellProfile.outerWall,
+         shellProfile.innerWall
+       ],
+       axis = Y,
+       bodyType = SURFACE,
+     )
   |> translate(z = 30)
 
 ```
@@ -491,6 +512,47 @@ ring = revolve(ringRegion, axis = Y)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve14.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+// Sketch some disconnected lines in a sketch block.
+originalSketch = sketch(on = YZ) {
+  line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+}
+
+// Revolve just one line in the sketch.
+revolve(
+  [originalSketch.line1],
+  axis = Y,
+  angle = 180deg,
+  bodyType = SURFACE,
+)
+// Surface revolves of sketch blocks are non-destructive, so you can keep revolving
+// the same line again.
+revolve(
+  [originalSketch.line1],
+  axis = Y,
+  angle = -90deg,
+  bodyType = SURFACE,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the revolve function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve15_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve15.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
