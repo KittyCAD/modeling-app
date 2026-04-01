@@ -1,0 +1,22 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  // Same geometric line as tangent_line_arc, but with endpoints reversed.
+  l = line(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm])
+  a = arc(start = [var -5mm, var 5mm], end = [var 5mm, var 5mm], center = [var 0mm, var 5mm])
+
+  // Lock the line in place so branch selection comes only from tangent().
+  l.start.at[0] == 10mm
+  l.start.at[1] == 0mm
+  l.end.at[0] == -10mm
+  l.end.at[1] == 0mm
+
+  // Keep the arc radius and x-position fixed, leaving two possible tangent branches.
+  radius(a) == 5mm
+  a.center.at[0] == 0mm
+
+  tangent([l, a])
+}
+
+assert(s.a.center.at[0], isEqualTo = 0mm, tolerance = 0.001)
+assert(s.a.center.at[1], isEqualTo = 5mm, tolerance = 0.001)

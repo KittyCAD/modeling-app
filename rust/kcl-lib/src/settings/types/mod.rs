@@ -4,9 +4,12 @@ pub mod project;
 
 use anyhow::Result;
 use kittycad_modeling_cmds::units::UnitLength;
-use parse_display::{Display, FromStr};
+use parse_display::Display;
+use parse_display::FromStr;
 use schemars::JsonSchema;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
 use validator::Validate;
 
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
@@ -537,11 +540,21 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use super::{
-        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
-        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
-        TextEditorSettings, UnitLength, default_backface_color,
-    };
+    use super::AppSettings;
+    use super::AppTheme;
+    use super::AppearanceSettings;
+    use super::CameraProjectionType;
+    use super::CommandBarSettings;
+    use super::Configuration;
+    use super::ModelingSettings;
+    use super::MouseControlType;
+    use super::OnboardingStatus;
+    use super::ProjectNameTemplate;
+    use super::ProjectSettings;
+    use super::Settings;
+    use super::TextEditorSettings;
+    use super::UnitLength;
+    use super::default_backface_color;
 
     #[test]
     fn test_settings_empty_file_parses() {

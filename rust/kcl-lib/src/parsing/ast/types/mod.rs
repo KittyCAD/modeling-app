@@ -1,39 +1,51 @@
 //! Data types for the AST.
 
-use std::{
-    cell::RefCell,
-    collections::{BTreeMap, HashMap},
-    fmt,
-    ops::{Deref, DerefMut, RangeInclusive},
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::fmt;
+use std::ops::Deref;
+use std::ops::DerefMut;
+use std::ops::RangeInclusive;
+use std::rc::Rc;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use anyhow::Result;
-use parse_display::{Display, FromStr};
-pub use path::{NodePath, Step};
-use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::{
-    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
-    FoldingRangeKind, SymbolKind,
-};
+use parse_display::Display;
+use parse_display::FromStr;
+pub use path::NodePath;
+pub use path::Step;
+use serde::Deserialize;
+use serde::Serialize;
+use tower_lsp::lsp_types::Color;
+use tower_lsp::lsp_types::ColorInformation;
+use tower_lsp::lsp_types::ColorPresentation;
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::DocumentSymbol;
+use tower_lsp::lsp_types::FoldingRange;
+use tower_lsp::lsp_types::FoldingRangeKind;
+use tower_lsp::lsp_types::SymbolKind;
 
-pub use crate::parsing::ast::types::{
-    condition::{ElseIf, IfExpression},
-    literal_value::LiteralValue,
-    none::KclNone,
-};
-use crate::{
-    ModuleId, SourceRange, TypedPath,
-    errors::KclError,
-    execution::{
-        KclValue, Metadata, TagIdentifier,
-        annotations::{self, WarningLevel},
-        types::ArrayLen,
-    },
-    lsp::ToLspRange,
-    parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
-};
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::TypedPath;
+use crate::errors::KclError;
+use crate::execution::KclValue;
+use crate::execution::Metadata;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations::WarningLevel;
+use crate::execution::annotations::{self};
+use crate::execution::types::ArrayLen;
+use crate::lsp::ToLspRange;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::ast::digest::Digest;
+pub use crate::parsing::ast::types::condition::ElseIf;
+pub use crate::parsing::ast::types::condition::IfExpression;
+pub use crate::parsing::ast::types::literal_value::LiteralValue;
+pub use crate::parsing::ast::types::none::KclNone;
+use crate::parsing::token::NumericSuffix;
 
 mod condition;
 mod literal_value;
@@ -4804,22 +4816,6 @@ startSketchOn(XY)
 5
 "#
         );
-    }
-
-    #[test]
-    fn test_module_name() {
-        #[track_caller]
-        fn assert_mod_name(stmt: &str, name: &str) {
-            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
-            let stmt = crate::parsing::parser::import_stmt(&mut tokens.as_slice()).unwrap();
-            assert_eq!(stmt.module_name().unwrap(), name);
-        }
-
-        assert_mod_name("import 'foo.kcl'", "foo");
-        assert_mod_name("import 'foo.kcl' as bar", "bar");
-        assert_mod_name("import 'main.kcl'", "main");
-        assert_mod_name("import 'foo/main.kcl'", "foo");
-        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
     }
 
     #[test]

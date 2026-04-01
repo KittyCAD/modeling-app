@@ -1,5 +1,7 @@
-use serde::{Deserialize, Serialize};
-pub use source_range::{ModuleId, SourceRange};
+use serde::Deserialize;
+use serde::Serialize;
+pub use source_range::ModuleId;
+pub use source_range::SourceRange;
 
 mod source_range;
 
@@ -64,6 +66,10 @@ impl CompilationError {
             suggestion.insert,
             &src[suggestion.source_range.end()..]
         ))
+    }
+
+    pub fn is_err(&self) -> bool {
+        self.severity.is_err()
     }
 }
 

@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
-use crate::{
-    ExecutorContext, ExecutorSettings,
-    engine::conn_mock::EngineConnection,
-    execution::{ContextType, MockConfig},
-    front::{Freedom, ObjectKind},
-    frontend::api::ObjectId,
-};
+use crate::ExecutorContext;
+use crate::ExecutorSettings;
+use crate::engine::conn_mock::EngineConnection;
+use crate::execution::ContextType;
+use crate::execution::MockConfig;
+use crate::front::Freedom;
+use crate::front::ObjectKind;
+use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
@@ -35,7 +36,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         }
     }
     // Sort by object ID for consistent ordering
-    point_freedoms.sort_by_key(|(id, _)| id.0);
+    point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
     point_freedoms
 }

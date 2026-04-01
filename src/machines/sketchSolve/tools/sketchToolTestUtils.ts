@@ -6,6 +6,7 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { Themes } from '@src/lib/theme'
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
@@ -57,10 +58,12 @@ export function createPointApiObject({
   id,
   x = 0,
   y = 0,
+  owner = null,
 }: {
   id: number
   x?: number
   y?: number
+  owner?: number | null
 }): ApiObject {
   return {
     id,
@@ -73,7 +76,7 @@ export function createPointApiObject({
           y: { value: y, units: 'Mm' },
         },
         ctor: null,
-        owner: null,
+        owner,
         freedom: 'Free',
         constraints: [],
       },
@@ -177,6 +180,49 @@ export function createArcApiObject({
 }
 
 /**
+ * Helper to create a Circle ApiObject
+ */
+export function createCircleApiObject({
+  id,
+  center,
+  start,
+}: {
+  id: number
+  center: number
+  start: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Circle',
+        center,
+        start,
+        ctor: {
+          type: 'Circle',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+/**
  * Mock dependencies
  * Note: SceneInfra only needs setCallbacks, but we mock it for simplicity
  * RustContext and KclManager MUST be mocked as they have WASM bindings and complex dependencies
@@ -184,10 +230,10 @@ export function createArcApiObject({
 export function createMockSceneInfra(): SceneInfra {
   return {
     setCallbacks: vi.fn(),
+    getClientSceneScaleFactor: vi.fn(() => 1),
+    theme: Themes.Light,
     scene: {
-      getObjectByName: vi.fn(() => ({
-        getObjectByName: vi.fn(() => null),
-      })),
+      getObjectByName: vi.fn(() => null),
     },
   } as unknown as SceneInfra
 }
@@ -196,8 +242,17 @@ export function createMockRustContext(): RustContext {
   return {
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
+    chainSegment: vi.fn(),
     editSegments: vi.fn(),
     deleteObjects: vi.fn(),
+    settingsActor: {
+      send: vi.fn(),
+      getSnapshot: vi.fn(() => ({
+        context: {
+          app: {},
+        },
+      })),
+    },
   } as unknown as RustContext
 }
 

@@ -266,7 +266,11 @@ export class ToolbarFixture {
     await this.page.getByTestId(operationTestId).click()
   }
   selectSurface = async (
-    operation: 'blend-surface' | 'flip-surface' | 'delete-face'
+    operation:
+      | 'blend-surface'
+      | 'flip-surface'
+      | 'join-surfaces'
+      | 'delete-face'
   ) => {
     await this.page
       .getByRole('button', { name: 'caret down surface: open menu' })
@@ -345,6 +349,18 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  /**
+   * Get a specific sketch solve group caret button from the Feature Tree pane.
+   * Index is 0-based.
+   */
+  async getFeatureTreeSketchBlockGroupCaret(index: number) {
+    await this.openFeatureTreePane()
+    await expect(this.featureTreePane).toBeVisible()
+    return this.featureTreePane
+      .getByTestId('sketchblock-group-caret')
+      .nth(index)
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {

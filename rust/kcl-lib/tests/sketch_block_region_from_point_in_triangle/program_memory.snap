@@ -86,23 +86,6 @@ description: Variables in memory after executing sketch_block_region_from_point_
             "sourceRange": []
           },
           "from": [
-            3.3967460225035606,
-            -0.06852748084842362
-          ],
-          "tag": null,
-          "to": [
-            3.3967460225035526,
-            -0.06852748084837883
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
             3.3967460225035526,
             -0.06852748084837883
           ],
@@ -117,23 +100,6 @@ description: Variables in memory after executing sketch_block_region_from_point_
           "to": [
             1.5950000411833656,
             4.787054952178176
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.5950000411833656,
-            4.787054952178176
-          ],
-          "tag": null,
-          "to": [
-            1.5950000411833656,
-            4.78705495217822
           ],
           "type": "ToPoint",
           "units": "mm"

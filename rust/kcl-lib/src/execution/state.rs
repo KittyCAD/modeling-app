@@ -1,35 +1,65 @@
 #[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
-use std::{str::FromStr, sync::Arc};
+use std::str::FromStr;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, MockConfig, SourceRange,
-    collections::AhashIndexSet,
-    errors::{KclError, KclErrorDetails, Severity},
-    exec::DefaultPlanes,
-    execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, UnsolvedSegment, annotations,
-        cad_op::Operation,
-        id_generator::IdGenerator,
-        memory::{ProgramMemory, Stack},
-        types::NumericType,
-    },
-    front::{Object, ObjectId},
-    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef, TagNode},
-};
+use crate::CompilationError;
+use crate::EngineManager;
+use crate::ExecutorContext;
+use crate::KclErrorWithOutputs;
+use crate::MockConfig;
+use crate::SourceRange;
+use crate::collections::AhashIndexSet;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::exec::DefaultPlanes;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
-    front::Number,
-    id::IncIdGenerator,
-};
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecOutcome;
+use crate::execution::ExecutorSettings;
+use crate::execution::KclValue;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ProgramLookup;
+use crate::execution::SketchVarId;
+use crate::execution::UnsolvedSegment;
+use crate::execution::annotations;
+use crate::execution::cad_op::Operation;
+use crate::execution::id_generator::IdGenerator;
+use crate::execution::memory::ProgramMemory;
+use crate::execution::memory::Stack;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::sketch_solve::Solved;
+use crate::execution::types::NumericType;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::id::IncIdGenerator;
+use crate::modules::ModuleId;
+use crate::modules::ModuleInfo;
+use crate::modules::ModuleLoader;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagNode;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]
@@ -105,7 +135,10 @@ pub struct ModuleArtifactState {
 
 #[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct ModuleArtifactState {}
+pub struct ModuleArtifactState {
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+}
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
@@ -327,26 +360,10 @@ impl ExecState {
             }
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn next_object_id(&mut self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn peek_object_id(&self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
@@ -1001,11 +1018,13 @@ mod tests {
     use uuid::Uuid;
 
     use super::ModuleArtifactState;
-    use crate::{
-        SourceRange,
-        execution::ArtifactId,
-        front::{Object, ObjectId, ObjectKind, Plane, SourceRef},
-    };
+    use crate::SourceRange;
+    use crate::execution::ArtifactId;
+    use crate::front::Object;
+    use crate::front::ObjectId;
+    use crate::front::ObjectKind;
+    use crate::front::Plane;
+    use crate::front::SourceRef;
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {

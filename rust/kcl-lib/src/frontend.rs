@@ -1,38 +1,79 @@
-use std::{
-    cell::Cell,
-    collections::{HashMap, HashSet},
-    ops::ControlFlow,
-};
+use std::cell::Cell;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
-use kcl_error::{CompilationError, SourceRange};
+use kcl_error::CompilationError;
+use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
-    collections::AhashIndexSet,
-    exec::WarningLevel,
-    execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
-    fmt::format_number_literal,
-    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent},
-    frontend::{
-        api::{
-            Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
-            SourceDelta, SourceRef, Version,
-        },
-        modify::{find_defined_names, next_free_name, next_free_name_with_padding},
-        sketch::{
-            Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
-            SegmentCtor, SketchApi, SketchCtor, Vertical,
-        },
-        traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
-    },
-    parsing::ast::types as ast,
-    pretty::NumericSuffix,
-    std::constraints::LinesAtAngleKind,
-    walk::{NodeMut, Visitable},
-};
+use crate::ExecOutcome;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::KclErrorWithOutputs;
+use crate::Program;
+use crate::collections::AhashIndexSet;
+use crate::exec::WarningLevel;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CapSubType;
+use crate::execution::MockConfig;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::fmt::format_number_literal;
+use crate::front::Angle;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Distance;
+use crate::front::FixedPoint;
+use crate::front::Freedom;
+use crate::front::LinesEqualLength;
+use crate::front::Parallel;
+use crate::front::Perpendicular;
+use crate::front::PointCtor;
+use crate::front::Tangent;
+use crate::frontend::api::Error;
+use crate::frontend::api::Expr;
+use crate::frontend::api::FileId;
+use crate::frontend::api::Number;
+use crate::frontend::api::ObjectId;
+use crate::frontend::api::ObjectKind;
+use crate::frontend::api::Plane;
+use crate::frontend::api::ProjectId;
+use crate::frontend::api::SceneGraph;
+use crate::frontend::api::SceneGraphDelta;
+use crate::frontend::api::SourceDelta;
+use crate::frontend::api::SourceRef;
+use crate::frontend::api::Version;
+use crate::frontend::modify::find_defined_names;
+use crate::frontend::modify::next_free_name;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::frontend::sketch::Coincident;
+use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::Diameter;
+use crate::frontend::sketch::ExistingSegmentCtor;
+use crate::frontend::sketch::Horizontal;
+use crate::frontend::sketch::LineCtor;
+use crate::frontend::sketch::Point2d;
+use crate::frontend::sketch::Radius;
+use crate::frontend::sketch::Segment;
+use crate::frontend::sketch::SegmentCtor;
+use crate::frontend::sketch::SketchApi;
+use crate::frontend::sketch::SketchCtor;
+use crate::frontend::sketch::Vertical;
+use crate::frontend::traverse::MutateBodyItem;
+use crate::frontend::traverse::TraversalReturn;
+use crate::frontend::traverse::Visitor;
+use crate::frontend::traverse::dfs_mut;
+use crate::parsing::ast::types as ast;
+use crate::pretty::NumericSuffix;
+use crate::std::constraints::LinesAtAngleKind;
+use crate::walk::NodeMut;
+use crate::walk::Visitable;
 
 pub(crate) mod api;
 pub(crate) mod modify;
@@ -57,10 +98,14 @@ const ARC_FN: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const CIRCLE_FN: &str = "circle";
+const CIRCLE_START_PARAM: &str = "start";
+const CIRCLE_CENTER_PARAM: &str = "center";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
@@ -76,6 +121,8 @@ const LINE_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_START: &str = "start";
 const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
+const CIRCLE_PROPERTY_START: &str = "start";
+const CIRCLE_PROPERTY_CENTER: &str = "center";
 
 const CONSTRUCTION_PARAM: &str = "construction";
 
@@ -211,7 +258,28 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
+        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
+        let mut defined_names = find_defined_names(&new_ast);
+        let is_face_of_expr = matches!(
+            &plane_ast,
+            ast::Expr::CallExpressionKw(call) if call.callee.name.name == "faceOf"
+        );
+        if is_face_of_expr {
+            let face_name =
+                next_free_name_with_padding("face", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
+            let face_decl = ast::VariableDeclaration::new(
+                ast::VariableDeclarator::new(&face_name, plane_ast),
+                ast::ItemVisibility::Default,
+                ast::VariableKind::Const,
+            );
+            new_ast
+                .body
+                .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                    face_decl,
+                ))));
+            defined_names.insert(face_name.clone());
+            plane_ast = ast::Expr::Name(Box::new(ast::Name::new(&face_name)));
+        }
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
@@ -227,7 +295,6 @@ impl SketchApi for FrontendState {
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
-        let defined_names = find_defined_names(&new_ast);
         let sketch_name =
             next_free_name_with_padding("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
         let sketch_decl = ast::VariableDeclaration::new(
@@ -270,7 +337,16 @@ impl SketchApi for FrontendState {
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
-        let Some(sketch_id) = self.scene_graph.objects.last().map(|object| object.id) else {
+        let Some(sketch_id) = self
+            .scene_graph
+            .objects
+            .iter()
+            .filter_map(|object| match object.kind {
+                ObjectKind::Sketch(_) => Some(object.id),
+                _ => None,
+            })
+            .max_by_key(|id| id.0)
+        else {
             return Err(Error {
                 msg: "No objects in scene graph after adding sketch".to_owned(),
             });
@@ -415,9 +491,7 @@ impl SketchApi for FrontendState {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
             SegmentCtor::Arc(ctor) => self.add_arc(ctx, sketch, ctor).await,
-            _ => Err(Error {
-                msg: format!("segment ctor not implemented yet: {segment:?}"),
-            }),
+            SegmentCtor::Circle(ctor) => self.add_circle(ctx, sketch, ctor).await,
         }
     }
 
@@ -530,6 +604,33 @@ impl SketchApi for FrontendState {
                                 }
                                 continue;
                             }
+                            Segment::Circle(circle) if circle.start == segment_id || circle.center == segment_id => {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Circle(circle_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected circle ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
+                                    if circle.start == segment_id {
+                                        circle_ctor.start = ctor.position;
+                                    } else {
+                                        circle_ctor.center = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
+                                    let mut circle_ctor = circle_ctor.clone();
+                                    if circle.start == segment_id {
+                                        circle_ctor.start = ctor.position;
+                                    } else {
+                                        circle_ctor.center = ctor.position;
+                                    }
+                                    final_edits.insert(owner_id, SegmentCtor::Circle(circle_ctor));
+                                } else {
+                                    return Err(Error {
+                                        msg: format!("Internal: Circle does not have circle ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
                             _ => {}
                         }
                     }
@@ -543,8 +644,8 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Arc(ctor) => {
                     final_edits.insert(segment_id, SegmentCtor::Arc(ctor));
                 }
-                other_ctor => {
-                    final_edits.insert(segment_id, other_ctor);
+                SegmentCtor::Circle(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::Circle(ctor));
                 }
             }
         }
@@ -554,11 +655,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment_id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {ctor:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment_id, ctor)?,
             }
         }
         self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
@@ -590,7 +687,7 @@ impl SketchApi for FrontendState {
                 && let Some(owner_id) = point.owner
                 && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
                 && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
-                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_))
+                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_))
             {
                 // segment is owned -> delete the owner
                 resolved_segment_ids_to_delete.insert(owner_id);
@@ -674,6 +771,7 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::Fixed(fixed) => self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?,
             Constraint::HorizontalDistance(distance) => {
                 self.add_horizontal_distance(sketch, distance, &mut new_ast).await?
             }
@@ -883,11 +981,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment.id, ctor)?,
             }
         }
 
@@ -899,6 +993,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::Fixed(fixed) => {
+                    self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?;
                 }
                 Constraint::HorizontalDistance(distance) => {
                     self.add_horizontal_distance(sketch, distance, &mut new_ast).await?;
@@ -980,11 +1077,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment.id, ctor)?,
             }
         }
 
@@ -1519,6 +1612,138 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
+    async fn add_circle(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: CircleCtor,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Create updated KCL source from args.
+        let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let mut arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+        let circle_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
+            unlabeled: None,
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        // Add the circle to the AST of the sketch block.
+        let mut new_ast = self.program.ast.clone();
+        let (sketch_block_range, _) = self.mutate_ast(
+            &mut new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: circle_ast },
+        )?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding circle: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding circle".to_string(),
+            });
+        };
+        let circle_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of circle not found in sketch block: {sketch_block_range:?}; {err:?}"),
+            })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = circle_source_range;
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
+        // Execute.
+        let outcome = ctx
+            .run_mock(
+                &truncated_program,
+                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
+            )
+            .await
+            .map_err(|err| Error {
+                msg: err.error.message().to_owned(),
+            })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&circle_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of circle not found: {circle_source_range:?}"),
+                })?;
+            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
+                msg: format!("Segment not found: {segment_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {segment_object:?}"),
+                });
+            };
+            let Segment::Circle(circle) = segment else {
+                return Err(Error {
+                    msg: format!("Segment is not a circle: {segment:?}"),
+                });
+            };
+            vec![circle.start, circle.center, segment_id]
+        };
+        let src_delta = SourceDelta { text: new_source };
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
     fn edit_point(
         &mut self,
         new_ast: &mut ast::Node<ast::Program>,
@@ -1615,7 +1840,29 @@ impl FrontendState {
                 return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
             }
 
-            // If owner is neither Line nor Arc, allow editing the point directly
+            // Handle Circle owner
+            if let Segment::Circle(circle) = segment {
+                let SegmentCtor::Circle(circle_ctor) = &circle.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have circle ctor: {owner_object:?}"),
+                    });
+                };
+                let mut circle_ctor = circle_ctor.clone();
+                if circle.center == point_id {
+                    circle_ctor.center = ctor.position;
+                } else if circle.start == point_id {
+                    circle_ctor.start = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's circle segment: point={point_id:?}, circle={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_circle(new_ast, sketch_id, owner_id, circle_ctor);
+            }
+
+            // If owner is neither Line, Arc, nor Circle, allow editing the point directly
             // (fall through to the point editing logic below)
         }
 
@@ -1715,6 +1962,54 @@ impl FrontendState {
             AstMutateCommand::EditArc {
                 start: new_start_ast,
                 end: new_end_ast,
+                center: new_center_ast,
+                construction: ctor.construction,
+            },
+        )?;
+        Ok(())
+    }
+
+    fn edit_circle(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        circle: ObjectId,
+        ctor: CircleCtor,
+    ) -> api::Result<()> {
+        // Create updated KCL source from args.
+        let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let new_center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch.segments.iter().find(|o| **o == circle).ok_or_else(|| Error {
+            msg: format!("Circle not found in sketch: circle={circle:?}, sketch={sketch:?}"),
+        })?;
+        // Look up existing circle.
+        let circle_id = circle;
+        let circle_object = self.scene_graph.objects.get(circle_id.0).ok_or_else(|| Error {
+            msg: format!("Circle not found in scene graph: circle={circle:?}"),
+        })?;
+        let ObjectKind::Segment { .. } = &circle_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {circle_object:?}"),
+            });
+        };
+
+        // Modify the circle AST.
+        self.mutate_ast(
+            new_ast,
+            circle_id,
+            AstMutateCommand::EditCircle {
+                start: new_start_ast,
                 center: new_center_ast,
                 construction: ctor.construction,
             },
@@ -2046,6 +2341,20 @@ impl FrontendState {
                     };
                     get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
                 }
+                Segment::Circle(circle) => {
+                    let property = if circle.start == point_id {
+                        CIRCLE_PROPERTY_START
+                    } else if circle.center == point_id {
+                        CIRCLE_PROPERTY_CENTER
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's circle segment: point={point_id:?}, circle={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "circle", Some(property))
+                }
                 _ => Err(Error {
                     msg: format!(
                         "Internal: Owner of point is not a supported segment type for constraints: {owner_segment:?}"
@@ -2092,9 +2401,13 @@ impl FrontendState {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
-            Segment::Arc(_) | Segment::Circle(_) => {
+            Segment::Arc(_) => {
                 // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
+            }
+            Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
             }
         };
 
@@ -2116,9 +2429,13 @@ impl FrontendState {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
-            Segment::Arc(_) | Segment::Circle(_) => {
+            Segment::Arc(_) => {
                 // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
+            }
+            Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
             }
         };
 
@@ -2176,8 +2493,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -2259,7 +2578,7 @@ impl FrontendState {
                     value: angle.angle.value,
                     suffix: angle.angle.units,
                 },
-                raw: format_number_literal(angle.angle.value, angle.angle.units).map_err(|_| Error {
+                raw: format_number_literal(angle.angle.value, angle.angle.units, None).map_err(|_| Error {
                     msg: format!("Could not format numeric suffix: {:?}", angle.angle.units),
                 })?,
                 digest: None,
@@ -2303,9 +2622,10 @@ impl FrontendState {
         let seg0_ast = match seg0_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
-                    msg: format!("Tangent supports only line/arc segments, got: {seg0_segment:?}"),
+                    msg: format!("Tangent supports only line/arc/circle segments, got: {seg0_segment:?}"),
                 });
             }
         };
@@ -2321,9 +2641,10 @@ impl FrontendState {
         let seg1_ast = match seg1_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
-                    msg: format!("Tangent supports only line/arc segments, got: {seg1_segment:?}"),
+                    msg: format!("Tangent supports only line/arc/circle segments, got: {seg1_segment:?}"),
                 });
             }
         };
@@ -2369,6 +2690,32 @@ impl FrontendState {
         self.add_arc_size_constraint(sketch, params, new_ast).await
     }
 
+    async fn add_fixed_constraints(
+        &mut self,
+        sketch: ObjectId,
+        points: Vec<FixedPoint>,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let mut sketch_block_range = None;
+
+        for fixed_point in points {
+            let point_ast = self.point_id_to_ast_reference(fixed_point.point, new_ast)?;
+            let fixed_ast = create_fixed_point_constraint_ast(point_ast, fixed_point.position)
+                .map_err(|err| Error { msg: err.to_string() })?;
+
+            let (range, _) = self.mutate_ast(
+                new_ast,
+                sketch,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_ast },
+            )?;
+            sketch_block_range = Some(range);
+        }
+
+        sketch_block_range.ok_or_else(|| Error {
+            msg: "Fixed constraint requires at least one point".to_owned(),
+        })
+    }
+
     async fn add_arc_size_constraint(
         &mut self,
         sketch: ObjectId,
@@ -2397,16 +2744,20 @@ impl FrontendState {
                 msg: format!("Object is not a segment: {arc_object:?}"),
             });
         };
-        let Segment::Arc(_) = arc_segment else {
-            return Err(Error {
-                msg: format!(
-                    "{} constraint argument must be an arc segment, got: {arc_segment:?}",
-                    params.constraint_type_name
-                ),
-            });
+        let ref_type = match arc_segment {
+            Segment::Arc(_) => "arc",
+            Segment::Circle(_) => "circle",
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "{} constraint argument must be an arc or circle segment, got: {arc_segment:?}",
+                        params.constraint_type_name
+                    ),
+                });
+            }
         };
-        // Reference the arc segment directly
-        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
+        // Reference the arc/circle segment directly
+        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, ref_type, None)?;
 
         // Create the function call.
         let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -2424,7 +2775,7 @@ impl FrontendState {
                     value: params.value,
                     suffix: params.units,
                 },
-                raw: format_number_literal(params.value, params.units).map_err(|_| Error {
+                raw: format_number_literal(params.value, params.units, None).map_err(|_| Error {
                     msg: format!("Could not format numeric suffix: {:?}", params.units),
                 })?,
                 digest: None,
@@ -2483,8 +2834,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -2542,8 +2895,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -2919,6 +3274,7 @@ impl FrontendState {
                     }
                     false
                 }),
+                Constraint::Fixed(_) => false,
                 Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
                 Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
                 Constraint::HorizontalDistance(d) => d.points.iter().any(|pt_id| {
@@ -2975,7 +3331,7 @@ impl FrontendState {
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
-            let new_objects = std::mem::take(&mut outcome.scene_objects);
+            let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
             if freedom_analysis_ran {
                 // When freedom analysis ran, replace the cache entirely with new values
@@ -2989,6 +3345,7 @@ impl FrontendState {
                         self.point_freedom_cache.insert(new_obj.id, point.freedom);
                     }
                 }
+                add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
                 // Objects are already correct from the analysis, just use them as-is
                 self.scene_graph.objects = new_objects;
             } else {
@@ -3049,6 +3406,7 @@ impl FrontendState {
                     updated_objects.push(obj);
                 }
 
+                add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
                 self.scene_graph.objects = updated_objects;
             }
             outcome
@@ -3180,7 +3538,179 @@ fn sketch_on_ast_expr(
             let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
                 msg: format!("Sketch plane object not found: {object_id:?}"),
             })?;
+            #[cfg(feature = "artifact-graph")]
+            {
+                if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
+                    return Ok(face_expr);
+                }
+            }
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+        }
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn sketch_face_of_scene_object_ast_expr(
+    ast: &mut ast::Node<ast::Program>,
+    on_object: &crate::front::Object,
+) -> api::Result<Option<ast::Expr>> {
+    let SourceRef::BackTrace { ranges } = &on_object.source else {
+        return Ok(None);
+    };
+
+    match &on_object.kind {
+        ObjectKind::Wall(_) => {
+            let [sweep_range, segment_range] = ranges.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let sweep_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *sweep_range }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve sweep reference for selected wall: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_name = solid_name_expr.name.name.clone();
+            let solid_expr = ast_name_expr(solid_name.clone());
+            let segment_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *segment_range }, "line", None)?;
+
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
+                let ast::Expr::Name(segment_name_expr) = segment_ref else {
+                    return Err(Error {
+                        msg: format!(
+                            "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
+                            on_object.artifact_id
+                        ),
+                    });
+                };
+                create_member_expression(
+                    create_member_expression(ast_name_expr(region_name), "tags"),
+                    &segment_name_expr.name.name,
+                )
+            } else {
+                segment_ref
+            };
+
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
+        }
+        ObjectKind::Cap(cap) => {
+            let [range] = ranges.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Expected cap source metadata to have 1 range, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *range }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve sweep reference for selected cap: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            // TODO: change this to explicit tag references with tagStart/tagEnd mutations
+            let face_expr = match cap.kind {
+                crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
+                crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
+            };
+
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
+        }
+        _ => Ok(None),
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
+    let mut existing_artifact_ids = scene_objects
+        .iter()
+        .map(|object| object.artifact_id)
+        .collect::<HashSet<_>>();
+
+    for artifact in artifact_graph.values() {
+        match artifact {
+            Artifact::Wall(wall) => {
+                if existing_artifact_ids.contains(&wall.id) {
+                    continue;
+                }
+
+                let Some(segment) = artifact_graph.get(&wall.seg_id).and_then(|artifact| match artifact {
+                    Artifact::Segment(segment) => Some(segment),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let Some(sweep) = artifact_graph.get(&wall.sweep_id).and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let source_segment = segment
+                    .original_seg_id
+                    .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Segment(segment) => Some(segment),
+                        _ => None,
+                    })
+                    .unwrap_or(segment);
+                let id = ObjectId(scene_objects.len());
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Wall(crate::frontend::api::Wall { id }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: wall.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range, source_segment.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(wall.id);
+            }
+            Artifact::Cap(cap) => {
+                if existing_artifact_ids.contains(&cap.id) {
+                    continue;
+                }
+
+                let Some(sweep) = artifact_graph.get(&cap.sweep_id).and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let id = ObjectId(scene_objects.len());
+                let kind = match cap.sub_type {
+                    CapSubType::Start => crate::frontend::api::CapKind::Start,
+                    CapSubType::End => crate::frontend::api::CapKind::End,
+                };
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: cap.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(cap.id);
+            }
+            _ => {}
         }
     }
 }
@@ -3203,6 +3733,50 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
         ast::UnaryOperator::Neg,
         ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
     )))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
+        unlabeled: Some(solid_expr),
+        arguments: vec![ast::LabeledArg {
+            label: Some(ast::Identifier::new("face")),
+            arg: face_expr,
+        }],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
+    let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(sweep_call) = &sweep_decl.init else {
+        return None;
+    };
+    if !matches!(
+        sweep_call.callee.name.name.as_str(),
+        "extrude" | "revolve" | "sweep" | "loft"
+    ) {
+        return None;
+    }
+    let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
+        return None;
+    };
+    let candidate = region_name_expr.name.name.clone();
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -3283,6 +3857,11 @@ enum AstMutateCommand {
     EditArc {
         start: ast::Expr,
         end: ast::Expr,
+        center: ast::Expr,
+        construction: Option<bool>,
+    },
+    EditCircle {
+        start: ast::Expr,
         center: ast::Expr,
         construction: Option<bool>,
     },
@@ -3547,6 +4126,59 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditCircle {
+            start,
+            center,
+            construction,
+        } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != CIRCLE_FN {
+                    return TraversalReturn::new_continue(());
+                }
+                // Update the arguments.
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CIRCLE_START_PARAM) {
+                        labeled_arg.arg = start.clone();
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CIRCLE_CENTER_PARAM) {
+                        labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        if construction_exists {
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditConstraintValue { value } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let left_is_constraint = matches!(
@@ -3719,7 +4351,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: format_number_literal(number.value, number.units)?,
+        raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
 }
@@ -3838,6 +4470,26 @@ pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_as
     })))
 }
 
+/// Create an AST node for circle(start = [...], center = [...])
+pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
+        unlabeled: None,
+        arguments: vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3878,6 +4530,40 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
+/// Create an AST node for `fixed([point, [x, y]])`.
+fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    // Create [x, y] array literal.
+    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.x,
+    )?))));
+    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.y,
+    )?))));
+    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![x_literal, y_literal],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create [point, [x, y]] outer array.
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![point_expr, point_array],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create fixed([...])
+    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+        ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
+            unlabeled: Some(array_expr),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        },
+    ))))
+}
+
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -3916,12 +4602,16 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
-    use crate::{
-        engine::PlaneName,
-        front::{Distance, Object, Plane, Sketch, Tangent},
-        frontend::sketch::Vertical,
-        pretty::NumericSuffix,
-    };
+    use crate::engine::PlaneName;
+    use crate::front::Distance;
+    use crate::front::Fixed;
+    use crate::front::FixedPoint;
+    use crate::front::Object;
+    use crate::front::Plane;
+    use crate::front::Sketch;
+    use crate::front::Tangent;
+    use crate::frontend::sketch::Vertical;
+    use crate::pretty::NumericSuffix;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
@@ -3939,6 +4629,47 @@ mod tests {
             }
         }
         None
+    }
+
+    fn find_first_wall_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
+        for object in &scene_graph.objects {
+            if matches!(&object.kind, ObjectKind::Wall(_)) {
+                return Some(object.id);
+            }
+        }
+        None
+    }
+
+    #[test]
+    fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
+        let source = "\
+region001 = region(point = [0.1, 0.1], sketch = s)
+extrude001 = extrude(region001, length = 5)
+revolve001 = revolve(region001, axis = Y)
+sweep001 = sweep(region001, path = path001)
+loft001 = loft(region001)
+not_sweep001 = shell(extrude001, faces = [], thickness = 1)
+";
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "extrude001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "revolve001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "sweep001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "loft001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(region_name_from_sweep_variable(&program.ast, "not_sweep001"), None);
     }
 
     #[track_caller]
@@ -4376,6 +5107,241 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_circle_edit_circle() {
+        let program = Program::empty();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let sketch_args = SketchCtor {
+            on: Plane::Default(PlaneName::Xy),
+        };
+        let (_src_delta, _scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        // Add a circle segment.
+        let circle_ctor = CircleCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Circle(circle_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+"
+        );
+        // The new objects are start, center, and then the circle segment.
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+
+        let circle = *scene_delta.new_objects.last().unwrap();
+
+        // Edit the circle segment.
+        let circle_ctor = CircleCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 3.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 4.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: circle,
+            ctor: SegmentCtor::Circle(circle_ctor),
+        }];
+        let (src_delta, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_circle() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // The sketch should have 3 segments: start point, center point, and the circle.
+        assert_eq!(sketch.segments.len(), 3);
+        let circle_id = sketch.segments[2];
+
+        // Delete the circle.
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![], vec![circle_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+}
+"
+        );
+        let new_sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let new_sketch = expect_sketch(new_sketch_object);
+        assert_eq!(new_sketch.segments.len(), 0);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_circle_via_point() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // Find the circle segment and its start point.
+        let circle_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    }
+                )
+            })
+            .expect("Expected a circle segment in sketch");
+        let circle_object = &frontend.scene_graph.objects[circle_id.0];
+        let ObjectKind::Segment {
+            segment: Segment::Circle(circle),
+        } = &circle_object.kind
+        else {
+            panic!("Expected circle segment, got: {:?}", circle_object.kind);
+        };
+        let start_point_id = circle.start;
+
+        // Edit the start point via SegmentCtor::Point.
+        let segments = vec![ExistingSegmentCtor {
+            id: start_point_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 7.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 7mm, var 1mm], center = [var 0mm, var 0mm])
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_add_line_when_sketch_block_uses_variable() {
         let initial_source = "@settings(experimentalFeatures = allow)
 
@@ -4691,8 +5657,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -4739,8 +5704,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -4748,7 +5712,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            10,
+            11,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -5745,6 +6709,232 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_standalone_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  fixed([point1, [2mm, 3mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_multiple_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![
+                        FixedPoint {
+                            point: point0_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 2.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 3.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                            },
+                        },
+                        FixedPoint {
+                            point: point1_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 4.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 5.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                            },
+                        },
+                    ],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  fixed([point1, [2mm, 3mm]])
+  fixed([point2, [4mm, 5mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_owned_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_start_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: line_start_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  fixed([line1.start, [2mm, 3mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_error_cases() {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -6461,10 +7651,90 @@ face = faceOf(cube, face = side)
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_region_extrude() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = YZ) {
+  line1 = line(start = [0, 0], end = [0, 1])
+  line2 = line(start = [0, 1], end = [1, 1])
+  line3 = line(start = [1, 1], end = [0, 0])
+}
+region001 = region(point = [0.1, 0.1], sketch = s)
+extrude001 = extrude(region001, length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_split_region_extrude() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 0.49, var -0.39], end = [var 6.52, var -0.39])
+  line2 = line(start = [var 6.52, var -0.39], end = [var 6.52, var 4.9])
+  line3 = line(start = [var 6.52, var 4.9], end = [var 0.49, var 4.9])
+  line4 = line(start = [var 0.49, var 4.9], end = [var 0.49, var -0.39])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [2.35, 6.65], end = [5.89, -2.7])
+}
+region001 = region(point = [3.1, 3.74], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6546,7 +7816,7 @@ sketch001 = sketch(on = plane) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 9);
 
         let plane_object = scene_delta.new_graph.objects.get(plane_id.0).unwrap();
         assert_eq!(plane_object.id, plane_id);
@@ -6873,7 +8143,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 23, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 29, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //

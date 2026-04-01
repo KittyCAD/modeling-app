@@ -1,6 +1,7 @@
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { topLevelRange } from '@src/lang/util'
 import {
+  clamp,
   getInVariableCase,
   hexToRgba,
   hasDigitsLeftOfDecimal,
@@ -23,6 +24,8 @@ describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 1))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 0))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-2, -1), false)
+  testBothOrders(topLevelRange(0, 10), topLevelRange(3, 6))
+  testBothOrders(topLevelRange(0, 10), topLevelRange(0, 10))
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {
@@ -44,6 +47,20 @@ describe('testing roundOff', () => {
   })
   it('rounds up ok', () => {
     expect(roundOff(1.273456789, 1)).toBe(1.3)
+  })
+})
+
+describe('clamp', () => {
+  it('returns the input when it is within range', () => {
+    expect(clamp(5, 0, 10)).toBe(5)
+  })
+
+  it('clamps values below the minimum', () => {
+    expect(clamp(-1, 0, 10)).toBe(0)
+  })
+
+  it('clamps values above the maximum', () => {
+    expect(clamp(11, 0, 10)).toBe(10)
   })
 })
 

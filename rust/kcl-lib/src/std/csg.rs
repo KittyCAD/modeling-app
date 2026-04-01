@@ -1,15 +1,24 @@
 //! Constructive Solid Geometry (CSG) operations.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
-use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, ModelingCmdMeta, Solid, types::RuntimeType},
-    std::{Args, patterns::GeometryTrait},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::patterns::GeometryTrait;
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

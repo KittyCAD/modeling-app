@@ -1,14 +1,20 @@
 #![allow(async_fn_in_trait)]
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    ExecutorContext,
-    front::Plane,
-    frontend::api::{
-        Expr, FileId, Number, ObjectId, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
-    },
-};
+use crate::ExecutorContext;
+use crate::front::Plane;
+use crate::frontend::api::Expr;
+use crate::frontend::api::FileId;
+use crate::frontend::api::Number;
+use crate::frontend::api::ObjectId;
+use crate::frontend::api::ProjectId;
+use crate::frontend::api::Result;
+use crate::frontend::api::SceneGraph;
+use crate::frontend::api::SceneGraphDelta;
+use crate::frontend::api::SourceDelta;
+use crate::frontend::api::Version;
 
 /// Information about a newly created segment for batch operations
 #[derive(Debug, Clone)]
@@ -291,17 +297,21 @@ pub struct ArcCtor {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCircle")]
 pub struct Circle {
     pub start: ObjectId,
-    pub radius: Number,
-    // Invariant: Circle or ThreePointCircle
+    pub center: ObjectId,
+    // Invariant: Circle
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct CircleCtor {
+    pub start: Point2d<Expr>,
     pub center: Point2d<Expr>,
-    pub radius: Expr,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -312,6 +322,7 @@ pub enum Constraint {
     Distance(Distance),
     Angle(Angle),
     Diameter(Diameter),
+    Fixed(Fixed),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
     Horizontal(Horizontal),
@@ -368,6 +379,22 @@ pub struct Diameter {
     pub diameter: Number,
     #[serde(default)]
     pub source: ConstraintSource,
+}
+
+/// Multiple fixed constraints, allowing callers to add fixed constraints on
+/// multiple points at once.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Fixed {
+    pub points: Vec<FixedPoint>,
+}
+
+/// A fixed constraint on a single point.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct FixedPoint {
+    pub point: ObjectId,
+    pub position: Point2d<Number>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

@@ -1,62 +1,128 @@
 //! Functions for the `kcl` lsp server.
 #![allow(dead_code)]
 
-use std::{
-    collections::HashMap,
-    io::Write,
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
-use sha2::Digest;
 use tokio::sync::RwLock;
-use tower_lsp::{
-    Client, LanguageServer,
-    jsonrpc::Result as RpcResult,
-    lsp_types::{
-        CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
-        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
-        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
-        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
-        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
-        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
-        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
-        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
-        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
-        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
-        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
-        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
-        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
-        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
-    },
-};
+use tower_lsp::Client;
+use tower_lsp::LanguageServer;
+use tower_lsp::jsonrpc::Result as RpcResult;
+use tower_lsp::lsp_types::CodeAction;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOptions;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::CodeActionParams;
+use tower_lsp::lsp_types::CodeActionProviderCapability;
+use tower_lsp::lsp_types::CodeActionResponse;
+use tower_lsp::lsp_types::ColorInformation;
+use tower_lsp::lsp_types::ColorPresentation;
+use tower_lsp::lsp_types::ColorPresentationParams;
+use tower_lsp::lsp_types::ColorProviderCapability;
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::CompletionOptions;
+use tower_lsp::lsp_types::CompletionParams;
+use tower_lsp::lsp_types::CompletionResponse;
+use tower_lsp::lsp_types::CreateFilesParams;
+use tower_lsp::lsp_types::DeleteFilesParams;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticOptions;
+use tower_lsp::lsp_types::DiagnosticServerCapabilities;
+use tower_lsp::lsp_types::DiagnosticSeverity;
+use tower_lsp::lsp_types::DidChangeConfigurationParams;
+use tower_lsp::lsp_types::DidChangeTextDocumentParams;
+use tower_lsp::lsp_types::DidChangeWatchedFilesParams;
+use tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams;
+use tower_lsp::lsp_types::DidCloseTextDocumentParams;
+use tower_lsp::lsp_types::DidOpenTextDocumentParams;
+use tower_lsp::lsp_types::DidSaveTextDocumentParams;
+use tower_lsp::lsp_types::DocumentColorParams;
+use tower_lsp::lsp_types::DocumentDiagnosticParams;
+use tower_lsp::lsp_types::DocumentDiagnosticReport;
+use tower_lsp::lsp_types::DocumentDiagnosticReportResult;
+use tower_lsp::lsp_types::DocumentFilter;
+use tower_lsp::lsp_types::DocumentFormattingParams;
+use tower_lsp::lsp_types::DocumentSymbol;
+use tower_lsp::lsp_types::DocumentSymbolParams;
+use tower_lsp::lsp_types::DocumentSymbolResponse;
+use tower_lsp::lsp_types::Documentation;
+use tower_lsp::lsp_types::FoldingRange;
+use tower_lsp::lsp_types::FoldingRangeParams;
+use tower_lsp::lsp_types::FoldingRangeProviderCapability;
+use tower_lsp::lsp_types::FullDocumentDiagnosticReport;
+use tower_lsp::lsp_types::Hover as LspHover;
+use tower_lsp::lsp_types::HoverContents;
+use tower_lsp::lsp_types::HoverParams;
+use tower_lsp::lsp_types::HoverProviderCapability;
+use tower_lsp::lsp_types::InitializeParams;
+use tower_lsp::lsp_types::InitializeResult;
+use tower_lsp::lsp_types::InitializedParams;
+use tower_lsp::lsp_types::InlayHint;
+use tower_lsp::lsp_types::InlayHintParams;
+use tower_lsp::lsp_types::InsertTextFormat;
+use tower_lsp::lsp_types::MarkupContent;
+use tower_lsp::lsp_types::MarkupKind;
+use tower_lsp::lsp_types::MessageType;
+use tower_lsp::lsp_types::OneOf;
+use tower_lsp::lsp_types::Position;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::RelatedFullDocumentDiagnosticReport;
+use tower_lsp::lsp_types::RenameFilesParams;
+use tower_lsp::lsp_types::RenameParams;
+use tower_lsp::lsp_types::SemanticToken;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::SemanticTokens;
+use tower_lsp::lsp_types::SemanticTokensFullOptions;
+use tower_lsp::lsp_types::SemanticTokensLegend;
+use tower_lsp::lsp_types::SemanticTokensOptions;
+use tower_lsp::lsp_types::SemanticTokensParams;
+use tower_lsp::lsp_types::SemanticTokensRegistrationOptions;
+use tower_lsp::lsp_types::SemanticTokensResult;
+use tower_lsp::lsp_types::SemanticTokensServerCapabilities;
+use tower_lsp::lsp_types::ServerCapabilities;
+use tower_lsp::lsp_types::SignatureHelp;
+use tower_lsp::lsp_types::SignatureHelpOptions;
+use tower_lsp::lsp_types::SignatureHelpParams;
+use tower_lsp::lsp_types::StaticRegistrationOptions;
+use tower_lsp::lsp_types::TextDocumentItem;
+use tower_lsp::lsp_types::TextDocumentPositionParams;
+use tower_lsp::lsp_types::TextDocumentRegistrationOptions;
+use tower_lsp::lsp_types::TextDocumentSyncCapability;
+use tower_lsp::lsp_types::TextDocumentSyncKind;
+use tower_lsp::lsp_types::TextDocumentSyncOptions;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkDoneProgressOptions;
+use tower_lsp::lsp_types::WorkspaceEdit;
+use tower_lsp::lsp_types::WorkspaceFolder;
+use tower_lsp::lsp_types::WorkspaceFoldersServerCapabilities;
+use tower_lsp::lsp_types::WorkspaceServerCapabilities;
 
-use crate::{
-    ModuleId, Program, SourceRange,
-    docs::kcl_doc::{ArgData, ModData},
-    exec::KclValue,
-    execution::cache,
-    lsp::{
-        LspSuggestion, ToLspRange,
-        backend::Backend as _,
-        kcl::hover::{Hover, HoverOpts},
-        util::IntoDiagnostic,
-    },
-    parsing::{
-        PIPE_OPERATOR,
-        ast::types::{Expr, Node, VariableKind},
-        token::{RESERVED_WORDS, TokenStream},
-    },
-};
+use crate::ModuleId;
+use crate::Program;
+use crate::SourceRange;
+use crate::docs::kcl_doc::ArgData;
+use crate::docs::kcl_doc::ModData;
+use crate::exec::KclValue;
+use crate::execution::cache;
+use crate::lsp::LspSuggestion;
+use crate::lsp::ToLspRange;
+use crate::lsp::backend::Backend as _;
+use crate::lsp::kcl::hover::Hover;
+use crate::lsp::kcl::hover::HoverOpts;
+use crate::lsp::util::IntoDiagnostic;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::RESERVED_WORDS;
+use crate::parsing::token::TokenStream;
 
 pub mod custom_notifications;
 mod hover;
@@ -126,8 +192,6 @@ pub struct Backend {
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
-    /// If we can send telemetry for this user.
-    pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
     pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
@@ -143,15 +207,8 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(fs),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(fs), zoo_client)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -159,15 +216,8 @@ impl Backend {
         client: Client,
         executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(), zoo_client)
     }
 
     fn with_file_manager(
@@ -175,7 +225,6 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
@@ -191,7 +240,6 @@ impl Backend {
             stdlib_args,
             kcl_keywords,
             zoo_client,
-            can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
             executor_ctx: Arc::new(RwLock::new(executor_ctx)),
             workspace_folders: Default::default(),
@@ -820,88 +868,6 @@ impl Backend {
         modifier
     }
 
-    pub async fn create_zip(&self) -> Result<Vec<u8>> {
-        // Collect all the file data we know.
-        let mut buf = vec![];
-        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for code in self.code_map.iter() {
-            let entry = code.key();
-            let value = code.value();
-            let file_name = entry.replace("file://", "").to_string();
-
-            let options = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-            zip.start_file(file_name, options)?;
-            zip.write_all(value)?;
-        }
-        // Apply the changes you've made.
-        // Dropping the `ZipWriter` will have the same effect, but may silently fail
-        zip.finish()?;
-
-        Ok(buf)
-    }
-
-    pub async fn send_telemetry(&self) -> Result<()> {
-        // Get information about the user.
-        let user = self
-            .zoo_client
-            .users()
-            .get_self()
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        // Hash the user's id.
-        // Create a SHA-256 object
-        let mut hasher = sha2::Sha256::new();
-        // Write input message
-        hasher.update(user.id);
-        // Read hash digest and consume hasher
-        let result = hasher.finalize();
-        // Get the hash as a string.
-        let user_id_hash = format!("{result:x}");
-
-        // Get the workspace folders.
-        // The key of the workspace folder is the project name.
-        let workspace_folders = self.workspace_folders().await;
-        let project_names: Vec<&str> = workspace_folders.iter().map(|v| v.name.as_str()).collect::<Vec<_>>();
-        // Get the first name.
-        let project_name = project_names
-            .first()
-            .ok_or_else(|| anyhow::anyhow!("no project names"))?
-            .to_string();
-
-        // Send the telemetry data.
-        self.zoo_client
-            .meta()
-            .create_event(
-                vec![kittycad::types::multipart::Attachment {
-                    // Clean the URI part.
-                    name: "attachment".to_string(),
-                    filepath: Some("attachment.zip".into()),
-                    content_type: Some("application/x-zip".to_string()),
-                    data: self.create_zip().await?,
-                }],
-                &kittycad::types::Event {
-                    // This gets generated server side so leave empty for now.
-                    attachment_uri: None,
-                    created_at: chrono::Utc::now(),
-                    event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
-                    last_compiled_at: Some(chrono::Utc::now()),
-                    // We do not have project descriptions yet.
-                    project_description: None,
-                    project_name,
-                    // The UUID for the Design Studio.
-                    // We can unwrap here because we know it will not panic.
-                    source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
-                    type_: kittycad::types::Type::ModelingAppEvent,
-                    user_id: user_id_hash,
-                },
-            )
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        Ok(())
-    }
-
     pub async fn update_can_execute(
         &self,
         params: custom_notifications::UpdateCanExecuteParams,
@@ -1073,31 +1039,6 @@ impl LanguageServer for Backend {
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
         self.do_did_close(params).await;
-
-        // Inject telemetry if we can train on the user's code.
-        // Return early if we cannot.
-        if !self.can_send_telemetry {
-            return;
-        }
-
-        // In wasm this needs to be spawn_local since fucking reqwests doesn't implement Send for wasm.
-        #[cfg(target_arch = "wasm32")]
-        {
-            let be = self.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                if let Err(err) = be.send_telemetry().await {
-                    be.client
-                        .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
-                        .await;
-                }
-            });
-        }
-        #[cfg(not(target_arch = "wasm32"))]
-        if let Err(err) = self.send_telemetry().await {
-            self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
-                .await;
-        }
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<LspHover>> {

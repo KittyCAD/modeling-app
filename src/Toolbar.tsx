@@ -20,16 +20,17 @@ import type {
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarItemResolvedDropdown,
-  ToolbarModeName,
 } from '@src/lib/toolbar'
 import {
   isToolbarItemResolvedDropdown,
+  modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -85,10 +86,14 @@ const Toolbar_ = memo(
       !props.isStreamReady ||
       !props.isStreamAcceptingInput
 
-    const currentMode =
-      (Object.entries(toolbarConfig).find(([_, mode]) =>
-        mode.check(props.state)
-      )?.[0] as ToolbarModeName) || 'modeling'
+    // Load bearing logic for determining the items in the toolbar
+    // Based on the state of the modeling machine determine what toolbar should be rendered
+    const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
+      props.state
+    )
+
+    const showNonVisualConstraints =
+      props.state.context.showNonVisualConstraints
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -158,20 +163,22 @@ const Toolbar_ = memo(
       | ToolbarItemResolvedDropdown
       | 'break'
     )[] = useMemo(() => {
-      return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
-        if (maybeIconConfig === 'break') {
-          return 'break'
-        } else if (isToolbarDropdown(maybeIconConfig)) {
-          return {
-            id: maybeIconConfig.id,
-            array: maybeIconConfig.array.map((item) =>
-              resolveItemConfig(item, wasmInstance)
-            ),
+      return toolbarConfig[toolbarConfigurationName].items.map(
+        (maybeIconConfig) => {
+          if (maybeIconConfig === 'break') {
+            return 'break'
+          } else if (isToolbarDropdown(maybeIconConfig)) {
+            return {
+              id: maybeIconConfig.id,
+              array: maybeIconConfig.array.map((item) =>
+                resolveItemConfig(item, wasmInstance)
+              ),
+            }
+          } else {
+            return resolveItemConfig(maybeIconConfig, wasmInstance)
           }
-        } else {
-          return resolveItemConfig(maybeIconConfig, wasmInstance)
         }
-      })
+      )
 
       function resolveItemConfig(
         maybeIconConfig: ToolbarItem,
@@ -219,7 +226,13 @@ const Toolbar_ = memo(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
+    }, [
+      toolbarConfigurationName,
+      disableAllButtons,
+      configCallbackProps,
+      wasmInstance,
+      showNonVisualConstraints,
+    ])
 
     // To remember the last selected item in an ActionButtonDropdown
     const [lastSelectedMultiActionItem, _] = useState(
@@ -231,7 +244,7 @@ const Toolbar_ = memo(
 
     return (
       <menu
-        data-current-mode={currentMode}
+        data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
         className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
@@ -434,15 +447,16 @@ const Toolbar_ = memo(
           {props.state.matches('Sketch no face') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Select a plane or face to start sketching
+                Select a plane or face to start sketching.
               </p>
             </div>
           )}
           {props.state.matches('sketchSolveMode') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Sketch solve mode is experimental. Disable in settings if you
-                want classic sketch mode.
+                {IS_STAGING_OR_DEBUG
+                  ? 'Sketch solve mode is experimental. This will soon become the default in production.'
+                  : 'Sketch solve mode is experimental. Disable in settings if you want classic sketch mode.'}
               </p>
             </div>
           )}
@@ -457,7 +471,6 @@ const Toolbar_ = memo(
     oldP.immediateState?.type === newP.immediateState?.type &&
     oldP.isStreamReady === newP.isStreamReady &&
     oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
-    oldP.context?.currentMode === newP.context?.currentMode &&
     oldP.context?.currentTool === newP.context?.currentTool
 )
 
@@ -591,9 +604,7 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">
-              {filterEscHotkey(itemConfig.hotkey)}
-            </kbd>
+            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">

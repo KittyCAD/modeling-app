@@ -1,23 +1,23 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use pretty_assertions::assert_eq;
-use tower_lsp::{
-    LanguageServer,
-    lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
-        SemanticTokenType, TextEdit, WorkspaceEdit,
-    },
-};
+use tower_lsp::LanguageServer;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkspaceEdit;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{
-        LspSuggestion,
-        test_util::{copilot_lsp_server, kcl_lsp_server},
-    },
-    parsing::ast::types::{Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::LspSuggestion;
+use crate::lsp::test_util::copilot_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
@@ -557,84 +557,6 @@ async fn test_updating_copilot_lsp_files() {
         }
     );
     assert_eq!(server.code_map.len(), 11);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn test_kcl_lsp_create_zip() {
-    let server = kcl_lsp_server(false).await.unwrap();
-
-    assert_eq!(server.code_map.len(), 0);
-
-    // Get the path to the current file.
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
-    let string_path = format!("file://{}", path.display());
-
-    // Run workspace folders change.
-    server
-        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
-            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
-                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
-                    uri: string_path.as_str().try_into().unwrap(),
-                    name: "my-project".to_string(),
-                }],
-                removed: vec![],
-            },
-        })
-        .await;
-
-    // Get the workspace folders.
-    assert_eq!(server.workspace_folders.len(), 1);
-    assert_eq!(
-        server.workspace_folders.get("my-project").unwrap().clone(),
-        tower_lsp::lsp_types::WorkspaceFolder {
-            uri: string_path.as_str().try_into().unwrap(),
-            name: "my-project".to_string()
-        }
-    );
-
-    assert_eq!(server.code_map.len(), 11);
-
-    // Run open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: "test".to_string(),
-            },
-        })
-        .await;
-
-    // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
-    assert_eq!(
-        server.code_map.get("file:///test.kcl").unwrap().clone(),
-        "test".as_bytes()
-    );
-
-    // Create a zip.
-    let bytes = server.create_zip().await.unwrap();
-    // Write the bytes to a tmp file.
-    let tmp_dir = std::env::temp_dir();
-    let filename = format!("test-{}.zip", chrono::Utc::now().timestamp());
-    let tmp_file = tmp_dir.join(filename);
-    std::fs::write(&tmp_file, bytes).unwrap();
-
-    // Try to unzip the file.
-    let mut archive = zip::ZipArchive::new(std::fs::File::open(&tmp_file).unwrap()).unwrap();
-
-    // Check the files in the zip.
-    let mut files = BTreeMap::new();
-    for i in 0..archive.len() {
-        let file = archive.by_index(i).unwrap();
-        files.insert(file.name().to_string(), file.size());
-    }
-
-    assert_eq!(files.len(), 12);
-    let util_path = format!("{string_path}/util.rs").replace("file://", "");
-    assert!(files.contains_key(&util_path));
-    assert_eq!(files.get("/test.kcl"), Some(&4));
 }
 
 #[tokio::test(flavor = "multi_thread")]

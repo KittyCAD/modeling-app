@@ -19,7 +19,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -37,7 +37,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v16
+        uses: dawidd6/action-download-artifact@v19
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}

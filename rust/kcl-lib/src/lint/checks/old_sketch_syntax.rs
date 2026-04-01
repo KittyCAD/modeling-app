@@ -1,11 +1,15 @@
 use anyhow::Result;
 
-use crate::{
-    SourceRange,
-    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
-    parsing::ast::types::{Expr, Node as AstNode, PipeExpression, Program},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::FindingFamily;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 def_finding!(
     Z0005,
@@ -38,7 +42,17 @@ pub fn contains_start_profile(pipe_expr: &PipeExpression) -> bool {
 
 /// Lint that detects old sketch syntax (startProfile in pipe expressions).
 /// This is detection-only - actual transpilation is done via WASM API function.
-pub fn lint_old_sketch_syntax(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+pub fn lint_old_sketch_syntax(node: Node, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+    // Only run if experimental features are allowed.
+    let settings = match prog.meta_settings() {
+        Ok(settings) => settings.unwrap_or_default(),
+        // Error interpreting @settings(). Ignore it and assume the default.
+        Err(_) => Default::default(),
+    };
+    if !settings.experimental_features.is_allow() {
+        return Ok(Vec::new());
+    }
+
     let mut findings = vec![];
 
     // Only check variable declarations

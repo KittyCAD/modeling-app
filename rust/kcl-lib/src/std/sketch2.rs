@@ -1,27 +1,56 @@
+use std::collections::HashMap;
+use std::f64::consts::TAU;
+
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::Angle as KAngle;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
 
-use crate::{
-    ExecState, ExecutorContext, KclError,
-    errors::KclErrorDetails,
-    exec::{KclValue, NumericType, Sketch},
-    execution::{
-        BasePath, GeoMeta, Metadata, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META,
-        SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SketchSurface,
-        types::{ArrayLen, RuntimeType},
-    },
-    front::ObjectId,
-    parsing::ast::types::TagNode,
-    std::{
-        Args, CircularDirection,
-        args::{FromKclValue, TyF64},
-        sketch::{StraightLineParams, create_sketch, relative_arc, straight_line},
-        utils::{distance, point_to_len_unit, point_to_mm, untype_point},
-    },
-    std_utils::untyped_point_to_unit,
-};
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::exec::NumericType;
+use crate::exec::Sketch;
+use crate::execution::BasePath;
+use crate::execution::GeoMeta;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SketchSurface;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::front::ObjectId;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::CircularDirection;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::StraightLineParams;
+use crate::std::sketch::create_sketch;
+use crate::std::sketch::relative_arc;
+use crate::std::sketch::straight_line;
+use crate::std::utils::distance;
+use crate::std::utils::point_to_len_unit;
+use crate::std::utils::point_to_mm;
+use crate::std::utils::untype_point;
+use crate::std::utils::untyped_point_to_mm;
+use crate::std_utils::untyped_point_to_unit;
 
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
@@ -50,6 +79,7 @@ pub(crate) async fn create_segments_in_engine(
             }
             SegmentKind::Line { start, .. } => start.clone(),
             SegmentKind::Arc { start, .. } => start.clone(),
+            SegmentKind::Circle { start, .. } => start.clone(),
         };
 
         // Get the source range of the segment from its metadata, falling back to the sketch block's.
@@ -191,6 +221,88 @@ pub(crate) async fn create_segments_in_engine(
                 .await?;
                 outer_sketch = Some(sketch);
             }
+            SegmentKind::Circle { start, center, .. } => {
+                let (start, start_ty) = untype_point(start.clone());
+                let Some(start_unit) = start_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Start point of circle must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let (center, center_ty) = untype_point(center.clone());
+                let Some(center_unit) = center_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Center point of circle must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let start_in_center_unit = untyped_point_to_unit(start, start_unit, center_unit);
+                let start_radians =
+                    libm::atan2(start_in_center_unit[1] - center[1], start_in_center_unit[0] - center[0]);
+                let end_radians = start_radians + TAU;
+                let radius_in_center_unit = distance(center, start_in_center_unit);
+
+                let sketch_surface = SketchOrSurface::Sketch(Box::new(sketch.clone())).into_sketch_surface();
+                let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
+                let from = start_in_center_unit;
+                let from_t = [TyF64::new(from[0], center_ty), TyF64::new(from[1], center_ty)];
+
+                let sketch =
+                    crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, ctx, range)
+                        .await?;
+
+                let id = exec_state.next_uuid();
+
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::with_id(exec_state, ctx, range, id),
+                        ModelingCmd::from(
+                            mcmd::ExtendPath::builder()
+                                .path(sketch.id.into())
+                                .segment(PathSegment::Arc {
+                                    start: KAngle::from_radians(start_radians),
+                                    end: KAngle::from_radians(end_radians),
+                                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                                    radius: LengthUnit(
+                                        crate::execution::types::adjust_length(
+                                            units,
+                                            radius_in_center_unit,
+                                            UnitLength::Millimeters,
+                                        )
+                                        .0,
+                                    ),
+                                    relative: false,
+                                })
+                                .build(),
+                        ),
+                    )
+                    .await?;
+
+                let current_path = Path::Circle {
+                    base: BasePath {
+                        from,
+                        to: from,
+                        tag: tag.clone(),
+                        units,
+                        geo_meta: GeoMeta {
+                            id,
+                            metadata: range.into(),
+                        },
+                    },
+                    radius: radius_in_center_unit,
+                    center,
+                    ccw: start_radians < end_radians,
+                };
+
+                let mut new_sketch = sketch;
+                if let Some(tag) = &tag {
+                    new_sketch.add_tag(tag, &current_path, exec_state, None);
+                }
+
+                new_sketch.paths.push(current_path);
+
+                outer_sketch = Some(new_sketch);
+            }
         }
     }
 
@@ -254,13 +366,13 @@ async fn inner_region(
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
 
-    let sketch_or_segment = match (point, segments) {
+    let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegionFromQueryPoint::builder()
@@ -271,7 +383,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            sketch
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (sketch, region_mapping)
         }
         (None, Some(segments)) => {
             if sketch.is_some() {
@@ -315,8 +436,8 @@ async fn inner_region(
             };
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegion::builder()
@@ -330,7 +451,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            SketchOrSegment::Segment(seg0)
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegion(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (SketchOrSegment::Segment(seg0), region_mapping)
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -403,6 +533,63 @@ async fn inner_region(
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
+
+    let mut region_mapping = region_mapping;
+    if args.ctx.no_engine_commands().await && region_mapping.is_empty() {
+        // In mock mode, we need to create fake segment IDs so that tags can be
+        // found.
+        let mut mock_mapping = HashMap::new();
+        for path in &sketch.paths {
+            mock_mapping.insert(exec_state.next_uuid(), path.get_id());
+        }
+        region_mapping = mock_mapping;
+    }
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
+    let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
+
+    // Early expansion: replace paths and update tags to use region segment IDs.
+    {
+        // Replace paths with region-segment paths.
+        let mut new_paths = Vec::new();
+        for path in &sketch.paths {
+            let original_id = path.get_id();
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                for region_id in region_ids {
+                    let mut new_path = path.clone();
+                    new_path.set_id(*region_id);
+                    new_paths.push(new_path);
+                }
+            }
+            // Paths not in region_mapping are dropped (not part of region).
+        }
+        sketch.paths = new_paths;
+
+        // Update tag engine infos to use region segment IDs.
+        for (_tag_name, tag) in &mut sketch.tags {
+            let Some(info) = tag.get_cur_info().cloned() else {
+                continue;
+            };
+            let original_id = info.id;
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
+                // First entry: update existing info's ID.
+                // Additional entries: clone and push with new IDs.
+                for (i, region_id) in region_ids.iter().enumerate() {
+                    if i == 0 {
+                        if let Some((_, existing)) = tag.info.last_mut() {
+                            existing.id = *region_id;
+                        }
+                    } else {
+                        let mut new_info = info.clone();
+                        new_info.id = *region_id;
+                        tag.info.push((epoch, new_info));
+                    }
+                }
+            }
+        }
+    }
+
     sketch.meta.push(args.source_range.into());
     // The engine always returns a closed Solid2d for a region.
     sketch.is_closed = ProfileClosed::Explicitly;
@@ -410,6 +597,53 @@ async fn inner_region(
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
+}
+
+/// The region mapping returned from the engine maps from region segment ID to
+/// the original sketch segment ID. Create the reverse mapping, i.e. original
+/// sketch segment ID to region segment IDs, where the entries are ordered by
+/// the given original segments.
+///
+/// This runs in O(r + s) where r is the number of segments in the region, and s
+/// is the number of segments in the original sketch. Technically, it's more
+/// complicated since we also sort region segments, but in practice, there
+/// should be very few of these.
+pub(crate) fn build_reverse_region_mapping(
+    region_mapping: &HashMap<Uuid, Uuid>,
+    original_segments: &[Uuid],
+) -> IndexMap<Uuid, Vec<Uuid>> {
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::default();
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice. This function exists to work around that."
+    )]
+    for (region_id, original_id) in region_mapping {
+        reverse.entry(*original_id).or_default().push(*region_id);
+    }
+    // Sort the values so that they're deterministic. The engine uses
+    // UUIDv5s, so the relative order shouldn't change across runs.
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is safe since we're just sorting values."
+    )]
+    for values in reverse.values_mut() {
+        values.sort_unstable();
+    }
+    // Create the order. The region_mapping is unordered, so never use any order
+    // that comes out of it. Use the order of the original segments.
+    let mut ordered = IndexMap::with_capacity(original_segments.len());
+    for original_id in original_segments {
+        let mut region_ids = Vec::new();
+        reverse.entry(*original_id).and_modify(|entry_value| {
+            region_ids = std::mem::take(entry_value);
+        });
+        // Not every original segment will be in the region. Omit those.
+        if !region_ids.is_empty() {
+            ordered.insert(*original_id, region_ids);
+        }
+    }
+    ordered
 }
 
 fn region_from_point(

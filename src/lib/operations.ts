@@ -39,7 +39,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import { stripQuotes } from '@src/lib/utils'
+import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
@@ -2019,6 +2019,14 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Angle Constraint',
     icon: 'angle',
   },
+  arc: {
+    label: 'Arc',
+    icon: 'arc',
+  },
+  circle: {
+    label: 'Circle',
+    icon: 'circle',
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
@@ -2047,6 +2055,18 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Horizontal Constraint',
     icon: 'horizontal',
   },
+  horizontalDistance: {
+    label: 'Horizontal Distance Constraint',
+    icon: 'horizontalDimension',
+  },
+  verticalDistance: {
+    label: 'Vertical Distance Constraint',
+    icon: 'verticalDimension',
+  },
+  line: {
+    label: 'Line',
+    icon: 'line',
+  },
   midpoint: {
     label: 'Midpoint Constraint',
     icon: 'midpoint',
@@ -2062,6 +2082,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  point: {
+    label: 'Point',
+    icon: 'oneDot',
   },
   radius: {
     label: 'Radius Constraint',
@@ -2089,6 +2113,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'hole::holes': {
     label: 'Holes',
     icon: 'hole',
+  },
+  joinSurfaces: {
+    label: 'Join Surfaces',
+    icon: 'joinSurfaces',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   sketchSolve: {
     label: 'Solve Sketch',
@@ -2177,7 +2207,31 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
-type NestedOpList = (Operation | Operation[])[]
+export type NestedOpList = (Operation | Operation[])[]
+
+function getSketchBlockOperationKey(op: Operation): string | null {
+  if (!('nodePath' in op)) {
+    return null
+  }
+  const sketchBlockIndex = op.nodePath.steps.findIndex(
+    (step) => step.type === 'SketchBlock'
+  )
+  if (sketchBlockIndex < 0) {
+    return null
+  }
+  return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex + 1))
+}
+
+export function isSketchBlockOperationGroup(items: Operation[]): boolean {
+  if (items.length === 0) {
+    return false
+  }
+  const firstKey = getSketchBlockOperationKey(items[0])
+  if (!firstKey) {
+    return false
+  }
+  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
+}
 
 /**
  * Given an operations list, group streaks of provided types
@@ -2227,6 +2281,53 @@ export function groupOperationTypeStreaks(
   // Flush any remaining streak
   flushStreak()
 
+  return result
+}
+
+/**
+ * Given a list that may already contain grouped operation streaks, group
+ * contiguous operations that belong to the same sketch block.
+ */
+export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
+  const result: NestedOpList = []
+  let currentSketchKey: string | null = null
+  let currentSketchOps: Operation[] = []
+
+  const flushSketchOps = () => {
+    if (currentSketchOps.length === 0) {
+      return
+    }
+    result.push([...currentSketchOps])
+    currentSketchOps = []
+    currentSketchKey = null
+  }
+
+  for (const item of opList) {
+    if (isArray(item)) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    const sketchKey = getSketchBlockOperationKey(item)
+    if (!sketchKey) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    if (currentSketchKey === null || currentSketchKey === sketchKey) {
+      currentSketchKey = sketchKey
+      currentSketchOps.push(item)
+      continue
+    }
+
+    flushSketchOps()
+    currentSketchKey = sketchKey
+    currentSketchOps.push(item)
+  }
+
+  flushSketchOps()
   return result
 }
 
@@ -2285,13 +2386,13 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
     case 'TagDeclarator':
       return op.name
     case 'SketchVar':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'String':
       return op.value
     case 'Bool':
       return String(op.value)
     case 'Number':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     default:
       return op.type
   }

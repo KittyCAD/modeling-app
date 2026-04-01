@@ -34,18 +34,21 @@ import {
   deleteDraftEntities,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
-  onCameraScaleChange,
+  refreshSketchSolveScale,
   tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
+  buildFixedConstraintInput,
   buildTangentConstraintInput,
   isArcSegment,
+  isCircleSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -74,7 +77,7 @@ async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
-  constraintType: 'HorizontalDistance' | 'VerticalDistance'
+  providedDistance?: number
 ) {
   let segmentsToConstrain = context.selectedIds
   if (segmentsToConstrain.length === 1) {
@@ -91,12 +94,15 @@ async function addAxisDistanceConstraint(
       (id) => context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
     )
     .filter(Boolean)
-  let distance = DEFAULT_DISTANCE_FALLBACK
+  let distance =
+    providedDistance !== undefined
+      ? providedDistance
+      : DEFAULT_DISTANCE_FALLBACK
   const units = baseUnitToNumericSuffix(
     context.kclManager.fileSettings.defaultLengthUnit
   )
   // Calculate distance between two points if both are point segments
-  if (currentSelections.length === 2) {
+  if (currentSelections.length === 2 && providedDistance === undefined) {
     const first = currentSelections[0]
     const second = currentSelections[1]
     if (isPointSegment(first) && isPointSegment(second)) {
@@ -108,15 +114,16 @@ async function addAxisDistanceConstraint(
         x: second.kind.segment.position.x,
         y: second.kind.segment.position.y,
       }
-      // Calculate distance: axis === 'horizontal' ? x2 - x1 : y2 - y1 (preserve sign)
-      if (axis === 'horizontal') {
-        const x1 = point1.x.value
-        const x2 = point2.x.value
-        distance = roundOff(x2 - x1)
+      const signedDistance =
+        axis === 'horizontal'
+          ? roundOff(point2.x.value - point1.x.value)
+          : roundOff(point2.y.value - point1.y.value)
+
+      if (signedDistance < 0) {
+        segmentsToConstrain = [segmentsToConstrain[1], segmentsToConstrain[0]]
+        distance = -signedDistance
       } else {
-        const y1 = point1.y.value
-        const y2 = point2.y.value
-        distance = roundOff(y2 - y1)
+        distance = signedDistance
       }
     }
   }
@@ -124,13 +131,71 @@ async function addAxisDistanceConstraint(
     0,
     context.sketchId,
     {
-      type: constraintType,
+      type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
       distance: { value: distance, units },
       points: segmentsToConstrain,
       source: {
         expr: distance.toString(),
         is_literal: true,
       },
+    },
+    jsAppSettings(context.kclManager.systemDeps.settings)
+  )
+  sendToolbarConstraintOutcome(self, result)
+}
+
+async function addLineOrientationConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self'],
+  type: 'Horizontal' | 'Vertical'
+) {
+  let result
+  for (const id of context.selectedIds) {
+    // TODO this is not how these constraints should operate long term, as they should be equipable tools
+    result = await context.rustContext.addConstraint(
+      0,
+      context.sketchId,
+      {
+        type,
+        line: id,
+      },
+      jsAppSettings(context.kclManager.systemDeps.settings)
+    )
+  }
+  sendToolbarConstraintOutcome(self, result)
+}
+
+async function addHorizontalConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  await addLineOrientationConstraint(context, self, 'Horizontal')
+}
+
+async function addVerticalConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  await addLineOrientationConstraint(context, self, 'Vertical')
+}
+
+async function addFixedConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  const objects =
+    context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+  const fixedInput = buildFixedConstraintInput(context.selectedIds, objects)
+  if (!fixedInput) {
+    return
+  }
+
+  const result = await context.rustContext.addConstraint(
+    0,
+    context.sketchId,
+    {
+      type: 'Fixed',
+      points: fixedInput,
     },
     jsAppSettings(context.kclManager.systemDeps.settings)
   )
@@ -157,6 +222,15 @@ export const sketchSolveMachine = setup({
   actions: {
     'initialize intersection plane': initializeIntersectionPlane,
     'initialize initial scene graph': assign(initializeInitialSceneGraph),
+    'register sketch solve scale refresh': ({ self, context }) => {
+      context.sceneInfra.setOnBeforeRender(() => {
+        const snapshot = self.getSnapshot()
+        refreshSketchSolveScale(snapshot.context)
+      })
+    },
+    'clear sketch solve scale refresh': ({ context }) => {
+      context.sceneInfra.setOnBeforeRender(null)
+    },
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': ({ context }) => {
@@ -182,6 +256,15 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
+    'toggle non-visual constraints': assign(({ context }) => ({
+      showNonVisualConstraints: !context.showNonVisualConstraints,
+    })),
+    'send show non-visual constraints changed to parent': sendParent(
+      ({ context }) => ({
+        type: 'show non-visual constraints changed',
+        data: { value: context.showNonVisualConstraints },
+      })
+    ),
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
@@ -189,11 +272,13 @@ export const sketchSolveMachine = setup({
     'update selected ids': assign(updateSelectedIds),
     'update hovered id': assign(({ event }) => {
       assertEvent(event, 'update hovered id')
-      return { hoveredId: event.data.hoveredId }
+      return {
+        hoveredId: event.data.hoveredId,
+        constraintHoverPopups: event.data.constraintHoverPopups ?? [],
+      }
     }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
-    'camera scale change': onCameraScaleChange,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -222,6 +307,7 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       hoveredId: null,
+      constraintHoverPopups: [],
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         sourceDelta: {
@@ -234,6 +320,7 @@ export const sketchSolveMachine = setup({
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
+      showNonVisualConstraints: false,
     }
   },
   id: 'Sketch Solve Mode',
@@ -241,7 +328,11 @@ export const sketchSolveMachine = setup({
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
-      actions: ['send unequip to tool', 'send tool unequipped to parent'],
+      actions: [
+        'clear sketch solve scale refresh',
+        'send unequip to tool',
+        'send tool unequipped to parent',
+      ],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
@@ -249,9 +340,6 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
-    },
-    'camera scale change': {
-      actions: 'camera scale change',
     },
     'set draft entities': {
       actions: 'set draft entities',
@@ -266,6 +354,15 @@ export const sketchSolveMachine = setup({
       actions: 'delete draft entities',
       description:
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
+    },
+    'toggle non-visual constraints': {
+      actions: [
+        'toggle non-visual constraints',
+        'send show non-visual constraints changed to parent',
+        'refresh selection styling',
+      ],
+      description:
+        'Toggles whether non-visual constraints should be shown in sketch solve mode.',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state
@@ -287,6 +384,11 @@ export const sketchSolveMachine = setup({
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
         sendToolbarConstraintOutcome(self, result)
+      },
+    },
+    Fixed: {
+      actions: async ({ self, context }) => {
+        await addFixedConstraint(context, self)
       },
     },
     Tangent: {
@@ -376,10 +478,7 @@ export const sketchSolveMachine = setup({
           }
         } else if (currentSelections.length === 1) {
           const first = currentSelections[0]
-          if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind?.segment?.type === 'Arc'
-          ) {
+          if (isArcSegment(first) || isCircleSegment(first)) {
             // Calculate radius for arc segment from its center and start point
             const centerPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
@@ -481,22 +580,12 @@ export const sketchSolveMachine = setup({
     },
     HorizontalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(
-          context,
-          self,
-          'horizontal',
-          'HorizontalDistance'
-        )
+        await addAxisDistanceConstraint(context, self, 'horizontal')
       },
     },
     VerticalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(
-          context,
-          self,
-          'vertical',
-          'VerticalDistance'
-        )
+        await addAxisDistanceConstraint(context, self, 'vertical')
       },
     },
     Parallel: {
@@ -546,38 +635,42 @@ export const sketchSolveMachine = setup({
     },
     Vertical: {
       actions: async ({ self, context }) => {
-        let result
-        for (const id of context.selectedIds) {
-          // TODO this is not how Vertical should operate long term, as it should be an equipable tool
-          result = await context.rustContext.addConstraint(
-            0,
-            context.sketchId,
-            {
-              type: 'Vertical',
-              line: id,
-            },
-            jsAppSettings(context.kclManager.systemDeps.settings)
+        const itemsToConstrain = context.selectedIds
+        const selectionIsAllPoints = itemsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
           )
+          .every((selection) => isPointSegment(selection))
+
+        // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
+        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+          await addAxisDistanceConstraint(context, self, 'horizontal', 0)
+          return
+        } else {
+          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+          await addVerticalConstraint(context, self)
         }
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     Horizontal: {
       actions: async ({ self, context }) => {
-        let result
-        for (const id of context.selectedIds) {
-          // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
-          result = await context.rustContext.addConstraint(
-            0,
-            context.sketchId,
-            {
-              type: 'Horizontal',
-              line: id,
-            },
-            jsAppSettings(context.kclManager.systemDeps.settings)
+        const itemsToConstrain = context.selectedIds
+        const selectionIsAllPoints = itemsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
           )
+          .every((selection) => isPointSegment(selection))
+
+        // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
+        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+          await addAxisDistanceConstraint(context, self, 'vertical', 0)
+          return
+        } else {
+          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+          await addHorizontalConstraint(context, self)
         }
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     construction: {
@@ -601,10 +694,11 @@ export const sketchSolveMachine = setup({
             continue
           }
 
-          // Only Line and Arc segments support construction geometry
+          // Only Line, Arc, and Circle segments support construction geometry
           if (
             obj.kind.segment.type !== 'Line' &&
-            obj.kind.segment.type !== 'Arc'
+            obj.kind.segment.type !== 'Arc' &&
+            obj.kind.segment.type !== 'Circle'
           ) {
             continue
           }
@@ -617,7 +711,7 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            isLineSegment(obj) || isArcSegment(obj)
+            isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
               ? obj.kind.segment.construction
               : false
 
@@ -634,6 +728,14 @@ export const sketchSolveMachine = setup({
               },
             })
           } else if (baseCtor.type === 'Arc') {
+            segmentsToEdit.push({
+              id,
+              ctor: {
+                ...baseCtor,
+                construction: newConstruction,
+              },
+            })
+          } else if (baseCtor.type === 'Circle') {
             segmentsToEdit.push({
               id,
               ctor: {
@@ -889,8 +991,15 @@ export const sketchSolveMachine = setup({
   },
 
   entry: [
+    'register sketch solve scale refresh',
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
+    ({ context }) => toggleSketchExtension(context.kclManager.editorView, true),
+  ],
+
+  exit: [
+    ({ context }) =>
+      toggleSketchExtension(context.kclManager.editorView, false),
   ],
 })

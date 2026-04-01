@@ -1,0 +1,110 @@
+// Parametric Shelf Unit
+// A modular and adjustable 3D shelf model designed for basic furniture design.
+// Categories: Construction
+
+// This model includes:
+// - Two vertical side panels (left and right)
+// - A floor base (spacer) at the bottom
+// - Multiple evenly spaced horizontal shelf boards
+// - Optional top board acting as a cover
+// All elements are parametric and adaptable through clearly named variables.
+
+@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+
+// --- Global Dimensions ---
+unitWidth = 1 // overall external width of the shelf
+unitHeight = 2 // total height including top and base
+unitDepth = 0.4 // depth from front to back
+
+
+shelfBoardCount = 5 // number of usable shelf boards (excludes top cover)
+
+
+// --- Panel & Shelf Geometry ---
+panelThickness = 0.02 // thickness of side panels and shelf boards
+sidePanelOffset = unitWidth - panelThickness // distance between origin points of left and right panel
+
+
+// --- Base Spacer (Plinth) ---
+baseHeight = 0.05 // elevation of bottom plinth from ground
+baseInset = 0.03 // inward offset at the front (toe kick for foot clearance)
+baseWidth = unitWidth - (panelThickness * 2) // internal width of base element
+baseDepth = unitDepth - baseInset // shallower depth than full unit
+
+
+// --- Shelf Placement ---
+shelfStartZ = baseHeight // Z elevation of the first shelf board
+shelfThickness = panelThickness // shelf board thickness
+shelfWidth = baseWidth // width same as base
+shelfDepth = unitDepth // full shelf depth
+
+
+totalShelfBoards = shelfBoardCount + 1 // includes top cover board
+availableVerticalSpace = unitHeight - baseHeight - shelfThickness
+shelfSpacing = availableVerticalSpace / shelfBoardCount // vertical distance between shelf boards
+
+
+// --- Reference Plane ---
+basePlane = startSketchOn(XY)
+
+// --- Side Panels ---
+// Left and right vertical structural walls.
+sidePanelProfile = startProfile(basePlane, at = [-unitWidth / 2, 0])
+  |> yLine(length = -unitDepth)
+  |> xLine(length = panelThickness)
+  |> yLine(length = unitDepth)
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = sidePanelOffset,
+       axis = [1, 0],
+     )
+sidePanels = extrude(sidePanelProfile, length = unitHeight)
+
+// --- Floor Base / Plinth ---
+// Supporting base element between side panels.
+baseProfile = sketch(on = basePlane) {
+  line1 = line(start = [var -0.48m, var 0m], end = [var -0.48m, var -0.37m])
+  line2 = line(start = [var -0.48m, var -0.37m], end = [var 0.48m, var -0.37m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.48m, var -0.37m], end = [var 0.48m, var 0m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.48m, var 0m], end = [var -0.48m, var 0m])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+region001 = region(segments = [baseProfile.line1, baseProfile.line2])
+baseBlock = extrude(region001, length = baseHeight)
+
+// --- First Shelf Board ---
+firstShelfPlane = offsetPlane(XY, offset = shelfStartZ)
+firstShelfSketch = startSketchOn(firstShelfPlane)
+firstShelfProfile = sketch(on = firstShelfSketch) {
+  line1 = line(start = [var -0.48m, var 0m], end = [var -0.48m, var -0.4m])
+  line2 = line(start = [var -0.48m, var -0.4m], end = [var 0.48m, var -0.4m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.48m, var -0.4m], end = [var 0.48m, var 0m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.48m, var 0m], end = [var -0.48m, var 0m])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+region002 = region(segments = [
+  firstShelfProfile.line1,
+  firstShelfProfile.line2
+])
+firstShelf = extrude(region002, length = shelfThickness)
+
+// --- Shelf Stack ---
+shelves = patternLinear3d(
+  firstShelf,
+  instances = totalShelfBoards,
+  distance = shelfSpacing,
+  axis = [0, 0, 1],
+)
+

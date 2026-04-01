@@ -1,26 +1,36 @@
+//!
 //! Transpiler for converting old sketch syntax to new sketch block syntax.
 
 use std::collections::HashMap;
 
 use kcl_error::SourceRange;
 
-use crate::{
-    Program,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecOutcome, ExecutorContext, KclValue, SKETCH_BLOCK_PARAM_ON,
-        geometry::{Path, Sketch, SketchSurface},
-    },
-    fmt::format_number_literal,
-    frontend::{
-        api::{Expr, Number},
-        ast_name_expr, create_arc_ast, create_coincident_ast, create_equal_length_ast, create_horizontal_ast,
-        create_line_ast, create_member_expression, create_tangent_ast, create_vertical_ast,
-        sketch::Point2d,
-        to_ast_point2d,
-    },
-    parsing::ast::types as ast,
-};
+use crate::Program;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecOutcome;
+use crate::execution::ExecutorContext;
+use crate::execution::KclValue;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::geometry::GetTangentialInfoFromPathsResult;
+use crate::execution::geometry::Path;
+use crate::execution::geometry::Sketch;
+use crate::fmt::format_number_literal;
+use crate::frontend::api::Expr;
+use crate::frontend::api::Number;
+use crate::frontend::ast_name_expr;
+use crate::frontend::create_arc_ast;
+use crate::frontend::create_circle_ast;
+use crate::frontend::create_coincident_ast;
+use crate::frontend::create_equal_length_ast;
+use crate::frontend::create_horizontal_ast;
+use crate::frontend::create_line_ast;
+use crate::frontend::create_member_expression;
+use crate::frontend::create_tangent_ast;
+use crate::frontend::create_vertical_ast;
+use crate::frontend::sketch::Point2d;
+use crate::frontend::to_ast_point2d;
+use crate::parsing::ast::types as ast;
 
 mod intermediate_var;
 mod region;
@@ -173,20 +183,10 @@ pub fn transpile_old_sketch_to_new_ast(
     // Get the sketch from execution outcome
     let sketch = get_sketch_from_exec_outcome(exec_outcome, variable_name)?;
 
-    // Get the plane name
-    let plane_name = match get_plane_name(&sketch) {
-        Ok(p) => p,
-        Err(err) => {
-            if fail_fast {
-                return Err(err);
-            } else {
-                "XY".to_owned()
-            }
-        }
-    };
+    let on_expr = extract_sketch_block_on_expr(program, variable_name)?;
 
     // Build the sketch block AST
-    build_sketch_block_ast(&sketch, &plane_name, program, variable_name, fail_fast)
+    build_sketch_block_ast(&sketch, on_expr, program, variable_name, fail_fast)
 }
 
 /// Transpile an old-style sketch to new sketch block syntax by re-executing the program.
@@ -236,30 +236,19 @@ pub async fn transpile_old_sketch_to_new_with_execution(
 /// Build the AST for a sketch block from the executed sketch
 fn build_sketch_block_ast(
     sketch: &Sketch,
-    plane_name: &str,
+    on_expr: ast::Expr,
     program: &Program,
     variable_name: &str,
     fail_fast: bool,
 ) -> Result<ast::SketchBlock, KclError> {
-    // Find the pipe expression with startProfile
-    let pipe_expr = find_start_profile_pipe(program, variable_name)?;
+    // Find the original old-sketch initializer expression.
+    let pipe_expr = find_old_sketch_init_expr(program, variable_name)?;
 
     // Map segments to their AST calls using source ranges
     let segment_ast_calls = map_segments_to_ast_calls(sketch, pipe_expr)?;
 
     // Detect constraints from AST
     let constraints = detect_constraints_from_ast(&segment_ast_calls, sketch)?;
-
-    // Create the plane expression
-    let plane_expr = ast::Expr::Name(Box::new(ast::Node::no_src(ast::Name {
-        name: ast::Node::no_src(ast::Identifier {
-            name: plane_name.to_string(),
-            digest: None,
-        }),
-        path: Vec::new(),
-        abs_path: false,
-        digest: None,
-    })));
 
     // Build sketch block body items
     let mut body_items = Vec::new();
@@ -393,7 +382,7 @@ fn build_sketch_block_ast(
     Ok(ast::SketchBlock {
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
-            arg: plane_expr,
+            arg: on_expr,
         }],
         body: ast::Node::no_src(block),
         is_being_edited: false,
@@ -406,7 +395,8 @@ fn build_sketch_block_ast(
 fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -> Number {
     // Round to 2 decimal places, then convert using From trait
     let rounded = (value * 100.0).round() / 100.0;
-    (rounded, units).into()
+    let normalized = if rounded == 0.0 { 0.0 } else { rounded };
+    (normalized, units).into()
 }
 
 fn transpiler_build_segment(
@@ -422,8 +412,11 @@ fn transpiler_build_segment(
             start: base.from,
             end: base.to,
         }))),
-        Path::TangentialArcTo { center, ccw, .. } | Path::TangentialArc { center, ccw, .. } => {
-            let (start, end, entry_endpoint, exit_endpoint) = if *ccw {
+        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } | Path::Arc { .. } | Path::ArcThreePoint { .. } => {
+            let GetTangentialInfoFromPathsResult::Arc { center, ccw } = path_segment.get_tangential_info() else {
+                unreachable!("Arc-like paths should always produce arc tangential info");
+            };
+            let (start, end, entry_endpoint, exit_endpoint) = if ccw {
                 (base.from, base.to, SegmentEndpoint::Start, SegmentEndpoint::End)
             } else {
                 (base.to, base.from, SegmentEndpoint::End, SegmentEndpoint::Start)
@@ -433,7 +426,7 @@ fn transpiler_build_segment(
                 name: transpiler_segment_name_for_path(path_segment, segment_index),
                 start,
                 end,
-                center: *center,
+                center,
                 entry_endpoint,
                 exit_endpoint,
             })))
@@ -444,11 +437,9 @@ fn transpiler_build_segment(
             radius: *radius,
         })),
         Path::CircleThreePoint { .. }
-        | Path::ArcThreePoint { .. }
         | Path::Horizontal { .. }
         | Path::AngledLineTo { .. }
         | Path::Base { .. }
-        | Path::Arc { .. }
         | Path::Ellipse { .. }
         | Path::Conic { .. }
         | Path::Bezier { .. } => {
@@ -456,7 +447,7 @@ fn transpiler_build_segment(
                 Err(transpiler_create_unsupported_segment_error(segment_index, path_segment))
             } else {
                 std::eprintln!(
-                    "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+                    "Transpilation not supported: segment {} has unsupported type {}. Only line segments, arcs, tangential arcs, and circles are currently supported.",
                     segment_index + 1,
                     transpiler_path_type_name(path_segment),
                 );
@@ -487,7 +478,9 @@ fn transpiler_path_type_name(path_segment: &Path) -> &'static str {
 fn transpiler_segment_name_for_path(path_segment: &Path, segment_index: usize) -> String {
     match path_segment {
         Path::ToPoint { .. } => format!("line{}", segment_index + 1),
-        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } => format!("arc{}", segment_index + 1),
+        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } | Path::Arc { .. } | Path::ArcThreePoint { .. } => {
+            format!("arc{}", segment_index + 1)
+        }
         Path::Circle { .. } => format!("circle{}", segment_index + 1),
         _ => format!("segment{}", segment_index + 1),
     }
@@ -530,15 +523,7 @@ fn transpiler_create_segment_declaration(
         ),
         TranspilerSegment::Circle { name, center, radius } => (
             name.as_str(),
-            create_arc_ast_from_coords(
-                center[0] + radius,
-                center[1],
-                center[0] + radius,
-                center[1],
-                center[0],
-                center[1],
-                units,
-            )?,
+            create_circle_ast_from_coords(center[0] + radius, center[1], center[0], center[1], units)?,
         ),
     };
 
@@ -573,7 +558,7 @@ fn transpiler_create_segment_coincident_constraint(
 fn transpiler_create_unsupported_segment_error(segment_index: usize, _path_segment: &Path) -> KclError {
     KclError::new_internal(KclErrorDetails::new(
         format!(
-            "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+            "Transpilation not supported: segment {} has unsupported type {}. Only line segments, arcs, tangential arcs, and circles are currently supported.",
             segment_index + 1,
             transpiler_path_type_name(_path_segment),
         ),
@@ -665,6 +650,39 @@ fn create_arc_ast_from_coords(
     Ok(create_arc_ast(start_ast, end_ast, center_ast))
 }
 
+/// Create an AST node for a circle call.
+fn create_circle_ast_from_coords(
+    start_x: f64,
+    start_y: f64,
+    center_x: f64,
+    center_y: f64,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::Expr, KclError> {
+    let start_point = Point2d {
+        x: Expr::Var(f64_to_number(start_x, units)),
+        y: Expr::Var(f64_to_number(start_y, units)),
+    };
+    let center_point = Point2d {
+        x: Expr::Var(f64_to_number(center_x, units)),
+        y: Expr::Var(f64_to_number(center_y, units)),
+    };
+
+    let start_ast = to_ast_point2d(&start_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle start point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+    let center_ast = to_ast_point2d(&center_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle center point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    Ok(create_circle_ast(start_ast, center_ast))
+}
+
 // Helper functions below use shared AST creation functions from frontend.rs
 // to ensure consistency between transpiler and frontend code generation.
 
@@ -721,7 +739,7 @@ fn create_arc_size_constraint_ast_from_name(
         digest: None,
         non_code_meta: Default::default(),
     })));
-    let raw = format_number_literal(num.value, num.units).map_err(|err| {
+    let raw = format_number_literal(num.value, num.units, None).map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
             format!("Failed to format numeric constraint literal: {err}"),
             vec![],
@@ -772,53 +790,68 @@ fn transpiler_segment_connection_expr(segment: &TranspilerSegment, side: Segment
     )
 }
 
-/// Get the plane name from a sketch
-fn get_plane_name(sketch: &Sketch) -> Result<String, KclError> {
-    match &sketch.on {
-        SketchSurface::Plane(plane) => {
-            // Check plane.kind to determine the base plane type
-            let base_name = match plane.kind {
-                crate::execution::geometry::PlaneKind::XY => "XY",
-                crate::execution::geometry::PlaneKind::XZ => "XZ",
-                crate::execution::geometry::PlaneKind::YZ => "YZ",
-                crate::execution::geometry::PlaneKind::Custom => {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        "Cannot transpile sketch on custom plane".to_string(),
-                        vec![],
-                    )));
-                }
-            };
+fn extract_sketch_block_on_expr(program: &Program, variable_name: &str) -> Result<ast::Expr, KclError> {
+    let init_expr = find_old_sketch_init_expr(program, variable_name)?;
+    extract_sketch_surface_expr(init_expr)
+}
 
-            // Detect negative orientation by checking x_axis
-            // For XY and XZ planes: negative planes have x_axis.x < 0
-            // For YZ planes: negative planes have x_axis.y < 0
-            let is_negative = match plane.kind {
-                crate::execution::geometry::PlaneKind::XY | crate::execution::geometry::PlaneKind::XZ => {
-                    plane.info.x_axis.x < 0.0
-                }
-                crate::execution::geometry::PlaneKind::YZ => plane.info.x_axis.y < 0.0,
-                crate::execution::geometry::PlaneKind::Custom => {
-                    // Already handled above, but needed for match exhaustiveness
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        "Cannot transpile sketch on custom plane".to_string(),
-                        vec![],
-                    )));
-                }
+fn extract_sketch_surface_expr(expr: &ast::Expr) -> Result<ast::Expr, KclError> {
+    match expr {
+        ast::Expr::PipeExpression(pipe_expr) => {
+            let Some(first_expr) = pipe_expr.body.first() else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "Expected old sketch pipe expression to contain at least one call".to_owned(),
+                    vec![],
+                )));
             };
-
-            let name = if is_negative {
-                format!("-{}", base_name)
-            } else {
-                base_name.to_string()
-            };
-
-            Ok(name)
+            extract_sketch_surface_expr(first_expr)
         }
-        SketchSurface::Face(_) => Err(KclError::new_internal(KclErrorDetails::new(
-            "Cannot transpile sketch on face".to_string(),
+        ast::Expr::CallExpressionKw(call) => extract_sketch_surface_expr_from_call(call),
+        _ => Err(KclError::new_internal(KclErrorDetails::new(
+            "Expected old sketch syntax to start from a call expression".to_owned(),
             vec![],
         ))),
     }
+}
+
+fn extract_sketch_surface_expr_from_call(call: &ast::Node<ast::CallExpressionKw>) -> Result<ast::Expr, KclError> {
+    let call_name = &call.callee.name.name;
+    if call_name == "startSketchOn" {
+        return extract_sketch_surface_expr_from_start_sketch_on(call);
+    }
+
+    if !is_str_profile_function(call_name) {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Expected sketch-generating call, found '{call_name}'"),
+            vec![],
+        )));
+    }
+
+    let Some(surface_expr) = call.unlabeled.as_ref() else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Expected '{call_name}' to have an unlabeled sketch or surface argument"),
+            vec![],
+        )));
+    };
+
+    match surface_expr {
+        ast::Expr::CallExpressionKw(surface_call) if surface_call.callee.name.name == "startSketchOn" => {
+            extract_sketch_surface_expr_from_start_sketch_on(surface_call)
+        }
+        _ => Ok(surface_expr.clone()),
+    }
+}
+
+fn extract_sketch_surface_expr_from_start_sketch_on(
+    call: &ast::Node<ast::CallExpressionKw>,
+) -> Result<ast::Expr, KclError> {
+    if call.arguments.is_empty()
+        && let Some(surface_expr) = call.unlabeled.as_ref()
+    {
+        return Ok(surface_expr.clone());
+    }
+
+    Ok(ast::Expr::CallExpressionKw(Box::new(call.clone())))
 }
 
 /// Get a Sketch value from ExecOutcome's variables.
@@ -839,21 +872,17 @@ fn get_sketch_from_exec_outcome(exec_outcome: &ExecOutcome, variable_name: &str)
     }
 }
 
-/// Find the pipe expression containing startProfile for the given variable
-/// Uses the same detection logic as the lint (lint_old_sketch_syntax) to ensure consistency
-fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::Expr, KclError> {
-    use crate::lint::checks::contains_start_profile;
-
+/// Find the original initializer expression for a supported old-sketch variable.
+fn find_old_sketch_init_expr<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::Expr, KclError> {
     // Find the variable declaration
     for item in &program.ast.body {
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && var_decl.declaration.id.name == variable_name
         {
             if let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
-                && contains_start_profile(&pipe.inner)
+                && let Some(ast::Expr::CallExpressionKw(call)) = pipe.body.first()
+                && (call.callee.name.name == "startSketchOn" || is_str_profile_function(&call.callee.name.name))
             {
-                // Use the lint's detection logic as the source of truth
-                // This ensures the transpiler only processes what the lint detects
                 return Ok(&var_decl.declaration.init);
             }
             if let ast::Expr::CallExpressionKw(call) = &var_decl.declaration.init
@@ -865,7 +894,10 @@ fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Res
     }
 
     Err(KclError::new_internal(KclErrorDetails::new(
-        format!("Could not find startProfile pipe for variable '{}'", variable_name),
+        format!(
+            "Could not find supported old sketch initializer for variable '{}'",
+            variable_name
+        ),
         vec![],
     )))
 }
@@ -968,6 +1000,20 @@ fn detect_constraints_from_ast(
             {
                 constraints[*segment_index].push(SegmentConstraint::Diameter { d });
             }
+        } else if function_name == "arc" {
+            if call_has_labeled_arg(call, "radius")
+                && let Some(r) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Radius)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Radius { r });
+            }
+
+            if call_has_labeled_arg(call, "diameter")
+                && let Some(d) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Diameter)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Diameter { d });
+            }
         }
     }
 
@@ -993,7 +1039,9 @@ fn get_arc_size_constraint_value(
     kind: ArcSizeKind,
 ) -> Option<Number> {
     let (center, from) = match path_segment {
-        Path::TangentialArc { center, base, .. } | Path::TangentialArcTo { center, base, .. } => (*center, base.from),
+        Path::TangentialArc { center, base, .. }
+        | Path::TangentialArcTo { center, base, .. }
+        | Path::Arc { center, base, .. } => (*center, base.from),
         _ => return None,
     };
 
@@ -1076,10 +1124,9 @@ fn find_seg_len_reference(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        Program,
-        test_server::{execute_and_snapshot_ast, new_context},
-    };
+    use crate::Program;
+    use crate::test_server::execute_and_snapshot_ast;
+    use crate::test_server::new_context;
 
     async fn transpile_test_sketch(code: &str, variable_name: &str) -> Result<String, KclError> {
         let program = Program::parse_no_errs(code).unwrap();
@@ -1175,7 +1222,7 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
 
         // Expected transpiled output
         // Note: Coordinates are from actual execution, may have small rounding differences
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var -3.71mm, var 5.81mm], end = [var -7.51mm, var 0.89mm])
   line2 = line(start = [var -7.51mm, var 0.89mm], end = [var -4.04mm, var -4.86mm])
   coincident([line1.end, line2.start])
@@ -1213,7 +1260,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(endAbsolute = [10, 10])
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   arc1 = arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
 }"#;
 
@@ -1229,7 +1276,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(endAbsolute = [20, 10])
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
   coincident([line1.end, arc2.start])
@@ -1248,7 +1295,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(end = [10, 10])
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
   coincident([line1.end, arc2.start])
@@ -1267,7 +1314,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(radius = 5, angle = 90deg)
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
   coincident([line1.end, arc2.start])
@@ -1287,7 +1334,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(diameter = 10, angle = 90deg)
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
   coincident([line1.end, arc2.start])
@@ -1308,7 +1355,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [0, -10])
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 15mm, var -5mm], end = [var 10mm, var 0mm], center = [var 10mm, var -5mm])
   coincident([line1.end, arc2.end])
@@ -1330,13 +1377,85 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [0, 10])
 "#;
 
-        let expected_output = r#"sketch(on = XY) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
   coincident([line1.end, arc2.start])
   tangent([line1, arc2])
   line3 = line(start = [var 20mm, var 10mm], end = [var 20mm, var 20mm])
   coincident([arc2.end, line3.start])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_arc_radius_angle_adds_radius_constraint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> arc(angleStart = 0deg, angleEnd = 90deg, radius = 10)
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  arc1 = arc(start = [var 0mm, var 0mm], end = [var -10mm, var 10mm], center = [var -10mm, var 0mm])
+  radius(arc1) == 10mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_arc_diameter_angle_adds_diameter_constraint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> arc(angleStart = 0deg, angleEnd = 90deg, diameter = 10)
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  arc1 = arc(start = [var 0mm, var 0mm], end = [var -5mm, var 5mm], center = [var -5mm, var 0mm])
+  diameter(arc1) == 10mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_clockwise_arc_preserves_connectivity() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(angleStart = 180deg, angleEnd = 0deg, radius = 5)
+  |> line(end = [0, 10])
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 20mm, var 0mm], end = [var 10mm, var 0mm], center = [var 15mm, var 0mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 20mm, var 0mm], end = [var 20mm, var 10mm])
+  coincident([arc2.start, line3.start])
+  radius(arc2) == 5mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_three_point_arc_adds_coincident_endpoint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(interiorAbsolute = [15, -5], endAbsolute = [20, 0])
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm], center = [var 15mm, var 0mm])
+  coincident([line1.end, arc2.start])
 }"#;
 
         assert_transpiled_matches(code, "profile001", expected_output).await;
@@ -1368,7 +1487,7 @@ profile001 = startProfile(sketch001, at = [2.25, 4.48])
         // Expected transpiled output
         // Note: Coordinates are from actual execution, may have small rounding differences
         // Also note: yLine should be vertical on line2, and equalLength should be on line3
-        let expected_output = r#"sketch(on = YZ) {
+        let expected_output = r#"sketch(on = sketch001) {
   line1 = line(start = [var 2.25mm, var 4.48mm], end = [var -5.21mm, var 2.89mm])
   line2 = line(start = [var -5.21mm, var 2.89mm], end = [var -5.21mm, var -4.57mm])
   coincident([line1.end, line2.start])
@@ -1471,12 +1590,72 @@ profile001 = startProfile(sketch001, at = [2.0, 3.0])
 
         // Verify that the output contains "-XY" (not just "XY")
         assert!(
-            transpiled.contains("sketch(on = -XY)"),
-            "Transpiled output should contain '-XY' plane name. Got: {}",
+            transpiled.contains("sketch(on = sketch001)"),
+            "Transpiled output should preserve the surface variable name. Got: {}",
             transpiled
         );
 
         // Clean up
         ctx.close().await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_preserves_offset_plane_expression() {
+        let code = r#"
+profile001 = startSketchOn(offsetPlane(XY, offset = 2))
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+
+        let expected_output = r#"sketch(on = offsetPlane(XY, offset = 2)) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_preserves_face_surface_variable() {
+        let code = r#"
+base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> line(end = [-1, 0])
+  |> close()
+  |> extrude(length = 1)
+
+topFace = startSketchOn(base, face = END)
+profile001 = startProfile(topFace, at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+
+        let expected_output = r#"sketch(on = topFace) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_preserves_inline_face_surface_expression() {
+        let code = r#"
+base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> line(end = [-1, 0])
+  |> close()
+  |> extrude(length = 1)
+
+profile001 = startProfile(startSketchOn(base, face = END), at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+
+        let expected_output = r#"sketch(on = startSketchOn(base, face = END)) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
     }
 }

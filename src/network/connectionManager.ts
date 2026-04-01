@@ -62,7 +62,6 @@ import {
   isModelingBatchResponse,
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
-import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export type ConnectionSystemDeps = {
@@ -756,19 +755,10 @@ export class ConnectionManager extends EventTarget {
     if (timeoutPendingCommand) {
       setTimeout(() => {
         if (!isSettled) {
-          console.warn(message.command)
-          let details = message.command.type
-          if (message.command.type === 'modeling_cmd_req') {
-            details += ` - ${message.command.cmd.type}`
-          }
-          showErrorToastPlusReportLink(
-            `A command timed out and was rejected (${details}).`,
-            message.command,
-            'Command Timeout Error'
-          )
-          reject(
-            `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
-          )
+          // TODO: Send this to a logging or error tracking service
+          const errorMessage = `sendCommand rejected, you hit the timeout: ${JSON.stringify(message.command)}`
+          console.error(errorMessage)
+          reject(errorMessage)
         }
       }, PENDING_COMMAND_TIMEOUT)
     }

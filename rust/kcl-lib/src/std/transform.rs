@@ -1,22 +1,26 @@
 //! Standard library transforms.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared,
-    shared::{OriginType, Point3d},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared;
+use kcmc::shared::OriginType;
+use kcmc::shared::Point3d;
 use kittycad_modeling_cmds as kcmc;
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, HideableGeometry, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
-        types::{PrimitiveType, RuntimeType},
-    },
-    std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::HideableGeometry;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::SolidOrSketchOrImportedGeometry;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis3dOrPoint3d;
 
 fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::TransformBy<T> {
     shared::TransformBy::builder()

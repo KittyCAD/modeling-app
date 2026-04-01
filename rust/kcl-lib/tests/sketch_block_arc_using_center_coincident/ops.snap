@@ -6,6 +6,160 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
   "rust/kcl-lib/tests/sketch_block_arc_using_center_coincident/input.kcl": [
     {
       "type": "StdLibCall",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 2.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 1.5,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "point",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "at": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "coincident",
       "unlabeledArg": {
         "value": {
@@ -43,6 +197,83 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "horizontal",
       "unlabeledArg": {
         "value": {
@@ -51,6 +282,83 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
         "sourceRange": []
       },
       "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
       "nodePath": {
         "steps": [
           {
@@ -148,6 +456,114 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             },
             {
               "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "point",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "at": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
+                }
+              ]
             }
           ]
         },

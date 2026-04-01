@@ -1,4 +1,5 @@
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use std::sync::RwLock;
 
 use anyhow::Result;
 use tower_lsp::LanguageServer;
@@ -37,7 +38,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
-        can_send_telemetry: true,
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),

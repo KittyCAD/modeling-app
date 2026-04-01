@@ -3,10 +3,15 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, MockConfig, Program, ProjectManager,
-    front::FrontendState, wasm_engine::FileManager,
-};
+use kcl_lib::EngineManager;
+use kcl_lib::ExecOutcome;
+use kcl_lib::KclError;
+use kcl_lib::KclErrorWithOutputs;
+use kcl_lib::MockConfig;
+use kcl_lib::Program;
+use kcl_lib::ProjectManager;
+use kcl_lib::front::FrontendState;
+use kcl_lib::wasm_engine::FileManager;
 use wasm_bindgen::prelude::*;
 
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";

@@ -37,10 +37,11 @@ use anyhow::Result;
 pub use args::Args;
 use futures::future::FutureExt;
 
-use crate::{
-    errors::KclError,
-    execution::{ExecState, KclValue, KclValueControlFlow, types::PrimitiveType},
-};
+use crate::errors::KclError;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::types::PrimitiveType;
 
 pub type StdFn =
     fn(
@@ -522,6 +523,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::arc(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::arc"),
         ),
+        ("sketch2", "circle") => (
+            |e, a| Box::pin(crate::std::constraints::circle(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::circle"),
+        ),
         ("sketch2", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::coincident"),
@@ -593,6 +598,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "blend") => (
             |e, a| Box::pin(crate::std::surfaces::blend(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::blend"),
+        ),
+        ("solid", "joinSurfaces") => (
+            |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::joinSurfaces"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")

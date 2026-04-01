@@ -1,9 +1,14 @@
 //! Cache testing framework.
 
-use kcl_lib::{ExecError, ExecOutcome, bust_cache};
+use kcl_lib::ExecError;
+use kcl_lib::ExecOutcome;
 #[cfg(feature = "artifact-graph")]
-use kcl_lib::{NodePathStep, exec::Operation};
-use kcmc::{ModelingCmd, each_cmd as mcmd};
+use kcl_lib::NodePathStep;
+use kcl_lib::bust_cache;
+#[cfg(feature = "artifact-graph")]
+use kcl_lib::exec::Operation;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
 
@@ -52,7 +57,11 @@ async fn cache_test(
         }
 
         let outcome = match ctx.run_with_caching(program).await {
-            Ok(outcome) => outcome,
+            Ok(outcome) => {
+                let errors = outcome.actual_errors().collect::<Vec<_>>();
+                assert!(errors.is_empty(), "Execution resulted in error: {errors:#?}");
+                outcome
+            }
             Err(error) => {
                 let report = error.into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);

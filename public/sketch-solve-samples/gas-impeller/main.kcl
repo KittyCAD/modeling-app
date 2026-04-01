@@ -1,0 +1,65 @@
+// Gas Impeller
+// The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed
+// Categories: Aerospace, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+fanHeight = 60
+fanSize = 160
+bladeCount = 9
+bladeThickness = 2
+twistAngle = 65deg
+mountingBore = 8.8
+
+// Model the center of the fan
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.4mm, var 0mm], end = [var 4.4mm, var 60mm])
+  line2 = line(start = [var 4.4mm, var 60mm], end = [var 7.33mm, var 60mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 8.21mm, var 59.12mm], end = [var 7.33mm, var 60mm], center = [var 7.33mm, var 59.12mm])
+  coincident([line2.end, arc3.end])
+  arc4 = arc(start = [var 8.21mm, var 59.12mm], end = [var 80mm, var 4mm], center = [var 92.73mm, var 94.89mm])
+  coincident([arc3.start, arc4.start])
+  line5 = line(start = [var 80mm, var 4mm], end = [var 80mm, var 0mm])
+  coincident([arc4.end, line5.start])
+  line6 = line(start = [var 80mm, var 0mm], end = [var 4.4mm, var 0mm])
+  coincident([line5.end, line6.start])
+  vertical(line2)
+  horizontal(arc3)
+  vertical(line6)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+fanCenter = revolve(region001, axis = Y)
+
+// Profile the sweep path of the blade design
+sketch002 = sketch(on = YZ) {
+  arc1 = arc(start = [var 8.21mm, var 59.12mm], end = [var 80mm, var 4mm], center = [var 92.73mm, var 94.89mm])
+  line2 = line(start = [var 80mm, var 4mm], end = [var 75.98mm, var 50mm])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 75.98mm, var 50mm], end = [var 65.35mm, var 59.74mm], center = [var 65.35mm, var 49.07mm])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 65.35mm, var 59.74mm], end = [var 8.21mm, var 59.12mm])
+  coincident([arc3.end, line4.start])
+}
+region002 = region(segments = [sketch002.arc1, sketch002.line2])
+bladeProfile = revolve(region002, axis = Y)
+
+// Create a dart to form the blade
+sketch003 = sketch(on = XY) {
+  line1 = line(start = [var 4.4mm, var 0mm], end = [var 84.4mm, var 0mm])
+  line2 = line(start = [var 84.4mm, var 0mm], end = [var 84.4mm, var 2mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 84.4mm, var 2mm], end = [var 4.4mm, var 2mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4.4mm, var 2mm], end = [var 4.4mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region003 = region(segments = [sketch003.line1, sketch003.line2])
+dart = extrude(region003, twistAngle, length = 65)
+
+// Intersect the dart and the blade profile to create a blade, then pattern around the Z axis
+blades = intersect([bladeProfile, dart])
+  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
+

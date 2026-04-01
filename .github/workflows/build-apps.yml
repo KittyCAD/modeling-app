@@ -35,7 +35,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             rust:
@@ -44,7 +44,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v16
+        uses: dawidd6/action-download-artifact@v19
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
