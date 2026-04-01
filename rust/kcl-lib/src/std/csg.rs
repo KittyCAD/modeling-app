@@ -25,7 +25,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let solids: Vec<Solid> =
         args.get_unlabeled_kw_arg("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     if solids.len() < 2 {
@@ -119,7 +119,7 @@ pub(crate) async fn inner_union(
 pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     if solids.len() < 2 {
@@ -197,7 +197,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let tools: Vec<Solid> = args.get_kw_arg("tools", &RuntimeType::solids(), exec_state)?;
 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     let solids = inner_subtract(solids, tools, tolerance, csg_algorithm, exec_state, args).await?;
@@ -269,7 +269,7 @@ pub(crate) async fn inner_subtract(
 pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let targets: Vec<Solid> = args.get_unlabeled_kw_arg("targets", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let tools: Option<Vec<Solid>> = args.get_kw_arg_opt("tools", &RuntimeType::solids(), exec_state)?;
     let keep_tools = args

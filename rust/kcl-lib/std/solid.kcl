@@ -108,7 +108,7 @@ export fn fillet(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -254,7 +254,7 @@ export fn chamfer(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): Solid {}
 
 /// Remove volume from a 3-dimensional shape such that a wall of the
@@ -959,7 +959,7 @@ export fn union(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -1021,7 +1021,7 @@ export fn intersect(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -1180,7 +1180,7 @@ export fn subtract(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
@@ -1595,7 +1595,7 @@ export fn split(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  legacyAlgorithm?: bool,
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 

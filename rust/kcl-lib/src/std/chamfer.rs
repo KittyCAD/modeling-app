@@ -36,7 +36,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     // TODO: custom profiles not ready yet
 
