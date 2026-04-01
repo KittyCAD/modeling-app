@@ -51,6 +51,7 @@ use crate::frontend::api::SourceRef;
 use crate::frontend::api::Version;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
+use crate::frontend::modify::next_free_name_using_max;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
 use crate::frontend::sketch::Constraint;
@@ -3781,6 +3782,79 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
         return None;
     }
     Some(candidate)
+}
+
+pub(crate) fn patch_sketch_block_missing_declarations(ast: &mut ast::Node<ast::Program>) -> bool {
+    let mut context = PatchSketchBlockMissingDeclarations::default();
+    let _ = dfs_mut(ast, &mut context);
+    context.changed
+}
+
+#[derive(Default)]
+struct PatchSketchBlockMissingDeclarations {
+    changed: bool,
+}
+
+impl Visitor for PatchSketchBlockMissingDeclarations {
+    type Break = ();
+    type Continue = ();
+
+    fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+        let NodeMut::SketchBlock(sketch_block) = node else {
+            return TraversalReturn::new_continue(());
+        };
+
+        self.changed |= patch_sketch_block_body_missing_declarations(sketch_block);
+        TraversalReturn::new_continue(())
+    }
+
+    fn finish(&mut self, _node: NodeMut<'_>) {}
+}
+
+fn patch_sketch_block_body_missing_declarations(sketch_block: &mut ast::Node<ast::SketchBlock>) -> bool {
+    let mut changed = false;
+    let mut defined_names = find_defined_names(&sketch_block.body);
+
+    for item in &mut sketch_block.body.items {
+        let replacement = match item {
+            ast::BodyItem::ExpressionStatement(expr_stmt) => {
+                sketch_segment_prefix_for_expr(&expr_stmt.expression).map(|prefix| (prefix, expr_stmt.clone()))
+            }
+            _ => None,
+        };
+        let Some((prefix, expr_stmt)) = replacement else {
+            continue;
+        };
+
+        let Ok(var_name) = next_free_name_using_max(prefix, &defined_names, 9_999) else {
+            continue;
+        };
+        defined_names.insert(var_name.clone());
+
+        let var_decl = expr_stmt.map(|stmt| {
+            ast::VariableDeclaration::new(
+                ast::VariableDeclarator::new(&var_name, stmt.expression),
+                ast::ItemVisibility::Default,
+                ast::VariableKind::Const,
+            )
+        });
+        *item = ast::BodyItem::VariableDeclaration(Box::new(var_decl));
+        changed = true;
+    }
+
+    changed
+}
+
+fn sketch_segment_prefix_for_expr(expr: &ast::Expr) -> Option<&'static str> {
+    let ast::Expr::CallExpressionKw(call_expr) = expr else {
+        return None;
+    };
+    match call_expr.callee.name.name.as_str() {
+        LINE_FN => Some("line"),
+        ARC_FN => Some("arc"),
+        CIRCLE_FN => Some("circle"),
+        _ => None,
+    }
 }
 
 /// Return the AST expression referencing the variable at the given source ref.

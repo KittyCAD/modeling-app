@@ -312,6 +312,19 @@ impl Program {
         })
     }
 
+    /// Ensure sketch block segment calls have variable declarations so downstream
+    /// codemods can reliably reference segment names.
+    ///
+    /// Returns `None` when no declaration patching was needed.
+    pub fn patch_sketch_block_missing_declarations(&self) -> Option<Self> {
+        let mut new_program = self.clone();
+        if crate::frontend::patch_sketch_block_missing_declarations(&mut new_program.ast) {
+            Some(new_program)
+        } else {
+            None
+        }
+    }
+
     pub fn is_empty_or_only_settings(&self) -> bool {
         self.ast.is_empty_or_only_settings()
     }
@@ -415,5 +428,41 @@ mod test {
         assert_eq!(try_f64_to_i64(f64::NAN), None);
         assert_eq!(try_f64_to_i64(f64::INFINITY), None);
         assert_eq!(try_f64_to_i64((0.1 + 0.2) * 10.0), None);
+    }
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_basic() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [0, 0], end = [1, 0])
+  line1 = line(start = [1, 0], end = [1, 1])
+  arc(start = [1, 1], end = [0, 1], center = [0.5, 1])
+}"#;
+
+        let program = Program::parse_no_errs(input).unwrap();
+        let patched = program.patch_sketch_block_missing_declarations().unwrap();
+        let recast = patched.recast();
+
+        assert!(recast.contains("line2 = line("), "{recast}");
+        assert!(recast.contains("line1 = line("), "{recast}");
+        assert!(recast.contains("arc1 = arc("), "{recast}");
+    }
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_nested_function() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+fn make() {
+  return sketch(on = XY) {
+    line(start = [0, 0], end = [1, 0])
+  }
+}"#;
+
+        let program = Program::parse_no_errs(input).unwrap();
+        let patched = program.patch_sketch_block_missing_declarations().unwrap();
+        let recast = patched.recast();
+
+        assert!(recast.contains("line1 = line("), "{recast}");
     }
 }
