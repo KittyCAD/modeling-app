@@ -832,7 +832,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPosition: candidate?.position ?? null,
+        targetPosition: isPointSnapTarget(candidate?.target)
+          ? candidate.position
+          : null,
       })
     }
 
@@ -937,7 +939,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          console.log('move tool snap target', snappingCandidate?.target ?? null)
+          console.log(
+            'move tool snap target',
+            snappingCandidate?.target ?? null
+          )
           const pointSnapTargetId =
             snappingCandidate && isPointSnapTarget(snappingCandidate.target)
               ? snappingCandidate.target.pointId

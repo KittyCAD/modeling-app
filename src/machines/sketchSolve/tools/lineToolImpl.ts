@@ -180,7 +180,9 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    targetPosition: snappingCandidate?.position ?? null,
+    targetPosition: isPointSnapTarget(snappingCandidate?.target)
+      ? snappingCandidate.position
+      : null,
   })
 }
 
@@ -268,7 +270,9 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = isPointSnapTarget(snappingCandidate?.target)
+          ? snappingCandidate.position
+          : mousePosition
         console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
@@ -299,7 +303,9 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = isPointSnapTarget(snappingCandidate?.target)
+          ? snappingCandidate.position
+          : mousePosition
         console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
