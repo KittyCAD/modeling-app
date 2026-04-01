@@ -24,6 +24,7 @@ use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::csg::CsgAlgorithm;
 use crate::std::fillet::EdgeReference;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
@@ -35,13 +36,27 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyAlgorithm", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     // TODO: custom profiles not ready yet
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
+    let value = inner_chamfer(
+        solid,
+        length,
+        tags,
+        second_length,
+        angle,
+        None,
+        tag,
+        csg_algorithm,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -54,6 +69,7 @@ async fn inner_chamfer(
     angle: Option<TyF64>,
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
+    csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -125,6 +141,7 @@ async fn inner_chamfer(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::Solid3dCutEdges::builder()
+                            .use_legacy(csg_algorithm.is_legacy())
                             .edge_ids(vec![edge_id])
                             .extra_face_ids(vec![])
                             .strategy(strategy)
