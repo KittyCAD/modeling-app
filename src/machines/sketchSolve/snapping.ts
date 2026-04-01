@@ -51,11 +51,11 @@ export function getSnappingCandidates(
     }
 
     return [
-        {
-          target: {
-            type: 'point' as const,
-            pointId: candidate.apiObject.id,
-          },
+      {
+        target: {
+          type: 'point' as const,
+          pointId: candidate.apiObject.id,
+        },
         distance: candidate.distance,
         position: pointToCoords2d(candidate.apiObject),
       },
@@ -96,7 +96,7 @@ export function getSnappingCandidates(
     }
 
     // Note: for point-point sorting this implicitly relies on the order coming from
-    // findClosestApiObjects. This is fine because Array.sort is stable but we may want 
+    // findClosestApiObjects. This is fine because Array.sort is stable but we may want
     // to more explicitly have it here too.
     return a.distance - b.distance
   })
