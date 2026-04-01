@@ -27,11 +27,10 @@ For example:
 
 ```kcl
 
-
-// The rest of your KCL code goes below...
-
 // The settings attribute.
 @settings(defaultLengthUnit = in)
+
+// The rest of your KCL code goes below...
 
 x = 42 // Represents 42 inches.
 
