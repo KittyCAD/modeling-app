@@ -381,7 +381,7 @@ export const ConnectionStream = (props: {
       },
       engineCommandManager,
     }),
-    [modelingSend, engineCommandManager]
+    [modelingMachineState, modelingSend, engineCommandManager]
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
