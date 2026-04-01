@@ -4,7 +4,7 @@ import { err } from '@src/lib/trap'
 import {
   changeExperimentalFeatures,
   parse,
-  patchSketchBlockMissingDeclarations as patchSketchBlockMissingDeclarationsCode,
+  patchSketchBlockMissingDeclarations as pathSketchBlock,
   type Program,
 } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -40,7 +40,7 @@ export function patchSketchBlockMissingDeclarations(
       changed: boolean
     }
   | Error {
-  const newCode = patchSketchBlockMissingDeclarationsCode(code, instance)
+  const newCode = pathSketchBlock(code, instance)
   if (err(newCode)) {
     return newCode
   }

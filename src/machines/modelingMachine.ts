@@ -200,7 +200,7 @@ import type {
 import {
   patchSketchBlockMissingDeclarations,
   setExperimentalFeatures,
-} from '@src/lang/modifyAst/settings'
+} from '@src/lang/modifyAst/wasmWrappers'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -4332,10 +4332,18 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const patchResult = patchSketchBlockMissingDeclarations(
+          input.kclManager.code,
+          input.wasmInstance
+        )
+        if (err(patchResult)) {
+          return Promise.reject(patchResult)
+        }
+
+        const { artifactGraph } = input.kclManager
         const astResult = addChamfer({
           ...input.data,
-          ast,
+          ast: patchResult.ast,
           artifactGraph,
           wasmInstance: input.wasmInstance,
         })
