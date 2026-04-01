@@ -14,8 +14,10 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_HIGHLIGHT_COLOR,
   DEFAULT_ML_COPILOT_MODE,
   DEFAULT_PROJECT_NAME,
+  DEFAULT_SELECTION_COLOR,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -439,6 +441,80 @@ export function createSettings() {
           inputType: 'color',
           defaultValueFromContext: (context) =>
             context.modeling.backfaceColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
+      }),
+      highlightColor: new Setting<string>({
+        defaultValue: DEFAULT_HIGHLIGHT_COLOR,
+        description: 'Default highlight color for entities.',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.highlightColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
+      }),
+      selectionColor: new Setting<string>({
+        defaultValue: DEFAULT_SELECTION_COLOR,
+        description: 'Default selection color for entities.',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.selectionColor.current,
         },
         Component: ({ value, updateValue }) => {
           const colorInputDebounceRef = useRef<

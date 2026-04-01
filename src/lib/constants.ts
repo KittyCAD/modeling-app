@@ -103,6 +103,14 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+/** The sketch mode revamp highlight rgb values */
+export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
+  Math.round(val * 0.7)
+)
+/** The sketch mode revamp highlight rgb values as a string */
+export const SKETCH_HIGHLIGHT_RGB_STR = SKETCH_HIGHLIGHT_RGB.join(', ')
+/** The sketch mode revamp highlight rgb values as HEX */
+export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
 
 /** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
 export const SKETCH_FILE_VERSION = 0
@@ -335,6 +343,10 @@ export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
+// Default selection color
+export const DEFAULT_SELECTION_COLOR = '#FFB727'
+// Default highlight color
+export const DEFAULT_HIGHLIGHT_COLOR = '#B3801B'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

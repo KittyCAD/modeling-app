@@ -438,12 +438,20 @@ export class App implements AppSubsystems {
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
+    const newHighlightColor = context.modeling.highlightColor.current
+    const newSelectionColor = context.modeling.selectionColor.current
     Promise.all([
       this.singletons.kclManager.updateTheme(newTheme),
       ...(this.singletons.kclManager.engineCommandManager.connection?.connected
         ? [
             this.singletons.kclManager.engineCommandManager.setBackfaceColor(
               newBackfaceColor
+            ),
+            this.singletons.kclManager.engineCommandManager.setHighlightColor(
+              newHighlightColor
+            ),
+            this.singletons.kclManager.engineCommandManager.setSelectionColor(
+              newSelectionColor
             ),
           ]
         : []),
@@ -458,7 +466,17 @@ export class App implements AppSubsystems {
           s.modeling.highlightEdges !== context.modeling.highlightEdges.current
         const hasBackfaceColor =
           s.modeling.backfaceColor !== context.modeling.backfaceColor.current
-        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
+        const hasHighlightColor =
+          s.modeling.highlightColor !== context.modeling.highlightColor.current
+        const hasSelectionColor =
+          s.modeling.selectionColor !== context.modeling.selectionColor.current
+        return (
+          hasScaleGrid ||
+          hasHighlightEdges ||
+          hasBackfaceColor ||
+          hasHighlightColor ||
+          hasSelectionColor
+        )
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(

@@ -437,6 +437,18 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
+        'set.modeling.highlightColor': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
+        'set.modeling.selectionColor': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
         'Reset settings': {
           target: 'persisting settings',
 

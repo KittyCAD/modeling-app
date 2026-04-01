@@ -43,6 +43,8 @@ export const createOnEngineConnectionOpened = ({
   settings,
   sendSceneCommand,
   setBackfaceColor,
+  setHighlightColor,
+  setSelectionColor,
   setTheme,
   listenToDarkModeMatcher,
   camControlsCameraChange,
@@ -55,6 +57,8 @@ export const createOnEngineConnectionOpened = ({
     forceWebsocket?: boolean
   ) => Promise<WebSocketResponse | [WebSocketResponse] | null>
   setBackfaceColor: (color: string) => Promise<void>
+  setHighlightColor: (color: string) => Promise<void>
+  setSelectionColor: (color: string) => Promise<void>
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
@@ -134,6 +138,16 @@ export const createOnEngineConnectionOpened = ({
     })
 
     await setBackfaceColor(settings.backfaceColor)
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionOpened',
+      message: 'default_highlight_set_color',
+    })
+    await setHighlightColor(settings.highlightColor)
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionOpened',
+      message: 'default_selection_set_color',
+    })
+    await setSelectionColor(settings.selectionColor)
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',

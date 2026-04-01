@@ -240,6 +240,18 @@ pub struct ModelingSettings {
         skip_serializing_if = "is_default_backface_color"
     )]
     pub backface_color: String,
+    /// The default color to use for highlighted entities.
+    #[serde(
+        default = "default_highlight_color",
+        skip_serializing_if = "is_default_highlight_color"
+    )]
+    pub highlight_color: String,
+    /// The default color to use for selected entities.
+    #[serde(
+        default = "default_selection_color",
+        skip_serializing_if = "is_default_selection_color"
+    )]
+    pub selection_color: String,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -275,6 +287,24 @@ fn is_default_backface_color(color: &String) -> bool {
     *color == default_backface_color()
 }
 
+// Also defined at src/lib/constants.ts
+fn default_highlight_color() -> String {
+    "#B3801B".to_string()
+}
+
+fn is_default_highlight_color(color: &String) -> bool {
+    *color == default_highlight_color()
+}
+
+// Also defined at src/lib/constants.ts
+fn default_selection_color() -> String {
+    "#FFB727".to_string()
+}
+
+fn is_default_selection_color(color: &String) -> bool {
+    *color == default_selection_color()
+}
+
 impl Default for ModelingSettings {
     fn default() -> Self {
         Self {
@@ -288,6 +318,8 @@ impl Default for ModelingSettings {
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
             backface_color: default_backface_color(),
+            highlight_color: default_highlight_color(),
+            selection_color: default_selection_color(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),
@@ -555,6 +587,8 @@ mod tests {
     use super::TextEditorSettings;
     use super::UnitLength;
     use super::default_backface_color;
+    use super::default_highlight_color;
+    use super::default_selection_color;
 
     #[test]
     fn test_settings_empty_file_parses() {
@@ -563,6 +597,8 @@ mod tests {
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(parsed.settings.modeling.highlight_color, default_highlight_color());
+        assert_eq!(parsed.settings.modeling.selection_color, default_selection_color());
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -571,6 +607,8 @@ mod tests {
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(parsed.settings.modeling.highlight_color, default_highlight_color());
+        assert_eq!(parsed.settings.modeling.selection_color, default_selection_color());
     }
 
     #[test]
@@ -661,5 +699,23 @@ backface_color = "#112233"
         let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
         assert_eq!(reparsed, parsed);
         assert!(serialized.contains("backface_color = \"#112233\""));
+    }
+
+    #[test]
+    fn test_settings_highlight_and_selection_color_roundtrip() {
+        let settings_file = r##"[settings.modeling]
+highlight_color = "#123456"
+selection_color = "#654321"
+"##;
+
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(parsed.settings.modeling.highlight_color, "#123456");
+        assert_eq!(parsed.settings.modeling.selection_color, "#654321");
+
+        let serialized = toml::to_string(&parsed).unwrap();
+        let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
+        assert_eq!(reparsed, parsed);
+        assert!(serialized.contains("highlight_color = \"#123456\""));
+        assert!(serialized.contains("selection_color = \"#654321\""));
     }
 }
