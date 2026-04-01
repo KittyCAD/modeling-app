@@ -7,14 +7,15 @@ import type {
 } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-interface DraggableProps extends HTMLProps<HTMLDivElement> {
+export interface DraggableProps extends HTMLProps<HTMLDivElement> {
   containerRef?: RefObject<HTMLElement | null>
   Handle?: ReactNode
-  side?: Side
+  side?: DraggableSide
 }
 
-type Side = 'top' | 'right' | 'bottom' | 'left'
-type Offset = {
+export type DraggableSide = 'top' | 'right' | 'bottom' | 'left'
+
+interface Offset {
   top: number
   left: number
   margin: {
@@ -25,7 +26,7 @@ type Offset = {
   }
 }
 
-function Draggable({
+export function Draggable({
   containerRef,
   Handle,
   side: providedSide,
@@ -35,62 +36,58 @@ function Draggable({
 }: DraggableProps) {
   const style = useMemo(
     () =>
-      Object.assign(
-        structuredClone(providedStyle) ?? ({} as CSSProperties),
-        sideToCSSStyles(providedSide || 'top'),
-        { boxSizing: 'border-box', cursor: Handle === undefined && 'move' }
-      ),
+      Object.assign({}, providedStyle, sideToCSSStyles(providedSide ?? 'top'), {
+        boxSizing: 'border-box',
+        cursor: Handle === undefined ? 'move' : undefined,
+      }),
     [providedSide, providedStyle, Handle]
   )
   const targetRef = useRef<HTMLDivElement>(null)
-  const offsetRef = useRef<Offset>(null)
+  const offsetRef = useRef<Offset | null>(null)
   const dragCallback = useRef<((e: MouseEvent) => void) | undefined>(undefined)
   const dragRemoveCallback = useRef<((u: unknown) => void) | undefined>(
     undefined
   )
 
   const onContainerResize = useCallback((entries: ResizeObserverEntry[]) => {
-    debugger
-    if (targetRef.current && offsetRef.current && entries.length === 1) {
-      const computedStyles = getComputedStyle(targetRef.current)
-      const position = computedStyles['position']
-
-      if (position === 'fixed') {
-        const targetRect = targetRef.current.getBoundingClientRect()
-        const containerRect = entries[0].contentRect
-
-        const top = clamp(
-          targetRect.top,
-          containerRect.top - offsetRef.current.margin.blockStart,
-          containerRect.bottom -
-            targetRect.height -
-            offsetRef.current.margin.blockEnd
-        )
-        const left = clamp(
-          targetRect.left,
-          containerRect.left - offsetRef.current.margin.inlineStart,
-          containerRect.right -
-            targetRect.width -
-            offsetRef.current.margin.inlineEnd
-        )
-
-        targetRef.current.style.setProperty('top', top.toString().concat('px'))
-        targetRef.current.style.setProperty(
-          'left',
-          left.toString().concat('px')
-        )
-      }
+    if (!targetRef.current || !offsetRef.current || entries.length !== 1) {
+      return
     }
+
+    const computedStyles = getComputedStyle(targetRef.current)
+    const position = computedStyles.position
+
+    if (position !== 'fixed') {
+      return
+    }
+
+    const targetRect = targetRef.current.getBoundingClientRect()
+    const containerRect = entries[0].contentRect
+
+    const top = clamp(
+      targetRect.top,
+      containerRect.top - offsetRef.current.margin.blockStart,
+      containerRect.bottom -
+        targetRect.height -
+        offsetRef.current.margin.blockEnd
+    )
+    const left = clamp(
+      targetRect.left,
+      containerRect.left - offsetRef.current.margin.inlineStart,
+      containerRect.right - targetRect.width - offsetRef.current.margin.inlineEnd
+    )
+
+    targetRef.current.style.setProperty('top', `${top}px`)
+    targetRef.current.style.setProperty('left', `${left}px`)
   }, [])
 
   useEffect(() => {
     const observer = new ResizeObserver(onContainerResize)
-
     const container = containerRef?.current ?? window.document.documentElement
     observer.observe(container)
 
     return () => observer.unobserve(container)
-  }, [onContainerResize])
+  }, [containerRef, onContainerResize])
 
   const elementDrag = useCallback(
     (offset: Offset) => (e: MouseEvent) => {
@@ -98,9 +95,8 @@ function Draggable({
       if (!targetRef.current) {
         return
       }
-      const container = containerRef?.current ?? window.document.body
 
-      // set the element's new position:
+      const container = containerRef?.current ?? window.document.body
       const containerBox = container.getBoundingClientRect()
       const targetBox = targetRef.current.getBoundingClientRect()
       const targetTop = e.clientY - offset.top - offset.margin.blockStart
@@ -115,21 +111,28 @@ function Draggable({
         containerBox.left - offset.margin.inlineStart,
         containerBox.right - targetBox.width - offset.margin.inlineEnd
       )
-      targetRef.current.style.top = top + 'px'
-      targetRef.current.style.left = left + 'px'
+
+      targetRef.current.style.top = `${top}px`
+      targetRef.current.style.left = `${left}px`
     },
     [containerRef]
   )
 
   const closeDragElement = useCallback(() => {
-    // stop moving when mouse button is released:
     document.removeEventListener('mouseup', closeDragElement)
+
     if (dragCallback.current) {
       document.removeEventListener('mousemove', dragCallback.current)
+      dragCallback.current = undefined
     }
+
     if (dragRemoveCallback.current) {
-      document.addEventListener('visibilitychange', dragRemoveCallback.current)
-      document.addEventListener('mouseleave', dragRemoveCallback.current)
+      document.removeEventListener(
+        'visibilitychange',
+        dragRemoveCallback.current
+      )
+      document.removeEventListener('mouseleave', dragRemoveCallback.current)
+      dragRemoveCallback.current = undefined
     }
   }, [])
 
@@ -140,6 +143,7 @@ function Draggable({
       if (!targetRef.current) {
         return
       }
+
       const { width, height, top, left } =
         targetRef.current.getBoundingClientRect()
       const computedStyles = getComputedStyle(targetRef.current)
@@ -154,30 +158,27 @@ function Draggable({
         inlineStart: pxStyleToNumber('marginInlineStart'),
         inlineEnd: pxStyleToNumber('marginInlineEnd'),
       }
-      targetRef.current.style.position = 'fixed'
-      targetRef.current.style.top = (top - margin.blockStart)
-        .toString()
-        .concat('px')
-      targetRef.current.style.left = (left - margin.inlineStart)
-        .toString()
-        .concat('px')
-      targetRef.current.style.width = width + 'px'
-      targetRef.current.style.height = height + 'px'
 
-      // get the mouse cursor position at startup:
+      targetRef.current.style.position = 'fixed'
+      targetRef.current.style.top = `${top - margin.blockStart}px`
+      targetRef.current.style.left = `${left - margin.inlineStart}px`
+      targetRef.current.style.width = `${width}px`
+      targetRef.current.style.height = `${height}px`
+
       document.addEventListener('mouseup', closeDragElement)
-      // call a function whenever the cursor moves:
       offsetRef.current = {
         top: e.nativeEvent.offsetY,
         left: e.nativeEvent.offsetX,
         margin,
       }
+
       const onDrag = elementDrag(offsetRef.current)
-      // Save a ref to the callback so we can remove the event listener on mouseup
       dragCallback.current = onDrag
       document.addEventListener('mousemove', onDrag)
+
       dragRemoveCallback.current = () => {
         document.removeEventListener('mousemove', onDrag)
+        dragCallback.current = undefined
       }
       document.addEventListener('visibilitychange', dragRemoveCallback.current)
       document.addEventListener('mouseleave', dragRemoveCallback.current)
@@ -210,9 +211,7 @@ function clamp(target: number, min: number, max: number) {
   return Math.min(max, Math.max(min, target))
 }
 
-export default Draggable
-
-function sideToCSSStyles(side: Side): CSSProperties {
+function sideToCSSStyles(side: DraggableSide): CSSProperties {
   return {
     display: 'flex',
     flexDirection:

@@ -4,6 +4,11 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@kittycad/ui-components': resolve(__dirname, 'src/index.ts'),
+    },
+  },
   build: {
     cssCodeSplit: false,
     lib: {

@@ -1,13 +1,13 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-
-import Draggable from '@src/components/Draggable'
+import { Draggable } from '@kittycad/ui-components'
 
 const createRect = (rect: Partial<DOMRect>): DOMRect => {
   const width = rect.width ?? 0
   const height = rect.height ?? 0
   const left = rect.left ?? 0
   const top = rect.top ?? 0
+
   return {
     x: rect.x ?? left,
     y: rect.y ?? top,
@@ -23,6 +23,7 @@ const createRect = (rect: Partial<DOMRect>): DOMRect => {
 
 const mockComputedStyle = (overrides?: Partial<CSSStyleDeclaration>) =>
   vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+    getPropertyValue: () => '',
     marginBlockStart: '0px',
     marginBlockEnd: '0px',
     marginInlineStart: '0px',
@@ -96,12 +97,55 @@ describe('Draggable', () => {
       offsetX: 10,
       offsetY: 15,
     })
-    // It should account for both the margin and the offset here
+
     expect(draggable.style.top).toBe(`${115 - 15 - 8}px`)
     fireEvent.mouseMove(document, { clientX: 130, clientY: 115 })
 
     expect(draggable.style.top).toBe('92px')
     expect(draggable.style.left).toBe('114px')
+  })
+
+  test('only starts dragging from the custom handle', () => {
+    mockComputedStyle()
+    vi.spyOn(document.body, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 0, left: 0, width: 300, height: 300 })
+    )
+
+    render(
+      <Draggable
+        data-testid="draggable"
+        Handle={<button type="button">Drag handle</button>}
+      >
+        Drag me
+      </Draggable>
+    )
+
+    const draggable = screen.getByTestId('draggable')
+    vi.spyOn(draggable, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 20, left: 20, width: 40, height: 40 })
+    )
+
+    fireEvent.mouseDown(draggable, {
+      clientX: 30,
+      clientY: 30,
+      offsetX: 10,
+      offsetY: 10,
+    })
+    fireEvent.mouseMove(document, { clientX: 80, clientY: 80 })
+
+    expect(draggable.style.top).toBe('')
+    expect(draggable.style.left).toBe('')
+
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'Drag handle' }), {
+      clientX: 30,
+      clientY: 30,
+      offsetX: 10,
+      offsetY: 10,
+    })
+    fireEvent.mouseMove(document, { clientX: 80, clientY: 80 })
+
+    expect(draggable.style.top).toBe('70px')
+    expect(draggable.style.left).toBe('70px')
   })
 
   test('stops dragging on visibilitychange', () => {

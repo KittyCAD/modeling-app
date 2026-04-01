@@ -17,8 +17,8 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
-import Draggable from '@src/components/Draggable'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Draggable } from '@kittycad/ui-components'
 
 const Handle = () => (
   <div className="flex justify-center hover:bg-2">
