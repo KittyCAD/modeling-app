@@ -56,7 +56,6 @@ import {
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import {
-  hideSnappingPreviewSprite,
   updateSnappingPreviewSprite,
 } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
@@ -822,7 +821,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
-      hideSnappingPreviewSprite(sketchSolveGroup)
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        target: null,
+      })
     }
   }
 
@@ -832,9 +835,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPosition: isPointSnapTarget(candidate?.target)
-          ? candidate.position
-          : null,
+        target: candidate,
       })
     }
 

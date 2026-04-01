@@ -30,7 +30,6 @@ import {
   isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
-  hideSnappingPreviewSprite,
   updateSnappingPreviewSprite,
 } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
@@ -180,9 +179,7 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    targetPosition: isPointSnapTarget(snappingCandidate?.target)
-      ? snappingCandidate.position
-      : null,
+    target: snappingCandidate,
   })
 }
 
@@ -370,7 +367,11 @@ export function removePointListener({ context, self }: ToolActionArgs) {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (sketchSolveGroup instanceof Group) {
-    hideSnappingPreviewSprite(sketchSolveGroup)
+    updateSnappingPreviewSprite({
+      sketchSolveGroup,
+      sceneInfra: context.sceneInfra,
+      target: null,
+    })
   }
   // Reset callbacks to remove the onClick and onMove listeners
   context.sceneInfra.setCallbacks({
