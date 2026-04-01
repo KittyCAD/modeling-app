@@ -74,7 +74,9 @@ export function Draggable({
     const left = clamp(
       targetRect.left,
       containerRect.left - offsetRef.current.margin.inlineStart,
-      containerRect.right - targetRect.width - offsetRef.current.margin.inlineEnd
+      containerRect.right -
+        targetRect.width -
+        offsetRef.current.margin.inlineEnd
     )
 
     targetRef.current.style.setProperty('top', `${top}px`)
