@@ -3784,7 +3784,7 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
     Some(candidate)
 }
 
-pub(crate) fn patch_sketch_block_missing_declarations(ast: &mut ast::Node<ast::Program>) -> bool {
+pub fn patch_sketch_block_missing_declarations(ast: &mut ast::Node<ast::Program>) -> bool {
     let mut context = PatchSketchBlockMissingDeclarations::default();
     let _ = dfs_mut(ast, &mut context);
     context.changed
@@ -3854,6 +3854,47 @@ fn sketch_segment_prefix_for_expr(expr: &ast::Expr) -> Option<&'static str> {
         ARC_FN => Some("arc"),
         CIRCLE_FN => Some("circle"),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod patch_sketch_block_missing_declarations_tests {
+    use super::*;
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_basic() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [0, 0], end = [1, 0])
+  line1 = line(start = [1, 0], end = [1, 1])
+  arc(start = [1, 1], end = [0, 1], center = [0.5, 1])
+}"#;
+
+        let mut program = Program::parse_no_errs(input).unwrap();
+        assert!(patch_sketch_block_missing_declarations(&mut program.ast));
+        let recast = program.recast();
+
+        assert!(recast.contains("line2 = line("), "{recast}");
+        assert!(recast.contains("line1 = line("), "{recast}");
+        assert!(recast.contains("arc1 = arc("), "{recast}");
+    }
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_nested_function() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+fn make() {
+  return sketch(on = XY) {
+    line(start = [0, 0], end = [1, 0])
+  }
+}"#;
+
+        let mut program = Program::parse_no_errs(input).unwrap();
+        assert!(patch_sketch_block_missing_declarations(&mut program.ast));
+        let recast = program.recast();
+
+        assert!(recast.contains("line1 = line("), "{recast}");
     }
 }
 

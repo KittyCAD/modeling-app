@@ -369,11 +369,11 @@ pub fn change_experimental_features(code: &str, level_str: &str) -> Result<Strin
 pub fn patch_sketch_block_missing_declarations(code: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
-    let Some(new_program) = program.patch_sketch_block_missing_declarations() else {
+    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+    if !kcl_lib::front::patch_sketch_block_missing_declarations(&mut program.ast) {
         return Ok(code.to_owned());
-    };
-    Ok(new_program.recast())
+    }
+    Ok(program.recast())
 }
 
 /// Returns true if the given KCL is empty or only contains settings that would
