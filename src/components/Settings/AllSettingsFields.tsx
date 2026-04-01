@@ -23,7 +23,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
+import { capitaliseFC, toSync } from '@src/lib/utils'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -190,7 +190,7 @@ export const AllSettingsFields = forwardRef(
                     className: 'p-1',
                   }}
                 >
-                  Show in folder
+                  Show in Folder
                 </ActionButton>
               )}
               <ActionButton
@@ -211,7 +211,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Reset {searchParamTab}-level settings
+                Reset {capitaliseFC(searchParamTab)}-Level Settings
               </ActionButton>
             </div>
           </SettingsSection>
@@ -246,7 +246,7 @@ export const AllSettingsFields = forwardRef(
                 to={getReleaseUrl()}
                 iconStart={{ icon: 'file', className: 'p-1' }}
               >
-                View release on GitHub
+                View Release on GitHub
               </ActionButton>
               <ActionButton
                 Element="button"
@@ -259,23 +259,23 @@ export const AllSettingsFields = forwardRef(
                   className: 'p-1',
                 }}
               >
-                Check for updates
+                Check for Updates
               </ActionButton>
             </div>
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a
                 onClick={openExternalBrowserIfDesktop(
-                  'https://github.com/KittyCAD/modeling-app/discussions'
+                  'https://zoo.dev/roadmap'
                 )}
-                href="https://github.com/KittyCAD/modeling-app/discussions"
+                href="https://zoo.dev/roadmap"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 our roadmap
-              </a>
-              , and start a discussion if you don't see it! Your feedback will
-              help us prioritize what to build next.
+              </a>{' '}
+              or reach out. Your feedback will help us prioritize what to build
+              next.
             </p>
           </div>
         </div>

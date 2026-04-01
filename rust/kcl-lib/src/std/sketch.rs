@@ -1334,6 +1334,7 @@ pub(crate) async fn create_sketch(
         units,
         mirror: Default::default(),
         clone: Default::default(),
+        synthetic_jump_path_ids: vec![],
         meta: vec![source_range.into()],
         tags: Default::default(),
         start: current_path.clone(),

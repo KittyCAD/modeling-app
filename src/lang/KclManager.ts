@@ -902,6 +902,22 @@ export class KclManager extends File {
   })
 
   /**
+   * code mirror extension that clears modeling selection state when the document is empty
+   */
+  private clearSelectionsOnEmptyDoc = EditorView.updateListener.of((update) => {
+    // The doc changed and the new code is the empty string
+    if (update.docChanged) {
+      const newCode = update.view.state.doc.toString()
+      if (newCode === '') {
+        this.sendModelingEvent({
+          type: 'Set selection',
+          data: { selection: undefined, selectionType: 'singleCodeCursor' },
+        })
+      }
+    }
+  })
+
+  /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
    * then fires (and forgets) an execution with a debounce.
@@ -1021,6 +1037,7 @@ export class KclManager extends File {
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
       this.writeToFileListener,
+      this.clearSelectionsOnEmptyDoc,
     ]
   }
   private createEditorView(initialCode = '') {
