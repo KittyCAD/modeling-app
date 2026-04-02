@@ -976,6 +976,24 @@ export function changeExperimentalFeatures(
 }
 
 /**
+ * Patch sketch block segment calls so they always have declarations.
+ * @returns the new kcl string with patched sketch blocks.
+ */
+export function patchSketchBlockMissingDeclarations(
+  kcl: string,
+  instance: ModuleType
+): string | Error {
+  try {
+    return instance.patch_sketch_block_missing_declarations(kcl)
+  } catch (e) {
+    console.error('Caught error patching sketch block declarations', e)
+    return new Error('Caught error patching sketch block declarations', {
+      cause: e,
+    })
+  }
+}
+
+/**
  * Returns true if the given KCL is empty or only contains settings that would
  * be auto-generated.
  */

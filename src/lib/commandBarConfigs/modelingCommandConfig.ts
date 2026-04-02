@@ -92,6 +92,7 @@ import {
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { patchSketchBlockMissingDeclarations } from '@src/lang/modifyAst/wasmWrappers'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1554,11 +1555,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const wasmInstance = await kclManager.wasmInstancePromise
+      const patchResult = patchSketchBlockMissingDeclarations(
+        kclManager.code,
+        wasmInstance
+      )
+      if (err(patchResult)) return patchResult
+
       const modRes = addFillet({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
-        ast: kclManager.ast,
+        ast: patchResult.ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1607,14 +1615,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const { engineCommandManager, kclManager, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
+      if (err(hasConnectionRes)) return hasConnectionRes
+      const wasmInstance = await kclManager.wasmInstancePromise
+      const patchResult = patchSketchBlockMissingDeclarations(
+        kclManager.code,
+        wasmInstance
+      )
+      if (err(patchResult)) return patchResult
       const modRes = addChamfer({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
-        ast: kclManager.ast,
+        ast: patchResult.ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(

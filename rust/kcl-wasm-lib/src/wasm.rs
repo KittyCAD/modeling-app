@@ -363,6 +363,19 @@ pub fn change_experimental_features(code: &str, level_str: &str) -> Result<Strin
     Ok(formatted)
 }
 
+/// Ensure sketch block segment calls have declarations so codemods can
+/// consistently reference them by name.
+#[wasm_bindgen]
+pub fn patch_sketch_block_missing_declarations(code: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+    if !kcl_lib::front::patch_sketch_block_missing_declarations(&mut program.ast) {
+        return Ok(code.to_owned());
+    }
+    Ok(program.recast())
+}
+
 /// Returns true if the given KCL is empty or only contains settings that would
 /// be auto-generated.
 #[wasm_bindgen]

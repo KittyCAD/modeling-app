@@ -187,6 +187,7 @@ pub mod pretty {
 pub mod front {
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
+    pub use crate::frontend::patch_sketch_block_missing_declarations;
     // Re-export trim module items
     pub use crate::frontend::{
         FrontendState, SetProgramOutcome,

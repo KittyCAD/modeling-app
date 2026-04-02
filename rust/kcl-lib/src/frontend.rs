@@ -51,6 +51,7 @@ use crate::frontend::api::SourceRef;
 use crate::frontend::api::Version;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
+use crate::frontend::modify::next_free_name_using_max;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
 use crate::frontend::sketch::Constraint;
@@ -99,7 +100,6 @@ const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
 const CIRCLE_FN: &str = "circle";
-const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
 
@@ -1666,10 +1666,7 @@ impl FrontendState {
         let (sketch_block_range, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
-            AstMutateCommand::AddSketchBlockVarDecl {
-                prefix: CIRCLE_VARIABLE.to_owned(),
-                expr: circle_ast,
-            },
+            AstMutateCommand::AddSketchBlockExprStmt { expr: circle_ast },
         )?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
@@ -2357,7 +2354,7 @@ impl FrontendState {
                             ),
                         });
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, CIRCLE_VARIABLE, Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "circle", Some(property))
                 }
                 _ => Err(Error {
                     msg: format!(
@@ -2411,7 +2408,7 @@ impl FrontendState {
             }
             Segment::Circle(_) => {
                 // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
             }
         };
 
@@ -2439,7 +2436,7 @@ impl FrontendState {
             }
             Segment::Circle(_) => {
                 // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
             }
         };
 
@@ -2626,7 +2623,7 @@ impl FrontendState {
         let seg0_ast = match seg0_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
-            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
                     msg: format!("Tangent supports only line/arc/circle segments, got: {seg0_segment:?}"),
@@ -2645,7 +2642,7 @@ impl FrontendState {
         let seg1_ast = match seg1_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
-            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
                     msg: format!("Tangent supports only line/arc/circle segments, got: {seg1_segment:?}"),
@@ -2750,7 +2747,7 @@ impl FrontendState {
         };
         let ref_type = match arc_segment {
             Segment::Arc(_) => "arc",
-            Segment::Circle(_) => CIRCLE_VARIABLE,
+            Segment::Circle(_) => "circle",
             _ => {
                 return Err(Error {
                     msg: format!(
@@ -3783,6 +3780,120 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
     Some(candidate)
 }
 
+pub fn patch_sketch_block_missing_declarations(ast: &mut ast::Node<ast::Program>) -> bool {
+    let mut context = PatchSketchBlockMissingDeclarations::default();
+    let _ = dfs_mut(ast, &mut context);
+    context.changed
+}
+
+#[derive(Default)]
+struct PatchSketchBlockMissingDeclarations {
+    changed: bool,
+}
+
+impl Visitor for PatchSketchBlockMissingDeclarations {
+    type Break = ();
+    type Continue = ();
+
+    fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+        let NodeMut::SketchBlock(sketch_block) = node else {
+            return TraversalReturn::new_continue(());
+        };
+
+        self.changed |= patch_sketch_block_body_missing_declarations(sketch_block);
+        TraversalReturn::new_continue(())
+    }
+
+    fn finish(&mut self, _node: NodeMut<'_>) {}
+}
+
+fn patch_sketch_block_body_missing_declarations(sketch_block: &mut ast::Node<ast::SketchBlock>) -> bool {
+    let mut changed = false;
+    let mut defined_names = find_defined_names(&sketch_block.body);
+
+    for item in &mut sketch_block.body.items {
+        let replacement = match item {
+            ast::BodyItem::ExpressionStatement(expr_stmt) => {
+                sketch_segment_prefix_for_expr(&expr_stmt.expression).map(|prefix| (prefix, expr_stmt.clone()))
+            }
+            _ => None,
+        };
+        let Some((prefix, expr_stmt)) = replacement else {
+            continue;
+        };
+
+        let Ok(var_name) = next_free_name_using_max(prefix, &defined_names, 9_999) else {
+            continue;
+        };
+        defined_names.insert(var_name.clone());
+
+        let var_decl = expr_stmt.map(|stmt| {
+            ast::VariableDeclaration::new(
+                ast::VariableDeclarator::new(&var_name, stmt.expression),
+                ast::ItemVisibility::Default,
+                ast::VariableKind::Const,
+            )
+        });
+        *item = ast::BodyItem::VariableDeclaration(Box::new(var_decl));
+        changed = true;
+    }
+
+    changed
+}
+
+fn sketch_segment_prefix_for_expr(expr: &ast::Expr) -> Option<&'static str> {
+    let ast::Expr::CallExpressionKw(call_expr) = expr else {
+        return None;
+    };
+    match call_expr.callee.name.name.as_str() {
+        LINE_FN => Some("line"),
+        ARC_FN => Some("arc"),
+        CIRCLE_FN => Some("circle"),
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod patch_sketch_block_missing_declarations_tests {
+    use super::*;
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_basic() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [0, 0], end = [1, 0])
+  line1 = line(start = [1, 0], end = [1, 1])
+  arc(start = [1, 1], end = [0, 1], center = [0.5, 1])
+}"#;
+
+        let mut program = Program::parse_no_errs(input).unwrap();
+        assert!(patch_sketch_block_missing_declarations(&mut program.ast));
+        let recast = program.recast();
+
+        assert!(recast.contains("line2 = line("), "{recast}");
+        assert!(recast.contains("line1 = line("), "{recast}");
+        assert!(recast.contains("arc1 = arc("), "{recast}");
+    }
+
+    #[test]
+    fn patch_sketch_block_missing_declarations_nested_function() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+fn make() {
+  return sketch(on = XY) {
+    line(start = [0, 0], end = [1, 0])
+  }
+}"#;
+
+        let mut program = Program::parse_no_errs(input).unwrap();
+        assert!(patch_sketch_block_missing_declarations(&mut program.ast));
+        let recast = program.recast();
+
+        assert!(recast.contains("line1 = line("), "{recast}");
+    }
+}
+
 /// Return the AST expression referencing the variable at the given source ref.
 /// If no such variable exists, insert a new variable declaration with the given
 /// prefix.
@@ -3845,11 +3956,6 @@ struct AstMutateContext {
 enum AstMutateCommand {
     /// Add an expression statement to the sketch block.
     AddSketchBlockExprStmt {
-        expr: ast::Expr,
-    },
-    /// Add a variable declaration to the sketch block (e.g. `line1 = line(...)`).
-    AddSketchBlockVarDecl {
-        prefix: String,
         expr: ast::Expr,
     },
     AddVariableDeclaration {
@@ -3978,26 +4084,6 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         comment_start: Default::default(),
                     }));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
-            }
-        }
-        AstMutateCommand::AddSketchBlockVarDecl { prefix, expr } => {
-            if let NodeMut::SketchBlock(sketch_block) = node {
-                let empty_defined_names = HashSet::new();
-                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
-                let Ok(name) = next_free_name(prefix, defined_names) else {
-                    return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
-                };
-                sketch_block
-                    .body
-                    .items
-                    .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
-                        ast::VariableDeclaration::new(
-                            ast::VariableDeclarator::new(&name, expr.clone()),
-                            ast::ItemVisibility::Default,
-                            ast::VariableKind::Const,
-                        ),
-                    ))));
-                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::Name(name)));
             }
         }
         AstMutateCommand::AddVariableDeclaration { prefix } => {
@@ -4279,13 +4365,7 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
                 // End shouldn't match since we added something.
                 && node_range.end() >= self.target_before_mutation.end()
             {
-                self.found.set(sketch_block.body.items.last().map(|item| match item {
-                    // For declarations like `circle1 = circle(...)`, use
-                    // the init expression range so lookup in source_range_to_object
-                    // matches the segment source range.
-                    ast::BodyItem::VariableDeclaration(node) => SourceRange::from(&node.declaration.init),
-                    _ => SourceRange::from(item),
-                }));
+                self.found.set(sketch_block.body.items.last().map(SourceRange::from));
                 return Ok(false);
             } else {
                 // We found a different sketch block. No need to descend into
@@ -5194,7 +5274,7 @@ sketch001 = sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 "
         );
@@ -5241,7 +5321,7 @@ sketch001 = sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
+  circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
 }
 "
         );
