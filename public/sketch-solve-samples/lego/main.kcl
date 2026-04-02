@@ -77,4 +77,3 @@ sketch004 = startSketchOn(shellExtrude, face = START)
   |> patternLinear2d(axis = [1, 0], instances = wbumps - 1, distance = pitch)
   |> patternLinear2d(axis = [0, 1], instances = lbumps - 1, distance = pitch)
 tubePattern = extrude(sketch004, length = bumpHeight)
-

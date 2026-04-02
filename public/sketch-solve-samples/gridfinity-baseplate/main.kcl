@@ -80,4 +80,3 @@ basePlateCorners = patternLinear3d(
        distance = binLength,
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
-

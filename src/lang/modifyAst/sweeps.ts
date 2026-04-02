@@ -21,7 +21,6 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/tagManagement'
 import {
-  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -36,7 +35,6 @@ import type {
   LabeledArg,
   PathToNode,
   Program,
-  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -353,19 +351,19 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
-  // TODO: see if we can replace this with `getVariableExprsFromSelection`
-  const pathDeclaration = getNodeFromPath<VariableDeclaration>(
-    ast,
-    path.graphSelections[0].codeRef.pathToNode,
+  const pathVars = getVariableExprsFromSelection(
+    path,
+    artifactGraph,
+    modifiedAst,
     wasmInstance,
-    'VariableDeclaration'
+    mNodeToEdit
   )
-  if (err(pathDeclaration)) {
-    return pathDeclaration
+  if (err(pathVars)) {
+    return pathVars
   }
 
   // Extra labeled args expressions
-  const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
+  const pathExpr = pathVars.exprs[0]
   const sectionalExpr =
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]

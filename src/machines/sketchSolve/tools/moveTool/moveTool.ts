@@ -51,13 +51,12 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   allowSnapping,
+  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
+  isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
-import {
-  hideSnappingPreviewSprite,
-  updateSnappingPreviewSprite,
-} from '@src/machines/sketchSolve/snappingPreviewSprite'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -201,7 +200,9 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) => !coincidentPointIds.includes(candidate.apiObject.id)
+      (candidate) =>
+        !isPointSnapTarget(candidate.target) ||
+        !coincidentPointIds.includes(candidate.target.pointId)
     ) ?? null
 
   return candidate
@@ -819,7 +820,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
-      hideSnappingPreviewSprite(sketchSolveGroup)
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        target: null,
+      })
     }
   }
 
@@ -829,11 +834,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPoint: candidate?.apiObject ?? null,
+        target: candidate,
       })
     }
 
-    sendHoveredState(candidate?.apiObject.id ?? null)
+    sendHoveredState(
+      isPointSnapTarget(candidate?.target) ? candidate.target.pointId : null
+    )
   }
 
   const clearConstraintHoverPopups = () => {
@@ -932,8 +939,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          const result =
+          console.log(
+            'move tool snap target',
+            snappingCandidate?.target ?? null
+          )
+          const coincidentSegments =
             snappingCandidate && draggedEntityId !== null
+              ? getCoincidentSegmentsForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target
+                )
+              : null
+          const result =
+            snappingCandidate &&
+            draggedEntityId !== null &&
+            coincidentSegments !== null
               ? await (async () => {
                   const units = baseUnitToNumericSuffix(
                     context.kclManager.fileSettings.defaultLengthUnit
@@ -971,10 +991,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [
-                        draggedEntityId,
-                        snappingCandidate.apiObject.id,
-                      ],
+                      segments: coincidentSegments,
                     },
                     settings
                   )

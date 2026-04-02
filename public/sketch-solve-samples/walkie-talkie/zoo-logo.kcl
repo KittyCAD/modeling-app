@@ -52,4 +52,3 @@ export fn oLogo2(surface, origin, scale) {
     |> close()
   return oSketch002
 }
-

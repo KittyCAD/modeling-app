@@ -90,4 +90,3 @@ export fn twoByFourZRotated(minX, minY, minZ, lengthZ) {
     sizeZ = lengthZ,
   )
 }
-

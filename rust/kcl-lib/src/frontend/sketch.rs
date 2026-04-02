@@ -337,7 +337,55 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub segments: Vec<ObjectId>,
+    pub segments: Vec<CoincidentSegment>,
+}
+
+impl Coincident {
+    pub fn get_segments(&self) -> Vec<ObjectId> {
+        self.segments
+            .iter()
+            .filter_map(|segment| match segment {
+                CoincidentSegment::Segment(id) => Some(*id),
+                CoincidentSegment::Origin(_) => None,
+            })
+            .collect()
+    }
+
+    pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.segments.iter().filter_map(|segment| match segment {
+            CoincidentSegment::Segment(id) => Some(*id),
+            CoincidentSegment::Origin(_) => None,
+        })
+    }
+
+    pub fn contains_segment(&self, segment_id: ObjectId) -> bool {
+        self.segment_ids().any(|id| id == segment_id)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(untagged)]
+pub enum CoincidentSegment {
+    Segment(ObjectId),
+    Origin(OriginLiteral),
+}
+
+impl CoincidentSegment {
+    pub const ORIGIN: Self = Self::Origin(OriginLiteral::Origin);
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum OriginLiteral {
+    Origin,
+}
+
+impl From<ObjectId> for CoincidentSegment {
+    fn from(value: ObjectId) -> Self {
+        Self::Segment(value)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

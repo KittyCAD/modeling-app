@@ -91,4 +91,3 @@ region001 = region(segments = [
   washerSectionProfile.line2
 ])
 splitWasherBody = sweep(region001, path = helixGuide)
-

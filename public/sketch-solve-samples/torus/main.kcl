@@ -19,4 +19,3 @@ profile = sketch(on = sketch) {
 region001 = region(segments = [profile.circle1])
 // revolve the profile to create the torus
 torus = revolve(region001, axis = Y, angle = 360.0)
-

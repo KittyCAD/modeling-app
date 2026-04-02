@@ -96,4 +96,3 @@ region003 = region(segments = [
 ])
 // Create a revolved solid representing the thread geometry by repeating and revolving the profile around the shaft
 boltThreadRevolve = revolve(region003, angle = 360deg, axis = Y)
-

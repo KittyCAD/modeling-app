@@ -61,4 +61,3 @@ case = sketch(on = XZ) {
 region001 = region(segments = [case.line1, case.line2])
 extrude(region001, length = -0.0625)
   |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)
-
