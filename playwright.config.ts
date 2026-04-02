@@ -52,16 +52,6 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.VERCEL_BASE_URL ?? 'http://localhost:3000',
 
-    /* Set header to access password-protected Vercel deployments. */
-    ...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-      ? {
-          extraHTTPHeaders: {
-            'X-Vercel-Protection-Bypass':
-              process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-          },
-        }
-      : {}),
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
     actionTimeout: 15000,
