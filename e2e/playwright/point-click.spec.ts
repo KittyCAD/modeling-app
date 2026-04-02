@@ -328,97 +328,98 @@ region001 = region(segments = [sketch001.circle1])`
   })
 
   // TODO: double check if we want to keep this feature
-  //   test(`Verify user can double-click to edit a sketch`, async ({
-  //     context,
-  //     page,
-  //     homePage,
-  //     editor,
-  //     toolbar,
-  //     scene,
-  //     cmdBar,
-  //   }) => {
-  //     page.on('console', console.log)
+  test.skip(`Verify user can double-click to edit a sketch`, async ({
+    context,
+    page,
+    homePage,
+    editor,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    page.on('console', console.log)
 
-  //     const initialCode = `@settings(experimentalFeatures = allow)
+    const initialCode = `@settings(experimentalFeatures = allow)
 
-  // closedSketch = sketch(on = XZ) {
-  //   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
-  // }
-  // openSketch = sketch(on = XY) {
-  //   line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
-  //   line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
-  //   coincident([line1.end, line2.start])
-  //   arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
-  //   coincident([line2.end, arc3.end])
-  //   horizontal(arc3)
-  // }`
+  closedSketch = sketch(on = XZ) {
+    circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
+  }
+  openSketch = sketch(on = XY) {
+    line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
+    line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
+    coincident([line1.end, line2.start])
+    arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
+    coincident([line2.end, arc3.end])
+    horizontal(arc3)
+  }`
 
-  //     await context.addInitScript((code) => {
-  //       localStorage.setItem('persistCode', code)
-  //     }, initialCode)
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
 
-  //     await homePage.goToModelingScene()
+    await homePage.goToModelingScene()
 
-  //     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-  //       scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
+    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
 
-  //     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-  //       0.63,
-  //       0.5,
-  //       { format: 'ratio' }
-  //     )
+    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
+      0.63,
+      0.5,
+      { format: 'ratio' }
+    )
 
-  //     await test.step(`Double-click on the closed sketch`, async () => {
-  //       await scene.settled(cmdBar)
-  //       await editor.closePane()
-  //       await moveToCircle()
-  //       await page.waitForTimeout(1000)
-  //       await dblClickCircle()
-  //       await page.waitForTimeout(1000)
-  //       await expect(toolbar.exitSketchBtn).toBeVisible()
-  //       await editor.openPane()
-  //       await editor.expectActiveLinesToBe([
-  //         'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
-  //       ])
-  //     })
-  //     await page.waitForTimeout(1000)
+    await test.step(`Double-click on the closed sketch`, async () => {
+      await scene.settled(cmdBar)
+      await editor.closePane()
+      await moveToCircle()
+      await page.waitForTimeout(1000)
+      await dblClickCircle()
+      await page.waitForTimeout(1000)
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await editor.openPane()
+      await editor.expectActiveLinesToBe([
+        'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
+      ])
+    })
+    await page.waitForTimeout(1000)
 
-  //     await toolbar.exitSketch()
-  //     await page.waitForTimeout(1000)
-  //     await editor.closePane()
+    await toolbar.exitSketch()
+    await page.waitForTimeout(1000)
+    await editor.closePane()
 
-  //     // Drag the sketch line out of the axis view which blocks the click
-  //     await page.dragAndDrop('#stream', '#stream', {
-  //       sourcePosition: await scene.convertPagePositionToStream(
-  //         0.7,
-  //         0.5,
-  //         'ratio'
-  //       ),
-  //       targetPosition: await scene.convertPagePositionToStream(
-  //         0.7,
-  //         0.4,
-  //         'ratio'
-  //       ),
-  //     })
+    // Drag the sketch line out of the axis view which blocks the click
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.5,
+        'ratio'
+      ),
+      targetPosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.4,
+        'ratio'
+      ),
+    })
 
-  //     await page.waitForTimeout(500)
+    await page.waitForTimeout(500)
 
-  //     await test.step(`Double-click on the open sketch`, async () => {
-  //       await moveToOpenPath()
-  //       // There is a full execution after exiting sketch that clears the scene.
-  //       await page.waitForTimeout(500)
-  //       await dblClickOpenPath()
-  //       await expect(toolbar.exitSketchBtn).toBeVisible()
-  //       // Wait for enter sketch mode to complete
-  //       await page.waitForTimeout(500)
-  //       await editor.openPane()
-  //       await editor.expectActiveLinesToBe([
-  //         'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-  //       ])
-  //     })
-  //   })
+    await test.step(`Double-click on the open sketch`, async () => {
+      await moveToOpenPath()
+      // There is a full execution after exiting sketch that clears the scene.
+      await page.waitForTimeout(500)
+      await dblClickOpenPath()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      // Wait for enter sketch mode to complete
+      await page.waitForTimeout(500)
+      await editor.openPane()
+      await editor.expectActiveLinesToBe([
+        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+      ])
+    })
+  })
 
-  test(`Shift-click to select and deselect edges and faces`, async ({
+  // TODO: reenable once we can hide sketches
+  test.skip(`Shift-click to select and deselect edges and faces`, async ({
     context,
     cmdBar,
     toolbar,
@@ -1194,7 +1195,8 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  test(`Fillet point-and-click`, async ({
+  // TODO: reenable once we can hide sketches
+  test.skip(`Fillet point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1461,7 +1463,7 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 100)
-fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region.tags.circle1)])`
+fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.circle1)])`
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
