@@ -721,7 +721,6 @@ impl GlobalState {
     }
 }
 
-
 impl ArtifactState {
     #[cfg(feature = "artifact-graph")]
     pub fn cached_body_items(&self) -> usize {
