@@ -605,7 +605,8 @@ export function addRevolve({
     axis,
     edge,
     modifiedAst,
-    wasmInstance
+    wasmInstance,
+    artifactGraph
   )
   if (err(getAxisResult) || !getAxisResult.generatedAxis) {
     return new Error('Generated axis selection is missing.')
@@ -688,9 +689,25 @@ export function getAxisExpressionAndIndex(
   axis: string | undefined,
   edge: Selections | undefined,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  artifactGraph?: ArtifactGraph
 ) {
   if (edge) {
+    if (artifactGraph) {
+      const segmentAxisExpr = getVariableExprsFromSelection(
+        edge,
+        artifactGraph,
+        ast,
+        wasmInstance
+      )
+      if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
+        const directAxisExpr = segmentAxisExpr.exprs[0]
+        if (directAxisExpr.type === 'MemberExpression') {
+          return { generatedAxis: directAxisExpr }
+        }
+      }
+    }
+
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range

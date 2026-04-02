@@ -1931,6 +1931,77 @@ sketch002 = startSketchOn(XY)
 revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
     })
 
+    it('should add revolve call around a sketch block segment reference', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = [...artifactGraph.values()].find(
+        (a) => a.type === 'sketchBlock'
+      )
+      if (!sketch) throw new Error('Sketch block artifact not found')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: -2.48, y: -1.8875 },
+            sketchId: sketch.id,
+          },
+        ],
+      }
+
+      const line5RangeStart = code.indexOf('line5 = line(')
+      const axisArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment' && a.codeRef.range[0] === line5RangeStart
+      )
+      if (!axisArtifact) throw new Error('Axis segment artifact not found')
+      const edge = createSelectionFromArtifacts([axisArtifact], artifactGraph)
+      const angle = await getKclCommandValue(
+        '36deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches,
+        angle,
+        edge,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      expect(newCode).toContain(
+        `region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
+      )
+      expect(newCode).toContain(
+        `line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])`
+      )
+    })
+
     it('should edit revolve call, changing axis and setting both lengths', async () => {
       const code = `${circleCode}
 revolve001 = revolve(profile001, angle = 10, axis = X)`
@@ -2010,7 +2081,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
         undefined,
         edge,
         ast,
-        instanceInThisFile
+        instanceInThisFile,
+        artifactGraph
       )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')

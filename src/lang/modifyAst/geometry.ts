@@ -89,7 +89,8 @@ export function addHelix({
       axis,
       edge,
       modifiedAst,
-      wasmInstance
+      wasmInstance,
+      artifactGraph
     )
     if (err(result)) {
       return result
