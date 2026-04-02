@@ -1056,8 +1056,7 @@ dependencies = [
 [[package]]
 name = "ezpz"
 version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1db19d0382d333892e430efc4241ee92f9280465001c5367ff68d8c027eb9b30"
+source = "git+https://github.com/KittyCAD/ezpz.git?branch=david%2Flines-angle-sign-fix#7803f0d8a4127f18179d80212c9883d2d25f66b9"
 dependencies = [
  "faer",
  "indexmap 2.13.0",
