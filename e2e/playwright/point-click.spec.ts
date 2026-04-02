@@ -235,7 +235,7 @@ region001 = region(segments = [sketch001.circle1])`
       await test.step('Submit and verify', async () => {
         await cmdBar.submit()
         await editor.expectEditor.toContain(
-          'extrude(profile001, length = 3, tagEnd = $myEndTag)'
+          'extrude(region001, length = 3, tagEnd = $myEndTag)'
         )
       })
     })
@@ -956,20 +956,18 @@ extrude001 = extrude(region001, length = 100)`
     toolbar,
     cmdBar,
   }) => {
-    const circleCode1 = `circle1 = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])`
-    const circleCode2 = `circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])`
     const initialCode = `@settings(experimentalFeatures = allow)
 
-offset001 = 50
-sketch001 = sketch(on = XZ) {
-  ${circleCode1}
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
-plane001 = offsetPlane(XZ, offset = offset001)
+plane001 = offsetPlane(XY, offset = 5)
 sketch002 = sketch(on = plane001) {
-  ${circleCode2}
+  circle1 = circle(start = [var 2mm, var 2mm], center = [var 0mm, var 0mm])
 }
-region002 = region(segments = [sketch002.circle1])`
+region002 = region(point = [0mm, 0mm], sketch = sketch002)`
+    // TODO: replace point with segments = [sketch002.circle1] when the issue is fixed
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -1115,8 +1113,7 @@ region001 = region(segments = [sketch001.circle1])`
         highlightedHeaderArg: 'Profiles',
         stage: 'arguments',
       })
-      await editor.scrollToText(circleCode)
-      await page.getByText(circleCode).click()
+      await editor.selectText('region001 = region(')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
