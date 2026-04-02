@@ -1145,6 +1145,99 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         ))),
                     }
                 }
+                // Point-Circle or Circle-Point case: constrain point-to-center distance
+                // to equal the circle radius.
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::Circle {
+                        start: circle_start,
+                        center: circle_center,
+                        ..
+                    },
+                )
+                | (
+                    UnsolvedSegmentKind::Circle {
+                        start: circle_start,
+                        center: circle_center,
+                        ..
+                    },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let point_x = &point_pos[0];
+                    let point_y = &point_pos[1];
+                    match (point_x, point_y) {
+                        (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                            // Extract circle center and start coordinates.
+                            let (center_x, center_y) = (&circle_center[0], &circle_center[1]);
+                            let (start_x, start_y) = (&circle_start[0], &circle_start[1]);
+
+                            match (center_x, center_y, start_x, start_y) {
+                                (
+                                    UnsolvedExpr::Unknown(cx),
+                                    UnsolvedExpr::Unknown(cy),
+                                    UnsolvedExpr::Unknown(sx),
+                                    UnsolvedExpr::Unknown(sy),
+                                ) => {
+                                    let point_radius_line = DatumLineSegment::new(
+                                        DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        DatumPoint::new_xy(
+                                            point_x.to_constraint_id(range)?,
+                                            point_y.to_constraint_id(range)?,
+                                        ),
+                                    );
+                                    let circle_radius_line = DatumLineSegment::new(
+                                        DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        DatumPoint::new_xy(
+                                            sx.to_constraint_id(range)?,
+                                            sy.to_constraint_id(range)?,
+                                        ),
+                                    );
+                                    let constraint =
+                                        SolverConstraint::LinesEqualLength(point_radius_line, circle_radius_line);
+
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
+
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
+                                    Ok(KclValue::none())
+                                }
+                                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Circle start and center points must be sketch variables for point-circle coincident constraint".to_owned(),
+                                    vec![args.source_range],
+                                ))),
+                            }
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-circle coincident constraint"
+                                .to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
                 // Line-Line case: create parallel constraint and perpendicular distance of zero
                 (
                     UnsolvedSegmentKind::Line {
