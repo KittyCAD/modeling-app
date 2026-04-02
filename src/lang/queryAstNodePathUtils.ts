@@ -1,5 +1,6 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NumericLiteral } from '@rust/kcl-lib/bindings/NumericLiteral'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 import {
@@ -27,6 +28,7 @@ function moreNodePathFromSourceRange(
     | TypeDeclaration
     | ReturnStatement
     | Identifier
+    | NumericLiteral
   >,
   sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
@@ -43,7 +45,8 @@ function moreNodePathFromSourceRange(
     (_node.type === 'Name' ||
       _node.type === 'Literal' ||
       _node.type === 'Identifier' ||
-      _node.type === 'TagDeclarator') &&
+      _node.type === 'TagDeclarator' ||
+      _node.type === 'NumericLiteral') &&
     isInRange
   ) {
     return path
@@ -293,6 +296,15 @@ function moreNodePathFromSourceRange(
         }
       }
       return path
+    }
+    return path
+  }
+
+  if (_node.type === 'SketchVar' && isInRange) {
+    const { initial } = _node
+    if (initial && initial.start <= start && initial.end >= end) {
+      path.push(['initial', 'SketchVar'])
+      return moreNodePathFromSourceRange(initial, sourceRange, path)
     }
     return path
   }

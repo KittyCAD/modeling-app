@@ -117,5 +117,29 @@ b1 = cube(pos = [0,0], scale = 10)`
       expect(node.type).toBe('Name')
       expect(node.name.name).toBe('scale')
     })
+
+    it('gets path right for SketchVar initial values', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 42mm, var 0mm], end = [var 1mm, var 1mm])
+}`
+
+      const subStr = '42mm'
+      const subStrIndex = code.indexOf(subStr)
+      const sourceRange = topLevelRange(
+        subStrIndex,
+        subStrIndex + subStr.length
+      )
+
+      const ast = assertParse(code, instance)
+      const nodePath = getNodePathFromSourceRange(ast, sourceRange)
+      expect(nodePath).toContainEqual(['initial', 'SketchVar'])
+
+      const _node = getNodeFromPath<any>(ast, nodePath, instance)
+      if (err(_node)) throw _node
+      expect(_node.node.type).toBe('NumericLiteral')
+    })
   })
 })
