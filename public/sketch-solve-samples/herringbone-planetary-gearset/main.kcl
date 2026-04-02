@@ -183,4 +183,3 @@ herringboneGear(
        arcDegrees = 360deg,
        rotateDuplicates = false,
      )
-

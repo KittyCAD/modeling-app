@@ -199,4 +199,3 @@ a = patternLinear3d(
        a
      ]
   |> appearance(color, metalness = 40, roughness)
-

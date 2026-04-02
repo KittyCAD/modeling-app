@@ -108,4 +108,3 @@ region006 = region(segments = [eyeEndHoleProfile.circle1])
 eyeEndHoleExtrude = extrude(region006, length = -40)
 upperMountSolid = subtract([upperMount], tools = [eyeEndHoleExtrude])
   |> appearance(color = "#252318", roughness = 90, metalness = 90)
-

@@ -308,4 +308,3 @@ lipCorners001 = patternCircular3d(
   instances = 2,
   rotateDuplicates = true,
 )
-

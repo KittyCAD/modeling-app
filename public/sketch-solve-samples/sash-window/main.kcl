@@ -182,4 +182,3 @@ region003 = region(segments = [
   latchNutShape.line2
 ])
 latchNutPlateBody = extrude(region003, length = latchPlateThickness)
-

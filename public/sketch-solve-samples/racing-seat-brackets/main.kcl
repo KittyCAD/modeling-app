@@ -166,4 +166,3 @@ profile008 = extrude(sketch004, length = -2 * thickness)
 [bracket]
   |> translate(x = bracketSpacing / 2)
   |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)
-

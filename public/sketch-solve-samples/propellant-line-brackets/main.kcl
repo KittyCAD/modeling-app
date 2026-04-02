@@ -160,4 +160,3 @@ translate(
   z = bracketThickness,
   global = true,
 )
-
