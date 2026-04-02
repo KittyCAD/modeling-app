@@ -405,12 +405,12 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
 
     await test.step('Verify we navigated', async () => {
       await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
-      const url = page.url()
-      expect(url).toContain(newFileName)
+      // Route/hash can update after the tree; sync URL expectations retry like locators.
+      await expect.poll(() => page.url()).toContain(newFileName)
       await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
       await expect(projectMenuButton).not.toContainText('main.kcl')
-      expect(url).not.toContain('fileToRename.kcl')
-      expect(url).not.toContain('main.kcl')
+      await expect.poll(() => page.url()).not.toContain('fileToRename.kcl')
+      await expect.poll(() => page.url()).not.toContain('main.kcl')
 
       await u.openKclCodePanel()
       await expect(codeLocator).toContainText('circle(')
