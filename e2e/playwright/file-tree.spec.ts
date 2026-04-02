@@ -356,8 +356,11 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       const filePath = await fs.join(dir, 'Test Project', `${newFileName}.kcl`)
       return await exists(fs, filePath)
     }
-    const fileToRename = u.locatorFile('fileToRename.kcl')
-    const renamedFile = u.locatorFile('newFileName.kcl')
+    const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+    const treeFileByLabel = (filename: string) =>
+      filePaneScroll.getByRole('treeitem', { name: filename, exact: true })
+    const fileToRename = treeFileByLabel('fileToRename.kcl')
+    const renamedFile = treeFileByLabel('newFileName.kcl')
     const renameMenuItem = page.getByRole('button', { name: 'Rename' })
     const renameInput = page.getByPlaceholder('fileToRename.kcl')
     const codeLocator = page.locator('.cm-content')
@@ -387,13 +390,17 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       await expect(renameInput).toBeVisible()
       await renameInput.fill(newFileName)
       await page.keyboard.press('Enter')
+      // Inline rename uses async systemIO + readingFolders; wait until the row
+      // exits rename mode before asserting on tree contents.
+      await expect(page.getByTestId('file-rename-field')).not.toBeAttached()
     })
 
     await test.step('Verify the file is renamed', async () => {
-      await expect(fileToRename).not.toBeAttached()
+      await expect.poll(async () => await checkRenamedFS()).toBeTruthy()
+      await expect.poll(async () => !(await checkUnRenamedFS())).toBeTruthy()
+      // Prefer the new row appearing first: tree can lag briefly after disk rename.
       await expect(renamedFile).toBeVisible()
-      expect(await checkUnRenamedFS()).toBeFalsy()
-      expect(await checkRenamedFS()).toBeTruthy()
+      await expect(fileToRename).not.toBeAttached()
     })
 
     await test.step('Verify we navigated', async () => {
@@ -450,8 +457,11 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     }
     const projectLink = page.getByText('Test Project')
     const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const fileToRename = u.locatorFile('fileToRename.kcl')
-    const renamedFile = u.locatorFile(newFileName + FILE_EXT)
+    const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+    const treeFileByLabel = (filename: string) =>
+      filePaneScroll.getByRole('treeitem', { name: filename, exact: true })
+    const fileToRename = treeFileByLabel('fileToRename.kcl')
+    const renamedFile = treeFileByLabel(newFileName + FILE_EXT)
     const renameMenuItem = page.getByRole('button', { name: 'Rename' })
     const renameInput = page.getByPlaceholder('fileToRename.kcl')
     const codeLocator = page.locator('.cm-content')
@@ -476,13 +486,14 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       await expect(renameInput).toBeVisible()
       await renameInput.fill(newFileName)
       await page.keyboard.press('Enter')
+      await expect(page.getByTestId('file-rename-field')).not.toBeAttached()
     })
 
     await test.step('Verify the file is renamed', async () => {
-      await expect(fileToRename).not.toBeAttached()
+      await expect.poll(async () => await checkRenamedFS()).toBeTruthy()
+      await expect.poll(async () => !(await checkUnRenamedFS())).toBeTruthy()
       await expect(renamedFile).toBeVisible()
-      expect(await checkUnRenamedFS()).toBeFalsy()
-      expect(await checkRenamedFS()).toBeTruthy()
+      await expect(fileToRename).not.toBeAttached()
     })
 
     await test.step('Verify we have not navigated', async () => {
