@@ -5,7 +5,7 @@ import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -17,14 +17,46 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 
 function ModelingArea() {
   const { auth } = useApp()
+  const { state } = useModelingContext()
   const authToken = auth.useToken()
+  const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
+    DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+  )
+  const streamVisibilityPercent = Math.round(
+    (1 - sketchSolveStreamDimming) * 100
+  )
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
-      <ConnectionStream authToken={authToken} />
+      <ConnectionStream
+        authToken={authToken}
+        sketchSolveStreamDimming={sketchSolveStreamDimming}
+      />
+      {state.matches('sketchSolveMode') && (
+        <div className="absolute bottom-2 left-2 z-10 px-2 py-1 border border-chalkboard-20 dark:border-chalkboard-80 rounded bg-chalkboard-10/80 dark:bg-chalkboard-100/80 backdrop-blur-sm pointer-events-auto">
+          <div className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
+            Geometry passthrough
+          </div>
+          <input
+            aria-label="Sketch solve geometry passthrough"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={streamVisibilityPercent}
+            onChange={(e) => {
+              const nextVisibilityPercent = Number(e.target.value)
+              setSketchSolveStreamDimming((100 - nextVisibilityPercent) / 100)
+            }}
+            className="w-32 cursor-pointer"
+          />
+        </div>
+      )}
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <Gizmo />
       </div>
