@@ -515,6 +515,8 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         self.fill_node_paths();
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
+
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
 
@@ -670,8 +672,15 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment_id, ctor)?,
             }
         }
-        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            segment_ids_edited,
+            EditDeleteKind::Edit,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn delete_objects(
@@ -684,6 +693,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         self.fill_node_paths();
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         // Deduplicate IDs.
         let mut constraint_ids_set = constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
@@ -760,6 +770,7 @@ impl SketchApi for FrontendState {
         self.execute_after_edit(
             ctx,
             sketch,
+            sketch_block_ref,
             Default::default(),
             EditDeleteKind::DeleteNonSketch,
             &mut new_ast,
@@ -920,6 +931,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         self.fill_node_paths();
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
             msg: format!("Object not found: {constraint_id:?}"),
@@ -966,8 +978,15 @@ impl SketchApi for FrontendState {
             AstMutateCommand::EditConstraintValue { value: new_value },
         )?;
 
-        self.execute_after_edit(ctx, sketch, Default::default(), EditDeleteKind::Edit, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            Default::default(),
+            EditDeleteKind::Edit,
+            &mut new_ast,
+        )
+        .await
     }
 
     /// Splitting a segment means creating a new segment, editing the old one, and then
@@ -989,6 +1008,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         self.fill_node_paths();
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
@@ -1065,7 +1085,14 @@ impl SketchApi for FrontendState {
         // Always use Edit (not DeleteNonSketch) because we're editing the sketch block, not deleting it
         // But we'll manually set invalidates_ids: true if we deleted constraints
         let (source_delta, mut scene_graph_delta) = self
-            .execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .execute_after_edit(
+                ctx,
+                sketch,
+                sketch_block_ref,
+                segment_ids_edited,
+                EditDeleteKind::Edit,
+                &mut new_ast,
+            )
             .await?;
 
         // If we deleted constraints, set invalidates_ids: true
@@ -1087,6 +1114,7 @@ impl SketchApi for FrontendState {
         delete_constraint_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         self.fill_node_paths();
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
@@ -1128,7 +1156,14 @@ impl SketchApi for FrontendState {
         // Always use Edit (not DeleteNonSketch) because we're editing the sketch block, not deleting it
         // But we'll manually set invalidates_ids: true if we deleted constraints
         let (source_delta, mut scene_graph_delta) = self
-            .execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .execute_after_edit(
+                ctx,
+                sketch,
+                sketch_block_ref,
+                segment_ids_edited,
+                EditDeleteKind::Edit,
+                &mut new_ast,
+            )
             .await?;
 
         // If we deleted constraints, set invalidates_ids: true
@@ -2177,6 +2212,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         sketch: ObjectId,
+        sketch_block_ref: AstNodeRef,
         segment_ids_edited: AhashIndexSet<ObjectId>,
         edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
@@ -2203,7 +2239,11 @@ impl FrontendState {
         let is_delete = edit_kind.is_delete();
         let truncated_program = {
             let mut truncated_program = new_program;
-            self.only_sketch_block_from_range(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+            only_sketch_block(
+                &mut truncated_program.ast,
+                &sketch_block_ref,
+                edit_kind.to_change_kind(),
+            )?;
             truncated_program
         };
 
@@ -3178,7 +3218,7 @@ impl FrontendState {
         // Truncate after the sketch block for mock execution.
         // Use a clone so we don't mutate new_program yet
         let mut truncated_program = new_program.clone();
-        self.only_sketch_block_from_range(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)?;
 
         // Execute - if this fails, we haven't modified self yet, so state is safe
         let outcome = ctx
@@ -3424,26 +3464,6 @@ impl FrontendState {
         fill_node_paths(&mut self.program.ast)
     }
 
-    /// This is soft deprecated. Prefer [`only_sketch_block()`] to avoid
-    /// reliance on source ranges.
-    fn only_sketch_block_from_range(
-        &self,
-        sketch_id: ObjectId,
-        edit_kind: ChangeKind,
-        ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<()> {
-        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
-            msg: format!("Sketch not found: {sketch_id:?}"),
-        })?;
-        let ObjectKind::Sketch(_) = &sketch_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a sketch: {sketch_object:?}"),
-            });
-        };
-        let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
-        only_sketch_block_from_range(ast, sketch_block_range, edit_kind)
-    }
-
     fn mutate_ast(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
@@ -3528,8 +3548,8 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
     }
 }
 
-/// This is soft deprecated. Prefer [`only_sketch_block()`] to avoid reliance on
-/// source ranges.
+/// This is a deprecated fall-back implementation. Prefer
+/// [`only_sketch_block()`] to avoid reliance on source ranges.
 fn only_sketch_block_from_range(
     ast: &mut ast::Node<ast::Program>,
     sketch_block_range: SourceRange,
