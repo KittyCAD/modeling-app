@@ -11,7 +11,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
+test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
@@ -124,12 +124,8 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
   }) => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])`
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -144,7 +140,7 @@ region001 = region(segments = [sketch001.circle1])`
         await toolbar.extrudeButton.click()
       })
       await test.step('Select profile', async () => {
-        await editor.selectText('region(')
+        await editor.selectText('circle')
         await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
@@ -199,7 +195,7 @@ region001 = region(segments = [sketch001.circle1])`
       await test.step('Submit and verify', async () => {
         await cmdBar.submit()
         await editor.expectEditor.toContain(
-          'extrude(region001, length = 4, tagEnd = $myEndTag)'
+          'extrude(profile001, length = 4, tagEnd = $myEndTag)'
         )
       })
     })
@@ -383,11 +379,11 @@ region001 = region(segments = [sketch001.circle1])`
     )
 
     const expectedCodeSnippets = {
-      sketchOnXzPlane: 'sketch(on = XZ)',
-      pointAtOrigin: 'line(start = [var 0mm, var 0mm]',
-      segmentOnXAxis: 'line(start =',
+      sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
+      pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
+      segmentOnXAxis: 'xLine(length',
       afterSegmentDraggedOnYAxis:
-        /line\(start=\[var0mm,var(\d+(\.\d+)?)mm\],end=\[/,
+        /startProfile\(sketch001, at = \[0, (\d+(\.\d+)?)\]\)/,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -443,19 +439,14 @@ region001 = region(segments = [sketch001.circle1])`
   }) => {
     page.on('console', console.log)
 
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-closedSketch = sketch(on = XZ) {
-  circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
-}
-openSketch = sketch(on = XY) {
-  line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
-  line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
-  coincident([line1.end, line2.start])
-  arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
-  coincident([line2.end, arc3.end])
-  horizontal(arc3)
-}`
+    const initialCode = `closedSketch = startSketchOn(XZ)
+  |> circle(center = [8, 5], radius = 2)
+openSketch = startSketchOn(XY)
+  |> startProfile(at = [-5, 0])
+  |> line(endAbsolute = [0, 5])
+  |> xLine(length = 5)
+  |> tangentialArc(endAbsolute = [10, 0])
+`
 
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -481,9 +472,11 @@ openSketch = sketch(on = XY) {
       await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
-      ])
+      await editor.expectState({
+        activeLines: [`|>circle(center=[8,5],radius=2)`],
+        highlightedCode: 'circle(center=[8,5],radius=2)',
+        diagnostics: [],
+      })
     })
     await page.waitForTimeout(1000)
 
@@ -516,9 +509,11 @@ openSketch = sketch(on = XY) {
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
       await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-      ])
+      await editor.expectState({
+        activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
+        diagnostics: [],
+      })
     })
   })
 
@@ -531,19 +526,14 @@ openSketch = sketch(on = XY) {
     scene,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch002 = sketch(on = XY) {
-  line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
-  line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 12mm, var 6mm], end = [var 12mm, var -6mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch002.line1, sketch002.line2])
-sketch001 = extrude(region001, length = -12)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+    |> startProfile(at = [-12, -6])
+    |> line(end = [0, 12])
+    |> line(end = [24, 0])
+    |> line(end = [0, -12])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> extrude(%, length = -12)`
 
     // Locators
     const upperEdgeLocation = { x: 600, y: 193 }
@@ -879,18 +869,13 @@ sketch001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
-  line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 100mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line2.end, line3.start])
-  vertical(line1)
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 100)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+|> yLine(length = 100)
+|> line(endAbsolute = [100, 0])
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
+extrude001 = extrude(profile001, length = 100)`
 
     // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
     const testPoint = { x: 564, y: 364 }
@@ -954,7 +939,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(region001.tags.line1),
+          axis = getOppositeEdge(seg01),
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -1059,20 +1044,15 @@ extrude001 = extrude(region001, length = 100)`
     toolbar,
     cmdBar,
   }) => {
-    const circleCode1 = `circle1 = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])`
-    const circleCode2 = `circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-offset001 = 50
-sketch001 = sketch(on = XZ) {
-  ${circleCode1}
-}
-region001 = region(segments = [sketch001.circle1])
+    const circleCode1 = `circle(center = [0, 0], radius = 30)`
+    const circleCode2 = `circle(center = [0, 0], radius = 20)`
+    const initialCode = `offset001 = 50
+sketch001 = startSketchOn(XZ)
+  |> ${circleCode1}
 plane001 = offsetPlane(XZ, offset = offset001)
-sketch002 = sketch(on = plane001) {
-  ${circleCode2}
-}
-region002 = region(segments = [sketch002.circle1])`
+sketch002 = startSketchOn(plane001)
+  |> ${circleCode2}
+      `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -1080,15 +1060,15 @@ region002 = region(segments = [sketch002.circle1])`
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const loftDeclaration = 'loft001 = loft([region001, region002])'
+    const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
     const editedLoftDeclaration =
-      'loft001 = loft([region001, region002], vDegree = 3)'
+      'loft001 = loft([sketch001, sketch002], vDegree = 3)'
 
     async function selectSketches() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
-      await editor.selectText('region001 = region(')
+      await editor.selectText(circleCode1)
       await page.keyboard.down(multiCursorKey)
-      await page.getByText('region002 = region(').click()
+      await page.getByText(circleCode2).click()
       await page.keyboard.up(multiCursorKey)
     }
 
@@ -1180,10 +1160,8 @@ region002 = region(segments = [sketch002.circle1])`
     toolbar,
     cmdBar,
   }) => {
-    const circleCode = `circle1 = circle(start = [var 0.1mm, var -1mm], center = [var 0mm, var -1mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-helix001 = helix(
+    const circleCode = `circle(sketch001, center = [0, -1], radius = .1)`
+    const initialCode = `helix001 = helix(
   axis = X,
   radius = 1,
   length = 10,
@@ -1191,12 +1169,10 @@ helix001 = helix(
   angleStart = 0,
   ccw = false,
 )
-sketch001 = sketch(on = XZ) {
-  ${circleCode}
-}
-region001 = region(segments = [sketch001.circle1])`
-    const sweepDeclaration = 'sweep001 = sweep(region001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(region001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
+sketch001 = startSketchOn(XZ)
+profile001 = ${circleCode}`
+    const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -1308,21 +1284,17 @@ region001 = region(segments = [sketch001.circle1])`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
-  line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 12mm, var 6mm], end = [var 12mm, var -6mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capStart001]), radius=5)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-12, -6])
+  |> line(end = [0, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
+`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1558,14 +1530,16 @@ extrude001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 100)
-fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region.tags.circle1)])`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 100,
+  tag = $seg01,
+)
+extrude001 = extrude(profile001, length = 100)
+fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
+`
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -1617,31 +1591,25 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region.tags.c
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
-  line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 12mm, var 6mm], end = [var 12mm, var -6mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)
-  |> fillet(radius = 5, tags = [region001.tags.line1]) // fillet01
-  |> fillet(radius = 5, tags = [region001.tags.line2]) // fillet02
-fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])
-fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
-    const firstPipedFilletDeclaration =
-      'fillet(radius = 5, tags = [region001.tags.line1])'
-    const secondPipedFilletDeclaration =
-      'fillet(radius = 5, tags = [region001.tags.line2])'
+    const initialCode = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-12, -6])
+  |> line(end = [0, 12])
+  |> line(end = [24, 0], tag = $seg02)
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
+  |> fillet(radius = 5, tags = [seg01]) // fillet01
+  |> fillet(radius = 5, tags = [seg02]) // fillet02
+fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
+fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
+`
+    const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
+    const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
     const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
     const standaloneUnassignedFilletDeclaration =
-      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])'
+      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1743,23 +1711,18 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
-  line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -10mm, var -1mm], end = [var -10mm, var 9mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -10mm, var 9mm], end = [var 0mm, var 0mm])
-  coincident([line3.end, line4.start])
-  vertical(line1)
-  horizontal(line2)
-  vertical(line3)
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 5)`
-    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, region001.tags.line2]), radius = 1000)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = -1)
+  |> xLine(length = -10)
+  |> yLine(length = 10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
+    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
+    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1829,6 +1792,8 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Verify code is updated regardless of execution errors', async () => {
+      await editor.expectEditor.toContain(taggedSegment1)
+      await editor.expectEditor.toContain(taggedSegment2)
       await editor.expectEditor.toContain(filletExpression)
     })
   })
@@ -1843,21 +1808,18 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
-  line2 = line(start = [var -12in, var 6in], end = [var 12in, var 6in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 12in, var 6in], end = [var 12in, var -6in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 12in, var -6in], end = [var -12in, var -6in])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capStart001]), length=5)`
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-12, -6])
+  |> line(end = [0, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
+`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2104,31 +2066,26 @@ extrude001 = extrude(region001, length = -12)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
-  line2 = line(start = [var -12in, var 6in], end = [var 12in, var 6in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 12in, var 6in], end = [var 12in, var -6in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 12in, var -6in], end = [var -12in, var -6in])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)
-  |> chamfer(length = 5, tags = [region001.tags.line1]) // chamfer01
-  |> chamfer(length = 5, tags = [region001.tags.line2]) // chamfer02
-chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])
-chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
-    const firstPipedChamferDeclaration =
-      'chamfer(length = 5, tags = [region001.tags.line1])'
-    const secondPipedChamferDeclaration =
-      'chamfer(length = 5, tags = [region001.tags.line2])'
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-12, -6])
+  |> line(end = [0, 12])
+  |> line(end = [24, 0], tag = $seg02)
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
+  |> chamfer(length = 5, tags = [seg01]) // chamfer01
+  |> chamfer(length = 5, tags = [seg02]) // chamfer02
+chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])
+chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
+`
+    const firstPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
+    const secondPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg02])'
     const standaloneAssignedChamferDeclaration =
-      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])'
     const standaloneUnassignedChamferDeclaration =
-      'chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])'
+      'chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])'
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2235,13 +2192,10 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 30)`
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2361,13 +2315,10 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 30)`
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)`
     const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2430,24 +2381,17 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
-  line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 100.03mm, var -100.88mm], end = [var -102.57mm, var -100.88mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -102.57mm, var -100.88mm], end = [var -102.57mm, var 101.72mm])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 50)
-sketch002 = sketch(on = startSketchOn(extrude001, face = region001.tags.line1)) {
-  circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
-}
-region002 = region(segments = [sketch002.circle1])`
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-102.57, 101.72])
+  |> angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 202.6, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
+  |> circle(center = [-11.34, 10.0], radius = 8.69)`
+    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2583,24 +2527,15 @@ region002 = region(segments = [sketch002.circle1])`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch = sketch(on = XY) {
-  line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
-  line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 5mm, var 10mm], end = [var -5mm, var 10mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -5mm, var 10mm], end = [var -5mm, var -10mm])
-  coincident([line3.end, line4.start])
-  horizontal(line1)
-  vertical(line2)
-  horizontal(line3)
-}
-region001 = region(segments = [sketch.line1, sketch.line2])
-box = extrude(region001, length = 30)`
+    const initialCode = `sketch = startSketchOn(XY)
+profile = startProfile(sketch, at = [-5, -10])
+  |> xLine(length = 10)
+  |> yLine(length = 20)
+  |> xLine(length = -10)
+  |> close()
+box = extrude(profile, length = 30)`
     const expectedTranslateCode = `translate(box, x = 50)`
-    const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
+    const segmentToSelect = `yLine(length = 20)`
 
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
@@ -2703,24 +2638,20 @@ box = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
-    const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  ${firstSurfaceEdge}
-}
-region001 = region(segments = [sketch001.line1])
-surface001 = extrude(region001, length = 2, bodyType = SURFACE)
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
-sketch002 = sketch(on = XZ) {
-  ${secondSurfaceEdge}
-}
-region002 = region(segments = [sketch002.line1])
-surface002 = extrude(region002, length = 2, bodyType = SURFACE)
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
+    const blendDeclaration = `blend001 = blend([seg01, seg02])`
 
     async function selectEdgesFromBothSurfaces() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
@@ -2794,15 +2725,11 @@ surface002 = extrude(region002, length = 2, bodyType = SURFACE)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var -6.79mm, var 0mm], end = [var 4.67mm, var 10.74mm])
-  line2 = line(start = [var 4.67mm, var 10.74mm], end = [var 7.24mm, var 0mm])
-  coincident([line1.end, line2.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-6.79, 0])
+  |> line(end = [11.46, 10.74])
+  |> line(endAbsolute = [7.24, 0])
+extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
 
     await test.step('Settle the scene', async () => {
@@ -2883,20 +2810,15 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const firstSurface = `region001 = region(segments = [sketch001.line1])
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
-    const secondSurface = `region002 = region(segments = [sketch002.line1])
-extrude002 = extrude(region002, length = 5, bodyType = SURFACE)`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 6.07mm, var 1.66mm])
-  line2 = line(start = [var 6.07mm, var 1.66mm], end = [var 6.07mm, var -3.67mm])
-  coincident([line1.end, line2.start])
-}
-sketch002 = sketch(on = XY) {
-  line1 = line(start = [var -2mm, var -3.87mm], end = [var 0mm, var 0mm])
-}
+    const firstSurface = `extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
+    const secondSurface = `extrude002 = extrude(profile002, length = 5, bodyType = SURFACE)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [6.07, 1.66])
+  |> yLine(length = -5.33)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-2, -3.87])
+  |> line(endAbsolute = [0, 0])
 ${firstSurface}
 ${secondSurface}`
     const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
@@ -2965,13 +2887,9 @@ ${secondSurface}`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 1)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
     const declaration = `appearance(extrude001, color = "#ff0000")`
     const editedDeclaration = `appearance(extrude001, color = "#00ff00")`
     await context.addInitScript((initialCode) => {
@@ -3084,13 +3002,10 @@ extrude001 = extrude(region001, length = 1)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])
-solid001 = extrude(region001, length = 5)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 2)
+solid001 = extrude(sketch001, length = 5)`
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -3596,13 +3511,10 @@ solid001 = extrude(region001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])
-solid001 = extrude(region001, length = 5)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 2)
+solid001 = extrude(sketch001, length = 5)`
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -3943,13 +3855,11 @@ solid001 = extrude(region001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 30)`
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -4482,13 +4392,11 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
-}
-region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 30)`
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -4923,19 +4831,14 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
-  line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 5mm, var 5mm], end = [var -5mm, var 5mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -5mm, var 5mm], end = [var -5mm, var -5mm])
-  coincident([line3.end, line4.start])
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 10)`
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)`
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -5087,14 +4990,21 @@ extrude001 = extrude(region001, length = 10)`
       await scene.settled(cmdBar)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
-        `extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [0, 0],
-  holeBottom = hole::flat(),
-  holeBody = hole::blind(depth = 2, diameter = 1),
-  holeType = hole::simple(),
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
+  holeType =   hole::simple(),
 )`,
         { shouldNormalise: true }
       )
