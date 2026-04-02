@@ -6227,59 +6227,74 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
-        let mut frontend = FrontendState::new();
-
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        let version = Version(0);
-
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
-        let sketch_id = sketch_object.id;
-        let sketch = expect_sketch(sketch_object);
-        let point_id = *sketch.segments.first().unwrap();
-
-        let constraint = Constraint::Coincident(Coincident {
-            segments: vec![CoincidentSegment::ORIGIN, point_id.into()],
-        });
-        let (src_delta, scene_delta) = frontend
-            .add_constraint(&mock_ctx, version, sketch_id, constraint)
-            .await
-            .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
+        for (origin_first, expected_source) in [
+            (
+                true,
+                "\
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   coincident([ORIGIN, point1])
 }
-"
-        );
+",
+            ),
+            (
+                false,
+                "\
+@settings(experimentalFeatures = allow)
 
-        let constraint_object = scene_delta
-            .new_graph
-            .objects
-            .iter()
-            .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
-            .unwrap();
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  coincident([point1, ORIGIN])
+}
+",
+            ),
+        ] {
+            let program = Program::parse(initial_source).unwrap().0.unwrap();
 
-        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
-            panic!("expected a constraint object");
-        };
+            let mut frontend = FrontendState::new();
 
-        assert_eq!(
-            constraint,
-            &Constraint::Coincident(Coincident {
-                segments: vec![CoincidentSegment::ORIGIN, point_id.into()],
-            })
-        );
+            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+            let mock_ctx = ExecutorContext::new_mock(None).await;
+            let version = Version(0);
 
-        ctx.close().await;
-        mock_ctx.close().await;
+            frontend.hack_set_program(&ctx, program).await.unwrap();
+            let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+            let sketch_id = sketch_object.id;
+            let sketch = expect_sketch(sketch_object);
+            let point_id = *sketch.segments.first().unwrap();
+
+            let segments = if origin_first {
+                vec![CoincidentSegment::ORIGIN, point_id.into()]
+            } else {
+                vec![point_id.into(), CoincidentSegment::ORIGIN]
+            };
+            let constraint = Constraint::Coincident(Coincident {
+                segments: segments.clone(),
+            });
+            let (src_delta, scene_delta) = frontend
+                .add_constraint(&mock_ctx, version, sketch_id, constraint)
+                .await
+                .unwrap();
+            assert_eq!(src_delta.text.as_str(), expected_source);
+
+            let constraint_object = scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+                .unwrap();
+
+            let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+                panic!("expected a constraint object");
+            };
+
+            assert_eq!(constraint, &Constraint::Coincident(Coincident { segments }));
+
+            ctx.close().await;
+            mock_ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
