@@ -1,0 +1,12 @@
+# Uncomment and edit patterns as needed.
+#
+# Ignore a file:
+# stylized-car/main.kcl
+#
+# Ignore a directory:
+# walkie-talkie/
+#
+# Ignore a directory, then allow specific files:
+# cpu-cooler/
+# !cpu-cooler/main.kcl
+# !cpu-cooler/parameters.kcl

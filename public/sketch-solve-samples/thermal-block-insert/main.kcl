@@ -75,4 +75,3 @@ grooveShape = sketch(on = XY) {
 
 // Extrude both tongue and groove profiles to form the final thermal insert block
 insertShape = extrude([tongueShape, grooveShape], length = insertHeight)
-

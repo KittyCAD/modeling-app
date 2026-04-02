@@ -85,4 +85,3 @@ fn createIntersection(@solids) {
 
 // Apply intersection to all faces
 createIntersection(dodecFaces)
-

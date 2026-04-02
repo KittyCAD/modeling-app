@@ -176,4 +176,3 @@ binTop = extrude(region002, length = binHeight * countBinHeight)
        ],
      )
   |> shell(faces = [END], thickness = binThk)
-

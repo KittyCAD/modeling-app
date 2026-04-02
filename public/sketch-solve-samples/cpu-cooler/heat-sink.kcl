@@ -254,4 +254,3 @@ thruHole = extrude(region007, length = -sheetThickness)
        arcDegrees = 360deg,
        rotateDuplicates = true,
      )
-

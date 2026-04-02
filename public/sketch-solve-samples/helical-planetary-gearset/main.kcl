@@ -163,4 +163,3 @@ helicalGear(
        arcDegrees = 360deg,
        rotateDuplicates = false,
      )
-

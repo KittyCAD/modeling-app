@@ -44,4 +44,3 @@ region003 = region(segments = [sketch003.circle1])
 boltBody = extrude(region003, length = boltLength)
   |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
   |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
-

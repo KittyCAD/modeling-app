@@ -21,4 +21,3 @@ export fn pipe() {
     |> appearance(color = "#a24ed0")
   return pipe
 }
-

@@ -56,4 +56,3 @@ helicalGear(nTeeth = 16, helixAngle = -25deg, bore = 160)
 
 helicalGear(nTeeth = 14, helixAngle = -25deg, bore = 160)
   |> translate(y = -200, x = 392)
-
