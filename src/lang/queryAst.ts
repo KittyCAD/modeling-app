@@ -1170,6 +1170,28 @@ export function getVariableExprsFromSelection(
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
+
+  const resolveVariableFromCodeRefPath = (
+    selectionPath: PathToNode
+  ):
+    | {
+        node: VariableDeclaration
+        shallowPath: PathToNode
+        deepPath: PathToNode
+      }
+    | undefined => {
+    const directLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selectionPath,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(directLookup)) {
+      return undefined
+    }
+    return directLookup
+  }
+
   for (const s of selection.graphSelections) {
     if (s.artifact?.type === 'segment') {
       const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
@@ -1215,22 +1237,16 @@ export function getVariableExprsFromSelection(
         nodeToEdit
       )
       if (!lastChildVariable) {
-        continue
+        variable = resolveVariableFromCodeRefPath(s.codeRef.pathToNode)
+      } else {
+        variable = lastChildVariable.variableDeclaration
       }
-
-      variable = lastChildVariable.variableDeclaration
     } else {
-      const directLookup = getNodeFromPath<VariableDeclaration>(
-        ast,
-        s.codeRef.pathToNode,
-        wasmInstance,
-        'VariableDeclaration'
-      )
-      if (err(directLookup)) {
-        continue
-      }
+      variable = resolveVariableFromCodeRefPath(s.codeRef.pathToNode)
+    }
 
-      variable = directLookup
+    if (!variable) {
+      continue
     }
 
     if (variable.node.type === 'VariableDeclaration') {
