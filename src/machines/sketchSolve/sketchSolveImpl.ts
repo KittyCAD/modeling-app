@@ -211,7 +211,10 @@ export type SolveActionArgs = ActionArgs<
   SketchSolveMachineEvent
 >
 
-type EventLike = { type: string }
+interface EventLike {
+  type: string
+  [key: PropertyKey]: unknown
+}
 
 type SolveAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   SketchSolveContext,
@@ -223,9 +226,9 @@ type SolveAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
 export const CHILD_TOOL_ID = 'child tool'
 export const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
 
-export function sendToActorIfActive<TEvent extends EventLike>(
+export function sendToActorIfActive(
   actor: Pick<AnyActorRef, 'getSnapshot' | 'send'> | undefined,
-  event: TEvent
+  event: EventLike
 ): boolean {
   if (!actor || actor.getSnapshot().status !== 'active') {
     return false
