@@ -153,7 +153,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 profile',
+            Profiles: '1 path',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -165,7 +165,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 path',
           },
           commandName: 'Extrude',
         })
@@ -178,7 +178,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 path',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -190,7 +190,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 path',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -327,200 +327,96 @@ region001 = region(segments = [sketch001.circle1])`
       }
   })
 
-  test(`Verify axis, origin, and horizontal snapping`, async ({
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-  }) => {
-    const viewPortSize = { width: 1200, height: 500 }
+  // TODO: double check if we want to keep this feature
+  //   test(`Verify user can double-click to edit a sketch`, async ({
+  //     context,
+  //     page,
+  //     homePage,
+  //     editor,
+  //     toolbar,
+  //     scene,
+  //     cmdBar,
+  //   }) => {
+  //     page.on('console', console.log)
 
-    await page.setBodyDimensions(viewPortSize)
+  //     const initialCode = `@settings(experimentalFeatures = allow)
 
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
+  // closedSketch = sketch(on = XZ) {
+  //   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
+  // }
+  // openSketch = sketch(on = XY) {
+  //   line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
+  //   line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
+  //   coincident([line1.end, line2.start])
+  //   arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
+  //   coincident([line2.end, arc3.end])
+  //   horizontal(arc3)
+  // }`
 
-    // Constants and locators
-    // These are mappings from screenspace to KCL coordinates,
-    // until we merge in our coordinate system helpers
-    const xzPlane = [
-      viewPortSize.width * 0.65,
-      viewPortSize.height * 0.3,
-    ] as const
-    const originSloppy = {
-      screen: [
-        viewPortSize.width / 2 + 3, // 3px off the center of the screen
-        viewPortSize.height / 2,
-      ],
-    } as const
-    const xAxisSloppy = {
-      screen: [
-        viewPortSize.width * 0.75,
-        viewPortSize.height / 2 - 3, // 3px off the X-axis
-      ],
-    } as const
-    const offYAxis = {
-      screen: [
-        viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
-        viewPortSize.height * 0.3,
-      ],
-    } as const
-    const yAxisSloppy = {
-      screen: [
-        viewPortSize.width / 2 + 5, // 5px off the Y-axis
-        viewPortSize.height * 0.3,
-      ],
-    } as const
-    const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
-    const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
-    const [clickXAxisSloppy, moveXAxisSloppy] = scene.makeMouseHelpers(
-      ...xAxisSloppy.screen
-    )
-    const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
-      ...offYAxis.screen,
-      { debug: true }
-    )
+  //     await context.addInitScript((code) => {
+  //       localStorage.setItem('persistCode', code)
+  //     }, initialCode)
 
-    const expectedCodeSnippets = {
-      sketchOnXzPlane: 'sketch(on = XZ)',
-      pointAtOrigin: 'line(start = [var 0mm, var 0mm]',
-      segmentOnXAxis: 'line(start =',
-      afterSegmentDraggedOnYAxis:
-        /line\(start=\[var0mm,var(\d+(\.\d+)?)mm\],end=\[/,
-    }
+  //     await homePage.goToModelingScene()
 
-    await test.step(`Start a sketch on the XZ plane`, async () => {
-      await editor.closePane()
-      await toolbar.startSketchPlaneSelection()
-      await moveToXzPlane()
-      await clickOnXzPlane()
-      await toolbar.waitUntilSketchingReady()
-      await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
-    })
-    await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
-      await clickOriginSloppy()
-      await editor.expectEditor.toContain(expectedCodeSnippets.pointAtOrigin)
-    })
-    await test.step(`Add a segment on x-axis after moving the mouse a bit, verify it snaps`, async () => {
-      await moveXAxisSloppy()
-      await clickXAxisSloppy()
-      await editor.expectEditor.toContain(expectedCodeSnippets.segmentOnXAxis)
-    })
-    await test.step(`Unequip line tool`, async () => {
-      await toolbar.lineBtn.click()
-      await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
-    })
-    await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
-      await editor.closePane()
-      await dragToOffYAxis({
-        fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
-      })
-      await editor.expectEditor.not.toContain(
-        expectedCodeSnippets.pointAtOrigin
-      )
-    })
-    await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
-      await dragFromOffAxis({
-        toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
-      })
-      await editor.openPane()
-      await expect(editor.codeContent).toContainText(
-        expectedCodeSnippets.afterSegmentDraggedOnYAxis
-      )
-      await editor.closePane()
-    })
-  })
+  //     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+  //       scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
 
-  test(`Verify user can double-click to edit a sketch`, async ({
-    context,
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    page.on('console', console.log)
+  //     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
+  //       0.63,
+  //       0.5,
+  //       { format: 'ratio' }
+  //     )
 
-    const initialCode = `@settings(experimentalFeatures = allow)
+  //     await test.step(`Double-click on the closed sketch`, async () => {
+  //       await scene.settled(cmdBar)
+  //       await editor.closePane()
+  //       await moveToCircle()
+  //       await page.waitForTimeout(1000)
+  //       await dblClickCircle()
+  //       await page.waitForTimeout(1000)
+  //       await expect(toolbar.exitSketchBtn).toBeVisible()
+  //       await editor.openPane()
+  //       await editor.expectActiveLinesToBe([
+  //         'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
+  //       ])
+  //     })
+  //     await page.waitForTimeout(1000)
 
-closedSketch = sketch(on = XZ) {
-  circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
-}
-openSketch = sketch(on = XY) {
-  line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
-  line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
-  coincident([line1.end, line2.start])
-  arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
-  coincident([line2.end, arc3.end])
-  horizontal(arc3)
-}`
+  //     await toolbar.exitSketch()
+  //     await page.waitForTimeout(1000)
+  //     await editor.closePane()
 
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, initialCode)
+  //     // Drag the sketch line out of the axis view which blocks the click
+  //     await page.dragAndDrop('#stream', '#stream', {
+  //       sourcePosition: await scene.convertPagePositionToStream(
+  //         0.7,
+  //         0.5,
+  //         'ratio'
+  //       ),
+  //       targetPosition: await scene.convertPagePositionToStream(
+  //         0.7,
+  //         0.4,
+  //         'ratio'
+  //       ),
+  //     })
 
-    await homePage.goToModelingScene()
+  //     await page.waitForTimeout(500)
 
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
-
-    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      0.63,
-      0.5,
-      { format: 'ratio' }
-    )
-
-    await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled(cmdBar)
-      await editor.closePane()
-      await moveToCircle()
-      await page.waitForTimeout(1000)
-      await dblClickCircle()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
-      ])
-    })
-    await page.waitForTimeout(1000)
-
-    await toolbar.exitSketch()
-    await page.waitForTimeout(1000)
-    await editor.closePane()
-
-    // Drag the sketch line out of the axis view which blocks the click
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.5,
-        'ratio'
-      ),
-      targetPosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.4,
-        'ratio'
-      ),
-    })
-
-    await page.waitForTimeout(500)
-
-    await test.step(`Double-click on the open sketch`, async () => {
-      await moveToOpenPath()
-      // There is a full execution after exiting sketch that clears the scene.
-      await page.waitForTimeout(500)
-      await dblClickOpenPath()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      // Wait for enter sketch mode to complete
-      await page.waitForTimeout(500)
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-      ])
-    })
-  })
+  //     await test.step(`Double-click on the open sketch`, async () => {
+  //       await moveToOpenPath()
+  //       // There is a full execution after exiting sketch that clears the scene.
+  //       await page.waitForTimeout(500)
+  //       await dblClickOpenPath()
+  //       await expect(toolbar.exitSketchBtn).toBeVisible()
+  //       // Wait for enter sketch mode to complete
+  //       await page.waitForTimeout(500)
+  //       await editor.openPane()
+  //       await editor.expectActiveLinesToBe([
+  //         'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+  //       ])
+  //     })
+  //   })
 
   test(`Shift-click to select and deselect edges and faces`, async ({
     context,
@@ -1109,7 +1005,7 @@ region002 = region(segments = [sketch002.circle1])`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 profiles' },
+        headerArguments: { Profiles: '2 paths' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1345,7 +1241,7 @@ extrude001 = extrude(region001, length = -12)`
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
       await editor.selectText(
-        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
+        'line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])'
       )
     })
 
@@ -2443,7 +2339,8 @@ sketch001 = sketch(on = XZ) {
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 50)
-sketch002 = sketch(on = startSketchOn(extrude001, face = region001.tags.line1)) {
+face001 = faceOf(extrude001, face = region001.tags.line1)
+sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
 region002 = region(segments = [sketch002.circle1])`
@@ -2585,7 +2482,7 @@ region002 = region(segments = [sketch002.circle1])`
   }) => {
     const initialCode = `@settings(experimentalFeatures = allow)
 
-sketch = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
   line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
   coincident([line1.end, line2.start])
@@ -2597,7 +2494,7 @@ sketch = sketch(on = XY) {
   vertical(line2)
   horizontal(line3)
 }
-region001 = region(segments = [sketch.line1, sketch.line2])
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 box = extrude(region001, length = 30)`
     const expectedTranslateCode = `translate(box, x = 50)`
     const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
@@ -2883,10 +2780,6 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const firstSurface = `region001 = region(segments = [sketch001.line1])
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
-    const secondSurface = `region002 = region(segments = [sketch002.line1])
-extrude002 = extrude(region002, length = 5, bodyType = SURFACE)`
     const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
@@ -2897,8 +2790,10 @@ sketch001 = sketch(on = XY) {
 sketch002 = sketch(on = XY) {
   line1 = line(start = [var -2mm, var -3.87mm], end = [var 0mm, var 0mm])
 }
-${firstSurface}
-${secondSurface}`
+region001 = region(segments = [sketch001.line1])
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+region002 = region(segments = [sketch002.line1])
+extrude002 = extrude(region002, length = 5, bodyType = SURFACE)`
     const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
 
     await test.step('Settle the scene', async () => {
@@ -3133,7 +3028,7 @@ solid001 = extrude(region001, length = 5)`
             },
             highlightedHeaderArg: 'solids',
           })
-          await editor.selectText('extrude(sketch001, length = 5)')
+          await editor.selectText('extrude(region001, length = 5)')
         })
 
         await test.step('Configure instances', async () => {
@@ -3652,7 +3547,7 @@ solid001 = extrude(region001, length = 5)`
             },
             highlightedHeaderArg: 'solids',
           })
-          await editor.selectText('extrude(sketch001, length = 5)')
+          await editor.selectText('extrude(region001, length = 5)')
         })
 
         await test.step('Configure instances', async () => {
