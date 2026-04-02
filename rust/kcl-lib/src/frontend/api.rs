@@ -131,7 +131,7 @@ impl Object {
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::placeholder(),
-            source: SourceRef::Simple { range, node_path },
+            source: SourceRef::new(range, node_path),
         }
     }
 }
@@ -215,6 +215,12 @@ impl From<SourceRange> for SourceRef {
             range: value,
             node_path: None,
         }
+    }
+}
+
+impl SourceRef {
+    pub fn new(range: SourceRange, node_path: Option<NodePath>) -> Self {
+        Self::Simple { range, node_path }
     }
 }
 

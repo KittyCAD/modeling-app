@@ -1262,6 +1262,7 @@ impl Node<SketchBlock> {
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
+            use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
@@ -1281,7 +1282,7 @@ impl Node<SketchBlock> {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id,
-                source: range.into(),
+                source: SourceRef::new(self.into(), self.node_path.clone()),
             };
             exec_state.set_scene_object(sketch_scene_object);
 
@@ -1678,7 +1679,7 @@ impl Node<SketchBlock> {
             match &mut sketch_surface {
                 SketchSurface::Plane(plane) => {
                     // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
                 }
                 SketchSurface::Face(_) => {
                     // All faces should already be created in the engine.
@@ -3071,6 +3072,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Angle;
+                                use crate::front::SourceRef;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3102,7 +3104,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3138,6 +3140,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3169,7 +3172,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3354,6 +3357,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::CodeRef;
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
+                                use crate::front::SourceRef;
                                 let segment_object_id = match target_segment {
                                     CircularSegmentConstraintTarget::Arc { object_id, .. }
                                     | CircularSegmentConstraintTarget::Circle { object_id } => object_id,
@@ -3399,7 +3403,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3438,6 +3442,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3467,7 +3472,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3506,6 +3511,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3535,7 +3541,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );

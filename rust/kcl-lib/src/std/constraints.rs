@@ -57,6 +57,8 @@ use crate::front::Perpendicular;
 use crate::front::Point2d;
 use crate::front::PointCtor;
 #[cfg(feature = "artifact-graph")]
+use crate::front::SourceRef;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
@@ -1623,7 +1625,7 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
             label: Default::default(),
             comments: Default::default(),
             artifact_id,
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         },
         args.source_range,
     );

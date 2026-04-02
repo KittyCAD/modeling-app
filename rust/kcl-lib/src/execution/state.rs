@@ -1056,10 +1056,7 @@ mod tests {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id: plane_artifact_id,
-                source: SourceRef::Simple {
-                    range: plane_range,
-                    node_path: plane_node_path,
-                },
+                source: SourceRef::new(plane_range, plane_node_path),
             },
             Object {
                 id: ObjectId(1),
