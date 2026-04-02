@@ -119,6 +119,7 @@ impl Context {
             let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
             KclErrorWithOutputs::no_outputs(err)
         })?;
+        let program = program.fill_node_paths();
         let ctx = self.create_executor_ctx(settings, path, false).map_err(|e| {
             KclErrorWithOutputs::no_outputs(KclError::internal(format!(
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
@@ -184,6 +185,7 @@ impl Context {
             let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
             KclErrorWithOutputs::no_outputs(err)
         })?;
+        let program = program.fill_node_paths();
         let ctx = self.create_executor_ctx(settings, path, true).map_err(|e| {
             KclErrorWithOutputs::no_outputs(KclError::internal(format!(
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"

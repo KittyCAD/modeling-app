@@ -3471,9 +3471,7 @@ fn fill_program_node_paths(program: Program) -> Program {
     }
     #[cfg(feature = "artifact-graph")]
     {
-        let mut program = program;
-        fill_node_paths(&mut program.ast);
-        program
+        program.fill_node_paths()
     }
 }
 

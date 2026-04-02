@@ -333,6 +333,17 @@ impl Program {
         NodePath::from_range(&programs, cached_body_items, range)
     }
 
+    /// Fill node paths and consume the input so that the program without paths
+    /// isn't accidentally used. Filling node paths happens automatically during
+    /// parsing. Calling this is only needed after the caller invalidates the
+    /// node paths such as by mutating an AST or by making a round-trip through
+    /// serialization.
+    #[cfg(feature = "artifact-graph")]
+    pub fn fill_node_paths(mut self) -> Program {
+        parsing::ast::types::fill_node_paths(&mut self.ast);
+        self
+    }
+
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
         self.ast.recast_top(&Default::default(), 0)
