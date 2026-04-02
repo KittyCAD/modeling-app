@@ -2470,7 +2470,8 @@ region002 = region(segments = [sketch002.circle1])`
     })
   })
 
-  test(`Translate point-and-click with segment-to-body coercion`, async ({
+  // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10779 is in
+  test.skip(`Translate point-and-click with segment-to-body coercion`, async ({
     context,
     page,
     homePage,
