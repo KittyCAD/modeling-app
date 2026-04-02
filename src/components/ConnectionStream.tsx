@@ -373,11 +373,15 @@ export const ConnectionStream = (props: {
   const onOfflineToExitSketchModeParams = useMemo(
     () => ({
       callback: () => {
-        modelingSend({ type: 'Cancel' })
+        modelingSend({
+          type: modelingMachineState.matches('sketchSolveMode')
+            ? 'Exit sketch'
+            : 'Cancel',
+        })
       },
       engineCommandManager,
     }),
-    [modelingSend, engineCommandManager]
+    [modelingMachineState, modelingSend, engineCommandManager]
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 

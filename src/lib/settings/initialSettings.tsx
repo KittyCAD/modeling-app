@@ -165,7 +165,7 @@ let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
  * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
  * @returns An async function that resolves to the hideOnPlatform value
  */
-function hideWithoutFeatureFlag(
+function _hideWithoutFeatureFlag(
   featureFlagId: UserFeatureEntry['id'],
   defaultHide: HideOnPlatformValue = 'both'
 ): () => Promise<HideOnPlatformValue | null> {
@@ -233,7 +233,7 @@ export function createSettings() {
       theme: new Setting<Themes>({
         hideOnLevel: 'project',
         defaultValue: Themes.System,
-        description: 'The overall appearance of the app',
+        description: 'The overall appearance of the app.',
         validate: (v) => isEnumMember(v, Themes),
         commandConfig: {
           inputType: 'options',
@@ -256,7 +256,7 @@ export function createSettings() {
        */
       showDebugPanel: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
+        description: 'Whether to show the debug panel, a development tool.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -267,7 +267,7 @@ export function createSettings() {
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         description:
-          'Whether to enable Machine API discovery and printing controls on desktop',
+          'Whether to enable Machine API discovery and printing controls on desktop.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -288,7 +288,7 @@ export function createSettings() {
         defaultValue: 1 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
-        description: 'Save bandwidth & battery',
+        description: 'Save bandwidth & battery.',
         validate: (v) =>
           String(v) == 'undefined' ||
           (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
@@ -327,7 +327,7 @@ export function createSettings() {
         /** Unhide this once we make sketch mode unbreakable */
         hideOnPlatform: 'both',
         defaultValue: false,
-        description: 'Toggle free camera while in sketch mode',
+        description: 'Toggle free camera while in sketch mode.',
         validate: (v) => typeof v === 'boolean',
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
@@ -339,7 +339,7 @@ export function createSettings() {
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '', // gets set async in settingsUtils.ts
-        description: 'The directory to save and load projects from',
+        description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         validate: (v) =>
@@ -426,13 +426,13 @@ export function createSettings() {
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
         description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
-        description: 'Default backface color for surfaces',
+        description: 'Default backface color for surfaces.',
         hideOnLevel: 'project',
         validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
         commandConfig: {
@@ -472,7 +472,7 @@ export function createSettings() {
        */
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
-        description: 'The controls for how to navigate the 3D view',
+        description: 'The controls for how to navigate the 3D view.',
         validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
@@ -543,13 +543,11 @@ export function createSettings() {
       /**
        * Determines if new sketches should use the experimental solver-based sketch mode.
        * On staging, this setting cannot be disabled except by Playwright tests.
-       * On production, the 'new_sketch_mode' feature flag controls visibility.
+       * On production, users can opt in but classic sketch mode remains the default.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG
-          ? 'both'
-          : hideWithoutFeatureFlag('new_sketch_mode', 'both'),
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? 'both' : undefined,
         defaultValue: IS_STAGING_OR_DEBUG && !isPlaywright(),
         description:
           'Default to the experimental solver-based sketch mode for all new sketches.',
@@ -565,7 +563,7 @@ export function createSettings() {
         defaultValue: 'orthographic',
         hideOnLevel: 'project',
         description:
-          'Projection method applied to the 3D view, perspective or orthographic',
+          'Projection method applied to the 3D view, perspective or orthographic.',
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
           inputType: 'options',
@@ -594,7 +592,7 @@ export function createSettings() {
       cameraOrbit: new Setting<CameraOrbitType>({
         defaultValue: 'spherical',
         hideOnLevel: 'project',
-        description: 'What methodology to use for orbiting the camera',
+        description: 'What methodology to use for orbiting the camera.',
         validate: (v) => ['spherical', 'trackball'].includes(v),
         commandConfig: {
           inputType: 'options',
@@ -618,7 +616,7 @@ export function createSettings() {
       gizmoType: new Setting<'cube' | 'axis'>({
         defaultValue: 'cube',
         hideOnLevel: 'project',
-        description: 'Which type of orientation gizmo to use',
+        description: 'Which type of orientation gizmo to use.',
         validate: (v) => v === 'cube' || v === 'axis',
         commandConfig: {
           inputType: 'options',
@@ -641,7 +639,7 @@ export function createSettings() {
        */
       highlightEdges: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether to highlight edges of 3D objects',
+        description: 'Whether to highlight edges of 3D objects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -653,7 +651,7 @@ export function createSettings() {
        */
       showScaleGrid: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether to show a scale grid in the 3D modeling view',
+        description: 'Whether to show a scale grid in the 3D modeling view.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -672,7 +670,7 @@ export function createSettings() {
       majorGridSpacing: new Setting<number>({
         defaultValue: 1,
         description:
-          'The space between major grid lines, specified in the current unit',
+          'The space between major grid lines, specified in the current unit.',
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
@@ -681,7 +679,7 @@ export function createSettings() {
       }),
       minorGridsPerMajor: new Setting<number>({
         defaultValue: 4,
-        description: 'Number of minor grid lines per major grid line',
+        description: 'Number of minor grid lines per major grid line.',
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
@@ -692,7 +690,7 @@ export function createSettings() {
       snapToGrid: new Setting<boolean>({
         defaultValue: false,
         description:
-          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -701,7 +699,7 @@ export function createSettings() {
       snapsPerMinor: new Setting<number>({
         defaultValue: 1,
         description:
-          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line.',
         validate: (v) => typeof v === 'number',
         isEnabled: (context) => context.modeling.snapToGrid.current,
         commandConfig: {
@@ -716,7 +714,7 @@ export function createSettings() {
        */
       // reduceMotion: new Setting<boolean>({
       //   defaultValue: false,
-      //   description: 'Whether to turn off animations and other motion effects',
+      //   description: 'Whether to turn off animations and other motion effects.',
       //   validate: (v) => typeof v === 'boolean',
       //   commandConfig: {
       //     inputType: 'boolean',
@@ -730,7 +728,7 @@ export function createSettings() {
        */
       // moveOrthoginalToSketch: new Setting<boolean>({
       //   defaultValue: false,
-      //   description: 'Whether to move to view sketch planes orthogonally',
+      //   description: 'Whether to move to view sketch planes orthogonally.',
       //   validate: (v) => typeof v === 'boolean',
       //   commandConfig: {
       //     inputType: 'boolean',
@@ -747,7 +745,7 @@ export function createSettings() {
       textWrapping: new Setting<boolean>({
         defaultValue: true,
         description:
-          'Whether to wrap text in the editor or overflow with scroll',
+          'Whether to wrap text in the editor or overflow with scroll.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -758,7 +756,7 @@ export function createSettings() {
        */
       blinkingCursor: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether to make the cursor blink in the editor',
+        description: 'Whether to make the cursor blink in the editor.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -775,7 +773,7 @@ export function createSettings() {
       defaultProjectName: new Setting<string>({
         defaultValue: DEFAULT_PROJECT_NAME,
         description:
-          'The default project name to use when creating a new project',
+          'The default project name to use when creating a new project.',
         validate: (v) => typeof v === 'string' && v.length > 0,
         commandConfig: {
           inputType: 'string',
@@ -793,7 +791,7 @@ export function createSettings() {
        */
       // entryPointFileName: new Setting<string>({
       //   defaultValue: PROJECT_ENTRYPOINT,
-      //   description: 'The default file to open when a project is loaded',
+      //   description: 'The default file to open when a project is loaded.',
       //   validate: (v) => typeof v === 'string' && v.length > 0,
       //   commandConfig: {
       //     inputType: 'string',
@@ -812,7 +810,7 @@ export function createSettings() {
        */
       includeSettings: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether to include settings in the command bar',
+        description: 'Whether to include settings in the command bar.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -828,7 +826,7 @@ export function createSettings() {
       id: new Setting<string>({
         hideOnLevel: 'user',
         defaultValue: uuidNIL,
-        description: 'The unique project identifier',
+        description: 'The unique project identifier.',
         // Never allow the user to change the id, only view it.
         validate: (v) => REGEXP_UUIDV4.test(v),
         Component: ({ value }) => {

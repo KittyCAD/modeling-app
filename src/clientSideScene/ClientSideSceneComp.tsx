@@ -64,7 +64,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch')
+  let hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
   if (isTween) {
     hideServer = false
   }
@@ -197,7 +197,9 @@ export const ClientSideScene = ({
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
           hideClient ? 'opacity-0' : 'opacity-100'
         } ${hideServer ? 'bg-chalkboard-10 dark:bg-chalkboard-100' : ''} ${
-          !hideClient && !hideServer && state.matches('Sketch')
+          !hideClient &&
+          !hideServer &&
+          (state.matches('Sketch') || state.matches('sketchSolveMode'))
             ? 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80'
             : ''
         }`}

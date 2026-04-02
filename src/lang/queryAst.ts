@@ -5,6 +5,7 @@ import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
@@ -1170,6 +1171,30 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    if (s.artifact?.type === 'segment') {
+      const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
+      const sketchName = getSketchVariableNameForSegment(
+        ast,
+        sketchSegmentId,
+        artifactGraph,
+        wasmInstance
+      )
+      const lineName =
+        sketchName &&
+        getSketchSegmentName(ast, sketchSegmentId, artifactGraph, wasmInstance)
+
+      if (sketchName && lineName) {
+        const memberName = `${sketchName}.${lineName}`
+        if (pushedNames[memberName]) {
+          continue
+        }
+
+        exprs.push(createMemberExpression(sketchName, lineName))
+        pushedNames[memberName] = true
+        continue
+      }
+    }
+
     let variable:
       | {
           node: VariableDeclaration
@@ -1265,6 +1290,45 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+function getSketchVariableNameForSegment(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segment)) {
+    return null
+  }
+
+  const sketchPath = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(sketchPath)) {
+    return null
+  }
+
+  const sketchVarDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    sketchPath.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(sketchVarDec) ||
+    sketchVarDec.node.type !== 'VariableDeclaration' ||
+    sketchVarDec.node.declaration.init.type !== 'SketchBlock'
+  ) {
+    return null
+  }
+
+  return sketchVarDec.node.declaration.id.name
 }
 
 // Go from the sketches argument in a KCL call declaration

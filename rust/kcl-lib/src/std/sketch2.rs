@@ -121,6 +121,7 @@ pub(crate) async fn create_segments_in_engine(
                 },
             };
             sketch.paths.push(Path::ToPoint { base });
+            sketch.synthetic_jump_path_ids.push(id);
         } else {
             // Create a new path.
             let sketch = create_sketch(
@@ -522,6 +523,7 @@ async fn inner_region(
                     units,
                     mirror: Default::default(),
                     clone: Default::default(),
+                    synthetic_jump_path_ids: vec![],
                     meta: vec![args.source_range.into()],
                     tags: Default::default(),
                     start: start_base_path,
