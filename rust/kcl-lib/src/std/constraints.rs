@@ -67,12 +67,18 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 
 #[cfg(feature = "artifact-graph")]
-fn point2d_is_origin(point2d: &KclValue, exec_state: &ExecState) -> bool {
-    point2d.metadata().into_iter().any(|meta| {
-        exec_state
-            .source_slice(meta.source_range)
-            .is_some_and(|source| source.trim() == "ORIGIN")
-    })
+fn point2d_is_origin(point2d: &KclValue) -> bool {
+    let Some([x, y]) = <[TyF64; 2]>::from_kcl_val(point2d) else {
+        return false;
+    };
+    // Both components must be lengths (not angles or unknown types).
+    // as_length() returns None for non-length types.
+    if x.ty.as_length().is_none() || y.ty.as_length().is_none() {
+        return false;
+    }
+    // Now that we've checked that they're lengths, the exact units don't
+    // matter. We only care that the value is zero.
+    x.n == 0.0 && y.n == 0.0
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -80,9 +86,8 @@ fn coincident_segments_for_segment_and_point2d(
     segment_id: ObjectId,
     point2d: &KclValue,
     segment_first: bool,
-    exec_state: &ExecState,
 ) -> Vec<CoincidentSegment> {
-    if !point2d_is_origin(point2d, exec_state) {
+    if !point2d_is_origin(point2d) {
         return vec![segment_id.into()];
     }
 
@@ -1311,7 +1316,6 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                 unsolved.object_id,
                                 point2d,
                                 matches!((&point0, &point1), (KclValue::Segment { .. }, _)),
-                                exec_state,
                             );
                             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
