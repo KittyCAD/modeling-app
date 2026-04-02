@@ -636,7 +636,12 @@ impl ExecState {
 
         // Move the artifacts into ExecState global to simplify cache
         // management.
-        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+        for (id, exec_artifact) in new_exec_artifacts {
+            // Only insert if it wasn't already present. We don't want to
+            // overwrite what was previously there. We haven't filled in node
+            // paths yet.
+            self.global.artifacts.artifacts.entry(id).or_insert(exec_artifact);
+        }
 
         let initial_graph = self.global.artifacts.graph.clone();
 

@@ -565,6 +565,42 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with bodyType "surface" on two sketch solve segments', async () => {
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        triangleRegion,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = createSelectionFromArtifacts(
+        artifactGraph
+          .values()
+          .filter((a) => a.type === 'segment')
+          .toArray()
+          .slice(0, 2),
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: segment,
+        length,
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${triangleRegion}
+extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an extrude call with bodyType "solid"', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -931,6 +967,59 @@ sweep001 = sweep(region001, path = profile001)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a sweep call from a sketch region selection and sketch solve segment as path', async () => {
+      const code = `${triangleRegion}
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var -0.01mm, var 0.02mm], end = [var -0.03mm, var 1.65mm])
+  arc1 = arc(start = [var 0.28mm, var 2.48mm], end = [var -0.03mm, var 1.65mm], center = [var 1.2mm, var 1.67mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const sketch = artifactGraph
+        .values()
+        .find((s) => s.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketch!.id,
+          },
+        ],
+      }
+      const pathArtifacts = [...artifactGraph.values()]
+        .filter((s) => s.type === 'segment')
+        .slice(-2)
+      const path = createSelectionFromArtifacts(
+        [pathArtifacts[0]],
+        artifactGraph
+      )
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(point = [1mm, 1mm], sketch = s)
+sweep001 = sweep(region001, path = sketch002.line1)`
+      )
+      // TODO: enable once KCL is updated
+      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit a sweep call from a sketch region selection', async () => {
       const code = `${triangleRegion}
 sketch001 = startSketchOn(XZ)
@@ -997,6 +1086,43 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
       expect(newCode).toContain(
         `sweep001 = sweep(profile001, path = profile002, bodyType = SURFACE)`
       )
+    })
+
+    it('should add a sweep call with surface bodyType on a sketch solve segment', async () => {
+      const code = `${triangleRegion}
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = -5)
+  |> tangentialArc(endAbsolute = [-20, 5])`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = createSelectionFromArtifacts(
+        [artifactGraph.values().find((a) => a.type === 'segment')!],
+        artifactGraph
+      )
+      const pathArtifact = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'path'
+      )
+      expect(pathArtifact).toBeDefined()
+      const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches: segment,
+        path,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `sweep001 = sweep(s.line1, path = profile001, bodyType = SURFACE)`
+      )
+      // TODO: enable once KCL is updated
+      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
@@ -1286,6 +1412,48 @@ loft001 = loft([region001, region002])`
       // Don't think we can find the artifact here for loft?
     })
 
+    it('should add a basic loft call with surface bodyType on sketch solve segments', async () => {
+      const code = `${triangleRegion}
+
+plane001 = offsetPlane(XY, offset = 10)
+
+t = sketch(on = plane001) {
+  edge1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  edge2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([edge1.end, edge2.start])
+  edge3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([edge2.end, edge3.start])
+  coincident([edge1.start, edge3.end])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
+      )
+      expect(segments.length).toBeGreaterThanOrEqual(2)
+      const sketches = createSelectionFromArtifacts(
+        [segments[0], segments[segments.length - 1]],
+        artifactGraph
+      )
+      const result = addLoft({
+        ast,
+        artifactGraph,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toMatch(
+        /loft001 = loft\(\[s\.[a-zA-Z0-9_]+, t\.[a-zA-Z0-9_]+\], bodyType = SURFACE\)/
+      )
+      // TODO: enable once KCL is updated
+      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic loft call with surface bodyType on open path without engine errors', async () => {
       const openPaths = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [-2.32, -2.09])
@@ -1529,6 +1697,42 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
   bodyType = SURFACE,
 )`
       )
+    })
+
+    it('should add basic revolve call with surface bodyType on a sketch solve segment', async () => {
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        triangleRegion,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = createSelectionFromArtifacts(
+        [artifactGraph.values().find((a) => a.type === 'segment')!],
+        artifactGraph
+      )
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches: segment,
+        angle,
+        axis: 'X',
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${triangleRegion}
+revolve001 = revolve(
+  s.line1,
+  angle = 10,
+  axis = X,
+  bodyType = SURFACE,
+)`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add basic revolve call with symmetric true', async () => {

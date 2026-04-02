@@ -78,7 +78,7 @@ impl Context {
             ));
         }
 
-        Ok(kcl_lib::ExecutorContext::new(
+        Ok(kcl_lib::ExecutorContext::new_with_engine_and_fs(
             self.engine.clone(),
             self.fs.clone(),
             settings,
