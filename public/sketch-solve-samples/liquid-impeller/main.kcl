@@ -75,4 +75,3 @@ vane = extrude(region003, length = vaneHeight)
        axis = Z,
        center = [0, 0, 0],
      )
-

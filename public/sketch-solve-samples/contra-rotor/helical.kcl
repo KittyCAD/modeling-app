@@ -51,4 +51,3 @@ export fn helicalGear(nTeeth, helixAngle, bore) {
 
   return gear
 }
-

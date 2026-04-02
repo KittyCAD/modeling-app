@@ -46,4 +46,3 @@ export gasketThickness = 0.031
 export pipeInnerDiameter = 2.0
 export pipeOuterDiameter = 2.375
 export pipeLength = 6
-

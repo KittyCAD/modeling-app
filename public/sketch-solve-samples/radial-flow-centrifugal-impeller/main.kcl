@@ -95,4 +95,3 @@ bore = extrude(region003, length = baseThick * 2 + hubHeight + 5)
 
 // final impeller
 impeller = subtract(hub, tools = [bore])
-

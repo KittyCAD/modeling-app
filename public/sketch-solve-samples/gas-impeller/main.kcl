@@ -62,4 +62,3 @@ dart = extrude(region003, twistAngle, length = 65)
 // Intersect the dart and the blade profile to create a blade, then pattern around the Z axis
 blades = intersect([bladeProfile, dart])
   |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
-

@@ -96,4 +96,3 @@ region003 = region(segments = [sketch003.arc1, sketch003.line2])
 brazedCap = extrude(region003, length = 10, symmetric = true)
   |> patternLinear3d(instances = 4, distance = bendRadius * 2, axis = [0, -1, 0])
   |> appearance(color = "#6b261e")
-

@@ -99,4 +99,3 @@ propeller(
        shaftDiameter = shaftDiameter,
      )
   |> translate(y = -630)
-

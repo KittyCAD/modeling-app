@@ -98,4 +98,3 @@ modularShelfArray = patternLinear3d(
        distance = unitHeight,
        axis = [0, 0, 1],
      )
-

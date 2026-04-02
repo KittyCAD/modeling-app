@@ -34,4 +34,3 @@ floorSlats = patternLinear3d(
   distance = floorSlatActualPitch,
   instances = floorSlatCount,
 ) // Fill along Y with uniform pitch
-

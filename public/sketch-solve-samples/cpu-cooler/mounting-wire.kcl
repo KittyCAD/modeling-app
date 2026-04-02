@@ -127,4 +127,3 @@ sweepLowerHook = sweep(region004, path = lowerHook)
        sweepUpperHook
      ]
   |> appearance(color = "#0d0d0d")
-

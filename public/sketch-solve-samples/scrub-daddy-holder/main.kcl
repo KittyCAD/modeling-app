@@ -53,4 +53,3 @@ region002 = region(segments = [sketch003.circle1])
 holder = extrude(region002, length = spongeThickness - magnetThickness)
   |> fillet(radius = 2, tags = [getOppositeEdge(circ001), circ001])
   |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)
-

@@ -36,4 +36,3 @@ export pistonRodStopLength = 32.5
 export upperMountPlateDia = 70
 export upperMountPlateThickness = 22.5
 export pistonShaftDia = pistonShaftHoleDia - 0.1 // reduced shaft dia from the hole to provide some clearance
-

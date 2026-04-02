@@ -142,4 +142,3 @@ slats = translate(slat, x = -pergolaLength / 2 + beamWidth + slatSpacing)
        distance = slatSpacing,
        axis = [1, 0, 0],
      )
-
