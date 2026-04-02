@@ -51,6 +51,7 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   allowSnapping,
+  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
   type SnappingCandidate,
@@ -942,14 +943,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
             'move tool snap target',
             snappingCandidate?.target ?? null
           )
-          const pointSnapTargetId =
-            snappingCandidate && isPointSnapTarget(snappingCandidate.target)
-              ? snappingCandidate.target.pointId
+          const coincidentSegments =
+            snappingCandidate && draggedEntityId !== null
+              ? getCoincidentSegmentsForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target
+                )
               : null
           const result =
             snappingCandidate &&
             draggedEntityId !== null &&
-            pointSnapTargetId !== null
+            coincidentSegments !== null
               ? await (async () => {
                   const units = baseUnitToNumericSuffix(
                     context.kclManager.fileSettings.defaultLengthUnit
@@ -987,7 +991,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [draggedEntityId, pointSnapTargetId],
+                      segments: coincidentSegments,
                     },
                     settings
                   )

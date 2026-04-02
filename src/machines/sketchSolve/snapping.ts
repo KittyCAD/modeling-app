@@ -1,4 +1,7 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiObject,
+  CoincidentSegment,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
@@ -33,6 +36,20 @@ export function isPointSnapTarget(
   target: SnapTarget | null | undefined
 ): target is Extract<SnapTarget, { type: 'point' }> {
   return target?.type === 'point'
+}
+
+export function getCoincidentSegmentsForSnapTarget(
+  segmentId: number,
+  target: SnapTarget | undefined
+): CoincidentSegment[] | null {
+  switch (target?.type) {
+    case 'point':
+      return [segmentId, target.pointId]
+    case 'origin':
+      return [segmentId, 'ORIGIN']
+    default:
+      return null
+  }
 }
 
 export function getSnappingCandidates(

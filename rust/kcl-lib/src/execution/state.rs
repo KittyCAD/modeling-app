@@ -716,6 +716,17 @@ impl GlobalState {
     }
 }
 
+impl ExecState {
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn source_slice(&self, source_range: SourceRange) -> Option<&str> {
+        self.global
+            .id_to_source
+            .get(&source_range.module_id())?
+            .source
+            .get(source_range.start()..source_range.end())
+    }
+}
+
 impl ArtifactState {
     #[cfg(feature = "artifact-graph")]
     pub fn cached_body_items(&self) -> usize {

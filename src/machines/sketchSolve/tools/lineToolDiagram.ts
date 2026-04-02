@@ -33,7 +33,7 @@ import {
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  isPointSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 
@@ -115,10 +115,6 @@ export const machine = setup({
             settings
           )
 
-          if (!isPointSnapTarget(snapTarget)) {
-            return result
-          }
-
           const startPointId = result.sceneGraphDelta.new_objects.find(
             (objId) => {
               const obj = result.sceneGraphDelta.new_graph.objects[objId]
@@ -133,12 +129,20 @@ export const machine = setup({
             }
           }
 
+          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+            startPointId,
+            snapTarget
+          )
+          if (coincidentSegments === null) {
+            return result
+          }
+
           const snapResult = await rustContext.addConstraint(
             0,
             sketchId,
             {
               type: 'Coincident',
-              segments: [startPointId, snapTarget.pointId],
+              segments: coincidentSegments,
             },
             settings
           )
@@ -243,13 +247,17 @@ export const machine = setup({
           let latestSceneGraphDelta = result.sceneGraphDelta
           let snapConstraintNewObjects: Array<number> = []
 
-          if (isPointSnapTarget(snapTarget)) {
+          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+            id,
+            snapTarget
+          )
+          if (coincidentSegments !== null) {
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
               {
                 type: 'Coincident',
-                segments: [id, snapTarget.pointId],
+                segments: coincidentSegments,
               },
               settings
             )
@@ -268,7 +276,7 @@ export const machine = setup({
               ],
             },
             lastPointId:
-              snapTarget === undefined && isDoubleClick !== true
+              coincidentSegments === null && isDoubleClick !== true
                 ? id
                 : undefined,
           }
