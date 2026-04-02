@@ -852,7 +852,10 @@ test.describe(
             `${inlineSettingsString(initialInlineUnits)}
 fn cube`
           )
-          await expect(unitsIndicator).toContainText(initialInlineUnits)
+          // Per-file units come from executed AST; fill() triggers async executeAst.
+          await expect
+            .poll(async () => await unitsIndicator.innerText())
+            .toContain(initialInlineUnits)
         })
 
         await test.step(`Change units setting via lower-right control`, async () => {
