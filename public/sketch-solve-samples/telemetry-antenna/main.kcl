@@ -100,4 +100,3 @@ countersink([-r * 0.5, r * 0.8660254]) // 120 °
 countersink([-r, 0]) // 180 °
 countersink([-r * 0.5, -r * 0.8660254]) // 240 °
 countersink([r * 0.5, -r * 0.8660254]) // 300 °
-

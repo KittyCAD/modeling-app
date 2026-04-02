@@ -199,4 +199,3 @@ holeShapes = startProfile(
   |> patternLinear2d(instances = 3, distance = holeVerticalDistance, axis = [0, 1])
   |> patternLinear2d(instances = 2, distance = faceplateWidth + supportWidth, axis = [1, 0])
 holeVoid = extrude(holeShapes, length = -supportThickness)
-

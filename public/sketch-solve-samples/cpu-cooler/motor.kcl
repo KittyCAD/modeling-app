@@ -23,4 +23,3 @@ region002 = region(segments = [sketch002.circle1])
 motorStem = extrude(region002, length = 3.8)
   |> appearance(color = "#cbcccd")
 [motorBody, motorStem]
-

@@ -81,4 +81,3 @@ rodsAlongX = clone(rodsAlongYPatternAlongXThenZ)
 rodsAlongZ = clone(rodsAlongYPatternAlongXThenZ)
   |> rotate(axis = X, angle = 90, global = true)
   |> translate(y = rodExtrudeLengthY, global = true)
-

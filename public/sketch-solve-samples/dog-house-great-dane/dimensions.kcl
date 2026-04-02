@@ -36,4 +36,3 @@ export openingWidth = interiorWidth - (2 * openingSideClearance)
 export studBaseZ = plateHeight
 export studTopZ = eaveZ - plateHeight
 export studHeight = studTopZ - studBaseZ
-

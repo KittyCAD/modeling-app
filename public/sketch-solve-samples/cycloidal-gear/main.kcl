@@ -43,4 +43,3 @@ cycloidalGear(
   holeDiameter = 0.297,
   helixAngle = -80deg,
 )
-
