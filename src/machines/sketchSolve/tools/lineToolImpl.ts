@@ -27,11 +27,9 @@ import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGrap
 import {
   allowSnapping,
   getSnappingCandidates,
+  isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
-import {
-  hideSnappingPreviewSprite,
-  updateSnappingPreviewSprite,
-} from '@src/machines/sketchSolve/snappingPreviewSprite'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { Group } from 'three'
 
@@ -58,7 +56,7 @@ export type ToolContext = {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     // If present, the next draft line should chain from this committed point.
-    // When double-clicking or snapping to a point it becomes undefined to stop chaining.
+    // When double-clicking or snapping to a target it becomes undefined to stop chaining.
     lastPointId?: number
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
@@ -155,7 +153,11 @@ function getBestSnappingCandidate({
       mousePosition,
       currentSketchObjects,
       context.sceneInfra
-    ).find((candidate) => !excludedPointIds.has(candidate.apiObject.id)) ?? null
+    ).find(
+      (candidate) =>
+        !isPointSnapTarget(candidate.target) ||
+        !excludedPointIds.has(candidate.target.pointId)
+    ) ?? null
   )
 }
 
@@ -175,7 +177,7 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    targetPoint: snappingCandidate?.apiObject ?? null,
+    target: snappingCandidate,
   })
 }
 
@@ -195,7 +197,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+        sendHoveredId(
+          self,
+          isPointSnapTarget(snappingCandidate?.target)
+            ? snappingCandidate.target.pointId
+            : null
+        )
         updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
@@ -259,11 +266,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
+        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
           id: context.draftPointId,
-          snapTargetId: snappingCandidate?.apiObject.id,
+          snapTarget: snappingCandidate?.target,
           isDoubleClick: args.mouseEvent.detail === 2,
         })
       }
@@ -287,10 +295,11 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
+        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
-          snapTargetId: snappingCandidate?.apiObject.id,
+          snapTarget: snappingCandidate?.target,
         })
       }
     },
@@ -308,7 +317,12 @@ export function addPointListener({ self, context }: ToolActionArgs) {
         mousePosition: [twoD.x, twoD.y],
         mouseEvent: args.mouseEvent,
       })
-      sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+      sendHoveredId(
+        self,
+        isPointSnapTarget(snappingCandidate?.target)
+          ? snappingCandidate.target.pointId
+          : null
+      )
       updateSnappingPreview({ context, snappingCandidate })
     },
   })
@@ -343,7 +357,11 @@ export function removePointListener({ context, self }: ToolActionArgs) {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (sketchSolveGroup instanceof Group) {
-    hideSnappingPreviewSprite(sketchSolveGroup)
+    updateSnappingPreviewSprite({
+      sketchSolveGroup,
+      sceneInfra: context.sceneInfra,
+      target: null,
+    })
   }
   // Reset callbacks to remove the onClick and onMove listeners
   context.sceneInfra.setCallbacks({
