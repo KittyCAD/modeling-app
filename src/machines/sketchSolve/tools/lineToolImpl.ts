@@ -18,20 +18,18 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 import {
   getCoincidentCluster,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import {
-  allowSnapping,
-  getSnappingCandidates,
-  isPointSnapTarget,
-} from '@src/machines/sketchSolve/snapping'
-import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import { Group } from 'three'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -75,15 +73,6 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-function sendHoveredId(self: ToolActionArgs['self'], hoveredId: number | null) {
-  self._parent?.send({
-    type: 'update hovered id',
-    data: {
-      hoveredId,
-    },
-  })
-}
-
 // Don't snap to the current draft point and the opposite point's cluster.
 function getSnappingExcludedPointIds(
   objects: ApiObject[],
@@ -117,7 +106,7 @@ function getSnappingExcludedPointIds(
   return excludedPointIds
 }
 
-function getBestSnappingCandidate({
+function getLineToolSnappingCandidate({
   self,
   context,
   mousePosition,
@@ -128,56 +117,24 @@ function getBestSnappingCandidate({
   mousePosition: Coords2d
   mouseEvent: MouseEvent
 }) {
-  if (!allowSnapping(mouseEvent)) {
-    return null
-  }
-
-  const snapshot = self._parent?.getSnapshot()
-  const sceneGraphDelta = snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
-  const objects = sceneGraphDelta?.new_graph?.objects
-  if (!objects) {
-    return null
-  }
-
+  const objects =
+    self._parent?.getSnapshot?.()?.context?.sketchExecOutcome?.sceneGraphDelta
+      ?.new_graph?.objects ?? []
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
   )
-  const excludedPointIds = getSnappingExcludedPointIds(
-    currentSketchObjects,
-    context.draftPointId
-  )
 
-  return (
-    getSnappingCandidates(
-      mousePosition,
-      currentSketchObjects,
-      context.sceneInfra
-    ).find(
-      (candidate) =>
-        !isPointSnapTarget(candidate.target) ||
-        !excludedPointIds.has(candidate.target.pointId)
-    ) ?? null
-  )
-}
-
-function updateSnappingPreview({
-  context,
-  snappingCandidate,
-}: {
-  context: ToolContext
-  snappingCandidate: ReturnType<typeof getBestSnappingCandidate>
-}) {
-  const sketchSolveGroup =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  if (!(sketchSolveGroup instanceof Group)) {
-    return
-  }
-
-  updateSnappingPreviewSprite({
-    sketchSolveGroup,
+  return getBestSnappingCandidate({
+    self,
     sceneInfra: context.sceneInfra,
-    target: snappingCandidate,
+    sketchId: context.sketchId,
+    mousePosition,
+    mouseEvent,
+    excludedPointIds: getSnappingExcludedPointIds(
+      currentSketchObjects,
+      context.draftPointId
+    ),
   })
 }
 
@@ -191,19 +148,17 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD && !isEditInProgress) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const snappingCandidate = getLineToolSnappingCandidate({
           self,
           context,
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        sendHoveredId(
-          self,
-          isPointSnapTarget(snappingCandidate?.target)
-            ? snappingCandidate.target.pointId
-            : null
-        )
-        updateSnappingPreview({ context, snappingCandidate })
+        sendHoveredSnappingCandidate(self, snappingCandidate)
+        updateToolSnappingPreview({
+          sceneInfra: context.sceneInfra,
+          target: snappingCandidate,
+        })
 
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
@@ -261,9 +216,15 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
         const snappingCandidate = getBestSnappingCandidate({
           self,
-          context,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
+          excludedPointIds: getSnappingExcludedPointIds(
+            self._parent?.getSnapshot?.()?.context?.sketchExecOutcome
+              ?.sceneGraphDelta?.new_graph?.objects ?? [],
+            context.draftPointId
+          ),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         console.log('line tool snap target', snappingCandidate?.target ?? null)
@@ -288,7 +249,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const snappingCandidate = getLineToolSnappingCandidate({
           self,
           context,
           mousePosition,
@@ -306,24 +267,24 @@ export function addPointListener({ self, context }: ToolActionArgs) {
     onMove: (args) => {
       const twoD = args?.intersectionPoint?.twoD
       if (!twoD) {
-        sendHoveredId(self, null)
-        updateSnappingPreview({ context, snappingCandidate: null })
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
         return
       }
 
-      const snappingCandidate = getBestSnappingCandidate({
+      const snappingCandidate = getLineToolSnappingCandidate({
         self,
         context,
         mousePosition: [twoD.x, twoD.y],
         mouseEvent: args.mouseEvent,
       })
-      sendHoveredId(
-        self,
-        isPointSnapTarget(snappingCandidate?.target)
-          ? snappingCandidate.target.pointId
-          : null
-      )
-      updateSnappingPreview({ context, snappingCandidate })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
     },
   })
 }
@@ -353,16 +314,10 @@ export function addNextDraftLineListener({ self, context }: ToolActionArgs) {
 }
 
 export function removePointListener({ context, self }: ToolActionArgs) {
-  sendHoveredId(self, null)
-  const sketchSolveGroup =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  if (sketchSolveGroup instanceof Group) {
-    updateSnappingPreviewSprite({
-      sketchSolveGroup,
-      sceneInfra: context.sceneInfra,
-      target: null,
-    })
-  }
+  clearToolSnappingState({
+    self,
+    sceneInfra: context.sceneInfra,
+  })
   // Reset callbacks to remove the onClick and onMove listeners
   context.sceneInfra.setCallbacks({
     onClick: () => {},
