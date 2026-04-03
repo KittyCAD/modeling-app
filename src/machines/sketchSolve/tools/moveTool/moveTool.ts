@@ -81,7 +81,7 @@ function getClosestSelectionTarget(
     objects,
     sceneInfra
   )[0]
-  
+
   const originDistance = distance2d(mousePosition, [0, 0])
   if (closestObject && closestObject.distance < originDistance + 1e-8) {
     // Same as in snapping, object should take precedence if closer or tied with ORIGIN
@@ -100,11 +100,13 @@ function getClosestSelectionTarget(
     sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
   )
 
-  return originDistance < hoverDistance ? {
-    distance: originDistance,
-    selectionId: ORIGIN_TARGET,
-    apiObject: null
-  } : null
+  return originDistance < hoverDistance
+    ? {
+        distance: originDistance,
+        selectionId: ORIGIN_TARGET,
+        apiObject: null,
+      }
+    : null
 }
 
 /**

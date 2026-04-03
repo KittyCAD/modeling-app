@@ -216,7 +216,10 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        sendHoveredId(self, getHoveredIdFromSnappingCandidate(snappingCandidate))
+        sendHoveredId(
+          self,
+          getHoveredIdFromSnappingCandidate(snappingCandidate)
+        )
         updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
