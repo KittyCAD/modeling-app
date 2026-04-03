@@ -75,6 +75,18 @@ function sendToolbarConstraintOutcome(
   }
 }
 
+async function runSketchSolveToolbarAction(
+  description: string,
+  action: () => Promise<void>
+) {
+  try {
+    await action()
+  } catch (error) {
+    console.error(`Failed to ${description}:`, error)
+    toastSketchSolveError(error, `Failed to ${description}`)
+  }
+}
+
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
@@ -376,147 +388,224 @@ export const sketchSolveMachine = setup({
     },
     coincident: {
       actions: async ({ self, context }) => {
-        // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          {
-            type: 'Coincident',
-            segments: context.selectedIds,
-          },
-          jsAppSettings(context.kclManager.systemDeps.settings)
-        )
-        sendToolbarConstraintOutcome(self, result)
-      },
-    },
-    Fixed: {
-      actions: async ({ self, context }) => {
-        await addFixedConstraint(context, self)
-      },
-    },
-    Tangent: {
-      actions: async ({ self, context }) => {
-        const objects =
-          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-        const tangentConstraint = buildTangentConstraintInput(
-          context.selectedIds,
-          objects
-        )
-        if (!tangentConstraint) {
-          return
-        }
-
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          tangentConstraint,
-          jsAppSettings(context.kclManager.systemDeps.settings)
-        )
-        if (result) {
-          sendToActorIfActive(self, {
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
-      },
-    },
-    Dimension: {
-      actions: async ({ self, context }) => {
-        // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const segmentsToConstrain = context.selectedIds
-        const objects =
-          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-        const currentSelections = segmentsToConstrain
-          .map((id) => objects[id])
-          .filter(Boolean)
-        let distance = DEFAULT_DISTANCE_FALLBACK
-        const units = baseUnitToNumericSuffix(
-          context.kclManager.fileSettings.defaultLengthUnit
-        )
-
-        if (currentSelections.length === 2) {
-          const first = currentSelections[0]
-          const second = currentSelections[1]
-          if (isLineSegment(first) && isLineSegment(second)) {
-            const angleConstraint = buildAngleConstraintInput(
-              first,
-              second,
-              objects
-            )
-            if (angleConstraint) {
-              const result = await context.rustContext.addConstraint(
-                0,
-                context.sketchId,
-                angleConstraint,
-                jsAppSettings(context.kclManager.systemDeps.settings)
-              )
-              sendToolbarConstraintOutcome(self, result)
-              return
-            }
-          }
-
-          // Calculate distance between two points if both are point segments
-          if (isPointSegment(first) && isPointSegment(second)) {
-            // the units of these points will have already been normalized to the user's default units
-            // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
-            const point1 = {
-              x: first.kind.segment.position.x,
-              y: first.kind.segment.position.y,
-            }
-            const point2 = {
-              x: second.kind.segment.position.x,
-              y: second.kind.segment.position.y,
-            }
-            const distanceResult = distanceBetweenPoint2DExpr(
-              point1,
-              point2,
-              await context.kclManager.wasmInstancePromise
-            )
-            if (!(distanceResult instanceof Error)) {
-              distance = roundOff(distanceResult.distance)
-            }
-          }
-        } else if (currentSelections.length === 1) {
-          const first = currentSelections[0]
-          if (isArcSegment(first) || isCircleSegment(first)) {
-            // Calculate radius for arc segment from its center and start point
-            const centerPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.center
-              ]
-            const startPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.start
-              ]
-            if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
-              const point1 = {
-                x: centerPoint.kind.segment.position.x,
-                y: centerPoint.kind.segment.position.y,
-              }
-              const point2 = {
-                x: startPoint.kind.segment.position.x,
-                y: startPoint.kind.segment.position.y,
-              }
-              const distanceResult = distanceBetweenPoint2DExpr(
-                point1,
-                point2,
-                await context.kclManager.wasmInstancePromise
-              )
-              if (!(distanceResult instanceof Error)) {
-                distance = roundOff(distanceResult.distance)
-              }
-            }
-            // Apply radius constraint for arc
+        await runSketchSolveToolbarAction(
+          'add a coincident constraint',
+          async () => {
+            // TODO this is not how coincident should operate long term, as it should be an equipable tool
             const result = await context.rustContext.addConstraint(
               0,
               context.sketchId,
               {
-                type: 'Radius',
-                radius: { value: distance, units },
-                arc: segmentsToConstrain[0],
+                type: 'Coincident',
+                segments: context.selectedIds,
+              },
+              jsAppSettings(context.kclManager.systemDeps.settings)
+            )
+            console.log('FRANK', {
+              result,
+              selectedIds: context.selectedIds,
+            })
+            sendToolbarConstraintOutcome(self, result)
+          }
+        )
+      },
+    },
+    Fixed: {
+      actions: async ({ self, context }) => {
+        await runSketchSolveToolbarAction(
+          'add a fixed constraint',
+          async () => {
+            await addFixedConstraint(context, self)
+          }
+        )
+      },
+    },
+    Tangent: {
+      actions: async ({ self, context }) => {
+        await runSketchSolveToolbarAction(
+          'add a tangent constraint',
+          async () => {
+            const objects =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+            const tangentConstraint = buildTangentConstraintInput(
+              context.selectedIds,
+              objects
+            )
+            if (!tangentConstraint) {
+              return
+            }
+
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              tangentConstraint,
+              jsAppSettings(context.kclManager.systemDeps.settings)
+            )
+            if (result) {
+              sendToActorIfActive(self, {
+                type: 'update sketch outcome',
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                },
+              })
+            }
+          }
+        )
+      },
+    },
+    Dimension: {
+      actions: async ({ self, context }) => {
+        await runSketchSolveToolbarAction(
+          'add a dimension constraint',
+          async () => {
+            // TODO this is not how coincident should operate long term, as it should be an equipable tool
+            const segmentsToConstrain = context.selectedIds
+            const objects =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+            const currentSelections = segmentsToConstrain
+              .map((id) => objects[id])
+              .filter(Boolean)
+            let distance = DEFAULT_DISTANCE_FALLBACK
+            const units = baseUnitToNumericSuffix(
+              context.kclManager.fileSettings.defaultLengthUnit
+            )
+
+            if (currentSelections.length === 2) {
+              const first = currentSelections[0]
+              const second = currentSelections[1]
+              if (isLineSegment(first) && isLineSegment(second)) {
+                const angleConstraint = buildAngleConstraintInput(
+                  first,
+                  second,
+                  objects
+                )
+                if (angleConstraint) {
+                  const result = await context.rustContext.addConstraint(
+                    0,
+                    context.sketchId,
+                    angleConstraint,
+                    jsAppSettings(context.kclManager.systemDeps.settings)
+                  )
+                  sendToolbarConstraintOutcome(self, result)
+                  return
+                }
+              }
+
+              // Calculate distance between two points if both are point segments
+              if (isPointSegment(first) && isPointSegment(second)) {
+                // the units of these points will have already been normalized to the user's default units
+                // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
+                const point1 = {
+                  x: first.kind.segment.position.x,
+                  y: first.kind.segment.position.y,
+                }
+                const point2 = {
+                  x: second.kind.segment.position.x,
+                  y: second.kind.segment.position.y,
+                }
+                const distanceResult = distanceBetweenPoint2DExpr(
+                  point1,
+                  point2,
+                  await context.kclManager.wasmInstancePromise
+                )
+                if (!(distanceResult instanceof Error)) {
+                  distance = roundOff(distanceResult.distance)
+                }
+              }
+            } else if (currentSelections.length === 1) {
+              const first = currentSelections[0]
+              if (isArcSegment(first) || isCircleSegment(first)) {
+                // Calculate radius for arc segment from its center and start point
+                const centerPoint =
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    first.kind.segment.center
+                  ]
+                const startPoint =
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    first.kind.segment.start
+                  ]
+                if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
+                  const point1 = {
+                    x: centerPoint.kind.segment.position.x,
+                    y: centerPoint.kind.segment.position.y,
+                  }
+                  const point2 = {
+                    x: startPoint.kind.segment.position.x,
+                    y: startPoint.kind.segment.position.y,
+                  }
+                  const distanceResult = distanceBetweenPoint2DExpr(
+                    point1,
+                    point2,
+                    await context.kclManager.wasmInstancePromise
+                  )
+                  if (!(distanceResult instanceof Error)) {
+                    distance = roundOff(distanceResult.distance)
+                  }
+                }
+                // Apply radius constraint for arc
+                const result = await context.rustContext.addConstraint(
+                  0,
+                  context.sketchId,
+                  {
+                    type: 'Radius',
+                    radius: { value: distance, units },
+                    arc: segmentsToConstrain[0],
+                    source: {
+                      expr: distance.toString(),
+                      is_literal: true,
+                    },
+                  },
+                  jsAppSettings(context.kclManager.systemDeps.settings)
+                )
+                sendToolbarConstraintOutcome(self, result)
+                return
+              } else if (isLineSegment(first)) {
+                // Calculate distance for line segment from its endpoints
+                const startPoint =
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    first.kind.segment.start
+                  ]
+                const endPoint =
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    first.kind.segment.end
+                  ]
+                if (isPointSegment(startPoint) && isPointSegment(endPoint)) {
+                  const point1 = {
+                    x: startPoint.kind.segment.position.x,
+                    y: startPoint.kind.segment.position.y,
+                  }
+                  const point2 = {
+                    x: endPoint.kind.segment.position.x,
+                    y: endPoint.kind.segment.position.y,
+                  }
+                  const distanceResult = distanceBetweenPoint2DExpr(
+                    point1,
+                    point2,
+                    await context.kclManager.wasmInstancePromise
+                  )
+                  if (!(distanceResult instanceof Error)) {
+                    distance = roundOff(distanceResult.distance)
+                  }
+                }
+              }
+            }
+            // distance() accepts two points: when user selects one line, pass its endpoints
+            const pointsForDistance =
+              currentSelections.length === 1 &&
+              isLineSegment(currentSelections[0])
+                ? [
+                    currentSelections[0].kind.segment.start,
+                    currentSelections[0].kind.segment.end,
+                  ]
+                : segmentsToConstrain
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'Distance',
+                distance: { value: distance, units },
+                points: pointsForDistance,
                 source: {
                   expr: distance.toString(),
                   is_literal: true,
@@ -525,155 +614,142 @@ export const sketchSolveMachine = setup({
               jsAppSettings(context.kclManager.systemDeps.settings)
             )
             sendToolbarConstraintOutcome(self, result)
-            return
-          } else if (isLineSegment(first)) {
-            // Calculate distance for line segment from its endpoints
-            const startPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.start
-              ]
-            const endPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.end
-              ]
-            if (isPointSegment(startPoint) && isPointSegment(endPoint)) {
-              const point1 = {
-                x: startPoint.kind.segment.position.x,
-                y: startPoint.kind.segment.position.y,
-              }
-              const point2 = {
-                x: endPoint.kind.segment.position.x,
-                y: endPoint.kind.segment.position.y,
-              }
-              const distanceResult = distanceBetweenPoint2DExpr(
-                point1,
-                point2,
-                await context.kclManager.wasmInstancePromise
-              )
-              if (!(distanceResult instanceof Error)) {
-                distance = roundOff(distanceResult.distance)
-              }
-            }
           }
-        }
-        // distance() accepts two points: when user selects one line, pass its endpoints
-        const pointsForDistance =
-          currentSelections.length === 1 && isLineSegment(currentSelections[0])
-            ? [
-                currentSelections[0].kind.segment.start,
-                currentSelections[0].kind.segment.end,
-              ]
-            : segmentsToConstrain
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          {
-            type: 'Distance',
-            distance: { value: distance, units },
-            points: pointsForDistance,
-            source: {
-              expr: distance.toString(),
-              is_literal: true,
-            },
-          },
-          jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     HorizontalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(context, self, 'horizontal')
+        await runSketchSolveToolbarAction(
+          'add a horizontal distance constraint',
+          async () => {
+            await addAxisDistanceConstraint(context, self, 'horizontal')
+          }
+        )
       },
     },
     VerticalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(context, self, 'vertical')
+        await runSketchSolveToolbarAction(
+          'add a vertical distance constraint',
+          async () => {
+            await addAxisDistanceConstraint(context, self, 'vertical')
+          }
+        )
       },
     },
     Parallel: {
       actions: async ({ self, context }) => {
-        // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          {
-            type: 'Parallel',
-            lines: context.selectedIds,
-          },
-          jsAppSettings(context.kclManager.systemDeps.settings)
+        await runSketchSolveToolbarAction(
+          'add a parallel constraint',
+          async () => {
+            // TODO this is not how coincident should operate long term, as it should be an equipable tool
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'Parallel',
+                lines: context.selectedIds,
+              },
+              jsAppSettings(context.kclManager.systemDeps.settings)
+            )
+            sendToolbarConstraintOutcome(self, result)
+          }
         )
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     Perpendicular: {
       actions: async ({ self, context }) => {
-        // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          {
-            type: 'Perpendicular',
-            lines: context.selectedIds,
-          },
-          jsAppSettings(context.kclManager.systemDeps.settings)
+        await runSketchSolveToolbarAction(
+          'add a perpendicular constraint',
+          async () => {
+            // TODO this is not how coincident should operate long term, as it should be an equipable tool
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'Perpendicular',
+                lines: context.selectedIds,
+              },
+              jsAppSettings(context.kclManager.systemDeps.settings)
+            )
+            sendToolbarConstraintOutcome(self, result)
+          }
         )
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     LinesEqualLength: {
       actions: async ({ self, context }) => {
-        // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
-        const result = await context.rustContext.addConstraint(
-          0,
-          context.sketchId,
-          {
-            type: 'LinesEqualLength',
-            lines: context.selectedIds,
-          },
-          jsAppSettings(context.kclManager.systemDeps.settings)
+        await runSketchSolveToolbarAction(
+          'add an equal length constraint',
+          async () => {
+            // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'LinesEqualLength',
+                lines: context.selectedIds,
+              },
+              jsAppSettings(context.kclManager.systemDeps.settings)
+            )
+            sendToolbarConstraintOutcome(self, result)
+          }
         )
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     Vertical: {
       actions: async ({ self, context }) => {
-        const itemsToConstrain = context.selectedIds
-        const selectionIsAllPoints = itemsToConstrain
-          .map(
-            (id) =>
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-          )
-          .every((selection) => isPointSegment(selection))
+        await runSketchSolveToolbarAction(
+          'add a vertical constraint',
+          async () => {
+            const itemsToConstrain = context.selectedIds
+            const selectionIsAllPoints = itemsToConstrain
+              .map(
+                (id) =>
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    id
+                  ]
+              )
+              .every((selection) => isPointSegment(selection))
 
-        // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
-        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-          await addAxisDistanceConstraint(context, self, 'horizontal', 0)
-          return
-        } else {
-          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-          await addVerticalConstraint(context, self)
-        }
+            // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
+            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+              await addAxisDistanceConstraint(context, self, 'horizontal', 0)
+              return
+            } else {
+              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+              await addVerticalConstraint(context, self)
+            }
+          }
+        )
       },
     },
     Horizontal: {
       actions: async ({ self, context }) => {
-        const itemsToConstrain = context.selectedIds
-        const selectionIsAllPoints = itemsToConstrain
-          .map(
-            (id) =>
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-          )
-          .every((selection) => isPointSegment(selection))
+        await runSketchSolveToolbarAction(
+          'add a horizontal constraint',
+          async () => {
+            const itemsToConstrain = context.selectedIds
+            const selectionIsAllPoints = itemsToConstrain
+              .map(
+                (id) =>
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                    id
+                  ]
+              )
+              .every((selection) => isPointSegment(selection))
 
-        // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
-        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-          await addAxisDistanceConstraint(context, self, 'vertical', 0)
-          return
-        } else {
-          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-          await addHorizontalConstraint(context, self)
-        }
+            // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
+            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+              await addAxisDistanceConstraint(context, self, 'vertical', 0)
+              return
+            } else {
+              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+              await addHorizontalConstraint(context, self)
+            }
+          }
+        )
       },
     },
     construction: {
