@@ -76,6 +76,22 @@ function helixArtifact(id: string, sourceRange: SourceRange): Artifact {
   }
 }
 
+function pathArtifact(id: string, sourceRange: SourceRange): Artifact {
+  return {
+    type: 'path',
+    id,
+    planeId: 'plane-artifact',
+    segIds: [],
+    consumed: false,
+    trajectorySweepId: null,
+    codeRef: {
+      range: sourceRange,
+      nodePath: defaultNodePath(),
+      pathToNode: [],
+    },
+  }
+}
+
 function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
   const graph: ArtifactGraph = new Map()
   for (const artifact of artifacts) {
@@ -95,35 +111,7 @@ function expectHidden(
 }
 
 describe('resolveFeatureTreeVisibility', () => {
-  it('resolves hidden sketch visibility from hide(sketch###) source text', () => {
-    const sketchDeclaration = 'sketch001 = sketch(on = XY) {}'
-    const code = `${sketchDeclaration}\nhide(sketch001)`
-    const sketchRange = range(0, sketchDeclaration.length)
-    const hideArgStart = code.indexOf('sketch001)')
-    const hideArgRange = range(hideArgStart, hideArgStart + 'sketch001'.length)
-
-    const item = sketchSolveOperation(sketchRange)
-    const hideOp = hideOperation(hideArgRange, {
-      type: 'String',
-      value: 'sketch001',
-    })
-    const artifact = sketchBlockArtifact('sketch-artifact', sketchRange)
-
-    const visibilityState = resolveFeatureTreeVisibility({
-      item,
-      variableName: 'sketch001',
-      operations: [hideOp],
-      artifactGraph: toArtifactGraph([artifact]),
-      code,
-    })
-
-    expect(visibilityState.canToggleVisibility).toBe(true)
-    expectHidden(visibilityState)
-    expect(visibilityState.hideOperation).toBe(hideOp)
-    expect(visibilityState.targetArtifact.id).toBe('sketch-artifact')
-  })
-
-  it('falls back to artifact-id matching for sketch visibility', () => {
+  it('resolves sketch visibility via artifact-id hide matching', () => {
     const sketchDeclaration = 'sketch001 = sketch(on = XY) {}'
     const code = `${sketchDeclaration}\nhide(sketch001)`
     const sketchRange = range(0, sketchDeclaration.length)
@@ -140,13 +128,37 @@ describe('resolveFeatureTreeVisibility', () => {
       item,
       operations: [hideOp],
       artifactGraph: toArtifactGraph([artifact]),
-      code,
     })
 
     expect(visibilityState.canToggleVisibility).toBe(true)
     expectHidden(visibilityState)
     expect(visibilityState.hideOperation).toBe(hideOp)
     expect(visibilityState.targetArtifact.id).toBe('sketch-artifact')
+  })
+
+  it('resolves sketch visibility when hide references a sibling path artifact id', () => {
+    const sketchDeclaration = 'sketch001 = sketch(on = XY) {}'
+    const code = `${sketchDeclaration}\nhide(sketch001)`
+    const sketchRange = range(0, sketchDeclaration.length)
+    const hideRange = range(code.indexOf('hide('), code.length)
+
+    const item = sketchSolveOperation(sketchRange)
+    const hideOp = hideOperation(hideRange, {
+      type: 'Sketch',
+      value: { artifactId: 'path-artifact' },
+    })
+    const artifact = sketchBlockArtifact('sketch-artifact', sketchRange)
+    const path = pathArtifact('path-artifact', sketchRange)
+
+    const visibilityState = resolveFeatureTreeVisibility({
+      item,
+      operations: [hideOp],
+      artifactGraph: toArtifactGraph([artifact, path]),
+    })
+
+    expect(visibilityState.canToggleVisibility).toBe(true)
+    expect(visibilityState.hideOperation).toBe(hideOp)
+    expect(visibilityState.targetArtifact?.id).toBe('sketch-artifact')
   })
 
   it('disables sketch visibility toggle when no sketchBlock artifact is found', () => {
@@ -157,7 +169,6 @@ describe('resolveFeatureTreeVisibility', () => {
       item,
       operations: [],
       artifactGraph: new Map(),
-      code: 'sketch001 = sketch(on = XY) {}',
     })
 
     expect(visibilityState.canToggleVisibility).toBe(false)
@@ -179,7 +190,6 @@ describe('resolveFeatureTreeVisibility', () => {
       item,
       operations: [hideOp],
       artifactGraph: toArtifactGraph([artifact]),
-      code,
     })
 
     expect(visibilityState.canToggleVisibility).toBe(true)
@@ -188,26 +198,23 @@ describe('resolveFeatureTreeVisibility', () => {
     expect(visibilityState.targetArtifact.id).toBe('helix-artifact')
   })
 
-  it('uses whole-word variable matching for hide(sketch###)', () => {
-    const sketchDeclaration = 'sketch1 = sketch(on = XY) {}'
-    const code = `${sketchDeclaration}\nhide(sketch10)`
+  it('does not resolve when hide targets a different sketch artifact', () => {
+    const sketchDeclaration = 'sketch001 = sketch(on = XY) {}'
+    const code = `${sketchDeclaration}\nhide(sketch999)`
     const sketchRange = range(0, sketchDeclaration.length)
-    const hideArgStart = code.indexOf('sketch10)')
-    const hideArgRange = range(hideArgStart, hideArgStart + 'sketch10'.length)
+    const hideRange = range(code.indexOf('hide('), code.length)
 
     const item = sketchSolveOperation(sketchRange)
-    const hideOp = hideOperation(hideArgRange, {
-      type: 'String',
-      value: 'sketch10',
+    const hideOp = hideOperation(hideRange, {
+      type: 'Sketch',
+      value: { artifactId: 'different-artifact' },
     })
     const artifact = sketchBlockArtifact('sketch-artifact', sketchRange)
 
     const visibilityState = resolveFeatureTreeVisibility({
       item,
-      variableName: 'sketch1',
       operations: [hideOp],
       artifactGraph: toArtifactGraph([artifact]),
-      code,
     })
 
     expect(visibilityState.canToggleVisibility).toBe(true)

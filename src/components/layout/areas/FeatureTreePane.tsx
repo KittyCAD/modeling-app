@@ -935,10 +935,8 @@ const OperationItem = ({
 
   const visibilityState = resolveFeatureTreeVisibility({
     item,
-    variableName,
     operations: kclManager.operations ?? [],
     artifactGraph: kclManager.artifactGraph,
-    code: kclManager.code,
   })
 
   return (

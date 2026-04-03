@@ -23,7 +23,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { ActorRefFrom } from 'xstate'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 
 export interface FeatureTreeVisibilityState {
   canToggleVisibility: boolean
@@ -33,12 +33,10 @@ export interface FeatureTreeVisibilityState {
 
 export function resolveFeatureTreeVisibility(input: {
   item: Operation
-  variableName?: string
   operations: Operation[]
   artifactGraph: ArtifactGraph
-  code: string
 }): FeatureTreeVisibilityState {
-  const { item, variableName, operations, artifactGraph, code } = input
+  const { item, operations, artifactGraph } = input
 
   if (item.type === 'StdLibCall' && item.name === 'helix') {
     const operationArtifact = findOperationArtifact(item, artifactGraph)
@@ -61,43 +59,45 @@ export function resolveFeatureTreeVisibility(input: {
     return { canToggleVisibility: false }
   }
 
-  const hideOperationByVariableName = variableName
-    ? findHideOperationByVariableName({
-        variableName,
-        operations,
-        code,
-      })
-    : undefined
-
   return {
     canToggleVisibility: true,
-    hideOperation:
-      hideOperationByVariableName ??
-      getHideOpByArtifactId(operations, artifact.id),
+    hideOperation: findSketchHideOperation({
+      sketchBlockArtifact: artifact,
+      operations,
+      artifactGraph,
+    }),
     targetArtifact: artifact,
   }
 }
 
-function findHideOperationByVariableName(input: {
-  variableName: string
+function findSketchHideOperation(input: {
+  sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
   operations: Operation[]
-  code: string
+  artifactGraph: ArtifactGraph
 }): HideOperation | undefined {
-  const { variableName, operations, code } = input
-  const escaped = variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const variablePattern = new RegExp(`\\b${escaped}\\b`)
+  const { sketchBlockArtifact, operations, artifactGraph } = input
+  const idsToCheck = new Set<string>([sketchBlockArtifact.id])
 
-  return operations.find((operation): operation is HideOperation => {
-    if (!(operation.type === 'StdLibCall' && operation.name === 'hide')) {
-      return false
+  for (const artifact of artifactGraph.values()) {
+    if (!('codeRef' in artifact)) {
+      continue
     }
-    if (!operation.unlabeledArg) {
-      return false
+    const sameRange = artifact.codeRef.range.every(
+      (value, index) => value === sketchBlockArtifact.codeRef.range[index]
+    )
+    if (sameRange) {
+      idsToCheck.add(artifact.id)
     }
-    const [start, end] = operation.unlabeledArg.sourceRange
-    const argSource = code.slice(toUtf16(start, code), toUtf16(end, code))
-    return variablePattern.test(argSource)
-  })
+  }
+
+  for (const artifactId of idsToCheck) {
+    const hideOperation = getHideOpByArtifactId(operations, artifactId)
+    if (hideOperation) {
+      return hideOperation
+    }
+  }
+
+  return undefined
 }
 
 export function sendDeleteCommand(input: {
