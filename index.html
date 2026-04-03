@@ -13,12 +13,54 @@
 
   <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="light dark" />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: light)"
+    content="#fcfcfc"
+  />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: dark)"
+    content="#1c1c1c"
+  />
   <meta name="description" content="An open-source CAD modeling tool from the future by Zoo." />
   <link rel="apple-touch-icon" href="/logo192.png" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="./fonts/inter/inter.css" />
   <link rel="stylesheet" href="./fonts/source-code-pro/source-code-variable.css" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --app-shell-bg: #fcfcfc;
+      --app-shell-fg: #1c1c1c;
+      background-color: var(--app-shell-bg);
+      color: var(--app-shell-fg);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --app-shell-bg: #1c1c1c;
+        --app-shell-fg: #fcfcfc;
+      }
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body,
+    #root {
+      margin: 0;
+      background-color: var(--app-shell-bg);
+      color: var(--app-shell-fg);
+    }
+
+    #root {
+      min-height: 100vh;
+    }
+  </style>
   <script defer data-domain="app.zoo.dev" src="https://plausible.corp.zoo.dev/js/script.tagged-events.js"></script>
   <title>Zoo Design Studio</title>
 </head>
