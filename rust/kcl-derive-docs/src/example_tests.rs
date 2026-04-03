@@ -85,6 +85,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-helix-1",
     "std-helix-2",
     "std-helix-3",
+    "std-helix-4",
     "std-math-abs-0",
     "std-math-acos-0",
     "std-math-asin-0",

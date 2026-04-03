@@ -61,6 +61,36 @@ pub enum Axis3dOrEdgeReference {
     Edge(EdgeReference),
 }
 
+impl Axis3dOrEdgeReference {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => {
+                return Err(KclError::new_type(KclErrorDetails {
+                    source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                    backtrace: Default::default(),
+                    message: "Cannot use a point as an axis".to_owned(),
+                }));
+            }
+            SegmentKind::Arc { .. } => {
+                return Err(KclError::new_type(KclErrorDetails {
+                    source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                    backtrace: Default::default(),
+                    message: "Cannot use an arc as an axis".to_owned(),
+                }));
+            }
+            SegmentKind::Circle { .. } => {
+                return Err(KclError::new_type(KclErrorDetails {
+                    source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                    backtrace: Default::default(),
+                    message: "Cannot use a circle as an axis".to_owned(),
+                }));
+            }
+        }
+    }
+}
+
 /// A 2D axis or a raw point2d.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis2dOrPoint2d {

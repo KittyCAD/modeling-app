@@ -172,6 +172,30 @@ export CW = "cw": string
 ///     cylinder = part001,
 ///  )
 /// ```
+/// ```
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Demonstrate building a helix where the central axis is a line defined in a sketch block.
+/// // First, here's the sketch block with al ine:
+/// sketch002 = sketch(on = XZ) {
+///   line1 = line(start = [var -0.82mm, var 3.4mm], end = [var -1.58mm, var -5.24mm])
+/// }
+/// 
+/// // Create a helix around the line in the sketch above.
+/// helixPath = helix(
+///   angleStart = 0,
+///   ccw = true,
+///   revolutions = 5,
+///   length = 10,
+///   radius = 5,
+///   axis = sketch002.line1,
+/// )
+/// 
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(XZ)
+///   |> circle(center = [5, 0], radius = 0.5)
+///   |> sweep(path = helixPath)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn helix(
   /// Number of revolutions.
@@ -186,7 +210,7 @@ export fn helix(
   /// Axis to use for the helix.
   /// The center of the helix's base will be at this axis's origin point.
   @(includeInSnippet = true)
-  axis?: Axis3d | Edge,
+  axis?: Axis3d | Edge | Segment,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
   @(includeInSnippet = true)
   length?: number(Length),
