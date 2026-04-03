@@ -6,18 +6,28 @@ import type {
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { showRadiusPreviewListener as centerArcShowRadiusPreviewListener } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import {
   isCircleSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getCoincidentSegmentsForSnapTarget,
+  type SnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 export const TOOL_ID = 'Circle tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -29,6 +39,7 @@ export type ToolEvents =
       type: 'add point'
       data: [x: number, y: number]
       clickNumber?: 1 | 2
+      snapTarget?: SnapTarget
     }
   | {
       type: typeof CREATING_CIRCLE
@@ -41,6 +52,7 @@ export type ToolEvents =
 export type ToolContext = {
   centerPointId?: number
   centerPoint?: [number, number]
+  centerSnapTarget?: SnapTarget
   circleId?: number
   sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
@@ -58,8 +70,69 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-export function showRadiusPreviewListener(args: ToolActionArgs) {
-  centerArcShowRadiusPreviewListener(args as any)
+export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
+  if (!context.centerPoint) return
+
+  context.sceneInfra.setCallbacks({
+    onMove: (args) => {
+      if (!args || !context.centerPoint) return
+
+      const twoD = args.intersectionPoint?.twoD
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const dx = twoD.x - context.centerPoint[0]
+      const dy = twoD.y - context.centerPoint[1]
+      const radius = Math.sqrt(dx * dx + dy * dy)
+      segmentUtilsMap.ArcSegment.updatePreviewCircle({
+        sceneInfra: context.sceneInfra,
+        center: context.centerPoint,
+        radius,
+      })
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
+    },
+    onClick: (args) => {
+      if (!args || args.mouseEvent.which !== 1) return
+
+      const twoD = args.intersectionPoint?.twoD
+      if (!twoD) return
+
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
+
+      segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
+      self.send({
+        type: 'add point',
+        data: [x, y],
+        clickNumber: 2,
+        snapTarget: snappingCandidate?.target,
+      })
+    },
+  })
 }
 
 export function addPointListener({ self, context }: ToolActionArgs) {
@@ -70,19 +143,55 @@ export function addPointListener({ self, context }: ToolActionArgs) {
 
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
+          mousePosition,
+          mouseEvent: args.mouseEvent,
+        })
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
-          data: [twoD.x, twoD.y],
+          data: [x, y],
           clickNumber: 1,
+          snapTarget: snappingCandidate?.target,
         })
       }
     },
-    onMove: () => {},
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
+    },
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function removePointListener({ context, self }: ToolActionArgs) {
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
+  clearToolSnappingState({
+    self,
+    sceneInfra: context.sceneInfra,
+  })
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
@@ -156,6 +265,8 @@ export async function createCircleActor({
     | {
         centerPoint: [number, number]
         startPoint: [number, number]
+        centerSnapTarget?: SnapTarget
+        startSnapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
         sketchId: number
@@ -176,7 +287,15 @@ export async function createCircleActor({
     return { error: input.error }
   }
 
-  const { centerPoint, startPoint, rustContext, kclManager, sketchId } = input
+  const {
+    centerPoint,
+    startPoint,
+    centerSnapTarget,
+    startSnapTarget,
+    rustContext,
+    kclManager,
+    sketchId,
+  } = input
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
@@ -194,13 +313,80 @@ export async function createCircleActor({
       },
     }
 
-    return await rustContext.addSegment(
+    const settings = jsAppSettings(rustContext.settingsActor)
+    const result = await rustContext.addSegment(
       0,
       sketchId,
       segmentCtor,
       'circle',
-      jsAppSettings(rustContext.settingsActor)
+      settings
     )
+
+    const circleObjId = result.sceneGraphDelta.new_objects.find((objId) => {
+      const obj = result.sceneGraphDelta.new_graph.objects[objId]
+      return isCircleSegment(obj)
+    })
+    if (circleObjId === undefined) {
+      return result
+    }
+
+    const circleObj = result.sceneGraphDelta.new_graph.objects[circleObjId]
+    if (!isCircleSegment(circleObj)) {
+      return result
+    }
+
+    const snapTargets = [
+      {
+        segmentId: circleObj.kind.segment.center,
+        snapTarget: centerSnapTarget,
+      },
+      {
+        segmentId: circleObj.kind.segment.start,
+        snapTarget: startSnapTarget,
+      },
+    ]
+
+    let latestKclSource = result.kclSource
+    let latestSceneGraphDelta = result.sceneGraphDelta
+    const snapConstraintNewObjects: number[] = []
+
+    for (const { segmentId, snapTarget } of snapTargets) {
+      const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+        segmentId,
+        snapTarget
+      )
+      if (coincidentSegments === null) {
+        continue
+      }
+
+      const snapResult = await rustContext.addConstraint(
+        0,
+        sketchId,
+        {
+          type: 'Coincident',
+          segments: coincidentSegments,
+        },
+        settings
+      )
+      latestKclSource = snapResult.kclSource
+      latestSceneGraphDelta = snapResult.sceneGraphDelta
+      snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
+    }
+
+    if (snapConstraintNewObjects.length === 0) {
+      return result
+    }
+
+    return {
+      kclSource: latestKclSource,
+      sceneGraphDelta: {
+        ...latestSceneGraphDelta,
+        new_objects: [
+          ...result.sceneGraphDelta.new_objects,
+          ...snapConstraintNewObjects,
+        ],
+      },
+    }
   } catch (error) {
     console.error('Failed to create circle:', error)
     return {

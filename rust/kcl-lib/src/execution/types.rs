@@ -16,6 +16,8 @@ use crate::execution::ExecState;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
 use crate::execution::annotations;
 use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
@@ -1349,6 +1351,21 @@ impl KclValue {
             },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
+                KclValue::Object { value, .. } => {
+                    let Some(meta) = value.get(SKETCH_OBJECT_META) else {
+                        return Err(self.into());
+                    };
+                    let KclValue::Object { value: meta_map, .. } = meta else {
+                        return Err(self.into());
+                    };
+                    let Some(sketch) = meta_map.get(SKETCH_OBJECT_META_SKETCH).and_then(KclValue::as_sketch) else {
+                        return Err(self.into());
+                    };
+
+                    Ok(KclValue::Sketch {
+                        value: Box::new(sketch.clone()),
+                    })
+                }
                 _ => Err(self.into()),
             },
             PrimitiveType::Constraint => match self {
