@@ -72,6 +72,18 @@ export const ORIGIN_TARGET = 'origin'
 export type SketchSpecialTarget = typeof ORIGIN_TARGET
 export type SketchSolveSelectionId = number | SketchSpecialTarget
 
+export function isObjectSelectionId(
+  id: SketchSolveSelectionId | null | undefined
+): id is number {
+  return typeof id === 'number'
+}
+
+export function getObjectSelectionIds(
+  ids: readonly SketchSolveSelectionId[]
+): number[] {
+  return ids.filter(isObjectSelectionId)
+}
+
 // Type for the spawn function used in XState setup actions
 // This provides better type safety by constraining the actor parameter to valid tool names
 // and ensuring the return type matches the specific tool actor
@@ -463,6 +475,9 @@ export function updateSceneGraphFromDelta({
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
 
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
   const draftEntityIds = context.draftEntities?.segmentIds
 
   // If invalidates_ids is true, we need to delete everything and start fresh
@@ -500,7 +515,7 @@ export function updateSceneGraphFromDelta({
 
     // Combine selectedIds and duringAreaSelectIds for highlighting
     const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
+      new Set([...getObjectSelectionIds(selectedIds), ...duringAreaSelectIds])
     )
 
     // Render constraints
@@ -528,7 +543,7 @@ export function updateSceneGraphFromDelta({
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -708,10 +723,16 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   )
   const factor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
 
   // Get draft entity IDs from context
@@ -735,7 +756,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -815,9 +836,15 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
   const scaleFactor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
 
@@ -870,7 +897,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         scaleFactor,
         context.sceneInfra,
         allSelectedIds,
-        context.hoveredId,
+        hoveredObjectId,
         getInvisibleConstraintDisplayState(context)
       )
     }
@@ -890,7 +917,9 @@ function getHoveredSegmentIds(
   hoveredId: SketchSolveSelectionId | null,
   objects: ApiObject[]
 ): number[] {
-  const hoveredObject = hoveredId !== null ? objects[hoveredId] : null
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
   return isInvisibleConstraintObject(hoveredObject)
     ? findSegmentsForInvisibleConstraint(hoveredObject, objects)
     : []

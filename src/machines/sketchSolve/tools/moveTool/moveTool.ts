@@ -15,9 +15,14 @@ import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import {
   buildSegmentCtorFromObject,
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
+import { distance2d } from '@src/lib/utils2d'
 import {
   findContainedSegments,
   findIntersectingSegments,
@@ -44,8 +49,10 @@ import type {
   SceneInfra,
 } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
-import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import {
+  findClosestApiObjects,
+  getSketchHoverDistance,
+} from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
@@ -57,6 +64,54 @@ import {
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
+
+type ClosestSelectionTarget = {
+  distance: number
+  selectionId: SketchSolveSelectionId
+  apiObject: ApiObject | null
+}
+
+function getClosestSelectionTarget(
+  mousePosition: Coords2d,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+): ClosestSelectionTarget | null {
+  const closestObject = findClosestApiObjects(
+    mousePosition,
+    objects,
+    sceneInfra
+  )[0]
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const hoverDistance = getSketchHoverDistance(
+    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
+  )
+  const originDistance = distance2d(mousePosition, [0, 0])
+  const closestOrigin: ClosestSelectionTarget | null =
+    originDistance <= hoverDistance
+      ? {
+          distance: originDistance,
+          selectionId: ORIGIN_TARGET,
+          apiObject: null,
+        }
+      : null
+
+  if (!closestObject) {
+    return closestOrigin
+  }
+
+  if (!closestOrigin || closestObject.distance < closestOrigin.distance) {
+    return {
+      distance: closestObject.distance,
+      selectionId: closestObject.apiObject.id,
+      apiObject: closestObject.apiObject,
+    }
+  }
+
+  return closestOrigin
+}
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -222,7 +277,7 @@ export function createOnDragStartCallback({
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   setDraggedEntityId: (entityId: number | null) => void
-  getHoveredId: () => number | null
+  getHoveredId: () => SketchSolveSelectionId | null
   dismissConstraintHoverPopup: () => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
@@ -233,7 +288,8 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
-    setDraggedEntityId(getHoveredId())
+    const hoveredId = getHoveredId()
+    setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
 }
 
@@ -287,7 +343,7 @@ export function createOnClickCallback({
   getApiObjects: () => ApiObject[]
   sceneInfra: SceneInfra
   onUpdateSelectedIds: (data: {
-    selectedIds: Array<number>
+    selectedIds: Array<SketchSolveSelectionId>
     duringAreaSelectIds: Array<number>
     replaceExistingSelection?: boolean
   }) => void
@@ -299,7 +355,7 @@ export function createOnClickCallback({
   intersects: Array<unknown>
 }) => Promise<void> {
   return async ({ mouseEvent, intersectionPoint }) => {
-    let closestObject: ClosestApiObject | undefined
+    let closestSelection: ClosestSelectionTarget | null = null
     let mousePosition: Coords2d | undefined
 
     if (intersectionPoint) {
@@ -308,37 +364,38 @@ export function createOnClickCallback({
         intersectionPoint.twoD.y,
       ] as Coords2d
 
-      const closestObjects = findClosestApiObjects(
+      closestSelection = getClosestSelectionTarget(
         mousePosition,
         getApiObjects(),
         sceneInfra
       )
-      closestObject = closestObjects[0]
     }
+
+    const selectedApiObject = closestSelection?.apiObject ?? undefined
 
     if (
       mouseEvent.detail === 2 &&
-      isConstraint(closestObject?.apiObject) &&
-      !isInvisibleConstraintObject(closestObject.apiObject)
+      isConstraint(selectedApiObject) &&
+      !isInvisibleConstraintObject(selectedApiObject)
     ) {
       // Double clicking on Constraint
-      onEditConstraint(closestObject.apiObject.id)
+      onEditConstraint(selectedApiObject.id)
     } else {
-      const shouldReplaceSelection = isConstraint(closestObject?.apiObject)
+      const shouldReplaceSelection = isConstraint(selectedApiObject)
       if (
         mousePosition &&
-        closestObject &&
-        isInvisibleConstraintObject(closestObject.apiObject)
+        selectedApiObject &&
+        isInvisibleConstraintObject(selectedApiObject)
       ) {
         pinSelectedInvisibleConstraintPopup(
-          closestObject.apiObject.id,
+          selectedApiObject.id,
           mousePosition,
           getApiObjects(),
           sceneInfra
         )
       }
       onUpdateSelectedIds({
-        selectedIds: closestObject ? [closestObject.apiObject.id] : [],
+        selectedIds: closestSelection ? [closestSelection.selectionId] : [],
         duringAreaSelectIds: [],
         ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
       })
@@ -801,7 +858,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }
   }
 
-  const sendHoveredState = (hoveredId: number | null) => {
+  const sendHoveredState = (hoveredId: SketchSolveSelectionId | null) => {
     self.send({
       type: 'update hovered id',
       data: {
@@ -839,7 +896,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }
 
     sendHoveredState(
-      isPointSnapTarget(candidate?.target) ? candidate.target.pointId : null
+      candidate?.target?.type === ORIGIN_TARGET
+        ? ORIGIN_TARGET
+        : isPointSnapTarget(candidate?.target)
+          ? candidate.target.pointId
+          : null
     )
   }
 
@@ -927,7 +988,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             intersectionPoint?.twoD
               ? getDragPointSnappingCandidate({
                   draggedEntityId,
-                  selectedIds: snapshot.context.selectedIds,
+                  selectedIds: getObjectSelectionIds(
+                    snapshot.context.selectedIds
+                  ),
                   sceneGraphDelta,
                   sketchId: snapshot.context.sketchId,
                   mousePosition: [
@@ -939,10 +1002,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          console.log(
-            'move tool snap target',
-            snappingCandidate?.target ?? null
-          )
           const coincidentSegments =
             snappingCandidate && draggedEntityId !== null
               ? getCoincidentSegmentsForSnapTarget(
@@ -1024,7 +1083,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
-          selectedIds: snapshot.context.selectedIds,
+          selectedIds: getObjectSelectionIds(snapshot.context.selectedIds),
           sketchId: snapshot.context.sketchId,
           sketchExecOutcome: snapshot.context.sketchExecOutcome,
         }
@@ -1060,7 +1119,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       onUpdateDragSnapping: updateDragSnappingState,
     }),
     onMouseDownSelection: () => {
-      return self.getSnapshot().context.hoveredId !== null
+      return isObjectSelectionId(self.getSnapshot().context.hoveredId)
     },
     onClick: createOnClickCallback({
       getApiObjects: () => {
@@ -1073,7 +1132,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
       sceneInfra: context.sceneInfra,
       onUpdateSelectedIds: (data: {
-        selectedIds: Array<number>
+        selectedIds: Array<SketchSolveSelectionId>
         duringAreaSelectIds: Array<number>
         replaceExistingSelection?: boolean
       }) => self.send({ type: 'update selected ids', data }),
@@ -1100,14 +1159,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
           [],
         snapshot.context.sketchId
       )
-      const closestObjects = findClosestApiObjects(
+      const hoveredTarget = getClosestSelectionTarget(
         mousePosition,
         apiObjects,
         context.sceneInfra
       )
-      const hoveredObject: ClosestApiObject | null = closestObjects[0] ?? null
-      const hoveredApiObject = hoveredObject?.apiObject ?? null
-      const hoveredId = hoveredApiObject?.id ?? null
+      const hoveredApiObject = hoveredTarget?.apiObject ?? null
+      const hoveredId = hoveredTarget?.selectionId ?? null
       const lastHoveredId = snapshot.context.hoveredId
       const constraintHoverPopupSegmentId =
         hoveredApiObject !== null && !isConstraint(hoveredApiObject)

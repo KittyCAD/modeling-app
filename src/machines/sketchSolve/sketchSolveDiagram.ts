@@ -1,5 +1,6 @@
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 import type {
+  CoincidentSegment,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -34,6 +35,8 @@ import {
   deleteDraftEntities,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
+  getObjectSelectionIds,
+  ORIGIN_TARGET,
   refreshSketchSolveScale,
   tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -79,7 +82,7 @@ async function addAxisDistanceConstraint(
   axis: 'horizontal' | 'vertical',
   providedDistance?: number
 ) {
-  let segmentsToConstrain = context.selectedIds
+  let segmentsToConstrain = getObjectSelectionIds(context.selectedIds)
   if (segmentsToConstrain.length === 1) {
     const first =
       context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
@@ -150,7 +153,7 @@ async function addLineOrientationConstraint(
   type: 'Horizontal' | 'Vertical'
 ) {
   let result
-  for (const id of context.selectedIds) {
+  for (const id of getObjectSelectionIds(context.selectedIds)) {
     // TODO this is not how these constraints should operate long term, as they should be equipable tools
     result = await context.rustContext.addConstraint(
       0,
@@ -185,7 +188,10 @@ async function addFixedConstraint(
 ) {
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-  const fixedInput = buildFixedConstraintInput(context.selectedIds, objects)
+  const fixedInput = buildFixedConstraintInput(
+    getObjectSelectionIds(context.selectedIds),
+    objects
+  )
   if (!fixedInput) {
     return
   }
@@ -379,7 +385,9 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'Coincident',
-            segments: context.selectedIds,
+            segments: context.selectedIds.map(
+              (id): CoincidentSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+            ),
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
@@ -396,7 +404,7 @@ export const sketchSolveMachine = setup({
         const objects =
           context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
         const tangentConstraint = buildTangentConstraintInput(
-          context.selectedIds,
+          getObjectSelectionIds(context.selectedIds),
           objects
         )
         if (!tangentConstraint) {
@@ -423,7 +431,7 @@ export const sketchSolveMachine = setup({
     Dimension: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const segmentsToConstrain = context.selectedIds
+        const segmentsToConstrain = getObjectSelectionIds(context.selectedIds)
         const objects =
           context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
         const currentSelections = segmentsToConstrain
@@ -596,7 +604,7 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'Parallel',
-            lines: context.selectedIds,
+            lines: getObjectSelectionIds(context.selectedIds),
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
@@ -611,7 +619,7 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'Perpendicular',
-            lines: context.selectedIds,
+            lines: getObjectSelectionIds(context.selectedIds),
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
@@ -626,7 +634,7 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'LinesEqualLength',
-            lines: context.selectedIds,
+            lines: getObjectSelectionIds(context.selectedIds),
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
@@ -635,7 +643,7 @@ export const sketchSolveMachine = setup({
     },
     Vertical: {
       actions: async ({ self, context }) => {
-        const itemsToConstrain = context.selectedIds
+        const itemsToConstrain = getObjectSelectionIds(context.selectedIds)
         const selectionIsAllPoints = itemsToConstrain
           .map(
             (id) =>
@@ -655,7 +663,7 @@ export const sketchSolveMachine = setup({
     },
     Horizontal: {
       actions: async ({ self, context }) => {
-        const itemsToConstrain = context.selectedIds
+        const itemsToConstrain = getObjectSelectionIds(context.selectedIds)
         const selectionIsAllPoints = itemsToConstrain
           .map(
             (id) =>
@@ -675,7 +683,7 @@ export const sketchSolveMachine = setup({
     },
     construction: {
       actions: async ({ self, context }) => {
-        const selectedIds = context.selectedIds
+        const selectedIds = getObjectSelectionIds(context.selectedIds)
         const objects =
           context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
@@ -782,7 +790,7 @@ export const sketchSolveMachine = setup({
     },
     'delete selected': {
       actions: async ({ self, context }) => {
-        const selectedIds = context.selectedIds
+        const selectedIds = getObjectSelectionIds(context.selectedIds)
 
         // Only proceed if there are selected IDs
         if (selectedIds.length === 0) {
