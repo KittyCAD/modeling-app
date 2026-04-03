@@ -16,6 +16,7 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
+import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
@@ -118,10 +119,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
       commandData.name === 'add-kcl-file-to-project' &&
       commandData.argDefaultValues?.projectName
     ) {
-      const projectName = commandData.argDefaultValues.projectName
+      const projectNameArg = String(commandData.argDefaultValues.projectName)
+      const projectFolderName = fsZds.basename(projectNameArg)
+
       const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
-        (folders ?? []).some((f) => f.name === projectName)
+        (folders ?? []).some((f) => f.name === projectFolderName)
+
+      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
+        sendCommand()
+        return
+      }
 
       const subscription = systemIO.subscribe((snapshot) => {
         if (foldersIncludeProject(snapshot.context.folders)) {
