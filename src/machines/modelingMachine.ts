@@ -1,6 +1,12 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
+import {
+  type AnyActorRef,
+  assertEvent,
+  assign,
+  fromPromise,
+  setup,
+} from 'xstate'
 
 import type {
   SetSelections,
@@ -197,6 +203,7 @@ import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -443,6 +450,10 @@ export type ModelingMachineEvent =
       data: { tool: EquipTool | null }
     }
   | { type: 'delete selected' }
+
+function getSketchSolveActor(self: AnyActorRef) {
+  return self.getSnapshot().children.sketchSolveMachine
+}
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const OVERLAY_TIMEOUT_MS = 1_000
@@ -1909,6 +1920,15 @@ export const modelingMachine = setup({
       }
       return {}
     }),
+    'forward exit to sketch solve if active': ({ self }) => {
+      sendToActorIfActive(getSketchSolveActor(self), { type: 'exit' })
+    },
+    'forward escape to sketch solve if active': ({ self }) => {
+      sendToActorIfActive(getSketchSolveActor(self), { type: 'escape' })
+    },
+    'forward event to sketch solve if active': ({ self, event }) => {
+      sendToActorIfActive(getSketchSolveActor(self), event)
+    },
   },
   // end actions
   actors: {
@@ -6897,6 +6917,70 @@ export const modelingMachine = setup({
       initial: 'active',
       states: {
         active: {
+          on: {
+            Cancel: {
+              actions: ['forward escape to sketch solve if active'],
+              // Forward escape to sketch solve machine for hierarchical handling:
+              // - If tool equipped in ShowDraftLine: delete draft, return to ready
+              // - If tool equipped in ready: unequip tool
+              // - If no tool equipped (move and select): exit sketch mode
+            },
+            'Exit sketch': {
+              actions: ['forward exit to sketch solve if active'],
+              // Exit sketch immediately, bypassing tool unequip logic
+            },
+            'equip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'unequip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            coincident: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Fixed: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Tangent: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Parallel: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Perpendicular: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            LinesEqualLength: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Vertical: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Horizontal: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Dimension: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            HorizontalDistance: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            VerticalDistance: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            construction: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'toggle non-visual constraints': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'delete selected': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'update sketch outcome': {
+              actions: ['forward event to sketch solve if active'],
+            },
+          },
           invoke: {
             id: 'sketchSolveMachine',
             src: 'sketchSolveMachine',
@@ -6931,70 +7015,6 @@ export const modelingMachine = setup({
               actions: ['reset sketch metadata'],
             },
           },
-        },
-      },
-      on: {
-        Cancel: {
-          actions: [sendTo('sketchSolveMachine', { type: 'escape' })],
-          // Forward escape to sketch solve machine for hierarchical handling:
-          // - If tool equipped in ShowDraftLine: delete draft, return to ready
-          // - If tool equipped in ready: unequip tool
-          // - If no tool equipped (move and select): exit sketch mode
-        },
-        'Exit sketch': {
-          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
-          // Exit sketch immediately, bypassing tool unequip logic
-        },
-        'equip tool': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'unequip tool': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        coincident: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Fixed: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Tangent: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Parallel: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Perpendicular: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        LinesEqualLength: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Vertical: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Horizontal: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Dimension: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        HorizontalDistance: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        VerticalDistance: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        construction: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'toggle non-visual constraints': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'delete selected': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'update sketch outcome': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
       description: `Actor defined in separate file`,

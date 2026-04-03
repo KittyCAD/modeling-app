@@ -77,18 +77,18 @@ There are two common patterns for re‑using geometry:
 
 ```kcl
 fn cube(height) {
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
-  coincident([line1.start, ORIGIN])
-  line2 = line(start = [var 0mm, var 3mm], end = [var 3mm, var 3mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 3mm, var 3mm], end = [var 3mm, var 0mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-}
-region001 = region(point = [2mm, 2mm], sketch = sketch001)
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
+    coincident([line1.start, ORIGIN])
+    line2 = line(start = [var 0mm, var 3mm], end = [var 3mm, var 3mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 3mm, var 3mm], end = [var 3mm, var 0mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+  }
+  region001 = region(point = [2mm, 2mm], sketch = sketch001)
   return extrude(region001, length = height)
 }
 
