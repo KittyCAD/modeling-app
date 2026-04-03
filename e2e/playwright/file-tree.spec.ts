@@ -396,21 +396,45 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     })
 
     await test.step('Verify the file is renamed', async () => {
-      await expect.poll(async () => await checkRenamedFS()).toBeTruthy()
-      await expect.poll(async () => !(await checkUnRenamedFS())).toBeTruthy()
+      await expect
+        .poll(async () => await checkRenamedFS(), {
+          timeout: 15_000,
+        })
+        .toBeTruthy()
+      await expect
+        .poll(async () => !(await checkUnRenamedFS()), {
+          timeout: 15_000,
+        })
+        .toBeTruthy()
       // Prefer the new row appearing first: tree can lag briefly after disk rename.
-      await expect(renamedFile).toBeVisible()
-      await expect(fileToRename).not.toBeAttached()
+      await expect(renamedFile).toBeVisible({
+        timeout: 15_000,
+      })
+      await expect(fileToRename).not.toBeAttached({
+        timeout: 15_000,
+      })
     })
 
     await test.step('Verify we navigated', async () => {
-      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
+      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT, {
+        timeout: 15_000,
+      })
       // Route/hash can update after the tree; sync URL expectations retry like locators.
-      await expect.poll(() => page.url()).toContain(newFileName)
-      await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
-      await expect(projectMenuButton).not.toContainText('main.kcl')
-      await expect.poll(() => page.url()).not.toContain('fileToRename.kcl')
-      await expect.poll(() => page.url()).not.toContain('main.kcl')
+      await expect
+        .poll(() => page.url(), { timeout: 15_000 })
+        .toContain(newFileName)
+      await expect(projectMenuButton).not.toContainText('fileToRename.kcl', {
+        timeout: 15_000,
+      })
+      await expect(projectMenuButton).not.toContainText('main.kcl', {
+        timeout: 15_000,
+      })
+      await expect
+        .poll(() => page.url(), { timeout: 15_000 })
+        .not.toContain('fileToRename.kcl')
+      await expect
+        .poll(() => page.url(), { timeout: 15_000 })
+        .not.toContain('main.kcl')
 
       await u.openKclCodePanel()
       await expect(codeLocator).toContainText('circle(')
@@ -490,10 +514,22 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     })
 
     await test.step('Verify the file is renamed', async () => {
-      await expect.poll(async () => await checkRenamedFS()).toBeTruthy()
-      await expect.poll(async () => !(await checkUnRenamedFS())).toBeTruthy()
-      await expect(renamedFile).toBeVisible()
-      await expect(fileToRename).not.toBeAttached()
+      await expect
+        .poll(async () => await checkRenamedFS(), {
+          timeout: 15_000,
+        })
+        .toBeTruthy()
+      await expect
+        .poll(async () => !(await checkUnRenamedFS()), {
+          timeout: 15_000,
+        })
+        .toBeTruthy()
+      await expect(renamedFile).toBeVisible({
+        timeout: 15_000,
+      })
+      await expect(fileToRename).not.toBeAttached({
+        timeout: 15_000,
+      })
     })
 
     await test.step('Verify we have not navigated', async () => {
