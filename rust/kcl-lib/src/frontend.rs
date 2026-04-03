@@ -72,8 +72,6 @@ use crate::frontend::traverse::TraversalReturn;
 use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
 use crate::parsing::ast::types as ast;
-#[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::fill_node_paths;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
@@ -381,8 +379,6 @@ impl SketchApi for FrontendState {
     ) -> api::Result<SceneGraphDelta> {
         // TODO: Check version.
 
-        self.fill_node_paths();
-
         // Look up existing sketch.
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
@@ -497,7 +493,6 @@ impl SketchApi for FrontendState {
         _label: Option<String>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
         match segment {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
@@ -514,7 +509,6 @@ impl SketchApi for FrontendState {
         segments: Vec<ExistingSegmentCtor>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
         let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let mut new_ast = self.program.ast.clone();
@@ -692,7 +686,6 @@ impl SketchApi for FrontendState {
         segment_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
         let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         // Deduplicate IDs.
@@ -786,7 +779,6 @@ impl SketchApi for FrontendState {
         constraint: Constraint,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
 
         // Save the original state as a backup - we'll restore it if anything fails
         let original_program = self.program.clone();
@@ -842,7 +834,6 @@ impl SketchApi for FrontendState {
         _label: Option<String>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
 
         // First, add the segment (line) to get its start point ID
         let SegmentCtor::Line(line_ctor) = segment else {
@@ -930,7 +921,6 @@ impl SketchApi for FrontendState {
         value_expression: String,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
         let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
@@ -1007,7 +997,6 @@ impl SketchApi for FrontendState {
         _new_segment_info: sketch::NewSegmentInfo,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        self.fill_node_paths();
         let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let mut new_ast = self.program.ast.clone();
@@ -1113,7 +1102,6 @@ impl SketchApi for FrontendState {
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        self.fill_node_paths();
         let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
 
         let mut new_ast = self.program.ast.clone();
@@ -1323,7 +1311,6 @@ impl FrontendState {
                 msg: "No AST produced after adding point".to_string(),
             });
         };
-        let new_program = fill_program_node_paths(new_program);
 
         let point_node_ref =
             find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
@@ -1461,7 +1448,6 @@ impl FrontendState {
                 msg: "No AST produced after adding line".to_string(),
             });
         };
-        let new_program = fill_program_node_paths(new_program);
 
         let line_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
             msg: format!("Source range of line not found in sketch block: {sketch_block_ref:?}; {err:?}"),
@@ -1603,7 +1589,6 @@ impl FrontendState {
                 msg: "No AST produced after adding arc".to_string(),
             });
         };
-        let new_program = fill_program_node_paths(new_program);
 
         let arc_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
             msg: format!("Source range of arc not found in sketch block: {sketch_block_ref:?}; {err:?}"),
@@ -1743,7 +1728,6 @@ impl FrontendState {
                 msg: "No AST produced after adding circle".to_string(),
             });
         };
-        let new_program = fill_program_node_paths(new_program);
 
         let circle_node_ref =
             find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
@@ -3459,11 +3443,6 @@ impl FrontendState {
         }
     }
 
-    fn fill_node_paths(&mut self) {
-        #[cfg(feature = "artifact-graph")]
-        fill_node_paths(&mut self.program.ast)
-    }
-
     fn mutate_ast(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
@@ -3479,19 +3458,6 @@ impl FrontendState {
                 msg: "BackTrace source refs not supported yet".to_owned(),
             }),
         }
-    }
-}
-
-/// Fill node paths and consume the input so that the program without paths
-/// isn't accidentally used.
-fn fill_program_node_paths(program: Program) -> Program {
-    #[cfg(not(feature = "artifact-graph"))]
-    {
-        program
-    }
-    #[cfg(feature = "artifact-graph")]
-    {
-        program.fill_node_paths()
     }
 }
 
