@@ -94,7 +94,6 @@ noseSketch = sketch(on = XZ) {
   line6 = line(start = [var 0mm, var -0.5mm], end = [var 0mm, var 0mm])
   coincident([arc5.start, line6.start])
   horizontal(line2)
-  vertical(arc3)
 }
 region001 = region(segments = [noseSketch.line1, noseSketch.line2])
 nose = revolve(region001, axis = X)
