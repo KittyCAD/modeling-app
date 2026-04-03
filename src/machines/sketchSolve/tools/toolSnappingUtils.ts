@@ -2,6 +2,7 @@ import { Group } from 'three'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
@@ -60,6 +61,7 @@ export function getBestSnappingCandidate({
   mousePosition,
   mouseEvent,
   excludedPointIds = [],
+  getExcludedPointIds,
 }: {
   self: ToolSelf
   sceneInfra: SceneInfra
@@ -67,6 +69,9 @@ export function getBestSnappingCandidate({
   mousePosition: Coords2d
   mouseEvent: MouseEvent
   excludedPointIds?: Iterable<number>
+  getExcludedPointIds?: (
+    currentSketchObjects: ApiObject[]
+  ) => Iterable<number> | undefined
 }): SnappingCandidate | null {
   if (!allowSnapping(mouseEvent)) {
     return null
@@ -79,8 +84,12 @@ export function getBestSnappingCandidate({
     return null
   }
 
-  const excludedPointIdSet = new Set(excludedPointIds)
   const currentSketchObjects = getCurrentSketchObjectsById(objects, sketchId)
+  const excludedPointIdSet = new Set(excludedPointIds)
+
+  for (const pointId of getExcludedPointIds?.(currentSketchObjects) ?? []) {
+    excludedPointIdSet.add(pointId)
+  }
 
   return (
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(

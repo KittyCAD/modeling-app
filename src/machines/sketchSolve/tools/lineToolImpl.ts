@@ -18,7 +18,6 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   clearToolSnappingState,
   getBestSnappingCandidate,
@@ -106,38 +105,6 @@ function getSnappingExcludedPointIds(
   return excludedPointIds
 }
 
-function getLineToolSnappingCandidate({
-  self,
-  context,
-  mousePosition,
-  mouseEvent,
-}: {
-  self: ToolActionArgs['self']
-  context: ToolContext
-  mousePosition: Coords2d
-  mouseEvent: MouseEvent
-}) {
-  const objects =
-    self._parent?.getSnapshot?.()?.context?.sketchExecOutcome?.sceneGraphDelta
-      ?.new_graph?.objects ?? []
-  const currentSketchObjects = getCurrentSketchObjectsById(
-    objects,
-    context.sketchId
-  )
-
-  return getBestSnappingCandidate({
-    self,
-    sceneInfra: context.sceneInfra,
-    sketchId: context.sketchId,
-    mousePosition,
-    mouseEvent,
-    excludedPointIds: getSnappingExcludedPointIds(
-      currentSketchObjects,
-      context.draftPointId
-    ),
-  })
-}
-
 ////////////// --Actions-- //////////////////
 
 export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
@@ -148,11 +115,17 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD && !isEditInProgress) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getLineToolSnappingCandidate({
+        const snappingCandidate = getBestSnappingCandidate({
           self,
-          context,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
+          getExcludedPointIds: (currentSketchObjects) =>
+            getSnappingExcludedPointIds(
+              currentSketchObjects,
+              context.draftPointId
+            ),
         })
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
@@ -249,11 +222,17 @@ export function addPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getLineToolSnappingCandidate({
+        const snappingCandidate = getBestSnappingCandidate({
           self,
-          context,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
+          getExcludedPointIds: (currentSketchObjects) =>
+            getSnappingExcludedPointIds(
+              currentSketchObjects,
+              context.draftPointId
+            ),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         console.log('line tool snap target', snappingCandidate?.target ?? null)
@@ -274,11 +253,17 @@ export function addPointListener({ self, context }: ToolActionArgs) {
         return
       }
 
-      const snappingCandidate = getLineToolSnappingCandidate({
+      const snappingCandidate = getBestSnappingCandidate({
         self,
-        context,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
         mousePosition: [twoD.x, twoD.y],
         mouseEvent: args.mouseEvent,
+        getExcludedPointIds: (currentSketchObjects) =>
+          getSnappingExcludedPointIds(
+            currentSketchObjects,
+            context.draftPointId
+          ),
       })
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
