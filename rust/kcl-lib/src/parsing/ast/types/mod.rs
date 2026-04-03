@@ -96,6 +96,20 @@ impl<T> Node<T> {
         }
     }
 
+    #[cfg(test)]
+    pub fn with_node_path(inner: T, start: usize, end: usize, module_id: ModuleId, node_path: NodePath) -> Self {
+        Self {
+            inner,
+            start,
+            end,
+            module_id,
+            node_path: Some(node_path),
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        }
+    }
+
     pub fn new_node(start: usize, end: usize, module_id: ModuleId, inner: T) -> Self {
         Self {
             inner,
@@ -129,6 +143,26 @@ impl<T> Node<T> {
             end,
             module_id,
             node_path: None,
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        })
+    }
+
+    #[cfg(test)]
+    pub fn boxed_with_node_path(
+        start: usize,
+        end: usize,
+        module_id: ModuleId,
+        node_path: NodePath,
+        inner: T,
+    ) -> BoxNode<T> {
+        Box::new(Node {
+            inner,
+            start,
+            end,
+            module_id,
+            node_path: Some(node_path),
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,

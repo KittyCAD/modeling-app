@@ -3980,11 +3980,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
+    use crate::NodePath;
+    use crate::NodePathStep;
     use crate::parsing::ast::types::BodyItem;
     use crate::parsing::ast::types::Expr;
     use crate::parsing::ast::types::VariableKind;
@@ -5030,7 +5034,21 @@ mySk1 = startSketchOn(XY)
 
             // Run the second parser, check it matches the first parser.
             let actual = in_ctx(|| declaration.parse(tokens.as_slice())).unwrap();
-            assert_eq!(expected, actual);
+            // Note: node_paths won't match since the narrow parse function
+            // won't add that.
+            assert_eq!(expected.as_source_range(), actual.as_source_range());
+            assert_eq!(expected.inner.declaration.inner.id, actual.inner.declaration.id);
+            assert_eq!(
+                expected.inner.declaration.inner.id.as_source_range(),
+                actual.inner.declaration.id.as_source_range()
+            );
+            match (&expected.inner.declaration.inner.init, &actual.inner.declaration.init) {
+                (Expr::Literal(expected), Expr::Literal(actual)) => {
+                    assert_eq!(expected.value, actual.value);
+                    assert_eq!(expected.as_source_range(), actual.as_source_range());
+                }
+                (left, right) => panic!("Unexpected expressions: left={left:#?}, right={right:#?}"),
+            }
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
@@ -5049,13 +5067,19 @@ mySk1 = startSketchOn(XY)
     fn test_math_parse() {
         let module_id = ModuleId::default();
         let actual = crate::parsing::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
-        let expr = Node::boxed(
+        let expr = Node::boxed_with_node_path(
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![
+                    NodePathStep::ProgramBodyItem { index: 0 },
+                    NodePathStep::ExpressionStatementExpr,
+                ],
+            },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::new(
+                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -5067,8 +5091,15 @@ mySk1 = startSketchOn(XY)
                     0,
                     1,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryLeft,
+                        ],
+                    },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::new(
+                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -5077,11 +5108,18 @@ mySk1 = startSketchOn(XY)
                     4,
                     7,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryRight,
+                        ],
+                    },
                 ))),
                 digest: None,
             },
         );
-        let expected = vec![BodyItem::ExpressionStatement(Node::new(
+        let expected = vec![BodyItem::ExpressionStatement(Node::with_node_path(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
                 digest: None,
@@ -5089,6 +5127,9 @@ mySk1 = startSketchOn(XY)
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+            },
         ))];
         assert_eq!(expected, actual);
     }
@@ -5100,14 +5141,20 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::parse_str(code, module_id).unwrap();
         let expected_result = Node::new(
             Program {
-                body: vec![BodyItem::ExpressionStatement(Node::new(
+                body: vec![BodyItem::ExpressionStatement(Node::with_node_path(
                     ExpressionStatement {
-                        expression: Expr::BinaryExpression(Node::boxed(
+                        expression: Expr::BinaryExpression(Node::boxed_with_node_path(
                             0,
                             4,
                             module_id,
+                            NodePath {
+                                steps: vec![
+                                    NodePathStep::ProgramBodyItem { index: 0 },
+                                    NodePathStep::ExpressionStatementExpr,
+                                ],
+                            },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::new(
+                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -5119,9 +5166,16 @@ mySk1 = startSketchOn(XY)
                                     0,
                                     1,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryLeft,
+                                        ],
+                                    },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::new(
+                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,
@@ -5133,6 +5187,13 @@ mySk1 = startSketchOn(XY)
                                     3,
                                     4,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryRight,
+                                        ],
+                                    },
                                 ))),
                                 digest: None,
                             },
@@ -5142,6 +5203,9 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
+                    NodePath {
+                        steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+                    },
                 ))],
                 shebang: None,
                 non_code_meta: NonCodeMeta::default(),
