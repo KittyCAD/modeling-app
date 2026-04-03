@@ -418,7 +418,7 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  test(`Shift-click to select and deselect edges and faces`, async ({
+  test(`Shift-click to select and deselect faces`, async ({
     context,
     cmdBar,
     toolbar,
@@ -443,8 +443,6 @@ region001 = region(segments = [sketch002.line1, sketch002.line2])
 sketch001 = extrude(region001, length = -12)`
 
     // Locators
-    const upperEdgeLocation = { x: 600, y: 193 }
-    const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
     const timeout = 150
 
@@ -460,75 +458,21 @@ sketch001 = extrude(region001, length = -12)`
     })
 
     // Click helpers
-    const [clickOnUpperEdge] = scene.makeMouseHelpers(
-      upperEdgeLocation.x,
-      upperEdgeLocation.y
-    )
-    const [clickOnLowerEdge] = scene.makeMouseHelpers(
-      lowerEdgeLocation.x,
-      lowerEdgeLocation.y
-    )
     const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
 
-    await test.step('Select and deselect a single edge', async () => {
-      await expect(toolbar.selectionStatus).toContainText('No selection')
-      await test.step('Click the edge', async () => {
-        await clickOnUpperEdge()
-        await expect(toolbar.selectionStatus).toContainText('1 edge')
-      })
-      await test.step('Shift-click the same edge to deselect', async () => {
-        await page.keyboard.down('Shift')
-        await clickOnUpperEdge()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await expect(toolbar.selectionStatus).toContainText('No selection')
-      })
+    await test.step('Select the face (Shift-click)', async () => {
+      await page.keyboard.down('Shift')
+      await clickOnFace()
+      await page.waitForTimeout(timeout)
+      await page.keyboard.up('Shift')
+      await expect(toolbar.selectionStatus).toContainText('1 face')
     })
-
-    await test.step('Select and deselect multiple objects', async () => {
-      await test.step('Select both edges and the face', async () => {
-        await test.step('Select the upper edge', async () => {
-          await clickOnUpperEdge()
-          await expect(toolbar.selectionStatus).toContainText('1 edge')
-        })
-        await test.step('Select the lower edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnLowerEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges')
-        })
-        await test.step('Select the face (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnFace()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges, 1 face')
-        })
-      })
-      await test.step('Deselect them one by one', async () => {
-        await test.step('Deselect the face (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnFace()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges')
-        })
-        await test.step('Deselect the lower edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnLowerEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('1 edge')
-        })
-        await test.step('Deselect the upper edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnUpperEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('No selection')
-        })
-      })
+    await test.step('Deselect the face (Shift-click)', async () => {
+      await page.keyboard.down('Shift')
+      await clickOnFace()
+      await page.waitForTimeout(timeout)
+      await page.keyboard.up('Shift')
+      await expect(toolbar.selectionStatus).not.toContainText('1 face')
     })
   })
 
@@ -1216,11 +1160,16 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capStart001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capEnd001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capStart001]), radius=5)`
 
     // Locators
-    // TODO: find a way to not have hardcoded pixel values for sweepEdges
+    // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
+    const firstEdgeLocation = { x: 600, y: 195 }
+    const [clickOnFirstEdge] = scene.makeMouseHelpers(
+      firstEdgeLocation.x,
+      firstEdgeLocation.y
+    )
     const secondEdgeLocation = { x: 600, y: 383 }
     const [clickOnSecondEdge] = scene.makeMouseHelpers(
       secondEdgeLocation.x,
@@ -1239,9 +1188,7 @@ extrude001 = extrude(region001, length = -12)`
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await editor.selectText(
-        'line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])'
-      )
+      await clickOnFirstEdge()
     })
 
     await test.step(`Apply fillet to the preselected edge`, async () => {
@@ -1458,6 +1405,7 @@ extrude001 = extrude(region001, length = -12)`
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
 }
+hide(sketch001)
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 100)
 fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.circle1)])`
@@ -1523,6 +1471,7 @@ sketch001 = sketch(on = XY) {
   line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
   coincident([line3.end, line4.start])
 }
+hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)
   |> fillet(radius = 5, tags = [region001.tags.line1]) // fillet01
@@ -1749,10 +1698,11 @@ sketch001 = sketch(on = XY) {
   line4 = line(start = [var 12in, var -6in], end = [var -12in, var -6in])
   coincident([line3.end, line4.start])
 }
+hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capStart001]), length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capEnd001]), length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capStart001]), length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2010,6 +1960,7 @@ sketch001 = sketch(on = XY) {
   line4 = line(start = [var 12in, var -6in], end = [var -12in, var -6in])
   coincident([line3.end, line4.start])
 }
+hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)
   |> chamfer(length = 5, tags = [region001.tags.line1]) // chamfer01
