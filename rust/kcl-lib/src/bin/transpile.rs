@@ -23,6 +23,8 @@ use kcl_lib::exec::execute_with_retries;
 use kcl_lib::pre_execute_transpile;
 #[cfg(not(target_arch = "wasm32"))]
 use kcl_lib::test_server;
+use kcl_lib::tooling::image_comparison::DEFAULT_MIN_SIMILARITY;
+use kcl_lib::tooling::image_comparison::compare_images;
 use kcl_lib::tooling::render_artifacts::RenderArtifactKind;
 use kcl_lib::tooling::render_artifacts::render_artifact_path;
 use kcl_lib::transpile_all_old_sketches_to_new;
@@ -193,7 +195,7 @@ async fn main() -> ExitCode {
         Command::Convert(args) => convert(args).await,
         Command::Run(args) => run(args).await,
         Command::Render(args) => render(args).await,
-        Command::Compare(_) => Ok(not_implemented()),
+        Command::Compare(args) => compare(args).await,
     };
 
     match result {
@@ -549,6 +551,310 @@ async fn render_recursive(args: RequiredOutputCommandArgs) -> Result<ExitCode, s
     Ok(exit_code)
 }
 
+async fn compare(args: RequiredOutputCommandArgs) -> Result<ExitCode, std::io::Error> {
+    if args.json() {
+        return Ok(not_implemented());
+    }
+
+    if args.recursive() {
+        return compare_recursive(args).await;
+    }
+
+    compare_single(args).await
+}
+
+async fn compare_single(args: RequiredOutputCommandArgs) -> Result<ExitCode, std::io::Error> {
+    let input = normalize_input_path(args.input().to_path_buf())?;
+    fs::create_dir_all(args.out_dir())?;
+    let output_kcl_path = args.out_dir().join(
+        input
+            .file_name()
+            .ok_or_else(|| std::io::Error::other(format!("Input path `{}` has no filename", input.display())))?,
+    );
+
+    let v1_render = match render_input_file(&input).await {
+        Ok(image) => image,
+        Err(err) => {
+            fs::write(
+                args.out_dir().join("compare-log.txt"),
+                format!("render_v1_failed\n{err}\n"),
+            )?;
+            return Ok(ExitCode::FAILURE);
+        }
+    };
+
+    let transpiled = match transpile_to_output(&input, &output_kcl_path, true).await {
+        Ok(source) => source,
+        Err(err) => {
+            fs::write(
+                args.out_dir().join("compare-log.txt"),
+                format!("convert_failed\n{err}\n"),
+            )?;
+            return Ok(ExitCode::FAILURE);
+        }
+    };
+
+    let v2_render = match render_source_with_input_settings(&transpiled, &input).await {
+        Ok(image) => image,
+        Err(err) => {
+            fs::write(
+                args.out_dir().join("compare-log.txt"),
+                format!("render_v2_failed\n{err}\n"),
+            )?;
+            return Ok(ExitCode::FAILURE);
+        }
+    };
+
+    let v1_path = render_artifact_path(args.out_dir(), None, RenderArtifactKind::V1RenderedModel);
+    if let Err(err) = write_png(&v1_path, &v1_render) {
+        fs::write(
+            args.out_dir().join("compare-log.txt"),
+            format!("render_v1_failed\nFailed to write `{}`: {err}\n", v1_path.display()),
+        )?;
+        return Ok(ExitCode::FAILURE);
+    }
+
+    let v2_path = render_artifact_path(args.out_dir(), None, RenderArtifactKind::V2RenderedModel);
+    if let Err(err) = write_png(&v2_path, &v2_render) {
+        fs::write(
+            args.out_dir().join("compare-log.txt"),
+            format!("render_v2_failed\nFailed to write `{}`: {err}\n", v2_path.display()),
+        )?;
+        return Ok(ExitCode::FAILURE);
+    }
+
+    let comparison = match compare_images(&v1_render, &v2_render) {
+        Ok(comparison) => comparison,
+        Err(err) => {
+            fs::write(
+                args.out_dir().join("compare-log.txt"),
+                format!("compare_failed\n{err}\n"),
+            )?;
+            return Ok(ExitCode::FAILURE);
+        }
+    };
+
+    let diff_path = render_artifact_path(args.out_dir(), None, RenderArtifactKind::Diff);
+    if let Err(err) = write_png(&diff_path, &comparison.diff_image) {
+        fs::write(
+            args.out_dir().join("compare-log.txt"),
+            format!("compare_failed\nFailed to write `{}`: {err}\n", diff_path.display()),
+        )?;
+        return Ok(ExitCode::FAILURE);
+    }
+
+    let compare_log = format!(
+        "{}\nsimilarity={:.6}\ndifference={:.6}\n",
+        if comparison.similarity >= DEFAULT_MIN_SIMILARITY {
+            "success"
+        } else {
+            "compare_failed"
+        },
+        comparison.similarity,
+        comparison.difference
+    );
+    fs::write(args.out_dir().join("compare-log.txt"), compare_log)?;
+
+    Ok(if comparison.similarity >= DEFAULT_MIN_SIMILARITY {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    })
+}
+
+async fn compare_recursive(args: RequiredOutputCommandArgs) -> Result<ExitCode, std::io::Error> {
+    let root = args.input();
+    let mut report = CompareReport::default();
+
+    for entry in collect_recursive_entries(root, args.ignore_file())? {
+        let file = entry.source_path;
+        let rel_path = entry.relative_path;
+        report.processed += 1;
+
+        let out_kcl_path = args.out_dir().join(&rel_path);
+        let out_dir = args.out_dir().join(rel_path.parent().unwrap_or_else(|| Path::new("")));
+        let log_path = out_dir.join(compare_log_file_name(&file)?);
+        let stem = file_stem_string(&file)?;
+
+        let v1_render = match render_input_file(&file).await {
+            Ok(image) => image,
+            Err(err) => {
+                if let Some(parent) = log_path.parent() {
+                    fs::create_dir_all(parent)?;
+                }
+                fs::write(&log_path, format!("render_v1_failed\n{err}\n"))?;
+                report.v1_render_failures.push(CompareFailure {
+                    path: rel_path.clone(),
+                    error: err.clone(),
+                });
+                if !args.quiet() {
+                    eprintln!("V1 render failed: {}: {}", rel_path.display(), err);
+                }
+                if !args.keep_going() {
+                    break;
+                }
+                continue;
+            }
+        };
+
+        let transpiled = match transpile_to_output(&file, &out_kcl_path, !args.keep_going()).await {
+            Ok(source) => source,
+            Err(err) => {
+                if let Some(parent) = log_path.parent() {
+                    fs::create_dir_all(parent)?;
+                }
+                fs::write(&log_path, format!("convert_failed\n{err}\n"))?;
+                report.convert_failures.push(CompareFailure {
+                    path: rel_path.clone(),
+                    error: err.clone(),
+                });
+                if !args.quiet() {
+                    eprintln!("Convert failed: {}: {}", rel_path.display(), err);
+                }
+                if !args.keep_going() {
+                    break;
+                }
+                continue;
+            }
+        };
+
+        let v2_render = match render_source_with_input_settings(&transpiled, &file).await {
+            Ok(image) => image,
+            Err(err) => {
+                fs::write(&log_path, format!("render_v2_failed\n{err}\n"))?;
+                report.v2_render_failures.push(CompareFailure {
+                    path: rel_path.clone(),
+                    error: err.clone(),
+                });
+                if !args.quiet() {
+                    eprintln!("V2 render failed: {}: {}", rel_path.display(), err);
+                }
+                if !args.keep_going() {
+                    break;
+                }
+                continue;
+            }
+        };
+
+        let v1_path = render_artifact_path(&out_dir, Some(&stem), RenderArtifactKind::V1RenderedModel);
+        if let Err(err) = write_png(&v1_path, &v1_render) {
+            let error = format!("Failed to write `{}`: {err}", v1_path.display());
+            fs::write(&log_path, format!("render_v1_failed\n{error}\n"))?;
+            report.v1_render_failures.push(CompareFailure {
+                path: rel_path.clone(),
+                error: error.clone(),
+            });
+            if !args.quiet() {
+                eprintln!("V1 render failed: {}: {}", rel_path.display(), error);
+            }
+            if !args.keep_going() {
+                break;
+            }
+            continue;
+        }
+
+        let v2_path = render_artifact_path(&out_dir, Some(&stem), RenderArtifactKind::V2RenderedModel);
+        if let Err(err) = write_png(&v2_path, &v2_render) {
+            let error = format!("Failed to write `{}`: {err}", v2_path.display());
+            fs::write(&log_path, format!("render_v2_failed\n{error}\n"))?;
+            report.v2_render_failures.push(CompareFailure {
+                path: rel_path.clone(),
+                error: error.clone(),
+            });
+            if !args.quiet() {
+                eprintln!("V2 render failed: {}: {}", rel_path.display(), error);
+            }
+            if !args.keep_going() {
+                break;
+            }
+            continue;
+        }
+
+        let comparison = match compare_images(&v1_render, &v2_render) {
+            Ok(comparison) => comparison,
+            Err(err) => {
+                fs::write(&log_path, format!("compare_failed\n{err}\n"))?;
+                report.compare_failures.push(CompareFailure {
+                    path: rel_path.clone(),
+                    error: err.to_string(),
+                });
+                if !args.quiet() {
+                    eprintln!("Compare failed: {}: {}", rel_path.display(), err);
+                }
+                if !args.keep_going() {
+                    break;
+                }
+                continue;
+            }
+        };
+
+        let diff_path = render_artifact_path(&out_dir, Some(&stem), RenderArtifactKind::Diff);
+        if let Err(err) = write_png(&diff_path, &comparison.diff_image) {
+            let error = format!("Failed to write `{}`: {err}", diff_path.display());
+            fs::write(&log_path, format!("compare_failed\n{error}\n"))?;
+            report.compare_failures.push(CompareFailure {
+                path: rel_path.clone(),
+                error: error.clone(),
+            });
+            if !args.quiet() {
+                eprintln!("Compare failed: {}: {}", rel_path.display(), error);
+            }
+            if !args.keep_going() {
+                break;
+            }
+            continue;
+        }
+
+        let compare_log = format!(
+            "{}\nsimilarity={:.6}\ndifference={:.6}\n",
+            if comparison.similarity >= DEFAULT_MIN_SIMILARITY {
+                "success"
+            } else {
+                "compare_failed"
+            },
+            comparison.similarity,
+            comparison.difference
+        );
+        fs::write(&log_path, compare_log)?;
+
+        if comparison.similarity >= DEFAULT_MIN_SIMILARITY {
+            report.succeeded += 1;
+            if !args.quiet() {
+                eprintln!("Compared: {}", rel_path.display());
+            }
+        } else {
+            let error = format!(
+                "similarity {:.6} below threshold {:.2}",
+                comparison.similarity, DEFAULT_MIN_SIMILARITY
+            );
+            report.compare_failures.push(CompareFailure {
+                path: rel_path.clone(),
+                error: error.clone(),
+            });
+            if !args.quiet() {
+                eprintln!("Compare failed: {}: {}", rel_path.display(), error);
+            }
+            if !args.keep_going() {
+                break;
+            }
+        }
+    }
+
+    let report_text = render_compare_report(&report);
+    write_report(&report_text, args.quiet(), args.report_file())?;
+
+    let exit_code = if report.convert_failures.is_empty()
+        && report.v1_render_failures.is_empty()
+        && report.v2_render_failures.is_empty()
+        && report.compare_failures.is_empty()
+    {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    };
+    Ok(exit_code)
+}
+
 fn normalize_input_path(mut path: PathBuf) -> Result<PathBuf, std::io::Error> {
     // Normalize the path.
     if let Some(ext) = path.extension() {
@@ -672,6 +978,12 @@ async fn render_source_with_input_settings(source: &str, input_path: &Path) -> R
         .map_err(|err| format!("Render error for `{}`: {err:#?}", input_path.display()))
 }
 
+async fn render_input_file(input_path: &Path) -> Result<image::DynamicImage, String> {
+    let source =
+        fs::read_to_string(input_path).map_err(|err| format!("Failed to read `{}`: {err}", input_path.display()))?;
+    render_source_with_input_settings(&source, input_path).await
+}
+
 fn executor_settings_for_input(path: &Path) -> ExecutorSettings {
     let project_directory_string = path.parent().map(|p| p.to_string_lossy());
     let project_directory = project_directory_string.map(|p| TypedPath::from(p.as_ref()));
@@ -734,6 +1046,22 @@ struct RenderFailure {
     error: String,
 }
 
+#[derive(Debug, Default)]
+struct CompareReport {
+    processed: usize,
+    succeeded: usize,
+    convert_failures: Vec<CompareFailure>,
+    v1_render_failures: Vec<CompareFailure>,
+    v2_render_failures: Vec<CompareFailure>,
+    compare_failures: Vec<CompareFailure>,
+}
+
+#[derive(Debug)]
+struct CompareFailure {
+    path: PathBuf,
+    error: String,
+}
+
 fn render_convert_report(report: &ConvertReport) -> String {
     let mut output = String::new();
     output.push_str(&format!("Processed: {}\n", report.processed));
@@ -791,6 +1119,46 @@ fn render_render_report(report: &RenderReport) -> String {
     if !report.render_failures.is_empty() {
         output.push_str("\nRender failed\n");
         for failure in &report.render_failures {
+            output.push_str(&format!("- {}: {}\n", failure.path.display(), failure.error));
+        }
+    }
+
+    output
+}
+
+fn render_compare_report(report: &CompareReport) -> String {
+    let mut output = String::new();
+    output.push_str(&format!("Processed: {}\n", report.processed));
+    output.push_str(&format!("Succeeded: {}\n", report.succeeded));
+    output.push_str(&format!("Convert failed: {}\n", report.convert_failures.len()));
+    output.push_str(&format!("V1 render failed: {}\n", report.v1_render_failures.len()));
+    output.push_str(&format!("V2 render failed: {}\n", report.v2_render_failures.len()));
+    output.push_str(&format!("Compare failed: {}\n", report.compare_failures.len()));
+
+    if !report.convert_failures.is_empty() {
+        output.push_str("\nConvert failed\n");
+        for failure in &report.convert_failures {
+            output.push_str(&format!("- {}: {}\n", failure.path.display(), failure.error));
+        }
+    }
+
+    if !report.v1_render_failures.is_empty() {
+        output.push_str("\nV1 render failed\n");
+        for failure in &report.v1_render_failures {
+            output.push_str(&format!("- {}: {}\n", failure.path.display(), failure.error));
+        }
+    }
+
+    if !report.v2_render_failures.is_empty() {
+        output.push_str("\nV2 render failed\n");
+        for failure in &report.v2_render_failures {
+            output.push_str(&format!("- {}: {}\n", failure.path.display(), failure.error));
+        }
+    }
+
+    if !report.compare_failures.is_empty() {
+        output.push_str("\nCompare failed\n");
+        for failure in &report.compare_failures {
             output.push_str(&format!("- {}: {}\n", failure.path.display(), failure.error));
         }
     }
@@ -869,6 +1237,11 @@ fn run_log_file_name(file: &Path) -> Result<PathBuf, std::io::Error> {
 fn render_log_file_name(file: &Path) -> Result<PathBuf, std::io::Error> {
     let stem = file_stem_string(file)?;
     Ok(PathBuf::from(format!("{stem}-render-log.txt")))
+}
+
+fn compare_log_file_name(file: &Path) -> Result<PathBuf, std::io::Error> {
+    let stem = file_stem_string(file)?;
+    Ok(PathBuf::from(format!("{stem}-compare-log.txt")))
 }
 
 fn file_stem_string(file: &Path) -> Result<String, std::io::Error> {
