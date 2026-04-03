@@ -2213,8 +2213,9 @@ function getSketchBlockOperationKey(op: Operation): string | null {
   if (!('nodePath' in op)) {
     return null
   }
+  // TODO: This probably misses the sketch block if it's empty.
   const sketchBlockIndex = op.nodePath.steps.findIndex(
-    (step) => step.type === 'SketchBlock'
+    (step) => step.type === 'SketchBlockBody'
   )
   if (sketchBlockIndex < 0) {
     return null
@@ -2419,7 +2420,7 @@ export function getOperationVariableName(
   // Handle inner sketch block variables
   if (
     op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlock')
+    op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
   ) {
     return undefined
   }
