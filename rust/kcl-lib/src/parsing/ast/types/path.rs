@@ -358,12 +358,12 @@ impl NodePath {
                     label.map(|label| label.contains_range(&range)).unwrap_or(false) || arg.contains_range(&range)
                 }) {
                     path.push(Step::SketchBlockArgs);
+                    // TODO: Should we dig deeper into the arguments?
                     return Some(path);
                 }
                 if node.body.contains_range(&range) {
                     path.push(Step::SketchBlockBody);
                     for (i, item) in node.body.items.iter().enumerate() {
-                        // TODO: Check the type annotation and default value.
                         if item.contains_range(&range) {
                             path.push(Step::SketchBlockBodyItem { index: i });
                             return Self::from_body_item(item, range, path);
