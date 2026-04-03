@@ -24,6 +24,7 @@ use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
+use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
@@ -1092,7 +1093,10 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).or_else(|| case2(arg).map(Self::Edge))
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 
