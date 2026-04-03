@@ -7,16 +7,11 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  findOperationArtifact,
-  findOperationPlaneArtifact,
-  isOffsetPlane,
-} from '@src/lang/queryAst'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
-  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
@@ -27,7 +22,6 @@ import {
   groupOperationTypeStreaks,
   isSketchBlockOperationGroup,
   stdLibMap,
-  type HideOperation,
   onUnhide,
 } from '@src/lib/operations'
 import { stripQuotes } from '@src/lib/utils'
@@ -55,6 +49,7 @@ import { Disclosure } from '@headlessui/react'
 import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
+  resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
@@ -66,7 +61,6 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Artifact } from '@src/lang/wasm'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -939,104 +933,13 @@ const OperationItem = ({
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
-  const sketchBlockArtifact =
-    item.type === 'SketchSolve' && kclManager.artifactGraph
-      ? (() => {
-          const byNodePath = [...kclManager.artifactGraph.values()].find(
-            (
-              artifact
-            ): artifact is Extract<Artifact, { type: 'sketchBlock' }> => {
-              if (artifact.type !== 'sketchBlock') {
-                return false
-              }
-              return (
-                JSON.stringify(artifact.codeRef?.nodePath) ===
-                  JSON.stringify(item.nodePath) &&
-                artifact.codeRef.range.every(
-                  (v, i) => v === item.sourceRange[i]
-                )
-              )
-            }
-          )
-          if (byNodePath) {
-            return byNodePath
-          }
-          const byRange = getArtifactFromRange(
-            item.sourceRange,
-            kclManager.artifactGraph
-          )
-          if (byRange?.type === 'sketchBlock') {
-            return byRange
-          }
-          return undefined
-        })()
-      : undefined
-
-  const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.artifactGraph
-      ? findOperationArtifact(item, kclManager.artifactGraph)
-      : item.type === 'SketchSolve'
-        ? sketchBlockArtifact
-        : undefined
-  const hideOperation =
-    item.type === 'SketchSolve' &&
-    sketchBlockArtifact &&
-    kclManager.operations &&
-    kclManager.artifactGraph
-      ? (() => {
-          const idsToCheck = new Set<string>([sketchBlockArtifact.id])
-          for (const artifact of kclManager.artifactGraph.values()) {
-            if (artifact.type !== 'path') {
-              continue
-            }
-            if (
-              JSON.stringify(artifact.codeRef?.nodePath) ===
-                JSON.stringify(sketchBlockArtifact.codeRef?.nodePath) &&
-              artifact.codeRef.range.every(
-                (v, i) => v === sketchBlockArtifact.codeRef.range[i]
-              )
-            ) {
-              idsToCheck.add(artifact.id)
-            }
-          }
-          for (const id of idsToCheck) {
-            const op = getHideOpByArtifactId(kclManager.operations ?? [], id)
-            if (op) {
-              return op
-            }
-          }
-          return undefined
-        })()
-      : operationArtifact
-        ? getHideOpByArtifactId(
-            kclManager.operations ?? [],
-            operationArtifact.id
-          )
-        : undefined
-  const hideOperationByVariableName =
-    item.type === 'SketchSolve' && variableName && kclManager.operations
-      ? kclManager.operations.find((op): op is HideOperation => {
-          if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
-            return false
-          }
-          if (!op.unlabeledArg) {
-            return false
-          }
-          const [start, end] = op.unlabeledArg.sourceRange
-          const argSource = kclManager.code.slice(
-            toUtf16(start, kclManager.code),
-            toUtf16(end, kclManager.code)
-          )
-          const escaped = variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-          return new RegExp(`\\b${escaped}\\b`).test(argSource)
-        })
-      : undefined
-  const resolvedHideOperation = hideOperationByVariableName ?? hideOperation
-  const unhideTargetArtifact =
-    item.type === 'SketchSolve' ? sketchBlockArtifact : operationArtifact
-  const canToggleVisibility =
-    (item.type === 'StdLibCall' && item.name === 'helix') ||
-    (item.type === 'SketchSolve' && sketchBlockArtifact !== undefined)
+  const visibilityState = resolveFeatureTreeVisibility({
+    item,
+    variableName,
+    operations: kclManager.operations ?? [],
+    artifactGraph: kclManager.artifactGraph,
+    code: kclManager.code,
+  })
 
   return (
     <OperationItemWrapper
@@ -1073,22 +976,22 @@ const OperationItem = ({
       disabled={!enabled}
       size={size}
       visibilityToggle={
-        canToggleVisibility
+        visibilityState.canToggleVisibility
           ? {
-              visible: resolvedHideOperation === undefined,
+              visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
                 selectOperation()
                   .then(() => {
-                    if (resolvedHideOperation === undefined) {
+                    if (visibilityState.hideOperation === undefined) {
                       onHide({
                         ast: kclManager.ast,
                         artifactGraph: kclManager.artifactGraph,
                         modelingActor,
                       })
-                    } else if (unhideTargetArtifact !== undefined) {
+                    } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
-                        hideOperation: resolvedHideOperation,
-                        targetArtifact: unhideTargetArtifact,
+                        hideOperation: visibilityState.hideOperation,
+                        targetArtifact: visibilityState.targetArtifact,
                         kclManager,
                       })
                         .then((result) => {
