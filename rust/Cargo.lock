@@ -2056,6 +2056,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "image-compare"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "176623a137baf75908084aff53578d6336cbd932bffaf12fabe26b343eb13338"
+dependencies = [
+ "image",
+ "itertools 0.14.0",
+ "rayon",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2334,6 +2346,7 @@ dependencies = [
  "http 1.4.0",
  "ignore",
  "image",
+ "image-compare 0.5.0",
  "indexmap 2.13.0",
  "insta",
  "itertools 0.14.0",
@@ -5274,7 +5287,7 @@ checksum = "f40badf08ea9162f080ee79ef4411b1a91919b44a01a3035c004a080dac39494"
 dependencies = [
  "anyhow",
  "image",
- "image-compare",
+ "image-compare 0.4.2",
  "uuid",
 ]
 

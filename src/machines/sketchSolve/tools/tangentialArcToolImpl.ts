@@ -33,10 +33,21 @@ import {
   isArcSegment,
   isLineSegment,
   isPointSegment,
+  pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import {
+  getCoincidentSegmentsForSnapTarget,
+  type SnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 export const TOOL_ID = 'Tangential arc tool'
 export const CREATING_ARC = `xstate.done.actor.0.${TOOL_ID}.Creating arc`
@@ -63,6 +74,7 @@ export type ToolEvents =
       type: 'add point'
       data: Coords2d
       clickNumber?: 2
+      snapTarget?: SnapTarget
     }
   | {
       type: typeof CREATING_ARC | typeof FINALIZING_ARC
@@ -75,6 +87,8 @@ export type ToolEvents =
 export type ToolContext = {
   tangentInfo?: TangentInfo
   arcId?: number
+  arcStartPointId?: number
+  arcEndPointId?: number
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -369,6 +383,10 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       const snapshot = self._parent?.getSnapshot()
       if (!snapshot) {
         console.warn("Couldn't get snapshot")
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
         return
       }
       const mousePosition = [
@@ -379,6 +397,10 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       const sceneGraphDelta =
         snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
       if (!sceneGraphDelta) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
         return
       }
 
@@ -389,10 +411,31 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         sceneInfra: context.sceneInfra,
       })
 
-      self._parent?.send({
-        type: 'update hovered id',
-        data: {
-          hoveredId: tangentTarget?.apiObject.id ?? null,
+      if (!tangentTarget || !isPointSegment(tangentTarget.apiObject)) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      sendHoveredSnappingCandidate(self, {
+        target: {
+          type: 'point',
+          pointId: tangentTarget.apiObject.id,
+        },
+        distance: 0,
+        position: pointToCoords2d(tangentTarget.apiObject),
+      })
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: {
+          target: {
+            type: 'point',
+            pointId: tangentTarget.apiObject.id,
+          },
+          distance: 0,
+          position: tangentTarget.tangentInfo.tangentStart.position,
         },
       })
     },
@@ -421,7 +464,31 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       }
 
       const twoD = args.intersectionPoint?.twoD
-      if (!twoD || isEditInProgress) return
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+      if (isEditInProgress) return
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+        excludedPointIds: [
+          context.arcStartPointId,
+          context.arcEndPointId,
+        ].filter((id): id is number => id !== undefined),
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
 
       const endPoint: Coords2d = [twoD.x, twoD.y]
       const centerPoint = findTangentialArcCenter({
@@ -513,10 +580,25 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
 
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+        excludedPointIds: [
+          context.arcStartPointId,
+          context.arcEndPointId,
+        ].filter((id): id is number => id !== undefined),
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
+
       self.send({
         type: 'add point',
-        data: [twoD.x, twoD.y],
+        data: [x, y],
         clickNumber: 2,
+        snapTarget: snappingCandidate?.target,
       })
     },
     onMouseEnter: () => {},
@@ -524,8 +606,12 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function removePointListener({ context, self }: ToolActionArgs) {
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
+  clearToolSnappingState({
+    self,
+    sceneInfra: context.sceneInfra,
+  })
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
@@ -582,8 +668,15 @@ export function storeCreatedArcResult({
   })
 
   let arcId: number | undefined
+  let arcStartPointId: number | undefined
+  let arcEndPointId: number | undefined
   if (arcObjId !== undefined) {
     arcId = arcObjId
+    const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
+    if (isArcSegment(arcObj)) {
+      arcStartPointId = arcObj.kind.segment.start
+      arcEndPointId = arcObj.kind.segment.end
+    }
   }
 
   const entitiesToTrack: {
@@ -616,6 +709,8 @@ export function storeCreatedArcResult({
 
   return {
     arcId,
+    arcStartPointId,
+    arcEndPointId,
   }
 }
 
@@ -698,6 +793,7 @@ export async function finalizeArcActor({
     | {
         arcId: number
         endPoint: Coords2d
+        endSnapTarget?: SnapTarget
         tangentInfo: TangentInfo
         rustContext: RustContext
         kclManager: KclManager
@@ -719,8 +815,15 @@ export async function finalizeArcActor({
     return { error: input.error }
   }
 
-  const { arcId, endPoint, tangentInfo, rustContext, kclManager, sketchId } =
-    input
+  const {
+    arcId,
+    endPoint,
+    endSnapTarget,
+    tangentInfo,
+    rustContext,
+    kclManager,
+    sketchId,
+  } = input
   const startPoint = tangentInfo.tangentStart.position
   const tangentDirection = tangentInfo.tangentDirection
   const tangentSegmentId = tangentInfo.ownerId
@@ -799,7 +902,30 @@ export async function finalizeArcActor({
       ? arcObj.kind.segment.end
       : arcObj.kind.segment.start
 
-    await rustContext.addConstraint(
+    const freeArcPointId = arcEndpoints.swapped
+      ? arcObj.kind.segment.start
+      : arcObj.kind.segment.end
+
+    const newObjects = [...arcEditResult.sceneGraphDelta.new_objects]
+
+    const freePointCoincidentSegments = getCoincidentSegmentsForSnapTarget(
+      freeArcPointId,
+      endSnapTarget
+    )
+    if (freePointCoincidentSegments !== null) {
+      const snapResult = await rustContext.addConstraint(
+        0,
+        sketchId,
+        {
+          type: 'Coincident',
+          segments: freePointCoincidentSegments,
+        },
+        settings
+      )
+      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+    }
+
+    const tangentCoincidentResult = await rustContext.addConstraint(
       0,
       sketchId,
       {
@@ -808,8 +934,9 @@ export async function finalizeArcActor({
       },
       settings
     )
+    newObjects.push(...tangentCoincidentResult.sceneGraphDelta.new_objects)
 
-    return await rustContext.addConstraint(
+    const tangentResult = await rustContext.addConstraint(
       0,
       sketchId,
       {
@@ -818,6 +945,17 @@ export async function finalizeArcActor({
       },
       settings
     )
+
+    return {
+      kclSource: tangentResult.kclSource,
+      sceneGraphDelta: {
+        ...tangentResult.sceneGraphDelta,
+        new_objects: [
+          ...newObjects,
+          ...tangentResult.sceneGraphDelta.new_objects,
+        ],
+      },
+    }
   } catch (error) {
     console.error('Failed to finalize tangential arc:', error)
     return {

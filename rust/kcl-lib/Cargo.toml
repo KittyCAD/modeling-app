@@ -63,6 +63,7 @@ gltf-json = "1.4.1"
 ignore = "0.4.25"
 http = { workspace = true }
 image = { version = "0.25.10", default-features = false, features = ["png"] }
+image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
 kcl-derive-docs = { version = "0.2.138", path = "../kcl-derive-docs" }
