@@ -135,6 +135,7 @@ pub struct Plane {
 #[serde(rename_all = "camelCase")]
 pub struct Path {
     pub id: ArtifactId,
+    pub sub_type: PathSubType,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
     /// Whether this artifact has been used in a subsequent operation
@@ -159,6 +160,14 @@ pub struct Path {
     /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_path_id: Option<ArtifactId>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum PathSubType {
+    Sketch,
+    Region,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -463,8 +472,7 @@ pub struct Helix {
     pub consumed: bool,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     CompositeSolid(CompositeSolid),
@@ -486,6 +494,65 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
+}
+
+// TS bindings need a dedicated `region` artifact discriminator that aliases the
+// shape of `Path`. Keep runtime `Artifact` unchanged and customize only
+// TypeScript generation.
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts", rename = "Artifact")]
+#[serde(tag = "type", rename_all = "camelCase")]
+enum ArtifactForTs {
+    CompositeSolid(CompositeSolid),
+    Plane(Plane),
+    Path(Path),
+    Region(Path),
+    Segment(Segment),
+    Solid2d(Solid2d),
+    PrimitiveFace(PrimitiveFace),
+    PrimitiveEdge(PrimitiveEdge),
+    PlaneOfFace(PlaneOfFace),
+    StartSketchOnFace(StartSketchOnFace),
+    StartSketchOnPlane(StartSketchOnPlane),
+    SketchBlock(SketchBlock),
+    SketchBlockConstraint(SketchBlockConstraint),
+    Sweep(Sweep),
+    Wall(Wall),
+    Cap(Cap),
+    SweepEdge(SweepEdge),
+    EdgeCut(EdgeCut),
+    EdgeCutEdge(EdgeCutEdge),
+    Helix(Helix),
+}
+
+impl ts_rs::TS for Artifact {
+    type WithoutGenerics = Self;
+    type OptionInnerType = Self;
+
+    fn name(config: &ts_rs::Config) -> String {
+        ArtifactForTs::name(config)
+    }
+
+    fn decl(config: &ts_rs::Config) -> String {
+        ArtifactForTs::decl(config)
+    }
+
+    fn decl_concrete(config: &ts_rs::Config) -> String {
+        ArtifactForTs::decl_concrete(config)
+    }
+
+    fn inline(config: &ts_rs::Config) -> String {
+        ArtifactForTs::inline(config)
+    }
+
+    fn inline_flattened(config: &ts_rs::Config) -> String {
+        ArtifactForTs::inline_flattened(config)
+    }
+
+    fn output_path() -> Option<std::path::PathBuf> {
+        ArtifactForTs::output_path()
+    }
 }
 
 impl Artifact {
@@ -1119,6 +1186,7 @@ fn artifacts_to_update(
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Sketch,
                 plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
@@ -1221,6 +1289,7 @@ fn artifacts_to_update(
             // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Region,
                 plane_id: path.plane_id,
                 seg_ids: Vec::new(),
                 consumed: false,
@@ -1327,6 +1396,7 @@ fn artifacts_to_update(
                     };
                     Path {
                         id: path_id,
+                        sub_type: original_path.sub_type,
                         plane_id: original_path.plane_id,
                         seg_ids: Vec::new(),
                         sweep_id: None,

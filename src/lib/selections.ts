@@ -151,7 +151,7 @@ async function getEngineRegionSelectionFromEntity(
   if (!sketch) return null
 
   return {
-    type: 'region',
+    type: 'engineRegion',
     id: regionEntityId,
     point,
     sketchId: sketch.id,
@@ -209,7 +209,7 @@ export function isEngineRegionSelection(
   return (
     typeof selection === 'object' &&
     'type' in selection &&
-    selection.type === 'region'
+    selection.type === 'engineRegion'
   )
 }
 
@@ -756,6 +756,13 @@ export function getSelectionCountByType(
         return
       }
     }
+    if (
+      graphSelection.artifact.type === 'path' &&
+      graphSelection.artifact.subType === 'region'
+    ) {
+      incrementOrInitializeSelectionType('region')
+      return
+    }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
@@ -1083,7 +1090,8 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'region'],
+  profile: ['solid2d'],
+  region: ['region'],
   edge: [
     'segment',
     'sweepEdge',
