@@ -1,5 +1,9 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
+import {
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
@@ -29,6 +33,10 @@ export const machine = setup({
     events: {} as ToolEvents,
     input: {} as ToolInput,
   },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
+  },
   actions: {
     'add first point listener': addFirstPointListener,
     'add second point listener': addSecondPointListener,
@@ -38,6 +46,9 @@ export const machine = setup({
     'store first point result': assign(storeFirstPointResult),
     'store second point result': assign(storeSecondPointResult),
     'store created arc result': assign(storeCreatedArcResult),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     addDraftPoint: fromPromise(addDraftPointActor),
@@ -95,11 +106,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ready for second point click',
-          actions: ['send result to parent', 'store first point result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for first point click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for second point click',
+            actions: ['send result to parent', 'store first point result'],
+          },
+        ],
+        onError: {
+          target: 'ready for first point click',
+          actions: 'toast sketch solve error',
         },
-        onError: 'ready for first point click',
       },
     },
 
@@ -131,11 +152,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'Creating arc',
-          actions: ['send result to parent', 'store second point result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for second point click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'Creating arc',
+            actions: ['send result to parent', 'store second point result'],
+          },
+        ],
+        onError: {
+          target: 'ready for second point click',
+          actions: 'toast sketch solve error',
         },
-        onError: 'ready for second point click',
       },
     },
 
@@ -154,11 +185,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'Animating arc',
-          actions: ['send result to parent', 'store created arc result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for second point click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'Animating arc',
+            actions: ['send result to parent', 'store created arc result'],
+          },
+        ],
+        onError: {
+          target: 'ready for second point click',
+          actions: 'toast sketch solve error',
         },
-        onError: 'ready for second point click',
       },
     },
 
@@ -210,26 +251,36 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ready for first point click',
-          actions: [
-            'send result to parent',
-            ({ self }) => {
-              const sendData: SketchSolveMachineEvent = {
-                type: 'clear draft entities',
-              }
-              self._parent?.send(sendData)
-            },
-            assign({
-              startPoint: undefined,
-              startPointId: undefined,
-              throughPoint: undefined,
-              throughPointId: undefined,
-              arcId: undefined,
-            }),
-          ],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'Animating arc',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for first point click',
+            actions: [
+              'send result to parent',
+              ({ self }) => {
+                const sendData: SketchSolveMachineEvent = {
+                  type: 'clear draft entities',
+                }
+                self._parent?.send(sendData)
+              },
+              assign({
+                startPoint: undefined,
+                startPointId: undefined,
+                throughPoint: undefined,
+                throughPointId: undefined,
+                arcId: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: 'Animating arc',
+          actions: 'toast sketch solve error',
         },
-        onError: 'Animating arc',
       },
     },
 

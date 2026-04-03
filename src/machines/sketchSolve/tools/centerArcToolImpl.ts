@@ -1,26 +1,27 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type {
   SceneGraphDelta,
-  SourceDelta,
   SegmentCtor,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
-import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
-import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import {
-  shouldSwapStartEnd,
-  calculateArcSwapState,
-} from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { roundOff } from '@src/lib/utils'
 import {
   isArcSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  calculateArcSwapState,
+  shouldSwapStartEnd,
+} from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -275,6 +276,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           })
         } catch (err) {
           console.error('failed to edit arc segment', err)
+          toastSketchSolveError(err)
         } finally {
           isEditInProgress = false
         }

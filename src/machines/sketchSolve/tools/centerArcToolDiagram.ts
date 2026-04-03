@@ -2,24 +2,28 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  type ToolEvents,
-  type ToolContext,
-  type TOOL_ID,
-  type SHOWING_RADIUS_PREVIEW,
-  type ANIMATING_ARC,
-  showRadiusPreviewListener,
-  animateArcEndPointListener,
-  addPointListener,
-  removePointListener,
-  sendResultToParent,
-  createArcActor,
-  finalizeArcActor,
-  storeCreatedArcResult,
-} from '@src/machines/sketchSolve/tools/centerArcToolImpl'
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  type ANIMATING_ARC,
+  type SHOWING_RADIUS_PREVIEW,
+  type TOOL_ID,
+  type ToolContext,
+  type ToolEvents,
+  addPointListener,
+  animateArcEndPointListener,
+  createArcActor,
+  finalizeArcActor,
+  removePointListener,
+  sendResultToParent,
+  showRadiusPreviewListener,
+  storeCreatedArcResult,
+} from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -35,6 +39,10 @@ export const machine = setup({
     events: {} as ToolEvents,
     input: {} as ToolInput,
   },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
+  },
   actions: {
     'show radius preview listener': showRadiusPreviewListener,
     'animate arc end point listener': animateArcEndPointListener,
@@ -42,6 +50,9 @@ export const machine = setup({
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
     'store created arc result': assign(storeCreatedArcResult),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     createArc: fromPromise(createArcActor),
@@ -135,11 +146,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: animatingArc,
-          actions: ['send result to parent', 'store created arc result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: showingRadiusPreview,
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: animatingArc,
+            actions: ['send result to parent', 'store created arc result'],
+          },
+        ],
+        onError: {
+          target: showingRadiusPreview,
+          actions: 'toast sketch solve error',
         },
-        onError: showingRadiusPreview,
       },
     },
 
@@ -208,28 +229,38 @@ export const machine = setup({
             arcIsSwapped: context.arcIsSwapped,
           }
         },
-        onDone: {
-          target: 'ready for center click',
-          actions: [
-            'send result to parent',
-            ({ self }) => {
-              const sendData: SketchSolveMachineEvent = {
-                type: 'clear draft entities',
-              }
-              self._parent?.send(sendData)
-            },
-            assign({
-              // Clear context values for the next arc
-              centerPoint: undefined,
-              centerPointId: undefined,
-              arcId: undefined,
-              arcEndPointId: undefined,
-              arcStartPoint: undefined,
-              arcIsSwapped: undefined,
-            }),
-          ],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: animatingArc,
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for center click',
+            actions: [
+              'send result to parent',
+              ({ self }) => {
+                const sendData: SketchSolveMachineEvent = {
+                  type: 'clear draft entities',
+                }
+                self._parent?.send(sendData)
+              },
+              assign({
+                // Clear context values for the next arc
+                centerPoint: undefined,
+                centerPointId: undefined,
+                arcId: undefined,
+                arcEndPointId: undefined,
+                arcStartPoint: undefined,
+                arcIsSwapped: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: animatingArc,
+          actions: 'toast sketch solve error',
         },
-        onError: animatingArc,
       },
     },
 

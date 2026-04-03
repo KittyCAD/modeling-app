@@ -1,9 +1,14 @@
-import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 import type { KclManager } from '@src/lang/KclManager'
+import {
+  baseUnitToNumericSuffix,
+  distanceBetweenPoint2DExpr,
+} from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import type {
@@ -11,35 +16,6 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import {
-  baseUnitToNumericSuffix,
-  distanceBetweenPoint2DExpr,
-} from '@src/lang/wasm'
-import {
-  type SketchSolveMachineEvent,
-  type SketchSolveContext,
-  type SpawnToolActor,
-  type SolveActionArgs,
-  CHILD_TOOL_DONE_EVENT,
-  equipTools,
-  initializeIntersectionPlane,
-  initializeInitialSceneGraph,
-  clearHoverCallbacks,
-  updateSelectedIds,
-  refreshSelectionStyling,
-  updateSketchOutcome,
-  spawnTool,
-  setDraftEntities,
-  clearDraftEntities,
-  deleteDraftEntities,
-  cleanupSketchSolveGroup,
-  buildSegmentCtorFromObject,
-  refreshSketchSolveScale,
-  sendToActorIfActive,
-  tearDownSketchSolve,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
-import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
   buildFixedConstraintInput,
@@ -49,7 +25,32 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { toggleSketchExtension } from '@src/editor/plugins/sketch'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import {
+  CHILD_TOOL_DONE_EVENT,
+  type SketchSolveContext,
+  type SketchSolveMachineEvent,
+  type SolveActionArgs,
+  type SpawnToolActor,
+  buildSegmentCtorFromObject,
+  cleanupSketchSolveGroup,
+  clearDraftEntities,
+  clearHoverCallbacks,
+  deleteDraftEntities,
+  equipTools,
+  initializeInitialSceneGraph,
+  initializeIntersectionPlane,
+  refreshSelectionStyling,
+  refreshSketchSolveScale,
+  sendToActorIfActive,
+  setDraftEntities,
+  spawnTool,
+  tearDownSketchSolve,
+  updateSelectedIds,
+  updateSketchOutcome,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -231,6 +232,9 @@ export const sketchSolveMachine = setup({
     },
     'clear sketch solve scale refresh': ({ context }) => {
       context.sceneInfra.setOnBeforeRender(null)
+    },
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
     },
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
@@ -759,6 +763,7 @@ export const sketchSolveMachine = setup({
           )
           .catch((err) => {
             console.error('failed to toggle construction geometry', err)
+            toastSketchSolveError(err)
             return null
           })
 
@@ -812,6 +817,7 @@ export const sketchSolveMachine = setup({
           )
           .catch((err) => {
             console.error('failed to delete objects', err)
+            toastSketchSolveError(err)
             return null
           })
 
@@ -877,6 +883,7 @@ export const sketchSolveMachine = setup({
         },
         onError: {
           target: 'exiting',
+          actions: 'toast sketch solve error',
         },
         src: 'moveToolActor',
       },
@@ -961,6 +968,9 @@ export const sketchSolveMachine = setup({
         onError: {
           target: '#Sketch Solve Mode.exiting',
           actions: [
+            ({ event }) => {
+              toastSketchSolveError(event, 'Failed to exit sketch cleanly')
+            },
             ({ event, context, self }) => {
               // Clear draft entities even on error to allow exit to continue
               sendToActorIfActive(self, { type: 'clear draft entities' })
