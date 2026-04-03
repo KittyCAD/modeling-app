@@ -10,7 +10,7 @@ export type Point2D = [x: number, y: number]
 
 export type ToolUiEvent = { type: 'point'; point: Point2D } | { type: 'escape' }
 
-export type ToolYield =
+export type CircleToolYield =
   | { type: 'await-center-point' }
   | { type: 'await-radius-point'; center: Point2D }
   | { type: 'commit-circle'; center: Point2D; radiusPoint: Point2D }
@@ -20,14 +20,14 @@ export type ToolCompletion = {
 }
 
 export type SketchToolInput =
-  | { type: 'scene-click'; point: Point2D }
+  | { type: 'scene-click'; point: Point2D; clickCount?: number }
   | { type: 'scene-move'; point: Point2D }
   | { type: 'escape' }
 
 export type SketchToolStatus = 'active' | 'unequipped'
 
 export type SketchToolSnapshot = {
-  instructionType: ToolYield['type'] | null
+  instructionType: string | null
 }
 
 export interface SketchTool {
@@ -45,6 +45,24 @@ export type CircleCommitResult = {
   sceneGraphDelta: SceneGraphDelta
 }
 
+export type SketchOutcomeMeta = {
+  writeToDisk?: boolean
+}
+
+export type DraftEntities = {
+  segmentIds: Array<number>
+  constraintIds: Array<number>
+}
+
+export type StartLineDraftResult = CircleCommitResult & {
+  draftPointId: number
+  newlyAddedEntities?: DraftEntities
+}
+
+export type CommitLineDraftResult = CircleCommitResult & {
+  lastPointId?: number
+}
+
 export type GeneratorToolContext = {
   sceneInfra: SceneInfra
   rustContext: RustContext
@@ -54,15 +72,37 @@ export type GeneratorToolContext = {
     centerPoint: Point2D
     startPoint: Point2D
   }) => Promise<CircleCommitResult>
-  onSketchOutcome?: (outcome: CircleCommitResult) => void
+  startLineDraft?: (input: {
+    startPoint: Point2D
+  }) => Promise<StartLineDraftResult>
+  previewLineDraft?: (input: {
+    draftPointId: number
+    point: Point2D
+  }) => Promise<CircleCommitResult | void> | CircleCommitResult | void
+  commitLineDraft?: (input: {
+    draftPointId: number
+    point: Point2D
+    isDoubleClick?: boolean
+  }) => Promise<CommitLineDraftResult>
+  startChainedLineDraft?: (input: {
+    lastPointId: number
+    draftPoint: Point2D
+  }) => Promise<StartLineDraftResult>
+  onSketchOutcome?: (
+    outcome: CircleCommitResult,
+    meta?: SketchOutcomeMeta
+  ) => void
   onRadiusPreview?: (center: Point2D, radiusPoint: Point2D) => void
   clearRadiusPreview?: () => void
+  setDraftEntities?: (entities: DraftEntities) => void
+  clearDraftEntities?: () => void
+  deleteDraftEntities?: () => void
 }
 
 type ToolFactory = (context: GeneratorToolContext) => SketchTool
 
 type SceneClickArgs = {
-  mouseEvent?: { which?: number }
+  mouseEvent?: { which?: number; detail?: number }
   intersectionPoint?: { twoD?: { x: number; y: number } }
 }
 
@@ -84,7 +124,7 @@ const UNEQUIP_TOOL = Symbol('unequip-tool')
 const CANCEL_CURRENT_CIRCLE = Symbol('cancel-current-circle')
 
 function* waitForCenterPoint(): Generator<
-  ToolYield,
+  CircleToolYield,
   Point2D | typeof UNEQUIP_TOOL,
   ToolUiEvent
 > {
@@ -94,9 +134,98 @@ function* waitForCenterPoint(): Generator<
 
 function* waitForRadiusPoint(
   center: Point2D
-): Generator<ToolYield, Point2D | typeof CANCEL_CURRENT_CIRCLE, ToolUiEvent> {
+): Generator<
+  CircleToolYield,
+  Point2D | typeof CANCEL_CURRENT_CIRCLE,
+  ToolUiEvent
+> {
   const event = yield { type: 'await-radius-point', center }
   return event.type === 'escape' ? CANCEL_CURRENT_CIRCLE : event.point
+}
+
+type LineToolResumeEvent =
+  | { type: 'point'; point: Point2D; clickCount?: number }
+  | { type: 'move'; point: Point2D }
+  | { type: 'escape' }
+
+type LineToolYield =
+  | { type: 'await-line-start' }
+  | { type: 'start-first-draft-line'; startPoint: Point2D }
+  | { type: 'preview-draft-line'; draftPointId: number }
+  | {
+      type: 'commit-draft-line'
+      draftPointId: number
+      point: Point2D
+      isDoubleClick?: boolean
+    }
+  | { type: 'await-next-draft-line-start'; lastPointId: number }
+  | {
+      type: 'start-chained-draft-line'
+      lastPointId: number
+      draftPoint: Point2D
+    }
+  | { type: 'delete-current-draft' }
+
+const STOP_LINE_CHAIN = Symbol('stop-line-chain')
+const DELETE_CURRENT_LINE_DRAFT = Symbol('delete-current-line-draft')
+
+function* waitForLineStart(): Generator<
+  LineToolYield,
+  Point2D | typeof UNEQUIP_TOOL,
+  LineToolResumeEvent
+> {
+  while (true) {
+    const event = yield { type: 'await-line-start' }
+    if (event.type === 'escape') {
+      return UNEQUIP_TOOL
+    }
+    if (event.type === 'point') {
+      return event.point
+    }
+  }
+}
+
+function* previewDraftLine(
+  draftPointId: number
+): Generator<
+  LineToolYield,
+  | { point: Point2D; isDoubleClick?: boolean }
+  | typeof DELETE_CURRENT_LINE_DRAFT,
+  LineToolResumeEvent
+> {
+  while (true) {
+    const event = yield { type: 'preview-draft-line', draftPointId }
+    if (event.type === 'escape') {
+      return DELETE_CURRENT_LINE_DRAFT
+    }
+    if (event.type === 'point') {
+      return {
+        point: event.point,
+        isDoubleClick: event.clickCount === 2,
+      }
+    }
+  }
+}
+
+function* waitForNextDraftLineStart(
+  lastPointId: number
+): Generator<
+  LineToolYield,
+  Point2D | typeof STOP_LINE_CHAIN,
+  LineToolResumeEvent
+> {
+  while (true) {
+    const event = yield { type: 'await-next-draft-line-start', lastPointId }
+    if (event.type === 'escape') {
+      return STOP_LINE_CHAIN
+    }
+    if (event.type === 'move') {
+      return event.point
+    }
+    if (event.type === 'point' && event.clickCount === 2) {
+      return STOP_LINE_CHAIN
+    }
+  }
 }
 
 abstract class GeneratorSketchTool<
@@ -145,7 +274,7 @@ abstract class GeneratorSketchTool<
 
   getSnapshot(): SketchToolSnapshot {
     return {
-      instructionType: (this.instruction?.type as ToolYield['type']) ?? null,
+      instructionType: this.instruction?.type ?? null,
     }
   }
 
@@ -216,7 +345,7 @@ abstract class GeneratorSketchTool<
 }
 
 export class CircleTool extends GeneratorSketchTool<
-  ToolYield,
+  CircleToolYield,
   ToolUiEvent,
   ToolCompletion
 > {
@@ -237,14 +366,14 @@ export class CircleTool extends GeneratorSketchTool<
   }
 
   protected createGenerator(): Generator<
-    ToolYield,
+    CircleToolYield,
     ToolCompletion,
     ToolUiEvent
   > {
     return this.flow()
   }
 
-  protected async applyInstruction(instruction: ToolYield) {
+  protected async applyInstruction(instruction: CircleToolYield) {
     switch (instruction.type) {
       case 'await-center-point':
         this.context.clearRadiusPreview?.()
@@ -302,7 +431,7 @@ export class CircleTool extends GeneratorSketchTool<
     this.context.clearRadiusPreview?.()
   }
 
-  private *flow(): Generator<ToolYield, ToolCompletion, ToolUiEvent> {
+  private *flow(): Generator<CircleToolYield, ToolCompletion, ToolUiEvent> {
     while (true) {
       const center = yield* waitForCenterPoint()
       if (center === UNEQUIP_TOOL) {
@@ -320,6 +449,263 @@ export class CircleTool extends GeneratorSketchTool<
         radiusPoint,
       }
     }
+  }
+}
+
+export class LineTool extends GeneratorSketchTool<
+  LineToolYield,
+  LineToolResumeEvent,
+  ToolCompletion
+> {
+  readonly name = 'lineTool'
+  private nextDraftPointId?: number
+  private nextLastPointId?: number
+
+  async advance(input: SketchToolInput): Promise<SketchToolStatus> {
+    switch (input.type) {
+      case 'scene-click':
+        return this.dispatchResume({
+          type: 'point',
+          point: input.point,
+          clickCount: input.clickCount,
+        })
+      case 'scene-move':
+        if (this.instruction?.type === 'preview-draft-line') {
+          const previewResult = await this.context.previewLineDraft?.({
+            draftPointId: this.instruction.draftPointId,
+            point: input.point,
+          })
+          if (previewResult) {
+            this.context.onSketchOutcome?.(previewResult, {
+              writeToDisk: false,
+            })
+          }
+          return this.isEquipped() ? 'active' : 'unequipped'
+        }
+        if (this.instruction?.type === 'await-next-draft-line-start') {
+          return this.dispatchResume({ type: 'move', point: input.point })
+        }
+        return this.isEquipped() ? 'active' : 'unequipped'
+      case 'escape':
+        return this.dispatchResume({ type: 'escape' })
+    }
+  }
+
+  protected createGenerator(): Generator<
+    LineToolYield,
+    ToolCompletion,
+    LineToolResumeEvent
+  > {
+    return this.flow()
+  }
+
+  protected async applyInstruction(instruction: LineToolYield) {
+    switch (instruction.type) {
+      case 'await-line-start':
+        this.setSceneCallbacks({
+          onClick: (args) => {
+            const point = readPoint(args)
+            if (!point) {
+              return
+            }
+            void this.advance({
+              type: 'scene-click',
+              point,
+              clickCount: args?.mouseEvent?.detail,
+            })
+          },
+          onMove: () => {},
+        })
+        return
+
+      case 'start-first-draft-line': {
+        const startLineDraft = this.context.startLineDraft
+        if (!startLineDraft) {
+          throw new Error('LineTool requires startLineDraft')
+        }
+        const result = await startLineDraft({
+          startPoint: instruction.startPoint,
+        })
+        this.context.onSketchOutcome?.(result)
+        if (result.newlyAddedEntities) {
+          this.context.setDraftEntities?.(result.newlyAddedEntities)
+        }
+        this.nextDraftPointId = result.draftPointId
+        await this.continueGenerator()
+        return
+      }
+
+      case 'preview-draft-line':
+        this.setSceneCallbacks({
+          onClick: (args) => {
+            const point = readPoint(args)
+            if (!point) {
+              return
+            }
+            void this.advance({
+              type: 'scene-click',
+              point,
+              clickCount: args?.mouseEvent?.detail,
+            })
+          },
+          onMove: (args) => {
+            const point = readPoint(args)
+            if (!point) {
+              return
+            }
+            void this.advance({
+              type: 'scene-move',
+              point,
+            })
+          },
+        })
+        return
+
+      case 'commit-draft-line': {
+        const commitLineDraft = this.context.commitLineDraft
+        if (!commitLineDraft) {
+          throw new Error('LineTool requires commitLineDraft')
+        }
+        const result = await commitLineDraft({
+          draftPointId: instruction.draftPointId,
+          point: instruction.point,
+          isDoubleClick: instruction.isDoubleClick,
+        })
+        this.context.onSketchOutcome?.(result, { writeToDisk: true })
+        this.context.clearDraftEntities?.()
+        this.nextLastPointId = result.lastPointId
+        await this.continueGenerator()
+        return
+      }
+
+      case 'await-next-draft-line-start':
+        this.setSceneCallbacks({
+          onClick: (args) => {
+            const point = readPoint(args)
+            if (!point) {
+              return
+            }
+            void this.advance({
+              type: 'scene-click',
+              point,
+              clickCount: args?.mouseEvent?.detail,
+            })
+          },
+          onMove: (args) => {
+            const point = readPoint(args)
+            if (!point) {
+              return
+            }
+            void this.advance({
+              type: 'scene-move',
+              point,
+            })
+          },
+        })
+        return
+
+      case 'start-chained-draft-line': {
+        const startChainedLineDraft = this.context.startChainedLineDraft
+        if (!startChainedLineDraft) {
+          throw new Error('LineTool requires startChainedLineDraft')
+        }
+        const result = await startChainedLineDraft({
+          lastPointId: instruction.lastPointId,
+          draftPoint: instruction.draftPoint,
+        })
+        this.context.onSketchOutcome?.(result)
+        if (result.newlyAddedEntities) {
+          this.context.setDraftEntities?.(result.newlyAddedEntities)
+        }
+        this.nextDraftPointId = result.draftPointId
+        await this.continueGenerator()
+        return
+      }
+
+      case 'delete-current-draft':
+        this.context.deleteDraftEntities?.()
+        this.context.clearDraftEntities?.()
+        await this.continueGenerator()
+        return
+    }
+  }
+
+  protected override onTeardown() {
+    this.context.clearDraftEntities?.()
+  }
+
+  override async unequip() {
+    if (this.instruction?.type === 'preview-draft-line') {
+      this.context.deleteDraftEntities?.()
+    }
+    this.context.clearDraftEntities?.()
+    await super.unequip()
+  }
+
+  private *flow(): Generator<
+    LineToolYield,
+    ToolCompletion,
+    LineToolResumeEvent
+  > {
+    while (true) {
+      const startPoint = yield* waitForLineStart()
+      if (startPoint === UNEQUIP_TOOL) {
+        return { reason: 'unequipped' }
+      }
+
+      yield {
+        type: 'start-first-draft-line',
+        startPoint,
+      }
+
+      while (true) {
+        const draftPointId = this.consumeNextDraftPointId()
+
+        const draftOutcome = yield* previewDraftLine(draftPointId)
+        if (draftOutcome === DELETE_CURRENT_LINE_DRAFT) {
+          yield { type: 'delete-current-draft' }
+          break
+        }
+
+        yield {
+          type: 'commit-draft-line',
+          draftPointId,
+          point: draftOutcome.point,
+          isDoubleClick: draftOutcome.isDoubleClick,
+        }
+
+        const lastPointId = this.consumeNextLastPointId()
+        if (lastPointId === undefined) {
+          break
+        }
+
+        const nextDraftStart = yield* waitForNextDraftLineStart(lastPointId)
+        if (nextDraftStart === STOP_LINE_CHAIN) {
+          break
+        }
+
+        yield {
+          type: 'start-chained-draft-line',
+          lastPointId,
+          draftPoint: nextDraftStart,
+        }
+      }
+    }
+  }
+
+  private consumeNextDraftPointId() {
+    if (this.nextDraftPointId === undefined) {
+      throw new Error('LineTool expected nextDraftPointId')
+    }
+    const draftPointId = this.nextDraftPointId
+    this.nextDraftPointId = undefined
+    return draftPointId
+  }
+
+  private consumeNextLastPointId() {
+    const lastPointId = this.nextLastPointId
+    this.nextLastPointId = undefined
+    return lastPointId
   }
 }
 
@@ -373,7 +759,7 @@ export class MockSketchMode {
     }
   }
 
-  async simulateSceneClick(point: Point2D) {
+  async simulateSceneClick(point: Point2D, options?: { clickCount?: number }) {
     if (!this.activeTool) {
       return
     }
@@ -381,17 +767,21 @@ export class MockSketchMode {
     const status = await this.activeTool.advance({
       type: 'scene-click',
       point,
+      clickCount: options?.clickCount,
     })
     if (status === 'unequipped') {
       this.activeTool = undefined
     }
   }
 
-  simulateSceneMove(point: Point2D) {
-    void this.activeTool?.advance({
+  async simulateSceneMove(point: Point2D) {
+    const status = await this.activeTool?.advance({
       type: 'scene-move',
       point,
     })
+    if (status === 'unequipped') {
+      this.activeTool = undefined
+    }
   }
 }
 
