@@ -418,8 +418,7 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  // TODO: reenable once we can hide sketches
-  test.skip(`Shift-click to select and deselect edges and faces`, async ({
+  test(`Shift-click to select and deselect edges and faces`, async ({
     context,
     cmdBar,
     toolbar,
@@ -439,6 +438,7 @@ sketch002 = sketch(on = XY) {
   line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
   coincident([line3.end, line4.start])
 }
+hide(sketch002)
 region001 = region(segments = [sketch002.line1, sketch002.line2])
 sketch001 = extrude(region001, length = -12)`
 
@@ -1192,8 +1192,7 @@ region001 = region(segments = [sketch001.circle1])`
     })
   })
 
-  // TODO: reenable once we can hide sketches
-  test.skip(`Fillet point-and-click`, async ({
+  test(`Fillet point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1214,6 +1213,7 @@ sketch001 = sketch(on = XY) {
   line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
   coincident([line3.end, line4.start])
 }
+hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line1,capEnd001]), radius=5)`
