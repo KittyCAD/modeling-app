@@ -18,7 +18,11 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  updateSelectedIds,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function createTestMouseEvent(detail = 1): MouseEvent {
   return new MouseEvent('click', {
@@ -93,6 +97,7 @@ function createDragSnappingDeps() {
 function setUpMoveToolCallbacks({
   apiObjects = [],
   hoveredId = null,
+  selectedIds = [],
   isAreaSelectActive = false,
   sketchId = 0,
   showNonVisualConstraints = false,
@@ -101,6 +106,7 @@ function setUpMoveToolCallbacks({
 }: {
   apiObjects?: ApiObject[]
   hoveredId?: number | null
+  selectedIds?: Array<SketchSolveSelectionId>
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
@@ -150,7 +156,7 @@ function setUpMoveToolCallbacks({
       hoveredId,
       constraintHoverPopups,
       showNonVisualConstraints,
-      selectedIds: [],
+      selectedIds,
       duringAreaSelectIds: [],
       sketchId,
       draftEntities: undefined,
@@ -171,12 +177,13 @@ function setUpMoveToolCallbacks({
         }
       }
       if (event.type === 'update selected ids') {
-        if (event.data.selectedIds !== undefined) {
-          snapshot.context.selectedIds = event.data.selectedIds
-        }
-        if (event.data.duringAreaSelectIds !== undefined) {
-          snapshot.context.duringAreaSelectIds = event.data.duringAreaSelectIds
-        }
+        Object.assign(
+          snapshot.context,
+          updateSelectedIds({
+            context: snapshot.context,
+            event,
+          } as any)
+        )
       }
     }),
   }
