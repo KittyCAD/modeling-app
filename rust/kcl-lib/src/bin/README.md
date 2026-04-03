@@ -14,8 +14,8 @@ Current status:
 
 - `convert` is implemented
 - `run` is implemented
-- `render` is not implemented yet
-- `compare` is not implemented yet
+- `render` is implemented
+- `compare` is implemented
 
 ## Build
 
@@ -36,8 +36,8 @@ cargo run -p kcl-lib --bin transpile -- --help
 ```text
 transpile convert <input> [OPTIONS]
 transpile run <input> -o <DIR> [OPTIONS]
-transpile render <input> [OPTIONS]
-transpile compare <input> [OPTIONS]
+transpile render <input> -o <DIR> [OPTIONS]
+transpile compare <input> -o <DIR> [OPTIONS]
 ```
 
 There is no legacy bare `transpile <input>` mode anymore.
@@ -205,6 +205,142 @@ Example recursive output files:
 /tmp/transpile-run-recursive/box/main-run-log.txt
 /tmp/transpile-run-recursive/cpu-cooler/fan.kcl
 /tmp/transpile-run-recursive/cpu-cooler/fan-run-log.txt
+```
+
+## `render`
+
+`render` transpiles to Sketch V2, persists the transpiled KCL, then renders a PNG from the transpiled result.
+
+Single-file behavior:
+
+- requires `-o, --out-dir`
+- writes the transpiled KCL into `--out-dir`
+- writes `rendered_model.png`
+- writes `render-log.txt`
+
+`render-log.txt` contains either:
+
+- `success`
+- or a failure marker plus the error text
+
+Recursive behavior:
+
+- requires `-r, --recursive`
+- requires `-o, --out-dir`
+- mirrors transpiled KCL under `--out-dir`
+- writes one PNG per processed file using `<stem>-rendered_model.png`
+- writes one log per processed file using `<stem>-render-log.txt`
+- writes grouped `Convert failed` and `Render failed` summaries
+- optionally writes the same report to `--report-file`
+
+Single-file example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  render public/kcl-samples/cone \
+  -o /tmp/transpile-render-one
+```
+
+Example output files:
+
+```text
+/tmp/transpile-render-one/main.kcl
+/tmp/transpile-render-one/rendered_model.png
+/tmp/transpile-render-one/render-log.txt
+```
+
+Recursive example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  render /tmp/transpile-input \
+  -r \
+  -k \
+  -o /tmp/transpile-render-recursive \
+  --report-file /tmp/transpile-render-recursive/report.txt
+```
+
+Example recursive output files:
+
+```text
+/tmp/transpile-render-recursive/box/main.kcl
+/tmp/transpile-render-recursive/box/main-rendered_model.png
+/tmp/transpile-render-recursive/box/main-render-log.txt
+/tmp/transpile-render-recursive/cpu-cooler/fan.kcl
+/tmp/transpile-render-recursive/cpu-cooler/fan-rendered_model.png
+/tmp/transpile-render-recursive/cpu-cooler/fan-render-log.txt
+```
+
+## `compare`
+
+`compare` renders both the original Sketch V1 input and the transpiled Sketch V2 output, compares the two images, and writes a diff image.
+
+Single-file behavior:
+
+- requires `-o, --out-dir`
+- writes the transpiled KCL into `--out-dir`
+- writes `v1-rendered_model.png`
+- writes `v2-rendered_model.png`
+- writes `diff.png`
+- writes `compare-log.txt`
+
+`compare-log.txt` contains:
+
+- `success` or `compare_failed`
+- `similarity=<score>`
+- `difference=<score>`
+
+The compare threshold currently passes when similarity is at least `0.99`.
+
+Recursive behavior:
+
+- requires `-r, --recursive`
+- requires `-o, --out-dir`
+- mirrors transpiled KCL under `--out-dir`
+- writes one V1 render per processed file using `<stem>-v1-rendered_model.png`
+- writes one V2 render per processed file using `<stem>-v2-rendered_model.png`
+- writes one diff image per processed file using `<stem>-diff.png`
+- writes one log per processed file using `<stem>-compare-log.txt`
+- writes grouped `Convert failed`, `V1 render failed`, `V2 render failed`, and `Compare failed` summaries
+- optionally writes the same report to `--report-file`
+
+Single-file example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  compare public/kcl-samples/cone \
+  -o /tmp/transpile-compare-one
+```
+
+Example output files:
+
+```text
+/tmp/transpile-compare-one/main.kcl
+/tmp/transpile-compare-one/v1-rendered_model.png
+/tmp/transpile-compare-one/v2-rendered_model.png
+/tmp/transpile-compare-one/diff.png
+/tmp/transpile-compare-one/compare-log.txt
+```
+
+Recursive example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  compare /tmp/transpile-input \
+  -r \
+  -k \
+  -o /tmp/transpile-compare-recursive \
+  --report-file /tmp/transpile-compare-recursive/report.txt
+```
+
+Example recursive output files:
+
+```text
+/tmp/transpile-compare-recursive/box/main.kcl
+/tmp/transpile-compare-recursive/box/main-v1-rendered_model.png
+/tmp/transpile-compare-recursive/box/main-v2-rendered_model.png
+/tmp/transpile-compare-recursive/box/main-diff.png
+/tmp/transpile-compare-recursive/box/main-compare-log.txt
 ```
 
 ## Ignore Files

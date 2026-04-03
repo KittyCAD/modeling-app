@@ -23,7 +23,7 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.13.0"
-ezpz = "0.2.18"
+ezpz = "0.2.22"
 kittycad = { version = "0.4.8", default-features = false, features = [
   "js",
   "requests",
