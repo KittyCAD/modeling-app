@@ -24,7 +24,6 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
@@ -50,10 +49,15 @@ import {
   getFacesExprsFromSelection,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
-import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import {
+  getPrimitiveEdgeSelections,
+  groupSelectionsByBodyAndAddTags,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+} from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 import { isEngineRegionSelection } from '@src/lib/selections'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addExtrude({
   ast,
@@ -601,7 +605,7 @@ export function addRevolve({
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(
+  const getAxisResult = getAxisExpression(
     axis,
     edge,
     modifiedAst,
@@ -685,29 +689,33 @@ export function addRevolve({
 
 // Utilities
 
-export function getAxisExpressionAndIndex(
+export function getAxisExpression(
   axis: string | undefined,
   edge: Selections | undefined,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  nodeToEdit?: PathToNode
 ) {
-  if (edge) {
-    if (artifactGraph) {
-      const segmentAxisExpr = getVariableExprsFromSelection(
-        edge,
-        artifactGraph,
-        ast,
-        wasmInstance
-      )
-      if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
-        const directAxisExpr = segmentAxisExpr.exprs[0]
-        if (directAxisExpr.type === 'MemberExpression') {
-          return { generatedAxis: directAxisExpr }
-        }
+  let modifiedAst = structuredClone(ast)
+  if (axis) {
+    return { generatedAxis: createLocalName(axis), modifiedAst }
+  } else if (edge && artifactGraph) {
+    // Direct segment case (sketch solve)
+    const segmentAxisExpr = getVariableExprsFromSelection(
+      edge,
+      artifactGraph,
+      ast,
+      wasmInstance
+    )
+    if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
+      const directAxisExpr = segmentAxisExpr.exprs[0]
+      if (directAxisExpr.type === 'MemberExpression') {
+        return { generatedAxis: directAxisExpr, modifiedAst }
       }
     }
 
+    // Direct segment case (old sketch)
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range
@@ -718,47 +726,43 @@ export function getAxisExpressionAndIndex(
       wasmInstance
     )
 
-    // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) {
-      return tagResult
+    if (!err(tagResult)) {
+      return { generatedAxis: createLocalName(tagResult.tag) }
     }
 
-    const { tag } = tagResult
-    const axisSelection = edge?.graphSelections[0]?.artifact
-    if (!axisSelection) {
-      return new Error('Generated axis selection is missing.')
+    // Sweep edge case (both sketch v1 and sketch solve)
+    const bodyData = groupSelectionsByBodyAndAddTags(
+      edge,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(bodyData)) return bodyData
+    let bodies = bodyData.bodies
+    modifiedAst = bodyData.modifiedAst
+
+    const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
+    if (primitiveEdgeSelections.length > 0) {
+      const primitiveEdgeResult =
+        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+          primitiveEdgeSelections,
+          bodies,
+          modifiedAst,
+          artifactGraph,
+          wasmInstance,
+        })
+      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+      bodies = primitiveEdgeResult.bodies
     }
-
-    const generatedAxis = getEdgeTagCall(tag, axisSelection)
-    if (
-      axisSelection.type === 'segment' ||
-      axisSelection.type === 'path' ||
-      axisSelection.type === 'edgeCut'
-    ) {
-      const axisDeclaration = axisSelection.codeRef.pathToNode
-      if (!axisDeclaration) {
-        return new Error('Expected to find axis declaration')
-      }
-
-      const axisIndexInPathToNode =
-        axisDeclaration.findIndex((a) => a[0] === 'body') + 1
-      const value = axisDeclaration[axisIndexInPathToNode][0]
-      if (typeof value !== 'number') {
-        return new Error('expected axis index value to be a number')
-      }
-
-      const axisIndexIfAxis = value
-      return { generatedAxis, axisIndexIfAxis }
-    } else {
-      return { generatedAxis }
+    if (bodies.size !== 1) {
+      return new Error('No edges found in the selection')
     }
+    const expr = bodies.values().toArray()[0].tagsExpr
+    return { generatedAxis: expr, modifiedAst }
+  } else {
+    return new Error('Helix must have either an axis or a cylinder')
   }
-
-  if (axis) {
-    return { generatedAxis: createLocalName(axis) }
-  }
-
-  return new Error('Axis or edge selection is missing.')
 }
 
 // Sort of an inverse from getAxisExpressionAndIndex

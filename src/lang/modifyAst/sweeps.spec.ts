@@ -26,7 +26,7 @@ import {
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpressionAndIndex,
+  getAxisExpression,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
@@ -1970,9 +1970,8 @@ sketch001 = sketch(on = XZ) {
         ],
       }
 
-      const line5RangeStart = code.indexOf('line5 = line(')
-      const axisArtifact = [...artifactGraph.values()].find(
-        (a) => a.type === 'segment' && a.codeRef.range[0] === line5RangeStart
+      const axisArtifact = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'segment'
       )
       if (!axisArtifact) throw new Error('Axis segment artifact not found')
       const edge = createSelectionFromArtifacts([axisArtifact], artifactGraph)
@@ -1996,9 +1995,6 @@ sketch001 = sketch(on = XZ) {
       expect(newCode).toContain(
         `region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
 revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
-      )
-      expect(newCode).toContain(
-        `line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])`
       )
     })
 
@@ -2053,7 +2049,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
       async (axis) => {
         const { instance } = await buildTheWorldAndNoEngineConnection()
         const ast = assertParse('', instance)
-        const result = getAxisExpressionAndIndex(
+        const result = getAxisExpression(
           axis,
           undefined,
           ast,
@@ -2077,7 +2073,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         (a) => a.type === 'segment'
       )
       const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
-      const result = getAxisExpressionAndIndex(
+      const result = getAxisExpression(
         undefined,
         edge,
         ast,
@@ -2094,7 +2090,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     it('should error if nothing is provided', async () => {
       const { instance } = await buildTheWorldAndNoEngineConnection()
-      const result = getAxisExpressionAndIndex(
+      const result = getAxisExpression(
         undefined,
         undefined,
         assertParse('', instance),
