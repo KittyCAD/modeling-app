@@ -37,4 +37,3 @@ sketch001 = sketch(on = customPlane) {
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
 lugNut = revolve(region001, axis = Y)
   |> appearance(color = "#ededed", metalness = 70, roughness = 30)
-

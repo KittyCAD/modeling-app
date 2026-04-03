@@ -124,4 +124,3 @@ sketch005 = sketch(on = startSketchOn(bracketProfile, face = holeFace)) {
 }
 region002 = region(segments = [sketch005.circle1])
 centeredHole = extrude(region002, length = -thickness)
-

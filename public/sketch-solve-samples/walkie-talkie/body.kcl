@@ -89,4 +89,3 @@ speakerBox = sketch(on = startSketchOn(extrude002, face = START)) {
 region004 = region(segments = [speakerBox.line1, speakerBox.line2])
 extrude(region004, length = -.5)
   |> appearance(color = "#277bb0")
-

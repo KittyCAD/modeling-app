@@ -161,4 +161,3 @@ ridgeBoard = twoByFourYRotated(
        ridgeBoard
      ]
   |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
-

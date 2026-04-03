@@ -158,4 +158,3 @@ helicalGear(
   helixAngle = 55deg,
   gearHeight = supportBearingWidth,
 )
-

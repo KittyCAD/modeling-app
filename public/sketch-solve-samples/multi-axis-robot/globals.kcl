@@ -45,4 +45,3 @@ export plane003 = {
   xAxis = [sin(axisJ1): in, cos(axisJ1): in, 0.0],
   yAxis = [0.0, 0.0, 1.0]
 }
-

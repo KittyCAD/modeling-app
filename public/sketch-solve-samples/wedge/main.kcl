@@ -26,4 +26,3 @@ profile = sketch(on = sketch) {
 region001 = region(segments = [profile.line1, profile.line2])
 // extrude the profile to create the wedge
 wedge = extrude(region001, length = width)
-

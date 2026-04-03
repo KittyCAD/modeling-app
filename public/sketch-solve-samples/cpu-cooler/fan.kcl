@@ -71,4 +71,3 @@ bladeLoft = loft(crossSections)
 
 [fanCenter, bladeLoft]
   |> appearance(color = "#110803")
-

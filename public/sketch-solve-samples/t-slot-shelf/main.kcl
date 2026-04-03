@@ -85,4 +85,3 @@ railTslot(railHeight, length = -frameWidth + 2 * railHeight)
   |> rotate(yaw = 90)
   |> translate(z = shelfHeight)
   |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
-

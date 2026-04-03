@@ -70,4 +70,3 @@ boreCircle = sketch(on = boreSketch) {
 }
 region004 = region(segments = [boreCircle.circle1])
 boreCut = extrude(region004, length = -(baseThickness + hubHeight))
-

@@ -58,4 +58,3 @@ sketch004 = sketch(on = startSketchOn(topExtrusion, face = END)) {
 }
 region004 = region(segments = [sketch004.circle1])
 pipeHole = extrude(region004, length = -(topTotalThickness + baseThickness + bottomThickness))
-
