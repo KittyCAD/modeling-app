@@ -68,6 +68,73 @@ describe('circleToolImpl', () => {
         sceneGraphDelta,
       })
     })
+
+    it('adds coincident constraints for snapped center and radius points', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
+      const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
+      const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
+      const addSegmentResult = {
+        kclSource: { text: 'circle' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, circleObj],
+          [1, 2, 3]
+        ),
+      }
+      const centerSnapResult = {
+        kclSource: { text: 'center-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [10]),
+      }
+      const startSnapResult = {
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [11]),
+      }
+      ;(rustContext.addSegment as any).mockResolvedValue(addSegmentResult)
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce(centerSnapResult)
+        .mockResolvedValueOnce(startSnapResult)
+
+      const result = await createCircleActor({
+        input: {
+          centerPoint: [10, 20],
+          startPoint: [30, 40],
+          centerSnapTarget: { type: 'origin' },
+          startSnapTarget: { type: 'point', pointId: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [1, 'ORIGIN'],
+        },
+        expect.anything()
+      )
+      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+        2,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 99],
+        },
+        expect.anything()
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: {
+          ...startSnapResult.sceneGraphDelta,
+          new_objects: [1, 2, 3, 10, 11],
+        },
+      })
+    })
   })
 
   describe('sendResultToParent', () => {
