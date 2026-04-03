@@ -4,7 +4,6 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
@@ -22,17 +21,9 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import {
-  allowSnapping,
-  getSnappingCandidates,
-  isPointSnapTarget,
-} from '@src/machines/sketchSolve/snapping'
-import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { Group } from 'three'
 import {
   type ActionArgs,
   type AssignArgs,
