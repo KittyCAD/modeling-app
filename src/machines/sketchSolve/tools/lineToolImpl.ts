@@ -1,23 +1,15 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type {
   ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
-import {
-  type ActionArgs,
-  type AssignArgs,
-  type ProvidedActor,
-  type DoneActorEvent,
-} from 'xstate'
-import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { roundOff } from '@src/lib/utils'
 import {
   clearToolSnappingState,
   getBestSnappingCandidate,
@@ -29,6 +21,15 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import {
+  type ActionArgs,
+  type AssignArgs,
+  type DoneActorEvent,
+  type ProvidedActor,
+} from 'xstate'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -177,6 +178,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit segment', err)
+          toastSketchSolveError(err)
         } finally {
           isEditInProgress = false
         }

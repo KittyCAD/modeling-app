@@ -163,6 +163,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   state: SegmentRenderState
+  hasSolveErrors: boolean
   freedom: Freedom | null
 }
 
@@ -354,6 +355,7 @@ class PointSegment implements SketchEntityUtils {
       isSelected: state.selected,
       isHovered: state.hovered,
       isDraft: state.draft,
+      hasSolveErrors: args.hasSolveErrors,
       freedom,
       theme,
     })
@@ -365,12 +367,14 @@ class PointSegment implements SketchEntityUtils {
       isSelected,
       isHovered,
       isDraft,
+      hasSolveErrors,
       freedom,
       theme,
     }: {
       isSelected: boolean
       isHovered: boolean
       isDraft: boolean
+      hasSolveErrors?: boolean
       freedom?: Freedom | null
       theme: Themes
     }
@@ -383,6 +387,7 @@ class PointSegment implements SketchEntityUtils {
       isDraft,
       isHovered,
       isSelected,
+      hasSolveErrors,
       freedom,
       theme,
     })
@@ -400,6 +405,7 @@ class LineSegment implements SketchEntityUtils {
     isHovered: boolean,
     isDraft: boolean,
     theme: Themes,
+    hasSolveErrors?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
@@ -407,6 +413,7 @@ class LineSegment implements SketchEntityUtils {
       isHovered,
       isDraft,
       theme,
+      hasSolveErrors,
       freedom,
     })
   }
@@ -575,6 +582,7 @@ class LineSegment implements SketchEntityUtils {
       state.hovered,
       state.draft,
       theme,
+      args.hasSolveErrors,
       freedom
     )
   }
@@ -661,6 +669,7 @@ class ArcSegment implements SketchEntityUtils {
     isHovered: boolean,
     isDraft: boolean,
     theme: Themes,
+    hasSolveErrors?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
@@ -668,6 +677,7 @@ class ArcSegment implements SketchEntityUtils {
       isHovered,
       isDraft,
       theme,
+      hasSolveErrors,
       freedom,
     })
   }
@@ -897,6 +907,7 @@ class ArcSegment implements SketchEntityUtils {
       state.hovered,
       state.draft,
       theme,
+      args.hasSolveErrors,
       freedom
     )
   }
@@ -1089,6 +1100,7 @@ class CircleSegment implements SketchEntityUtils {
       isHovered: state.hovered,
       isDraft: state.draft,
       theme,
+      hasSolveErrors: args.hasSolveErrors,
       freedom,
     })
   }
@@ -1101,12 +1113,14 @@ function updateLineMaterial(
     isHovered,
     isDraft,
     theme,
+    hasSolveErrors,
     freedom,
   }: {
     isSelected: boolean
     isHovered: boolean
     isDraft: boolean
     theme: Themes
+    hasSolveErrors?: boolean
     freedom?: Freedom | null
   }
 ) {
@@ -1117,6 +1131,7 @@ function updateLineMaterial(
     isHovered,
     isSelected,
     theme,
+    hasSolveErrors,
     freedom,
   })
   material.color.set(color)

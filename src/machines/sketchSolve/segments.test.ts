@@ -488,6 +488,19 @@ describe('getSegmentColor', () => {
     expect(color).toBe(CONFLICT_COLOR)
   })
 
+  it('should return conflict color when the solver has outcome errors', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
+    })
+
+    expect(color).toBe(CONFLICT_COLOR)
+  })
+
   it('should return unconstrained color when freedom is Free (priority 5)', () => {
     const color = getSegmentColor({
       isDraft: false,
@@ -608,6 +621,19 @@ describe('getSegmentColor', () => {
 
     expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
     expect(unselectedColor).toBe(UNCONSTRAINED_COLOR)
+  })
+
+  it('should prioritize selection over solver errors', () => {
+    const selectedColor = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: true,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
+    })
+
+    expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
   })
 
   it('should prioritize conflict over free and fixed', () => {
