@@ -1055,9 +1055,15 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
+<<<<<<< HEAD
 version = "0.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07878f63542370fd5fcf06f776cc2bf7b58cb557a41f9a72d4183e84e7707e54"
+=======
+version = "0.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1db19d0382d333892e430efc4241ee92f9280465001c5367ff68d8c027eb9b30"
+>>>>>>> d2c35cd8b ((refactor): use new ezpz Constraint method for vars in constraints)
 dependencies = [
  "faer",
  "indexmap 2.13.0",

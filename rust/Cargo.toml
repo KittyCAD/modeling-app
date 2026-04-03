@@ -23,7 +23,11 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.13.0"
+<<<<<<< HEAD
 ezpz = "0.2.22"
+=======
+ezpz = "0.2.20"
+>>>>>>> d2c35cd8b ((refactor): use new ezpz Constraint method for vars in constraints)
 kittycad = { version = "0.4.8", default-features = false, features = [
   "js",
   "requests",
