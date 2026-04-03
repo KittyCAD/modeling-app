@@ -42,6 +42,7 @@ import {
   type ActionArgs,
   type AssignArgs,
   type ActorRefFrom,
+  type AnyActorRef,
   type ProvidedActor,
   assertEvent,
   fromPromise,
@@ -225,6 +226,11 @@ export type SolveActionArgs = ActionArgs<
   SketchSolveMachineEvent
 >
 
+interface EventLike {
+  type: string
+  [key: PropertyKey]: unknown
+}
+
 type SolveAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   SketchSolveContext,
   SketchSolveMachineEvent,
@@ -234,6 +240,18 @@ type SolveAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
 
 export const CHILD_TOOL_ID = 'child tool'
 export const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
+
+export function sendToActorIfActive(
+  actor: Pick<AnyActorRef, 'getSnapshot' | 'send'> | undefined,
+  event: EventLike
+): boolean {
+  if (!actor || actor.getSnapshot().status !== 'active') {
+    return false
+  }
+
+  actor.send(event)
+  return true
+}
 
 /**
  * Helper function to build a segment ctor from a scene graph object.
@@ -1100,7 +1118,7 @@ export async function deleteDraftEntities({
 
     if (result) {
       // Clear draft entities after successful deletion
-      self.send({
+      sendToActorIfActive(self, {
         type: 'update sketch outcome',
         data: {
           sourceDelta: result.kclSource,
@@ -1110,11 +1128,11 @@ export async function deleteDraftEntities({
     }
     // Always clear draft entities, even if deletion failed or returned no result
     // This allows the exit flow to continue
-    self.send({ type: 'clear draft entities' })
+    sendToActorIfActive(self, { type: 'clear draft entities' })
   } catch (error) {
     console.error('Failed to delete draft entities:', error)
     // Clear draft entities even on error to allow exit to continue
-    self.send({ type: 'clear draft entities' })
+    sendToActorIfActive(self, { type: 'clear draft entities' })
   }
 }
 

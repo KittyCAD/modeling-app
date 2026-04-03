@@ -38,6 +38,7 @@ import {
   getObjectSelectionIds,
   ORIGIN_TARGET,
   refreshSketchSolveScale,
+  sendToActorIfActive,
   tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
@@ -62,11 +63,11 @@ function sendToolbarConstraintOutcome(
     | undefined
 ) {
   if (result) {
-    self.send({
+    sendToActorIfActive(self, {
       type: 'update selected ids',
       data: { selectedIds: [], duringAreaSelectIds: [] },
     })
-    self.send({
+    sendToActorIfActive(self, {
       type: 'update sketch outcome',
       data: {
         sourceDelta: result.kclSource,
@@ -243,12 +244,10 @@ export const sketchSolveMachine = setup({
       cleanupSketchSolveGroup(context.sceneInfra)
     },
     'send unequip to tool': ({ context }) => {
-      // Use the actor reference directly - optional chaining handles missing actor gracefully
-      context.childTool?.send({ type: 'unequip' })
+      sendToActorIfActive(context.childTool, { type: 'unequip' })
     },
     'send escape to tool': ({ context }) => {
-      // Use the actor reference directly - optional chaining handles missing actor gracefully
-      context.childTool?.send({ type: 'escape' })
+      sendToActorIfActive(context.childTool, { type: 'escape' })
     },
     'store pending tool': assign(({ event, system }) => {
       assertEvent(event, 'equip tool')
@@ -418,7 +417,7 @@ export const sketchSolveMachine = setup({
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
-          self.send({
+          sendToActorIfActive(self, {
             type: 'update sketch outcome',
             data: {
               sourceDelta: result.kclSource,
@@ -772,7 +771,7 @@ export const sketchSolveMachine = setup({
           })
 
         if (result) {
-          self.send({
+          sendToActorIfActive(self, {
             type: 'update sketch outcome',
             data: {
               sourceDelta: result.kclSource,
@@ -826,13 +825,13 @@ export const sketchSolveMachine = setup({
 
         if (result) {
           // Clear selection after deletion
-          self.send({
+          sendToActorIfActive(self, {
             type: 'update selected ids',
             data: { selectedIds: [], duringAreaSelectIds: [] },
           })
 
           // Send the update sketch outcome event
-          self.send({
+          sendToActorIfActive(self, {
             type: 'update sketch outcome',
             data: {
               sourceDelta: result.kclSource,
@@ -962,7 +961,7 @@ export const sketchSolveMachine = setup({
               // Scene cleanup will run on entry of final exiting state
 
               // Always clear draft entities after deletion attempt
-              self.send({ type: 'clear draft entities' })
+              sendToActorIfActive(self, { type: 'clear draft entities' })
             },
             // No need to update context with scene graph on exit
           ],
@@ -972,7 +971,7 @@ export const sketchSolveMachine = setup({
           actions: [
             ({ event, context, self }) => {
               // Clear draft entities even on error to allow exit to continue
-              self.send({ type: 'clear draft entities' })
+              sendToActorIfActive(self, { type: 'clear draft entities' })
             },
           ],
         },
