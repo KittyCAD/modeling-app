@@ -877,7 +877,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        target: null,
+        snappingCandidate: null,
       })
     }
   }
@@ -888,7 +888,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        target: candidate,
+        snappingCandidate: candidate,
       })
     }
 

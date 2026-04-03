@@ -196,7 +196,7 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    target: snappingCandidate,
+    snappingCandidate,
   })
 }
 
@@ -372,7 +372,7 @@ export function removePointListener({ context, self }: ToolActionArgs) {
     updateSnappingPreviewSprite({
       sketchSolveGroup,
       sceneInfra: context.sceneInfra,
-      target: null,
+      snappingCandidate: null,
     })
   }
   // Reset callbacks to remove the onClick and onMove listeners
