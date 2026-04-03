@@ -13,6 +13,7 @@ import {
   getConstraintBadgeTexture,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
 import { type SnappingCandidate } from '@src/machines/sketchSolve/snapping'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'
@@ -42,7 +43,7 @@ export function updateSnappingPreviewSprite({
     sketchSolveGroup,
     scale,
     sceneInfra.theme,
-    target?.target.type === 'origin' ? 'hovered' : 'default'
+    target?.target.type === ORIGIN_TARGET ? 'hovered' : 'default'
   )
 
   if (!target) {

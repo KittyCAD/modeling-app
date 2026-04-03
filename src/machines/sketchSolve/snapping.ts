@@ -14,11 +14,12 @@ import {
   findClosestApiObjects,
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { Group } from 'three'
 
 export type SnapTarget =
   | { type: 'point'; pointId: number }
-  | { type: 'origin' }
+  | { type: typeof ORIGIN_TARGET }
   | { type: 'x-axis' }
   | { type: 'y-axis' }
 
@@ -45,7 +46,7 @@ export function getCoincidentSegmentsForSnapTarget(
   switch (target?.type) {
     case 'point':
       return [segmentId, target.pointId]
-    case 'origin':
+    case ORIGIN_TARGET:
       return [segmentId, 'ORIGIN']
     default:
       return null
@@ -90,7 +91,7 @@ export function getSnappingCandidates(
     originDistance <= hoverDistance
       ? [
           {
-            target: { type: 'origin' as const },
+            target: { type: ORIGIN_TARGET as typeof ORIGIN_TARGET },
             distance: originDistance,
             position: [0, 0] as Coords2d,
           },

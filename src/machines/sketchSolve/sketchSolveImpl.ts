@@ -68,6 +68,9 @@ import { StateEffect } from '@codemirror/state'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 
 export type EquipTool = keyof typeof equipTools
+export const ORIGIN_TARGET = 'origin'
+export type SketchSpecialTarget = typeof ORIGIN_TARGET
+export type SketchSolveSelectionId = number | SketchSpecialTarget
 
 // Type for the spawn function used in XState setup actions
 // This provides better type safety by constraining the actor parameter to valid tool names
@@ -104,7 +107,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids'
       data: {
-        selectedIds?: Array<number>
+        selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
       }
@@ -112,7 +115,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update hovered id'
       data: {
-        hoveredId: number | null
+        hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
       }
     }
@@ -181,9 +184,9 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
-  hoveredId: number | null
+  hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
@@ -433,7 +436,7 @@ function initSegmentGroup({
 export interface IUpdateSketchSceneGraph {
   sceneGraphDelta: SceneGraphDelta
   context: SketchSolveContext
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
 }
 export const updateSketchSceneGraphEffect =
@@ -884,7 +887,7 @@ function getInvisibleConstraintDisplayState(
 }
 
 function getHoveredSegmentIds(
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   objects: ApiObject[]
 ): number[] {
   const hoveredObject = hoveredId !== null ? objects[hoveredId] : null
@@ -895,9 +898,9 @@ function getHoveredSegmentIds(
 
 function getSegmentRenderState(
   segmentId: number,
-  selectedIds: Array<number>,
+  selectedIds: Array<SketchSolveSelectionId>,
   duringAreaSelectIds: Array<number>,
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   hoveredSegmentIds: Array<number>,
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
