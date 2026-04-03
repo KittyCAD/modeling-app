@@ -8794,4 +8794,589 @@ sketch2 = sketch(on = XY) {
         ctx.close().await;
         mock_ctx.close().await;
     }
+
+    // Regression tests: operations on source code with extra whitespace/newlines.
+    // These test that NodePath-based lookups work correctly when source ranges
+    // are shifted by extra whitespace that wouldn't be present after formatting.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_after_settings_edit_sketch_add_point() {
+        // Extra newlines after @settings line - this shifts all source ranges.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+sketch001 = sketch(on = XY) {
+  point(at = [1in, 2in])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        // Edit sketch should succeed despite extra newlines.
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+
+        // Add a new point to the sketch.
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Number(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 6.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segment = SegmentCtor::Point(point_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        // After adding a point, the source should be reformatted with standard whitespace.
+        assert!(
+            src_delta.text.contains("point(at = [5mm, 6mm])"),
+            "Expected new point in source, got: {}",
+            src_delta.text
+        );
+        assert!(!scene_delta.new_objects.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_after_settings_add_line_to_empty_sketch() {
+        // Extra newlines after @settings, with an empty sketch block.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+s = sketch(on = XY) {}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Line(line_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("line(start = [0mm, 0mm], end = [10mm, 10mm])"),
+            "Expected line in source, got: {}",
+            src_delta.text
+        );
+        // Line creates start point, end point, and line segment.
+        assert_eq!(scene_delta.new_objects.len(), 3);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_between_operations_edit_line() {
+        // Extra newlines between @settings and sketch, and inside the sketch block.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+sketch001 = sketch(on = XY) {
+
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])
+
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // Extract segment IDs before edit_sketch borrows frontend mutably.
+        let line_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .expect("Expected a line segment in sketch");
+
+        // Enter sketch edit mode.
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+
+        // Edit the line.
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 13.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 14.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: line_id,
+            ctor: SegmentCtor::Line(line_ctor),
+        }];
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("line(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm])"),
+            "Expected edited line in source, got: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_delete_segment() {
+        // Extra whitespace before and after the sketch block.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // The sketch should have 3 segments: start point, center point, and the circle.
+        assert_eq!(sketch.segments.len(), 3);
+        let circle_id = sketch.segments[2];
+
+        // Delete the circle despite extra newlines in original source.
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![], vec![circle_id])
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("sketch(on = XY) {"),
+            "Expected sketch block in source, got: {}",
+            src_delta.text
+        );
+        let new_sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let new_sketch = expect_sketch(new_sketch_object);
+        assert_eq!(new_sketch.segments.len(), 0);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unformatted_source_add_arc() {
+        // Source with inconsistent whitespace - tabs, extra spaces, multiple blank lines.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let arc_ctor = ArcCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Arc(arc_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])"),
+            "Expected arc in source, got: {}",
+            src_delta.text
+        );
+        assert!(!scene_delta.new_objects.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_add_circle() {
+        // Extra blank lines between settings and sketch.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let circle_ctor = CircleCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Circle(circle_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])"),
+            "Expected circle in source, got: {}",
+            src_delta.text
+        );
+        assert!(!scene_delta.new_objects.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_add_constraint() {
+        // Extra newlines with a sketch containing two lines - add a coincident constraint.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])
+  line2 = line(start = [var 10mm, var 10mm], end = [var 20mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // Extract segment data before edit_sketch borrows frontend mutably.
+        let line_ids: Vec<ObjectId> = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .collect();
+        assert_eq!(line_ids.len(), 2, "Expected two line segments");
+
+        let line1 = &frontend.scene_graph.objects[line_ids[0].0];
+        let ObjectKind::Segment {
+            segment: Segment::Line(line1_data),
+        } = &line1.kind
+        else {
+            panic!("Expected line");
+        };
+        let line2 = &frontend.scene_graph.objects[line_ids[1].0];
+        let ObjectKind::Segment {
+            segment: Segment::Line(line2_data),
+        } = &line2.kind
+        else {
+            panic!("Expected line");
+        };
+
+        // Build constraint before entering sketch mode.
+        let constraint = Constraint::Coincident(Coincident {
+            segments: vec![line1_data.end.into(), line2_data.start.into()],
+        });
+
+        // Enter sketch edit mode.
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("coincident("),
+            "Expected coincident constraint in source, got: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_extra_newlines_add_line_then_edit_line() {
+        // Extra newlines after @settings - add a line, then edit it.
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        // Add a line.
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Line(line_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("line(start = [0mm, 0mm], end = [10mm, 10mm])"),
+            "Expected line in source after add, got: {}",
+            src_delta.text
+        );
+        // Line creates start point, end point, and line segment.
+        let line_id = *scene_delta.new_objects.last().unwrap();
+
+        // Edit the line.
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 13.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 14.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: line_id,
+            ctor: SegmentCtor::Line(line_ctor),
+        }];
+        let (src_delta, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("line(start = [1mm, 2mm], end = [13mm, 14mm])"),
+            "Expected edited line in source, got: {}",
+            src_delta.text
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
 }
