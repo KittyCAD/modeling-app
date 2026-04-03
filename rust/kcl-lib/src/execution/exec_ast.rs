@@ -2922,6 +2922,7 @@ impl Node<BinaryExpression> {
                         return Err(internal_err(message, self));
                     };
                     sketch_block_state.solver_constraints.push(constraint);
+                    exec_state.warn_experimental("scalar fixed constraint", self.as_source_range());
                     return Ok(KclValue::none());
                 }
                 // One sketch constraint, one number.
