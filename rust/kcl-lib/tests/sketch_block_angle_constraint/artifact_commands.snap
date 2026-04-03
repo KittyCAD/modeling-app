@@ -68,8 +68,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.955506042817888,
-          "y": -2.699496966694193,
+          "x": -0.0345391463724767,
+          "y": 3.870891596316077,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.2306386116863632,
-            "y": -3.0887358945042678,
+            "x": 1.31779667024565,
+            "y": 1.041242494895562,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.9906789509843044,
-          "y": 2.9264225565341766,
+          "x": 1.317796711585515,
+          "y": 1.0412426910069752,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.2306386116863632,
-            "y": -3.0887358945042678,
+            "x": 1.31779667024565,
+            "y": 1.041242494895562,
             "z": 0.0
           },
           "relative": false
@@ -135,8 +135,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.6155463755492705,
-          "y": 8.961810322607123,
+          "x": 3.4989470497882578,
+          "y": 0.1466339480431578,
           "z": 0.0
         }
       }
@@ -150,8 +150,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.2306386116863632,
-            "y": -3.0887358945042678,
+            "x": 1.31779667024565,
+            "y": 1.041242494895562,
             "z": 0.0
           },
           "relative": false

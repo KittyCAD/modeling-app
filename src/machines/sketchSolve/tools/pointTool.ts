@@ -1,21 +1,25 @@
 import { assertEvent, fromPromise, setup } from 'xstate'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
-import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
+import {
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -40,6 +44,10 @@ export const machine = setup({
     },
     events: {} as ToolEvents,
     input: {} as ToolInput,
+  },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
   },
   actions: {
     'add point listener': ({ self, context }) => {
@@ -82,6 +90,9 @@ export const machine = setup({
         },
       }
       self._parent?.send(sendData)
+    },
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
     },
   },
   actors: {
@@ -178,13 +189,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ready for user click',
-          reenter: true,
-          actions: 'send result to parent',
-        },
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'unequipping',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for user click',
+            reenter: true,
+            actions: 'send result to parent',
+          },
+        ],
         onError: {
           target: 'unequipping',
+          actions: 'toast sketch solve error',
         },
         onExit: {
           actions: 'send result to parent',
