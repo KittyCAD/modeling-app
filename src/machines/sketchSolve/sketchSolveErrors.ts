@@ -1,3 +1,5 @@
+import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import toast from 'react-hot-toast'
 
 export const SKETCH_SOLVE_ERROR_TOAST_ID = 'sketch-solve-error'
@@ -63,4 +65,47 @@ export function toastSketchSolveError(
   const message = getSketchSolveErrorMessage(input, fallback)
   toast.error(message, { id: SKETCH_SOLVE_ERROR_TOAST_ID })
   return message
+}
+
+export function getSketchSolveExecOutcomeErrors(
+  sceneGraphDelta?: SceneGraphDelta
+): CompilationError[] {
+  return sceneGraphDelta?.exec_outcome?.errors ?? []
+}
+
+export function getSketchSolveExecOutcomeErrorMessage(
+  sceneGraphDelta?: SceneGraphDelta,
+  fallback = 'Sketch solve failed'
+): string | null {
+  const errors = getSketchSolveExecOutcomeErrors(sceneGraphDelta)
+  if (errors.length === 0) {
+    return null
+  }
+
+  const firstError =
+    errors.find((error) => error.severity !== 'Warning') ?? errors[0]
+  if (!firstError) {
+    return fallback
+  }
+
+  const extraCount = errors.length - 1
+  return extraCount > 0
+    ? `${firstError.message} (+${extraCount} more)`
+    : firstError.message
+}
+
+export function toastSketchSolveExecOutcomeErrors(
+  sceneGraphDelta?: SceneGraphDelta,
+  fallback = 'Sketch solve failed'
+) {
+  const message = getSketchSolveExecOutcomeErrorMessage(
+    sceneGraphDelta,
+    fallback
+  )
+  if (!message) {
+    return false
+  }
+
+  toast.error(message, { id: SKETCH_SOLVE_ERROR_TOAST_ID })
+  return true
 }

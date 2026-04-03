@@ -29,6 +29,7 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import { compilationErrorsToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback } from '@src/lib/utils'
@@ -48,7 +49,11 @@ import {
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
-import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import {
+  getSketchSolveExecOutcomeErrors,
+  toastSketchSolveError,
+  toastSketchSolveExecOutcomeErrors,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -343,6 +348,7 @@ export function updateSegmentGroup({
   state,
   scale,
   theme,
+  hasSolveErrors,
   objects,
 }: {
   group: Group
@@ -350,6 +356,7 @@ export function updateSegmentGroup({
   state: SegmentRenderState
   scale: number
   theme: Themes
+  hasSolveErrors: boolean
   objects: ApiObject[]
 }): void {
   const idNum = Number(group.name)
@@ -369,6 +376,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -378,6 +386,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -387,6 +396,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -396,6 +406,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   }
@@ -469,6 +480,8 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds,
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -593,6 +606,7 @@ export function updateSceneGraphFromDelta({
       state,
       scale: factor,
       theme: context.sceneInfra.theme,
+      hasSolveErrors,
       objects,
     })
   })
@@ -718,6 +732,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -778,6 +794,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         ),
         scale: factor,
         theme: context.sceneInfra.theme,
+        hasSolveErrors,
         objects,
       })
     }
@@ -825,6 +842,9 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   }
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeErrors(context.sketchExecOutcome.sceneGraphDelta)
+      .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -868,6 +888,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       ),
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
+      hasSolveErrors,
       objects,
     })
   })
@@ -968,6 +989,16 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
+
+  const sketchSolveDiagnostics = compilationErrorsToDiagnostics(
+    getSketchSolveExecOutcomeErrors(event.data.sceneGraphDelta),
+    event.data.sourceDelta.text
+  )
+  context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
+  toastSketchSolveExecOutcomeErrors(
+    event.data.sceneGraphDelta,
+    'Sketch solver failed to find a solution'
+  )
 
   // Update scene immediately - no delay, no flicker
   // This is wired through a CodeMirror StateEffect so that
