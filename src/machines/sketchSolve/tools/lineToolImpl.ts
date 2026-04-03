@@ -17,7 +17,11 @@ import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveMachineEvent,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   getCoincidentCluster,
   isLineSegment,
@@ -75,13 +79,28 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-function sendHoveredId(self: ToolActionArgs['self'], hoveredId: number | null) {
+function sendHoveredId(
+  self: ToolActionArgs['self'],
+  hoveredId: SketchSolveSelectionId | null
+) {
   self._parent?.send({
     type: 'update hovered id',
     data: {
       hoveredId,
     },
   })
+}
+
+function getHoveredIdFromSnappingCandidate(
+  snappingCandidate: ReturnType<typeof getBestSnappingCandidate>
+): SketchSolveSelectionId | null {
+  if (snappingCandidate?.target.type === ORIGIN_TARGET) {
+    return ORIGIN_TARGET
+  }
+
+  return isPointSnapTarget(snappingCandidate?.target)
+    ? snappingCandidate.target.pointId
+    : null
 }
 
 // Don't snap to the current draft point and the opposite point's cluster.
@@ -197,12 +216,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        sendHoveredId(
-          self,
-          isPointSnapTarget(snappingCandidate?.target)
-            ? snappingCandidate.target.pointId
-            : null
-        )
+        sendHoveredId(self, getHoveredIdFromSnappingCandidate(snappingCandidate))
         updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
@@ -317,12 +331,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
         mousePosition: [twoD.x, twoD.y],
         mouseEvent: args.mouseEvent,
       })
-      sendHoveredId(
-        self,
-        isPointSnapTarget(snappingCandidate?.target)
-          ? snappingCandidate.target.pointId
-          : null
-      )
+      sendHoveredId(self, getHoveredIdFromSnappingCandidate(snappingCandidate))
       updateSnappingPreview({ context, snappingCandidate })
     },
   })

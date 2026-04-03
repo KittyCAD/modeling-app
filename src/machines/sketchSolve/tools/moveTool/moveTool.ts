@@ -81,28 +81,10 @@ function getClosestSelectionTarget(
     objects,
     sceneInfra
   )[0]
-  const sketchSolveGroupObject =
-    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  const sketchSolveGroup =
-    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
-  const hoverDistance = getSketchHoverDistance(
-    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
-  )
+  
   const originDistance = distance2d(mousePosition, [0, 0])
-  const closestOrigin: ClosestSelectionTarget | null =
-    originDistance <= hoverDistance
-      ? {
-          distance: originDistance,
-          selectionId: ORIGIN_TARGET,
-          apiObject: null,
-        }
-      : null
-
-  if (!closestObject) {
-    return closestOrigin
-  }
-
-  if (!closestOrigin || closestObject.distance < closestOrigin.distance) {
+  if (closestObject && closestObject.distance < originDistance + 1e-8) {
+    // Same as in snapping, object should take precedence if closer or tied with ORIGIN
     return {
       distance: closestObject.distance,
       selectionId: closestObject.apiObject.id,
@@ -110,7 +92,19 @@ function getClosestSelectionTarget(
     }
   }
 
-  return closestOrigin
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const hoverDistance = getSketchHoverDistance(
+    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
+  )
+
+  return originDistance < hoverDistance ? {
+    distance: originDistance,
+    selectionId: ORIGIN_TARGET,
+    apiObject: null
+  } : null
 }
 
 /**

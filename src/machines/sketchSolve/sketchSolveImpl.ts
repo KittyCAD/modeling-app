@@ -504,7 +504,12 @@ export function updateSceneGraphFromDelta({
   }
 
   if (sketchSolveGroup instanceof Group) {
-    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
   }
 
   currentSketchObjects.forEach((obj) => {
@@ -692,7 +697,7 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
       const first = event.data.selectedIds[0]
       if (
         event.data.selectedIds.length === 1 &&
-        first &&
+        first !== undefined &&
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
@@ -737,6 +742,17 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
 
   // Get draft entity IDs from context
   const draftEntityIds = context.draftEntities?.segmentIds
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
+  }
 
   currentSketchObjects.forEach((obj) => {
     if (obj.kind.type === 'Sketch') {
@@ -848,7 +864,12 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
   const draftEntityIds = context.draftEntities?.segmentIds
 
-  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
+  updateOriginSprite(
+    sketchSolveGroup,
+    scaleFactor,
+    context.sceneInfra.theme,
+    getOriginSpriteState(context)
+  )
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {
@@ -942,6 +963,18 @@ function getSegmentRenderState(
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }
+}
+
+function getOriginSpriteState(
+  context: Pick<SketchSolveContext, 'hoveredId' | 'selectedIds'>
+) {
+  if (context.hoveredId === ORIGIN_TARGET) {
+    return 'hovered' as const
+  }
+  if (context.selectedIds.includes(ORIGIN_TARGET)) {
+    return 'selected' as const
+  }
+  return 'default' as const
 }
 
 function getSketchSolveScaleFactor(context: SketchSolveContext): number {
