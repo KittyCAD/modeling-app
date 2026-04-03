@@ -72,6 +72,7 @@ describe('circleToolImpl', () => {
     it('adds coincident constraints for snapped center and radius points', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
       const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
       const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
@@ -107,7 +108,7 @@ describe('circleToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         1,
         0,
         7,
@@ -117,7 +118,7 @@ describe('circleToolImpl', () => {
         },
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
         0,
         7,

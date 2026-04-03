@@ -25,6 +25,7 @@ describe('threePointArcToolImpl', () => {
     it('adds a coincident constraint when the draft point is snapped', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       ;(rustContext.addSegment as any).mockResolvedValue({
         kclSource: { text: 'point' },
         sceneGraphDelta: createSceneGraphDelta(
@@ -47,7 +48,7 @@ describe('threePointArcToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenCalledWith(
+      expect(addConstraintSpy).toHaveBeenCalledWith(
         0,
         7,
         {
@@ -72,6 +73,8 @@ describe('threePointArcToolImpl', () => {
     it('adds a coincident constraint for the snapped end point before cleanup', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const deleteObjectsSpy = vi.spyOn(rustContext, 'deleteObjects')
       const center = createPointApiObject({ id: 4, x: 1, y: 0 })
       const arcStart = createPointApiObject({ id: 5, x: 0, y: 0 })
       const arcEnd = createPointApiObject({ id: 6, x: 2, y: 0 })
@@ -112,7 +115,7 @@ describe('threePointArcToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         1,
         0,
         7,
@@ -122,7 +125,7 @@ describe('threePointArcToolImpl', () => {
         },
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
         0,
         7,
@@ -139,6 +142,7 @@ describe('threePointArcToolImpl', () => {
           new_objects: [7, 10, 11, 12],
         },
       })
+      expect(deleteObjectsSpy).toHaveBeenCalled()
     })
   })
 })

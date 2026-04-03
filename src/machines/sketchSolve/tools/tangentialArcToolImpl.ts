@@ -906,8 +906,6 @@ export async function finalizeArcActor({
       ? arcObj.kind.segment.start
       : arcObj.kind.segment.end
 
-    let latestKclSource = arcEditResult.kclSource
-    let latestSceneGraphDelta = arcEditResult.sceneGraphDelta
     const newObjects = [...arcEditResult.sceneGraphDelta.new_objects]
 
     const freePointCoincidentSegments = getCoincidentSegmentsForSnapTarget(
@@ -924,8 +922,6 @@ export async function finalizeArcActor({
         },
         settings
       )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
       newObjects.push(...snapResult.sceneGraphDelta.new_objects)
     }
 
@@ -938,8 +934,6 @@ export async function finalizeArcActor({
       },
       settings
     )
-    latestKclSource = tangentCoincidentResult.kclSource
-    latestSceneGraphDelta = tangentCoincidentResult.sceneGraphDelta
     newObjects.push(...tangentCoincidentResult.sceneGraphDelta.new_objects)
 
     const tangentResult = await rustContext.addConstraint(

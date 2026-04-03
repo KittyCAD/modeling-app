@@ -325,6 +325,7 @@ describe('tangentialArcToolImpl', () => {
     it('adds a coincident constraint for a snapped free endpoint before tangent constraints', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const center = createPointApiObject({ id: 1, x: 0, y: 1 })
       const start = createPointApiObject({ id: 2, x: 0, y: 0 })
       const end = createPointApiObject({ id: 3, x: 1, y: 1 })
@@ -366,7 +367,7 @@ describe('tangentialArcToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         1,
         0,
         7,
@@ -376,7 +377,7 @@ describe('tangentialArcToolImpl', () => {
         },
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
         0,
         7,
@@ -386,7 +387,7 @@ describe('tangentialArcToolImpl', () => {
         },
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         3,
         0,
         7,

@@ -468,6 +468,7 @@ describe('centerArcToolImpl', () => {
     it('creates coincident constraints for snapped center and start points', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
       const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
       const endPoint = createPointApiObject({ id: 3, x: 10, y: 0 })
@@ -506,7 +507,7 @@ describe('centerArcToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         1,
         0,
         7,
@@ -516,7 +517,7 @@ describe('centerArcToolImpl', () => {
         },
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
         0,
         7,
@@ -538,6 +539,7 @@ describe('centerArcToolImpl', () => {
     it('adds a coincident constraint for the clicked endpoint when finalizing', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const currentArc = createArcApiObject({
         id: 4,
         center: 1,
@@ -594,7 +596,7 @@ describe('centerArcToolImpl', () => {
         },
       })
 
-      expect(rustContext.addConstraint).toHaveBeenCalledWith(
+      expect(addConstraintSpy).toHaveBeenCalledWith(
         0,
         7,
         {
