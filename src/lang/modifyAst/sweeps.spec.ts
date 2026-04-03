@@ -1,4 +1,4 @@
-import { assertParse, recast, type Name } from '@src/lang/wasm'
+import { assertParse, PathToNode, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -2043,7 +2043,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
     })
   })
 
-  describe('Testing getAxisExpressionAndIndex', () => {
+  describe('Testing getAxisExpression', () => {
     it.each(['X', 'Y', 'Z'])(
       'should return axis expression for default axis %s',
       async (axis) => {
@@ -2073,17 +2073,25 @@ profile001 = startProfile(sketch001, at = [0, 0])
         (a) => a.type === 'segment'
       )
       const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [1, 'index'],
+        ['expression', 'ExpressionStatement'],
+        ['body', 'PipeExpression'],
+        [1, 'index'],
+      ]
       const result = getAxisExpression(
         undefined,
         edge,
         ast,
         instanceInThisFile,
-        artifactGraph
+        artifactGraph,
+        nodeToEdit
       )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')
       expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
-      expect(recast(ast, instanceInThisFile)).toContain(
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
         `xLine(length = 1, tag = $seg01)`
       )
     })

@@ -577,7 +577,7 @@ export function addRevolve({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -612,9 +612,10 @@ export function addRevolve({
     wasmInstance,
     artifactGraph
   )
-  if (err(getAxisResult) || !getAxisResult.generatedAxis) {
+  if (err(getAxisResult)) {
     return new Error('Generated axis selection is missing.')
   }
+  modifiedAst = getAxisResult.modifiedAst
 
   // Extra labeled args expressions
   const symmetricExpr =
@@ -705,8 +706,9 @@ export function getAxisExpression(
     const segmentAxisExpr = getVariableExprsFromSelection(
       edge,
       artifactGraph,
-      ast,
-      wasmInstance
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
     )
     if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
       const directAxisExpr = segmentAxisExpr.exprs[0]
@@ -717,17 +719,17 @@ export function getAxisExpression(
 
     // Direct segment case (old sketch)
     const pathToAxisSelection = getNodePathFromSourceRange(
-      ast,
+      modifiedAst,
       edge.graphSelections[0]?.codeRef.range
     )
     const tagResult = mutateAstWithTagForSketchSegment(
-      ast,
+      modifiedAst,
       pathToAxisSelection,
       wasmInstance
     )
-
     if (!err(tagResult)) {
-      return { generatedAxis: createLocalName(tagResult.tag) }
+      modifiedAst = tagResult.modifiedAst
+      return { generatedAxis: createLocalName(tagResult.tag), modifiedAst }
     }
 
     // Sweep edge case (both sketch v1 and sketch solve)
@@ -765,7 +767,7 @@ export function getAxisExpression(
   }
 }
 
-// Sort of an inverse from getAxisExpressionAndIndex
+// Sort of an inverse from getAxisExpression
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
   artifactGraph: ArtifactGraph

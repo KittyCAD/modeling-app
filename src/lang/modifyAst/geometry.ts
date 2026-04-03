@@ -95,6 +95,7 @@ export function addHelix({
       return result
     }
     axisExpr.push(createLabeledArg('axis', result.generatedAxis))
+    modifiedAst = result.modifiedAst
   } else {
     return new Error('Helix must have either an axis or a cylinder')
   }
