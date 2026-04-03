@@ -2560,17 +2560,17 @@ box = extrude(region001, length = 30)`
     const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
-  ${firstSurfaceEdge}
+  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
 }
-region001 = region(segments = [sketch001.line1])
-surface001 = extrude(region001, length = 2, bodyType = SURFACE)
+hide(sketch001)
+surface001 = extrude(sketch001.line1, length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
 sketch002 = sketch(on = XZ) {
-  ${secondSurfaceEdge}
+  line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])
 }
-region002 = region(segments = [sketch002.line1])
-surface002 = extrude(region002, length = 2, bodyType = SURFACE)
+hide(sketch002)
+surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
   |> flipSurface()`
     const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
 
@@ -2742,13 +2742,13 @@ sketch001 = sketch(on = XY) {
   line2 = line(start = [var 6.07mm, var 1.66mm], end = [var 6.07mm, var -3.67mm])
   coincident([line1.end, line2.start])
 }
+hide(sketch001)
 sketch002 = sketch(on = XY) {
   line1 = line(start = [var -2mm, var -3.87mm], end = [var 0mm, var 0mm])
 }
-region001 = region(segments = [sketch001.line1])
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
-region002 = region(segments = [sketch002.line1])
-extrude002 = extrude(region002, length = 5, bodyType = SURFACE)`
+hide(sketch002)
+extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)
+extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
     const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
 
     await test.step('Settle the scene', async () => {
@@ -2781,7 +2781,7 @@ extrude002 = extrude(region002, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Selection: '2 sweeps',
+          Selection: '2 paths',
         },
         commandName: 'Join Surfaces',
       })
