@@ -12,8 +12,14 @@ import {
   createConstraintBadgeSprite,
   getConstraintBadgeTexture,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
-import { type SnappingCandidate } from '@src/machines/sketchSolve/snapping'
+import {
+  X_AXIS_TARGET,
+  Y_AXIS_TARGET,
+  type SnapTarget,
+  type SnappingCandidate,
+} from '@src/machines/sketchSolve/snapping'
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConstraintIconName } from '@src/components/constraintIconPaths'
 
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'
@@ -35,7 +41,8 @@ export function updateSnappingPreviewSprite({
 }) {
   const sprite = getSnappingPreviewSprite(
     sketchSolveGroup,
-    getResolvedTheme(sceneInfra.theme)
+    getResolvedTheme(sceneInfra.theme),
+    getBadgeTypeForSnappingTarget(target?.target)
   )
   const scale = sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
 
@@ -62,14 +69,15 @@ export function updateSnappingPreviewSprite({
 
 function getSnappingPreviewSprite(
   sketchSolveGroup: Group,
-  theme: Themes
+  theme: Themes,
+  badgeType: ConstraintIconName
 ): Sprite {
   const existingObject = sketchSolveGroup.getObjectByName(
     SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE
   )
   if (existingObject instanceof Sprite) {
     const texture = getConstraintBadgeTexture({
-      badgeType: 'Coincident',
+      badgeType,
       badgeState: 'hovered',
       theme,
     })
@@ -82,7 +90,7 @@ function getSnappingPreviewSprite(
 
   const sprite = createConstraintBadgeSprite()
   sprite.material.map = getConstraintBadgeTexture({
-    badgeType: 'Coincident',
+    badgeType,
     badgeState: 'hovered',
     theme,
   })
@@ -92,4 +100,17 @@ function getSnappingPreviewSprite(
   sprite.visible = false
   sketchSolveGroup.add(sprite)
   return sprite
+}
+
+function getBadgeTypeForSnappingTarget(
+  target: SnapTarget | null | undefined
+): ConstraintIconName {
+  switch (target?.type) {
+    case X_AXIS_TARGET:
+      return 'VerticalDistance'
+    case Y_AXIS_TARGET:
+      return 'HorizontalDistance'
+    default:
+      return 'Coincident'
+  }
 }

@@ -33,7 +33,8 @@ import {
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  getConstraintForSnapTarget,
+  toApiConstraint,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 
@@ -129,21 +130,19 @@ export const machine = setup({
             }
           }
 
-          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+          const snapConstraint = getConstraintForSnapTarget(
             startPointId,
-            snapTarget
+            snapTarget,
+            units
           )
-          if (coincidentSegments === null) {
+          if (snapConstraint === null) {
             return result
           }
 
           const snapResult = await rustContext.addConstraint(
             0,
             sketchId,
-            {
-              type: 'Coincident',
-              segments: coincidentSegments,
-            },
+            toApiConstraint(snapConstraint),
             settings
           )
 
@@ -247,18 +246,16 @@ export const machine = setup({
           let latestSceneGraphDelta = result.sceneGraphDelta
           let snapConstraintNewObjects: Array<number> = []
 
-          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+          const snapConstraint = getConstraintForSnapTarget(
             id,
-            snapTarget
+            snapTarget,
+            units
           )
-          if (coincidentSegments !== null) {
+          if (snapConstraint !== null) {
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
-              {
-                type: 'Coincident',
-                segments: coincidentSegments,
-              },
+              toApiConstraint(snapConstraint),
               settings
             )
             latestKclSource = snapResult.kclSource
@@ -276,7 +273,7 @@ export const machine = setup({
               ],
             },
             lastPointId:
-              coincidentSegments === null && isDoubleClick !== true
+              snapConstraint === null && isDoubleClick !== true
                 ? id
                 : undefined,
           }

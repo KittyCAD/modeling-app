@@ -1,6 +1,9 @@
 import type {
   ApiObject,
+  ApiConstraint,
   CoincidentSegment,
+  ConstraintSource,
+  Number as ConstraintNumber,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -17,17 +20,33 @@ import {
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { Group } from 'three'
 
+export const X_AXIS_TARGET = 'x-axis'
+export const Y_AXIS_TARGET = 'y-axis'
+
 export type SnapTarget =
   | { type: 'point'; pointId: number }
   | { type: typeof ORIGIN_TARGET }
-  | { type: 'x-axis' }
-  | { type: 'y-axis' }
+  | { type: typeof X_AXIS_TARGET }
+  | { type: typeof Y_AXIS_TARGET }
 
 export type SnappingCandidate = {
   target: SnapTarget
   distance: number
   position: Coords2d
 }
+
+type AxisDistancePoint = number | 'ORIGIN'
+
+type AxisSnapConstraint = {
+  type: 'HorizontalDistance' | 'VerticalDistance'
+  points: [AxisDistancePoint, AxisDistancePoint]
+  distance: ConstraintNumber
+  source: ConstraintSource
+}
+
+export type SnapConstraint =
+  | Extract<ApiConstraint, { type: 'Coincident' }>
+  | AxisSnapConstraint
 
 export function allowSnapping(mouseEvent: MouseEvent) {
   return !mouseEvent.shiftKey
@@ -50,6 +69,63 @@ export function getCoincidentSegmentsForSnapTarget(
       return [segmentId, 'ORIGIN']
     default:
       return null
+  }
+}
+
+export function getConstraintForSnapTarget(
+  segmentId: number,
+  target: SnapTarget | undefined,
+  units: ConstraintNumber['units']
+): SnapConstraint | null {
+  switch (target?.type) {
+    case 'point':
+    case ORIGIN_TARGET: {
+      const segments = getCoincidentSegmentsForSnapTarget(segmentId, target)
+      return segments === null
+        ? null
+        : {
+            type: 'Coincident',
+            segments,
+          }
+    }
+    case X_AXIS_TARGET:
+      return {
+        type: 'VerticalDistance',
+        points: [segmentId, 'ORIGIN'],
+        distance: { value: 0, units },
+        source: {
+          expr: `0${units.toLowerCase()}`,
+          is_literal: true,
+        },
+      }
+    case Y_AXIS_TARGET:
+      return {
+        type: 'HorizontalDistance',
+        points: [segmentId, 'ORIGIN'],
+        distance: { value: 0, units },
+        source: {
+          expr: `0${units.toLowerCase()}`,
+          is_literal: true,
+        },
+      }
+    default:
+      return null
+  }
+}
+
+export function toApiConstraint(constraint: SnapConstraint): ApiConstraint {
+  return constraint as unknown as ApiConstraint
+}
+
+function getSnapTargetPriority(target: SnapTarget) {
+  switch (target.type) {
+    case 'point':
+      return 0
+    case ORIGIN_TARGET:
+      return 1
+    case X_AXIS_TARGET:
+    case Y_AXIS_TARGET:
+      return 2
   }
 }
 
@@ -98,19 +174,38 @@ export function getSnappingCandidates(
         ]
       : []
 
-  return [...pointCandidates, ...originCandidates].sort((a, b) => {
+  const xAxisDistance = Math.abs(mousePosition[1])
+  const xAxisCandidates =
+    xAxisDistance <= hoverDistance
+      ? [
+          {
+            target: { type: X_AXIS_TARGET as typeof X_AXIS_TARGET },
+            distance: xAxisDistance,
+            position: [mousePosition[0], 0] as Coords2d,
+          },
+        ]
+      : []
+
+  const yAxisDistance = Math.abs(mousePosition[0])
+  const yAxisCandidates =
+    yAxisDistance <= hoverDistance
+      ? [
+          {
+            target: { type: Y_AXIS_TARGET as typeof Y_AXIS_TARGET },
+            distance: yAxisDistance,
+            position: [0, mousePosition[1]] as Coords2d,
+          },
+        ]
+      : []
+
+  return [
+    ...pointCandidates,
+    ...originCandidates,
+    ...xAxisCandidates,
+    ...yAxisCandidates,
+  ].sort((a, b) => {
     if (Math.abs(a.distance - b.distance) < 1e-8) {
-      // Points should take precedence if tied with ORIGIN
-      const isPointA = isPointSnapTarget(a.target)
-      const isPointB = isPointSnapTarget(b.target)
-      if (isPointA && !isPointB) {
-        // a is point, b is ORIGIN -> a wins
-        return -1
-      }
-      if (!isPointA && isPointB) {
-        // a is ORIGIN, b is POINT -> b wins
-        return 1
-      }
+      return getSnapTargetPriority(a.target) - getSnapTargetPriority(b.target)
     }
 
     // Note: for point-point sorting this implicitly relies on the order coming from

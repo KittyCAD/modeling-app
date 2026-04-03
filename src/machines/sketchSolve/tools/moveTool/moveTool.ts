@@ -58,9 +58,10 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   allowSnapping,
-  getCoincidentSegmentsForSnapTarget,
+  getConstraintForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
+  toApiConstraint,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
@@ -998,21 +999,22 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          const coincidentSegments =
+          const units = baseUnitToNumericSuffix(
+            context.kclManager.fileSettings.defaultLengthUnit
+          )
+          const snapConstraint =
             snappingCandidate && draggedEntityId !== null
-              ? getCoincidentSegmentsForSnapTarget(
+              ? getConstraintForSnapTarget(
                   draggedEntityId,
-                  snappingCandidate.target
+                  snappingCandidate.target,
+                  units
                 )
               : null
           const result =
             snappingCandidate &&
             draggedEntityId !== null &&
-            coincidentSegments !== null
+            snapConstraint !== null
               ? await (async () => {
-                  const units = baseUnitToNumericSuffix(
-                    context.kclManager.fileSettings.defaultLengthUnit
-                  )
                   const [x, y] = snappingCandidate.position
 
                   await context.rustContext.editSegments(
@@ -1044,10 +1046,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   return context.rustContext.addConstraint(
                     SKETCH_FILE_VERSION,
                     context.sketchId,
-                    {
-                      type: 'Coincident',
-                      segments: coincidentSegments,
-                    },
+                    toApiConstraint(snapConstraint),
                     settings
                   )
                 })()
