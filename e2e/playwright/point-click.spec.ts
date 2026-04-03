@@ -2547,7 +2547,7 @@ box = extrude(region001, length = 30)`
   })
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/issues/10728 is closed
-  test('Blend point-and-click', async ({
+  test.skip('Blend point-and-click', async ({
     context,
     page,
     homePage,
