@@ -221,17 +221,17 @@ pub(crate) async fn build_segment_surface_sketch(
             )));
         }
 
-        if segment.is_construction() {
+        if matches!(segment.kind, SegmentKind::Point { .. }) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Construction segments cannot be used here. Select non-construction sketch segments instead."
-                    .to_owned(),
+                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
                 vec![source_range],
             )));
         }
 
-        if matches!(segment.kind, SegmentKind::Point { .. }) {
+        if segment.is_construction() {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
+                "Construction segments cannot be used here. Select non-construction sketch segments instead."
+                    .to_owned(),
                 vec![source_range],
             )));
         }
