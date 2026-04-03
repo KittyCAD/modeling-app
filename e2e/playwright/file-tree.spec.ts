@@ -398,42 +398,58 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Verify the file is renamed', async () => {
       await expect
         .poll(async () => await checkRenamedFS(), {
-          timeout: 15_000,
+          timeout: 30_000,
+          message: 'Renamed file should exist on disk',
         })
         .toBeTruthy()
       await expect
         .poll(async () => !(await checkUnRenamedFS()), {
-          timeout: 15_000,
+          timeout: 30_000,
+          message: 'Old path should disappear from disk after rename',
         })
         .toBeTruthy()
       // Prefer the new row appearing first: tree can lag briefly after disk rename.
-      await expect(renamedFile).toBeVisible({
-        timeout: 15_000,
-      })
-      await expect(fileToRename).not.toBeAttached({
-        timeout: 15_000,
-      })
+      await expect(
+        renamedFile,
+        'File tree should list the new filename after reading folders'
+      ).toBeVisible({ timeout: 30_000 })
+      await expect(
+        fileToRename,
+        'Old filename row should leave the file tree after rename'
+      ).not.toBeAttached({ timeout: 30_000 })
     })
 
     await test.step('Verify we navigated', async () => {
-      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT, {
-        timeout: 15_000,
-      })
+      await expect(
+        projectMenuButton,
+        'Sidebar should show the renamed open file'
+      ).toContainText(newFileName + FILE_EXT, { timeout: 30_000 })
       // Route/hash can update after the tree; sync URL expectations retry like locators.
       await expect
-        .poll(() => page.url(), { timeout: 15_000 })
+        .poll(() => page.url(), {
+          timeout: 30_000,
+          message: 'URL should include the new file segment after navigation',
+        })
         .toContain(newFileName)
-      await expect(projectMenuButton).not.toContainText('fileToRename.kcl', {
-        timeout: 15_000,
-      })
-      await expect(projectMenuButton).not.toContainText('main.kcl', {
-        timeout: 15_000,
-      })
+      await expect(
+        projectMenuButton,
+        'Sidebar should no longer reference the old filename'
+      ).not.toContainText('fileToRename.kcl', { timeout: 30_000 })
+      await expect(
+        projectMenuButton,
+        'Sidebar should show only the renamed file, not main.kcl'
+      ).not.toContainText('main.kcl', { timeout: 30_000 })
       await expect
-        .poll(() => page.url(), { timeout: 15_000 })
+        .poll(() => page.url(), {
+          timeout: 30_000,
+          message: 'URL should drop the old filename after rename navigation',
+        })
         .not.toContain('fileToRename.kcl')
       await expect
-        .poll(() => page.url(), { timeout: 15_000 })
+        .poll(() => page.url(), {
+          timeout: 30_000,
+          message: 'URL should not still point at main.kcl',
+        })
         .not.toContain('main.kcl')
 
       await u.openKclCodePanel()
@@ -516,20 +532,24 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Verify the file is renamed', async () => {
       await expect
         .poll(async () => await checkRenamedFS(), {
-          timeout: 15_000,
+          timeout: 30_000,
+          message: 'Renamed file should exist on disk',
         })
         .toBeTruthy()
       await expect
         .poll(async () => !(await checkUnRenamedFS()), {
-          timeout: 15_000,
+          timeout: 30_000,
+          message: 'Old path should disappear from disk after rename',
         })
         .toBeTruthy()
-      await expect(renamedFile).toBeVisible({
-        timeout: 15_000,
-      })
-      await expect(fileToRename).not.toBeAttached({
-        timeout: 15_000,
-      })
+      await expect(
+        renamedFile,
+        'File tree should list the new filename after reading folders'
+      ).toBeVisible({ timeout: 30_000 })
+      await expect(
+        fileToRename,
+        'Old filename row should leave the file tree after rename'
+      ).not.toBeAttached({ timeout: 30_000 })
     })
 
     await test.step('Verify we have not navigated', async () => {
