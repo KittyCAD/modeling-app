@@ -45,4 +45,3 @@ tipProfile = sketch(on = tipSketch) {
 
 // create blade solid
 twistedBlade = loft([rootProfile, tipProfile])
-

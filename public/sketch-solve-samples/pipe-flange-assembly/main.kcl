@@ -79,4 +79,3 @@ pipe()
        z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),
        global = true,
      )
-

@@ -53,6 +53,7 @@ use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
+use crate::frontend::sketch::CoincidentSegment;
 use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
@@ -99,6 +100,7 @@ const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
 const CIRCLE_FN: &str = "circle";
+const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
 
@@ -873,7 +875,7 @@ impl SketchApi for FrontendState {
 
         // Now add the coincident constraint between the previous end point and the new line's start point.
         let coincident = Coincident {
-            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
+            segments: vec![previous_segment_end_point_id.into(), new_line_start_point_id.into()],
         };
 
         let (final_src_delta, final_scene_delta) = self
@@ -1665,7 +1667,10 @@ impl FrontendState {
         let (sketch_block_range, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: circle_ast },
+            AstMutateCommand::AddSketchBlockVarDecl {
+                prefix: CIRCLE_VARIABLE.to_owned(),
+                expr: circle_ast,
+            },
         )?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
@@ -2353,7 +2358,7 @@ impl FrontendState {
                             ),
                         });
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, "circle", Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, CIRCLE_VARIABLE, Some(property))
                 }
                 _ => Err(Error {
                     msg: format!(
@@ -2367,75 +2372,54 @@ impl FrontendState {
         }
     }
 
+    fn coincident_segment_to_ast(
+        &self,
+        segment: &CoincidentSegment,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<ast::Expr> {
+        match segment {
+            CoincidentSegment::Origin(_) => Ok(ast_name_expr("ORIGIN".to_owned())),
+            CoincidentSegment::Segment(segment_id) => {
+                let segment_object = self.scene_graph.objects.get(segment_id.0).ok_or_else(|| Error {
+                    msg: format!("Object not found: {segment_id:?}"),
+                })?;
+                let ObjectKind::Segment { segment } = &segment_object.kind else {
+                    return Err(Error {
+                        msg: format!("Object is not a segment: {segment_object:?}"),
+                    });
+                };
+
+                match segment {
+                    Segment::Point(_) => self.point_id_to_ast_reference(*segment_id, new_ast),
+                    Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
+                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
+                    Segment::Circle(_) => {
+                        get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None)
+                    }
+                }
+            }
+        }
+    }
+
     async fn add_coincident(
         &mut self,
         sketch: ObjectId,
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[seg0_id, seg1_id] = coincident.segments.as_slice() else {
-            return Err(Error {
-                msg: format!(
-                    "Coincident constraint must have exactly 2 segments, got {}",
-                    coincident.segments.len()
-                ),
-            });
-        };
         let sketch_id = sketch;
-
-        // Get AST reference for first object (point or segment)
-        let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {seg0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: seg0_segment } = &seg0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {seg0_object:?}"),
-            });
-        };
-        let seg0_ast = match seg0_segment {
-            Segment::Point(_) => {
-                // Use the helper function which supports both Line and Arc owners
-                self.point_id_to_ast_reference(seg0_id, new_ast)?
-            }
-            Segment::Line(_) => {
-                // Reference the segment directly (for point-segment coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
-            }
-            Segment::Arc(_) => {
-                // Reference the segment directly (for point-arc coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
-            }
-            Segment::Circle(_) => {
-                // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
-            }
-        };
-
-        // Get AST reference for second object (point or segment)
-        let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {seg1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: seg1_segment } = &seg1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {seg1_object:?}"),
-            });
-        };
-        let seg1_ast = match seg1_segment {
-            Segment::Point(_) => {
-                // Use the helper function which supports both Line and Arc owners
-                self.point_id_to_ast_reference(seg1_id, new_ast)?
-            }
-            Segment::Line(_) => {
-                // Reference the segment directly (for point-segment coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
-            }
-            Segment::Arc(_) => {
-                // Reference the segment directly (for point-arc coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
-            }
-            Segment::Circle(_) => {
-                // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
+        let [seg0_ast, seg1_ast] = match coincident.segments.as_slice() {
+            [seg0, seg1] => [
+                self.coincident_segment_to_ast(seg0, new_ast)?,
+                self.coincident_segment_to_ast(seg1, new_ast)?,
+            ],
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "Coincident constraint must have exactly 2 inputs, got {}",
+                        coincident.segments.len()
+                    ),
+                });
             }
         };
 
@@ -2622,7 +2606,7 @@ impl FrontendState {
         let seg0_ast = match seg0_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
-            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(Error {
                     msg: format!("Tangent supports only line/arc/circle segments, got: {seg0_segment:?}"),
@@ -2641,7 +2625,7 @@ impl FrontendState {
         let seg1_ast = match seg1_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
-            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(Error {
                     msg: format!("Tangent supports only line/arc/circle segments, got: {seg1_segment:?}"),
@@ -2746,7 +2730,7 @@ impl FrontendState {
         };
         let ref_type = match arc_segment {
             Segment::Arc(_) => "arc",
-            Segment::Circle(_) => "circle",
+            Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(Error {
                     msg: format!(
@@ -3244,9 +3228,9 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.segments.iter().any(|seg_id| {
+                Constraint::Coincident(c) => c.segment_ids().any(|seg_id| {
                     // Check if the segment itself is being deleted
-                    if segment_ids_set.contains(seg_id) {
+                    if segment_ids_set.contains(&seg_id) {
                         return true;
                     }
                     // For points, also check if the owner line/arc is being deleted
@@ -3843,6 +3827,11 @@ enum AstMutateCommand {
     AddSketchBlockExprStmt {
         expr: ast::Expr,
     },
+    /// Add a variable declaration to the sketch block (e.g. `line1 = line(...)`).
+    AddSketchBlockVarDecl {
+        prefix: String,
+        expr: ast::Expr,
+    },
     AddVariableDeclaration {
         prefix: String,
     },
@@ -3969,6 +3958,26 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         comment_start: Default::default(),
                     }));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::AddSketchBlockVarDecl { prefix, expr } => {
+            if let NodeMut::SketchBlock(sketch_block) = node {
+                let empty_defined_names = HashSet::new();
+                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
+                let Ok(name) = next_free_name(prefix, defined_names) else {
+                    return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+                };
+                sketch_block
+                    .body
+                    .items
+                    .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                        ast::VariableDeclaration::new(
+                            ast::VariableDeclarator::new(&name, expr.clone()),
+                            ast::ItemVisibility::Default,
+                            ast::VariableKind::Const,
+                        ),
+                    ))));
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::Name(name)));
             }
         }
         AstMutateCommand::AddVariableDeclaration { prefix } => {
@@ -4250,7 +4259,13 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
                 // End shouldn't match since we added something.
                 && node_range.end() >= self.target_before_mutation.end()
             {
-                self.found.set(sketch_block.body.items.last().map(SourceRange::from));
+                self.found.set(sketch_block.body.items.last().map(|item| match item {
+                    // For declarations like `circle1 = circle(...)`, use
+                    // the init expression range so lookup in source_range_to_object
+                    // matches the segment source range.
+                    ast::BodyItem::VariableDeclaration(node) => SourceRange::from(&node.declaration.init),
+                    _ => SourceRange::from(item),
+                }));
                 return Ok(false);
             } else {
                 // We found a different sketch block. No need to descend into
@@ -5159,7 +5174,7 @@ sketch001 = sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
-  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 "
         );
@@ -5206,7 +5221,7 @@ sketch001 = sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
-  circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
 }
 "
         );
@@ -6210,7 +6225,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Coincident(Coincident {
-            segments: vec![point0_id, point1_id],
+            segments: vec![point0_id.into(), point1_id.into()],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -6240,6 +6255,86 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_origin_coincident_preserves_order() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        for (origin_first, expected_source) in [
+            (
+                true,
+                "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  coincident([ORIGIN, point1])
+}
+",
+            ),
+            (
+                false,
+                "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  coincident([point1, ORIGIN])
+}
+",
+            ),
+        ] {
+            let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+            let mut frontend = FrontendState::new();
+
+            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+            let mock_ctx = ExecutorContext::new_mock(None).await;
+            let version = Version(0);
+
+            frontend.hack_set_program(&ctx, program).await.unwrap();
+            let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+            let sketch_id = sketch_object.id;
+            let sketch = expect_sketch(sketch_object);
+            let point_id = *sketch.segments.first().unwrap();
+
+            let segments = if origin_first {
+                vec![CoincidentSegment::ORIGIN, point_id.into()]
+            } else {
+                vec![point_id.into(), CoincidentSegment::ORIGIN]
+            };
+            let constraint = Constraint::Coincident(Coincident {
+                segments: segments.clone(),
+            });
+            let (src_delta, scene_delta) = frontend
+                .add_constraint(&mock_ctx, version, sketch_id, constraint)
+                .await
+                .unwrap();
+            assert_eq!(src_delta.text.as_str(), expected_source);
+
+            let constraint_object = scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+                .unwrap();
+
+            let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+                panic!("expected a constraint object");
+            };
+
+            assert_eq!(constraint, &Constraint::Coincident(Coincident { segments }));
+
+            ctx.close().await;
+            mock_ctx.close().await;
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_coincident_of_line_end_points() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
@@ -6266,7 +6361,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(3).unwrap();
 
         let constraint = Constraint::Coincident(Coincident {
-            segments: vec![point0_id, point1_id],
+            segments: vec![point0_id.into(), point1_id.into()],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -6292,6 +6387,86 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_coincident_of_line_point_and_circle_segment() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.program = program;
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).expect("Expected sketch object");
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let circle_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    }
+                )
+            })
+            .expect("Expected a circle segment in sketch");
+        let line_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .expect("Expected a line segment in sketch");
+
+        let line_start_point_id = match &frontend.scene_graph.objects[line_id.0].kind {
+            ObjectKind::Segment {
+                segment: Segment::Line(line),
+            } => line.start,
+            _ => panic!("Expected line segment object"),
+        };
+
+        let constraint = Constraint::Coincident(Coincident {
+            segments: vec![line_start_point_id.into(), circle_id.into()],
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
+  coincident([line1.start, circle1])
+}
+"
+        );
+
         mock_ctx.close().await;
     }
 
@@ -6396,7 +6571,7 @@ sketch(on = XY) {
         // Attempt to add an invalid coincident constraint between arc and line
         // This should fail during execution, but state should remain intact
         let constraint = Constraint::Coincident(Coincident {
-            segments: vec![arc_id, line_id],
+            segments: vec![arc_id.into(), line_id.into()],
         });
         let result = frontend.add_constraint(&mock_ctx, version, sketch_id, constraint).await;
 

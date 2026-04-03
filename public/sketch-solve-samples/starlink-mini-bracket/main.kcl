@@ -138,4 +138,3 @@ sketch006 = extrude(region006, length = -((barrelD - holeD) / 2 - .003))
        instances = nRidges,
        rotateDuplicates = true,
      )
-

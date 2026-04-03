@@ -126,4 +126,3 @@ sketch004 = sketch(on = startSketchOn(extrude002, face = END)) {
 region004 = region(segments = [sketch004.line1, sketch004.line2])
 // Extrude the fourth sketch
 extrude004 = extrude(region004, length = 4)
-

@@ -2809,6 +2809,7 @@ impl Node<BinaryExpression> {
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
+                    crate::std::csg::CsgAlgorithm::Latest,
                     exec_state,
                     args,
                 )
@@ -2823,6 +2824,7 @@ impl Node<BinaryExpression> {
                     vec![*left.clone()],
                     vec![*right.clone()],
                     Default::default(),
+                    crate::std::csg::CsgAlgorithm::Latest,
                     exec_state,
                     args,
                 )
@@ -2837,6 +2839,7 @@ impl Node<BinaryExpression> {
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
                 Default::default(),
+                crate::std::csg::CsgAlgorithm::Latest,
                 exec_state,
                 args,
             )

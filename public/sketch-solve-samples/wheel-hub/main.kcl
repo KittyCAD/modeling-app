@@ -85,4 +85,3 @@ sketch005 = sketch(on = startSketchOn(boltHead, face = START)) {
 region005 = region(segments = [sketch005.circle1])
 boltStem = extrude(region005, length = hubSpacing / 4 + lugLength)
   |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])
-

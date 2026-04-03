@@ -90,4 +90,3 @@ step7 = extrude(region009, length = stepLength * 3, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg02, capEnd001])
        ],
      )
-

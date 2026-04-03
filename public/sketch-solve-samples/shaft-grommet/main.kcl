@@ -49,4 +49,3 @@ region001 = region(segments = [
 ])
 // Revolve the profile to create the grommet
 grommet = revolve(region001, axis = Y, angle = 330.0)
-

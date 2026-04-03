@@ -22,4 +22,3 @@ profile = sketch(on = sketch) {
 region001 = region(segments = [profile.line1, profile.arc2])
 // revolve the profile to create the sphere
 wedge = revolve(region001, axis = X, angle = 360.0)
-

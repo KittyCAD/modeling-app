@@ -138,4 +138,3 @@ flangeSketch = extrude(region001, length = plateHeight)
          getNextAdjacentEdge(seg08)
        ],
      )
-

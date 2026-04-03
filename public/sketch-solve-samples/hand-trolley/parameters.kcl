@@ -17,4 +17,3 @@ export roughness = 30
 // Calculate stock material bend radii
 export tubeBend = tubeDiameter * 2.5
 export bendRadius = grateThickness * 1.25
-

@@ -12,6 +12,7 @@ subtract(
   @solids: [Solid; 1+],
   tools: [Solid],
   tolerance?: number(Length),
+  legacyMethod?: bool,
 ): [Solid; 1+]
 ```
 
@@ -28,6 +29,7 @@ and complex multi-body part modeling.
 | `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The solids to use as the base to subtract from. | Yes |
 | `tools` | [[`Solid`](/docs/kcl-std/types/std-types-Solid)] | The solids to subtract. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 

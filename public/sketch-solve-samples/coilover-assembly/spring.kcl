@@ -20,4 +20,3 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.circle1])
 springSketch = sweep(region001, path = helixPath)
   |> appearance(color = "#d78109", roughness = 90, metalness = 50)
-
