@@ -1,4 +1,4 @@
-import { assertParse, recast } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
