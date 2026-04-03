@@ -14,15 +14,15 @@ boltHexDrive = 5 / 32
 boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 
 // Create the head of the cap screw
-sketch001 = sketch(on = XZ) {
+headSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 0.16in, var 0in], center = [var 0in, var 0in])
 }
-region001 = region(segments = [sketch001.circle1])
-boltHead = extrude(region001, length = -boltHeadLength)
-  |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+boltProfile = region(segments = [headSketch.circle1])
+boltHead = extrude(boltProfile, length = -boltHeadLength, tagStart = $capStart001)
+  |> fillet(tags = getCommonEdge(faces = [boltProfile.tags.circle1, capStart001]), radius = 0.020)
 
 // Define the sketch of the hex pattern on the screw head
-sketch002 = sketch(on = startSketchOn(boltHead, face = START)) {
+hexSketch = sketch(on = startSketchOn(boltHead, face = START)) {
   line1 = line(start = [var 0.08in, var 0.05in], end = [var 0.08in, var -0.05in])
   line2 = line(start = [var 0.08in, var -0.05in], end = [var 0in, var -0.09in])
   coincident([line1.end, line2.start])
@@ -35,12 +35,11 @@ sketch002 = sketch(on = startSketchOn(boltHead, face = START)) {
   line6 = line(start = [var 0in, var 0.09in], end = [var 0.08in, var 0.05in])
   coincident([line5.end, line6.start])
 }
-region002 = region(segments = [sketch002.line1, sketch002.line2])
-hexPatternSketch = extrude(region002, length = -boltHeadLength * 0.75)
-sketch003 = sketch(on = startSketchOn(boltHead, face = END)) {
+hexProfile = region(segments = [hexSketch.line1, hexSketch.line2])
+hexPatternSketch = extrude(hexProfile, length = -boltHeadLength * 0.75)
+stemSketch = sketch(on = startSketchOn(boltHead, face = END)) {
   circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
 }
-region003 = region(segments = [sketch003.circle1])
-boltBody = extrude(region003, length = boltLength)
-  |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
+stemProfile = region(segments = [stemSketch.circle1])
+boltBody = extrude(stemProfile, length = boltLength)
   |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
