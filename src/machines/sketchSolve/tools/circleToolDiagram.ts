@@ -38,6 +38,7 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     centerPointId: undefined,
     centerPoint: undefined,
+    centerSnapTarget: undefined,
     circleId: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
@@ -71,6 +72,7 @@ export const machine = setup({
             assertEvent(event, 'add point')
             return {
               centerPoint: event.data,
+              centerSnapTarget: event.snapTarget,
             }
           }),
         },
@@ -110,6 +112,8 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
+            centerSnapTarget: context.centerSnapTarget,
+            startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -122,6 +126,7 @@ export const machine = setup({
             assign({
               centerPoint: undefined,
               centerPointId: undefined,
+              centerSnapTarget: undefined,
               circleId: undefined,
             }),
           ],
