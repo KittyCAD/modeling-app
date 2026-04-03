@@ -43,4 +43,3 @@ backSlats = patternLinear3d(
   distance = backSlatActualPitch,
   instances = backSlatCount,
 ) // Distribute slats across the back opening along X
-

@@ -1,0 +1,152 @@
+Processed: 217
+Succeeded: 196
+Convert failed: 21
+
+Convert failed
+- battery-module-cooling-plate/main.kcl: Execution error for `public/kcl-samples/battery-module-cooling-plate/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch006'",
+    },
+}
+- car-wheel-assembly/brake-rotor.kcl: Execution error for `public/kcl-samples/car-wheel-assembly/brake-rotor.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'profileIn'",
+    },
+}
+- car-wheel-assembly/car-wheel.kcl: Execution error for `public/kcl-samples/car-wheel-assembly/car-wheel.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch004'",
+    },
+}
+- clock/main.kcl: Execution error for `public/kcl-samples/clock/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch002'",
+    },
+}
+- dining-table/main.kcl: Execution error for `public/kcl-samples/dining-table/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'longApronProfileMoved'",
+    },
+}
+- dog-house-great-dane/dog-bone-sign.kcl: Execution error for `public/kcl-samples/dog-house-great-dane/dog-bone-sign.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch001'",
+    },
+}
+- end-effector-gripper-fingers/main.kcl: Execution error for `public/kcl-samples/end-effector-gripper-fingers/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch1'",
+    },
+}
+- focusrite-scarlett-mounting-bracket/main.kcl: Execution error for `public/kcl-samples/focusrite-scarlett-mounting-bracket/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'bs'",
+    },
+}
+- food-service-spatula/main.kcl: Execution error for `public/kcl-samples/food-service-spatula/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'slotProfile000'",
+    },
+}
+- gridfinity-baseplate-magnets/main.kcl: Execution error for `public/kcl-samples/gridfinity-baseplate-magnets/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'magnetProfile'",
+    },
+}
+- manhole-cover/main.kcl: Execution error for `public/kcl-samples/manhole-cover/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'slot1'",
+    },
+}
+- marine-ladder/main.kcl: Execution error for `public/kcl-samples/marine-ladder/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'rungProfile'",
+    },
+}
+- mounting-plate/main.kcl: Execution error for `public/kcl-samples/mounting-plate/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch002'",
+    },
+}
+- pipe-elbow-90deg/main.kcl: Execution error for `public/kcl-samples/pipe-elbow-90deg/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'elbowAnnulusProfile'",
+    },
+}
+- pipe-straight/main.kcl: Execution error for `public/kcl-samples/pipe-straight/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'pipeSectionSketch'",
+    },
+}
+- pipe-with-bend/main.kcl: Execution error for `public/kcl-samples/pipe-with-bend/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'pipeProfile'",
+    },
+}
+- prosthetic-hip/main.kcl: Execution error for `public/kcl-samples/prosthetic-hip/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch001'",
+    },
+}
+- truss-structure/main.kcl: Execution error for `public/kcl-samples/truss-structure/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'profile004'",
+    },
+}
+- twisted-wire-sculpture/main.kcl: Execution error for `public/kcl-samples/twisted-wire-sculpture/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'sketch001'",
+    },
+}
+- wind-turbine-blade-root-inserts/main.kcl: Execution error for `public/kcl-samples/wind-turbine-blade-root-inserts/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'blade01'",
+    },
+}
+- wood-screw/main.kcl: Execution error for `public/kcl-samples/wood-screw/main.kcl`: Internal {
+    details: KclErrorDetails {
+        source_ranges: [],
+        backtrace: [],
+        message: "Could not find supported old sketch initializer for variable 'halfPhillipsDrive'",
+    },
+}

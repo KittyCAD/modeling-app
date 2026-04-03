@@ -31,4 +31,3 @@ backBottomPlate = twoByFourX(
   minZ = floorZ,
   lengthX = frameWidth - (2 * studDepth),
 )
-

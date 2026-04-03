@@ -90,4 +90,3 @@ sketch003 = sketch(on = startSketchOn(extrude001, face = START)) {
 region003 = region(segments = [sketch003.line1, sketch003.line2])
 // Extrude the third Sketch
 extrude003 = extrude(region003, length = 7.5)
-

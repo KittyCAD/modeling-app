@@ -51,6 +51,8 @@ export const machine = setup({
     throughPoint: undefined,
     throughPointId: undefined,
     arcId: undefined,
+    arcStartPointId: undefined,
+    arcEndPointId: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
@@ -90,6 +92,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             point: event.data,
+            snapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -126,6 +129,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             point: event.data,
+            snapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -205,6 +209,7 @@ export const machine = setup({
             throughPoint: context.throughPoint,
             throughPointId: context.throughPointId,
             endPoint: event.data,
+            endSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -226,6 +231,8 @@ export const machine = setup({
               throughPoint: undefined,
               throughPointId: undefined,
               arcId: undefined,
+              arcStartPointId: undefined,
+              arcEndPointId: undefined,
             }),
           ],
         },

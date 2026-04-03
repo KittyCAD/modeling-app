@@ -24,4 +24,3 @@ sketch002 = sketch(on = offsetPlane(XY, offset = 21)) {
 region002 = region(segments = [sketch002.circle1])
 extrude(region002, length = 3.8)
   |> appearance(color = "#dbc89e")
-

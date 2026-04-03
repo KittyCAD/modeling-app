@@ -13,4 +13,3 @@ import "block.kcl" as block
 // Render each part
 ballBearing
 block
-

@@ -353,6 +353,104 @@ extrude001 = extrude(profile001, length = 4)
 
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_second_sketch_block_preserves_node_path() {
+    let code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.14mm, var -0.05mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.89mm, var 2.82mm])
+  line4 = line(start = [var 4.09mm, var 3.03mm], end = [var 4.5mm, var -0.16mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#;
+    // Use a new statement; don't extend the prior pipeline.  This allows us to
+    // detect a prefix.
+    let code_with_extrude = code.to_owned()
+        + r#"
+sketch002 = sketch(on = -XZ) {
+  line1 = line(start = [var -5.33mm, var -0.06mm], end = [var -3.49mm, var -0.06mm])
+  line2 = line(start = [var -3.49mm, var -0.06mm], end = [var -3.49mm, var 3.09mm])
+  line3 = line(start = [var -3.52mm, var 4.47mm], end = [var -5.36mm, var 4.47mm])
+  line4 = line(start = [var -5.33mm, var 3.09mm], end = [var -5.33mm, var -0.06mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+region001 = region(point = [-4.4175mm, -0.0575mm], sketch = sketch002)
+extrude001 = extrude(region001, length = 5)
+"#;
+
+    let result = cache_test(
+        "add_second_sketch_block_preserves_node_path",
+        vec![
+            Variation {
+                code,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: code_with_extrude.as_str(),
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let first = &result.first().unwrap().2;
+    let second = &result.last().unwrap().2;
+
+    assert!(
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
+    );
+    assert!(
+        first.operations.len() < second.operations.len(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.len(),
+        second.operations.len()
+    );
+    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+        panic!("Last operation should be stdlib call extrude");
+    };
+    assert_eq!(name, "extrude");
+    // Make sure we have NodePaths.
+    let first_graph = &first.artifact_graph;
+    assert!(!first_graph.is_empty());
+    for artifact in first_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+    // Make sure we have NodePaths.
+    let second_graph = &second.artifact_graph;
+    assert!(!second_graph.is_empty());
+    for artifact in second_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_offset_plane_computes_node_path() {
     let code = r#"sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])

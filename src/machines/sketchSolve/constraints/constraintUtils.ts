@@ -2,6 +2,8 @@ import type {
   ApiConstraint,
   FixedPoint,
   ApiObject,
+  Coincident,
+  CoincidentSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -321,6 +323,25 @@ export type CoincidentConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
 }
 
+export function isCoincidentSegmentId(
+  segment: CoincidentSegment
+): segment is number {
+  return typeof segment === 'number'
+}
+
+export function getCoincidentSegmentIds(
+  coincident: Pick<Coincident, 'segments'>
+): number[] {
+  return coincident.segments.filter(isCoincidentSegmentId)
+}
+
+export function coincidentContainsSegment(
+  coincident: Pick<Coincident, 'segments'>,
+  segmentId: number
+) {
+  return getCoincidentSegmentIds(coincident).includes(segmentId)
+}
+
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
 }
@@ -479,9 +500,9 @@ export function getCoincidentCluster(
       .filter(
         (obj): obj is CoincidentConstraint =>
           isConstraint(obj, 'Coincident') &&
-          obj.kind.constraint.segments.includes(currentPointId)
+          coincidentContainsSegment(obj.kind.constraint, currentPointId)
       )
-      .flatMap((obj) => obj.kind.constraint.segments)
+      .flatMap((obj) => getCoincidentSegmentIds(obj.kind.constraint))
 
     coincidentPointIds.forEach((coincidentPointId) => {
       if (

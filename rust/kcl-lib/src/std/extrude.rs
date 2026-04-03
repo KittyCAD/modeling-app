@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
@@ -29,6 +30,7 @@ use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::CreatorFace;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
@@ -36,6 +38,8 @@ use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::ProfileClosed;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
@@ -44,19 +48,23 @@ use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
+use crate::std::sketch2::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches: Vec<Extrudable> = args.get_unlabeled_kw_arg(
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "sketches",
         &RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::sketch(),
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
+                RuntimeType::segment(),
             ])),
             ArrayLen::Minimum(1),
         ),
@@ -91,6 +99,16 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
     let hide_seams: Option<bool> = args.get_kw_arg_opt("hideSeams", &RuntimeType::bool(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let sketches = coerce_extrude_targets(
+        sketch_values,
+        body_type.unwrap_or_default(),
+        tag_start.as_ref(),
+        tag_end.as_ref(),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let result = inner_extrude(
         sketches,
@@ -113,6 +131,142 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     .await?;
 
     Ok(result.into())
+}
+
+async fn coerce_extrude_targets(
+    sketch_values: Vec<KclValue>,
+    body_type: BodyType,
+    tag_start: Option<&TagNode>,
+    tag_end: Option<&TagNode>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: crate::SourceRange,
+) -> Result<Vec<Extrudable>, KclError> {
+    let mut extrudables = Vec::new();
+    let mut segments = Vec::new();
+
+    for value in sketch_values {
+        if let Some(segment) = value.clone().into_segment() {
+            segments.push(segment);
+            continue;
+        }
+
+        let Some(extrudable) = Extrudable::from_kcl_val(&value) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected sketches, faces, tagged faces, or solved sketch segments for extrusion.".to_owned(),
+                vec![source_range],
+            )));
+        };
+        extrudables.push(extrudable);
+    }
+
+    if !segments.is_empty() && !extrudables.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot extrude sketch segments together with sketches or faces in the same call. Use separate `extrude()` calls.".to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    if !segments.is_empty() {
+        if !matches!(body_type, BodyType::Surface) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Extruding sketch segments is only supported for surface extrudes. Set `bodyType = SURFACE`."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if tag_start.is_some() || tag_end.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`tagStart` and `tagEnd` are not supported when extruding sketch segments. Segment surface extrudes do not create start or end caps."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
+        return Ok(vec![Extrudable::from(synthetic_sketch)]);
+    }
+
+    Ok(extrudables)
+}
+
+pub(crate) async fn build_segment_surface_sketch(
+    mut segments: Vec<Segment>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: crate::SourceRange,
+) -> Result<Sketch, KclError> {
+    let Some(first_segment) = segments.first() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Expected at least one sketch segment.".to_owned(),
+            vec![source_range],
+        )));
+    };
+
+    let sketch_id = first_segment.sketch_id;
+    let sketch_surface = first_segment.surface.clone();
+    for segment in &segments {
+        if segment.sketch_id != sketch_id {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "All sketch segments passed to this operation must come from the same sketch.".to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if segment.surface != sketch_surface {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "All sketch segments passed to this operation must lie on the same sketch surface.".to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if matches!(segment.kind, SegmentKind::Point { .. }) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if segment.is_construction() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Construction segments cannot be used here. Select non-construction sketch segments instead."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+    }
+
+    let synthetic_sketch_id = exec_state.next_uuid();
+    let segment_tags = IndexMap::from_iter(segments.iter().filter_map(|segment| {
+        segment
+            .tag
+            .as_ref()
+            .map(|tag| (segment.object_id, TagDeclarator::new(&tag.value)))
+    }));
+
+    for segment in &mut segments {
+        segment.id = exec_state.next_uuid();
+        segment.sketch_id = synthetic_sketch_id;
+        segment.sketch = None;
+    }
+
+    create_segments_in_engine(
+        &sketch_surface,
+        synthetic_sketch_id,
+        &mut segments,
+        &segment_tags,
+        ctx,
+        exec_state,
+        source_range,
+    )
+    .await?
+    .ok_or_else(|| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "Expected at least one usable sketch segment.".to_owned(),
+            vec![source_range],
+        ))
+    })
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -892,4 +1046,80 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
         },
     });
     Some(extrude_surface)
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
+
+    use super::*;
+    use crate::execution::AbstractSegment;
+    use crate::execution::Plane;
+    use crate::execution::SegmentRepr;
+    use crate::execution::types::NumericType;
+    use crate::front::Expr;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+    use crate::front::PointCtor;
+    use crate::std::sketch::PlaneData;
+
+    fn point_expr(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        }
+    }
+
+    fn segment_value(exec_state: &mut ExecState) -> KclValue {
+        let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, exec_state).unwrap();
+        let segment = Segment {
+            id: exec_state.next_uuid(),
+            object_id: ObjectId(1),
+            kind: SegmentKind::Point {
+                position: [TyF64::new(0.0, NumericType::mm()), TyF64::new(0.0, NumericType::mm())],
+                ctor: Box::new(PointCtor {
+                    position: point_expr(0.0, 0.0),
+                }),
+                freedom: None,
+            },
+            surface: SketchSurface::Plane(Box::new(plane)),
+            sketch_id: exec_state.next_uuid(),
+            sketch: None,
+            tag: None,
+            meta: vec![],
+        };
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Solved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn segment_extrude_rejects_cap_tags() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let err = coerce_extrude_targets(
+            vec![segment_value(&mut exec_state)],
+            BodyType::Surface,
+            Some(&TagDeclarator::new("cap_start")),
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("`tagStart` and `tagEnd` are not supported when extruding sketch segments"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
 }

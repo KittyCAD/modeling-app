@@ -464,11 +464,12 @@ async fn inner_rotate(
     Ok(objects)
 }
 
-/// Hide solids, sketches, or imported objects.
+/// Hide solids, sketches, helices, or imported objects.
 pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::helices(),
             RuntimeType::imported(),
@@ -773,6 +774,19 @@ sweepSketch = startSketchOn(XY)
 )
 
 hide(helixPath)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_sketch_block() {
+        let ast = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle001 = circle(start = [var 1.16mm, var 4.24mm], center = [var -1.81mm, var -0.5mm])
+}
+
+hide(sketch001)
 "#;
         parse_execute(ast).await.unwrap();
     }
