@@ -14,7 +14,7 @@ Current status:
 
 - `convert` is implemented
 - `run` is implemented
-- `render` is not implemented yet
+- `render` is implemented
 - `compare` is not implemented yet
 
 ## Build
@@ -36,8 +36,8 @@ cargo run -p kcl-lib --bin transpile -- --help
 ```text
 transpile convert <input> [OPTIONS]
 transpile run <input> -o <DIR> [OPTIONS]
-transpile render <input> [OPTIONS]
-transpile compare <input> [OPTIONS]
+transpile render <input> -o <DIR> [OPTIONS]
+transpile compare <input> -o <DIR> [OPTIONS]
 ```
 
 There is no legacy bare `transpile <input>` mode anymore.
@@ -205,6 +205,70 @@ Example recursive output files:
 /tmp/transpile-run-recursive/box/main-run-log.txt
 /tmp/transpile-run-recursive/cpu-cooler/fan.kcl
 /tmp/transpile-run-recursive/cpu-cooler/fan-run-log.txt
+```
+
+## `render`
+
+`render` transpiles to Sketch V2, persists the transpiled KCL, then renders a PNG from the transpiled result.
+
+Single-file behavior:
+
+- requires `-o, --out-dir`
+- writes the transpiled KCL into `--out-dir`
+- writes `rendered_model.png`
+- writes `render-log.txt`
+
+`render-log.txt` contains either:
+
+- `success`
+- or a failure marker plus the error text
+
+Recursive behavior:
+
+- requires `-r, --recursive`
+- requires `-o, --out-dir`
+- mirrors transpiled KCL under `--out-dir`
+- writes one PNG per processed file using `<stem>-rendered_model.png`
+- writes one log per processed file using `<stem>-render-log.txt`
+- writes grouped `Convert failed` and `Render failed` summaries
+- optionally writes the same report to `--report-file`
+
+Single-file example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  render public/kcl-samples/cone \
+  -o /tmp/transpile-render-one
+```
+
+Example output files:
+
+```text
+/tmp/transpile-render-one/main.kcl
+/tmp/transpile-render-one/rendered_model.png
+/tmp/transpile-render-one/render-log.txt
+```
+
+Recursive example:
+
+```bash
+cargo run -p kcl-lib --bin transpile -- \
+  render /tmp/transpile-input \
+  -r \
+  -k \
+  -o /tmp/transpile-render-recursive \
+  --report-file /tmp/transpile-render-recursive/report.txt
+```
+
+Example recursive output files:
+
+```text
+/tmp/transpile-render-recursive/box/main.kcl
+/tmp/transpile-render-recursive/box/main-rendered_model.png
+/tmp/transpile-render-recursive/box/main-render-log.txt
+/tmp/transpile-render-recursive/cpu-cooler/fan.kcl
+/tmp/transpile-render-recursive/cpu-cooler/fan-rendered_model.png
+/tmp/transpile-render-recursive/cpu-cooler/fan-render-log.txt
 ```
 
 ## Ignore Files
