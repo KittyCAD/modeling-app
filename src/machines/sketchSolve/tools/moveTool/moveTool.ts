@@ -174,17 +174,23 @@ function getDragPointSnappingCandidate({
   if (draggedEntityId === null) {
     return null
   }
-  if (
-    selectedIds.length >= 2 ||
-    (selectedIds.length === 1 && selectedIds[0] !== draggedEntityId)
-  ) {
-    // dragging more than 1 point -> not supported
-    return null
-  }
-
   const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
   if (!isPointSegment(draggedObject)) {
     // snapping only works with points for now
+    return null
+  }
+
+  const selectedIdsWithoutOwner = selectedIds.filter(
+    (selectedId) => selectedId !== draggedObject.kind.segment.owner
+  )
+  if (
+    selectedIdsWithoutOwner.length >= 2 ||
+    (selectedIdsWithoutOwner.length === 1 &&
+      selectedIdsWithoutOwner[0] !== draggedEntityId)
+  ) {
+    // Drag snapping only supports a single dragged point, but allow the point's
+    // owner segment to remain selected because arc/circle point drags often keep
+    // the parent segment selected in the move tool.
     return null
   }
 

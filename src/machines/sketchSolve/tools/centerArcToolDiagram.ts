@@ -63,9 +63,11 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     centerPointId: undefined,
     centerPoint: undefined,
+    centerSnapTarget: undefined,
     arcId: undefined,
     arcEndPointId: undefined,
     arcStartPoint: undefined,
+    startSnapTarget: undefined,
     arcIsSwapped: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
@@ -100,6 +102,7 @@ export const machine = setup({
             // Just store the center point coordinate, don't create a point segment
             return {
               centerPoint: event.data,
+              centerSnapTarget: event.snapTarget,
             }
           }),
         },
@@ -141,6 +144,8 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
+            centerSnapTarget: context.centerSnapTarget,
+            startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -223,6 +228,7 @@ export const machine = setup({
             centerPoint: context.centerPoint,
             endPoint: event.data,
             sceneGraphDelta: context.sceneGraphDelta,
+            endSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -249,9 +255,11 @@ export const machine = setup({
                 // Clear context values for the next arc
                 centerPoint: undefined,
                 centerPointId: undefined,
+                centerSnapTarget: undefined,
                 arcId: undefined,
                 arcEndPointId: undefined,
                 arcStartPoint: undefined,
+                startSnapTarget: undefined,
                 arcIsSwapped: undefined,
               }),
             ],

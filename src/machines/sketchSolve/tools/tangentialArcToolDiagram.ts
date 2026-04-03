@@ -51,6 +51,8 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     tangentInfo: undefined,
     arcId: undefined,
+    arcStartPointId: undefined,
+    arcEndPointId: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
@@ -166,6 +168,7 @@ export const machine = setup({
           return {
             arcId: context.arcId,
             endPoint: event.data,
+            endSnapTarget: event.snapTarget,
             tangentInfo: context.tangentInfo,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -191,6 +194,8 @@ export const machine = setup({
               assign({
                 tangentInfo: undefined,
                 arcId: undefined,
+                arcStartPointId: undefined,
+                arcEndPointId: undefined,
               }),
             ],
           },
