@@ -12,8 +12,8 @@ pub fn compare_images(
     right: &image::DynamicImage,
 ) -> Result<ImageComparison, image_compare::CompareError> {
     let result = image_compare::rgba_hybrid_compare(&left.to_rgba8(), &right.to_rgba8())?;
-    let difference = result.score.clamp(0.0, 1.0);
-    let similarity = (1.0 - difference).clamp(0.0, 1.0);
+    let similarity = result.score.clamp(0.0, 1.0);
+    let difference = (1.0 - similarity).clamp(0.0, 1.0);
 
     Ok(ImageComparison {
         similarity,
