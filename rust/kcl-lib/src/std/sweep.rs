@@ -22,6 +22,7 @@ use crate::execution::ProfileClosed;
 use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
@@ -36,7 +37,13 @@ use crate::std::extrude::do_post_extrude;
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
-    Segment(Segment),
+    Segments(Vec<Segment>),
+}
+
+/// The outer (typical) sweep path gets converted to this, losing some of its variants in the conversion.
+enum InnerSweepPath {
+    Sketch(Sketch),
+    Helix(Box<Helix>),
 }
 
 /// Create a 3D surface or solid by sweeping a sketch along a path.
@@ -47,7 +54,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::sketch(),
             RuntimeType::helix(),
-            RuntimeType::segment(),
+            RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         ]),
         exec_state,
     )?;
@@ -59,10 +66,11 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
     let version: Option<TyF64> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     let path = match path {
-        SweepPath::Segment(segment) => SweepPath::Sketch(
-            build_segment_surface_sketch(vec![segment], exec_state, &args.ctx, args.source_range).await?,
+        SweepPath::Segments(segments) => InnerSweepPath::Sketch(
+            build_segment_surface_sketch(segments, exec_state, &args.ctx, args.source_range).await?,
         ),
-        path => path,
+        SweepPath::Sketch(sketch) => InnerSweepPath::Sketch(sketch),
+        SweepPath::Helix(helix) => InnerSweepPath::Helix(helix),
     };
 
     let value = inner_sweep(
@@ -85,7 +93,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Sketch>,
-    path: SweepPath,
+    path: InnerSweepPath,
     sectional: Option<bool>,
     tolerance: Option<TyF64>,
     relative_to: Option<String>,
@@ -105,9 +113,8 @@ async fn inner_sweep(
     }
 
     let trajectory = ModelingCmdId::from(match path {
-        SweepPath::Sketch(sketch) => sketch.id,
-        SweepPath::Helix(helix) => helix.value,
-        SweepPath::Segment(segment) => segment.id,
+        InnerSweepPath::Sketch(sketch) => sketch.id,
+        InnerSweepPath::Helix(helix) => helix.value,
     });
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
