@@ -40,7 +40,6 @@ use crate::std::Args;
 use crate::std::CircularDirection;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
-use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::StraightLineParams;
 use crate::std::sketch::create_sketch;
 use crate::std::sketch::relative_arc;
@@ -243,14 +242,8 @@ pub(crate) async fn create_segments_in_engine(
                 let end_radians = start_radians + TAU;
                 let radius_in_center_unit = distance(center, start_in_center_unit);
 
-                let sketch_surface = SketchOrSurface::Sketch(Box::new(sketch.clone())).into_sketch_surface();
                 let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
                 let from = start_in_center_unit;
-                let from_t = [TyF64::new(from[0], center_ty), TyF64::new(from[1], center_ty)];
-
-                let sketch =
-                    crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, ctx, range)
-                        .await?;
 
                 let id = exec_state.next_uuid();
 
@@ -295,7 +288,7 @@ pub(crate) async fn create_segments_in_engine(
                     ccw: start_radians < end_radians,
                 };
 
-                let mut new_sketch = sketch;
+                let mut new_sketch = sketch.clone();
                 if let Some(tag) = &tag {
                     new_sketch.add_tag(tag, &current_path, exec_state, None);
                 }

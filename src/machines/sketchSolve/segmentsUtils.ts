@@ -123,7 +123,7 @@ export function deriveSegmentFreedom(
  * 1. Draft color (priority 1) - grey
  * 2. Hover color (priority 2) - lighter version of selection color
  * 3. Select color (priority 3) - SKETCH_SELECTION_COLOR
- * 4. Conflict color (priority 4) - CONFLICT_COLOR (red)
+ * 4. Conflict/solver-failure color (priority 4) - CONFLICT_COLOR (red)
  * 5. Constrained color (priority 5) - theme-aware for sketch scene contrast
  * 6. Unconstrained color (priority 6) - UNCONSTRAINED_COLOR (brand blue)
  * 7. Default color (lowest priority) - UNCONSTRAINED_COLOR
@@ -132,12 +132,14 @@ export function getSegmentColor({
   isDraft = false,
   isHovered,
   isSelected,
+  hasSolveErrors = false,
   freedom,
   theme,
 }: {
   isDraft?: boolean
   isHovered?: boolean
   isSelected?: boolean
+  hasSolveErrors?: boolean
   freedom?: Freedom | null
   theme: Themes
 }): number {
@@ -160,8 +162,8 @@ export function getSegmentColor({
     return SKETCH_SELECTION_COLOR
   }
 
-  // Priority 4: Conflict color (red)
-  if (freedom === 'Conflict') {
+  // Priority 4: Conflict / solver failure color (red)
+  if (hasSolveErrors || freedom === 'Conflict') {
     return CONFLICT_COLOR
   }
 
