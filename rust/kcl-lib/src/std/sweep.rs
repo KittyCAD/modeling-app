@@ -100,7 +100,7 @@ async fn inner_sweep(
     let trajectory = ModelingCmdId::from(match path {
         SweepPath::Sketch(sketch) => sketch.id,
         SweepPath::Helix(helix) => helix.value,
-        SweepPath::Segment(segment) => segment.id,
+        SweepPath::Segment(segment) => segment.sketch_id,
     });
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
