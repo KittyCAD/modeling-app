@@ -2288,7 +2288,7 @@ sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
 region002 = region(segments = [sketch002.circle1])`
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
+    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2299,10 +2299,9 @@ region002 = region(segments = [sketch002.circle1])`
 
     await test.step('Add revolve feature via point-and-click', async () => {
       // select line of code
-      const codeToSelection = `center = [-11.34, 10.0]`
+      const codeToSelection = `region002 = region(`
       // revolve
-      await editor.scrollToText(codeToSelection)
-      await page.getByText(codeToSelection).click()
+      await editor.selectText(codeToSelection)
       await toolbar.revolveButton.click()
       await cmdBar.expectState({
         commandName: 'Revolve',
@@ -2322,7 +2321,7 @@ region002 = region(segments = [sketch002.circle1])`
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 path',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2335,7 +2334,7 @@ region002 = region(segments = [sketch002.circle1])`
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 path',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2343,15 +2342,20 @@ region002 = region(segments = [sketch002.circle1])`
         highlightedHeaderArg: 'edge',
         stage: 'arguments',
       })
-      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-      await editor.selectText(lineCodeToSelection)
+      // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
+      const firstEdgeLocation = { x: 600, y: 195 }
+      const [clickOnFirstEdge] = scene.makeMouseHelpers(
+        firstEdgeLocation.x,
+        firstEdgeLocation.y
+      )
+      await clickOnFirstEdge()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Revolve',
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 path',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2363,7 +2367,7 @@ region002 = region(segments = [sketch002.circle1])`
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 path',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
