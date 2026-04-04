@@ -2373,8 +2373,8 @@ answer = returnX()"#;
     async fn test_override_prelude() {
         let text = "PI = 3.0";
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.issues();
-        assert!(errs.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2390,8 +2390,8 @@ foo([0, 1])
 type Other = MyTy | Helix
 "#;
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.issues();
-        assert!(errs.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3151,10 +3151,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = allow)
@@ -3163,8 +3163,8 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert!(errors.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
 
         let code = r#"@settings(experimentalFeatures = warn)
 startSketchOn(XY)
@@ -3172,10 +3172,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Warning);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Warning);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = deny)
@@ -3184,10 +3184,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = foo)
@@ -3208,10 +3208,10 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5, amount = 2)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         // If the parameter isn't used, there's no warning.
@@ -3223,8 +3223,8 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.issues();
-        assert_eq!(errors.len(), 0);
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
