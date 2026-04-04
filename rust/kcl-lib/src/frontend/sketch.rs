@@ -391,9 +391,22 @@ impl From<ObjectId> for CoincidentSegment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
-    pub points: Vec<ObjectId>,
+    pub points: Vec<CoincidentSegment>,
     pub distance: Number,
     pub source: ConstraintSource,
+}
+
+impl Distance {
+    pub fn point_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.points.iter().filter_map(|point| match point {
+            CoincidentSegment::Segment(id) => Some(*id),
+            CoincidentSegment::Origin(_) => None,
+        })
+    }
+
+    pub fn contains_point(&self, point_id: ObjectId) -> bool {
+        self.point_ids().any(|id| id == point_id)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

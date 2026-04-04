@@ -2441,19 +2441,21 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
-            return Err(Error {
-                msg: format!(
-                    "Distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                ),
-            });
-        };
         let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
-        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
+        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+            [pt0, pt1] => [
+                self.coincident_segment_to_ast(pt0, new_ast)?,
+                self.coincident_segment_to_ast(pt1, new_ast)?,
+            ],
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "Distance constraint must have exactly 2 points, got {}",
+                        distance.points.len()
+                    ),
+                });
+            }
+        };
 
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -2782,19 +2784,21 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
-            return Err(Error {
-                msg: format!(
-                    "Horizontal distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                ),
-            });
-        };
         let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
-        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
+        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+            [pt0, pt1] => [
+                self.coincident_segment_to_ast(pt0, new_ast)?,
+                self.coincident_segment_to_ast(pt1, new_ast)?,
+            ],
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "Horizontal distance constraint must have exactly 2 points, got {}",
+                        distance.points.len()
+                    ),
+                });
+            }
+        };
 
         // Create the horizontalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -2843,19 +2847,21 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
-            return Err(Error {
-                msg: format!(
-                    "Vertical distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                ),
-            });
-        };
         let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
-        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
+        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+            [pt0, pt1] => [
+                self.coincident_segment_to_ast(pt0, new_ast)?,
+                self.coincident_segment_to_ast(pt1, new_ast)?,
+            ],
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "Vertical distance constraint must have exactly 2 points, got {}",
+                        distance.points.len()
+                    ),
+                });
+            }
+        };
 
         // Create the verticalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3244,8 +3250,8 @@ impl FrontendState {
                     }
                     false
                 }),
-                Constraint::Distance(d) => d.points.iter().any(|pt_id| {
-                    if segment_ids_set.contains(pt_id) {
+                Constraint::Distance(d) => d.point_ids().any(|pt_id| {
+                    if segment_ids_set.contains(&pt_id) {
                         return true;
                     }
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
@@ -3261,7 +3267,7 @@ impl FrontendState {
                 Constraint::Fixed(_) => false,
                 Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
                 Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
-                Constraint::HorizontalDistance(d) => d.points.iter().any(|pt_id| {
+                Constraint::HorizontalDistance(d) => d.point_ids().any(|pt_id| {
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
                     if let Some(obj) = pt_object
                         && let ObjectKind::Segment { segment } = &obj.kind
@@ -3272,7 +3278,7 @@ impl FrontendState {
                     }
                     false
                 }),
-                Constraint::VerticalDistance(d) => d.points.iter().any(|pt_id| {
+                Constraint::VerticalDistance(d) => d.point_ids().any(|pt_id| {
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
                     if let Some(obj) = pt_object
                         && let ObjectKind::Segment { segment } = &obj.kind
@@ -6652,7 +6658,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id, point1_id],
+            points: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -6714,7 +6720,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::HorizontalDistance(Distance {
-            points: vec![point0_id, point1_id],
+            points: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -6848,7 +6854,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::VerticalDistance(Distance {
-            points: vec![point0_id, point1_id],
+            points: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,

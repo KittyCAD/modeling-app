@@ -2354,10 +2354,9 @@ pub(crate) fn trim_strategy(
             // even when this segment is trimmed. Only constraints that measure distances between
             // points on the same segment (e.g., segment length constraints) should be deleted.
             let points_owned_by_segment: Vec<bool> = distance
-                .points
-                .iter()
+                .point_ids()
                 .map(|point_id| {
-                    if let Some(point_obj) = objects.iter().find(|o| o.id == *point_id)
+                    if let Some(point_obj) = objects.iter().find(|o| o.id == point_id)
                         && let ObjectKind::Segment { segment } = &point_obj.kind
                         && let Segment::Point(point) = segment
                         && let Some(owner_id) = point.owner
@@ -3304,7 +3303,7 @@ pub(crate) fn trim_strategy(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.points.contains(&center_id)
+                    && distance.contains_point(center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -3784,7 +3783,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.points.contains(&original_center_id)
+                            && distance.contains_point(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -4168,8 +4167,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.points.contains(&original_start_id);
-                        let references_end = distance.points.contains(&original_end_id);
+                        let references_start = distance.contains_point(original_start_id);
+                        let references_end = distance.contains_point(original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push((distance.distance, distance.source.clone()));
@@ -4181,7 +4180,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                            points: vec![original_start_id, new_segment_end_point_id],
+                            points: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             source,
                         }));
@@ -4212,10 +4211,17 @@ pub(crate) async fn execute_trim_operations_simple(
                                 }));
                             }
                             Constraint::Distance(distance) => {
-                                let new_points: Vec<ObjectId> = distance
+                                let new_points: Vec<crate::frontend::sketch::CoincidentSegment> = distance
                                     .points
                                     .iter()
-                                    .map(|pt| if *pt == original_center_id { new_center_id } else { *pt })
+                                    .map(|point| match *point {
+                                        crate::frontend::sketch::CoincidentSegment::Segment(id)
+                                            if id == original_center_id =>
+                                        {
+                                            new_center_id.into()
+                                        }
+                                        _ => *point,
+                                    })
                                     .collect();
 
                                 batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {

@@ -35,11 +35,9 @@ export type SnappingCandidate = {
   position: Coords2d
 }
 
-type AxisDistancePoint = number | 'ORIGIN'
-
 type AxisSnapConstraint = {
   type: 'HorizontalDistance' | 'VerticalDistance'
-  points: [AxisDistancePoint, AxisDistancePoint]
+  points: [CoincidentSegment, CoincidentSegment]
   distance: ConstraintNumber
   source: ConstraintSource
 }

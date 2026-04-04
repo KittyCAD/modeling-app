@@ -108,17 +108,29 @@ export function getDistanceEndPoints(
 ) {
   const constraint = obj.kind.constraint
   const [p1Id, p2Id] = constraint.points
-  const p1Obj = objects[p1Id]
-  const p2Obj = objects[p2Id]
+  const p1 = getDistanceConstraintPointPosition(p1Id, objects)
+  const p2 = getDistanceConstraintPointPosition(p2Id, objects)
 
-  if (isPointSegment(p1Obj) && isPointSegment(p2Obj)) {
+  if (p1 && p2) {
     return {
-      p1: pointToVec3(p1Obj),
-      p2: pointToVec3(p2Obj),
+      p1,
+      p2,
       distance: constraint.distance,
     }
   }
   return null
+}
+
+function getDistanceConstraintPointPosition(
+  pointId: number | 'ORIGIN',
+  objects: ApiObject[]
+) {
+  if (pointId === 'ORIGIN') {
+    return new Vector3(0, 0, 0)
+  }
+
+  const pointObject = objects[pointId]
+  return isPointSegment(pointObject) ? pointToVec3(pointObject) : null
 }
 
 function getDirections(
