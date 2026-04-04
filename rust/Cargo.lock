@@ -1055,9 +1055,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.19"
+version = "0.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b9af36d791ceed4ad8ed5f985f0768fc09f8186edef9fca0e277d26ef5125ea"
+checksum = "07878f63542370fd5fcf06f776cc2bf7b58cb557a41f9a72d4183e84e7707e54"
 dependencies = [
  "faer",
  "indexmap 2.13.0",
@@ -2056,6 +2056,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "image-compare"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "176623a137baf75908084aff53578d6336cbd932bffaf12fabe26b343eb13338"
+dependencies = [
+ "image",
+ "itertools 0.14.0",
+ "rayon",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2334,6 +2346,7 @@ dependencies = [
  "http 1.4.0",
  "ignore",
  "image",
+ "image-compare 0.5.0",
  "indexmap 2.13.0",
  "insta",
  "itertools 0.14.0",
@@ -5274,7 +5287,7 @@ checksum = "f40badf08ea9162f080ee79ef4411b1a91919b44a01a3035c004a080dac39494"
 dependencies = [
  "anyhow",
  "image",
- "image-compare",
+ "image-compare 0.4.2",
  "uuid",
 ]
 

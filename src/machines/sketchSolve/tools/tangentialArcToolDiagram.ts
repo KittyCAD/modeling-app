@@ -1,5 +1,9 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
+import {
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
@@ -25,12 +29,19 @@ export const machine = setup({
     events: {} as ToolEvents,
     input: {} as ToolInput,
   },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
+  },
   actions: {
     'add first point listener': addFirstPointListener,
     'add second point listener': animateArcEndPointListener,
     'remove point listener': removePointListener,
     'send result to parent': sendResultToParent,
     'store created arc result': assign(storeCreatedArcResult),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     createArc: fromPromise(createArcActor),
@@ -94,11 +105,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'Animating arc',
-          actions: ['send result to parent', 'store created arc result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for tangent info click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'Animating arc',
+            actions: ['send result to parent', 'store created arc result'],
+          },
+        ],
+        onError: {
+          target: 'ready for tangent info click',
+          actions: 'toast sketch solve error',
         },
-        onError: 'ready for tangent info click',
       },
     },
 
@@ -154,25 +175,35 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ready for tangent info click',
-          actions: [
-            'send result to parent',
-            ({ self }) => {
-              const sendData: SketchSolveMachineEvent = {
-                type: 'clear draft entities',
-              }
-              self._parent?.send(sendData)
-            },
-            assign({
-              tangentInfo: undefined,
-              arcId: undefined,
-              arcStartPointId: undefined,
-              arcEndPointId: undefined,
-            }),
-          ],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'Animating arc',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for tangent info click',
+            actions: [
+              'send result to parent',
+              ({ self }) => {
+                const sendData: SketchSolveMachineEvent = {
+                  type: 'clear draft entities',
+                }
+                self._parent?.send(sendData)
+              },
+              assign({
+                tangentInfo: undefined,
+                arcId: undefined,
+                arcStartPointId: undefined,
+                arcEndPointId: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: 'Animating arc',
+          actions: 'toast sketch solve error',
         },
-        onError: 'Animating arc',
       },
     },
 
