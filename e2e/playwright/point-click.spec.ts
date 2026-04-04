@@ -703,11 +703,16 @@ sketch001 = extrude(region001, length = -12)`
     commandName: 'Helix',
   }
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10786 is in
-  test.fixme(
-    `Helix point-and-click around sweepEdge with edit and delete flows`,
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `@settings(experimentalFeatures = allow)
+  test(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
@@ -720,170 +725,163 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
-      // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-      const testPoint = { x: 564, y: 364 }
-      const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
+    const testPoint = { x: 564, y: 364 }
+    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
 
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-      await test.step(`Go through the command bar flow`, async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.helixButton.click()
-        await cmdBar.expectState(initialCmdBarStateHelix)
-        await cmdBar.selectOption({ name: 'Edge' }).click()
-        await expect
-          .poll(() => page.getByText('Please select one').count())
-          .toBe(1)
-        await clickOnEdge()
-        await cmdBar.progressCmdBar()
-        await cmdBar.argumentInput.focus()
-        await page.keyboard.insertText('20')
-        await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('0')
-        await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Mode: 'Edge',
-            Edge: `1 edge`,
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: '1',
-          },
-          commandName: 'Helix',
-        })
-        await cmdBar.clickOptionalArgument('ccw')
-        await cmdBar.selectOption({ name: 'On' }).click()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Mode: 'Edge',
-            Edge: `1 edge`,
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: '1',
-            CounterClockWise: 'true',
-          },
-          commandName: 'Helix',
-        })
-        await cmdBar.submit()
-        await scene.settled(cmdBar)
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.helixButton.click()
+      await cmdBar.expectState(initialCmdBarStateHelix)
+      await cmdBar.selectOption({ name: 'Edge' }).click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
+      await clickOnEdge()
+      await cmdBar.progressCmdBar()
+      await cmdBar.argumentInput.focus()
+      await page.keyboard.insertText('20')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('0')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('1')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Mode: 'Edge',
+          Edge: `1 edge`,
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: '1',
+        },
+        commandName: 'Helix',
       })
+      await cmdBar.clickOptionalArgument('ccw')
+      await cmdBar.selectOption({ name: 'On' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Mode: 'Edge',
+          Edge: `1 edge`,
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: '1',
+          CounterClockWise: 'true',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
 
-      await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
         helix001 = helix(
-          axis = getOppositeEdge(region001.tags.line1),
+          axis = getCommonEdge(faces=[region001.tags.line3,capEnd001]),
           revolutions = 20,
           angleStart = 0,
           radius = 1,
           ccw = true,
         )`,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
+        { shouldNormalise: true }
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      await test.step(`Edit helix through the feature tree`, async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Helix',
-          0
-        )
-        await operationButton.dblclick()
-        const initialInput = '1'
-        const newInput = '5'
-        await cmdBar.expectState({
-          commandName: 'Helix',
-          stage: 'arguments',
-          currentArgKey: 'radius',
-          currentArgValue: initialInput,
-          headerArguments: {
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: initialInput,
-            CounterClockWise: 'true',
-          },
-          highlightedHeaderArg: 'radius',
-        })
-        await page.keyboard.insertText(newInput)
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: newInput,
-            CounterClockWise: 'true',
-          },
-          commandName: 'Helix',
-        })
-        await page.getByRole('button', { name: 'CounterClockWise' }).click()
-        await cmdBar.expectState({
-          commandName: 'Helix',
-          stage: 'arguments',
-          currentArgKey: 'CounterClockWise',
-          currentArgValue: '',
-          headerArguments: {
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: newInput,
-            CounterClockWise: 'true',
-          },
-          highlightedHeaderArg: 'CounterClockWise',
-        })
-        await cmdBar.selectOption({ name: 'Off' }).click()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            AngleStart: '0',
-            Revolutions: '20',
-            Radius: newInput,
-            CounterClockWise: 'false',
-          },
-          commandName: 'Helix',
-        })
-        await cmdBar.submit()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
+    await test.step(`Edit helix through the feature tree`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await operationButton.dblclick()
+      const initialInput = '1'
+      const newInput = '5'
+      await cmdBar.expectState({
+        commandName: 'Helix',
+        stage: 'arguments',
+        currentArgKey: 'radius',
+        currentArgValue: initialInput,
+        headerArguments: {
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: initialInput,
+          CounterClockWise: 'true',
+        },
+        highlightedHeaderArg: 'radius',
+      })
+      await page.keyboard.insertText(newInput)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: newInput,
+          CounterClockWise: 'true',
+        },
+        commandName: 'Helix',
+      })
+      await page.getByRole('button', { name: 'CounterClockWise' }).click()
+      await cmdBar.expectState({
+        commandName: 'Helix',
+        stage: 'arguments',
+        currentArgKey: 'CounterClockWise',
+        currentArgValue: '',
+        headerArguments: {
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: newInput,
+          CounterClockWise: 'true',
+        },
+        highlightedHeaderArg: 'CounterClockWise',
+      })
+      await cmdBar.selectOption({ name: 'Off' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: newInput,
+          CounterClockWise: 'false',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.submit()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = getCommonEdge(faces=[region001.tags.line3,capEnd001]),
           revolutions = 20,
           angleStart = 0,
           radius = 5,
           ccw = false,
         )`,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
+        { shouldNormalise: true }
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
 
-      await test.step('Delete helix via feature tree selection', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Helix',
-          0
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await editor.expectEditor.not.toContain('helix')
-        await expect(
-          await toolbar.getFeatureTreeOperation('Helix', 0)
-        ).not.toBeVisible()
-      })
-    }
-  )
+    await test.step('Delete helix via feature tree selection', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await editor.expectEditor.not.toContain('helix')
+      await expect(
+        await toolbar.getFeatureTreeOperation('Helix', 0)
+      ).not.toBeVisible()
+    })
+  })
 
   test(`Loft point-and-click`, async ({
     context,
@@ -2263,11 +2261,16 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10786 is in
-  test.fixme(
-    'Revolve point-and-click',
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `@settings(experimentalFeatures = allow)
+  test('Revolve point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
@@ -2285,133 +2288,132 @@ sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
 region002 = region(segments = [sketch002.circle1])`
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
+    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
 
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-      await test.step('Add revolve feature via point-and-click', async () => {
-        // select line of code
-        const codeToSelection = `center = [-11.34, 10.0]`
-        // revolve
-        await editor.scrollToText(codeToSelection)
-        await page.getByText(codeToSelection).click()
-        await toolbar.revolveButton.click()
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          currentArgKey: 'sketches',
-          currentArgValue: '',
-          headerArguments: {
-            Profiles: '',
-            AxisOrEdge: '',
-            Angle: '',
-          },
-          highlightedHeaderArg: 'Profiles',
-          stage: 'arguments',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          currentArgKey: 'axisOrEdge',
-          currentArgValue: '',
-          headerArguments: {
-            Profiles: '1 profile',
-            AxisOrEdge: '',
-            Angle: '',
-          },
-          highlightedHeaderArg: 'axisOrEdge',
-          stage: 'arguments',
-        })
-        await cmdBar.selectOption({ name: 'Edge' }).click()
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          currentArgKey: 'edge',
-          currentArgValue: '',
-          headerArguments: {
-            Profiles: '1 profile',
-            Angle: '',
-            AxisOrEdge: 'Edge',
-            Edge: '',
-          },
-          highlightedHeaderArg: 'edge',
-          stage: 'arguments',
-        })
-        const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-        await editor.selectText(lineCodeToSelection)
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          currentArgKey: 'angle',
-          currentArgValue: '360deg',
-          headerArguments: {
-            Profiles: '1 profile',
-            Angle: '',
-            AxisOrEdge: 'Edge',
-            Edge: '1 edge',
-          },
-          highlightedHeaderArg: 'angle',
-          stage: 'arguments',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          headerArguments: {
-            Profiles: '1 profile',
-            Angle: '360deg',
-            AxisOrEdge: 'Edge',
-            Edge: '1 edge',
-          },
-          stage: 'review',
-        })
-        await cmdBar.submit()
-
-        await editor.expectEditor.toContain(newCodeToFind)
+    await test.step('Add revolve feature via point-and-click', async () => {
+      // select line of code
+      const codeToSelection = `center = [-11.34, 10.0]`
+      // revolve
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await toolbar.revolveButton.click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        stage: 'arguments',
       })
-
-      await test.step('Edit revolve feature via feature tree selection', async () => {
-        const newAngle = '180deg'
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Revolve',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
-        await cmdBar.expectState({
-          commandName: 'Revolve',
-          currentArgKey: 'angle',
-          currentArgValue: '360deg',
-          headerArguments: {
-            Angle: '360deg',
-          },
-          highlightedHeaderArg: 'angle',
-          stage: 'arguments',
-        })
-        await page.keyboard.insertText(newAngle)
-        await cmdBar.variableCheckbox.click()
-        await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-          'angle001'
-        )
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Angle: newAngle,
-          },
-          commandName: 'Revolve',
-        })
-        await cmdBar.progressCmdBar()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await editor.expectEditor.toContain('angle001 = ' + newAngle)
-        await editor.expectEditor.toContain(
-          newCodeToFind.replace('angle = 360deg', 'angle = angle001')
-        )
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'axisOrEdge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'axisOrEdge',
+        stage: 'arguments',
       })
-    }
-  )
+      await cmdBar.selectOption({ name: 'Edge' }).click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'edge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '',
+        },
+        highlightedHeaderArg: 'edge',
+        stage: 'arguments',
+      })
+      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+      await editor.selectText(lineCodeToSelection)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '1 edge',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '360deg',
+          AxisOrEdge: 'Edge',
+          Edge: '1 edge',
+        },
+        stage: 'review',
+      })
+      await cmdBar.submit()
+
+      await editor.expectEditor.toContain(newCodeToFind)
+    })
+
+    await test.step('Edit revolve feature via feature tree selection', async () => {
+      const newAngle = '180deg'
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Angle: '360deg',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await cmdBar.variableCheckbox.click()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+      )
+    })
+  })
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10779 is in
   test.fixme(
