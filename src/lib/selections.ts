@@ -419,13 +419,14 @@ export function handleSelectionBatch({
   const selectionToEngine: SelectionToEngine[] = []
 
   selections.graphSelections.forEach(({ artifact }) => {
-    artifact?.id &&
+    if (artifact?.id) {
       selectionToEngine.push({
         id: artifact?.id,
         range:
           getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
           defaultSourceRange(),
       })
+    }
   })
   selections.otherSelections.forEach((s) => {
     if (isEnginePrimitiveSelection(s)) {
@@ -614,7 +615,7 @@ function updateSceneObjectColors(
       ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
     segmentGroup.traverse((child) => {
-      child instanceof Mesh && child.material.color.set(color)
+      if (child instanceof Mesh) child.material.color.set(color)
     })
     // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
     updateExtraSegments(segmentGroup, 'selected', groupHasCursor)

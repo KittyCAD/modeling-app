@@ -117,14 +117,15 @@ function CommandBarSelectionInput({
 
   // Clear selection if needed
   useEffect(() => {
-    arg.clearSelectionFirst &&
+    if (arg.clearSelectionFirst) {
       engineCommandManager.modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
         },
-      }) &&
+      })
       setHasClearedSelection(true)
+    }
   }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
@@ -152,8 +153,9 @@ function CommandBarSelectionInput({
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter &&
+    if (arg.selectionFilter) {
       kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+    }
     return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])

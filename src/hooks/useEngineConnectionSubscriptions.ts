@@ -53,7 +53,7 @@ export function useEngineConnectionSubscriptions() {
             artifactGraph: kclManager.artifactGraph,
             engineCommandManager,
           })
-          event && send(event)
+          if (event) send(event)
         })().catch(reportRejection)
       },
     })

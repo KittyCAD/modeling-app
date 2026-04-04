@@ -150,9 +150,11 @@ export class HistoryView {
       for (const tr of vu.transactions) {
         for (const e of tr.effects) {
           if (e.is(globalHistoryRequest)) {
-            e.value.request === 'undo'
-              ? undo(e.value.historySource)
-              : redo(e.value.historySource)
+            if (e.value.request === 'undo') {
+              undo(e.value.historySource)
+            } else {
+              redo(e.value.historySource)
+            }
           }
         }
       }
