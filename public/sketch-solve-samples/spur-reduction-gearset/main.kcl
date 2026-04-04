@@ -68,4 +68,3 @@ spurGear(
 
   // Rotate the gear so that the teeth mesh but do not intersect
   |> rotate(yaw = 3)
-

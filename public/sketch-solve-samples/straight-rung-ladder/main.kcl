@@ -63,4 +63,3 @@ rungs = patternLinear3d(
        axis = [0, 0, 1],
      )
   |> translate(z = rungSpacing) // lift to first rung position
-

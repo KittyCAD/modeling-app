@@ -21,4 +21,3 @@ sketch002 = sketch(on = startSketchOn(gasketBase, face = END)) {
 region002 = region(segments = [sketch002.circle1])
 extrude(region002, length = -gasketThickness)
   |> appearance(color = "#d0cb3e")
-

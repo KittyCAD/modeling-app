@@ -224,6 +224,10 @@ export type ClosestApiObject = {
   apiObject: ApiObject
 }
 
+export function getSketchHoverDistance(scale: number) {
+  return 10 * scale
+}
+
 /**
  * Finds the closest apiObject to mousePosition (which is given in sketch space).
  * Uses ApiObjects instead of the three.js scene.
@@ -242,7 +246,7 @@ export function findClosestApiObjects(
   // All segments outside of hoverDistance are dropped.
   // Visible non-visual constraints take precedence over overlapping geometry,
   // then points take precedence over other segments to keep them easy to target.
-  const hoverDistance = 10 * scale
+  const hoverDistance = getSketchHoverDistance(scale)
   let mouseScreenPosition: Coords2d | undefined
   const getMouseScreenPosition = () =>
     (mouseScreenPosition ??= localToScreen(

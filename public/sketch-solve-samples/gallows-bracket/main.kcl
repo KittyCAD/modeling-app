@@ -40,4 +40,3 @@ gallowsBracket(
        distance = (width - (bracketsNeeded * ironWidth)) / (bracketsNeeded - 1) + ironWidth,
        axis = [0, 1, 0],
      )
-

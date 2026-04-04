@@ -131,4 +131,3 @@ pistonShaftProfile = sketch(on = pistonShaftSketch) {
 }
 region008 = region(segments = [pistonShaftProfile.circle1])
 pistonShaftHole = extrude(region008, length = -damperBodyLength)
-

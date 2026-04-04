@@ -1,5 +1,7 @@
 import {
   createMockSceneInfra,
+  createMockRustContext,
+  createMockKclManager,
   createArcApiObject,
   createLineApiObject,
   createPointApiObject,
@@ -7,6 +9,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   addFirstPointListener,
+  finalizeArcActor,
   findTangentialArcCenter,
   resolveTangentInfoFromClick,
   resolveTangentialArcEndpoints,
@@ -14,7 +17,8 @@ import {
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it, vi } from 'vitest'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { Mesh } from 'three'
+import { Group, Mesh, Sprite } from 'three'
+import { SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 function createSketchApiObject({ id }: { id: number }): ApiObject {
   return {
@@ -112,6 +116,70 @@ describe('tangentialArcToolImpl', () => {
           ownerId: 3,
           tangentStart: { pointId: 1, position: [0, 0] },
           tangentDirection: [-1, 0],
+        },
+      })
+    })
+
+    it('shows the coincident badge preview when hovering a valid tangent endpoint', () => {
+      const sceneInfra = createMockSceneInfra()
+      const sketchSolveGroup = new Group()
+      ;(sceneInfra.scene.getObjectByName as any).mockReturnValue(
+        sketchSolveGroup
+      )
+
+      const send = vi.fn()
+      const sketch = createSketchApiObject({ id: 0 })
+      const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
+      if (isPointSegment(p1)) {
+        p1.kind.segment.owner = 3
+      }
+      if (isPointSegment(p2)) {
+        p2.kind.segment.owner = 3
+      }
+      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+      const sceneGraphDelta = createSceneGraphDelta(
+        [sketch, p1, p2, line],
+        [0, 1, 2, 3]
+      )
+
+      addFirstPointListener({
+        self: {
+          send,
+          _parent: {
+            send,
+            getSnapshot: () => ({
+              context: {
+                sketchId: 0,
+                sketchExecOutcome: {
+                  sceneGraphDelta,
+                },
+              },
+            }),
+          },
+        } as any,
+        context: {
+          sceneInfra,
+        } as any,
+      } as any)
+
+      const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+      callbacks.onMove({
+        intersectionPoint: {
+          twoD: { x: 0, y: 0 },
+        },
+      })
+
+      const previewSprite = sketchSolveGroup.getObjectByName(
+        SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE
+      )
+      expect(previewSprite).toBeInstanceOf(Sprite)
+      expect((previewSprite as Sprite).visible).toBe(true)
+      expect(send).toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: {
+          hoveredId: 1,
         },
       })
     })
@@ -249,6 +317,92 @@ describe('tangentialArcToolImpl', () => {
         start: [1, -1],
         end: [0, 0],
         swapped: true,
+      })
+    })
+  })
+
+  describe('finalizeArcActor', () => {
+    it('adds a coincident constraint for a snapped free endpoint before tangent constraints', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const center = createPointApiObject({ id: 1, x: 0, y: 1 })
+      const start = createPointApiObject({ id: 2, x: 0, y: 0 })
+      const end = createPointApiObject({ id: 3, x: 1, y: 1 })
+      const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+      ;(rustContext.editSegments as any).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta([center, start, end, arc], [4]),
+      })
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce({
+          kclSource: { text: 'snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [10]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'coincident' },
+          sceneGraphDelta: createSceneGraphDelta([], [11]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'tangent' },
+          sceneGraphDelta: createSceneGraphDelta([], [12]),
+        })
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          endPoint: [1, 1],
+          endSnapTarget: { type: 'point', pointId: 99 },
+          tangentInfo: {
+            ownerId: 5,
+            tangentStart: {
+              pointId: 2,
+              position: [0, 0],
+            },
+            tangentDirection: [1, 0],
+          },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [3, 99],
+        },
+        expect.anything()
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        2,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 2],
+        },
+        expect.anything()
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        3,
+        0,
+        7,
+        {
+          type: 'Tangent',
+          input: [5, 4],
+        },
+        expect.anything()
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'tangent' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [12]),
+          new_objects: [4, 10, 11, 12],
+        },
       })
     })
   })

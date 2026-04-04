@@ -83,4 +83,3 @@ helicalGear(
   helixAngle = 35deg,
   gearHeight = 7,
 )
-

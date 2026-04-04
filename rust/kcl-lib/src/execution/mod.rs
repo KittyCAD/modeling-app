@@ -2066,6 +2066,28 @@ myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn issue_10741_point_circle_coincident_executes() {
+        let code = r#"@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -1.05mm, var 2.22mm], end = [var -3.58mm, var -0.78mm])
+  coincident([line1.start, circle1])
+}
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(
+            result
+                .exec_state
+                .errors()
+                .iter()
+                .all(|error| error.severity != Severity::Error),
+            "unexpected execution errors: {:#?}",
+            result.exec_state.errors()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"myVar = 3
 part001 = startSketchOn(XY)
@@ -3204,6 +3226,35 @@ answer = inc(5)
         let result = parse_execute(code).await.unwrap();
         let errors = result.exec_state.errors();
         assert_eq!(errors.len(), 0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_scalar_fixed_constraint() {
+        let code_left = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point1.at[0] == 1mm
+}
+"#;
+        // It's symmetric. Flipping the binary operator has the same behavior.
+        let code_right = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  1mm == point1.at[0]
+}
+"#;
+
+        for code in [code_left, code_right] {
+            let result = parse_execute(code).await.unwrap();
+            let errors = result.exec_state.errors();
+            let Some(error) = errors
+                .iter()
+                .find(|err| err.message.contains("scalar fixed constraint is experimental"))
+            else {
+                panic!("found {errors:#?}");
+            };
+            assert_eq!(error.severity, Severity::Warning);
+        }
     }
 
     // START Mock Execution tests

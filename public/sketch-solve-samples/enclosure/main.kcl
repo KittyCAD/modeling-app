@@ -117,4 +117,3 @@ extrude004 = extrude(region003, length = wallThickness)
          getNextAdjacentEdge(rectangleSegmentD003)
        ],
      )
-

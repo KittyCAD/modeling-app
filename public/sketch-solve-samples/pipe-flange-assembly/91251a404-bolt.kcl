@@ -37,4 +37,3 @@ export fn bolt() {
 
   return boltBody
 }
-

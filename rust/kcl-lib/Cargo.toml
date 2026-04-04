@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.137"
+version = "0.2.138"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -63,10 +63,11 @@ gltf-json = "1.4.1"
 ignore = "0.4.25"
 http = { workspace = true }
 image = { version = "0.25.10", default-features = false, features = ["png"] }
+image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-derive-docs = { version = "0.2.137", path = "../kcl-derive-docs" }
-kcl-error = { version = "0.2.137", path = "../kcl-error" }
+kcl-derive-docs = { version = "0.2.138", path = "../kcl-derive-docs" }
+kcl-error = { version = "0.2.138", path = "../kcl-error" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -101,7 +102,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.27"
 thiserror = "2.0.18"
-toml = "1.0.7"
+toml = "1.1.0"
 ts-rs = { version = "12.0.1", features = [
   "uuid-impl",
   "url-impl",
@@ -146,7 +147,7 @@ criterion = { version = "0.8.2", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.0"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
-insta = { version = "1.46.3", features = ["json", "filters", "redactions"] }
+insta = { version = "1.47.0", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"

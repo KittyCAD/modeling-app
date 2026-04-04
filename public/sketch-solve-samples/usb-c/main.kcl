@@ -160,4 +160,3 @@ sketch002 = sketch(on = offsetPlane(YZ, offset = -housingLength)) {
 region005 = region(segments = [sketch002.circle1])
 cable = sweep(region005, path = cablePath)
   |> appearance(color = "#101010", metalness = 0, roughness = 80)
-

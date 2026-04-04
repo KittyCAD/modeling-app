@@ -174,4 +174,3 @@ cuffs = extrude(region007, length = decorationThickness)
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-

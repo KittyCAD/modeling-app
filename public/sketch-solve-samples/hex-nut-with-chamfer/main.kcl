@@ -100,4 +100,3 @@ finishedNut = subtract(nutWithChamfer, tools = holeSolid)
 
 // Apply a visual appearance to the finished nut
 appearance(finishedNut, color = "#0040ff")
-

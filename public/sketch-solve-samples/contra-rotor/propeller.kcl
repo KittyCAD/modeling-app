@@ -82,4 +82,3 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
   return [hub, blades]
     |> appearance(color = "#e88811", metalness = 10, roughness = 80)
 }
-

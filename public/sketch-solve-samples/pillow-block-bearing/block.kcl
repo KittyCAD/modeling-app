@@ -56,4 +56,3 @@ fn counterbore(@holePosition) {
 
 // Place a counterbored hole at each bolt hole position
 map(holePositions, f = counterbore)
-

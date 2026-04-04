@@ -43,4 +43,3 @@ export aspectRatio = 30
 export overallDiameter = rimDiameter + tireWidth * aspectRatio * 0.02
 export sidewallThickness = 6mm
 export treadDepth = 3mm
-
