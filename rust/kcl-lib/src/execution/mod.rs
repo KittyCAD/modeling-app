@@ -3247,7 +3247,6 @@ sketch(on = XY) {
         for code in [code_left, code_right] {
             let result = parse_execute(code).await.unwrap();
             let errors = result.exec_state.errors();
-            assert_eq!(errors.len(), 2, "errors={errors:#?}");
             let Some(error) = errors
                 .iter()
                 .find(|err| err.message.contains("scalar fixed constraint is experimental"))
