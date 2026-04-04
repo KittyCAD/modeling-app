@@ -472,7 +472,8 @@ pub struct Helix {
     pub consumed: bool,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     CompositeSolid(CompositeSolid),
@@ -494,65 +495,6 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
-}
-
-// TS bindings need a dedicated `region` artifact discriminator that aliases the
-// shape of `Path`. Keep runtime `Artifact` unchanged and customize only
-// TypeScript generation.
-#[allow(dead_code)]
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts", rename = "Artifact")]
-#[serde(tag = "type", rename_all = "camelCase")]
-enum ArtifactForTs {
-    CompositeSolid(CompositeSolid),
-    Plane(Plane),
-    Path(Path),
-    Region(Path),
-    Segment(Segment),
-    Solid2d(Solid2d),
-    PrimitiveFace(PrimitiveFace),
-    PrimitiveEdge(PrimitiveEdge),
-    PlaneOfFace(PlaneOfFace),
-    StartSketchOnFace(StartSketchOnFace),
-    StartSketchOnPlane(StartSketchOnPlane),
-    SketchBlock(SketchBlock),
-    SketchBlockConstraint(SketchBlockConstraint),
-    Sweep(Sweep),
-    Wall(Wall),
-    Cap(Cap),
-    SweepEdge(SweepEdge),
-    EdgeCut(EdgeCut),
-    EdgeCutEdge(EdgeCutEdge),
-    Helix(Helix),
-}
-
-impl ts_rs::TS for Artifact {
-    type WithoutGenerics = Self;
-    type OptionInnerType = Self;
-
-    fn name(config: &ts_rs::Config) -> String {
-        ArtifactForTs::name(config)
-    }
-
-    fn decl(config: &ts_rs::Config) -> String {
-        ArtifactForTs::decl(config)
-    }
-
-    fn decl_concrete(config: &ts_rs::Config) -> String {
-        ArtifactForTs::decl_concrete(config)
-    }
-
-    fn inline(config: &ts_rs::Config) -> String {
-        ArtifactForTs::inline(config)
-    }
-
-    fn inline_flattened(config: &ts_rs::Config) -> String {
-        ArtifactForTs::inline_flattened(config)
-    }
-
-    fn output_path() -> Option<std::path::PathBuf> {
-        ArtifactForTs::output_path()
-    }
 }
 
 impl Artifact {
