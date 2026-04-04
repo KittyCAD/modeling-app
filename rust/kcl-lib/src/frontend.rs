@@ -53,7 +53,7 @@ use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
-use crate::frontend::sketch::CoincidentSegment;
+use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
@@ -2374,12 +2374,12 @@ impl FrontendState {
 
     fn coincident_segment_to_ast(
         &self,
-        segment: &CoincidentSegment,
+        segment: &ConstraintSegment,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<ast::Expr> {
         match segment {
-            CoincidentSegment::Origin(_) => Ok(ast_name_expr("ORIGIN".to_owned())),
-            CoincidentSegment::Segment(segment_id) => {
+            ConstraintSegment::Origin(_) => Ok(ast_name_expr("ORIGIN".to_owned())),
+            ConstraintSegment::Segment(segment_id) => {
                 let segment_object = self.scene_graph.objects.get(segment_id.0).ok_or_else(|| Error {
                     msg: format!("Object not found: {segment_id:?}"),
                 })?;
@@ -6309,9 +6309,9 @@ sketch(on = XY) {
             let point_id = *sketch.segments.first().unwrap();
 
             let segments = if origin_first {
-                vec![CoincidentSegment::ORIGIN, point_id.into()]
+                vec![ConstraintSegment::ORIGIN, point_id.into()]
             } else {
-                vec![point_id.into(), CoincidentSegment::ORIGIN]
+                vec![point_id.into(), ConstraintSegment::ORIGIN]
             };
             let constraint = Constraint::Coincident(Coincident {
                 segments: segments.clone(),

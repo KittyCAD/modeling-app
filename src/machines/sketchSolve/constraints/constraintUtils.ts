@@ -3,7 +3,7 @@ import type {
   FixedPoint,
   ApiObject,
   Coincident,
-  CoincidentSegment,
+  ConstraintSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -325,7 +325,7 @@ export type CoincidentConstraint = ApiObject & {
 }
 
 export function isCoincidentSegmentId(
-  segment: CoincidentSegment
+  segment: ConstraintSegment
 ): segment is number {
   return typeof segment === 'number'
 }

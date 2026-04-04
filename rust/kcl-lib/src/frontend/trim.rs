@@ -4197,9 +4197,9 @@ pub(crate) async fn execute_trim_operations_simple(
                                     .iter()
                                     .map(|segment| {
                                         if *segment
-                                            == crate::frontend::sketch::CoincidentSegment::Segment(original_center_id)
+                                            == crate::frontend::sketch::ConstraintSegment::Segment(original_center_id)
                                         {
-                                            crate::frontend::sketch::CoincidentSegment::Segment(new_center_id)
+                                            crate::frontend::sketch::ConstraintSegment::Segment(new_center_id)
                                         } else {
                                             *segment
                                         }
@@ -4211,11 +4211,11 @@ pub(crate) async fn execute_trim_operations_simple(
                                 }));
                             }
                             Constraint::Distance(distance) => {
-                                let new_points: Vec<crate::frontend::sketch::CoincidentSegment> = distance
+                                let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
                                     .points
                                     .iter()
                                     .map(|point| match *point {
-                                        crate::frontend::sketch::CoincidentSegment::Segment(id)
+                                        crate::frontend::sketch::ConstraintSegment::Segment(id)
                                             if id == original_center_id =>
                                         {
                                             new_center_id.into()

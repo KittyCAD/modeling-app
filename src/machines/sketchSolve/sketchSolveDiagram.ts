@@ -1,5 +1,5 @@
 import type {
-  CoincidentSegment,
+  ConstraintSegment,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -173,7 +173,7 @@ async function addAxisDistanceConstraint(
       type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
       distance: { value: distance, units },
       points: segmentsToConstrain.map(
-        (id): CoincidentSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+        (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
       ),
       source: {
         expr: distance.toString(),
@@ -423,7 +423,7 @@ export const sketchSolveMachine = setup({
           async () => {
             // TODO this is not how coincident should operate long term, as it should be an equipable tool
             const selectedIds = context.selectedIds.map(
-              (id): CoincidentSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+              (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
             )
             const result = await context.rustContext.addConstraint(
               0,
@@ -636,14 +636,14 @@ export const sketchSolveMachine = setup({
               currentSelections[0] !== ORIGIN_TARGET
                 ? currentSelections[0]
                 : undefined
-            const pointsForDistance: CoincidentSegment[] =
+            const pointsForDistance: ConstraintSegment[] =
               currentSelections.length === 1 && isLineSegment(firstSelection)
                 ? [
                     firstSelection.kind.segment.start,
                     firstSelection.kind.segment.end,
                   ]
                 : segmentsToConstrain.map(
-                    (id): CoincidentSegment =>
+                    (id): ConstraintSegment =>
                       id === ORIGIN_TARGET ? 'ORIGIN' : id
                   )
             const result = await context.rustContext.addConstraint(

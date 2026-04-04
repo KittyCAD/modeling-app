@@ -62,7 +62,7 @@ use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
 #[cfg(feature = "artifact-graph")]
-use crate::frontend::sketch::CoincidentSegment;
+use crate::frontend::sketch::ConstraintSegment;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -86,15 +86,15 @@ fn coincident_segments_for_segment_and_point2d(
     segment_id: ObjectId,
     point2d: &KclValue,
     segment_first: bool,
-) -> Vec<CoincidentSegment> {
+) -> Vec<ConstraintSegment> {
     if !point2d_is_origin(point2d) {
         return vec![segment_id.into()];
     }
 
     if segment_first {
-        vec![segment_id.into(), CoincidentSegment::ORIGIN]
+        vec![segment_id.into(), ConstraintSegment::ORIGIN]
     } else {
-        vec![CoincidentSegment::ORIGIN, segment_id.into()]
+        vec![ConstraintSegment::ORIGIN, segment_id.into()]
     }
 }
 

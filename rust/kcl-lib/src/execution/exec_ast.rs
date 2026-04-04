@@ -3166,7 +3166,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
-                                use crate::frontend::sketch::CoincidentSegment;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3177,18 +3177,18 @@ impl Node<BinaryExpression> {
                                     points: vec![
                                         match p0 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                         match p1 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                     ],
@@ -3517,24 +3517,24 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
-                                use crate::frontend::sketch::CoincidentSegment;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![
                                         match p0 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                         match p1 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                     ],
@@ -3634,24 +3634,24 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
-                                use crate::frontend::sketch::CoincidentSegment;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![
                                         match p0 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                         match p1 {
                                             crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
-                                                CoincidentSegment::from(point.object_id)
+                                                ConstraintSegment::from(point.object_id)
                                             }
                                             crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
-                                                CoincidentSegment::ORIGIN
+                                                ConstraintSegment::ORIGIN
                                             }
                                         },
                                     ],

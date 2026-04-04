@@ -1,7 +1,7 @@
 import type {
   ApiObject,
   ApiConstraint,
-  CoincidentSegment,
+  ConstraintSegment,
   ConstraintSource,
   Number as ConstraintNumber,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -37,7 +37,7 @@ export type SnappingCandidate = {
 
 type AxisSnapConstraint = {
   type: 'HorizontalDistance' | 'VerticalDistance'
-  points: [CoincidentSegment, CoincidentSegment]
+  points: [ConstraintSegment, ConstraintSegment]
   distance: ConstraintNumber
   source: ConstraintSource
 }
@@ -59,7 +59,7 @@ export function isPointSnapTarget(
 export function getCoincidentSegmentsForSnapTarget(
   segmentId: number,
   target: SnapTarget | undefined
-): CoincidentSegment[] | null {
+): ConstraintSegment[] | null {
   switch (target?.type) {
     case 'point':
       return [segmentId, target.pointId]
