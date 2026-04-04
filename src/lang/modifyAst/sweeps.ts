@@ -782,6 +782,30 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   let axis: string | undefined
   let edge: Selections | undefined
   const axisValue = opArg.value
+  const buildEdgeSelectionFromSegmentId = (
+    segmentId: string
+  ): Selections | Error => {
+    const artifact = getArtifactOfTypes(
+      {
+        key: segmentId,
+        types: ['segment'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    return {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  }
   const nonZero = (val: OpKclValue): number => {
     if (val.type === 'Number') {
       return val.value
@@ -808,26 +832,19 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case
     axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.artifact_id,
-        types: ['segment'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
-
-    edge = {
-      graphSelections: [
-        {
-          artifact,
-          codeRef: artifact.codeRef,
-        },
-      ],
-      otherSelections: [],
+    edge = edgeSelection
+  } else if (axisValue.type === 'Segment') {
+    // segment case from sketch-solve member expressions (for example: sketch001.line5)
+    axisOrEdge = 'Edge'
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
+    edge = edgeSelection
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
     axisOrEdge = 'Edge'
