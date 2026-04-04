@@ -399,8 +399,7 @@ export const sketchSolveMachine = setup({
           async () => {
             // TODO this is not how coincident should operate long term, as it should be an equipable tool
             const selectedIds = context.selectedIds.map(
-              (id): CoincidentSegment =>
-                id === ORIGIN_TARGET ? 'ORIGIN' : id
+              (id): CoincidentSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
             )
             const result = await context.rustContext.addConstraint(
               0,

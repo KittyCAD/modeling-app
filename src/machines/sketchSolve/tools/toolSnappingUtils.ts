@@ -35,7 +35,10 @@ type ToolSelf = {
   }
 }
 
-function sendHoveredId(self: ToolSelf, hoveredId: SketchSolveSelectionId | null) {
+function sendHoveredId(
+  self: ToolSelf,
+  hoveredId: SketchSolveSelectionId | null
+) {
   self._parent?.send?.({
     type: 'update hovered id',
     data: {
@@ -54,10 +57,7 @@ export function sendHoveredSnappingCandidate(
   } else if (isPointSnapTarget(snappingCandidate?.target)) {
     hoveredId = snappingCandidate.target.pointId
   }
-  sendHoveredId(
-    self,
-    hoveredId
-  )
+  sendHoveredId(self, hoveredId)
 }
 
 export function getBestSnappingCandidate({
