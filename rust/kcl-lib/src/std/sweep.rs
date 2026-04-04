@@ -5,6 +5,7 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::BodyType;
+use kittycad_modeling_cmds::id::ModelingCmdId;
 use kittycad_modeling_cmds::shared::RelativeTo;
 use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
@@ -18,6 +19,7 @@ use crate::execution::Helix;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ProfileClosed;
+use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
@@ -33,6 +35,7 @@ use crate::std::extrude::do_post_extrude;
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
+    Segment(Segment),
 }
 
 /// Create a 3D surface or solid by sweeping a sketch along a path.
@@ -40,7 +43,11 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let path: SweepPath = args.get_kw_arg(
         "path",
-        &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
+        &RuntimeType::Union(vec![
+            RuntimeType::sketch(),
+            RuntimeType::helix(),
+            RuntimeType::segment(),
+        ]),
         exec_state,
     )?;
     let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
@@ -90,10 +97,11 @@ async fn inner_sweep(
         )));
     }
 
-    let trajectory = match path {
-        SweepPath::Sketch(sketch) => sketch.id.into(),
-        SweepPath::Helix(helix) => helix.value.into(),
-    };
+    let trajectory = ModelingCmdId::from(match path {
+        SweepPath::Sketch(sketch) => sketch.id,
+        SweepPath::Helix(helix) => helix.value,
+        SweepPath::Segment(segment) => segment.id,
+    });
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
         Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,

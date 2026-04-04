@@ -1580,7 +1580,7 @@ export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
   @sketches: [Sketch; 1+],
   /// The path to sweep the sketch along.
-  path: Sketch | Helix,
+  path: Sketch | Helix | Segment,
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
