@@ -2287,7 +2287,8 @@ face001 = faceOf(extrude001, face = region001.tags.line1)
 sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
-region002 = region(segments = [sketch002.circle1])`
+region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
+    // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
     const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`
 
     await context.addInitScript((initialCode) => {
@@ -2343,11 +2344,9 @@ region002 = region(segments = [sketch002.circle1])`
         stage: 'arguments',
       })
       // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
-      const firstEdgeLocation = { x: 600, y: 195 }
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(
-        firstEdgeLocation.x,
-        firstEdgeLocation.y
-      )
+      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.23, {
+        format: 'ratio',
+      })
       await clickOnFirstEdge()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
