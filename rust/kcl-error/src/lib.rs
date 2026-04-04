@@ -5,7 +5,8 @@ pub use source_range::SourceRange;
 
 mod source_range;
 
-/// An error which occurred during parsing, etc.
+/// An issue which occurred during parsing, etc. The severity determines whether
+/// it's an error, warning, or other kind of issue.
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
 pub struct CompilationIssue {
