@@ -25,6 +25,7 @@ use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
 
 /// A path to sweep along.
@@ -57,6 +58,12 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
     let version: Option<TyF64> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let path = match path {
+        SweepPath::Segment(segment) => SweepPath::Sketch(
+            build_segment_surface_sketch(vec![segment], exec_state, &args.ctx, args.source_range).await?,
+        ),
+        path => path,
+    };
 
     let value = inner_sweep(
         sketches,
@@ -100,7 +107,7 @@ async fn inner_sweep(
     let trajectory = ModelingCmdId::from(match path {
         SweepPath::Sketch(sketch) => sketch.id,
         SweepPath::Helix(helix) => helix.value,
-        SweepPath::Segment(segment) => segment.sketch_id,
+        SweepPath::Segment(segment) => segment.id,
     });
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
