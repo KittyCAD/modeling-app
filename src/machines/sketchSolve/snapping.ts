@@ -140,7 +140,7 @@ export function getSnappingCandidates(
     sceneInfra
   ).flatMap((candidate): SnappingCandidate[] => {
     if (!isPointSegment(candidate.apiObject)) {
-      // Only snapping to points for now
+      // Only snapping to points for now, no other segments like lines
       return []
     }
 
@@ -204,13 +204,17 @@ export function getSnappingCandidates(
     ...xAxisCandidates,
     ...yAxisCandidates,
   ].sort((a, b) => {
-    if (Math.abs(a.distance - b.distance) < 1e-8) {
-      return getSnapTargetPriority(a.target) - getSnapTargetPriority(b.target)
+    const priorityDelta =
+      getSnapTargetPriority(a.target) - getSnapTargetPriority(b.target)
+    if (priorityDelta !== 0) {
+      return priorityDelta
     }
 
     // Note: for point-point sorting this implicitly relies on the order coming from
     // findClosestApiObjects. This is fine because Array.sort is stable but we may want
-    // to more explicitly have it here too.
+    // to ensure that more explicitly here as well.
+    // Eg. in the case of 2 coincident points findClosestApiObjects ensures the one with
+    // the higherid gets comest first.
     return a.distance - b.distance
   })
 }
