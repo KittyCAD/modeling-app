@@ -53,6 +53,23 @@ import Axis3d from "std::types"
 /// ```
 ///
 /// ```
+/// // Mirror an un-closed sketch across a line from a sketch block.
+/// @settings(experimentalFeatures = allow)
+///
+/// helper001 = sketch(on = XZ) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
+/// }
+///
+/// sketch001 = startSketchOn(XZ)
+///     |> startProfile(at = [0, 8.5])
+///     |> line(end = [20, -8.5])
+///     |> line(end = [-20, -8.5])
+///     |> mirror2d(axis = helper001.line1)
+///
+/// // example = extrude(sketch001, length = 10)
+/// ```
+///
+/// ```
 /// // Mirror an un-closed sketch across a custom axis.
 /// sketch001 = startSketchOn(XZ)
 ///     |> startProfile(at = [0, 8.5])
@@ -90,7 +107,7 @@ export fn mirror2d(
   /// The sketch or sketches to be reflected.
   @sketches: [Sketch; 1+],
   /// The axis to reflect around.
-  axis: Axis2d | Edge,
+  axis: Axis2d | Edge | Segment,
 ): Sketch {}
 
 /// Move a solid or a sketch.

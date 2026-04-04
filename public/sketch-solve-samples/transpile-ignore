@@ -101,18 +101,18 @@
 # router-template-slate/
 # sash-window/
 # saturn-v/
-# scrub-daddy-holder/
-# shaft-grommet/
-# sheet-metal-bracket/
+scrub-daddy-holder/
+shaft-grommet/
+sheet-metal-bracket/
 # shepherds-hook-bolt/
-# single-impeller-blade/
+single-impeller-blade/
 # sls/
-# snowman/
-# socket-head-cap-screw/
-# sphere/
+snowman/
+socket-head-cap-screw/
+sphere/
 # spinning-highrise-tower/
 # split-washer-flat-version/
-# split-washer-spring-version/
+split-washer-spring-version/
 # spool/
 # sprocket/
 # spur-gear/
@@ -134,14 +134,14 @@
 # telemetry-antenna/
 # thermal-block-insert/
 # tooling-nest-block/
-# torus/
+torus/
 # tube-manifold/
 # usb-c/
 # utility-sink/
-# v-block/
+v-block/
 # walkie-talkie/
 # washer/
-# wedge/
+wedge/
 # wheel-hub/
 # wing-spar/
 # zoo-logo/

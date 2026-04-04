@@ -3228,6 +3228,35 @@ answer = inc(5)
         assert_eq!(errors.len(), 0);
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_scalar_fixed_constraint() {
+        let code_left = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point1.at[0] == 1mm
+}
+"#;
+        // It's symmetric. Flipping the binary operator has the same behavior.
+        let code_right = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  1mm == point1.at[0]
+}
+"#;
+
+        for code in [code_left, code_right] {
+            let result = parse_execute(code).await.unwrap();
+            let errors = result.exec_state.errors();
+            let Some(error) = errors
+                .iter()
+                .find(|err| err.message.contains("scalar fixed constraint is experimental"))
+            else {
+                panic!("found {errors:#?}");
+            };
+            assert_eq!(error.severity, Severity::Warning);
+        }
+    }
+
     // START Mock Execution tests
     // Ideally, we would do this as part of all sim tests and delete these one-off tests.
 
