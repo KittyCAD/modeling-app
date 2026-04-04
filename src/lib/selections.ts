@@ -716,7 +716,7 @@ export function getSelectionCountByType(
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -756,11 +756,12 @@ export function getSelectionCountByType(
         return
       }
     }
+    // Intercept subtypes here. Would have to think of a better way to scale this
     if (
       graphSelection.artifact.type === 'path' &&
       graphSelection.artifact.subType === 'region'
     ) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('path.region')
       return
     }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
@@ -1091,7 +1092,7 @@ const semanticEntityNames: {
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
-  region: ['region'],
+  region: ['path.region', 'engineRegion'],
   edge: [
     'segment',
     'sweepEdge',
