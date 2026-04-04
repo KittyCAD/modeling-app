@@ -763,7 +763,7 @@ export function getAxisExpression(
     const expr = bodies.values().toArray()[0].tagsExpr
     return { generatedAxis: expr, modifiedAst }
   } else {
-    return new Error('Helix must have either an axis or a cylinder')
+    return new Error('Must provide either an axis or an edge selection')
   }
 }
 
