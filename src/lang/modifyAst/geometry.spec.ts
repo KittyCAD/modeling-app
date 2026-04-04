@@ -230,7 +230,7 @@ helix001 = helix(
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, rustContextInThisFile)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toBe(helixFromSegmentInPath)
     })
