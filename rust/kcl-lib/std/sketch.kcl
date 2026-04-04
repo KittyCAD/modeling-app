@@ -1596,8 +1596,8 @@ export fn polygon(
 /// // Sketch a path
 /// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
 ///   line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
-///   arc1 = arc(start = [var -3.85mm, var 1.41mm], end = [var -3mm, var 0mm], center = [var -3mm, var 0.96mm])
-///   coincident([line1.end, arc1.end])
+///   arc1 = arc(start = [var -3mm, var 0mm], end = [var -3.85mm, var 1.41mm], center = [var -3mm, var 0.96mm])
+///   coincident([line1.end, arc1.start])
 ///   tangent([line1, arc1])
 /// }
 /// 
