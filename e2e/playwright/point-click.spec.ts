@@ -328,18 +328,12 @@ region001 = region(segments = [sketch001.circle1])`
   })
 
   // TODO: double check if we want to keep this feature
-  test.skip(`Verify user can double-click to edit a sketch`, async ({
-    context,
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    page.on('console', console.log)
+  test.fixme(
+    `Verify user can double-click to edit a sketch`,
+    async ({ context, page, homePage, editor, toolbar, scene, cmdBar }) => {
+      page.on('console', console.log)
 
-    const initialCode = `@settings(experimentalFeatures = allow)
+      const initialCode = `@settings(experimentalFeatures = allow)
 
   closedSketch = sketch(on = XZ) {
     circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
@@ -353,70 +347,68 @@ region001 = region(segments = [sketch001.circle1])`
     horizontal(arc3)
   }`
 
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, initialCode)
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
+      const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+        scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
 
-    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      0.63,
-      0.5,
-      { format: 'ratio' }
-    )
+      const [_clickCircle, moveToCircle, dblClickCircle] =
+        scene.makeMouseHelpers(0.63, 0.5, { format: 'ratio' })
 
-    await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled(cmdBar)
+      await test.step(`Double-click on the closed sketch`, async () => {
+        await scene.settled(cmdBar)
+        await editor.closePane()
+        await moveToCircle()
+        await page.waitForTimeout(1000)
+        await dblClickCircle()
+        await page.waitForTimeout(1000)
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        await editor.openPane()
+        await editor.expectActiveLinesToBe([
+          'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
+        ])
+      })
+      await page.waitForTimeout(1000)
+
+      await toolbar.exitSketch()
+      await page.waitForTimeout(1000)
       await editor.closePane()
-      await moveToCircle()
-      await page.waitForTimeout(1000)
-      await dblClickCircle()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
-      ])
-    })
-    await page.waitForTimeout(1000)
 
-    await toolbar.exitSketch()
-    await page.waitForTimeout(1000)
-    await editor.closePane()
+      // Drag the sketch line out of the axis view which blocks the click
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: await scene.convertPagePositionToStream(
+          0.7,
+          0.5,
+          'ratio'
+        ),
+        targetPosition: await scene.convertPagePositionToStream(
+          0.7,
+          0.4,
+          'ratio'
+        ),
+      })
 
-    // Drag the sketch line out of the axis view which blocks the click
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.5,
-        'ratio'
-      ),
-      targetPosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.4,
-        'ratio'
-      ),
-    })
-
-    await page.waitForTimeout(500)
-
-    await test.step(`Double-click on the open sketch`, async () => {
-      await moveToOpenPath()
-      // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
-      await dblClickOpenPath()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      // Wait for enter sketch mode to complete
-      await page.waitForTimeout(500)
-      await editor.openPane()
-      await editor.expectActiveLinesToBe([
-        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-      ])
-    })
-  })
+
+      await test.step(`Double-click on the open sketch`, async () => {
+        await moveToOpenPath()
+        // There is a full execution after exiting sketch that clears the scene.
+        await page.waitForTimeout(500)
+        await dblClickOpenPath()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
+        // Wait for enter sketch mode to complete
+        await page.waitForTimeout(500)
+        await editor.openPane()
+        await editor.expectActiveLinesToBe([
+          'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+        ])
+      })
+    }
+  )
 
   test(`Shift-click to select and deselect faces`, async ({
     context,
@@ -712,16 +704,10 @@ sketch001 = extrude(region001, length = -12)`
   }
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10786 is in
-  test.skip(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
+  test.fixme(
+    `Helix point-and-click around sweepEdge with edit and delete flows`,
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
@@ -734,67 +720,67 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
-    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 364 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+      // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
+      const testPoint = { x: 564, y: 364 }
+      const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.helixButton.click()
-      await cmdBar.expectState(initialCmdBarStateHelix)
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await clickOnEdge()
-      await cmdBar.progressCmdBar()
-      await cmdBar.argumentInput.focus()
-      await page.keyboard.insertText('20')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('0')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('1')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Edge',
-          Edge: `1 edge`,
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: '1',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.clickOptionalArgument('ccw')
-      await cmdBar.selectOption({ name: 'On' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Edge',
-          Edge: `1 edge`,
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: '1',
-          CounterClockWise: 'true',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-    })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `
+      await test.step(`Go through the command bar flow`, async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.helixButton.click()
+        await cmdBar.expectState(initialCmdBarStateHelix)
+        await cmdBar.selectOption({ name: 'Edge' }).click()
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
+        await clickOnEdge()
+        await cmdBar.progressCmdBar()
+        await cmdBar.argumentInput.focus()
+        await page.keyboard.insertText('20')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('1')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Mode: 'Edge',
+            Edge: `1 edge`,
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: '1',
+          },
+          commandName: 'Helix',
+        })
+        await cmdBar.clickOptionalArgument('ccw')
+        await cmdBar.selectOption({ name: 'On' }).click()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Mode: 'Edge',
+            Edge: `1 edge`,
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: '1',
+            CounterClockWise: 'true',
+          },
+          commandName: 'Helix',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `
         helix001 = helix(
           axis = getOppositeEdge(region001.tags.line1),
           revolutions = 20,
@@ -802,72 +788,75 @@ extrude001 = extrude(region001, length = 100)`
           radius = 1,
           ccw = true,
         )`,
-        { shouldNormalise: true }
-      )
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    await test.step(`Edit helix through the feature tree`, async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.dblclick()
-      const initialInput = '1'
-      const newInput = '5'
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'radius',
-        currentArgValue: initialInput,
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: initialInput,
-          CounterClockWise: 'true',
-        },
-        highlightedHeaderArg: 'radius',
-      })
-      await page.keyboard.insertText(newInput)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'true',
-        },
-        commandName: 'Helix',
-      })
-      await page.getByRole('button', { name: 'CounterClockWise' }).click()
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'CounterClockWise',
-        currentArgValue: '',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'true',
-        },
-        highlightedHeaderArg: 'CounterClockWise',
-      })
-      await cmdBar.selectOption({ name: 'Off' }).click()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          AngleStart: '0',
-          Revolutions: '20',
-          Radius: newInput,
-          CounterClockWise: 'false',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `
+      await test.step(`Edit helix through the feature tree`, async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Helix',
+          0
+        )
+        await operationButton.dblclick()
+        const initialInput = '1'
+        const newInput = '5'
+        await cmdBar.expectState({
+          commandName: 'Helix',
+          stage: 'arguments',
+          currentArgKey: 'radius',
+          currentArgValue: initialInput,
+          headerArguments: {
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: initialInput,
+            CounterClockWise: 'true',
+          },
+          highlightedHeaderArg: 'radius',
+        })
+        await page.keyboard.insertText(newInput)
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: newInput,
+            CounterClockWise: 'true',
+          },
+          commandName: 'Helix',
+        })
+        await page.getByRole('button', { name: 'CounterClockWise' }).click()
+        await cmdBar.expectState({
+          commandName: 'Helix',
+          stage: 'arguments',
+          currentArgKey: 'CounterClockWise',
+          currentArgValue: '',
+          headerArguments: {
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: newInput,
+            CounterClockWise: 'true',
+          },
+          highlightedHeaderArg: 'CounterClockWise',
+        })
+        await cmdBar.selectOption({ name: 'Off' }).click()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            AngleStart: '0',
+            Revolutions: '20',
+            Radius: newInput,
+            CounterClockWise: 'false',
+          },
+          commandName: 'Helix',
+        })
+        await cmdBar.submit()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `
         helix001 = helix(
           axis = getOppositeEdge(seg01),
           revolutions = 20,
@@ -875,22 +864,26 @@ extrude001 = extrude(region001, length = 100)`
           radius = 5,
           ccw = false,
         )`,
-        { shouldNormalise: true }
-      )
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
-    await test.step('Delete helix via feature tree selection', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await editor.expectEditor.not.toContain('helix')
-      await expect(
-        await toolbar.getFeatureTreeOperation('Helix', 0)
-      ).not.toBeVisible()
-    })
-  })
+      await test.step('Delete helix via feature tree selection', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Helix',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await editor.expectEditor.not.toContain('helix')
+        await expect(
+          await toolbar.getFeatureTreeOperation('Helix', 0)
+        ).not.toBeVisible()
+      })
+    }
+  )
 
   test(`Loft point-and-click`, async ({
     context,
@@ -2271,16 +2264,10 @@ extrude001 = extrude(region001, length = 30)`
   })
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10786 is in
-  test.skip('Revolve point-and-click', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
+  test.fixme(
+    'Revolve point-and-click',
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
@@ -2298,144 +2285,139 @@ sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
 region002 = region(segments = [sketch002.circle1])`
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = region001.tags.line1)`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
-    await test.step('Add revolve feature via point-and-click', async () => {
-      // select line of code
-      const codeToSelection = `center = [-11.34, 10.0]`
-      // revolve
-      await editor.scrollToText(codeToSelection)
-      await page.getByText(codeToSelection).click()
-      await toolbar.revolveButton.click()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '',
-          AxisOrEdge: '',
-          Angle: '',
-        },
-        highlightedHeaderArg: 'Profiles',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'axisOrEdge',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 profile',
-          AxisOrEdge: '',
-          Angle: '',
-        },
-        highlightedHeaderArg: 'axisOrEdge',
-        stage: 'arguments',
-      })
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'edge',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 profile',
-          Angle: '',
-          AxisOrEdge: 'Edge',
-          Edge: '',
-        },
-        highlightedHeaderArg: 'edge',
-        stage: 'arguments',
-      })
-      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-      await editor.selectText(lineCodeToSelection)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'angle',
-        currentArgValue: '360deg',
-        headerArguments: {
-          Profiles: '1 profile',
-          Angle: '',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-        },
-        highlightedHeaderArg: 'angle',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        headerArguments: {
-          Profiles: '1 profile',
-          Angle: '360deg',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-        },
-        stage: 'review',
-      })
-      await cmdBar.submit()
+      await test.step('Add revolve feature via point-and-click', async () => {
+        // select line of code
+        const codeToSelection = `center = [-11.34, 10.0]`
+        // revolve
+        await editor.scrollToText(codeToSelection)
+        await page.getByText(codeToSelection).click()
+        await toolbar.revolveButton.click()
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          currentArgKey: 'sketches',
+          currentArgValue: '',
+          headerArguments: {
+            Profiles: '',
+            AxisOrEdge: '',
+            Angle: '',
+          },
+          highlightedHeaderArg: 'Profiles',
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          currentArgKey: 'axisOrEdge',
+          currentArgValue: '',
+          headerArguments: {
+            Profiles: '1 profile',
+            AxisOrEdge: '',
+            Angle: '',
+          },
+          highlightedHeaderArg: 'axisOrEdge',
+          stage: 'arguments',
+        })
+        await cmdBar.selectOption({ name: 'Edge' }).click()
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          currentArgKey: 'edge',
+          currentArgValue: '',
+          headerArguments: {
+            Profiles: '1 profile',
+            Angle: '',
+            AxisOrEdge: 'Edge',
+            Edge: '',
+          },
+          highlightedHeaderArg: 'edge',
+          stage: 'arguments',
+        })
+        const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+        await editor.selectText(lineCodeToSelection)
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          currentArgKey: 'angle',
+          currentArgValue: '360deg',
+          headerArguments: {
+            Profiles: '1 profile',
+            Angle: '',
+            AxisOrEdge: 'Edge',
+            Edge: '1 edge',
+          },
+          highlightedHeaderArg: 'angle',
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          headerArguments: {
+            Profiles: '1 profile',
+            Angle: '360deg',
+            AxisOrEdge: 'Edge',
+            Edge: '1 edge',
+          },
+          stage: 'review',
+        })
+        await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
-    })
+        await editor.expectEditor.toContain(newCodeToFind)
+      })
 
-    await test.step('Edit revolve feature via feature tree selection', async () => {
-      const newAngle = '180deg'
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Revolve',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        currentArgKey: 'angle',
-        currentArgValue: '360deg',
-        headerArguments: {
-          Angle: '360deg',
-        },
-        highlightedHeaderArg: 'angle',
-        stage: 'arguments',
+      await test.step('Edit revolve feature via feature tree selection', async () => {
+        const newAngle = '180deg'
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Revolve',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          commandName: 'Revolve',
+          currentArgKey: 'angle',
+          currentArgValue: '360deg',
+          headerArguments: {
+            Angle: '360deg',
+          },
+          highlightedHeaderArg: 'angle',
+          stage: 'arguments',
+        })
+        await page.keyboard.insertText(newAngle)
+        await cmdBar.variableCheckbox.click()
+        await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+          'angle001'
+        )
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Angle: newAngle,
+          },
+          commandName: 'Revolve',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await editor.expectEditor.toContain('angle001 = ' + newAngle)
+        await editor.expectEditor.toContain(
+          newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        )
       })
-      await page.keyboard.insertText(newAngle)
-      await cmdBar.variableCheckbox.click()
-      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-        'angle001'
-      )
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Angle: newAngle,
-        },
-        commandName: 'Revolve',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await editor.expectEditor.toContain('angle001 = ' + newAngle)
-      await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
-      )
-    })
-  })
+    }
+  )
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10779 is in
-  test.skip(`Translate point-and-click with segment-to-body coercion`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
+  test.fixme(
+    `Translate point-and-click with segment-to-body coercion`,
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
@@ -2451,114 +2433,109 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 box = extrude(region001, length = 30)`
-    const expectedTranslateCode = `translate(box, x = 50)`
-    const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
+      const expectedTranslateCode = `translate(box, x = 50)`
+      const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
 
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Select an edge first (before opening translate)', async () => {
-      await editor.selectText(segmentToSelect)
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-    })
-
-    await test.step('Open translate via context menu and verify coercion', async () => {
-      await toolbar.translateButton.click()
-
-      // When translate opens with a segment selected, it should coerce to the parent body
-      // The segment belongs to the 'profile' path, which is extruded into 'box'
-      // So the selection should coerce from segment to path (body)
-      await cmdBar.expectState({
-        commandName: 'Translate',
-        currentArgKey: 'objects',
-        currentArgValue: '',
-        headerArguments: {
-          Objects: '',
-        },
-        highlightedHeaderArg: 'objects',
-        stage: 'arguments',
-      })
-
-      await expect(page.getByText('1 path selected')).toBeVisible()
-      await expect(toolbar.selectionStatus).toContainText('1 path')
-    })
-
-    await test.step('Complete command flow', async () => {
-      await test.step('Progress to review since object is already selected', async () => {
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 path',
-          },
-          commandName: 'Translate',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, or `z` to be provided.',
-        })
-      })
-
-      await test.step('Add x translation', async () => {
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '0',
-          headerArguments: {
-            Objects: '1 path',
-            X: '',
-          },
-          highlightedHeaderArg: 'x',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('50')
-        await cmdBar.progressCmdBar()
-      })
-
-      await test.step('Review and submit', async () => {
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 path',
-            X: '50',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
         await scene.settled(cmdBar)
       })
-    })
 
-    await test.step('Verify code was added correctly', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(expectedTranslateCode)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedTranslateCode],
-        highlightedCode: '',
+      await test.step('Select an edge first (before opening translate)', async () => {
+        await editor.selectText(segmentToSelect)
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
-    })
-  })
+
+      await test.step('Open translate via context menu and verify coercion', async () => {
+        await toolbar.translateButton.click()
+
+        // When translate opens with a segment selected, it should coerce to the parent body
+        // The segment belongs to the 'profile' path, which is extruded into 'box'
+        // So the selection should coerce from segment to path (body)
+        await cmdBar.expectState({
+          commandName: 'Translate',
+          currentArgKey: 'objects',
+          currentArgValue: '',
+          headerArguments: {
+            Objects: '',
+          },
+          highlightedHeaderArg: 'objects',
+          stage: 'arguments',
+        })
+
+        await expect(page.getByText('1 path selected')).toBeVisible()
+        await expect(toolbar.selectionStatus).toContainText('1 path')
+      })
+
+      await test.step('Complete command flow', async () => {
+        await test.step('Progress to review since object is already selected', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Objects: '1 path',
+            },
+            commandName: 'Translate',
+            reviewValidationError:
+              'semantic: Expected `x`, `y`, or `z` to be provided.',
+          })
+        })
+
+        await test.step('Add x translation', async () => {
+          await cmdBar.clickOptionalArgument('x')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'x',
+            currentArgValue: '0',
+            headerArguments: {
+              Objects: '1 path',
+              X: '',
+            },
+            highlightedHeaderArg: 'x',
+            commandName: 'Translate',
+          })
+          await page.keyboard.insertText('50')
+          await cmdBar.progressCmdBar()
+        })
+
+        await test.step('Review and submit', async () => {
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Objects: '1 path',
+              X: '50',
+            },
+            commandName: 'Translate',
+          })
+          await cmdBar.submit()
+          await scene.settled(cmdBar)
+        })
+      })
+
+      await test.step('Verify code was added correctly', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(expectedTranslateCode)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [expectedTranslateCode],
+          highlightedCode: '',
+        })
+      })
+    }
+  )
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/issues/10728 is closed
-  test.skip('Blend point-and-click', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
-    const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
+  test.fixme(
+    'Blend point-and-click',
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
+      const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
+      const initialCode = `@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
@@ -2573,70 +2550,71 @@ sketch002 = sketch(on = XZ) {
 hide(sketch002)
 surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
+      const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
 
-    async function selectEdgesFromBothSurfaces() {
-      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
-      await editor.selectText(firstSurfaceEdge)
-      await page.keyboard.down(multiCursorKey)
-      await page.getByText(secondSurfaceEdge).click()
-      await page.keyboard.up(multiCursorKey)
+      async function selectEdgesFromBothSurfaces() {
+        const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+        await editor.selectText(firstSurfaceEdge)
+        await page.keyboard.down(multiCursorKey)
+        await page.getByText(secondSurfaceEdge).click()
+        await page.keyboard.up(multiCursorKey)
+      }
+
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Click blend in the surface toolbar group', async () => {
+        await toolbar.selectSurface('blend-surface')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'edges',
+          currentArgValue: '',
+          headerArguments: {
+            Edges: '',
+          },
+          highlightedHeaderArg: 'edges',
+          commandName: 'Blend',
+        })
+      })
+
+      await test.step('Select two edges through the command bar flow', async () => {
+        await selectEdgesFromBothSurfaces()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Edges: '2 edges',
+          },
+          commandName: 'Blend',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Check blend code was added', async () => {
+        await editor.expectEditor.toContain(blendDeclaration)
+      })
+
+      await test.step('Delete blend via feature tree selection', async () => {
+        await editor.closePane()
+        await toolbar.openFeatureTreePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'blend001',
+          0
+        )
+        await operationButton.click()
+        await page.keyboard.press('Delete')
+        await scene.settled(cmdBar)
+        await editor.expectEditor.not.toContain(blendDeclaration)
+      })
     }
-
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Click blend in the surface toolbar group', async () => {
-      await toolbar.selectSurface('blend-surface')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'edges',
-        currentArgValue: '',
-        headerArguments: {
-          Edges: '',
-        },
-        highlightedHeaderArg: 'edges',
-        commandName: 'Blend',
-      })
-    })
-
-    await test.step('Select two edges through the command bar flow', async () => {
-      await selectEdgesFromBothSurfaces()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Edges: '2 edges',
-        },
-        commandName: 'Blend',
-      })
-      await cmdBar.submit()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Check blend code was added', async () => {
-      await editor.expectEditor.toContain(blendDeclaration)
-    })
-
-    await test.step('Delete blend via feature tree selection', async () => {
-      await editor.closePane()
-      await toolbar.openFeatureTreePane()
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'blend001',
-        0
-      )
-      await operationButton.click()
-      await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain(blendDeclaration)
-    })
-  })
+  )
 
   test('Flip Surface point-and-click', async ({
     context,
