@@ -50,7 +50,7 @@ import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
-  getSketchSolveExecOutcomeErrors,
+  getSketchSolveExecOutcomeIssues,
   toastSketchSolveError,
   toastSketchSolveExecOutcomeErrors,
 } from '@src/machines/sketchSolve/sketchSolveErrors'
@@ -481,7 +481,7 @@ export function updateSceneGraphFromDelta({
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -733,7 +733,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -843,7 +843,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(context.sketchExecOutcome.sceneGraphDelta)
+    getSketchSolveExecOutcomeIssues(context.sketchExecOutcome.sceneGraphDelta)
       .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
@@ -991,7 +991,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   }
 
   const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
-    getSketchSolveExecOutcomeErrors(event.data.sceneGraphDelta),
+    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
     event.data.sourceDelta.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
