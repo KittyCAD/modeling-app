@@ -84,14 +84,13 @@ function getClosestSelectionTarget(
     sceneInfra
   )[0]
 
-  const originDistance = distance2d(mousePosition, [0, 0])
-  if (closestObject && closestObject.distance < originDistance + 1e-8) {
-    // Same as in snapping, object should take precedence if closer or tied with ORIGIN
-    return {
+  const selectionCandidates: ClosestSelectionTarget[] = []
+  if (closestObject) {
+    selectionCandidates.push({
       distance: closestObject.distance,
       selectionId: closestObject.apiObject.id,
       apiObject: closestObject.apiObject,
-    }
+    })
   }
 
   const sketchSolveGroupObject =
@@ -101,14 +100,41 @@ function getClosestSelectionTarget(
   const hoverDistance = getSketchHoverDistance(
     sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
   )
+  const originDistance = distance2d(mousePosition, [0, 0])
 
-  return originDistance < hoverDistance
-    ? {
-        distance: originDistance,
-        selectionId: ORIGIN_TARGET,
-        apiObject: null,
-      }
-    : null
+  if (originDistance < hoverDistance) {
+    selectionCandidates.push({
+      distance: originDistance,
+      selectionId: ORIGIN_TARGET,
+      apiObject: null,
+    })
+  }
+
+  selectionCandidates.sort((a, b) => {
+    const priorityDelta = getSelectionPriority(a) - getSelectionPriority(b)
+    if (priorityDelta !== 0) {
+      return priorityDelta
+    }
+    return a.distance - b.distance
+  })
+  return selectionCandidates[0] ?? null
+}
+
+// Priorities are similar to snapping/getSnappingCandidates:
+// - point like objects (point segment, origin) should take precedence
+// However:
+// - axes cannot be selected, but they can be snapped to
+// - only points can be snapped to, other segment types cannot (for now)
+function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
+  if (isInvisibleConstraintObject(selectionTarget.apiObject)) {
+    return 0
+  }
+  const isPointLike = selectionTarget.selectionId === 'origin' || isPointSegment(selectionTarget.apiObject)
+  if (isPointLike) {
+    return 1
+  }
+
+  return 2
 }
 
 /**
