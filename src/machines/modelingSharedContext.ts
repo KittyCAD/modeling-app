@@ -29,7 +29,7 @@ export const dummyInitSketchGraphDelta = Object.freeze({
   new_objects: [],
   invalidates_ids: false,
   exec_outcome: {
-    errors: [],
+    issues: [],
     variables: {},
     operations: [],
     artifactGraph: { map: {}, itemCount: 0 },
