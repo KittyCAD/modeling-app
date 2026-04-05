@@ -657,7 +657,7 @@ export class CameraControls {
           cmd_id: uuidv4(),
         },
       ],
-      responses: false,
+      responses: true,
     })
   }
 
