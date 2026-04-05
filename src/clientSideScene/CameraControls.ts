@@ -1476,7 +1476,7 @@ export class CameraControls {
     const initialInteractionType =
       'pointerType' in event && event.pointerType === 'touch'
         ? 'rotate'
-        : _getInteractionType(
+        : getInteractionType(
             this.interactionGuards,
             event,
             this.enablePan,
@@ -1727,7 +1727,7 @@ function convertThreeCamValuesToEngineCam(
   }
 }
 
-export function _getInteractionType(
+export function getInteractionType(
   interactionGuards: MouseGuard,
   event: MouseEvent | WheelEvent,
   enablePan: boolean,
