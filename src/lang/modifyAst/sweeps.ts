@@ -50,6 +50,7 @@ import {
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import {
+  getEdgeTagCall,
   getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
   insertPrimitiveEdgeVariablesAndOffsetPathToNode,
@@ -729,7 +730,14 @@ export function getAxisExpression(
     )
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
-      return { generatedAxis: createLocalName(tagResult.tag), modifiedAst }
+      const { tag } = tagResult
+      const axisSelection = edge?.graphSelections[0]?.artifact
+      if (!axisSelection) {
+        return new Error('Generated axis selection is missing.')
+      }
+
+      const generatedAxis = getEdgeTagCall(tag, axisSelection)
+      return { generatedAxis, modifiedAst }
     }
 
     // Sweep edge case (both sketch v1 and sketch solve)
