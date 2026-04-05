@@ -1016,8 +1016,62 @@ sketch002 = sketch(on = XZ) {
         `region001 = region(point = [1mm, 1mm], sketch = s)
 sweep001 = sweep(region001, path = sketch002.line1)`
       )
-      // TODO: enable once KCL is updated
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a sweep call from region001 with sketch solve line and arc path segments', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var -2.38mm, var 2.51mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+}
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
+  coincident([line1.start, ORIGIN])
+  arc1 = arc(start = [var 6.66mm, var 22.81mm], end = [var 0mm, var 10mm], center = [var 15.65mm, var 10mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  vertical(line1)
+  verticalDistance([line1.start, line1.end]) == 10
+}
+region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)
+region002 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const regionArtifacts = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'path')
+        .slice(-2, -1)
+      expect(regionArtifacts).toHaveLength(1)
+      const sketches = createSelectionFromArtifacts(
+        regionArtifacts,
+        artifactGraph
+      )
+
+      const pathArtifacts = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'segment')
+        .slice(-2)
+      expect(pathArtifacts).toHaveLength(2)
+      const path = createSelectionFromArtifacts(pathArtifacts, artifactGraph)
+
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `sweep001 = sweep(region001, path = [sketch002.line1, sketch002.arc1])`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should edit a sweep call from a sketch region selection', async () => {
