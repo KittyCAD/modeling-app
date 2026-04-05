@@ -1035,8 +1035,7 @@ sketch002 = sketch(on = YZ) {
   vertical(line1)
   verticalDistance([line1.start, line1.end]) == 10
 }
-region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)
-region002 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
+region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
         code,
         instanceInThisFile,
@@ -1045,7 +1044,7 @@ region002 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
 
       const regionArtifacts = [...artifactGraph.values()]
         .filter((artifact) => artifact.type === 'path')
-        .slice(-2, -1)
+        .slice(-1)
       expect(regionArtifacts).toHaveLength(1)
       const sketches = createSelectionFromArtifacts(
         regionArtifacts,
@@ -1144,10 +1143,12 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
 
     it('should add a sweep call with surface bodyType on a sketch solve segment', async () => {
       const code = `${triangleRegion}
-sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = -5)
-  |> tangentialArc(endAbsolute = [-20, 5])`
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var -0.01mm, var 0.02mm], end = [var -0.03mm, var 1.65mm])
+  arc1 = arc(start = [var 0.28mm, var 2.48mm], end = [var -0.03mm, var 1.65mm], center = [var 1.2mm, var 1.67mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}`
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
@@ -1157,11 +1158,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
         [artifactGraph.values().find((a) => a.type === 'segment')!],
         artifactGraph
       )
-      const pathArtifact = [...artifactGraph.values()].findLast(
-        (a) => a.type === 'path'
+      const path = createSelectionFromArtifacts(
+        artifactGraph
+          .values()
+          .toArray()
+          .filter((a) => a.type === 'segment')
+          .slice(-2),
+        artifactGraph
       )
-      expect(pathArtifact).toBeDefined()
-      const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
       const result = addSweep({
         ast,
         artifactGraph,
@@ -1173,10 +1177,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `sweep001 = sweep(s.line1, path = profile001, bodyType = SURFACE)`
+        `sweep001 = sweep(s.line1, path = [s2.line1, s2.arc1], bodyType = SURFACE)`
       )
-      // TODO: enable once KCL is updated
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
