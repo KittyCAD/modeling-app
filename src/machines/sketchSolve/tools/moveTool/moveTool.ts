@@ -129,7 +129,9 @@ function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
   if (isInvisibleConstraintObject(selectionTarget.apiObject)) {
     return 0
   }
-  const isPointLike = selectionTarget.selectionId === 'origin' || isPointSegment(selectionTarget.apiObject)
+  const isPointLike =
+    selectionTarget.selectionId === 'origin' ||
+    isPointSegment(selectionTarget.apiObject)
   if (isPointLike) {
     return 1
   }
