@@ -70,4 +70,3 @@ sketch003 = sketch(on = XY) {
 }
 region003 = region(segments = [sketch003.line1, sketch003.arc2])
 endCapTooth2 = extrude(region003, length = width)
-

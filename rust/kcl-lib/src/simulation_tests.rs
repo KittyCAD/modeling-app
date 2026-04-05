@@ -19,6 +19,7 @@ use crate::execution::ModuleArtifactState;
 use crate::modules::ModulePath;
 #[cfg(feature = "artifact-graph")]
 use crate::modules::ModuleRepr;
+use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 use crate::util::RetryConfig;
 use crate::util::execute_with_retries;
 use crate::walk::Node;
@@ -42,8 +43,6 @@ struct Test {
     #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     skip_assert_artifact_graph: bool,
 }
-
-pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";

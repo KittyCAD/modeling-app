@@ -7,6 +7,8 @@ import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import {
+  coincidentContainsSegment,
+  getCoincidentSegmentIds,
   getCoincidentCluster,
   getArcPoints,
   getLinePoints,
@@ -72,7 +74,8 @@ export function getInvisibleConstraintAnchor(
 
   switch (constraint.type) {
     case 'Coincident': {
-      const pointAnchors = constraint.segments
+      const coincidentSegmentIds = getCoincidentSegmentIds(constraint)
+      const pointAnchors = coincidentSegmentIds
         .map((segmentId) => objects[segmentId])
         .filter(isPointSegment)
         .map(pointToVec3)
@@ -82,7 +85,7 @@ export function getInvisibleConstraintAnchor(
       }
 
       return averageVectors(
-        constraint.segments
+        coincidentSegmentIds
           .map((segmentId) => getObjectAnchor(segmentId, objects))
           .filter(isVector3)
       )
@@ -197,7 +200,7 @@ function getCoincidentHighlightedSegmentIds(
   constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
   objects: ApiObject[]
 ) {
-  const pointIds = constraint.segments.filter((id) =>
+  const pointIds = getCoincidentSegmentIds(constraint).filter((id) =>
     isPointSegment(objects[id])
   )
   const ownerSegmentIds = pointIds.flatMap((pointId) => {
@@ -233,7 +236,7 @@ export function isConstrainingSegment(
 
   switch (constraint.kind.constraint.type) {
     case 'Coincident':
-      return constraint.kind.constraint.segments.includes(segment.id)
+      return coincidentContainsSegment(constraint.kind.constraint, segment.id)
     case 'Horizontal':
     case 'Vertical':
       return (
@@ -262,7 +265,9 @@ function isConstrainingCoincidentPointCluster(
     return false
   }
 
-  return constraint.kind.constraint.segments.some((id) => pointIds.includes(id))
+  return getCoincidentSegmentIds(constraint.kind.constraint).some((id) =>
+    pointIds.includes(id)
+  )
 }
 
 function getObjectAnchor(

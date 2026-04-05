@@ -36,4 +36,3 @@ extrude(region001, length = talkButtonHeight)
        ],
      )
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)
-

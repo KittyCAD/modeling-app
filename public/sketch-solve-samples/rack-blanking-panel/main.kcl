@@ -95,4 +95,3 @@ region003 = region(segments = [
   topWingProfile.line2
 ])
 topWing = extrude(region003, length = wingLength)
-

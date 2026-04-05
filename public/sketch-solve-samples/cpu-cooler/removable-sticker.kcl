@@ -26,4 +26,3 @@ removableSticker = extrude(region001, length = .3)
          getNextAdjacentEdge(rectangleSegmentD001)
        ],
      )
-

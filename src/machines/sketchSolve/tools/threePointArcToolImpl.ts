@@ -19,6 +19,16 @@ import {
   isArcSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getCoincidentSegmentsForSnapTarget,
+  type SnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 export const TOOL_ID = 'Three-point arc tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding first point`
@@ -59,6 +69,7 @@ export type ToolEvents =
       type: 'add point'
       data: Coords2d
       clickNumber?: 1 | 2 | 3
+      snapTarget?: SnapTarget
     }
   | {
       type:
@@ -75,6 +86,8 @@ export type ToolContext = {
   throughPoint?: Coords2d
   throughPointId?: number
   arcId?: number
+  arcStartPointId?: number
+  arcEndPointId?: number
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -152,6 +165,7 @@ function resolveArcEndpoints({
 }): {
   start: Coords2d
   end: Coords2d
+  clickedPointIsStart: boolean
 } {
   const startFromCenter = subVec(startPoint, centerPoint)
   const endFromCenter = subVec(endPoint, centerPoint)
@@ -166,9 +180,17 @@ function resolveArcEndpoints({
   const throughIsOnArc = throughSpan <= endSpan + EPSILON
 
   if (throughIsOnArc) {
-    return { start: startPoint, end: endPoint }
+    return {
+      start: startPoint,
+      end: endPoint,
+      clickedPointIsStart: false,
+    }
   }
-  return { start: endPoint, end: startPoint }
+  return {
+    start: endPoint,
+    end: startPoint,
+    clickedPointIsStart: true,
+  }
 }
 
 async function editArcWithThreePoints({
@@ -249,13 +271,45 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       if (!args || args.mouseEvent.which !== 1) return
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
       self.send({
         type: 'add point',
-        data: [twoD.x, twoD.y],
+        data: [x, y],
         clickNumber: 1,
+        snapTarget: snappingCandidate?.target,
       })
     },
-    onMove: () => {},
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
+    },
   })
 }
 
@@ -265,13 +319,49 @@ export function addSecondPointListener({ self, context }: ToolActionArgs) {
       if (!args || args.mouseEvent.which !== 1) return
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+        excludedPointIds:
+          context.startPointId === undefined ? [] : [context.startPointId],
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
       self.send({
         type: 'add point',
-        data: [twoD.x, twoD.y],
+        data: [x, y],
         clickNumber: 2,
+        snapTarget: snappingCandidate?.target,
       })
     },
-    onMove: () => {},
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+        excludedPointIds:
+          context.startPointId === undefined ? [] : [context.startPointId],
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
+    },
   })
 }
 
@@ -286,7 +376,32 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
     onMove: async (args) => {
       if (!args || isEditInProgress) return
       const twoD = args.intersectionPoint?.twoD
-      if (!twoD) return
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+        excludedPointIds: [
+          context.startPointId,
+          context.throughPointId,
+          context.arcStartPointId,
+          context.arcEndPointId,
+        ].filter((id): id is number => id !== undefined),
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
 
       try {
         isEditInProgress = true
@@ -325,16 +440,36 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       if (!args || args.mouseEvent.which !== 1) return
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+        excludedPointIds: [
+          context.startPointId,
+          context.throughPointId,
+          context.arcStartPointId,
+          context.arcEndPointId,
+        ].filter((id): id is number => id !== undefined),
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
       self.send({
         type: 'add point',
-        data: [twoD.x, twoD.y],
+        data: [x, y],
         clickNumber: 3,
+        snapTarget: snappingCandidate?.target,
       })
     },
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function removePointListener({ context, self }: ToolActionArgs) {
+  clearToolSnappingState({
+    self,
+    sceneInfra: context.sceneInfra,
+  })
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
@@ -408,6 +543,14 @@ export function storeCreatedArcResult({
   const output = event.output
   if (output.arcId === undefined) return {}
 
+  const arcObj = output.sceneGraphDelta?.new_graph.objects[output.arcId]
+  const arcStartPointId = isArcSegment(arcObj)
+    ? arcObj.kind.segment.start
+    : undefined
+  const arcEndPointId = isArcSegment(arcObj)
+    ? arcObj.kind.segment.end
+    : undefined
+
   sendDraftEntitiesToParent({
     self,
     segmentIds: collectDraftSegmentIds([
@@ -417,7 +560,11 @@ export function storeCreatedArcResult({
     ]),
   })
 
-  return { arcId: output.arcId }
+  return {
+    arcId: output.arcId,
+    arcStartPointId,
+    arcEndPointId,
+  }
 }
 
 export async function addDraftPointActor({
@@ -426,6 +573,7 @@ export async function addDraftPointActor({
   input:
     | {
         point: Coords2d
+        snapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
         sketchId: number
@@ -438,7 +586,7 @@ export async function addDraftPointActor({
     return { error: input.error }
   }
 
-  const { point, rustContext, kclManager, sketchId } = input
+  const { point, snapTarget, rustContext, kclManager, sketchId } = input
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
@@ -466,8 +614,37 @@ export async function addDraftPointActor({
     return { error: 'Failed to create draft point' }
   }
 
+  const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+    pointId,
+    snapTarget
+  )
+  if (coincidentSegments === null) {
+    return {
+      ...result,
+      pointId,
+      point,
+    }
+  }
+
+  const snapResult = await rustContext.addConstraint(
+    0,
+    sketchId,
+    {
+      type: 'Coincident',
+      segments: coincidentSegments,
+    },
+    settings
+  )
+
   return {
-    ...result,
+    kclSource: snapResult.kclSource,
+    sceneGraphDelta: {
+      ...snapResult.sceneGraphDelta,
+      new_objects: [
+        ...result.sceneGraphDelta.new_objects,
+        ...snapResult.sceneGraphDelta.new_objects,
+      ],
+    },
     pointId,
     point,
   }
@@ -548,6 +725,7 @@ export async function finalizeArcActor({
         throughPoint: Coords2d
         throughPointId: number
         endPoint: Coords2d
+        endSnapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
         sketchId: number
@@ -573,6 +751,7 @@ export async function finalizeArcActor({
     throughPoint,
     throughPointId,
     endPoint,
+    endSnapTarget,
     rustContext,
     kclManager,
     sketchId,
@@ -593,6 +772,53 @@ export async function finalizeArcActor({
     return editResult
   }
 
+  const centerPoint = findThreePointArcCenter({
+    startPoint,
+    endPoint,
+    throughPoint,
+  })
+  if (!centerPoint) {
+    return { error: 'Cannot create arc from collinear points' }
+  }
+  const arcEndpoints = resolveArcEndpoints({
+    centerPoint,
+    startPoint,
+    endPoint,
+    throughPoint,
+  })
+
+  const editedArc = editResult.sceneGraphDelta.new_graph.objects[arcId]
+  if (!isArcSegment(editedArc)) {
+    return { error: 'Failed to find arc after final edit' }
+  }
+
+  const clickedArcPointId = arcEndpoints.clickedPointIsStart
+    ? editedArc.kind.segment.start
+    : editedArc.kind.segment.end
+
+  const newObjects = [...editResult.sceneGraphDelta.new_objects]
+  let latestKclSource = editResult.kclSource
+  let latestSceneGraphDelta = editResult.sceneGraphDelta
+
+  const endCoincidentSegments = getCoincidentSegmentsForSnapTarget(
+    clickedArcPointId,
+    endSnapTarget
+  )
+  if (endCoincidentSegments !== null) {
+    const snapResult = await rustContext.addConstraint(
+      0,
+      sketchId,
+      {
+        type: 'Coincident',
+        segments: endCoincidentSegments,
+      },
+      settings
+    )
+    latestKclSource = snapResult.kclSource
+    latestSceneGraphDelta = snapResult.sceneGraphDelta
+    newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+  }
+
   const constraintResult = await rustContext.addConstraint(
     0,
     sketchId,
@@ -602,10 +828,33 @@ export async function finalizeArcActor({
     },
     settings
   )
+  latestKclSource = constraintResult.kclSource
+  latestSceneGraphDelta = constraintResult.sceneGraphDelta
+  newObjects.push(...constraintResult.sceneGraphDelta.new_objects)
 
   if (startPointId === undefined) {
-    return constraintResult
+    return {
+      kclSource: latestKclSource,
+      sceneGraphDelta: {
+        ...latestSceneGraphDelta,
+        new_objects: newObjects,
+      },
+    }
   }
 
-  return rustContext.deleteObjects(0, sketchId, [], [startPointId], settings)
+  const deleteResult = await rustContext.deleteObjects(
+    0,
+    sketchId,
+    [],
+    [startPointId],
+    settings
+  )
+
+  return {
+    kclSource: deleteResult.kclSource,
+    sceneGraphDelta: {
+      ...deleteResult.sceneGraphDelta,
+      new_objects: [...newObjects, ...deleteResult.sceneGraphDelta.new_objects],
+    },
+  }
 }

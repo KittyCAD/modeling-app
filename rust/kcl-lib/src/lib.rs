@@ -79,6 +79,8 @@ pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
+#[doc(hidden)]
+pub mod tooling;
 mod unparser;
 mod util;
 #[cfg(test)]

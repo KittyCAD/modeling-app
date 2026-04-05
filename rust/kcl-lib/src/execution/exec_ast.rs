@@ -2882,7 +2882,7 @@ impl Node<BinaryExpression> {
                 (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
                     if left_value.id == right_value.id =>
                 {
-                    return Ok(KclValue::Bool { value: true, meta });
+                    return Ok(KclValue::none());
                 }
                 // Different sketch variables.
                 (KclValue::SketchVar { value: var0 }, KclValue::SketchVar { value: var1, .. }) => {
@@ -2896,7 +2896,7 @@ impl Node<BinaryExpression> {
                         return Err(internal_err(message, self));
                     };
                     sketch_block_state.solver_constraints.push(constraint);
-                    return Ok(KclValue::Bool { value: true, meta });
+                    return Ok(KclValue::none());
                 }
                 // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
@@ -2922,7 +2922,8 @@ impl Node<BinaryExpression> {
                         return Err(internal_err(message, self));
                     };
                     sketch_block_state.solver_constraints.push(constraint);
-                    return Ok(KclValue::Bool { value: true, meta });
+                    exec_state.warn_experimental("scalar fixed constraint", self.as_source_range());
+                    return Ok(KclValue::none());
                 }
                 // One sketch constraint, one number.
                 (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
@@ -3508,7 +3509,7 @@ impl Node<BinaryExpression> {
                             }
                         }
                     }
-                    return Ok(KclValue::Bool { value: true, meta });
+                    return Ok(KclValue::none());
                 }
                 _ => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(

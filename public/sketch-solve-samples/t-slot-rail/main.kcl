@@ -56,4 +56,3 @@ fn railTslot(railHeight, length) {
 
 // Generate one rail using the rail function
 railTslot(railHeight = 1.5, length = 2ft)
-

@@ -62,4 +62,3 @@ fn sideSlats(minX) {
 }
 
 rightSlats = sideSlats(minX = frameWidth / 2 - studThickness)
-

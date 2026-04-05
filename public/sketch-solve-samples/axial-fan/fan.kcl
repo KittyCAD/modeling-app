@@ -87,4 +87,3 @@ twistedBlade = extrude(
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-

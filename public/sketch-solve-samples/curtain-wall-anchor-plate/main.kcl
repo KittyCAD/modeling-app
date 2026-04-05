@@ -128,4 +128,3 @@ slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPla
   |> rotate(roll = 180, pitch = 0, yaw = 0)
   |> translate(x = offsetSlabRail, y = wideHoleOffset - (slabPlateWidth / 2), z = 5)
   |> patternLinear3d(instances = 2, distance = slabPlateWidth - (wideHoleOffset * 2), axis = [0, -1, 0])
-

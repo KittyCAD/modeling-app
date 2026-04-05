@@ -127,4 +127,3 @@ body = revolve(region005, axis = Y)
 // Join each component of the teapot and add an appearance
 [body, handle, spout]
   |> appearance(color = "#1f9896", metalness = 40, roughness = 30)
-
