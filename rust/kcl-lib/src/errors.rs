@@ -155,6 +155,8 @@ pub enum KclError {
     InvalidExpression { details: KclErrorDetails },
     #[error("max call stack size exceeded: {details:?}")]
     MaxCallStack { details: KclErrorDetails },
+    #[error("refactor: {details:?}")]
+    Refactor { details: KclErrorDetails },
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
     #[error("engine hangup: {details:?}")]
@@ -406,6 +408,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
+            KclError::Refactor { .. } => "Refactor",
             KclError::Engine { .. } => "Engine",
             KclError::EngineHangup { .. } => "EngineHangup",
             KclError::EngineInternal { .. } => "EngineInternal",
@@ -459,6 +462,7 @@ impl miette::Diagnostic for Report {
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
+            KclError::Refactor { .. } => "Refactor",
             KclError::Engine { .. } => "Engine",
             KclError::EngineHangup { .. } => "EngineHangup",
             KclError::EngineInternal { .. } => "EngineInternal",
@@ -555,6 +559,16 @@ impl KclError {
         KclError::InvalidExpression { details }
     }
 
+    pub fn refactor(message: String) -> KclError {
+        KclError::Refactor {
+            details: KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message,
+            },
+        }
+    }
+
     pub fn new_engine(details: KclErrorDetails) -> KclError {
         if details.message.eq_ignore_ascii_case("internal error") {
             KclError::EngineInternal { details }
@@ -598,6 +612,7 @@ impl KclError {
             KclError::UndefinedValue { .. } => "undefined value",
             KclError::InvalidExpression { .. } => "invalid expression",
             KclError::MaxCallStack { .. } => "max call stack",
+            KclError::Refactor { .. } => "refactor",
             KclError::Engine { .. } => "engine",
             KclError::EngineHangup { .. } => "engine hangup",
             KclError::EngineInternal { .. } => "engine internal",
@@ -619,6 +634,7 @@ impl KclError {
             KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
             KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
             KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
+            KclError::Refactor { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
             KclError::EngineHangup { details: e } => e.source_ranges.clone(),
             KclError::EngineInternal { details: e } => e.source_ranges.clone(),
@@ -641,6 +657,7 @@ impl KclError {
             KclError::UndefinedValue { details: e, .. } => &e.message,
             KclError::InvalidExpression { details: e } => &e.message,
             KclError::MaxCallStack { details: e } => &e.message,
+            KclError::Refactor { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
             KclError::EngineHangup { details: e } => &e.message,
             KclError::EngineInternal { details: e } => &e.message,
@@ -662,6 +679,7 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
             | KclError::EngineInternal { details: e }
@@ -684,6 +702,7 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
             | KclError::EngineInternal { details: e }
@@ -717,6 +736,7 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
             | KclError::EngineInternal { details: e }
