@@ -37,9 +37,9 @@ describe('cameraControls', () => {
   it('uses expected Apple Trackpad wheel guards', () => {
     const guards = cameraMouseDragGuards['Apple Trackpad']
 
-    expect(guards.pan.scrollCallback?.(wheel())).toBe(true)
+    expect(guards.pan.scrollCallback?.(wheel({ altKey: true }))).toBe(true)
     expect(guards.zoom.scrollCallback(wheel({ shiftKey: true }))).toBe(true)
-    expect(guards.rotate.scrollCallback?.(wheel({ altKey: true }))).toBe(true)
+    expect(guards.rotate.scrollCallback?.(wheel())).toBe(true)
     expect(guards.zoom.pinchToZoom).toBe(true)
   })
 })
@@ -76,30 +76,30 @@ describe('getInteractionType with Apple Trackpad guards', () => {
     )
   }
 
-  it('bare scroll → pan', () => {
-    expect(resolve(wheel({ deltaX: 10, deltaY: 5 }))).toBe('pan')
+  it('bare scroll → rotate', () => {
+    expect(resolve(wheel({ deltaX: 10, deltaY: 5 }))).toBe('rotate')
   })
 
   it('shift+scroll → zoom', () => {
     expect(resolve(wheel({ shiftKey: true, deltaY: 10 }))).toBe('zoom')
   })
 
-  it('alt+scroll → rotate', () => {
-    expect(resolve(wheel({ altKey: true, deltaX: 10 }))).toBe('rotate')
+  it('alt+scroll → pan', () => {
+    expect(resolve(wheel({ altKey: true, deltaX: 10 }))).toBe('pan')
   })
 
-  it('pinch-to-zoom (ctrlKey) → zoom, even though ctrlKey blocks pan guard', () => {
+  it('pinch-to-zoom (ctrlKey) → zoom, even though ctrlKey blocks rotate guard', () => {
     expect(resolve(wheel({ ctrlKey: true, deltaY: -5 }))).toBe('zoom')
   })
 
   it('pinch-to-zoom takes priority over other interactions', () => {
-    // ctrlKey + altKey: pinch-to-zoom should win over rotate
+    // ctrlKey + altKey: pinch-to-zoom should win over pan
     expect(resolve(wheel({ ctrlKey: true, altKey: true }))).toBe('zoom')
   })
 
-  it('returns none when pan is disabled and bare scroll', () => {
-    // Bare scroll matches pan only; with pan disabled, no other guard matches
-    expect(resolve(wheel(), { enablePan: false })).toBe('none')
+  it('returns none when rotate is disabled and bare scroll', () => {
+    // Bare scroll matches rotate only; with rotate disabled, no other guard matches
+    expect(resolve(wheel(), { enableRotate: false })).toBe('none')
   })
 
   it('returns none when zoom is disabled for shift+scroll', () => {
@@ -108,8 +108,8 @@ describe('getInteractionType with Apple Trackpad guards', () => {
     )
   })
 
-  it('returns none when rotate is disabled for alt+scroll', () => {
-    expect(resolve(wheel({ altKey: true }), { enableRotate: false })).toBe(
+  it('returns none when pan is disabled for alt+scroll', () => {
+    expect(resolve(wheel({ altKey: true }), { enablePan: false })).toBe(
       'none'
     )
   })

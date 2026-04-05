@@ -171,9 +171,14 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
   },
   'Apple Trackpad': {
     pan: {
-      description: 'Scroll or one finger drag',
+      description: `${ALT} + Scroll or one finger drag`,
       callback: (e) => btnName(e).left && noModifiersPressed(e),
-      scrollCallback: (e) => e.deltaMode === 0 && noModifiersPressed(e),
+      scrollCallback: (e) =>
+        e.deltaMode === 0 &&
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.shiftKey &&
+        !e.metaKey,
       lenientDragStartButton: 0,
     },
     zoom: {
@@ -188,14 +193,9 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       pinchToZoom: true,
     },
     rotate: {
-      description: `${ALT} + Scroll`,
+      description: 'Scroll',
       callback: () => false,
-      scrollCallback: (e) =>
-        e.deltaMode === 0 &&
-        e.altKey &&
-        !e.ctrlKey &&
-        !e.shiftKey &&
-        !e.metaKey,
+      scrollCallback: (e) => e.deltaMode === 0 && noModifiersPressed(e),
     },
   },
   Solidworks: {
