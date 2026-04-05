@@ -448,7 +448,7 @@ function buildEdgeExpr(
   }
 }
 
-function getPrimitiveEdgeSelections(
+export function getPrimitiveEdgeSelections(
   edges: Selections
 ): EnginePrimitiveSelection[] {
   return edges.otherSelections.filter(
@@ -470,7 +470,7 @@ function getPrimitiveEdgeSelections(
  * @param nodeToEdit - Optional path to the node being edited
  * @returns Object containing modified AST and Map of body data, or Error
  */
-function groupSelectionsByBodyAndAddTags(
+export function groupSelectionsByBodyAndAddTags(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
@@ -831,7 +831,7 @@ export function getEdgeTagCall(
 // Adds all the edgeId calls needed in the AST so we can refer to them,
 // keeps track of their names as "tags",
 // and gathers the corresponding solid expressions.
-function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   primitiveEdgeSelections,
   bodies,
   modifiedAst,

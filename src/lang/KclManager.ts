@@ -1,12 +1,14 @@
-import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import {
+  artifactAnnotationsEvent,
+  setArtifactGraphEffect,
+} from '@src/editor/plugins/artifacts'
 import type { KCLError } from '@src/lang/errors'
 import {
-  compilationErrorsToDiagnostics,
+  compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
@@ -21,17 +23,15 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
-import {
-  setArtifactGraphEffect,
-  artifactAnnotationsEvent,
-} from '@src/editor/plugins/artifacts'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
+import type RustContext from '@src/lib/rustContext'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
@@ -41,26 +41,22 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 
+import { EngineDebugger } from '@src/lib/debugger'
+import {
+  type handleSelectionBatch as handleSelectionBatchFn,
+  processCodeMirrorRanges,
+  type processCodeMirrorRanges as processCodeMirrorRangesFn,
+} from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineDebugger } from '@src/lib/debugger'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   PlaneVisibilityMap,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  processCodeMirrorRanges,
-  type handleSelectionBatch as handleSelectionBatchFn,
-  type processCodeMirrorRanges as processCodeMirrorRangesFn,
-} from '@src/lib/selections'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
-import {
-  setSelectionFilter,
-  setSelectionFilterToDefault,
-} from '@src/lib/selectionFilterUtils'
 import { history, redoDepth, undoDepth } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
@@ -74,7 +70,11 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { drawSelection, EditorView, keymap } from '@codemirror/view'
+import { EditorView, drawSelection, keymap } from '@codemirror/view'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -82,62 +82,62 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
+import { type Signal, computed, signal } from '@preact/signals-core'
 import type {
-  ModelingMachineEvent,
-  modelingMachine,
-} from '@src/machines/modelingMachine'
-import { historyCompartment } from '@src/editor/compartments'
-import { bracket } from '@src/lib/exampleKcl'
-import toast from 'react-hot-toast'
-import { computed, type Signal, signal } from '@preact/signals-core'
-import {
-  editorTheme,
-  themeCompartment,
-  appSettingsThemeEffect,
-  settingsUpdateAnnotation,
-} from '@src/editor/plugins/theme'
+  ApiFile,
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import {
+  baseEditorExtensions,
+  cursorBlinkingCompartment,
+  lineWrappingCompartment,
+} from '@src/editor'
+import {
+  HistoryView,
+  type TransactionSpecNoChanges,
+} from '@src/editor/HistoryView'
+import { historyCompartment } from '@src/editor/compartments'
 import {
   createEmptyAst,
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
 import {
+  requestCameraReset,
+  requestSkipExecution,
+} from '@src/editor/plugins/execution'
+import { fsHistoryExtension } from '@src/editor/plugins/fs'
+import {
   operationsAnnotation,
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
-import { setKclVersion } from '@src/lib/kclVersion'
 import {
-  baseEditorExtensions,
-  cursorBlinkingCompartment,
-  lineWrappingCompartment,
-} from '@src/editor'
-import type {
-  ApiFile,
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import {
-  HistoryView,
-  type TransactionSpecNoChanges,
-} from '@src/editor/HistoryView'
-import { fsHistoryExtension } from '@src/editor/plugins/fs'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+  appSettingsThemeEffect,
+  editorTheme,
+  settingsUpdateAnnotation,
+  themeCompartment,
+} from '@src/editor/plugins/theme'
+import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import type { FileEntry, Project } from '@src/lib/project'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
-import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
-import {
-  requestCameraReset,
-  requestSkipExecution,
-} from '@src/editor/plugins/execution'
-import { requestWriteToFile } from '@src/editor/plugins/write'
+import { bracket } from '@src/lib/exampleKcl'
+import { setKclVersion } from '@src/lib/kclVersion'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import type { FileEntry, Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import toast from 'react-hot-toast'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -626,6 +626,13 @@ export class KclManager extends File {
   private _logs = signal<string[]>([])
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
+  private _sketchSolveDiagnostics = signal<Diagnostic[]>([])
+  private _allDiagnostics = computed(() =>
+    this.makeUniqueDiagnostics([
+      ...this._diagnostics.value,
+      ...this._sketchSolveDiagnostics.value,
+    ])
+  )
   private _lastEvent: { event: string; time: number } | null = null
   private _highlightRange: Array<[number, number]> = [[0, 0]]
   /** a representation of selections used by modelingMachine */
@@ -753,6 +760,7 @@ export class KclManager extends File {
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
     this.errors = []
+    this.setSketchSolveDiagnostics([])
   }
 
   get variables() {
@@ -812,11 +820,11 @@ export class KclManager extends File {
   }
 
   get diagnostics() {
-    return this._diagnostics.value
+    return this._allDiagnostics.value
   }
   /** get entire signal for use in React. A plugin transforms its use there */
   get diagnosticsSignal() {
-    return this._diagnostics
+    return this._allDiagnostics
   }
 
   set diagnostics(ds) {
@@ -827,7 +835,13 @@ export class KclManager extends File {
 
   addDiagnostics(ds: Diagnostic[]) {
     if (ds.length === 0) return
-    this.diagnostics = this.diagnostics.concat(ds)
+    this.diagnostics = this._diagnostics.value.concat(ds)
+  }
+
+  setSketchSolveDiagnostics(ds: Diagnostic[]) {
+    if (ds === this._sketchSolveDiagnostics.value) return
+    this._sketchSolveDiagnostics.value = ds
+    this.setDiagnosticsForCurrentErrors()
   }
 
   hasErrors(): boolean {
@@ -1263,6 +1277,7 @@ export class KclManager extends File {
     wasmInstance: Promise<ModuleType> | ModuleType = this.wasmInstancePromise
   ): Promise<Node<Program> | null> {
     const result = parse(code, await wasmInstance)
+    this.setSketchSolveDiagnostics([])
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -1282,8 +1297,8 @@ export class KclManager extends File {
     this.errors = []
     this.logs = []
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -1321,6 +1336,7 @@ export class KclManager extends File {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
+    this.setSketchSolveDiagnostics([])
 
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -1387,7 +1403,7 @@ export class KclManager extends File {
     this.addDiagnostics(
       isInterrupted
         ? []
-        : compilationErrorsToDiagnostics(execState.errors, code)
+        : compilationIssuesToDiagnostics(execState.issues, code)
     )
     this.execState = execState
     if (!errors.length) {
@@ -2209,6 +2225,7 @@ export class KclManager extends File {
         annotations: [Transaction.addToHistory.of(false)],
         effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
       })
+      this.setDiagnosticsForCurrentErrors()
       return
     }
 
@@ -2255,6 +2272,7 @@ export class KclManager extends File {
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
       ],
     })
+    this.setDiagnosticsForCurrentErrors()
   }
   async writeToFile(newCode = this.codeSignal.value) {
     if (this.path !== '') {

@@ -1,26 +1,30 @@
-import type { ProvidedActor, AssignArgs } from 'xstate'
-import { createMachine, setup, fromPromise, assertEvent, assign } from 'xstate'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
-import type { KclManager } from '@src/lang/KclManager'
 import type {
-  SourceDelta,
   SceneGraphDelta,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
+import {
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { AssignArgs, ProvidedActor } from 'xstate'
+import { assertEvent, assign, createMachine, fromPromise, setup } from 'xstate'
 
+import type { Coords2d } from '@src/lang/util'
+import { pointsAreEqual } from '@src/lib/utils2d'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
   createDraftRectangle,
-  updateDraftRectangleAngled,
   updateDraftRectangleAligned,
+  updateDraftRectangleAngled,
 } from '@src/machines/sketchSolve/tools/rectUtils'
-import type { Coords2d } from '@src/lang/util'
-import { pointsAreEqual } from '@src/lib/utils2d'
 
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
@@ -65,6 +69,10 @@ export const machine = setup({
     context: {} as RectToolContext,
     events: {} as RectToolEvent,
     input: {} as ToolInput,
+  },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
   },
   actions: {
     'add first point listener': ({ self, context }) => {
@@ -149,6 +157,7 @@ export const machine = setup({
               await new Promise((resolve) => requestAnimationFrame(resolve))
             } catch (err) {
               console.error('failed to edit segment', err)
+              toastSketchSolveError(err)
             } finally {
               isEditInProgress = false
             }
@@ -204,6 +213,7 @@ export const machine = setup({
               await new Promise((resolve) => requestAnimationFrame(resolve))
             } catch (err) {
               console.error('failed to edit segment', err)
+              toastSketchSolveError(err)
             } finally {
               isEditInProgress = false
             }
@@ -257,6 +267,9 @@ export const machine = setup({
         onClick: () => {},
         onMove: () => {},
       })
+    },
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
     },
     'persist current sketch outcome': ({ self }) => {
       const sketchExecOutcome =
@@ -363,11 +376,21 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          actions: 'send result to parent',
-          target: 'awaiting second point',
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'awaiting first point',
+            actions: 'toast sketch solve error',
+          },
+          {
+            actions: 'send result to parent',
+            target: 'awaiting second point',
+          },
+        ],
+        onError: {
+          target: 'awaiting first point',
+          actions: 'toast sketch solve error',
         },
-        onError: 'awaiting first point',
       },
     },
     'awaiting second point': {

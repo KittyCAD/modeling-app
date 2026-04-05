@@ -25,19 +25,20 @@ import {
   scaleVec,
   subVec,
 } from '@src/lib/utils2d'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 import {
   isArcSegment,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   getCoincidentSegmentsForSnapTarget,
   type SnapTarget,
@@ -569,6 +570,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         self._parent?.send(sendData)
       } catch (err) {
         console.error('failed to edit tangential arc segment', err)
+        toastSketchSolveError(err)
       } finally {
         isEditInProgress = false
       }
