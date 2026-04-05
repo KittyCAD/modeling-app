@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
-use kcl_error::CompilationError;
+use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
@@ -1186,9 +1186,9 @@ impl FrontendState {
         } = err;
 
         if let Some(source_range) = error.source_ranges().first() {
-            non_fatal.push(CompilationError::fatal(*source_range, error.get_message()));
+            non_fatal.push(CompilationIssue::fatal(*source_range, error.get_message()));
         } else {
-            non_fatal.push(CompilationError::fatal(SourceRange::synthetic(), error.get_message()));
+            non_fatal.push(CompilationIssue::fatal(SourceRange::synthetic(), error.get_message()));
         }
 
         Ok(ExecOutcome {
@@ -1204,7 +1204,7 @@ impl FrontendState {
             source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions,
-            errors: non_fatal,
+            issues: non_fatal,
             default_planes,
         })
     }
