@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use super::CompilationError;
+use super::CompilationIssue;
 use crate::SourceRange;
 use crate::parsing::ast::types::BinaryExpression;
 use crate::parsing::ast::types::BinaryOperator;
@@ -10,16 +10,16 @@ use crate::parsing::ast::types::Node;
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
-pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationError> {
+pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationIssue> {
     let rpn = postfix(infix_tokens);
     evaluate(rpn)
 }
 
 /// Parses a list of tokens (in postfix order) into a binary expression tree.
-fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationError> {
+fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationIssue> {
     let source_range = source_range(&rpn);
     let mut operand_stack: Vec<BinaryPart> = Vec::new();
-    let e = CompilationError::fatal(source_range, "error parsing binary math expressions");
+    let e = CompilationIssue::fatal(source_range, "error parsing binary math expressions");
     for item in rpn {
         let expr = match item {
             BinaryExpressionToken::Operator(operator) => {

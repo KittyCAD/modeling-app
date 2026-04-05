@@ -1,4 +1,4 @@
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import toast from 'react-hot-toast'
 
@@ -67,28 +67,28 @@ export function toastSketchSolveError(
   return message
 }
 
-export function getSketchSolveExecOutcomeErrors(
+export function getSketchSolveExecOutcomeIssues(
   sceneGraphDelta?: SceneGraphDelta
-): CompilationError[] {
-  return sceneGraphDelta?.exec_outcome?.errors ?? []
+): CompilationIssue[] {
+  return sceneGraphDelta?.exec_outcome?.issues ?? []
 }
 
 export function getSketchSolveExecOutcomeErrorMessage(
   sceneGraphDelta?: SceneGraphDelta,
   fallback = 'Sketch solve failed'
 ): string | null {
-  const errors = getSketchSolveExecOutcomeErrors(sceneGraphDelta)
-  if (errors.length === 0) {
+  const issues = getSketchSolveExecOutcomeIssues(sceneGraphDelta)
+  if (issues.length === 0) {
     return null
   }
 
   const firstError =
-    errors.find((error) => error.severity !== 'Warning') ?? errors[0]
+    issues.find((issue) => issue.severity !== 'Warning') ?? issues[0]
   if (!firstError) {
     return fallback
   }
 
-  const extraCount = errors.length - 1
+  const extraCount = issues.length - 1
   return extraCount > 0
     ? `${firstError.message} (+${extraCount} more)`
     : firstError.message
