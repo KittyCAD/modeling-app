@@ -1962,7 +1962,7 @@ sketch001 = sketch(on = XZ) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: -2.48, y: -1.8875 },
             sketchId: sketch.id,
