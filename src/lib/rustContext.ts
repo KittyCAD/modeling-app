@@ -139,14 +139,14 @@ export default class RustContext {
     const instance = await this._checkContextInstance()
 
     try {
-      const result = await instance.execute(
+      const result: SceneGraphDelta = await instance.execute(
         JSON.stringify(node),
         path,
         JSON.stringify(settings)
       )
-      // Set the default planes, safe to call after execute.
-      const outcome = execStateFromRust(result)
+      const outcome = execStateFromRust(result.exec_outcome)
 
+      // Set the default planes, safe to call after execute.
       this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.

@@ -30,6 +30,7 @@ const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
+  sketchSolveStreamDimming?: number
 }) => {
   const { settings, project } = useApp()
   const { kclManager } = useSingletons()
@@ -439,6 +440,7 @@ export const ConnectionStream = (props: {
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
+        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
       <ViewControlContextMenu
         event="mouseup"

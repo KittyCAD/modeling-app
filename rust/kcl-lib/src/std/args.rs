@@ -8,7 +8,7 @@ use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::MetaSettings;
 use crate::ModuleId;
 use crate::SourceRange;
@@ -88,7 +88,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -106,7 +106,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }

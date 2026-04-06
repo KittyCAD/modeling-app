@@ -94,7 +94,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
-pub use errors::CompilationError;
+pub use errors::CompilationIssue;
 pub use errors::ConnectionError;
 pub use errors::ExecError;
 pub use errors::KclError;
@@ -264,7 +264,7 @@ pub use lsp::test_util::copilot_lsp_server;
 pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
-    pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
+    pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {
         let module_id = ModuleId::default();
         let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
