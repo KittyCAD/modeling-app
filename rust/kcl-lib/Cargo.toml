@@ -98,11 +98,11 @@ schemars = { version = "0.8.17", features = [
 ] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-sha2 = "0.10.9"
+sha2 = "0.11.0"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.27"
 thiserror = "2.0.18"
-toml = "1.0.7"
+toml = "1.1.0"
 ts-rs = { version = "12.0.1", features = [
   "uuid-impl",
   "url-impl",
@@ -147,7 +147,7 @@ criterion = { version = "0.8.2", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.0"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
-insta = { version = "1.46.3", features = ["json", "filters", "redactions"] }
+insta = { version = "1.47.0", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"

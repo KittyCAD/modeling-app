@@ -2,7 +2,7 @@
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
-pub use kcl_error::CompilationError;
+pub use kcl_error::CompilationIssue;
 pub use kcl_error::Severity;
 pub use kcl_error::Suggestion;
 pub use kcl_error::Tag;
@@ -183,7 +183,7 @@ impl IsRetryable for KclError {
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
-    pub non_fatal: Vec<CompilationError>,
+    pub non_fatal: Vec<CompilationIssue>,
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
@@ -214,7 +214,7 @@ impl KclErrorWithOutputs {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         error: KclError,
-        non_fatal: Vec<CompilationError>,
+        non_fatal: Vec<CompilationIssue>,
         variables: IndexMap<String, KclValue>,
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
@@ -822,8 +822,8 @@ impl From<KclError> for pyo3::PyErr {
     }
 }
 
-impl From<CompilationError> for KclErrorDetails {
-    fn from(err: CompilationError) -> Self {
+impl From<CompilationIssue> for KclErrorDetails {
+    fn from(err: CompilationIssue) -> Self {
         let backtrace = vec![BacktraceItem {
             source_range: err.source_range,
             fn_name: None,

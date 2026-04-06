@@ -62,7 +62,7 @@ function createSceneGraphDelta(
     new_objects: newObjectIds,
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
       operations: [],
       artifactGraph: { map: {}, itemCount: 0 },

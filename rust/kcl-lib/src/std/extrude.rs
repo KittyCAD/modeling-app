@@ -930,7 +930,7 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
             }
             other => {
                 exec_state.warn(
-                    crate::CompilationError {
+                    crate::CompilationIssue {
                         source_range: args.source_range,
                         message: format!("unknown extrusion face type {other:?}"),
                         suggestion: None,
