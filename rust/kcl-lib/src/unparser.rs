@@ -3500,4 +3500,21 @@ return union([right, left])
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn some_fn_args_still_prefixed() {
+        let code = "a
+  |> b()
+  |> subtract(
+       tools =     startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let extra_spaces = recasted.contains("=     startSketchOn");
+        assert!(!extra_spaces);
+    }
 }
