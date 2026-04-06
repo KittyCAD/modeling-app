@@ -1065,7 +1065,7 @@ description: Artifact commands propeller.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.00000012699999999999999
       }
     },
     {
@@ -1305,7 +1305,7 @@ description: Artifact commands propeller.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.00000012699999999999999
       }
     },
     {
