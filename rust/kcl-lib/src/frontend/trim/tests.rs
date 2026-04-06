@@ -2191,6 +2191,17 @@ fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> crate::fronten
     panic!("No arc segment found in {} objects", objects.len());
 }
 
+fn find_first_circle_id(objects: &[crate::frontend::api::Object]) -> crate::frontend::api::ObjectId {
+    for obj in objects {
+        if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind
+            && matches!(segment, crate::frontend::sketch::Segment::Circle(_))
+        {
+            return obj.id;
+        }
+    }
+    panic!("No circle segment found in {} objects", objects.len());
+}
+
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 /// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
@@ -2247,6 +2258,48 @@ sketch(on = YZ) {
             assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
         }
+    }
+
+    #[tokio::test]
+    async fn test_line_segment_intersection_with_circle_termination() {
+        let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+}
+"#;
+
+        let objects = get_objects_from_kcl(kcl_code).await;
+        let trim_points = vec![Coords2d { x: -1.24, y: 2.78 }, Coords2d { x: -0.5, y: 2.3 }];
+
+        let line_id = find_first_line_id(&objects);
+        let circle_id = find_first_circle_id(&objects);
+
+        let result = get_trim_spawn_terminations(line_id, &trim_points, &objects, UnitLength::Millimeters)
+            .expect("get_trim_spawn_terminations failed");
+
+        // One side should terminate at line endpoint, the other should terminate by intersecting circle.
+        let has_circle_intersection = matches!(
+            (&result.left_side, &result.right_side),
+            (
+                TrimTermination::Intersection {
+                    intersecting_seg_id, ..
+                },
+                TrimTermination::SegEndPoint { .. }
+            ) | (
+                TrimTermination::SegEndPoint { .. },
+                TrimTermination::Intersection {
+                    intersecting_seg_id, ..
+                }
+            ) if *intersecting_seg_id == circle_id
+        );
+
+        assert!(
+            has_circle_intersection,
+            "Expected one termination to be a circle intersection, got left={:?}, right={:?}",
+            result.left_side, result.right_side
+        );
     }
 
     #[tokio::test]
@@ -2616,6 +2669,136 @@ sketch(on = XY) {
   coincident([arc1.center, line3.end])
   coincident([arc1.end, line3])
   coincident([line4.start, arc1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_trim_circle_case_1_1() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 0.21, y: 2.24 }, Coords2d { x: -1.23, y: 1.12 }];
+
+    let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+  arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
+  coincident([arc1.start, line1])
+  coincident([arc1.end, line1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_trim_circle_case_1_2() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -2.0, y: 2.86 }, Coords2d { x: -2.53, y: 1.1 }];
+
+    let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+  arc1 = arc(start = [var -2.88mm, var 0.05mm], end = [var -1.04mm, var 2.23mm], center = [var -1.53mm, var 0.78mm])
+  coincident([arc1.start, line1])
+  coincident([arc1.end, line1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_trim_circle_case_1_3() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.24, y: 2.78 }, Coords2d { x: -0.5, y: 2.3 }];
+
+    let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
+  coincident([line1.start, circle1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_trim_circle_case_1_4() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
+}
+"#;
+
+    let trim_points = vec![
+        Coords2d { x: -1.14, y: 2.96 },
+        Coords2d { x: -0.51, y: 2.22 },
+        Coords2d { x: -0.4, y: 0.57 },
+    ];
+
+    let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
+  arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
+  coincident([arc1.start, line1.start])
+  coincident([arc1.end, line1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_trim_circle_case_2() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -0.75mm, var 2.93mm], end = [var -2.97mm, var -1.17mm])
+  line2 = line(start = [var -0.1mm, var 2.46mm], end = [var -0.67mm, var 0.97mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -0.44, y: 2.72 }, Coords2d { x: -0.99, y: 1.38 }];
+
+    let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -0.75mm, var 2.93mm], end = [var -2.97mm, var -1.17mm])
+  line2 = line(start = [var -0.1mm, var 2.46mm], end = [var -0.67mm, var 0.97mm])
+  arc1 = arc(start = [var -1.12mm, var 2.25mm], end = [var -0.36mm, var 1.77mm], center = [var -1.53mm, var 0.78mm])
+  coincident([arc1.start, line1])
+  coincident([arc1.end, line2])
 }
 "#;
 
