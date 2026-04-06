@@ -1589,11 +1589,6 @@ impl Node<SketchBlock> {
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
 
             // Push sketch solve operation
-            exec_state.push_op(Operation::SketchSolve {
-                sketch_id,
-                node_path: NodePath::placeholder(),
-                source_range: range,
-            });
             exec_state.push_op(Operation::GroupEnd);
         }
 

@@ -872,7 +872,9 @@ const prepareToEditSketchSolve: PrepareToEditCallback = async ({
   operation,
   artifact,
 }) => {
-  if (operation.type !== 'SketchSolve') {
+  if (
+    !(operation.type === 'GroupBegin' && operation.group.type === 'SketchBlock')
+  ) {
     return { reason: 'Wrong operation type' }
   }
 
@@ -2199,8 +2201,6 @@ export function getOperationLabel(op: Operation): string {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
-    case 'SketchSolve':
-      return 'Solve Sketch'
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -2368,8 +2368,6 @@ export function getOperationIcon(op: Operation): CustomIconName {
         return 'sketch'
       }
       return 'make-variable'
-    case 'SketchSolve':
-      return 'sketch'
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -2423,16 +2421,16 @@ export function getOperationVariableName(
   }
 
   // Handle inner sketch block variables
-  if (
-    op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
-  ) {
-    return undefined
-  }
+  // if (
+  //   op.type === 'StdLibCall' &&
+  //   op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
+  // ) {
+  //   return undefined
+  // }
 
   if (
     op.type !== 'StdLibCall' &&
-    op.type !== 'SketchSolve' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
     !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
@@ -2444,6 +2442,7 @@ export function getOperationVariableName(
   }
 
   // Find the AST node.
+  console.log('op', op)
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
   // If this is a module instance, the variable name is the import alias.
@@ -2649,15 +2648,19 @@ export async function enterEditFlow({
   }
 
   // Begin StdLibCall processing
-  if (operation.type !== 'StdLibCall' && operation.type !== 'SketchSolve') {
+  let stdLibInfo: StdLibCallInfo | undefined
+  if (operation.type === 'StdLibCall') {
+    stdLibInfo = stdLibMap[operation.name]
+  } else if (
+    operation.type === 'GroupBegin' &&
+    operation.group.type === 'SketchBlock'
+  ) {
+    stdLibInfo = stdLibMap.sketchSolve
+  } else {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
-  const stdLibInfo =
-    operation.type === 'SketchSolve'
-      ? stdLibMap.sketchSolve
-      : stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {

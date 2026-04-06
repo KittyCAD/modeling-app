@@ -293,18 +293,16 @@ function SketchBlockOperationGroup({
   engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
-  const contentItems = items.filter(
-    (item) =>
-      !(item.type === 'GroupBegin' && item.group.type === 'SketchBlock') &&
-      item.type !== 'GroupEnd'
-  )
+  const contentItems = items.filter((item) => item.type !== 'GroupEnd')
 
   if (contentItems.length === 0) {
     return null
   }
 
   const parentItem =
-    contentItems.find((item) => item.type === 'SketchSolve') ?? contentItems[0]
+    contentItems.find(
+      (item) => item.type === 'GroupBegin' && item.group.type === 'SketchBlock'
+    ) ?? contentItems[0]
   const childItems = contentItems.filter((item) => item !== parentItem)
 
   if (childItems.length === 0) {
@@ -618,7 +616,7 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
     ) {
       const artifact =
         getArtifactFromRange(
@@ -714,8 +712,7 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      item.type === 'VariableDeclaration'
     ) {
       const maybeArtifact =
         getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
@@ -844,12 +841,12 @@ const OperationItem = ({
         : []),
       ...(item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
         ? [
             <ContextMenuItem
               disabled={
                 item.type !== 'VariableDeclaration' &&
-                item.type !== 'SketchSolve' &&
+                item.type === 'StdLibCall' &&
                 stdLibMap[item.name]?.prepareToEdit === undefined
               }
               onClick={enterEditFlow}
@@ -924,8 +921,7 @@ const OperationItem = ({
         : []),
       ...(item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      item.type === 'VariableDeclaration'
         ? [
             <ContextMenuItem
               onClick={deleteOperation}

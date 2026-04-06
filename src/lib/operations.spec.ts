@@ -51,25 +51,6 @@ function sketchBlockEnd(): Operation {
   }
 }
 
-function sketchSolveInSketchBlock(index = 0): Operation {
-  return {
-    type: 'SketchSolve',
-    sketchId: index + 1,
-    nodePath: {
-      steps: [
-        {
-          type: 'ProgramBodyItem',
-          index,
-        },
-        {
-          type: 'ExpressionStatementExpr',
-        },
-      ],
-    },
-    sourceRange: defaultSourceRange(),
-  }
-}
-
 function userCall(name: string): Operation {
   return {
     type: 'GroupBegin',
@@ -226,7 +207,6 @@ describe('operations.test.ts', () => {
         sketchBlockBegin(0),
         stdlib('line'),
         stdlib('coincident'),
-        sketchSolveInSketchBlock(0),
         sketchBlockEnd(),
       ]
       const actual = filterOperations(operations)
@@ -401,7 +381,6 @@ describe('operations.test.ts', () => {
         stdlib('horizontal'),
         stdlib('vertical'),
         stdlib('coincident'),
-        sketchSolveInSketchBlock(1),
         sketchBlockEnd(),
         stdlib('extrude'),
       ]
@@ -415,7 +394,6 @@ describe('operations.test.ts', () => {
           stdlib('horizontal'),
           stdlib('vertical'),
           stdlib('coincident'),
-          sketchSolveInSketchBlock(1),
           sketchBlockEnd(),
         ],
         stdlib('extrude'),
@@ -427,12 +405,10 @@ describe('operations.test.ts', () => {
         sketchBlockBegin(1),
         stdlib('horizontal'),
         stdlib('vertical'),
-        sketchSolveInSketchBlock(1),
         sketchBlockEnd(),
         stdlib('offsetPlane'),
         sketchBlockBegin(2),
         stdlib('coincident'),
-        sketchSolveInSketchBlock(2),
         sketchBlockEnd(),
         stdlib('extrude'),
       ]
@@ -444,16 +420,10 @@ describe('operations.test.ts', () => {
           sketchBlockBegin(1),
           stdlib('horizontal'),
           stdlib('vertical'),
-          sketchSolveInSketchBlock(1),
           sketchBlockEnd(),
         ],
         stdlib('offsetPlane'),
-        [
-          sketchBlockBegin(2),
-          stdlib('coincident'),
-          sketchSolveInSketchBlock(2),
-          sketchBlockEnd(),
-        ],
+        [sketchBlockBegin(2), stdlib('coincident'), sketchBlockEnd()],
         stdlib('extrude'),
       ])
     })
@@ -464,7 +434,6 @@ describe('operations.test.ts', () => {
         sketchBlockBegin(1),
         stdlib('horizontal'),
         stdlib('vertical'),
-        sketchSolveInSketchBlock(1),
         sketchBlockEnd(),
       ]
 
@@ -476,7 +445,6 @@ describe('operations.test.ts', () => {
           sketchBlockBegin(1),
           stdlib('horizontal'),
           stdlib('vertical'),
-          sketchSolveInSketchBlock(1),
           sketchBlockEnd(),
         ],
       ])
