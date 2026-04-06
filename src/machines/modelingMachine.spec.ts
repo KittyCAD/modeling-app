@@ -1,3 +1,5 @@
+/** Engine-using integration tests of modelingMachine.
+ * For engineless unit tests, see modelingMachine.test.ts */
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'

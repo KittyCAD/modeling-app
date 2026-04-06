@@ -2851,6 +2851,12 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return null
         const { plane, kclManager, engineCommandManager, wasmInstance } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
           const originalCode = kclManager.code
           const sketched =
@@ -2958,6 +2964,12 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
