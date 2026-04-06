@@ -394,7 +394,7 @@ description: Artifact commands delete_face_by_index.kcl
       "command": {
         "type": "solid3d_get_face_uuid",
         "object_id": "[uuid]",
-        "face_index": 1
+        "face_index": 2
       }
     },
     {

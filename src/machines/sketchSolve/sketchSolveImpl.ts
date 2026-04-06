@@ -29,7 +29,7 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
-import { compilationErrorsToDiagnostics } from '@src/lang/errors'
+import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback } from '@src/lib/utils'
@@ -50,7 +50,7 @@ import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
-  getSketchSolveExecOutcomeErrors,
+  getSketchSolveExecOutcomeIssues,
   toastSketchSolveError,
   toastSketchSolveExecOutcomeErrors,
 } from '@src/machines/sketchSolve/sketchSolveErrors'
@@ -481,7 +481,7 @@ export function updateSceneGraphFromDelta({
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -733,7 +733,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(sceneGraphDelta).length > 0
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -843,7 +843,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeErrors(context.sketchExecOutcome.sceneGraphDelta)
+    getSketchSolveExecOutcomeIssues(context.sketchExecOutcome.sceneGraphDelta)
       .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
@@ -990,8 +990,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
-  const sketchSolveDiagnostics = compilationErrorsToDiagnostics(
-    getSketchSolveExecOutcomeErrors(event.data.sceneGraphDelta),
+  const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
+    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
     event.data.sourceDelta.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)

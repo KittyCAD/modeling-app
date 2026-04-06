@@ -58,7 +58,7 @@ async fn cache_test(
 
         let outcome = match ctx.run_with_caching(program).await {
             Ok(outcome) => {
-                let errors = outcome.actual_errors().collect::<Vec<_>>();
+                let errors = outcome.errors().collect::<Vec<_>>();
                 assert!(errors.is_empty(), "Execution resulted in error: {errors:#?}");
                 outcome
             }
