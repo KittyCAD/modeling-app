@@ -12,6 +12,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::Diagnostic;
 use tower_lsp::lsp_types::DiagnosticSeverity;
 
+use crate::ExecOutcome;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::exec::KclValue;
@@ -250,6 +251,7 @@ impl KclErrorWithOutputs {
             default_planes,
         }
     }
+
     pub fn no_outputs(error: KclError) -> Self {
         Self {
             error,
@@ -273,6 +275,32 @@ impl KclErrorWithOutputs {
             default_planes: Default::default(),
         }
     }
+
+    /// This is for when the error is generated after a successful execution.
+    pub fn from_error_outcome(error: KclError, outcome: ExecOutcome) -> Self {
+        KclErrorWithOutputs {
+            error,
+            non_fatal: outcome.issues,
+            variables: outcome.variables,
+            #[cfg(feature = "artifact-graph")]
+            operations: outcome.operations,
+            #[cfg(feature = "artifact-graph")]
+            _artifact_commands: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            artifact_graph: outcome.artifact_graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: outcome.scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: outcome.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: outcome.var_solutions,
+            scene_graph: Default::default(),
+            filenames: outcome.filenames,
+            source_files: Default::default(),
+            default_planes: outcome.default_planes,
+        }
+    }
+
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 

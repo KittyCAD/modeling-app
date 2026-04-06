@@ -347,9 +347,10 @@ impl SketchApi for FrontendState {
             })
             .max_by_key(|id| id.0)
         else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No objects in scene graph after adding sketch".to_owned(),
-            )));
+            return Err(KclErrorWithOutputs::from_error_outcome(
+                KclError::refactor("No objects in scene graph after adding sketch".to_owned()),
+                outcome,
+            ));
         };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
@@ -1415,27 +1416,22 @@ impl FrontendState {
         let new_object_ids = Vec::new();
         #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
+            let make_err =
+                |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
             let segment_id = outcome
                 .source_range_to_object
                 .get(&point_source_range)
                 .copied()
-                .ok_or_else(|| {
-                    KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                        "Source range of point not found: {point_source_range:?}"
-                    )))
-                })?;
-            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| {
-                KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Segment not found: {segment_id:?}")))
-            })?;
+                .ok_or_else(|| make_err(format!("Source range of point not found: {point_source_range:?}")))?;
+            let segment_object = outcome
+                .scene_objects
+                .get(segment_id.0)
+                .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a segment: {segment_object:?}"
-                ))));
+                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Point(_) = segment else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Segment is not a point: {segment:?}"
-                ))));
+                return Err(make_err(format!("Segment is not a point: {segment:?}")));
             };
             vec![segment_id]
         };
@@ -1553,27 +1549,21 @@ impl FrontendState {
         let new_object_ids = Vec::new();
         #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
+            let make_err =
+                |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
             let segment_id = outcome
                 .source_range_to_object
                 .get(&line_source_range)
                 .copied()
-                .ok_or_else(|| {
-                    KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                        "Source range of line not found: {line_source_range:?}"
-                    )))
-                })?;
-            let segment_object = outcome.scene_object_by_id(segment_id).ok_or_else(|| {
-                KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Segment not found: {segment_id:?}")))
-            })?;
+                .ok_or_else(|| make_err(format!("Source range of line not found: {line_source_range:?}")))?;
+            let segment_object = outcome
+                .scene_object_by_id(segment_id)
+                .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a segment: {segment_object:?}"
-                ))));
+                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Line(line) = segment else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Segment is not a line: {segment:?}"
-                ))));
+                return Err(make_err(format!("Segment is not a line: {segment:?}")));
             };
             vec![line.start, line.end, segment_id]
         };
@@ -1697,27 +1687,22 @@ impl FrontendState {
         let new_object_ids = Vec::new();
         #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
+            let make_err =
+                |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
             let segment_id = outcome
                 .source_range_to_object
                 .get(&arc_source_range)
                 .copied()
-                .ok_or_else(|| {
-                    KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                        "Source range of arc not found: {arc_source_range:?}"
-                    )))
-                })?;
-            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| {
-                KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Segment not found: {segment_id:?}")))
-            })?;
+                .ok_or_else(|| make_err(format!("Source range of arc not found: {arc_source_range:?}")))?;
+            let segment_object = outcome
+                .scene_objects
+                .get(segment_id.0)
+                .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a segment: {segment_object:?}"
-                ))));
+                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Arc(arc) = segment else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Segment is not an arc: {segment:?}"
-                ))));
+                return Err(make_err(format!("Segment is not an arc: {segment:?}")));
             };
             vec![arc.start, arc.end, arc.center, segment_id]
         };
@@ -1839,27 +1824,22 @@ impl FrontendState {
         let new_object_ids = Vec::new();
         #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
+            let make_err =
+                |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
             let segment_id = outcome
                 .source_range_to_object
                 .get(&circle_source_range)
                 .copied()
-                .ok_or_else(|| {
-                    KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                        "Source range of circle not found: {circle_source_range:?}"
-                    )))
-                })?;
-            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| {
-                KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Segment not found: {segment_id:?}")))
-            })?;
+                .ok_or_else(|| make_err(format!("Source range of circle not found: {circle_source_range:?}")))?;
+            let segment_object = outcome
+                .scene_objects
+                .get(segment_id.0)
+                .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a segment: {segment_object:?}"
-                ))));
+                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Circle(circle) = segment else {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Segment is not a circle: {segment:?}"
-                ))));
+                return Err(make_err(format!("Segment is not a circle: {segment:?}")));
             };
             vec![circle.start, circle.center, segment_id]
         };
@@ -2348,7 +2328,7 @@ impl FrontendState {
                     *var_range,
                     AstMutateCommand::EditVarInitialValue { value: rounded },
                 )
-                .map_err(KclErrorWithOutputs::no_outputs)?;
+                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
             }
             source_from_ast(&new_ast)
         };
@@ -3275,9 +3255,12 @@ impl FrontendState {
                 .get(&constraint_source_range)
                 .copied()
                 .ok_or_else(|| {
-                    KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                        "Source range of constraint not found: {constraint_source_range:?}"
-                    )))
+                    KclErrorWithOutputs::from_error_outcome(
+                        KclError::refactor(format!(
+                            "Source range of constraint not found: {constraint_source_range:?}"
+                        )),
+                        outcome.clone(),
+                    )
                 })?;
             vec![constraint_id]
         };
