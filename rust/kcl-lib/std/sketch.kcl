@@ -1579,10 +1579,10 @@ export fn polygon(
 /// 
 /// // Sketch a square
 /// sketch001 = sketch(on = XZ) {
-///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
-///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
-///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
-///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
+///   line2 = line(start = [var 2mm, var 0mm], end = [var 0mm, var 0mm])
+///   line3 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+///   line4 = line(start = [var 0mm, var 2mm], end = [var 2mm, var 2mm])
 ///   coincident([line1.end, line2.start])
 ///   coincident([line2.end, line3.start])
 ///   coincident([line3.end, line4.start])
@@ -1596,13 +1596,13 @@ export fn polygon(
 /// // Sketch a path
 /// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
 ///   line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
-///   arc1 = arc(start = [var -3mm, var 0mm], end = [var -3.85mm, var 1.41mm], center = [var -3mm, var 0.96mm])
-///   coincident([line1.end, arc1.start])
+///   arc1 = arc(start = [var -3.85mm, var 1.41mm], end = [var -3mm, var 0mm], center = [var -3mm, var 0.96mm])
+///   coincident([line1.end, arc1.end])
 ///   tangent([line1, arc1])
 /// }
 /// 
 /// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
-/// 
+///
 /// // Sweep the square along the path.
 /// path = [sketch002.line1, sketch002.arc1]
 /// sweep(mySquare, path)
