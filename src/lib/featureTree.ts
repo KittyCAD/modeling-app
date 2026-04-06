@@ -19,6 +19,7 @@ import {
 } from '@src/lib/operations'
 import {
   codeRefFromRange,
+  getArtifactsMatchingPathToNode,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
 import type { ActorRefFrom } from 'xstate'
@@ -76,22 +77,23 @@ function findSketchHideOperation(input: {
   artifactGraph: ArtifactGraph
 }): HideOperation | undefined {
   const { sketchBlockArtifact, operations, artifactGraph } = input
-  const idsToCheck = new Set<string>([sketchBlockArtifact.id])
-
-  for (const artifact of artifactGraph.values()) {
-    if (!('codeRef' in artifact)) {
-      continue
-    }
-    const sameRange = artifact.codeRef.range.every(
-      (value, index) => value === sketchBlockArtifact.codeRef.range[index]
-    )
-    if (sameRange) {
-      idsToCheck.add(artifact.id)
-    }
+  const directSketchHide = getHideOpByArtifactId(
+    operations,
+    sketchBlockArtifact.id
+  )
+  if (directSketchHide) {
+    return directSketchHide
   }
 
-  for (const artifactId of idsToCheck) {
-    const hideOperation = getHideOpByArtifactId(operations, artifactId)
+  for (const artifact of getArtifactsMatchingPathToNode(
+    sketchBlockArtifact.codeRef.pathToNode,
+    artifactGraph
+  )) {
+    if (artifact.id === sketchBlockArtifact.id) {
+      continue
+    }
+
+    const hideOperation = getHideOpByArtifactId(operations, artifact.id)
     if (hideOperation) {
       return hideOperation
     }
