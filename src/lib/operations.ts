@@ -2211,6 +2211,16 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
+type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
+
+function getGroupBeginSignature(operation: GroupBeginOperation): string {
+  return JSON.stringify({
+    group: operation.group,
+    nodePath: operation.nodePath,
+    sourceRange: operation.sourceRange,
+  })
+}
+
 /**
  * Given an operations list, group streaks of provided types
  * into arrays if they are of a given minimum length
@@ -2263,61 +2273,86 @@ export function groupOperationTypeStreaks(
 }
 
 /**
- * Given a list that may already contain grouped operation streaks, group
- * contiguous operations that belong to the same sketch block.
+ * Given a filtered operation list and the original operation stream, replace
+ * top-level GroupBegin operations with their full nested operation groups.
+ *
+ * This is generic over group type and allows callers to opt in to grouping any
+ * subset of GroupBegin operations.
  */
-export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
-  const result: NestedOpList = []
-  let sketchDepth = 0
-  let currentSketchOps: Operation[] = []
+export function groupNestedOperations(
+  opList: NestedOpList,
+  allOperations: Operation[],
+  shouldGroup: (groupBegin: GroupBeginOperation) => boolean
+): NestedOpList {
+  const groupOperationsByKey = new Map<string, Operation[]>()
+  const keyByGroupBegin = new Map<GroupBeginOperation, string>()
+  const seenSignatureCounts = new Map<string, number>()
+  const stack: {
+    begin: GroupBeginOperation
+    key: string
+    items: Operation[]
+  }[] = []
 
-  const flushSketchOps = () => {
-    if (currentSketchOps.length === 0) {
-      return
+  for (const operation of allOperations) {
+    if (operation.type === 'GroupBegin') {
+      const signature = getGroupBeginSignature(operation)
+      const ordinal = seenSignatureCounts.get(signature) ?? 0
+      seenSignatureCounts.set(signature, ordinal + 1)
+      const key = `${signature}#${ordinal}`
+      keyByGroupBegin.set(operation, key)
+      stack.push({ begin: operation, key, items: [operation] })
+      continue
     }
-    result.push([...currentSketchOps])
-    currentSketchOps = []
+
+    if (operation.type === 'GroupEnd') {
+      const current = stack.pop()
+      if (!current) {
+        console.assert(
+          false,
+          'Unbalanced GroupBegin and GroupEnd; too many ends while grouping'
+        )
+        continue
+      }
+
+      current.items.push(operation)
+      groupOperationsByKey.set(current.key, current.items)
+
+      if (stack.length > 0) {
+        stack[stack.length - 1].items.push(...current.items)
+      }
+      continue
+    }
+
+    if (stack.length > 0) {
+      stack[stack.length - 1].items.push(operation)
+    }
   }
 
+  const result: NestedOpList = []
+  const requestedSignatureCounts = new Map<string, number>()
   for (const item of opList) {
     if (isArray(item)) {
-      if (sketchDepth > 0) {
-        currentSketchOps.push(...item)
-      } else {
-        result.push(item)
-      }
+      result.push(item)
       continue
     }
 
-    if (item.type === 'GroupBegin' && item.group.type === 'SketchBlock') {
-      if (sketchDepth === 0) {
-        currentSketchOps = []
-      }
-      sketchDepth++
-      currentSketchOps.push(item)
+    if (item.type !== 'GroupBegin' || !shouldGroup(item)) {
+      result.push(item)
       continue
     }
 
-    if (item.type === 'GroupEnd') {
-      if (sketchDepth > 0) {
-        sketchDepth--
-        currentSketchOps.push(item)
-        if (sketchDepth === 0) {
-          flushSketchOps()
-        }
-      }
-      continue
+    let key = keyByGroupBegin.get(item)
+    if (!key) {
+      const signature = getGroupBeginSignature(item)
+      const ordinal = requestedSignatureCounts.get(signature) ?? 0
+      requestedSignatureCounts.set(signature, ordinal + 1)
+      key = `${signature}#${ordinal}`
     }
-
-    if (sketchDepth > 0) {
-      currentSketchOps.push(item)
-      continue
-    }
-
-    result.push(item)
+    result.push(
+      key !== undefined ? (groupOperationsByKey.get(key) ?? item) : item
+    )
   }
 
-  flushSketchOps()
   return result
 }
 
@@ -2461,6 +2496,7 @@ export function filterOperations(operations: Operation[]): Operation[] {
 const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
+  isNotGroupEnd,
   isNotHideOperation,
 ]
 
@@ -2471,48 +2507,22 @@ const operationFilters = [
  */
 function isNotInsideGroup(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
-  const groupStack: boolean[] = []
-  let nonSketchDepth = 0
-
+  let depth = 0
   for (const op of operations) {
-    if (op.type === 'GroupBegin') {
-      const isSketchBlock = op.group.type === 'SketchBlock'
-      groupStack.push(isSketchBlock)
-      if (nonSketchDepth === 0) {
-        ops.push(op)
-      }
-      if (!isSketchBlock) {
-        nonSketchDepth++
-      }
-      continue
-    }
-
-    if (op.type === 'GroupEnd') {
-      const isSketchBlock = groupStack.pop()
-      if (isSketchBlock === true) {
-        if (nonSketchDepth === 0) {
-          ops.push(op)
-        }
-      } else if (isSketchBlock === false) {
-        nonSketchDepth--
-        console.assert(
-          nonSketchDepth >= 0,
-          'Unbalanced GroupBegin and GroupEnd; too many ends'
-        )
-      } else {
-        console.assert(
-          false,
-          'Unbalanced GroupBegin and GroupEnd; too many ends'
-        )
-      }
-      continue
-    }
-
-    if (nonSketchDepth === 0) {
+    if (depth === 0) {
       ops.push(op)
     }
+    if (op.type === 'GroupBegin') {
+      depth++
+    }
+    if (op.type === 'GroupEnd') {
+      depth--
+      console.assert(
+        depth >= 0,
+        'Unbalanced GroupBegin and GroupEnd; too many ends'
+      )
+    }
   }
-
   // Depth could be non-zero here if there was an error in execution.
   return ops
 }
@@ -2546,6 +2556,13 @@ function isNotUserFunctionWithNoOperations(
 
     return true
   })
+}
+
+/**
+ * A filter to exclude GroupEnd operations from a list of operations.
+ */
+function isNotGroupEnd(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type !== 'GroupEnd')
 }
 
 /**
