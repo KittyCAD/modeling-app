@@ -2211,15 +2211,6 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-function isSketchBlockGroupBegin(op: Operation): op is Extract<
-  Operation,
-  { type: 'GroupBegin' }
-> & {
-  group: { type: 'SketchBlock' }
-} {
-  return op.type === 'GroupBegin' && op.group.type === 'SketchBlock'
-}
-
 /**
  * Given an operations list, group streaks of provided types
  * into arrays if they are of a given minimum length
@@ -2298,7 +2289,7 @@ export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
       continue
     }
 
-    if (isSketchBlockGroupBegin(item)) {
+    if (item.type === 'GroupBegin' && item.group.type === 'SketchBlock') {
       if (sketchDepth === 0) {
         currentSketchOps = []
       }
