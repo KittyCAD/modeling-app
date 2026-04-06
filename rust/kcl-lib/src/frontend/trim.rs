@@ -3525,7 +3525,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         vec![*segment_to_trim_id], // segment_ids
                     )
                     .await
-                    .map_err(|e| format!("Failed to delete segment: {}", e.msg))
+                    .map_err(|e| format!("Failed to delete segment: {}", e.error.message()))
             }
             TrimOperation::EditSegment {
                 segment_id,
@@ -3620,7 +3620,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                     delete_constraint_ids,
                                 )
                                 .await
-                                .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.msg))
+                                .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.error.message()))
                         } else {
                             // Not same segment/endpoint - execute EditSegment normally
                             let segment_to_edit = ExistingSegmentCtor {
@@ -3631,7 +3631,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             frontend
                                 .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                                 .await
-                                .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                                .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                         }
                     } else {
                         // Not followed by AddCoincidentConstraint - execute EditSegment normally
@@ -3643,7 +3643,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         frontend
                             .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                             .await
-                            .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                            .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                     }
                 } else {
                     // No following op to batch with - execute EditSegment normally
@@ -3655,7 +3655,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     frontend
                         .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                         .await
-                        .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                        .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
             }
             TrimOperation::AddCoincidentConstraint {
@@ -3715,7 +3715,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 frontend
                     .add_constraint(ctx, version, sketch_id, constraint)
                     .await
-                    .map_err(|e| format!("Failed to add constraint: {}", e.msg))
+                    .map_err(|e| format!("Failed to add constraint: {}", e.error.message()))
             }
             TrimOperation::DeleteConstraints { constraint_ids } => {
                 // Delete constraints
@@ -3730,7 +3730,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         Vec::new(), // segment_ids
                     )
                     .await
-                    .map_err(|e| format!("Failed to delete constraints: {}", e.msg))
+                    .map_err(|e| format!("Failed to delete constraints: {}", e.error.message()))
             }
             TrimOperation::SplitSegment {
                 segment_id,
@@ -3857,7 +3857,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 let (_add_source_delta, add_scene_graph_delta) = frontend
                     .add_segment(ctx, version, sketch_id, new_segment_ctor, None)
                     .await
-                    .map_err(|e| format!("Failed to add new segment: {}", e.msg))?;
+                    .map_err(|e| format!("Failed to add new segment: {}", e.error.message()))?;
 
                 // Step 3: Find the newly created segment
                 let new_segment_id = *add_scene_graph_delta
@@ -3927,7 +3927,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         }],
                     )
                     .await
-                    .map_err(|e| format!("Failed to edit segment: {}", e.msg))?;
+                    .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
                 // Track invalidates_ids from edit_segments call
                 invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
 
@@ -4312,7 +4312,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         },
                     )
                     .await
-                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg));
+                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.error.message()));
                 // Track invalidates_ids from batch_split_segment_operations call
                 if let Ok((_, ref batch_delta)) = batch_result {
                     invalidates_ids = invalidates_ids || batch_delta.invalidates_ids;
