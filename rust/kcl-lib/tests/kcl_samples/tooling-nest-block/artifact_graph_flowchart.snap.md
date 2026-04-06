@@ -341,12 +341,12 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   182["Cap Start"]
     %% face_code_ref=Missing NodePath
-  183["SweepEdge Opposite"]
-  184["SweepEdge Adjacent"]
-  185["EdgeCut Fillet<br>[1467, 1602, 0]"]
+  183["Cap End"]
+    %% face_code_ref=Missing NodePath
+  184["SweepEdge Opposite"]
+  185["SweepEdge Adjacent"]
+  186["EdgeCut Fillet<br>[1467, 1602, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-  186["StartSketchOnFace<br>[1260, 1303, 0]"]
-    %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   187["StartSketchOnFace<br>[1260, 1303, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   188["StartSketchOnFace<br>[1260, 1303, 0]"]
@@ -380,6 +380,8 @@ flowchart LR
   202["StartSketchOnFace<br>[1260, 1303, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   203["StartSketchOnFace<br>[1260, 1303, 0]"]
+    %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  204["StartSketchOnFace<br>[1260, 1303, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -428,9 +430,9 @@ flowchart LR
   43 <--x 10
   10 --- 51
   52 <--x 10
-  10 <--x 187
   10 <--x 188
   10 <--x 189
+  10 <--x 190
   17 <--x 11
   11 --- 18
   11 --- 19
@@ -442,16 +444,16 @@ flowchart LR
   79 <--x 11
   11 --- 87
   88 <--x 11
-  11 <--x 190
   11 <--x 191
   11 <--x 192
   11 <--x 193
+  11 <--x 194
   19 <--x 12
   12 --- 20
   12 --- 21
   12 --- 96
   97 <--x 12
-  12 <--x 194
+  12 <--x 195
   21 <--x 13
   13 --- 22
   13 --- 23
@@ -471,7 +473,6 @@ flowchart LR
   160 <--x 13
   13 --- 168
   169 <--x 13
-  13 <--x 195
   13 <--x 196
   13 <--x 197
   13 <--x 198
@@ -479,16 +480,16 @@ flowchart LR
   13 <--x 200
   13 <--x 201
   13 <--x 202
+  13 <--x 203
   14 --- 177
-  178 <--x 14
-  14 <--x 203
+  14 <--x 204
   16 <--x 15
   18 <--x 15
   20 <--x 15
   22 <--x 15
   15 --- 24
   25 <--x 15
-  15 <--x 186
+  15 <--x 187
   24 --- 25
   24 --- 26
   24 ---- 27
@@ -731,14 +732,16 @@ flowchart LR
   177 --- 179
   177 ---- 180
   178 --- 181
-  178 --- 183
+  178 x--> 183
   178 --- 184
+  178 --- 185
   180 --- 181
   180 --- 182
   180 --- 183
   180 --- 184
-  181 --- 183
+  180 --- 185
   181 --- 184
-  183 <--x 182
-  183 <--x 185
+  181 --- 185
+  184 <--x 182
+  184 <--x 186
 ```

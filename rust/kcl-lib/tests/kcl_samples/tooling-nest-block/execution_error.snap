@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing tooling-nest-block.kcl
+---
+KCL Engine error
+
+  × engine: Entity found but it was of the wrong type
+  │ Could not find any edges that match the given ids
+    ╭─[41:8]
+ 40 │         |> extrude(length = -nestSize, tagStart = $capStart001)
+ 41 │ ╭─▶     |> fillet(
+ 42 │ │            radius = nestSize * .99,
+ 43 │ │            tags = [
+ 44 │ │              getCommonEdge(faces = [seg01, capStart001])
+ 45 │ │            ],
+ 46 │ ├─▶        )
+    · ╰──── /Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/tooling-nest-block/main.kcl
+ 47 │       return {  }
+    ╰────
