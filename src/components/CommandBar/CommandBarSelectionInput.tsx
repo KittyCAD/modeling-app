@@ -37,7 +37,7 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [hasClearedSelection, setHasClearedSelection] = useState(false)
+  const [hasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
