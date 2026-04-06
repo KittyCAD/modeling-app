@@ -2213,14 +2213,22 @@ function getSketchBlockOperationKey(op: Operation): string | null {
   if (!('nodePath' in op)) {
     return null
   }
-  // TODO: This probably misses the sketch block if it's empty.
+
+  // Sketch block body ops are nested under a shared parent path. We use the
+  // path up to (but excluding) `SketchBlockBody` so their key also matches the
+  // corresponding `SketchSolve` operation.
   const sketchBlockIndex = op.nodePath.steps.findIndex(
     (step) => step.type === 'SketchBlockBody'
   )
-  if (sketchBlockIndex < 0) {
-    return null
+  if (sketchBlockIndex >= 0) {
+    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
   }
-  return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex + 1))
+
+  if (op.type === 'SketchSolve') {
+    return JSON.stringify(op.nodePath.steps)
+  }
+
+  return null
 }
 
 export function isSketchBlockOperationGroup(items: Operation[]): boolean {
