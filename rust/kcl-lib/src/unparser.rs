@@ -404,7 +404,9 @@ impl Expr {
                 }
             }
             Expr::TagDeclarator(tag) => tag.recast(buf),
-            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(buf, options, indentation_level, !is_decl),
+            Expr::PipeExpression(pipe_exp) => {
+                pipe_exp.recast(buf, options, indentation_level, !is_decl && ctxt.needs_leading_indent())
+            }
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(buf, options, indentation_level, ctxt),
             Expr::IfExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => buf.push_str(crate::parsing::PIPE_SUBSTITUTION_OPERATOR),
@@ -3499,5 +3501,30 @@ return union([right, left])
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn some_fn_args_still_prefixed() {
+        let code = "a
+  |> b()
+  |> subtract(
+       tools =     startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let actual_recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected_recasted = "a
+  |> b()
+  |> subtract(
+       tools = startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
+";
+        assert_eq!(actual_recasted, expected_recasted);
     }
 }
