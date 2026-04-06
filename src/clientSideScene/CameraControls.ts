@@ -116,7 +116,6 @@ export class CameraControls {
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
-  enableMouseDragPan = true
   enableZoom = true
   moveSender: CameraRateLimiter = new CameraRateLimiter()
   zoomSender: CameraRateLimiter = new CameraRateLimiter()
@@ -1481,7 +1480,6 @@ export class CameraControls {
             this.interactionGuards,
             event,
             this.enablePan,
-            this.enableMouseDragPan,
             this.enableRotate,
             this.enableZoom
           )
@@ -1733,7 +1731,6 @@ export function getInteractionType(
   interactionGuards: MouseGuard,
   event: MouseEvent | WheelEvent,
   enablePan: boolean,
-  enableMouseDragPan: boolean,
   enableRotate: boolean,
   enableZoom: boolean
 ): interactionType | 'none' {
@@ -1748,9 +1745,7 @@ export function getInteractionType(
     if (enableZoom && interactionGuards.zoom.scrollCallback(event))
       return 'zoom'
   } else {
-    if (enableMouseDragPan && interactionGuards.pan.callback(event)) {
-      return 'pan'
-    }
+    if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
     if (enableRotate && interactionGuards.rotate.callback(event))
       return 'rotate'
     if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'

@@ -60,15 +60,10 @@ describe('isPinchToZoom', () => {
 
 describe('getInteractionType with Apple Trackpad guards', () => {
   const guards = cameraMouseDragGuards['Apple Trackpad']
-  const allEnabled = {
-    enablePan: true,
-    enableMouseDragPan: true,
-    enableRotate: true,
-    enableZoom: true,
-  }
+  const allEnabled = { enablePan: true, enableRotate: true, enableZoom: true }
 
   function resolve(event: WheelEvent, overrides?: Partial<typeof allEnabled>) {
-    const { enablePan, enableMouseDragPan, enableRotate, enableZoom } = {
+    const { enablePan, enableRotate, enableZoom } = {
       ...allEnabled,
       ...overrides,
     }
@@ -76,7 +71,6 @@ describe('getInteractionType with Apple Trackpad guards', () => {
       guards,
       event,
       enablePan,
-      enableMouseDragPan,
       enableRotate,
       enableZoom
     )
@@ -129,7 +123,7 @@ describe('getInteractionType preserves existing Zoo behavior', () => {
   const guards = cameraMouseDragGuards['Zoo']
 
   function resolve(event: WheelEvent) {
-    return getInteractionType(guards, event, true, true, true, true)
+    return getInteractionType(guards, event, true, true, true)
   }
 
   it('bare scroll => zoom (Zoo has no scroll-to-pan/rotate)', () => {
