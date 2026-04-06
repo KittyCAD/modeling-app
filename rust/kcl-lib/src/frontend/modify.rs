@@ -208,7 +208,7 @@ fn next_free_name_using_max_and_padding(
         index += 1;
     }
     Err(ApiError {
-        msg: "Could not find a free name with prefix '{prefix}' after maximum tries.".to_owned(),
+        msg: format!("Could not find a free name with prefix '{prefix}' after maximum tries."),
     })
 }
 
