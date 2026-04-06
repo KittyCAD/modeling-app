@@ -124,7 +124,6 @@ function CommandBarSelectionInput({
           selectionType: 'singleCodeCursor',
         },
       })
-      setHasClearedSelection(true)
     }
   }, [arg, engineCommandManager])
 
