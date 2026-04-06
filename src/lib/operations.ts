@@ -2220,10 +2220,6 @@ function isSketchBlockGroupBegin(op: Operation): op is Extract<
   return op.type === 'GroupBegin' && op.group.type === 'SketchBlock'
 }
 
-export function isSketchBlockOperationGroup(items: Operation[]): boolean {
-  return items.some((item) => isSketchBlockGroupBegin(item))
-}
-
 /**
  * Given an operations list, group streaks of provided types
  * into arrays if they are of a given minimum length
@@ -2420,14 +2416,6 @@ export function getOperationVariableName(
     return undefined
   }
 
-  // Handle inner sketch block variables
-  // if (
-  //   op.type === 'StdLibCall' &&
-  //   op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
-  // ) {
-  //   return undefined
-  // }
-
   if (
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
@@ -2442,7 +2430,6 @@ export function getOperationVariableName(
   }
 
   // Find the AST node.
-  console.log('op', op)
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
   // If this is a module instance, the variable name is the import alias.
@@ -2483,7 +2470,6 @@ export function filterOperations(operations: Operation[]): Operation[] {
 const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
-  isNotGroupEnd,
   isNotHideOperation,
 ]
 
@@ -2569,34 +2555,6 @@ function isNotUserFunctionWithNoOperations(
 
     return true
   })
-}
-
-/**
- * A filter to exclude GroupEnd operations from a list of operations.
- */
-function isNotGroupEnd(ops: Operation[]): Operation[] {
-  const result: Operation[] = []
-  const groupStack: boolean[] = []
-
-  for (const op of ops) {
-    if (op.type === 'GroupBegin') {
-      groupStack.push(op.group.type === 'SketchBlock')
-      result.push(op)
-      continue
-    }
-
-    if (op.type === 'GroupEnd') {
-      const isSketchBlock = groupStack.pop()
-      if (isSketchBlock) {
-        result.push(op)
-      }
-      continue
-    }
-
-    result.push(op)
-  }
-
-  return result
 }
 
 /**

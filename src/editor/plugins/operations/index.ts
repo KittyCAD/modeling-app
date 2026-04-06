@@ -65,7 +65,7 @@ function buildOperationDecorations(
 
   for (const op of operations) {
     if (op.type === 'GroupEnd') continue
-    if (!(op.type === 'GroupBegin' && op.group.type === 'SketchBlock')) return
+    if (!(op.type === 'GroupBegin' && op.group.type === 'SketchBlock')) continue
     const sr = op.sourceRange
     const from = Math.max(0, Math.min(sr[0], docLen))
     const to = Math.max(0, Math.min(sr[1], docLen))

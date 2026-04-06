@@ -25,7 +25,6 @@ import {
   groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
-  isSketchBlockOperationGroup,
   stdLibMap,
   onUnhide,
 } from '@src/lib/operations'
@@ -238,7 +237,11 @@ export const FeatureTreePaneContents = memo(() => {
                 }`
               })()
 
-              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+              if (
+                isArray(opOrList) &&
+                opOrList[0]?.type === 'GroupBegin' &&
+                opOrList[0].group.type === 'SketchBlock'
+              ) {
                 return (
                   <SketchBlockOperationGroup
                     key={key}
