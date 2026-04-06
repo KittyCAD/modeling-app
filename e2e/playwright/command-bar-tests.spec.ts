@@ -5,7 +5,8 @@ import * as fsp from 'fs/promises'
 import {
   executorInputPath,
   getUtils,
-  waitForSelections,
+  waitForCommandBarSubmittableSelection,
+  waitForModelingGraphSelections,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -40,9 +41,10 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await u.closeDebugPanel()
 
     await page.getByText(`startProfile(at = [-10, -10])`).click()
-    await waitForSelections(page)
+    await waitForModelingGraphSelections(page)
 
     await toolbar.extrudeButton.click()
+    await waitForCommandBarSubmittableSelection(page)
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',

@@ -1214,7 +1214,7 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
 /**
  * Wait until a code-driven selection has been applied on the modeling machine.
  */
-export async function waitForSelections(
+export async function waitForModelingGraphSelections(
   page: Page,
   {
     minCount = 1,
@@ -1246,6 +1246,20 @@ export async function waitForSelections(
       { timeout }
     )
     .toBeGreaterThanOrEqual(minCount)
+}
+
+/**
+ * Wait until the command bar selection step shows a submittable selection.
+ */
+export async function waitForCommandBarSubmittableSelection(
+  page: Page,
+  { timeout = 15_000 }: { timeout?: number } = {}
+) {
+  const label = page
+    .getByTestId('command-bar')
+    .locator('#arg-form label')
+    .first()
+  await expect(label).toContainText(' selected', { timeout })
 }
 
 // TODO: fix type to allow for meta.id in configuration
