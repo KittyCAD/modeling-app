@@ -15,10 +15,6 @@ import {
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import {
-  getDistanceConstraintLineStyle,
-  shouldRenderDistanceConstraintDashed,
-} from '@src/machines/sketchSolve/constraints/distanceConstraintRender'
 import { type Group, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
@@ -53,14 +49,16 @@ export class DistanceConstraintBuilder {
       const { p1, p2, distance } = points
       const { start, end, perp } = getDirections(obj, p1, p2, scale)
       const isCollapsedZeroAxisDistance =
-        shouldRenderDistanceConstraintDashed(obj)
+        obj.kind.constraint.distance.value === 0 &&
+        (obj.kind.constraint.type === 'HorizontalDistance' ||
+          obj.kind.constraint.type === 'VerticalDistance')
       group.visible = true
       this.resources.updateConstraintGroup(
         group,
         obj.id,
         selectedIds,
         hoveredId,
-        getDistanceConstraintLineStyle(obj)
+        isCollapsedZeroAxisDistance ? 'dashed' : 'solid'
       )
       updateDimensionLine(start, end, group, obj, scale, sceneInfra, distance)
       if (isCollapsedZeroAxisDistance) {
