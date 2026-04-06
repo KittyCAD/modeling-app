@@ -41,6 +41,7 @@ pub enum SweepPath {
 }
 
 /// The outer (typical) sweep path gets converted to this, losing some of its variants in the conversion.
+#[allow(clippy::large_enum_variant)]
 enum InnerSweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
