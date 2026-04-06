@@ -1,5 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
+  ApiConstraint,
   ApiObject,
   ExistingSegmentCtor,
   SceneGraphDelta,
@@ -292,6 +293,44 @@ function getDragPointSnappingCandidate({
     ) ?? null
 
   return candidate
+}
+
+function hasCoincidentConstraintWithOrigin(
+  pointId: number,
+  objects: ApiObject[]
+) {
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      obj.kind.constraint.segments.includes(pointId) &&
+      obj.kind.constraint.segments.includes('ORIGIN')
+  )
+}
+
+function hasExistingZeroAxisDistanceConstraint(
+  pointId: number,
+  constraint: ApiConstraint,
+  objects: ApiObject[]
+) {
+  if (
+    constraint.type !== 'HorizontalDistance' &&
+    constraint.type !== 'VerticalDistance'
+  ) {
+    return false
+  }
+
+  return (
+    constraint.points.includes(pointId) &&
+    constraint.points.includes('ORIGIN') &&
+    constraint.distance.value === 0 &&
+    objects.some(
+      (obj) =>
+        isConstraint(obj, constraint.type) &&
+        obj.kind.constraint.points.includes(pointId) &&
+        obj.kind.constraint.points.includes('ORIGIN') &&
+        obj.kind.constraint.distance.value === 0
+    )
+  )
 }
 
 /**
@@ -1051,8 +1090,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             snapConstraint !== null
               ? await (async () => {
                   const [x, y] = snappingCandidate.position
-
-                  await context.rustContext.editSegments(
+                  const editResult = await context.rustContext.editSegments(
                     0,
                     context.sketchId,
                     [
@@ -1078,12 +1116,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     settings
                   )
 
-                  return context.rustContext.addConstraint(
-                    SKETCH_FILE_VERSION,
-                    context.sketchId,
-                    snapConstraint,
-                    settings
-                  )
+                  // If the same distance constraint with 0 distance already exists,
+                  // don't add it again
+                  const canAddSnapConstraint =
+                    !hasExistingZeroAxisDistanceConstraint(
+                      draggedEntityId,
+                      snapConstraint,
+                      sceneGraphDelta?.new_graph.objects ?? []
+                    )
+                  if (canAddSnapConstraint) {
+                    return context.rustContext.addConstraint(
+                      SKETCH_FILE_VERSION,
+                      context.sketchId,
+                      snapConstraint,
+                      settings
+                    )
+                  } else {
+                    return editResult
+                  }
                 })()
               : await context.rustContext.sketchExecuteMock(
                   SKETCH_FILE_VERSION,
@@ -1150,7 +1200,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
       onUpdateDragSnapping: updateDragSnappingState,
     }),
     onMouseDownSelection: () => {
-      return isObjectSelectionId(self.getSnapshot().context.hoveredId)
+      const snapshot = self.getSnapshot()
+      const hoveredId = snapshot.context.hoveredId
+      if (!isObjectSelectionId(hoveredId)) {
+        // Only api objects can be dragged, ORIGIN cannot be.
+        return false
+      }
+
+      const objects =
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+        []
+      // If it's a point which is already coincident with ORIGIN -> don't allow dragging
+      return !(
+        isPointSegment(objects[hoveredId]) &&
+        hasCoincidentConstraintWithOrigin(hoveredId, objects)
+      )
     },
     onClick: createOnClickCallback({
       getApiObjects: () => {
