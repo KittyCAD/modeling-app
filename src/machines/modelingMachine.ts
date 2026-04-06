@@ -1286,6 +1286,10 @@ export const modelingMachine = setup({
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
+    'disable rotate unless allowed in sketch mode': ({ context }) => {
+      context.kclManager.sceneInfra.camControls.enableRotate =
+        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+    },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
       context.kclManager.setSelectionFilter(
@@ -6913,7 +6917,10 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: ['clientToEngine cam sync direction'],
+      entry: [
+        'clientToEngine cam sync direction',
+        'disable rotate unless allowed in sketch mode',
+      ],
       initial: 'active',
       states: {
         active: {
