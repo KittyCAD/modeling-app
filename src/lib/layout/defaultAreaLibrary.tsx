@@ -46,7 +46,7 @@ function ModelingArea() {
               Background Opacity
             </div>
             <input
-              aria-label="Sketch solve background opacity"
+              aria-label="Sketch background opacity"
               type="range"
               min="0"
               max="100"
