@@ -9,7 +9,9 @@ use kcl_lib::front::FileId;
 use kcl_lib::front::LifecycleApi;
 use kcl_lib::front::ObjectId;
 use kcl_lib::front::ProjectId;
+use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::front::SketchApi;
+use kcl_lib::front::SourceDelta;
 use kcl_lib::front::Version;
 use wasm_bindgen::prelude::*;
 
@@ -18,8 +20,8 @@ use crate::TRUE_BUG;
 
 #[derive(serde::Serialize)]
 struct TrimOutcome {
-    source_delta: kcl_lib::front::SourceDelta,
-    scene_graph_delta: kcl_lib::front::SceneGraphDelta,
+    source_delta: SourceDelta,
+    scene_graph_delta: SceneGraphDelta,
     operations_performed: bool,
 }
 
