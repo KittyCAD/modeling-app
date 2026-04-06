@@ -43,10 +43,10 @@ function ModelingArea() {
         <div className="absolute bottom-2 left-2 z-10 flex items-end gap-2 pointer-events-auto">
           <div className="px-2 py-1 border border-chalkboard-20 dark:border-chalkboard-80 rounded bg-chalkboard-10/80 dark:bg-chalkboard-100/80 backdrop-blur-sm">
             <div className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
-              Geometry passthrough
+              Background Opacity
             </div>
             <input
-              aria-label="Sketch solve geometry passthrough"
+              aria-label="Sketch solve background opacity"
               type="range"
               min="0"
               max="100"
