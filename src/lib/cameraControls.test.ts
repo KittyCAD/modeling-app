@@ -76,19 +76,19 @@ describe('getInteractionType with Apple Trackpad guards', () => {
     )
   }
 
-  it('bare scroll → rotate', () => {
+  it('bare scroll => rotate', () => {
     expect(resolve(wheel({ deltaX: 10, deltaY: 5 }))).toBe('rotate')
   })
 
-  it('shift+scroll → zoom', () => {
+  it('shift+scroll => zoom', () => {
     expect(resolve(wheel({ shiftKey: true, deltaY: 10 }))).toBe('zoom')
   })
 
-  it('alt+scroll → pan', () => {
+  it('alt+scroll => pan', () => {
     expect(resolve(wheel({ altKey: true, deltaX: 10 }))).toBe('pan')
   })
 
-  it('pinch-to-zoom (ctrlKey) → zoom, even though ctrlKey blocks rotate guard', () => {
+  it('pinch-to-zoom (ctrlKey) => zoom, even though ctrlKey blocks rotate guard', () => {
     expect(resolve(wheel({ ctrlKey: true, deltaY: -5 }))).toBe('zoom')
   })
 
@@ -128,7 +128,7 @@ describe('getInteractionType preserves existing Zoo behavior', () => {
     return getInteractionType(guards, event, true, true, true)
   }
 
-  it('bare scroll → zoom (Zoo has no scroll-to-pan/rotate)', () => {
+  it('bare scroll => zoom (Zoo has no scroll-to-pan/rotate)', () => {
     expect(resolve(wheel({ deltaY: 10 }))).toBe('zoom')
   })
 
