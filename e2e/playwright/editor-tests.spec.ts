@@ -6,6 +6,8 @@ import {
   TEST_COLORS,
   executorInputPath,
   getUtils,
+  waitForCommandBarSubmittableSelection,
+  waitForModelingGraphSelections,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
@@ -1100,9 +1102,10 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(100)
 
     await page.getByText('startProfile(at = [4.61, -14.01])').click()
-    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
-    await page.waitForTimeout(200)
+    await waitForModelingGraphSelections(page)
+
     await toolbar.extrudeButton.click()
+    await waitForCommandBarSubmittableSelection(page)
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
