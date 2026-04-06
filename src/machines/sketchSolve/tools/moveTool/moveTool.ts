@@ -39,29 +39,28 @@ import {
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  buildSegmentCtorFromObject,
-  getObjectSelectionIds,
-  isObjectSelectionId,
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
   type SolveActionArgs,
+  buildSegmentCtorFromObject,
+  getObjectSelectionIds,
+  isObjectSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  type SnappingCandidate,
   allowSnapping,
   getConstraintForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
-  toApiConstraint,
-  type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import {
+  type SelectionBoxVisualState,
   findContainedSegments,
   findIntersectingSegments,
   isIntersectionSelectionMode,
   project3DToScreen,
   removeSelectionBox,
-  type SelectionBoxVisualState,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Group, type Object3D, Vector2, Vector3 } from 'three'
@@ -1082,7 +1081,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   return context.rustContext.addConstraint(
                     SKETCH_FILE_VERSION,
                     context.sketchId,
-                    toApiConstraint(snapConstraint),
+                    snapConstraint,
                     settings
                   )
                 })()

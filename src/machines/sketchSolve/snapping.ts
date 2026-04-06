@@ -1,12 +1,11 @@
 import type {
-  ApiObject,
   ApiConstraint,
-  ConstraintSegment,
-  ConstraintSource,
+  ApiObject,
   Number as ConstraintNumber,
+  ConstraintSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { distance2d } from '@src/lib/utils2d'
 import {
@@ -34,17 +33,6 @@ export type SnappingCandidate = {
   distance: number
   position: Coords2d
 }
-
-type AxisSnapConstraint = {
-  type: 'HorizontalDistance' | 'VerticalDistance'
-  points: [ConstraintSegment, ConstraintSegment]
-  distance: ConstraintNumber
-  source: ConstraintSource
-}
-
-export type SnapConstraint =
-  | Extract<ApiConstraint, { type: 'Coincident' }>
-  | AxisSnapConstraint
 
 export function allowSnapping(mouseEvent: MouseEvent) {
   return !mouseEvent.shiftKey
@@ -74,7 +62,7 @@ export function getConstraintForSnapTarget(
   segmentId: number,
   target: SnapTarget | undefined,
   units: ConstraintNumber['units']
-): SnapConstraint | null {
+): ApiConstraint | null {
   switch (target?.type) {
     case 'point':
     case ORIGIN_TARGET: {
@@ -109,10 +97,6 @@ export function getConstraintForSnapTarget(
     default:
       return null
   }
-}
-
-export function toApiConstraint(constraint: SnapConstraint): ApiConstraint {
-  return constraint as unknown as ApiConstraint
 }
 
 function getSnapTargetPriority(target: SnapTarget) {

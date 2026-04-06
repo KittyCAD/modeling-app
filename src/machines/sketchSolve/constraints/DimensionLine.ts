@@ -310,7 +310,10 @@ function updateCollapsedDimensionLine(
   arrow2.scale.setScalar(scale)
 }
 
-export function updateConstraintLinePositions(line: Line2, positions: number[]) {
+export function updateConstraintLinePositions(
+  line: Line2,
+  positions: number[]
+) {
   const segmentStart =
     line.userData.segmentStart instanceof Vector3
       ? line.userData.segmentStart

@@ -142,7 +142,8 @@ export class ConstraintResources {
     const segmentStart = (userData.segmentStart ??= new Vector3())
     const segmentEnd = (userData.segmentEnd ??= new Vector3())
     const dashedMaterial =
-      userData.dashedMaterial ?? (userData.dashedMaterial = baseMaterial.clone())
+      userData.dashedMaterial ??
+      (userData.dashedMaterial = baseMaterial.clone())
 
     if (userData.hasDashedShader !== true) {
       setupConstructionLineDashShader(dashedMaterial, segmentStart, segmentEnd)

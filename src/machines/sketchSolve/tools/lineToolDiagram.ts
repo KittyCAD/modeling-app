@@ -24,9 +24,8 @@ import type {
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  getConstraintForSnapTarget,
-  toApiConstraint,
   type SnapTarget,
+  getConstraintForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   type CONFIRMING_DIMENSIONS,
@@ -153,7 +152,7 @@ export const machine = setup({
           const snapResult = await rustContext.addConstraint(
             0,
             sketchId,
-            toApiConstraint(snapConstraint),
+            snapConstraint,
             settings
           )
 
@@ -266,7 +265,7 @@ export const machine = setup({
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
-              toApiConstraint(snapConstraint),
+              snapConstraint,
               settings
             )
             latestKclSource = snapResult.kclSource
