@@ -1,6 +1,7 @@
 import { setDiagnosticsEffect, type Diagnostic } from '@codemirror/lint'
-import { KclManager } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
+import { isArray } from '@src/lib/utils'
 import { loadWasm } from '@src/unitTestUtils'
 
 const wasmPromise = loadWasm()
@@ -26,15 +27,15 @@ export function createKclManagerTestHarness(initialCode = ''): {
 }
 
 export function getLatestDispatchedDiagnostics(
-  dispatchCalls: Array<[unknown, ...unknown[]]>
+  dispatchCalls: ReadonlyArray<ReadonlyArray<unknown>>
 ): Diagnostic[] {
   for (let i = dispatchCalls.length - 1; i >= 0; i -= 1) {
-    const [spec] = dispatchCalls[i]
+    const spec = dispatchCalls[i]?.[0]
     if (typeof spec !== 'object' || spec === null || !('effects' in spec)) {
       continue
     }
 
-    const effects = Array.isArray(spec.effects) ? spec.effects : [spec.effects]
+    const effects = isArray(spec.effects) ? spec.effects : [spec.effects]
     const diagnosticsEffect = effects.find(
       (effect) =>
         typeof effect === 'object' &&
@@ -44,7 +45,11 @@ export function getLatestDispatchedDiagnostics(
         effect.is(setDiagnosticsEffect)
     )
 
-    if (diagnosticsEffect && 'value' in diagnosticsEffect) {
+    if (
+      diagnosticsEffect &&
+      typeof diagnosticsEffect === 'object' &&
+      'value' in diagnosticsEffect
+    ) {
       return diagnosticsEffect.value as Diagnostic[]
     }
   }
