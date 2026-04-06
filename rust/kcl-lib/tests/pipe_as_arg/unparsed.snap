@@ -14,7 +14,7 @@ fn width() {
 }
 
 myCube = cube(
-  length =   200
+  length = 200
     |> double(%),
   center = [0, 0],
 )
