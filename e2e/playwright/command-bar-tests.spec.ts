@@ -2,7 +2,11 @@ import path, { join } from 'path'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import {
+  executorInputPath,
+  getUtils,
+  waitForSelections,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -35,11 +39,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // Click the line of code for xLine.
     await page.getByText(`startProfile(at = [-10, -10])`).click()
-
-    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
-    await page.waitForTimeout(200)
+    await waitForSelections(page)
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({

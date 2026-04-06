@@ -1211,6 +1211,43 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
+/**
+ * Wait until a code-driven selection has been applied on the modeling machine.
+ */
+export async function waitForSelections(
+  page: Page,
+  {
+    minCount = 1,
+    timeout = 10_000,
+  }: { minCount?: number; timeout?: number } = {}
+) {
+  await expect
+    .poll(
+      async () => {
+        return page.evaluate(() => {
+          const get = (
+            window as unknown as {
+              getModelingState?: () => {
+                modelingState: {
+                  context: { selectionRanges: { graphSelections: unknown[] } }
+                }
+              }
+            }
+          ).getModelingState
+          if (!get) return 0
+          try {
+            return get().modelingState.context.selectionRanges.graphSelections
+              .length
+          } catch {
+            return 0
+          }
+        })
+      },
+      { timeout }
+    )
+    .toBeGreaterThanOrEqual(minCount)
+}
+
 // TODO: fix type to allow for meta.id in configuration
 export function settingsToToml(
   settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
