@@ -1148,7 +1148,9 @@ impl FrontendState {
             Err(mut err) => {
                 // Don't return an error just because execution failed. Instead,
                 // update state as much as possible.
-                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                let outcome = self.exec_outcome_from_exec_error(err.clone()).map_err(|err| Error {
+                    msg: err.error.message().to_owned(),
+                })?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph.clone());
                 Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
@@ -1156,14 +1158,47 @@ impl FrontendState {
         }
     }
 
-    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> api::Result<ExecOutcome> {
+    /// Decorate engine execution such that our state is updated and the scene
+    /// graph is added to the return.
+    pub async fn engine_execute(
+        &mut self,
+        ctx: &ExecutorContext,
+        program: Program,
+    ) -> Result<SceneGraphDelta, KclErrorWithOutputs> {
+        self.program = program.clone();
+
+        // Engine execution now runs freedom analysis automatically. Clear the
+        // freedom cache since IDs might have changed after direct editing, and
+        // we're about to run freedom analysis which will repopulate it.
+        self.point_freedom_cache.clear();
+        match ctx.run_with_caching(program).await {
+            Ok(outcome) => {
+                let outcome = self.update_state_after_exec(outcome, true);
+                Ok(SceneGraphDelta {
+                    new_graph: self.scene_graph.clone(),
+                    exec_outcome: outcome,
+                    // We don't know what the new objects are.
+                    new_objects: Default::default(),
+                    // We don't know if IDs were invalidated.
+                    invalidates_ids: Default::default(),
+                })
+            }
+            Err(mut err) => {
+                // Update state as much as possible, even when there's an error.
+                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                self.update_state_after_exec(outcome, true);
+                err.scene_graph = Some(self.scene_graph.clone());
+                Err(err)
+            }
+        }
+    }
+
+    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> Result<ExecOutcome, KclErrorWithOutputs> {
         if matches!(err.error, KclError::EngineHangup { .. }) {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
             // errors that have nothing to do with the actual problem.
-            return Err(Error {
-                msg: err.error.message().to_owned(),
-            });
+            return Err(err);
         }
 
         let KclErrorWithOutputs {
