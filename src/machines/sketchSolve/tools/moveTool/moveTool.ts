@@ -1,6 +1,5 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
-  ApiConstraint,
   ApiObject,
   ExistingSegmentCtor,
   SceneGraphDelta,
@@ -129,14 +128,14 @@ function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
   if (isInvisibleConstraintObject(selectionTarget.apiObject)) {
     return 0
   }
-  const isPointLike =
-    selectionTarget.selectionId === 'origin' ||
-    isPointSegment(selectionTarget.apiObject)
-  if (isPointLike) {
+  if (isPointSegment(selectionTarget.apiObject)) {
     return 1
   }
+  if (selectionTarget.selectionId === 'origin') {
+    return 2
+  }
 
-  return 2
+  return 3
 }
 
 /**
@@ -307,29 +306,19 @@ function hasCoincidentConstraintWithOrigin(
   )
 }
 
-function hasExistingZeroAxisDistanceConstraint(
+function getZeroAxisDistanceConstraintWithOrigin(
   pointId: number,
-  constraint: ApiConstraint,
+  constraintType: 'HorizontalDistance' | 'VerticalDistance',
   objects: ApiObject[]
 ) {
-  if (
-    constraint.type !== 'HorizontalDistance' &&
-    constraint.type !== 'VerticalDistance'
-  ) {
-    return false
-  }
-
   return (
-    constraint.points.includes(pointId) &&
-    constraint.points.includes('ORIGIN') &&
-    constraint.distance.value === 0 &&
-    objects.some(
+    objects.find(
       (obj) =>
-        isConstraint(obj, constraint.type) &&
+        isConstraint(obj, constraintType) &&
         obj.kind.constraint.points.includes(pointId) &&
         obj.kind.constraint.points.includes('ORIGIN') &&
         obj.kind.constraint.distance.value === 0
-    )
+    ) ?? null
   )
 }
 
@@ -1116,24 +1105,61 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     settings
                   )
 
-                  // If the same distance constraint with 0 distance already exists,
-                  // don't add it again
-                  const canAddSnapConstraint =
-                    !hasExistingZeroAxisDistanceConstraint(
-                      draggedEntityId,
-                      snapConstraint,
-                      sceneGraphDelta?.new_graph.objects ?? []
-                    )
-                  if (canAddSnapConstraint) {
-                    return context.rustContext.addConstraint(
-                      SKETCH_FILE_VERSION,
-                      context.sketchId,
-                      snapConstraint,
-                      settings
-                    )
-                  } else {
-                    return editResult
+                  if (
+                    snapConstraint.type === 'HorizontalDistance' ||
+                    snapConstraint.type === 'VerticalDistance'
+                  ) {
+                    const objects = sceneGraphDelta?.new_graph.objects ?? []
+                    const existingSameConstraint =
+                      getZeroAxisDistanceConstraintWithOrigin(
+                        draggedEntityId,
+                        snapConstraint.type,
+                        objects
+                      )
+                    if (existingSameConstraint) {
+                      // Same zero distance constraint already exists -> don't add it again
+                      return editResult
+                    }
+
+                    const oppositeConstraintType =
+                      snapConstraint.type === 'HorizontalDistance'
+                        ? 'VerticalDistance'
+                        : 'HorizontalDistance'
+                    const existingOppositeConstraint =
+                      getZeroAxisDistanceConstraintWithOrigin(
+                        draggedEntityId,
+                        oppositeConstraintType,
+                        objects
+                      )
+                    if (existingOppositeConstraint) {
+                      // If there is already a 0 distance opposite constraint:
+                      // delete that and add a Coincident constraint instead.
+                      await context.rustContext.deleteObjects(
+                        SKETCH_FILE_VERSION,
+                        context.sketchId,
+                        [existingOppositeConstraint.id],
+                        [],
+                        settings
+                      )
+
+                      return context.rustContext.addConstraint(
+                        SKETCH_FILE_VERSION,
+                        context.sketchId,
+                        {
+                          type: 'Coincident',
+                          segments: [draggedEntityId, 'ORIGIN'],
+                        },
+                        settings
+                      )
+                    }
                   }
+
+                  return context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    snapConstraint,
+                    settings
+                  )
                 })()
               : await context.rustContext.sketchExecuteMock(
                   SKETCH_FILE_VERSION,
