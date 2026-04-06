@@ -293,13 +293,19 @@ function SketchBlockOperationGroup({
   engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
-  if (items.length === 0) {
+  const contentItems = items.filter(
+    (item) =>
+      !(item.type === 'GroupBegin' && item.group.type === 'SketchBlock') &&
+      item.type !== 'GroupEnd'
+  )
+
+  if (contentItems.length === 0) {
     return null
   }
 
   const parentItem =
-    items.find((item) => item.type === 'SketchSolve') ?? items[0]
-  const childItems = items.filter((item) => item !== parentItem)
+    contentItems.find((item) => item.type === 'SketchSolve') ?? contentItems[0]
+  const childItems = contentItems.filter((item) => item !== parentItem)
 
   if (childItems.length === 0) {
     return (

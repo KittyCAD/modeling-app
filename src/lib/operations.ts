@@ -2193,6 +2193,8 @@ export function getOperationLabel(op: Operation): string {
         return op.group.name ?? 'anonymous'
       } else if (op.group.type === 'ModuleInstance') {
         return op.group.name
+      } else if (op.group.type === 'SketchBlock') {
+        return 'Sketch'
       } else {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
@@ -2209,37 +2211,17 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-function getSketchBlockOperationKey(op: Operation): string | null {
-  if (!('nodePath' in op)) {
-    return null
-  }
-
-  // Sketch block body ops are nested under a shared parent path. We use the
-  // path up to (but excluding) `SketchBlockBody` so their key also matches the
-  // corresponding `SketchSolve` operation.
-  const sketchBlockIndex = op.nodePath.steps.findIndex(
-    (step) => step.type === 'SketchBlockBody'
-  )
-  if (sketchBlockIndex >= 0) {
-    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
-  }
-
-  if (op.type === 'SketchSolve') {
-    return JSON.stringify(op.nodePath.steps)
-  }
-
-  return null
+function isSketchBlockGroupBegin(op: Operation): op is Extract<
+  Operation,
+  { type: 'GroupBegin' }
+> & {
+  group: { type: 'SketchBlock' }
+} {
+  return op.type === 'GroupBegin' && op.group.type === 'SketchBlock'
 }
 
 export function isSketchBlockOperationGroup(items: Operation[]): boolean {
-  if (items.length === 0) {
-    return false
-  }
-  const firstKey = getSketchBlockOperationKey(items[0])
-  if (!firstKey) {
-    return false
-  }
-  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
+  return items.some((item) => isSketchBlockGroupBegin(item))
 }
 
 /**
@@ -2299,7 +2281,7 @@ export function groupOperationTypeStreaks(
  */
 export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
   const result: NestedOpList = []
-  let currentSketchKey: string | null = null
+  let sketchDepth = 0
   let currentSketchOps: Operation[] = []
 
   const flushSketchOps = () => {
@@ -2308,32 +2290,44 @@ export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
     }
     result.push([...currentSketchOps])
     currentSketchOps = []
-    currentSketchKey = null
   }
 
   for (const item of opList) {
     if (isArray(item)) {
-      flushSketchOps()
-      result.push(item)
+      if (sketchDepth > 0) {
+        currentSketchOps.push(...item)
+      } else {
+        result.push(item)
+      }
       continue
     }
 
-    const sketchKey = getSketchBlockOperationKey(item)
-    if (!sketchKey) {
-      flushSketchOps()
-      result.push(item)
-      continue
-    }
-
-    if (currentSketchKey === null || currentSketchKey === sketchKey) {
-      currentSketchKey = sketchKey
+    if (isSketchBlockGroupBegin(item)) {
+      if (sketchDepth === 0) {
+        currentSketchOps = []
+      }
+      sketchDepth++
       currentSketchOps.push(item)
       continue
     }
 
-    flushSketchOps()
-    currentSketchKey = sketchKey
-    currentSketchOps.push(item)
+    if (item.type === 'GroupEnd') {
+      if (sketchDepth > 0) {
+        sketchDepth--
+        currentSketchOps.push(item)
+        if (sketchDepth === 0) {
+          flushSketchOps()
+        }
+      }
+      continue
+    }
+
+    if (sketchDepth > 0) {
+      currentSketchOps.push(item)
+      continue
+    }
+
+    result.push(item)
   }
 
   flushSketchOps()
@@ -2369,6 +2363,9 @@ export function getOperationIcon(op: Operation): CustomIconName {
       }
       if (op.group.type === 'FunctionCall') {
         return 'function'
+      }
+      if (op.group.type === 'SketchBlock') {
+        return 'sketch'
       }
       return 'make-variable'
     case 'SketchSolve':
@@ -2498,22 +2495,48 @@ const operationFilters = [
  */
 function isNotInsideGroup(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
-  let depth = 0
+  const groupStack: boolean[] = []
+  let nonSketchDepth = 0
+
   for (const op of operations) {
-    if (depth === 0) {
+    if (op.type === 'GroupBegin') {
+      const isSketchBlock = op.group.type === 'SketchBlock'
+      groupStack.push(isSketchBlock)
+      if (nonSketchDepth === 0) {
+        ops.push(op)
+      }
+      if (!isSketchBlock) {
+        nonSketchDepth++
+      }
+      continue
+    }
+
+    if (op.type === 'GroupEnd') {
+      const isSketchBlock = groupStack.pop()
+      if (isSketchBlock === true) {
+        if (nonSketchDepth === 0) {
+          ops.push(op)
+        }
+      } else if (isSketchBlock === false) {
+        nonSketchDepth--
+        console.assert(
+          nonSketchDepth >= 0,
+          'Unbalanced GroupBegin and GroupEnd; too many ends'
+        )
+      } else {
+        console.assert(
+          false,
+          'Unbalanced GroupBegin and GroupEnd; too many ends'
+        )
+      }
+      continue
+    }
+
+    if (nonSketchDepth === 0) {
       ops.push(op)
     }
-    if (op.type === 'GroupBegin') {
-      depth++
-    }
-    if (op.type === 'GroupEnd') {
-      depth--
-      console.assert(
-        depth >= 0,
-        'Unbalanced GroupBegin and GroupEnd; too many ends'
-      )
-    }
   }
+
   // Depth could be non-zero here if there was an error in execution.
   return ops
 }
@@ -2553,7 +2576,28 @@ function isNotUserFunctionWithNoOperations(
  * A filter to exclude GroupEnd operations from a list of operations.
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
-  return ops.filter((op) => op.type !== 'GroupEnd')
+  const result: Operation[] = []
+  const groupStack: boolean[] = []
+
+  for (const op of ops) {
+    if (op.type === 'GroupBegin') {
+      groupStack.push(op.group.type === 'SketchBlock')
+      result.push(op)
+      continue
+    }
+
+    if (op.type === 'GroupEnd') {
+      const isSketchBlock = groupStack.pop()
+      if (isSketchBlock) {
+        result.push(op)
+      }
+      continue
+    }
+
+    result.push(op)
+  }
+
+  return result
 }
 
 /**

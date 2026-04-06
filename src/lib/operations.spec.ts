@@ -33,27 +33,21 @@ function stdlib(name: string): Operation {
   }
 }
 
-function stdlibInSketchBlock(name: string, index = 0): Operation {
-  const op = stdlib(name)
-  if (op.type !== 'StdLibCall') {
-    return op
-  }
+function sketchBlockBegin(index = 0): Operation {
   return {
-    ...op,
-    nodePath: {
-      steps: [
-        {
-          type: 'ProgramBodyItem',
-          index,
-        },
-        {
-          type: 'ExpressionStatementExpr',
-        },
-        {
-          type: 'SketchBlockBody',
-        },
-      ],
+    type: 'GroupBegin',
+    group: {
+      type: 'SketchBlock',
+      sketchId: index + 1,
     },
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+  }
+}
+
+function sketchBlockEnd(): Operation {
+  return {
+    type: 'GroupEnd',
   }
 }
 
@@ -226,6 +220,18 @@ describe('operations.test.ts', () => {
         stdlib('std8'),
       ])
     })
+
+    it('keeps operations inside sketch block groups', async () => {
+      const operations = [
+        sketchBlockBegin(0),
+        stdlib('line'),
+        stdlib('coincident'),
+        sketchSolveInSketchBlock(0),
+        sketchBlockEnd(),
+      ]
+      const actual = filterOperations(operations)
+      expect(actual).toEqual(operations)
+    })
   })
 
   function rangeOfText(fullCode: string, target: string): SourceRange {
@@ -391,31 +397,12 @@ describe('operations.test.ts', () => {
     it('groups contiguous operations from the same sketch block', () => {
       const ops = [
         stdlib('offsetPlane'),
-        stdlibInSketchBlock('horizontal', 1),
-        stdlibInSketchBlock('vertical', 1),
-        stdlibInSketchBlock('coincident', 1),
-        stdlib('extrude'),
-      ]
-
-      const actual = groupSketchBlockOperations(ops)
-
-      expect(actual).toEqual([
-        stdlib('offsetPlane'),
-        [
-          stdlibInSketchBlock('horizontal', 1),
-          stdlibInSketchBlock('vertical', 1),
-          stdlibInSketchBlock('coincident', 1),
-        ],
-        stdlib('extrude'),
-      ])
-    })
-
-    it('groups sketch block operations with their SketchSolve operation', () => {
-      const ops = [
-        stdlib('offsetPlane'),
-        stdlibInSketchBlock('horizontal', 1),
-        stdlibInSketchBlock('vertical', 1),
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
+        stdlib('coincident'),
         sketchSolveInSketchBlock(1),
+        sketchBlockEnd(),
         stdlib('extrude'),
       ]
 
@@ -424,9 +411,12 @@ describe('operations.test.ts', () => {
       expect(actual).toEqual([
         stdlib('offsetPlane'),
         [
-          stdlibInSketchBlock('horizontal', 1),
-          stdlibInSketchBlock('vertical', 1),
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
+          stdlib('coincident'),
           sketchSolveInSketchBlock(1),
+          sketchBlockEnd(),
         ],
         stdlib('extrude'),
       ])
@@ -434,32 +424,48 @@ describe('operations.test.ts', () => {
 
     it('keeps separate sketch blocks separate', () => {
       const ops = [
-        stdlibInSketchBlock('horizontal', 1),
-        stdlibInSketchBlock('vertical', 1),
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
         sketchSolveInSketchBlock(1),
+        sketchBlockEnd(),
         stdlib('offsetPlane'),
-        stdlibInSketchBlock('coincident', 2),
+        sketchBlockBegin(2),
+        stdlib('coincident'),
         sketchSolveInSketchBlock(2),
+        sketchBlockEnd(),
+        stdlib('extrude'),
       ]
 
       const actual = groupSketchBlockOperations(ops)
 
       expect(actual).toEqual([
         [
-          stdlibInSketchBlock('horizontal', 1),
-          stdlibInSketchBlock('vertical', 1),
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
           sketchSolveInSketchBlock(1),
+          sketchBlockEnd(),
         ],
         stdlib('offsetPlane'),
-        [stdlibInSketchBlock('coincident', 2), sketchSolveInSketchBlock(2)],
+        [
+          sketchBlockBegin(2),
+          stdlib('coincident'),
+          sketchSolveInSketchBlock(2),
+          sketchBlockEnd(),
+        ],
+        stdlib('extrude'),
       ])
     })
 
     it('does not merge pre-grouped operation streaks into sketch block groups', () => {
       const ops = [
         [stdlib('a'), stdlib('b')],
-        stdlibInSketchBlock('horizontal', 1),
-        stdlibInSketchBlock('vertical', 1),
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
+        sketchSolveInSketchBlock(1),
+        sketchBlockEnd(),
       ]
 
       const actual = groupSketchBlockOperations(ops)
@@ -467,8 +473,11 @@ describe('operations.test.ts', () => {
       expect(actual).toEqual([
         [stdlib('a'), stdlib('b')],
         [
-          stdlibInSketchBlock('horizontal', 1),
-          stdlibInSketchBlock('vertical', 1),
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
+          sketchSolveInSketchBlock(1),
+          sketchBlockEnd(),
         ],
       ])
     })

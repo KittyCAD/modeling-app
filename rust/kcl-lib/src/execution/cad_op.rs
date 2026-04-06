@@ -149,6 +149,13 @@ pub enum Group {
         /// The ID of the module which can be used to determine its path.
         module_id: ModuleId,
     },
+    /// A sketch block.
+    #[allow(dead_code)]
+    #[serde(rename_all = "camelCase")]
+    SketchBlock {
+        /// The ID of the sketch this group wraps.
+        sketch_id: ObjectId,
+    },
 }
 
 /// An argument to a CAD modeling operation.
