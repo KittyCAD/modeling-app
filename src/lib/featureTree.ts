@@ -50,24 +50,24 @@ export function resolveFeatureTreeVisibility(input: {
     }
   }
 
-  if (item.type !== 'SketchSolve') {
-    return { canToggleVisibility: false }
+  if (item.type === 'SketchSolve') {
+    const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
+    if (artifact?.type !== 'sketchBlock') {
+      return { canToggleVisibility: false }
+    }
+
+    return {
+      canToggleVisibility: true,
+      hideOperation: findSketchHideOperation({
+        sketchBlockArtifact: artifact,
+        operations,
+        artifactGraph,
+      }),
+      targetArtifact: artifact,
+    }
   }
 
-  const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
-  if (artifact?.type !== 'sketchBlock') {
-    return { canToggleVisibility: false }
-  }
-
-  return {
-    canToggleVisibility: true,
-    hideOperation: findSketchHideOperation({
-      sketchBlockArtifact: artifact,
-      operations,
-      artifactGraph,
-    }),
-    targetArtifact: artifact,
-  }
+  return { canToggleVisibility: false }
 }
 
 function findSketchHideOperation(input: {

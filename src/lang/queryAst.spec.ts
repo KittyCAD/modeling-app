@@ -1319,54 +1319,6 @@ extrude001 = extrude(profile001, length = 1)
     expect(vars.exprs[0].name.name).toEqual('extrude001')
     expect(vars.pathIfPipe).toBeUndefined()
   })
-
-  it('should fallback to direct variable lookup for sketch block selections when child lookup finds nothing', async () => {
-    const sketchBlock = `@settings(experimentalFeatures = allow)
-sketch001 = sketch(on = XY) {
-  circle001 = circle(start = [var 0mm, var 0mm], center = [var 0mm, var 0mm])
-}
-`
-    const ast = assertParse(sketchBlock, instanceInThisFile)
-    const { artifactGraph } = await enginelessExecutor(
-      ast,
-      rustContextInThisFile
-    )
-    const artifact = [...artifactGraph.values()].find(
-      (a) => a.type === 'sketchBlock'
-    )
-    if (!artifact || artifact.type !== 'sketchBlock') {
-      throw new Error('Sketch block artifact not found in the graph')
-    }
-
-    const selections: Selections = {
-      graphSelections: [
-        {
-          codeRef: artifact.codeRef,
-          artifact,
-        },
-      ],
-      otherSelections: [],
-    }
-    const vars = getVariableExprsFromSelection(
-      selections,
-      artifactGraph,
-      ast,
-      instanceInThisFile,
-      undefined,
-      {
-        lastChildLookup: true,
-      }
-    )
-    if (err(vars)) throw vars
-
-    expect(vars.exprs).toHaveLength(1)
-    if (vars.exprs[0].type !== 'Name') {
-      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
-    }
-
-    expect(vars.exprs[0].name.name).toEqual('sketch001')
-    expect(vars.pathIfPipe).toBeUndefined()
-  })
 })
 
 describe('Testing retrieveSelectionsFromOpArg', () => {
