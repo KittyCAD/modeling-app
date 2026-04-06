@@ -13,7 +13,7 @@ bench = false
 
 [dependencies]
 anyhow = { workspace = true }
-kcl-lib = { path = "../kcl-lib", features = [
+kcl-lib = { path = "../kcl-lib", default-features = false, features = [
   "pyo3",
   "engine",
   "disable-println",
