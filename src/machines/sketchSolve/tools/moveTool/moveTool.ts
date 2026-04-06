@@ -1134,7 +1134,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     if (existingOppositeConstraint) {
                       // If there is already a 0 distance opposite constraint:
                       // delete that and add a Coincident constraint instead.
-                      await context.rustContext.deleteObjects(
+                      const deleteResult = await context.rustContext.deleteObjects(
                         SKETCH_FILE_VERSION,
                         context.sketchId,
                         [existingOppositeConstraint.id],
@@ -1142,7 +1142,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                         settings
                       )
 
-                      return context.rustContext.addConstraint(
+                      const addResult = await context.rustContext.addConstraint(
                         SKETCH_FILE_VERSION,
                         context.sketchId,
                         {
@@ -1151,6 +1151,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
                         },
                         settings
                       )
+
+                      return {
+                        kclSource: addResult.kclSource,
+                        sceneGraphDelta: {
+                          ...addResult.sceneGraphDelta,
+                          invalidates_ids:
+                            deleteResult.sceneGraphDelta.invalidates_ids ||
+                            addResult.sceneGraphDelta.invalidates_ids,
+                        },
+                      }
                     }
                   }
 
