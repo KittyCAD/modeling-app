@@ -109,7 +109,9 @@ describe('getInteractionType with Apple Trackpad guards', () => {
   })
 
   it('returns none when pan is disabled for alt+scroll', () => {
-    expect(resolve(wheel({ altKey: true }), { enablePan: false })).toBe('none')
+    expect(resolve(wheel({ altKey: true }), { enablePan: false })).toBe(
+      'none'
+    )
   })
 
   it('returns none when zoom is disabled for pinch-to-zoom', () => {
