@@ -17,7 +17,7 @@ twistAngle = 45
 hub = startSketchOn(XY)
   |> circle(diameter = hubDiameter, tag = $seg01)
   // Create mounting holes around the perimeter of the hub
-  |> subtract2d(tool =   circle(center = [0, hubDiameter / 3], diameter = holeDiameter)
+  |> subtract2d(tool = circle(center = [0, hubDiameter / 3], diameter = holeDiameter)
     |> patternCircular2d(instances = 10, center = [0, 0]))
   |> extrude(
        length = hubThickness,
@@ -59,7 +59,7 @@ bladeRevolve = startSketchOn(YZ)
   |> close()
   |> revolve(axis = X)
   // Subtract out a mounting face to the center hub
-  |> subtract(tools =   startSketchOn(XY)
+  |> subtract(tools = startSketchOn(XY)
     |> circle(diameter = hubDiameter)
     |> extrude(length = hubThickness * 5, symmetric = true))
 

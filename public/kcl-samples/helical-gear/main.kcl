@@ -65,7 +65,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
 
     // Compute twist angle so the tooth helix matches helixAngle over the gear height
     |> extrude(length = gearHeight, twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter), twistAngleStep = 0)
-    |> subtract(tools =     holeWithKeyway
+    |> subtract(tools = holeWithKeyway
       |> extrude(length = gearHeight))
 
   return helicalGear

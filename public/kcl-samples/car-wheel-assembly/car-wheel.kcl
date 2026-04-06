@@ -33,7 +33,7 @@ wheelCenter = startSketchOn(XY)
   |> xLine(endAbsolute = profileStartX())
   |> close()
   |> revolve(axis = Y)
-  |> subtract(tools =   lugMounts
+  |> subtract(tools = lugMounts
     |> patternCircular3d(instances = lugCount, axis = [0, -1, 0], center = [0, 0, 0]))
 
 // Define and revolve the wheel exterior. Adjust position based on wheel parameters and offset
