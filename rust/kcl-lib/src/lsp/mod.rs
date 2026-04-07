@@ -16,12 +16,12 @@ use tower_lsp::lsp_types::Position;
 use tower_lsp::lsp_types::Range;
 pub use util::IntoDiagnostic;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Suggestion;
 use crate::errors::Tag;
 
-impl IntoDiagnostic for CompilationError {
+impl IntoDiagnostic for CompilationIssue {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 

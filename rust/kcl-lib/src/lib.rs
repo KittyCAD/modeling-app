@@ -79,6 +79,8 @@ pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
+#[doc(hidden)]
+pub mod tooling;
 mod unparser;
 mod util;
 #[cfg(test)]
@@ -92,7 +94,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
-pub use errors::CompilationError;
+pub use errors::CompilationIssue;
 pub use errors::ConnectionError;
 pub use errors::ExecError;
 pub use errors::KclError;
@@ -187,9 +189,10 @@ pub mod pretty {
 pub mod front {
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
-    // Re-export trim module items
+    pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
-        FrontendState, SetProgramOutcome,
+        FrontendState,
+        SetProgramOutcome,
         api::{
             Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
             ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
@@ -200,6 +203,7 @@ pub mod front {
             Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent,
             Vertical,
         },
+        // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
@@ -262,7 +266,7 @@ pub use lsp::test_util::copilot_lsp_server;
 pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
-    pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
+    pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {
         let module_id = ModuleId::default();
         let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
@@ -329,6 +333,17 @@ impl Program {
         let module_infos = indexmap::IndexMap::new();
         let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
         NodePath::from_range(&programs, cached_body_items, range)
+    }
+
+    /// Fill node paths and consume the input so that the program without paths
+    /// isn't accidentally used. Filling node paths happens automatically during
+    /// parsing. Calling this is only needed after the caller invalidates the
+    /// node paths such as by mutating an AST or by making a round-trip through
+    /// serialization.
+    #[cfg(feature = "artifact-graph")]
+    pub fn fill_node_paths(mut self) -> Program {
+        parsing::ast::types::fill_node_paths(&mut self.ast);
+        self
     }
 
     pub fn recast(&self) -> String {

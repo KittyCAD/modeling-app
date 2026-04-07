@@ -1,56 +1,39 @@
 import type {
   ApiObject,
   Expr,
+  Freedom,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
-  Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  segmentUtilsMap,
-  type SegmentRenderState,
-} from '@src/machines/sketchSolve/segments'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 import type { Themes } from '@src/lib/theme'
-import { Group } from 'three'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
   OffsetPlane,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type RustContext from '@src/lib/rustContext'
-import type { KclManager } from '@src/lang/KclManager'
+import {
+  type SegmentRenderState,
+  segmentUtilsMap,
+} from '@src/machines/sketchSolve/segments'
+import { Group } from 'three'
 
-import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
-import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
-import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
-import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
-import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
-import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
-import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
-import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
-import { deferredCallback } from '@src/lib/utils'
+import { StateEffect } from '@codemirror/state'
+import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
-import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
-import {
-  type ActionArgs,
-  type AssignArgs,
-  type ActorRefFrom,
-  type AnyActorRef,
-  type ProvidedActor,
-  assertEvent,
-  fromPromise,
-} from 'xstate'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { deferredCallback } from '@src/lib/utils'
+import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
   isCircleSegment,
@@ -59,14 +42,37 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
+  type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
   isInvisibleConstraintObject,
-  type ConstraintHoverPopup,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { StateEffect } from '@codemirror/state'
-import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
+import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  getSketchSolveExecOutcomeIssues,
+  toastSketchSolveError,
+  toastSketchSolveExecOutcomeErrors,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
+import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
+import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
+import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
+import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
+import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import {
+  type ActionArgs,
+  type ActorRefFrom,
+  type AnyActorRef,
+  type AssignArgs,
+  type ProvidedActor,
+  assertEvent,
+  fromPromise,
+} from 'xstate'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -342,6 +348,7 @@ export function updateSegmentGroup({
   state,
   scale,
   theme,
+  hasSolveErrors,
   objects,
 }: {
   group: Group
@@ -349,6 +356,7 @@ export function updateSegmentGroup({
   state: SegmentRenderState
   scale: number
   theme: Themes
+  hasSolveErrors: boolean
   objects: ApiObject[]
 }): void {
   const idNum = Number(group.name)
@@ -368,6 +376,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -377,6 +386,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -386,6 +396,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -395,6 +406,7 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   }
@@ -468,6 +480,8 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds,
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -592,6 +606,7 @@ export function updateSceneGraphFromDelta({
       state,
       scale: factor,
       theme: context.sceneInfra.theme,
+      hasSolveErrors,
       objects,
     })
   })
@@ -717,6 +732,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -777,6 +794,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         ),
         scale: factor,
         theme: context.sceneInfra.theme,
+        hasSolveErrors,
         objects,
       })
     }
@@ -824,6 +842,9 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   }
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const hasSolveErrors =
+    getSketchSolveExecOutcomeIssues(context.sketchExecOutcome.sceneGraphDelta)
+      .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -867,6 +888,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       ),
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
+      hasSolveErrors,
       objects,
     })
   })
@@ -968,6 +990,16 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
+  const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
+    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
+    event.data.sourceDelta.text
+  )
+  context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
+  toastSketchSolveExecOutcomeErrors(
+    event.data.sceneGraphDelta,
+    'Sketch solver failed to find a solution'
+  )
+
   // Update scene immediately - no delay, no flicker
   // This is wired through a CodeMirror StateEffect so that
   // an extension (in @src/editor/plugins/sketch.ts) can apply its
@@ -1066,6 +1098,7 @@ export async function deleteDraftEntities({
     sendToActorIfActive(self, { type: 'clear draft entities' })
   } catch (error) {
     console.error('Failed to delete draft entities:', error)
+    toastSketchSolveError(error)
     // Clear draft entities even on error to allow exit to continue
     sendToActorIfActive(self, { type: 'clear draft entities' })
   }
@@ -1105,6 +1138,7 @@ export async function deleteDraftEntitiesPromise({
     return result || null
   } catch (error) {
     console.error('Failed to delete draft entities:', error)
+    toastSketchSolveError(error)
     // Return null on error - we'll still clear draft entities in onDone
     return null
   }

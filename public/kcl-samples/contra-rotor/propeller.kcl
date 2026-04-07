@@ -59,7 +59,7 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
     |> yLine(endAbsolute = profileStartY())
     |> close()
     |> revolve(axis = X)
-    |> subtract(tools =     startSketchOn(XY)
+    |> subtract(tools = startSketchOn(XY)
       |> circle(diameter = hubDiameter)
       |> extrude(length = hubThickness * 5, symmetric = true))
 

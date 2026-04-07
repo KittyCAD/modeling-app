@@ -447,9 +447,9 @@ export fn ellipse(
   tag?: TagDecl,
 ): Sketch {}
 
-/// Extend a 2-dimensional sketch through a third dimension in order to
-/// create new 3-dimensional volume, or if extruded into an existing volume,
-/// cut into an existing solid.
+/// Extend a 2-dimensional sketch or individual segment of a sketch through
+/// a third dimension to create a new 3-dimensional volume or surface, or if
+/// extruded into an existing volume, cut into an existing solid.
 ///
 /// You can provide more than one sketch to extrude, and they will all be
 /// extruded in the same direction.
@@ -1060,12 +1060,34 @@ export fn extrude(
 /// // the same line again.
 /// revolve([originalSketch.line1], axis = Y, angle = -90deg, bodyType = SURFACE)
 /// ```
+/// ```
+/// // Use a solved constraint line as the axis of a revolve.
+/// @settings(experimentalFeatures = allow)
+/// 
+/// sketch001 = sketch(on = XZ) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+///   line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
+/// }
+/// region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+/// revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve.
   @sketches: [Sketch | Segment; 1+],
   /// Axis of revolution.
-  axis: Axis2d | Edge,
+  axis: Axis2d | Edge | Segment,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
@@ -1521,12 +1543,107 @@ export fn polygon(
 ///
 /// swept = sweep(profileRegion, path)
 /// ```
+/// ```
+/// @settings(experimentalFeatures = allow)
+/// // Demonstrates using sweeps with segments from sketch blocks.
+/// 
+/// // Sketch a square
+/// sketch001 = sketch(on = XZ) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// 
+/// // Sketch a path
+/// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+///   line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
+///   line2 = line(start = [var 00mm, var 0mm], end = [var 2mm, var 1mm])
+/// }
+/// 
+/// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+/// 
+/// // Sweep the square along the path.
+/// sweep(mySquare, path = sketch002.line1)
+/// ```
+/// ```
+/// // Demonstrates sweeping along a multi-segment path from a sketch block.
+/// @settings(experimentalFeatures = allow)
+/// 
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
+///   line2 = line(start = [var 2mm, var 0mm], end = [var 0mm, var 0mm])
+///   line3 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+///   line4 = line(start = [var 0mm, var 2mm], end = [var 2mm, var 2mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+/// }
+/// mySquare = region(point = [1.9975mm, 1mm], sketch = sketch001)
+/// 
+/// // Sketch a path
+/// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+///   line1 = line(start = [var -0.01mm, var -0.01mm], end = [var -0.12mm, var 2.4mm])
+///   arc1 = arc(start = [var 0.6mm, var 4.55mm], end = [var -0.12mm, var 2.4mm], center = [var 3.03mm, var 2.54mm])
+///   coincident([line1.end, arc1.end])
+///   tangent([line1, arc1])
+/// }
+/// 
+/// // Sweep the square along the path.
+/// path = [sketch002.line1, sketch002.arc1]
+/// sweep(mySquare, path)
+/// ```
+/// ```
+/// @settings(experimentalFeatures = allow)
+/// // Demonstrates surface sweeps of open profiles.
+/// 
+/// // Sketch a square
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// 
+/// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+/// 
+/// sketch002 = sketch(on = XZ) {
+///   line1 = line(start = [var -1.17mm, var -0.79mm], end = [var -15.37mm, var -0.7mm])
+///   arc1 = arc(start = [var -15.37mm, var 21.18mm], end = [var -15.37mm, var -0.7mm], center = [var -15.3mm, var 10.24mm])
+///   coincident([line1.end, arc1.end])
+///   tangent([line1, arc1])
+/// }
+/// 
+/// // Sweep the square along the path.
+/// path = [sketch002.line1, sketch002.arc1]
+/// sweep(sketch001.line2, path, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Segment; 1+],
   /// The path to sweep the sketch along.
-  path: Sketch | Helix,
+  path: Sketch | Helix | [Segment; 1+],
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.

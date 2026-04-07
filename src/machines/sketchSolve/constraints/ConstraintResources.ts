@@ -3,9 +3,8 @@ import {
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
 import {
-  packRgbToColor,
+  SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
 } from '@src/lib/constants'
 import {
   BufferGeometry,
@@ -17,10 +16,6 @@ import {
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
-
-const HOVER_COLOR = packRgbToColor(
-  SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
-)
 
 export class ConstraintResources {
   arrowGeometry = createArrowGeometry()
@@ -47,11 +42,11 @@ export class ConstraintResources {
     },
     selected: {
       arrow: new MeshBasicMaterial({
-        color: HOVER_COLOR,
+        color: SKETCH_HIGHLIGHT_COLOR,
         side: DoubleSide,
       }),
       line: new LineMaterial({
-        color: HOVER_COLOR,
+        color: SKETCH_HIGHLIGHT_COLOR,
         linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
         worldUnits: false,
       }),

@@ -769,7 +769,7 @@ export class SceneEntities {
           return
         } else if (currentTool === 'tangentialArc') {
           toast.error(
-            'Tangential Arc must continue an existing profile, please click on the last segment of the profile'
+            'Tangential Arc must continue an existing profile, please click on the last segment of the profile.'
           )
           return
         }

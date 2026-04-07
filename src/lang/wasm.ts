@@ -1,6 +1,6 @@
 import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
@@ -140,8 +140,8 @@ export function defaultNodePath(): NodePath {
 }
 
 const splitErrors = (
-  input: CompilationError[]
-): { errors: CompilationError[]; warnings: CompilationError[] } => {
+  input: CompilationIssue[]
+): { errors: CompilationIssue[]; warnings: CompilationIssue[] } => {
   let errors = []
   let warnings = []
   for (const i of input) {
@@ -157,13 +157,13 @@ const splitErrors = (
 
 export class ParseResult {
   program: Node<Program> | null
-  errors: CompilationError[]
-  warnings: CompilationError[]
+  errors: CompilationIssue[]
+  warnings: CompilationIssue[]
 
   constructor(
     program: Node<Program> | null,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     this.program = program
     this.errors = errors
@@ -180,8 +180,8 @@ class SuccessParseResult extends ParseResult {
 
   constructor(
     program: Node<Program>,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     super(program, errors, warnings)
     this.program = program
@@ -199,7 +199,7 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] =
+    const parsed: [Node<Program>, CompilationIssue[]] =
       instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
@@ -260,7 +260,7 @@ export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
   artifactGraph: ArtifactGraph
-  errors: CompilationError[]
+  issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
 }
@@ -274,7 +274,7 @@ export function emptyExecState(): ExecState {
     variables: {},
     operations: [],
     artifactGraph: defaultArtifactGraph(),
-    errors: [],
+    issues: [],
     filenames: [],
     defaultPlanes: null,
   }
@@ -287,7 +287,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
-    errors: execOutcome.errors,
+    issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
   }
@@ -862,8 +862,15 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
-      case 'SketchBlock':
-        // TODO: sketch-api: implement arguments and body.
+      case 'SketchBlockArgs':
+        pathToNode.push(['arguments', 'SketchBlockArgs'])
+        break
+      case 'SketchBlockBody':
+        pathToNode.push(['body', 'SketchBlockBody'])
+        break
+      case 'SketchBlockBodyItem':
+        pathToNode.push(['items', 'SketchBlockBodyItem'])
+        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.

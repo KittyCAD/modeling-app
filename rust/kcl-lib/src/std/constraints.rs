@@ -57,6 +57,8 @@ use crate::front::Perpendicular;
 use crate::front::Point2d;
 use crate::front::PointCtor;
 #[cfg(feature = "artifact-graph")]
+use crate::front::SourceRef;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
@@ -142,11 +144,12 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             ctor: Box::new(ctor),
         },
         tag: None,
+        node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let object_id = exec_state.add_placeholder_scene_object(segment.object_id, args.source_range);
+        let object_id = exec_state.add_placeholder_scene_object(segment.object_id, args.source_range, args.node_path);
 
         let mut optional_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&object_id) {
@@ -289,13 +292,17 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             construction,
         },
         tag: None,
+        node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
-        let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
-        let line_object_id = exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
+        let start_object_id =
+            exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
+        let end_object_id =
+            exec_state.add_placeholder_scene_object(end_object_id, args.source_range, args.node_path.clone());
+        let line_object_id =
+            exec_state.add_placeholder_scene_object(line_object_id, args.source_range, args.node_path.clone());
 
         let mut optional_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
@@ -507,14 +514,19 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             construction,
         },
         tag: None,
+        node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
-        let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
-        let center_object_id = exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
-        let arc_object_id = exec_state.add_placeholder_scene_object(arc_object_id, args.source_range);
+        let start_object_id =
+            exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
+        let end_object_id =
+            exec_state.add_placeholder_scene_object(end_object_id, args.source_range, args.node_path.clone());
+        let center_object_id =
+            exec_state.add_placeholder_scene_object(center_object_id, args.source_range, args.node_path.clone());
+        let arc_object_id =
+            exec_state.add_placeholder_scene_object(arc_object_id, args.source_range, args.node_path.clone());
 
         let mut optional_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
@@ -736,13 +748,17 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             construction,
         },
         tag: None,
+        node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
-        let center_object_id = exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
-        let circle_object_id = exec_state.add_placeholder_scene_object(circle_object_id, args.source_range);
+        let start_object_id =
+            exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
+        let center_object_id =
+            exec_state.add_placeholder_scene_object(center_object_id, args.source_range, args.node_path.clone());
+        let circle_object_id =
+            exec_state.add_placeholder_scene_object(circle_object_id, args.source_range, args.node_path.clone());
 
         let mut optional_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
@@ -1609,7 +1625,7 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
             label: Default::default(),
             comments: Default::default(),
             artifact_id,
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         },
         args.source_range,
     );

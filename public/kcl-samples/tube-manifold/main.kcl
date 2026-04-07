@@ -37,7 +37,7 @@ body = startSketchOn(XY)
   |> revolve(axis = X)
 
   // subtract an instance of the hollow port feature at each port location
-  |> subtract(tools =   clone(hollowPort)
+  |> subtract(tools = clone(hollowPort)
     |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0]))
 
 // Trim the bottom of the ports so that they fit against the curved main body

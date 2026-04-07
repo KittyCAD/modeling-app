@@ -24,6 +24,7 @@ use super::shapes::get_radius;
 use super::shapes::get_radius_labelled;
 use super::utils::untype_array;
 use crate::ExecutorContext;
+use crate::NodePath;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
@@ -1125,7 +1126,14 @@ pub async fn make_sketch_plane_from_orientation(
     };
 
     // Create the plane on the fly.
-    ensure_sketch_plane_in_engine(&mut plane, exec_state, &args.ctx, args.source_range).await?;
+    ensure_sketch_plane_in_engine(
+        &mut plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1136,6 +1144,7 @@ pub async fn ensure_sketch_plane_in_engine(
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
 ) -> Result<(), KclError> {
     if plane.is_initialized() {
         return Ok(());
@@ -1176,15 +1185,19 @@ pub async fn ensure_sketch_plane_in_engine(
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
+    #[cfg(not(feature = "artifact-graph"))]
+    let _ = node_path;
     #[cfg(feature = "artifact-graph")]
     {
+        use crate::front::SourceRef;
+
         let plane_object = crate::front::Object {
             id: plane_object_id,
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::new(plane.id),
-            source: source_range.into(),
+            source: SourceRef::new(source_range, node_path.clone()),
         };
         exec_state.add_scene_object(plane_object, source_range);
     }
@@ -1402,7 +1415,7 @@ pub(crate) async fn inner_close(
 ) -> Result<Sketch, KclError> {
     if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
                 suggestion: None,
@@ -1449,7 +1462,7 @@ pub(crate) async fn inner_close(
         new_sketch.paths.push(current_path);
     } else if tag.is_some() {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "A tag declarator was specified, but no segment was created".to_string(),
                 suggestion: None,

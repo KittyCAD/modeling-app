@@ -36,7 +36,7 @@ use crate::IMPORT_FILE_EXTENSIONS;
 use crate::MetaSettings;
 use crate::SourceRange;
 use crate::TypedPath;
-use crate::errors::CompilationError;
+use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
 use crate::execution::annotations::EXPERIMENTAL;
@@ -97,6 +97,8 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
@@ -134,15 +136,25 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
         return (None, ctxt.errors).into();
     }
 
-    let result = match program.parse(i) {
-        Ok(result) => Some(result),
+    let ast = match program.parse(i) {
+        Ok(ast) => Some(ast),
         Err(e) => {
             ParseContext::err(error_from_winnow_error(e));
             None
         }
     };
+    #[cfg(feature = "artifact-graph")]
+    let ast = {
+        let mut ast = ast;
+        if let Some(ast) = &mut ast {
+            // Fill in NodePath on every AST node. We do this in the parser so
+            // that an AST never exists without NodePaths.
+            fill_node_paths(ast);
+        }
+        ast
+    };
     let ctxt = ParseContext::take();
-    (result, ctxt.errors).into()
+    (ast, ctxt.errors).into()
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -157,7 +169,7 @@ enum CodeKind {
 /// When returned from parsing contains the errors and warnings from the current parse.
 #[derive(Debug, Clone, Default)]
 struct ParseContext {
-    pub errors: Vec<CompilationError>,
+    pub errors: Vec<CompilationIssue>,
     settings: MetaSettings,
     code_kind: CodeKind,
     // Tracks current recursive parser depth so we can reject pathological input
@@ -222,7 +234,7 @@ impl ParseContext {
             // more stack per frame than simple delimiter nesting.
             if ctxt.nesting_depth >= MAX_RECURSIVE_PARSER_DEPTH {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
+                    CompilationIssue::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
                 ));
             }
             ctxt.nesting_depth += 1;
@@ -244,7 +256,7 @@ impl ParseContext {
         })
     }
 
-    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationError> {
+    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationIssue> {
         let mut depth = 0;
         for token in tokens.iter() {
             if token.token_type != TokenType::Brace {
@@ -254,7 +266,7 @@ impl ParseContext {
                 "(" | "[" | "{" => {
                     depth += 1;
                     if depth > MAX_NESTING_DEPTH {
-                        return Some(CompilationError::fatal(
+                        return Some(CompilationIssue::fatal(
                             token.as_source_range(),
                             MAX_NESTING_DEPTH_MESSAGE,
                         ));
@@ -286,7 +298,7 @@ impl ParseContext {
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
-    fn err(err: CompilationError) {
+    fn err(err: CompilationIssue) {
         CTXT.with_borrow_mut(|ctxt| {
             // Avoid duplicating errors. This is possible since the parser can try one path, find
             // a warning, then backtrack and decide not to take that path and try another. This can
@@ -307,7 +319,7 @@ impl ParseContext {
     }
 
     /// Add a warning to the current `ParseContext`, panics if there is none.
-    fn warn(mut e: CompilationError) {
+    fn warn(mut e: CompilationIssue) {
         e.severity = Severity::Warning;
         Self::err(e);
     }
@@ -318,7 +330,7 @@ impl ParseContext {
             let Some(severity) = ctxt.settings.experimental_features.severity() else {
                 return;
             };
-            let error = CompilationError {
+            let error = CompilationIssue {
                 source_range,
                 message: format!("Use of {feature} is experimental and may change or be removed."),
                 suggestion: None,
@@ -358,12 +370,12 @@ impl ParseContext {
 #[derive(Debug, Clone)]
 pub(crate) struct ContextError<C = StrContext> {
     pub context: Vec<C>,
-    pub cause: Option<CompilationError>,
+    pub cause: Option<CompilationIssue>,
 }
 
-fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> CompilationError {
+fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> CompilationIssue {
     let Some(last_token) = err.input().last() else {
-        return CompilationError::fatal(Default::default(), "file is empty");
+        return CompilationIssue::fatal(Default::default(), "file is empty");
     };
 
     let (input, offset, err) = (err.input(), err.offset(), err.clone().into_inner());
@@ -375,7 +387,7 @@ fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, Contex
     // See docs on `offset`.
     if offset >= input.len() {
         let context = err.context.first();
-        return CompilationError::fatal(
+        return CompilationIssue::fatal(
             last_token.as_source_range(),
             match context {
                 Some(what) => format!("Unexpected end of file. The compiler {what}"),
@@ -387,14 +399,14 @@ fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, Contex
     let bad_token = input.token(offset);
     // TODO: Add the Winnow parser context to the error.
     // See https://github.com/KittyCAD/modeling-app/issues/784
-    CompilationError::fatal(
+    CompilationIssue::fatal(
         bad_token.as_source_range(),
         format!("Unexpected token: {}", bad_token.value),
     )
 }
 
-impl<C> From<CompilationError> for ContextError<C> {
-    fn from(e: CompilationError) -> Self {
+impl<C> From<CompilationIssue> for ContextError<C> {
+    fn from(e: CompilationIssue) -> Self {
         Self {
             context: Default::default(),
             cause: Some(e),
@@ -442,10 +454,10 @@ where
     }
 }
 
-impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
+impl<C, I> winnow::error::FromExternalError<I, CompilationIssue> for ContextError<C> {
     /// Like [`ParserError::from_input`] but also include an external error.
     #[inline]
-    fn from_external_error(_input: &I, e: CompilationError) -> Self {
+    fn from_external_error(_input: &I, e: CompilationIssue) -> Self {
         let mut err = Self::default();
         {
             err.cause = Some(e);
@@ -563,7 +575,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
 
     if name.is_none() && properties.is_none() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
+            CompilationIssue::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
         ));
     }
 
@@ -699,7 +711,7 @@ fn bool_value(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
             TokenType::Keyword if token.value == "false" => Ok((false, token)),
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "invalid boolean literal",
             )),
@@ -750,17 +762,17 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value: f64 = token.numeric_value().ok_or_else(|| {
-                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
+                    CompilationIssue::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 let suffix = token.numeric_suffix();
                 if let NumericSuffix::Unknown = suffix {
-                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                    ParseContext::warn(CompilationIssue::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
                 }
 
                 Ok((value, suffix, token))
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid number literal")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid number literal")),
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
@@ -797,7 +809,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
                 let s = token.value[1..token.value.len() - 1].to_string();
                 Ok((LiteralValue::from(s), token))
             }
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "invalid string literal",
             )),
@@ -818,7 +830,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
 
     if let Some(suggestion) = super::deprecation(result.value.string_value().unwrap(), DeprecationKind::String) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!(
                     "Using `\"{}\"` is deprecated, prefer using `{}`.",
@@ -848,12 +860,12 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value: f64 = token.numeric_value().ok_or_else(|| {
-                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
+                    CompilationIssue::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 let suffix = token.numeric_suffix();
                 if let NumericSuffix::Unknown = suffix {
-                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                    ParseContext::warn(CompilationIssue::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
                 }
 
                 Ok((
@@ -864,7 +876,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
                     token,
                 ))
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid literal")),
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
@@ -911,7 +923,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
     any.try_map(|token: Token| {
         if !matches!(token.token_type, TokenType::Operator) {
-            return Err(CompilationError::fatal(
+            return Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("unexpected token, should be an operator but was {}", token.token_type),
             ));
@@ -933,7 +945,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
             "&" => BinaryOperator::And,
             "||" => {
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         token.as_source_range(),
                         "`||` is not an operator, did you mean to use `|`?",
                     )
@@ -943,7 +955,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
             }
             "&&" => {
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         token.as_source_range(),
                         "`&&` is not an operator, did you mean to use `&`?",
                     )
@@ -952,7 +964,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
                 BinaryOperator::And
             }
             _ => {
-                return Err(CompilationError::fatal(
+                return Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not a binary operator", token.value.as_str()),
                 ));
@@ -979,9 +991,9 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
                 | Expr::LabelledExpression(..)
-                | Expr::SketchBlock(_) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::SketchBlock(_) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
-                    return Err(CompilationError::fatal(
+                    return Err(CompilationIssue::fatal(
                         source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
@@ -990,7 +1002,7 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                     ));
                 }
                 Expr::TagDeclarator(_) => {
-                    return Err(CompilationError::fatal(
+                    return Err(CompilationIssue::fatal(
                         source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
@@ -1024,7 +1036,7 @@ impl TokenType {
             if token.token_type == self {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!(
                         "expected {self} but found {} which is a {}",
@@ -1046,7 +1058,7 @@ fn whitespace(i: &mut TokenSlice) -> ModalResult<Vec<Token>> {
             if token.token_type == TokenType::Whitespace {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!(
                         "expected whitespace, found '{}' which is {}",
@@ -1074,7 +1086,7 @@ fn shebang(i: &mut TokenSlice) -> ModalResult<Node<Shebang>> {
 
     if tokens.is_empty() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(tok.as_source_range(), "expected a shebang value after #!").into(),
+            CompilationIssue::fatal(tok.as_source_range(), "expected a shebang value after #!").into(),
         ));
     }
 
@@ -1160,7 +1172,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
-            err.cause = Some(CompilationError::fatal(
+            err.cause = Some(CompilationIssue::fatal(
                 SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
                 "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
             ));
@@ -1196,7 +1208,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
             let end_range = maybe_closing_bracket.unwrap().1.as_source_range();
             let e = ContextError {
                 context: vec![],
-                cause: Some(CompilationError::fatal(
+                cause: Some(CompilationIssue::fatal(
                     SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between elements.",
                 )),
@@ -1299,7 +1311,7 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
                 return Err(err);
             }
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     SourceRange::from(sep),
                     "This property has a label, but no value. Put some value after the equals sign",
                 )
@@ -1313,7 +1325,7 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
         ErrMode::Cut(ContextError {
             context: Default::default(),
-            cause: Some(CompilationError::err(
+            cause: Some(CompilationIssue::err(
                 comp_err.source_range,
                 KEYWORD_EXPECTING_IDENTIFIER,
             )),
@@ -1333,7 +1345,7 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
 
     if sep.token_type == TokenType::Colon {
         ParseContext::err(
-            CompilationError::err(
+            CompilationIssue::err(
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
             )
@@ -1412,7 +1424,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
         if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
-            err.cause = Some(CompilationError::fatal(
+            err.cause = Some(CompilationIssue::fatal(
                 SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
                 "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
             ));
@@ -1448,7 +1460,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
 
             let e = ContextError {
                 context: vec![],
-                cause: Some(CompilationError::fatal(
+                cause: Some(CompilationIssue::fatal(
                     SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between properties.",
                 )),
@@ -1501,7 +1513,7 @@ fn pipe_sub(i: &mut TokenSlice) -> ModalResult<Node<PipeSubstitution>> {
                 token.module_id,
             ))
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "expected a pipe substitution symbol (%) but found {}",
@@ -1520,7 +1532,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'else'", token.value.as_str()),
                 ))
@@ -1534,7 +1546,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token.start)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'if'", token.value.as_str()),
                 ))
@@ -1571,7 +1583,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'if'", token.value.as_str()),
                 ))
@@ -1619,7 +1631,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token.start)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'else'", token.value.as_str()),
                 ))
@@ -1628,7 +1640,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .context(expected("the 'else' keyword"))
         .parse_next(i);
     let Ok(else_) = else_ else {
-        ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
+        ParseContext::err(CompilationIssue::err(if_.as_source_range(), MISSING_ELSE));
         return if_with_no_else(cond, then_val, else_ifs);
     };
     let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
@@ -1636,24 +1648,24 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 
     // Parse the else clause
     if open_brace(i).is_err() {
-        ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
+        ParseContext::err(CompilationIssue::err(else_range, ELSE_STRUCTURE));
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
     let Ok(final_else) = program.parse_next(i).map(Box::new) else {
-        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     };
     ignore_whitespace(i);
 
     if final_else.body.is_empty() {
-        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     }
     if !final_else.ends_with_expr() {
-        ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
+        ParseContext::err(CompilationIssue::err(else_range, ELSE_MUST_END_IN_EXPR));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     }
@@ -1682,7 +1694,7 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     // Make the function expression aware of its name.
     result.name = name;
     if fn_tok.is_none() {
-        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+        let err = CompilationIssue::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
@@ -2140,7 +2152,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
                     if !body.is_empty() {
-                        ParseContext::warn(CompilationError::err(
+                        ParseContext::warn(CompilationIssue::err(
                             attr.as_source_range(),
                             "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
                         ));
@@ -2182,13 +2194,13 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
 
     if !pending_attrs.is_empty() {
         for a in pending_attrs {
-            ParseContext::err(CompilationError::err(
+            ParseContext::err(CompilationIssue::err(
                 a.as_source_range(),
                 "Attribute is not attached to any item",
             ));
         }
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 SourceRange::new(start.0, end, start.1),
                 "Block contains un-attached attributes",
             )
@@ -2247,7 +2259,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not the 'import' keyword", token.value.as_str()),
                 ))
@@ -2282,7 +2294,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
                 if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
                     Ok(())
                 } else {
-                    Err(CompilationError::fatal(
+                    Err(CompilationIssue::fatal(
                         token.as_source_range(),
                         format!("{} is not the 'from' keyword", token.value.as_str()),
                     ))
@@ -2325,7 +2337,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
 
     if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 SourceRange::new(start, end, module_id),
                 "individual items can only be imported from KCL files",
             )
@@ -2391,7 +2403,7 @@ fn is_path_safe_identifier(path_str: &str) -> bool {
 fn validate_path_string(path_string: String, var_name: bool, path_range: SourceRange) -> ModalResult<ImportPath> {
     if path_string.is_empty() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path cannot be empty").into(),
+            CompilationIssue::fatal(path_range, "import path cannot be empty").into(),
         ));
     }
 
@@ -2403,7 +2415,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
                 )
@@ -2419,7 +2431,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             || typed_path::TypedPath::derive(&path_string).is_absolute()
         {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
                 )
@@ -2431,7 +2443,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             && !(path_string.ends_with("/main.kcl") || path_string.ends_with("\\main.kcl"))
         {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(path_range, "import path to a subdirectory must only refer to main.kcl.")
+                CompilationIssue::fatal(path_range, "import path to a subdirectory must only refer to main.kcl.")
                     .into(),
             ));
         }
@@ -2440,7 +2452,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     // This check applies to all file types.
     if var_name && !is_path_safe_identifier(&path_string) {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
+            CompilationIssue::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
         ));
     }
 
@@ -2456,7 +2468,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(path_range, "invalid path in import statement.").into(),
+                    CompilationIssue::fatal(path_range, "invalid path in import statement.").into(),
                 ));
             }
         }
@@ -2464,7 +2476,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         // For now we only support importing from singly-nested modules inside std.
         if segments.len() > 2 {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     format!("Invalid import path for import from std: {path_string}."),
                 )
@@ -2476,7 +2488,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     } else if path_string.contains('.') {
         let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
         if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
-            ParseContext::warn(CompilationError::err(
+            ParseContext::warn(CompilationIssue::err(
                 path_range,
                 format!(
                     "unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}",
@@ -2489,7 +2501,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
     } else {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 path_range,
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
@@ -2533,7 +2545,7 @@ fn import_as_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("{} is not the 'as' keyword", token.value.as_str()),
             ))
@@ -2550,7 +2562,7 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not a return keyword", token.value.as_str()),
                 ))
@@ -2737,7 +2749,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             if let Some(t) = eq {
                 ParseContext::warn(
-                    CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
+                    CompilationIssue::err(t.as_source_range(), "Unnecessary `=` in function declaration")
                         .with_suggestion("Remove `=`", "", None, Tag::Unnecessary),
                 );
             }
@@ -2755,7 +2767,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                     if matches!(val, Expr::FunctionExpression(_)) {
                         let fn_end = val.start();
                         ParseContext::warn(
-                            CompilationError::err(
+                            CompilationIssue::err(
                                 SourceRange::new(start, fn_end, id.module_id),
                                 "Define a function with `fn name()` instead of assigning the function to a variable",
                             )
@@ -2775,7 +2787,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             if let Some((_, tok)) = decl_token {
                 let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         tok.as_source_range(),
                         format!(
                             "Using `{}` to declare constants is deprecated; no keyword is required",
@@ -2891,7 +2903,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 }
 
 impl TryFrom<Token> for Node<Identifier> {
-    type Error = CompilationError;
+    type Error = CompilationIssue;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
@@ -2905,7 +2917,7 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.module_id,
             ))
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "Cannot assign a variable to a reserved keyword: {}",
@@ -2938,7 +2950,7 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         } else {
             "Names with a leading underscore"
         };
-        ParseContext::err(CompilationError::err(
+        ParseContext::err(CompilationIssue::err(
             SourceRange::new(result.start, result.end, result.module_id),
             format!("{desc} cannot be referred to, only declared."),
         ));
@@ -2976,7 +2988,7 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
 
     if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!("Using `{result}` is deprecated, prefer using `{suggestion}`."),
             )
@@ -2993,13 +3005,13 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
-    type Error = CompilationError;
+    type Error = CompilationIssue;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         match token.token_type {
             TokenType::Word => {
                 if !is_safe_sketch_block_binding_name(&token.value) {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::err(CompilationIssue::err(
                         SourceRange::new(token.start - 1, token.end, token.module_id),
                         format!("Cannot use a reserved name for a tag: {}", token.value.as_str()),
                     ));
@@ -3015,7 +3027,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                     token.module_id,
                 ))
             }
-            TokenType::Number => Err(CompilationError::fatal(
+            TokenType::Number => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "Tag names must not start with a number. Tag starts with `{}`",
@@ -3024,17 +3036,17 @@ impl TryFrom<Token> for Node<TagDeclarator> {
             )),
 
             // e.g. `line(%, $)` or `line(%, $ , 5)`
-            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
+            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "Tag names must not be empty".to_string(),
             )),
 
-            TokenType::Type => Err(CompilationError::fatal(
+            TokenType::Type => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             )),
 
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
@@ -3076,12 +3088,12 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
             TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
-            TokenType::Operator => Err(CompilationError::fatal(
+            TokenType::Operator => Err(CompilationIssue::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             )),
             TokenType::Bang => Ok((UnaryOperator::Not, token)),
-            other => Err(CompilationError::fatal(  token.as_source_range(), format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) )),
+            other => Err(CompilationIssue::fatal(  token.as_source_range(), format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) )),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
@@ -3261,7 +3273,7 @@ fn end_inclusive_range(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::DoublePeriod) {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "expected a '..' (double period) found {} which is {}",
@@ -3280,7 +3292,7 @@ fn end_exclusive_range(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::DoublePeriodLessThan) {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("expected a '..<' but found {}", token.value.as_str()),
             ))
@@ -3332,7 +3344,7 @@ fn ty(i: &mut TokenSlice) -> ModalResult<Token> {
 fn any_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword => Ok(token),
-        _ => Err(CompilationError::fatal(
+        _ => Err(CompilationIssue::fatal(
             token.as_source_range(),
             "expected some reserved keyword".to_owned(),
         )),
@@ -3343,7 +3355,7 @@ fn any_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
 fn keyword(i: &mut TokenSlice, expected: &str) -> ModalResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == expected => Ok(token),
-        _ => Err(CompilationError::fatal(
+        _ => Err(CompilationIssue::fatal(
             token.as_source_range(),
             format!("expected '{expected}', found {}", token.value.as_str(),),
         )),
@@ -3520,7 +3532,7 @@ fn array_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         any.try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value = token.uint_value().ok_or_else(|| {
-                    CompilationError::fatal(
+                    CompilationIssue::fatal(
                         token.as_source_range(),
                         format!("Expected unsigned integer literal, found: {}", token.value),
                     )
@@ -3528,7 +3540,7 @@ fn array_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
 
                 Ok(value as usize)
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid array length")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid array length")),
         }),
         opt(plus),
     ))
@@ -3610,7 +3622,7 @@ fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
             (false, None) => None,
             (false, Some(lit)) => {
                 let msg = "You're trying to set a default value for an argument, but only optional arguments can have default values, and this argument is mandatory. Try putting a ? after the argument name, to make the argument optional.";
-                let e = CompilationError::fatal((&lit).into(), msg);
+                let e = CompilationIssue::fatal((&lit).into(), msg);
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
@@ -3665,12 +3677,12 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
             },
         )
         .collect::<Result<_, _>>()
-        .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+        .map_err(|e: CompilationIssue| ErrMode::Backtrack(ContextError::from(e)))?;
 
     // Make sure the only unlabeled parameter is the first one.
     if let Some(param) = params.iter().skip(1).find(|param| !param.labeled) {
         let source_range = SourceRange::from(param);
-        return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+        return Err(ErrMode::Cut(ContextError::from(CompilationIssue::fatal(
             source_range,
             "Only the first parameter can be declared unlabeled",
         ))));
@@ -3683,14 +3695,14 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
     Ok(params)
 }
 
-fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError> {
+fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationIssue> {
     let mut found_optional = false;
     for p in params {
         if p.optional() {
             found_optional = true;
         }
         if !p.optional() && found_optional {
-            let e = CompilationError::fatal(
+            let e = CompilationIssue::fatal(
                 (&p.identifier).into(),
                 "mandatory parameters must be declared before optional parameters",
             );
@@ -3711,7 +3723,7 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         .parse_next(i)?;
 
     if !is_safe_sketch_block_binding_name(&ident.name) {
-        ParseContext::err(CompilationError::err(
+        ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
             format!("`{}` is a reserved name and cannot be defined.", &ident.name),
         ));
@@ -3746,6 +3758,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             start,
             end: _,
             module_id,
+            node_path: _,
             pre_comments,
             comment_start,
             outer_attrs,
@@ -3760,7 +3773,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
         } = fn_call;
         ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         if let Some(unlabeled) = unlabeled {
-            ParseContext::err(CompilationError::err(
+            ParseContext::err(CompilationIssue::err(
                 unlabeled.into(),
                 "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
             ));
@@ -3769,6 +3782,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             start,
             end,
             module_id,
+            node_path: None,
             outer_attrs,
             pre_comments,
             comment_start,
@@ -3854,7 +3868,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 ArgPlace::LabeledArg((x, bad_token_source_range)) => {
                     if let Some(bad_token_source_range) = bad_token_source_range {
                         return Err(ErrMode::Cut(
-                            CompilationError::fatal(
+                            CompilationIssue::fatal(
                                 bad_token_source_range,
                                 "Missing comma between arguments, try adding a comma in",
                             )
@@ -3865,7 +3879,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::Keyword(kw) => {
                     return Err(ErrMode::Cut(
-                        CompilationError::fatal(
+                        CompilationIssue::fatal(
                             SourceRange::from(kw.clone()),
                             format!(
                                 "`{}` is not the name of an argument (it's a reserved keyword)",
@@ -3879,7 +3893,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
                     if followed_by_equals {
                         return Err(ErrMode::Cut(
-                            CompilationError::fatal(
+                            CompilationIssue::fatal(
                                 SourceRange::from(arg),
                                 "This argument has a label, but no value. Put some value after the equals sign",
                             )
@@ -3900,7 +3914,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         Err(e) => {
             if let Some(tok) = i.next_token() {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(
+                    CompilationIssue::fatal(
                         SourceRange::from(&tok),
                         format!("There was an unexpected `{}`. Try removing it.", tok.value),
                     )
@@ -3923,7 +3937,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         let msg = format!(
             "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
         );
-        ParseContext::err(CompilationError::err(
+        ParseContext::err(CompilationIssue::err(
             SourceRange::new(fn_name.start, end, fn_name.module_id),
             msg,
         ));
@@ -3948,7 +3962,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     let callee_str = result.callee.name.name.to_string();
     if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!("Calling `{callee_str}` is deprecated, prefer using `{suggestion}`."),
             )
@@ -3966,11 +3980,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
+    use crate::NodePath;
+    use crate::NodePathStep;
     use crate::parsing::ast::types::BodyItem;
     use crate::parsing::ast::types::Expr;
     use crate::parsing::ast::types::VariableKind;
@@ -4078,7 +4096,7 @@ e
         let tokens = crate::parsing::token::lex("fn firstPrime(", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let last = tokens.last().unwrap().as_source_range();
-        let err: CompilationError = error_from_winnow_error(in_ctx(|| program.parse(tokens)).unwrap_err());
+        let err: CompilationIssue = error_from_winnow_error(in_ctx(|| program.parse(tokens)).unwrap_err());
         assert_eq!(err.source_range, last);
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -4240,7 +4258,7 @@ e
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
-        let err: CompilationError = error_from_winnow_error(in_ctx(|| program.parse(tokens.as_slice())).unwrap_err());
+        let err: CompilationIssue = error_from_winnow_error(in_ctx(|| program.parse(tokens.as_slice())).unwrap_err());
         assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
@@ -5016,7 +5034,21 @@ mySk1 = startSketchOn(XY)
 
             // Run the second parser, check it matches the first parser.
             let actual = in_ctx(|| declaration.parse(tokens.as_slice())).unwrap();
-            assert_eq!(expected, actual);
+            // Note: node_paths won't match since the narrow parse function
+            // won't add that.
+            assert_eq!(expected.as_source_range(), actual.as_source_range());
+            assert_eq!(expected.inner.declaration.inner.id, actual.inner.declaration.id);
+            assert_eq!(
+                expected.inner.declaration.inner.id.as_source_range(),
+                actual.inner.declaration.id.as_source_range()
+            );
+            match (&expected.inner.declaration.inner.init, &actual.inner.declaration.init) {
+                (Expr::Literal(expected), Expr::Literal(actual)) => {
+                    assert_eq!(expected.value, actual.value);
+                    assert_eq!(expected.as_source_range(), actual.as_source_range());
+                }
+                (left, right) => panic!("Unexpected expressions: left={left:#?}, right={right:#?}"),
+            }
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
@@ -5035,13 +5067,19 @@ mySk1 = startSketchOn(XY)
     fn test_math_parse() {
         let module_id = ModuleId::default();
         let actual = crate::parsing::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
-        let expr = Node::boxed(
+        let expr = Node::boxed_with_node_path(
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![
+                    NodePathStep::ProgramBodyItem { index: 0 },
+                    NodePathStep::ExpressionStatementExpr,
+                ],
+            },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::new(
+                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -5053,8 +5091,15 @@ mySk1 = startSketchOn(XY)
                     0,
                     1,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryLeft,
+                        ],
+                    },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::new(
+                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -5063,11 +5108,18 @@ mySk1 = startSketchOn(XY)
                     4,
                     7,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryRight,
+                        ],
+                    },
                 ))),
                 digest: None,
             },
         );
-        let expected = vec![BodyItem::ExpressionStatement(Node::new(
+        let expected = vec![BodyItem::ExpressionStatement(Node::with_node_path(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
                 digest: None,
@@ -5075,6 +5127,9 @@ mySk1 = startSketchOn(XY)
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+            },
         ))];
         assert_eq!(expected, actual);
     }
@@ -5086,14 +5141,20 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::parse_str(code, module_id).unwrap();
         let expected_result = Node::new(
             Program {
-                body: vec![BodyItem::ExpressionStatement(Node::new(
+                body: vec![BodyItem::ExpressionStatement(Node::with_node_path(
                     ExpressionStatement {
-                        expression: Expr::BinaryExpression(Node::boxed(
+                        expression: Expr::BinaryExpression(Node::boxed_with_node_path(
                             0,
                             4,
                             module_id,
+                            NodePath {
+                                steps: vec![
+                                    NodePathStep::ProgramBodyItem { index: 0 },
+                                    NodePathStep::ExpressionStatementExpr,
+                                ],
+                            },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::new(
+                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -5105,9 +5166,16 @@ mySk1 = startSketchOn(XY)
                                     0,
                                     1,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryLeft,
+                                        ],
+                                    },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::new(
+                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,
@@ -5119,6 +5187,13 @@ mySk1 = startSketchOn(XY)
                                     3,
                                     4,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryRight,
+                                        ],
+                                    },
                                 ))),
                                 digest: None,
                             },
@@ -5128,6 +5203,9 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
+                    NodePath {
+                        steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+                    },
                 ))],
                 shebang: None,
                 non_code_meta: NonCodeMeta::default(),
@@ -5150,7 +5228,7 @@ mySk1 = startSketchOn(XY)
     }
 
     #[track_caller]
-    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationIssue>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
@@ -5158,7 +5236,7 @@ mySk1 = startSketchOn(XY)
     }
 
     #[track_caller]
-    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationIssue>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(
@@ -6402,7 +6480,7 @@ bar = 1
     }
 
     struct MustFail {
-        err: CompilationError,
+        err: CompilationIssue,
         was_fatal: bool,
     }
 

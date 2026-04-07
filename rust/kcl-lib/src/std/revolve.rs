@@ -47,6 +47,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis2d),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;
@@ -262,7 +263,7 @@ async fn inner_revolve(
     Ok(solids)
 }
 
-async fn coerce_revolve_targets(
+pub async fn coerce_revolve_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,
@@ -364,6 +365,7 @@ mod tests {
             sketch_id: exec_state.next_uuid(),
             sketch: None,
             tag: None,
+            node_path: None,
             meta: vec![],
         };
         KclValue::Segment {

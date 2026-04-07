@@ -110,26 +110,13 @@ description: Artifact commands tangent_circle_circle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 5.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": -0.0
+            "y": -0.00000000000000183697019872103
           },
           "radius": 5.0,
           "start": {
@@ -186,26 +173,13 @@ description: Artifact commands tangent_circle_circle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 11.000000000000004,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
             "x": 8.000000000000004,
-            "y": -0.0
+            "y": -0.0000000000000011021821192326183
           },
           "radius": 3.0,
           "start": {
