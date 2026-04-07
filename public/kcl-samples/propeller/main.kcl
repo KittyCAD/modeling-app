@@ -12,12 +12,13 @@ hubDiameter = 8
 hubThickness = 4
 holeDiameter = .25
 twistAngle = 45
+tolerance = 0.000000005
 
 // Model the central hub of the propeller
 hub = startSketchOn(XY)
   |> circle(diameter = hubDiameter, tag = $seg01)
   // Create mounting holes around the perimeter of the hub
-  |> subtract2d(tool =   circle(center = [0, hubDiameter / 3], diameter = holeDiameter)
+  |> subtract2d(tool = circle(center = [0, hubDiameter / 3], diameter = holeDiameter)
     |> patternCircular2d(instances = 10, center = [0, 0]))
   |> extrude(
        length = hubThickness,
@@ -59,9 +60,12 @@ bladeRevolve = startSketchOn(YZ)
   |> close()
   |> revolve(axis = X)
   // Subtract out a mounting face to the center hub
-  |> subtract(tools =   startSketchOn(XY)
-    |> circle(diameter = hubDiameter)
-    |> extrude(length = hubThickness * 5, symmetric = true))
+  |> subtract(
+       tools = startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
 
 // Sketch the cross-section of the blade. Extrude with a twist down the length of the blade
 bladeTwist = startSketchOn(-XZ)
@@ -74,7 +78,7 @@ bladeTwist = startSketchOn(-XZ)
   |> extrude(twistAngle, length = bladeDiameter / 1.9)
 
 // Model the blades by intersecting the outer profile to the twisted section. Pattern about the shaft axis
-blades = intersect([bladeRevolve, bladeTwist])
+blades = intersect([bladeRevolve, bladeTwist], tolerance)
   |> patternCircular3d(instances = bladeCount, axis = Z, center = [0, 0, 0])
 
 // Apply wood appearance to the entire propeller model
