@@ -15,4 +15,3 @@ region001 = region(segments = [sketch001.circle1])
 extrude(region001, length = knobHeight)
   |> fillet(radius = knobFilletRadius, tags = [getOppositeEdge(knobBend)])
   |> appearance(color = "#afbf36")
-

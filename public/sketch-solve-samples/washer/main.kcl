@@ -19,4 +19,3 @@ washerSketch = sketch(on = XY) {
 
 region001 = region(segments = [washerSketch.circle1])
 washer = extrude(region001, length = thicknessNom)
-

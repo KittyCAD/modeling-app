@@ -75,4 +75,3 @@ bladeWithVoidOne = subtract([bladeSolid], tools = [voidCutoutOne])
 bladeWithVoids = subtract([bladeWithVoidOne], tools = [voidCutoutTwo])
   // Circular pattern: 3 blade instance fan
   |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
-

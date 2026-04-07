@@ -60,9 +60,43 @@ use crate::front::PointCtor;
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
+#[cfg(feature = "artifact-graph")]
+use crate::frontend::sketch::CoincidentSegment;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+
+#[cfg(feature = "artifact-graph")]
+fn point2d_is_origin(point2d: &KclValue) -> bool {
+    let Some([x, y]) = <[TyF64; 2]>::from_kcl_val(point2d) else {
+        return false;
+    };
+    // Both components must be lengths (not angles or unknown types).
+    // as_length() returns None for non-length types.
+    if x.ty.as_length().is_none() || y.ty.as_length().is_none() {
+        return false;
+    }
+    // Now that we've checked that they're lengths, the exact units don't
+    // matter. We only care that the value is zero.
+    x.n == 0.0 && y.n == 0.0
+}
+
+#[cfg(feature = "artifact-graph")]
+fn coincident_segments_for_segment_and_point2d(
+    segment_id: ObjectId,
+    point2d: &KclValue,
+    segment_first: bool,
+) -> Vec<CoincidentSegment> {
+    if !point2d_is_origin(point2d) {
+        return vec![segment_id.into()];
+    }
+
+    if segment_first {
+        vec![segment_id.into(), CoincidentSegment::ORIGIN]
+    } else {
+        vec![CoincidentSegment::ORIGIN, segment_id.into()]
+    }
+}
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
@@ -857,7 +891,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -892,7 +926,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -941,7 +975,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -1035,7 +1069,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -1126,7 +1160,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -1141,6 +1175,99 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         }
                         _ => Err(KclError::new_semantic(KclErrorDetails::new(
                             "Point coordinates must be sketch variables for point-arc coincident constraint".to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                // Point-Circle or Circle-Point case: constrain point-to-center distance
+                // to equal the circle radius.
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::Circle {
+                        start: circle_start,
+                        center: circle_center,
+                        ..
+                    },
+                )
+                | (
+                    UnsolvedSegmentKind::Circle {
+                        start: circle_start,
+                        center: circle_center,
+                        ..
+                    },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let point_x = &point_pos[0];
+                    let point_y = &point_pos[1];
+                    match (point_x, point_y) {
+                        (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                            // Extract circle center and start coordinates.
+                            let (center_x, center_y) = (&circle_center[0], &circle_center[1]);
+                            let (start_x, start_y) = (&circle_start[0], &circle_start[1]);
+
+                            match (center_x, center_y, start_x, start_y) {
+                                (
+                                    UnsolvedExpr::Unknown(cx),
+                                    UnsolvedExpr::Unknown(cy),
+                                    UnsolvedExpr::Unknown(sx),
+                                    UnsolvedExpr::Unknown(sy),
+                                ) => {
+                                    let point_radius_line = DatumLineSegment::new(
+                                        DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        DatumPoint::new_xy(
+                                            point_x.to_constraint_id(range)?,
+                                            point_y.to_constraint_id(range)?,
+                                        ),
+                                    );
+                                    let circle_radius_line = DatumLineSegment::new(
+                                        DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        DatumPoint::new_xy(
+                                            sx.to_constraint_id(range)?,
+                                            sy.to_constraint_id(range)?,
+                                        ),
+                                    );
+                                    let constraint =
+                                        SolverConstraint::LinesEqualLength(point_radius_line, circle_radius_line);
+
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
+
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
+                                    Ok(KclValue::none())
+                                }
+                                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Circle start and center points must be sketch variables for point-circle coincident constraint".to_owned(),
+                                    vec![args.source_range],
+                                ))),
+                            }
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-circle coincident constraint"
+                                .to_owned(),
                             vec![args.source_range],
                         ))),
                     }
@@ -1219,7 +1346,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             #[cfg(feature = "artifact-graph")]
                             {
                                 let constraint = crate::front::Constraint::Coincident(Coincident {
-                                    segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                    segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                 });
                                 sketch_state.sketch_constraints.push(constraint_id);
                                 track_constraint(constraint_id, constraint, exec_state, &args);
@@ -1277,6 +1404,12 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
+                            #[cfg(feature = "artifact-graph")]
+                            let coincident_segments = coincident_segments_for_segment_and_point2d(
+                                unsolved.object_id,
+                                point2d,
+                                matches!((&point0, &point1), (KclValue::Segment { .. }, _)),
+                            );
                             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     "coincident() can only be used inside a sketch block".to_owned(),
@@ -1288,7 +1421,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             #[cfg(feature = "artifact-graph")]
                             {
                                 let constraint = crate::front::Constraint::Coincident(Coincident {
-                                    segments: vec![unsolved.object_id],
+                                    segments: coincident_segments,
                                 });
                                 sketch_state.sketch_constraints.push(constraint_id);
                                 track_constraint(constraint_id, constraint, exec_state, &args);

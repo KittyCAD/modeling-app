@@ -147,4 +147,3 @@ tailBody = extrude(region004, length = -tailLength, tagStart = $tailCapStart)
        z = tailElevation,
        global = true,
      )
-

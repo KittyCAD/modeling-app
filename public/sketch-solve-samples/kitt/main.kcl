@@ -546,4 +546,3 @@ kitVentC = pixelBox(
   height = kitVentHoleWidth,
   depth = kitVentHoleDepth,
 )
-

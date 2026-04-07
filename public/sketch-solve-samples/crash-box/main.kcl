@@ -126,4 +126,3 @@ crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 
 
 appearance(crashBoxFinal, color = "#00aaff")
-

@@ -72,4 +72,3 @@ sketch016 = sketch(on = startSketchOn(extrude011, face = END)) {
 region004 = region(segments = [sketch016.circle1])
 extrude(region004, length = 1)
   |> appearance(color = "#454545", metalness = 90, roughness = 90)
-

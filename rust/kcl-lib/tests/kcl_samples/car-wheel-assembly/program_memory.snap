@@ -271,6 +271,15 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "type": "Length"
     }
   },
+  "tolerance": {
+    "type": "Number",
+    "value": 0.000000005,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
   "treadDepth": {
     "type": "Number",
     "value": 3.0,

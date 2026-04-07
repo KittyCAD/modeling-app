@@ -33,4 +33,3 @@ backSlats(offsetPlane(YZ, offset = -benchLength / 2 - (dividerThickness / 2)), l
 // Create the arm rests
 armRest(YZ, offset = benchLength / 2)
 armRest(YZ, offset = -benchLength / 2)
-

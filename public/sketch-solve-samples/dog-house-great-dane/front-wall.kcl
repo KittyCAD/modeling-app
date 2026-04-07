@@ -43,4 +43,3 @@ signBottomZ = peakZ - signTopClearance - signHeight
 signY = -signThickness - signFrontOffset
 frontDogBoneSign = dogBoneSign
   |> translate(x = 0, y = signY, z = signBottomZ)
-

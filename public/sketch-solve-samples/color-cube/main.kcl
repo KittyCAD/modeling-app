@@ -40,4 +40,3 @@ sketchRectangle(profile = greenPlane, color = '#00FF00')
 sketchRectangle(profile = redPlane, color = '#FF0000')
 sketchRectangle(profile = tealPlane, color = '#00FFFF')
 sketchRectangle(profile = purplePlane, color = '#FF00FF')
-

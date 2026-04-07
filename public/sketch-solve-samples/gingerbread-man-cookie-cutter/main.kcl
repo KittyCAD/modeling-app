@@ -41,4 +41,3 @@ sketch001 = sketch(on = sketch) {
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
 cutter = extrude(region001, length = thickness)
   |> shell(thickness = wallThickness, faces = [START, END])
-
