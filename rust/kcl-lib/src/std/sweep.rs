@@ -28,6 +28,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
+use crate::std::revolve::coerce_revolve_targets;
 
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -49,7 +50,14 @@ enum InnerSweepPath {
 
 /// Create a 3D surface or solid by sweeping a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketch_values = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment()])),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
     let path: SweepPath = args.get_kw_arg(
         "path",
         &RuntimeType::Union(vec![
@@ -73,6 +81,17 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         SweepPath::Sketch(sketch) => InnerSweepPath::Sketch(sketch),
         SweepPath::Helix(helix) => InnerSweepPath::Helix(helix),
     };
+
+    let sketches = coerce_revolve_targets(
+        sketch_values,
+        body_type.unwrap_or_default(),
+        tag_start.as_ref(),
+        tag_end.as_ref(),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let value = inner_sweep(
         sketches,
