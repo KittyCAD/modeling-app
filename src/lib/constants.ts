@@ -107,6 +107,8 @@ export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
 export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
   Math.round(val * 0.7)
 )
+/** The sketch mode revamp highlight rgb values as HEX */
+export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
 
 /** Corresponding engine selections and highlights */
 export const SYSTEM_SELECTION_COLOR = {
@@ -122,9 +124,6 @@ export const SYSTEM_HIGHLIGHT_COLOR = {
   b: SKETCH_HIGHLIGHT_RGB[2] / 255,
   a: 1,
 }
-
-/** The sketch mode revamp highlight rgb values as HEX */
-export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
 
 /** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
 export const SKETCH_FILE_VERSION = 0
