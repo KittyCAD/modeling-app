@@ -527,6 +527,150 @@ mod sync {
     }
 
     #[test]
+    fn test_line_circle_intersections_secant_returns_two_sorted_points() {
+        let intersections = line_circle_intersections(
+            Coords2d { x: -2.0, y: 0.0 },
+            Coords2d { x: 2.0, y: 0.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 2);
+        assert!((intersections[0].0 - 0.25).abs() < 1e-5);
+        assert!((intersections[0].1.x - -1.0).abs() < 1e-5);
+        assert!((intersections[0].1.y - 0.0).abs() < 1e-5);
+        assert!((intersections[1].0 - 0.75).abs() < 1e-5);
+        assert!((intersections[1].1.x - 1.0).abs() < 1e-5);
+        assert!((intersections[1].1.y - 0.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_line_circle_intersections_tangent_returns_single_point() {
+        let intersections = line_circle_intersections(
+            Coords2d { x: -2.0, y: 1.0 },
+            Coords2d { x: 2.0, y: 1.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 1);
+        assert!((intersections[0].0 - 0.5).abs() < 1e-5);
+        assert!((intersections[0].1.x - 0.0).abs() < 1e-5);
+        assert!((intersections[0].1.y - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_line_circle_intersections_disjoint_returns_empty() {
+        let intersections = line_circle_intersections(
+            Coords2d { x: -2.0, y: 2.0 },
+            Coords2d { x: 2.0, y: 2.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
+    fn test_project_point_onto_circle_start_is_zero() {
+        let t = project_point_onto_circle(
+            Coords2d { x: 1.0, y: 0.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+            Coords2d { x: 1.0, y: 0.0 },
+        );
+
+        assert!((t - 0.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_project_point_onto_circle_quarter_turn_is_one_quarter() {
+        let t = project_point_onto_circle(
+            Coords2d { x: 0.0, y: 1.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+            Coords2d { x: 1.0, y: 0.0 },
+        );
+
+        assert!((t - 0.25).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_project_point_onto_circle_wraps_across_zero_angle() {
+        let start = Coords2d {
+            x: libm::cos(350.0_f64.to_radians()),
+            y: libm::sin(350.0_f64.to_radians()),
+        };
+        let point = Coords2d {
+            x: libm::cos(10.0_f64.to_radians()),
+            y: libm::sin(10.0_f64.to_radians()),
+        };
+        let t = project_point_onto_circle(point, Coords2d { x: 0.0, y: 0.0 }, start);
+
+        assert!((t - (20.0 / 360.0)).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_circle_circle_intersections_two_points() {
+        let mut intersections = circle_circle_intersections(
+            Coords2d { x: 0.0, y: 0.0 },
+            2.0,
+            Coords2d { x: 2.0, y: 0.0 },
+            2.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        intersections.sort_by(|a, b| a.y.partial_cmp(&b.y).unwrap_or(std::cmp::Ordering::Equal));
+        assert_eq!(intersections.len(), 2);
+        assert!((intersections[0].x - 1.0).abs() < 1e-5);
+        assert!((intersections[0].y - -3.0_f64.sqrt()).abs() < 1e-5);
+        assert!((intersections[1].x - 1.0).abs() < 1e-5);
+        assert!((intersections[1].y - 3.0_f64.sqrt()).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_circle_circle_intersections_tangent_returns_single_point() {
+        let intersections = circle_circle_intersections(
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            Coords2d { x: 2.0, y: 0.0 },
+            1.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 1);
+        assert!((intersections[0].x - 1.0).abs() < 1e-5);
+        assert!((intersections[0].y - 0.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_circle_circle_intersections_disjoint_returns_empty() {
+        let intersections = circle_circle_intersections(
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            Coords2d { x: 3.0, y: 0.0 },
+            1.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
+    fn test_circle_circle_intersections_concentric_returns_empty() {
+        let intersections = circle_circle_intersections(
+            Coords2d { x: 0.0, y: 0.0 },
+            1.0,
+            Coords2d { x: 0.0, y: 0.0 },
+            2.0,
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
     fn test_arc_arc_intersection() {
         // Test case matching TypeScript test: two arcs that may or may not intersect
         // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0° to 90°)
