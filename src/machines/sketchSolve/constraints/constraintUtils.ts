@@ -15,7 +15,7 @@ import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
-import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 

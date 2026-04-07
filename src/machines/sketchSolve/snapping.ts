@@ -16,7 +16,7 @@ import {
   findClosestApiObjects,
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
 export const X_AXIS_TARGET = 'x-axis'

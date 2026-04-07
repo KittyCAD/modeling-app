@@ -21,6 +21,12 @@ import {
   type SegmentRenderState,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
+import {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
 import { StateEffect } from '@codemirror/state'
@@ -74,22 +80,15 @@ import {
   fromPromise,
 } from 'xstate'
 
+export {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  type SketchSpecialTarget,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
+
 export type EquipTool = keyof typeof equipTools
-export const ORIGIN_TARGET = 'origin'
-export type SketchSpecialTarget = typeof ORIGIN_TARGET
-export type SketchSolveSelectionId = number | SketchSpecialTarget
-
-export function isObjectSelectionId(
-  id: SketchSolveSelectionId | null | undefined
-): id is number {
-  return typeof id === 'number'
-}
-
-export function getObjectSelectionIds(
-  ids: readonly SketchSolveSelectionId[]
-): number[] {
-  return ids.filter(isObjectSelectionId)
-}
 
 // Type for the spawn function used in XState setup actions
 // This provides better type safety by constraining the actor parameter to valid tool names

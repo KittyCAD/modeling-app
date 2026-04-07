@@ -11,9 +11,11 @@ import {
   isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
-import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 type ToolSelf = {
   _parent?: {

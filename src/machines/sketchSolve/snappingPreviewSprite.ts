@@ -23,7 +23,7 @@ import {
   type SnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { ConstraintIconName } from '@src/components/constraintIconPaths'
 
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
