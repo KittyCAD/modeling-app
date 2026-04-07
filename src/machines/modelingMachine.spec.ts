@@ -1505,7 +1505,7 @@ sketch001 = sketch(on = YZ) {
         expect(kclManager.code).toBe(invalidCode)
         expect(actor.getSnapshot().value).toBe('Sketch no face')
         expect(toastErrorSpy).toHaveBeenCalledWith(
-          'Unable to enter sketch while KCL has parse errors'
+          'Unable to enter sketch while KCL has parse errors.'
         )
       })
     })
