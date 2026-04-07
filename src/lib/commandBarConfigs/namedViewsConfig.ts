@@ -119,7 +119,7 @@ export function createNamedViewsCommand(
     onSubmit: (data) => {
       const invokeAndForgetCreateNamedView = async () => {
         if (!data) {
-          return toast.error('Unable to create named view, missing name')
+          return toast.error('Unable to create named view, missing name.')
         }
 
         // Retrieve camera view state from the engine
@@ -135,7 +135,7 @@ export function createNamedViewsCommand(
           : cameraGetViewResponse
 
         if (!r) {
-          return toast.error('Unable to create named view, websocket failure')
+          return toast.error('Unable to create named view, websocket failure.')
         }
 
         const rr = r
@@ -200,7 +200,7 @@ export function createNamedViewsCommand(
     needsReview: false,
     onSubmit: (data) => {
       if (!data) {
-        return toast.error('Unable to delete named view, missing name')
+        return toast.error('Unable to delete named view, missing name.')
       }
       const idToDelete = data.name
 
@@ -226,7 +226,7 @@ export function createNamedViewsCommand(
           },
         })
       } else {
-        toast.error(`Unable to delete, could not find the named view`)
+        toast.error(`Unable to delete, could not find the named view.`)
       }
     },
     args: {
@@ -265,7 +265,7 @@ export function createNamedViewsCommand(
     onSubmit: (data) => {
       const invokeAndForgetLoadNamedView = async () => {
         if (!data) {
-          return toast.error('Unable to load named view')
+          return toast.error('Unable to load named view.')
         }
 
         // Retrieve application state for namedViews
@@ -281,7 +281,7 @@ export function createNamedViewsCommand(
           const cameraViewState = namedViewToCameraViewState(viewToLoad)
 
           if (err(cameraViewState)) {
-            toast.error(`Unable to load named view ${data.name}`)
+            toast.error(`Unable to load named view ${data.name}.`)
             return
           }
 
@@ -323,7 +323,7 @@ export function createNamedViewsCommand(
           // We do not have the promise of the engine command for ensuring the camera projection has been completed.
           toast.success(`Named view ${name} loaded.`)
         } else {
-          toast.error(`Unable to load named view, could not find named view`)
+          toast.error(`Unable to load named view, could not find named view.`)
         }
       }
       invokeAndForgetLoadNamedView().catch(reportRejection)

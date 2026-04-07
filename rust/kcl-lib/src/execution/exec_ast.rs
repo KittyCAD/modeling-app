@@ -105,6 +105,7 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
+use crate::std::sketch2::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::sketch2::create_segments_in_engine;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
@@ -1415,7 +1416,9 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = ezpz::Config::default().with_max_iterations(50);
+        let config = ezpz::Config::default()
+            .with_max_iterations(50)
+            .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());

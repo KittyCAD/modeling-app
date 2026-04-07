@@ -409,7 +409,7 @@ export const commandBarMachine = setup({
                     )
                   } else {
                     // Default message if there is not a custom one sent
-                    toast.error(`Unable to validate ${argName}`)
+                    toast.error(`Unable to validate ${argName}.`)
                     return reject(`unable to validate ${argName}}`)
                   }
                 }

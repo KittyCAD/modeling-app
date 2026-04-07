@@ -263,7 +263,7 @@ async fn inner_revolve(
     Ok(solids)
 }
 
-async fn coerce_revolve_targets(
+pub async fn coerce_revolve_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,

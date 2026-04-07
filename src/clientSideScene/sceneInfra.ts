@@ -34,7 +34,7 @@ import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
-import { getAngle, getLength } from '@src/lib/utils'
+import { baseUnitToMm, getAngle, getLength } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
@@ -155,9 +155,9 @@ export class SceneInfra {
   }
 
   set baseUnit(unit: BaseUnit) {
-    const newBaseUnitMultiplier = baseUnitTomm(unit)
+    const newBaseUnitMultiplier = baseUnitToMm(unit)
     if (newBaseUnitMultiplier !== this._baseUnitMultiplier) {
-      this._baseUnitMultiplier = baseUnitTomm(unit)
+      this._baseUnitMultiplier = baseUnitToMm(unit)
       this.scene.scale.set(
         this._baseUnitMultiplier,
         this._baseUnitMultiplier,
@@ -994,21 +994,4 @@ export class SceneInfra {
 function isAxisObject(object: Object3D | undefined): boolean {
   if (!object) return false
   return object.name === X_AXIS || object.name === Y_AXIS
-}
-
-function baseUnitTomm(baseUnit: BaseUnit) {
-  switch (baseUnit) {
-    case 'mm':
-      return 1
-    case 'cm':
-      return 10
-    case 'm':
-      return 1000
-    case 'in':
-      return 25.4
-    case 'ft':
-      return 304.8
-    case 'yd':
-      return 914.4
-  }
 }
