@@ -9,8 +9,8 @@ Create a 3D surface or solid by sweeping a sketch along a path.
 
 ```kcl
 sweep(
-  @sketches: [Sketch; 1+],
-  path: Sketch | Helix,
+  @sketches: [Sketch | Segment; 1+],
+  path: Sketch | Helix | [Segment; 1+],
   sectional?: bool,
   tolerance?: number(Length),
   relativeTo?: string,
@@ -34,8 +34,8 @@ swept along the same path.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
-| `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) | The path to sweep the sketch along. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
+| `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
@@ -317,6 +317,151 @@ swept = sweep(profileRegion, path)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep7.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+// Demonstrates using sweeps with segments from sketch blocks.
+
+// Sketch a square
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+// Sketch a path
+sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+  line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
+  line2 = line(start = [var 00mm, var 0mm], end = [var 2mm, var 1mm])
+}
+
+mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+
+// Sweep the square along the path.
+sweep(mySquare, path = sketch002.line1)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep8_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep8.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Demonstrates sweeping along a multi-segment path from a sketch block.
+@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
+  line2 = line(start = [var 2mm, var 0mm], end = [var 0mm, var 0mm])
+  line3 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+  line4 = line(start = [var 0mm, var 2mm], end = [var 2mm, var 2mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+}
+mySquare = region(point = [1.9975mm, 1mm], sketch = sketch001)
+
+// Sketch a path
+sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+  line1 = line(start = [var -0.01mm, var -0.01mm], end = [var -0.12mm, var 2.4mm])
+  arc1 = arc(start = [var 0.6mm, var 4.55mm], end = [var -0.12mm, var 2.4mm], center = [var 3.03mm, var 2.54mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+
+// Sweep the square along the path.
+path = [sketch002.line1, sketch002.arc1]
+sweep(mySquare, path)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep9_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep9.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+// Demonstrates surface sweeps of open profiles.
+
+// Sketch a square
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var -1.17mm, var -0.79mm], end = [var -15.37mm, var -0.7mm])
+  arc1 = arc(start = [var -15.37mm, var 21.18mm], end = [var -15.37mm, var -0.7mm], center = [var -15.3mm, var 10.24mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+
+// Sweep the square along the path.
+path = [sketch002.line1, sketch002.arc1]
+sweep(sketch001.line2, path, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep10.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
