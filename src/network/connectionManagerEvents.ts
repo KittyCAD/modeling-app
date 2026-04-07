@@ -42,9 +42,7 @@ export const createOnEngineOffline = ({
 export const createOnEngineConnectionOpened = ({
   settings,
   sendSceneCommand,
-  setBackfaceColor,
-  setHighlightColor,
-  setSelectionColor,
+  setDefaultSystemProperties,
   setTheme,
   listenToDarkModeMatcher,
   camControlsCameraChange,
@@ -56,9 +54,7 @@ export const createOnEngineConnectionOpened = ({
     command: EngineCommand,
     forceWebsocket?: boolean
   ) => Promise<WebSocketResponse | [WebSocketResponse] | null>
-  setBackfaceColor: (color: string) => Promise<void>
-  setHighlightColor: (color: string) => Promise<void>
-  setSelectionColor: (color: string) => Promise<void>
+  setDefaultSystemProperties: (backfaceColor: string) => Promise<void>
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
@@ -134,20 +130,10 @@ export const createOnEngineConnectionOpened = ({
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
-      message: 'default_backface_set_color',
+      message: 'default_system_properties_set',
     })
 
-    await setBackfaceColor(settings.backfaceColor)
-    EngineDebugger.addLog({
-      label: 'onEngineConnectionOpened',
-      message: 'default_highlight_set_color',
-    })
-    await setHighlightColor(settings.highlightColor)
-    EngineDebugger.addLog({
-      label: 'onEngineConnectionOpened',
-      message: 'default_selection_set_color',
-    })
-    await setSelectionColor(settings.selectionColor)
+    await setDefaultSystemProperties(settings.backfaceColor)
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',

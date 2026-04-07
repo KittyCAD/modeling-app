@@ -51,6 +51,8 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
 import {
+  DEFAULT_HIGHLIGHT_COLOR,
+  DEFAULT_SELECTION_COLOR,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
 } from '@src/lib/constants'
@@ -113,8 +115,6 @@ export class ConnectionManager extends EventTarget {
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
       backfaceColor: s.modeling.backfaceColor.current,
-      highlightColor: s.modeling.highlightColor.current,
-      selectionColor: s.modeling.selectionColor.current,
     }
   }
 
@@ -327,9 +327,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       settings: this.settings,
       sendSceneCommand: this.sendSceneCommand.bind(this),
-      setBackfaceColor: this.setBackfaceColor.bind(this),
-      setHighlightColor: this.setHighlightColor.bind(this),
-      setSelectionColor: this.setSelectionColor.bind(this),
+      setDefaultSystemProperties: this.setDefaultSystemProperties.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
@@ -429,9 +427,9 @@ export class ConnectionManager extends EventTarget {
     const opposingTheme = getOppositeTheme(theme)
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
     const highlightSystemColor =
-      hexToRgba(this.settings.highlightColor) ?? defaultSystemColor
+      hexToRgba(DEFAULT_HIGHLIGHT_COLOR) ?? defaultSystemColor
     const selectionSystemColor =
-      hexToRgba(this.settings.selectionColor) ?? defaultSystemColor
+      hexToRgba(DEFAULT_SELECTION_COLOR) ?? defaultSystemColor
     const setDefaultSystemPropertiesCmd = {
       type: 'set_default_system_properties',
       color: defaultSystemColor,
@@ -471,26 +469,43 @@ export class ConnectionManager extends EventTarget {
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
   }
 
-  /** Set the default backface color in the engine, with debug logging */
-  async setBackfaceColor(color: string) {
-    const rgbaColor = hexToRgba(color)
-    if (!rgbaColor) {
+  /** Set default system properties in the engine, with debug logging */
+  async setDefaultSystemProperties(backfaceColor: string) {
+    const backfaceRgbaColor = hexToRgba(backfaceColor)
+    if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: 'setBackfaceColor, invalid hex color',
-        metadata: { color },
+        message: 'setDefaultSystemProperties, invalid backface hex color',
+        metadata: { backfaceColor },
+      })
+      return
+    }
+
+    const highlightSystemColor = hexToRgba(DEFAULT_HIGHLIGHT_COLOR)
+    const selectionSystemColor = hexToRgba(DEFAULT_SELECTION_COLOR)
+    if (!highlightSystemColor || !selectionSystemColor) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message:
+          'setDefaultSystemProperties, invalid default highlight/selection color',
+        metadata: {
+          defaultHighlightColor: DEFAULT_HIGHLIGHT_COLOR,
+          defaultSelectionColor: DEFAULT_SELECTION_COLOR,
+        },
       })
       return
     }
 
     const cmd = {
       type: 'set_default_system_properties',
-      backface_color: rgbaColor,
+      backface_color: backfaceRgbaColor,
+      highlight_color: highlightSystemColor,
+      selection_color: selectionSystemColor,
     } as const
     const debugLog = (event: string) =>
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: `setBackfaceColor - set_default_system_properties - ${event}`,
+        message: `setDefaultSystemProperties - set_default_system_properties - ${event}`,
         metadata: {
           cmd,
         },
@@ -499,101 +514,7 @@ export class ConnectionManager extends EventTarget {
     if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: 'setBackfaceColor, websocket is not ready',
-        metadata: {
-          readyState: this.connection?.websocket?.readyState,
-        },
-      })
-      return
-    }
-
-    await this.connection.deferredConnection?.promise
-
-    debugLog('start')
-    await this.sendSceneCommand({
-      cmd_id: uuidv4(),
-      type: 'modeling_cmd_req',
-      cmd,
-    })
-    debugLog('done')
-  }
-
-  /** Set the default highlight color in the engine, with debug logging */
-  async setHighlightColor(color: string) {
-    const rgbaColor = hexToRgba(color)
-    if (!rgbaColor) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: 'setHighlightColor, invalid hex color',
-        metadata: { color },
-      })
-      return
-    }
-
-    const cmd = {
-      type: 'set_default_system_properties',
-      highlight_color: rgbaColor,
-    } as const
-    const debugLog = (event: string) =>
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: `setHighlightColor - set_default_system_properties - ${event}`,
-        metadata: {
-          cmd,
-        },
-      })
-
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: 'setHighlightColor, websocket is not ready',
-        metadata: {
-          readyState: this.connection?.websocket?.readyState,
-        },
-      })
-      return
-    }
-
-    await this.connection.deferredConnection?.promise
-
-    debugLog('start')
-    await this.sendSceneCommand({
-      cmd_id: uuidv4(),
-      type: 'modeling_cmd_req',
-      cmd,
-    })
-    debugLog('done')
-  }
-
-  /** Set the default selection color in the engine, with debug logging */
-  async setSelectionColor(color: string) {
-    const rgbaColor = hexToRgba(color)
-    if (!rgbaColor) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: 'setSelectionColor, invalid hex color',
-        metadata: { color },
-      })
-      return
-    }
-
-    const cmd = {
-      type: 'set_default_system_properties',
-      selection_color: rgbaColor,
-    } as const
-    const debugLog = (event: string) =>
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: `setSelectionColor - set_default_system_properties - ${event}`,
-        metadata: {
-          cmd,
-        },
-      })
-
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: 'setSelectionColor, websocket is not ready',
+        message: 'setDefaultSystemProperties, websocket is not ready',
         metadata: {
           readyState: this.connection?.websocket?.readyState,
         },

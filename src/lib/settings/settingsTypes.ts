@@ -24,8 +24,6 @@ export interface SettingsViaQueryString {
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
   backfaceColor: string
-  highlightColor: string
-  selectionColor: string
 }
 
 export const baseUnits = {
