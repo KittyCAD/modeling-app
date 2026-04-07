@@ -43,6 +43,7 @@ pub struct Args<Status: ArgsStatus = Desugared> {
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub source_range: SourceRange,
+    pub node_path: Option<NodePath>,
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
@@ -71,6 +72,7 @@ impl Args<Sugary> {
         labeled: IndexMap<String, Arg>,
         unlabeled: Vec<(Option<String>, Arg)>,
         source_range: SourceRange,
+        node_path: Option<NodePath>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
         fn_name: Option<String>,
@@ -80,6 +82,7 @@ impl Args<Sugary> {
             labeled,
             unlabeled,
             source_range,
+            node_path,
             ctx,
             pipe_value: exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
             _status: std::marker::PhantomData,
@@ -100,12 +103,18 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
+    pub fn new_no_args(
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+        ctx: ExecutorContext,
+        fn_name: Option<String>,
+    ) -> Args {
         Args {
             fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
+            node_path,
             ctx,
             pipe_value: None,
             _status: std::marker::PhantomData,
@@ -204,6 +213,7 @@ impl Node<CallExpressionKw> {
             fn_args,
             unlabeled,
             callsite,
+            self.node_path.clone(),
             exec_state,
             ctx.clone(),
             Some(fn_name.name.name.clone()),
@@ -651,6 +661,7 @@ fn type_check_params_kw(
     let fn_name = fn_name.or(args.fn_name.as_deref());
     let mut result = Args::new_no_args(
         args.source_range,
+        args.node_path.clone(),
         args.ctx,
         fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
     );
@@ -1102,6 +1113,7 @@ mod test {
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),
+                node_path: None,
                 ctx: exec_ctxt,
                 pipe_value: None,
                 _status: std::marker::PhantomData,
