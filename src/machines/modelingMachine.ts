@@ -1286,11 +1286,6 @@ export const modelingMachine = setup({
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
-    'disable rotate and drag-pan for sketch mode': ({ context }) => {
-      const camControls = context.kclManager.sceneInfra.camControls
-      camControls.enableRotate = camControls._setting_allowOrbitInSketchMode
-      camControls.enableMouseDragPan = false
-    },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
       context.kclManager.setSelectionFilter(
@@ -2851,6 +2846,12 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return null
         const { plane, kclManager, engineCommandManager, wasmInstance } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors.'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
           const originalCode = kclManager.code
           const sketched =
@@ -2958,6 +2959,12 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors.'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
@@ -6918,10 +6925,7 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: [
-        'clientToEngine cam sync direction',
-        'disable rotate and drag-pan for sketch mode',
-      ],
+      entry: ['clientToEngine cam sync direction'],
       initial: 'active',
       states: {
         active: {
