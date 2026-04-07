@@ -19,7 +19,6 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
 
-
 export type ConstraintLineStyle = 'solid' | 'dashed'
 
 type DashedLineUserData = {
