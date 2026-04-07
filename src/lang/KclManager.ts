@@ -848,6 +848,10 @@ export class KclManager extends File {
     return this._astParseFailed || this.errors.length > 0
   }
 
+  hasParseErrors(): boolean {
+    return this._astParseFailed
+  }
+
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
   }
@@ -1939,8 +1943,12 @@ export class KclManager extends File {
   }
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
+    const docLength = this._editorView.state.doc.length
     // Clear out any existing diagnostics that are the same.
-    diagnostics = this.makeUniqueDiagnostics(diagnostics)
+    diagnostics = this.makeUniqueDiagnostics(diagnostics).filter(
+      // Clear out any diagnostics that don't fit with the current document
+      (d) => d.from <= docLength && d.to <= docLength
+    )
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],

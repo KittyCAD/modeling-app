@@ -348,7 +348,7 @@ fn next_free_name(
 ) -> Result<String, KclError> {
     next_free_name_with_padding(prefix, taken_names).map_err(|e| {
         KclError::new_internal(KclErrorDetails::new(
-            format!("Failed to generate a unique name for {prefix}: {}", e),
+            format!("Failed to generate a unique name for {prefix}: {}", e.msg),
             source_ranges,
         ))
     })
