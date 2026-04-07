@@ -1549,7 +1549,6 @@ sketch001 = sketch(on = YZ) {
             } as any,
             sketchSolveId: 1,
           })),
-          sketchSolveMachine: fromPromise(async () => undefined),
         },
       })
 
@@ -1565,6 +1564,17 @@ sketch001 = sketch(on = YZ) {
         return (
           JSON.stringify(actor.getSnapshot().value) ===
           JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      actor.send({ type: 'Exit sketch' })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
             idle: 'hidePlanes',
           })
         )
@@ -1572,7 +1582,6 @@ sketch001 = sketch(on = YZ) {
 
       expect(sendSceneCommandSpy).toHaveBeenCalled()
       expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
-      expect(kclManager.sceneInfra.camControls.enableMouseDragPan).toBe(true)
       expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
         'engineToClient'

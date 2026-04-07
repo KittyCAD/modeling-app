@@ -1287,7 +1287,6 @@ export const modelingMachine = setup({
       const camControls = context.kclManager.sceneInfra.camControls
       camControls.enablePan = true
       camControls.enableRotate = true
-      camControls.enableMouseDragPan = true
       camControls.syncDirection = 'engineToClient'
     },
     'clientToEngine cam sync direction': ({ context }) => {
@@ -1985,7 +1984,6 @@ export const modelingMachine = setup({
           kclManager.sceneEntitiesManager.removeSketchGrid()
           camControls.enablePan = true
           camControls.enableRotate = true
-          camControls.enableMouseDragPan = true
           camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
