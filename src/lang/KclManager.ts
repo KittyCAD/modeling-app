@@ -848,6 +848,10 @@ export class KclManager extends File {
     return this._astParseFailed || this.errors.length > 0
   }
 
+  hasParseErrors(): boolean {
+    return this._astParseFailed
+  }
+
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
   }

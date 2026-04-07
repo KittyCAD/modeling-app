@@ -7,16 +7,11 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  findOperationArtifact,
-  findOperationPlaneArtifact,
-  isOffsetPlane,
-} from '@src/lang/queryAst'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
-  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
@@ -53,6 +48,7 @@ import { Disclosure } from '@headlessui/react'
 import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
+  resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
@@ -916,13 +912,11 @@ const OperationItem = ({
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
-  const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.artifactGraph
-      ? findOperationArtifact(item, kclManager.artifactGraph)
-      : undefined
-  const hideOperation = operationArtifact
-    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
-    : undefined
+  const visibilityState = resolveFeatureTreeVisibility({
+    item,
+    operations: kclManager.operations ?? [],
+    artifactGraph: kclManager.artifactGraph,
+  })
 
   return (
     <OperationItemWrapper
@@ -959,22 +953,22 @@ const OperationItem = ({
       disabled={!enabled}
       size={size}
       visibilityToggle={
-        item.type === 'StdLibCall' && item.name === 'helix'
+        visibilityState.canToggleVisibility
           ? {
-              visible: hideOperation === undefined,
+              visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
                 selectOperation()
                   .then(() => {
-                    if (hideOperation === undefined) {
+                    if (visibilityState.hideOperation === undefined) {
                       onHide({
                         ast: kclManager.ast,
                         artifactGraph: kclManager.artifactGraph,
                         modelingActor,
                       })
-                    } else if (operationArtifact !== undefined) {
+                    } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
-                        hideOperation,
-                        targetArtifact: operationArtifact,
+                        hideOperation: visibilityState.hideOperation,
+                        targetArtifact: visibilityState.targetArtifact,
                         kclManager,
                       })
                         .then((result) => {
