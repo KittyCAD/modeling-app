@@ -73,7 +73,7 @@ export function ExperimentalFeaturesMenu() {
                                 }
 
                                 toast.success(
-                                  `Updated file experimental features level to ${level.type}`
+                                  `Updated file experimental features level to ${level.type}.`
                                 )
                               })
                               .catch(reportRejection)

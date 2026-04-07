@@ -236,7 +236,7 @@ export const settingsMachine = setup({
                 : ' as a user default'
             }`
           : '')
-      toast.success(message, {
+      toast.success(`${message}.`, {
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
       })
