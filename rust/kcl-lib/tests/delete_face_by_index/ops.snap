@@ -216,7 +216,7 @@ description: Operations executed delete_face_by_index.kcl
         "faceIndices": {
           "value": {
             "type": "Number",
-            "value": 1.0,
+            "value": 2.0,
             "ty": {
               "type": "Known",
               "type": "Count"

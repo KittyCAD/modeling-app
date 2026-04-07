@@ -3741,7 +3741,6 @@ export class SceneEntities {
       this.sceneInfra.scene.remove(sketchSegments)
     }
     this.sceneInfra.camControls.enableRotate = true
-    this.sceneInfra.camControls.enableMouseDragPan = true
     this.activeSegments = {}
   }
 
