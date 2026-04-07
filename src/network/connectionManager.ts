@@ -621,29 +621,9 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (command.type === 'modeling_cmd_batch_req') {
-      if (command.responses) {
-        // Register as a pending command so the batch response is processed
-        // by the message handler (dispatching to subscribers, etc.).
-        return this.sendCommand(
-          command.batch_id,
-          {
-            command,
-            idToRangeMap: {},
-            range: defaultSourceRange(),
-          },
-          true
-        )
-          .then(([a]) => a)
-          .catch((e) => {
-            EngineDebugger.addLog({
-              label: 'sendCommand',
-              message: 'error',
-              metadata: { error: e },
-            })
-            return e
-          })
-      }
       this.connection.send(command)
+      // TODO - handlePendingCommands does not handle batch commands
+      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
       return Promise.resolve(null)
     }
 
@@ -930,12 +910,6 @@ export class ConnectionManager extends EventTarget {
                 modeling_response: response.response,
               },
             }
-
-            // Dispatch to subscribers, matching the non-batch path above.
-            const modelingResponse = response.response
-            Object.values(
-              this.subscriptions[modelingResponse.type] || {}
-            ).forEach((callback) => callback(modelingResponse))
           }
         )
       }
