@@ -1575,10 +1575,10 @@ export fn polygon(
 /// sweep(mySquare, path = sketch002.line1)
 /// ```
 /// ```
+/// // Demonstrates sweeping along a multi-segment path from a sketch block.
 /// @settings(experimentalFeatures = allow)
 /// 
-/// // Sketch a square
-/// sketch001 = sketch(on = XZ) {
+/// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
 ///   line2 = line(start = [var 2mm, var 0mm], end = [var 0mm, var 0mm])
 ///   line3 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
@@ -1590,19 +1590,17 @@ export fn polygon(
 ///   parallel([line2, line4])
 ///   parallel([line3, line1])
 ///   perpendicular([line1, line2])
-///   horizontal(line3)
 /// }
+/// mySquare = region(point = [1.9975mm, 1mm], sketch = sketch001)
 /// 
 /// // Sketch a path
 /// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
-///   line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
-///   arc1 = arc(start = [var -3.85mm, var 1.41mm], end = [var -3mm, var 0mm], center = [var -3mm, var 0.96mm])
+///   line1 = line(start = [var -0.01mm, var -0.01mm], end = [var -0.12mm, var 2.4mm])
+///   arc1 = arc(start = [var 0.6mm, var 4.55mm], end = [var -0.12mm, var 2.4mm], center = [var 3.03mm, var 2.54mm])
 ///   coincident([line1.end, arc1.end])
 ///   tangent([line1, arc1])
 /// }
 /// 
-/// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
-///
 /// // Sweep the square along the path.
 /// path = [sketch002.line1, sketch002.arc1]
 /// sweep(mySquare, path)
@@ -1612,7 +1610,7 @@ export fn polygon(
 /// // Demonstrates surface sweeps of open profiles.
 /// 
 /// // Sketch a square
-/// sketch001 = sketch(on = XZ) {
+/// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
 ///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
 ///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
@@ -1629,7 +1627,7 @@ export fn polygon(
 /// 
 /// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
 /// 
-/// sketch002 = sketch(on = YZ) {
+/// sketch002 = sketch(on = XZ) {
 ///   line1 = line(start = [var -1.17mm, var -0.79mm], end = [var -15.37mm, var -0.7mm])
 ///   arc1 = arc(start = [var -15.37mm, var 21.18mm], end = [var -15.37mm, var -0.7mm], center = [var -15.3mm, var 10.24mm])
 ///   coincident([line1.end, arc1.end])
