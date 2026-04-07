@@ -76,4 +76,3 @@ wedgeBody = extrude(region002, length = wedgeHeight)
 
 
 cShape = subtract([solidRing], tools = [wedgeBody])
-

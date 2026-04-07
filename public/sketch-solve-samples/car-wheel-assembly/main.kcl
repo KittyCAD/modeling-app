@@ -16,4 +16,3 @@ import "car-wheel.kcl" as carWheel
 import "lug-nut.kcl" as lugNut
 lugNut
   |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])
-

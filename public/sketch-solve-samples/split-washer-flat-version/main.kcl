@@ -84,4 +84,3 @@ wedgeBody = extrude(region002, length = wedgeHeight)
 
 
 splitWasherBody = subtract([solidWasherBody], tools = [wedgeBody])
-

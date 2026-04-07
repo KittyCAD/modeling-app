@@ -65,4 +65,3 @@ profile001 = sketch(on = sketch001) {
 region001 = region(segments = [profile001.line1, profile001.line2])
 revolve001 = revolve(region001, angle = 360deg, axis = Y)
 sketch002 = startSketchOn(-XZ)
-

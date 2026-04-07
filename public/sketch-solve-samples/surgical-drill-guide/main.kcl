@@ -155,4 +155,3 @@ grip02 = extrude(
        ],
      )
   |> appearance(color = "#23af93")
-

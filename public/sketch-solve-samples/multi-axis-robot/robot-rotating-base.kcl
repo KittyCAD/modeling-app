@@ -68,4 +68,3 @@ sketch010 = sketch(on = plane002) {
 
 region005 = region(segments = [sketch010.circle1])
 extrude(region005, length = -1)
-

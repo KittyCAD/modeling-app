@@ -107,4 +107,3 @@ shelves = patternLinear3d(
   distance = shelfSpacing,
   axis = [0, 0, 1],
 )
-

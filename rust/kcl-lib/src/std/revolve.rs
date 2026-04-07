@@ -47,6 +47,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis2d),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;
