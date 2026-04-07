@@ -1,6 +1,7 @@
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
-import { Compartment, Annotation, StateEffect } from '@codemirror/state'
+import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import { tags } from '@lezer/highlight'
+import { SKETCH_SELECTION_RGB_STR } from '@src/lib/constants'
 import { EditorView } from 'codemirror'
 
 const green = {
@@ -26,6 +27,7 @@ const primary = {
   light: 'var(--primary)',
   dark: 'oklch(from var(--primary) calc(l + 0.15) c h)',
 }
+const codeMirrorSelectionBackground = `rgb(${SKETCH_SELECTION_RGB_STR}, 0.5)`
 const colors = {
   green,
   magenta,
@@ -117,6 +119,10 @@ const lightTheme = EditorView.theme(
     '&': {
       backgroundColor: '#fff',
     },
+    '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
+      {
+        backgroundColor: codeMirrorSelectionBackground,
+      },
   },
   {
     dark: false,
@@ -127,6 +133,10 @@ const darkTheme = EditorView.theme(
     '&': {
       backgroundColor: 'transparent',
     },
+    '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
+      {
+        backgroundColor: codeMirrorSelectionBackground,
+      },
   },
   {
     dark: true,

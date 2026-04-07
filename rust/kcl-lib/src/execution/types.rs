@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::KclError;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
@@ -206,7 +206,7 @@ impl RuntimeType {
         source_range: SourceRange,
         constrainable: bool,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range, suppress_warnings),
             Type::Array { ty, len } => {
@@ -216,7 +216,7 @@ impl RuntimeType {
             Type::Union { tys } => tys
                 .into_iter()
                 .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable, suppress_warnings))
-                .collect::<Result<Vec<_>, CompilationError>>()
+                .collect::<Result<Vec<_>, CompilationIssue>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
@@ -224,7 +224,7 @@ impl RuntimeType {
                     RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable, suppress_warnings)
                         .map(|ty| (id.name.clone(), ty))
                 })
-                .collect::<Result<Vec<_>, CompilationError>>()
+                .collect::<Result<Vec<_>, CompilationIssue>>()
                 .map(|values| RuntimeType::Object(values, constrainable)),
         }
     }
@@ -234,7 +234,7 @@ impl RuntimeType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
@@ -259,11 +259,11 @@ impl RuntimeType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         let ty_val = exec_state
             .stack()
             .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
+            .map_err(|_| CompilationIssue::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
             KclValue::Type {
@@ -620,7 +620,7 @@ impl NumericType {
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
                 if b.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -629,7 +629,7 @@ impl NumericType {
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
                 if a.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -679,7 +679,7 @@ impl NumericType {
                     && b.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -690,7 +690,7 @@ impl NumericType {
                     && a.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -704,7 +704,7 @@ impl NumericType {
                     && b.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -715,7 +715,7 @@ impl NumericType {
                     && a.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -856,7 +856,7 @@ impl NumericType {
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
                 if b.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -865,7 +865,7 @@ impl NumericType {
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
                 if a.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -1403,7 +1403,7 @@ impl KclValue {
                         let z_axis = x_axis.axes_cross_product(&y_axis);
 
                         if value.get("zAxis").is_some() {
-                            exec_state.warn(CompilationError::err(
+                            exec_state.warn(CompilationIssue::err(
                             self.into(),
                             "Object with a zAxis field is being coerced into a plane, but the zAxis is ignored.",
                         ), annotations::WARN_IGNORED_Z_AXIS);
@@ -1622,7 +1622,7 @@ impl KclValue {
                         "Internal: Expected coerced array length {len} to be less than or equal to original length {}",
                         values.len()
                     );
-                    exec_state.err(CompilationError::err(self.into(), message.clone()));
+                    exec_state.err(CompilationIssue::err(self.into(), message.clone()));
                     #[cfg(debug_assertions)]
                     panic!("{message}");
                 }
@@ -2597,10 +2597,10 @@ u = min([3rad, 4in])
 
         let result = parse_execute(program).await.unwrap();
         assert_eq!(
-            result.exec_state.errors().len(),
+            result.exec_state.issues().len(),
             5,
             "errors: {:?}",
-            result.exec_state.errors()
+            result.exec_state.issues()
         );
 
         assert_value_and_type("a", &result, 9.0, NumericType::default());
@@ -2658,9 +2658,9 @@ d = cos(1rad)
 
         let result = parse_execute(program).await.unwrap();
         assert!(
-            result.exec_state.errors().is_empty(),
+            result.exec_state.issues().is_empty(),
             "{:?}",
-            result.exec_state.errors()
+            result.exec_state.issues()
         );
 
         assert_value_and_type("a", &result, 1.0, NumericType::default());

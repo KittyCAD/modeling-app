@@ -38,7 +38,7 @@ baseSketch = startSketchOn(caliperPlane)
   |> extrude(length = caliperThickness * 5 / 6, symmetric = true)
 
   // Cut the rotor opening from the caliper
-  |> subtract(tools = sketch003)
+  |> subtract(tools = sketch003, tolerance)
 
   // Add a bright appearance to the caliper
   |> appearance(color = "#ce0909")

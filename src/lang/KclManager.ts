@@ -8,7 +8,7 @@ import {
 } from '@src/editor/plugins/artifacts'
 import type { KCLError } from '@src/lang/errors'
 import {
-  compilationErrorsToDiagnostics,
+  compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
@@ -848,6 +848,10 @@ export class KclManager extends File {
     return this._astParseFailed || this.errors.length > 0
   }
 
+  hasParseErrors(): boolean {
+    return this._astParseFailed
+  }
+
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
   }
@@ -1297,8 +1301,8 @@ export class KclManager extends File {
     this.errors = []
     this.logs = []
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -1403,7 +1407,7 @@ export class KclManager extends File {
     this.addDiagnostics(
       isInterrupted
         ? []
-        : compilationErrorsToDiagnostics(execState.errors, code)
+        : compilationIssuesToDiagnostics(execState.issues, code)
     )
     this.execState = execState
     if (!errors.length) {
@@ -1939,8 +1943,12 @@ export class KclManager extends File {
   }
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
+    const docLength = this._editorView.state.doc.length
     // Clear out any existing diagnostics that are the same.
-    diagnostics = this.makeUniqueDiagnostics(diagnostics)
+    diagnostics = this.makeUniqueDiagnostics(diagnostics).filter(
+      // Clear out any diagnostics that don't fit with the current document
+      (d) => d.from <= docLength && d.to <= docLength
+    )
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
