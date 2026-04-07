@@ -2958,10 +2958,9 @@ export const modelingMachine = setup({
           projectRef,
         } = input
         if (kclManager.hasParseErrors()) {
-          const errorMessage =
-            'Unable to enter sketch while KCL has parse errors.'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(
+            new Error('Unable to enter sketch while KCL has parse errors.')
+          )
         }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
@@ -3002,13 +3001,13 @@ export const modelingMachine = setup({
           }
         }
         if (!result) {
-          return reject(new Error('Please select a valid sketch plane'))
+          return reject(new Error('Please select a valid sketch plane.'))
         }
 
         // Call newSketch API
         const project = projectRef?.current
         if (!project) {
-          return reject(new Error('No active project to start a sketch in'))
+          return reject(new Error('No active project to start a sketch in.'))
         }
 
         // Construct SketchCtor based on the result
@@ -3023,8 +3022,8 @@ export const modelingMachine = setup({
           }
         } else {
           if (setProgramOutcome.type !== 'Success') {
-            return Promise.reject(
-              new Error('Could not update SceneGraph before creating sketch')
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
             )
           }
 
@@ -3035,9 +3034,9 @@ export const modelingMachine = setup({
           )
 
           if (!selectedSceneObject) {
-            return Promise.reject(
+            return reject(
               new Error(
-                `Could not find SceneGraph object for artifact ${selectedArtifactId}`
+                `Could not find SceneGraph object for artifact ${selectedArtifactId}.`
               )
             )
           }
