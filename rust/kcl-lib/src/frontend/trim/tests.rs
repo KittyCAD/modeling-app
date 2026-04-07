@@ -2676,7 +2676,10 @@ sketch(on = XY) {
 }
 
 #[tokio::test]
-async fn test_trim_circle_case_1_1() {
+/// Issue #10732 case 1.1:
+/// trims a circle into an arc when cut in half by a line and trimmed on the side
+/// without the circle start point.
+async fn test_trim_circle_case_1_1_circle_to_arc_trimmed_without_start_point_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = YZ) {
@@ -2701,7 +2704,10 @@ sketch001 = sketch(on = YZ) {
 }
 
 #[tokio::test]
-async fn test_trim_circle_case_1_2() {
+/// Issue #10732 case 1.2:
+/// trims a circle into an arc when cut in half by a line and trimmed on the side
+/// with the circle start point.
+async fn test_trim_circle_case_1_2_circle_to_arc_trimmed_with_start_point_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = YZ) {
@@ -2726,7 +2732,9 @@ sketch001 = sketch(on = YZ) {
 }
 
 #[tokio::test]
-async fn test_trim_circle_case_1_3() {
+/// Issue #10732 case 1.3:
+/// trims the line so its endpoint becomes coincident with the circle.
+async fn test_trim_circle_case_1_3_trim_line_to_be_coincident_with_circle() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = YZ) {
@@ -2750,7 +2758,10 @@ sketch001 = sketch(on = YZ) {
 }
 
 #[tokio::test]
-async fn test_trim_circle_case_1_4() {
+/// Issue #10732 case 1.4:
+/// trims a line and circle such that the circle becomes an arc with coincident
+/// endpoints.
+async fn test_trim_circle_case_1_4_trim_line_and_circle_arc_with_coincident_endpoints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = YZ) {
@@ -2779,7 +2790,10 @@ sketch001 = sketch(on = YZ) {
 }
 
 #[tokio::test]
-async fn test_trim_circle_case_2() {
+/// Issue #10732 case 2:
+/// trimming a circle between two segments should convert it to one arc rather
+/// than split into multiple segments, with arc ends constrained to each segment.
+async fn test_trim_circle_case_2_convert_circle_to_arc_between_two_segments() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = YZ) {
