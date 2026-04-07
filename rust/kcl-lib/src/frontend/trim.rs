@@ -2481,8 +2481,17 @@ where
                     }
                 };
 
-                // Check if we deleted a segment (for fail-safe logic later)
-                let was_deleted = strategy.iter().any(|op| matches!(op, TrimOperation::SimpleTrim { .. }));
+                // Keep processing the same trim polyline segment after geometry-changing ops.
+                // This allows a single stroke to trim multiple intersected segments.
+                let geometry_was_modified = strategy.iter().any(|op| {
+                    matches!(
+                        op,
+                        TrimOperation::SimpleTrim { .. }
+                            | TrimOperation::EditSegment { .. }
+                            | TrimOperation::SplitSegment { .. }
+                            | TrimOperation::ReplaceCircleWithArc { .. }
+                    )
+                });
 
                 // Execute operations via callback
                 match execute_operations(strategy, current_scene_graph_delta.clone()).await {
@@ -2502,7 +2511,7 @@ where
                 start_index = *next_index;
 
                 // Fail-safe: if start_index didn't advance, force it to advance
-                if start_index <= old_start_index && !was_deleted {
+                if start_index <= old_start_index && !geometry_was_modified {
                     start_index = old_start_index + 1;
                 }
             }
@@ -2808,8 +2817,17 @@ pub async fn execute_trim_loop_with_context(
                     }
                 };
 
-                // Check if we deleted a segment (for fail-safe logic later)
-                let was_deleted = strategy.iter().any(|op| matches!(op, TrimOperation::SimpleTrim { .. }));
+                // Keep processing the same trim polyline segment after geometry-changing ops.
+                // This allows a single stroke to trim multiple intersected segments.
+                let geometry_was_modified = strategy.iter().any(|op| {
+                    matches!(
+                        op,
+                        TrimOperation::SimpleTrim { .. }
+                            | TrimOperation::EditSegment { .. }
+                            | TrimOperation::SplitSegment { .. }
+                            | TrimOperation::ReplaceCircleWithArc { .. }
+                    )
+                });
 
                 // Execute operations
                 match execute_trim_operations_simple(
@@ -2835,7 +2853,7 @@ pub async fn execute_trim_loop_with_context(
                 // Move to next segment
                 let old_start_index = start_index;
                 start_index = *next_index;
-                if start_index <= old_start_index && !was_deleted {
+                if start_index <= old_start_index && !geometry_was_modified {
                     start_index = old_start_index + 1;
                 }
             }
@@ -3275,7 +3293,7 @@ pub(crate) fn trim_strategy(
             }
         };
 
-        let coincident_data = if matches!(
+        let mut coincident_data = if matches!(
             side,
             TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
         ) {
@@ -3319,6 +3337,26 @@ pub(crate) fn trim_strategy(
         } else {
             None
         };
+
+        if let (Some(endpoint_id), Some(existing_constraint_id)) =
+            (endpoint_point_id, coincident_data.existing_point_segment_constraint_id)
+        {
+            let constraint_involves_trimmed_endpoint = objects
+                .iter()
+                .find(|obj| obj.id == existing_constraint_id)
+                .and_then(|obj| match &obj.kind {
+                    ObjectKind::Constraint {
+                        constraint: Constraint::Coincident(coincident),
+                    } => Some(coincident.contains_segment(endpoint_id) || coincident.contains_segment(trim_spawn_id)),
+                    _ => None,
+                })
+                .unwrap_or(false);
+
+            if !constraint_involves_trimmed_endpoint {
+                coincident_data.existing_point_segment_constraint_id = None;
+                coincident_data.intersecting_endpoint_point_id = None;
+            }
+        }
 
         // Find point-point and point-segment constraints to delete
         let coincident_end_constraint_to_delete_ids = if let Some(point_id) = endpoint_point_id {

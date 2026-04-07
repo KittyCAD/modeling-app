@@ -2965,3 +2965,137 @@ sketch001 = sketch(on = YZ) {
         result.kcl_code
     );
 }
+
+#[tokio::test]
+/// Regression: three intersecting arcs should trim deterministically and preserve
+/// expected coincident relationships.
+async fn test_trim_three_arcs_intersecting_each_other() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch002 = sketch(on = YZ) {
+  arc1 = arc(start = [var -0mm, var -0mm], end = [var -3.77mm, var 4.2mm], center = [var -1.93mm, var 2.06mm])
+  arc2 = arc(start = [var 3.58mm, var 7.01mm], end = [var -0mm, var -0mm], center = [var 4.54mm, var 2.1mm])
+  coincident([arc2.end, arc1.start])
+  arc3 = arc(start = [var -3.77mm, var 4.2mm], end = [var 3.58mm, var 7.01mm], center = [var -0.76mm, var 7.34mm])
+  coincident([arc3.start, arc1.end])
+  coincident([arc3.end, arc2.start])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 2.36, y: 2.6 }, Coords2d { x: 1.58, y: 4.45 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+
+    #[derive(Clone, Copy, Debug)]
+    struct ArcInfo {
+        id: ObjectId,
+        start_id: ObjectId,
+        end_id: ObjectId,
+        center_x: f64,
+        center_y: f64,
+    }
+
+    let expr_to_f64 = |expr: &crate::frontend::api::Expr| -> Option<f64> {
+        match expr {
+            crate::frontend::api::Expr::Var(n) | crate::frontend::api::Expr::Number(n) => Some(n.value),
+            _ => None,
+        }
+    };
+
+    let mut arcs: Vec<ArcInfo> = Vec::new();
+    for obj in &objects {
+        let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind else {
+            continue;
+        };
+        let crate::frontend::sketch::Segment::Arc(arc) = segment else {
+            continue;
+        };
+        let crate::frontend::sketch::SegmentCtor::Arc(ctor) = &arc.ctor else {
+            continue;
+        };
+        let center_x = expr_to_f64(&ctor.center.x).expect("arc center.x should be numeric");
+        let center_y = expr_to_f64(&ctor.center.y).expect("arc center.y should be numeric");
+        arcs.push(ArcInfo {
+            id: obj.id,
+            start_id: arc.start,
+            end_id: arc.end,
+            center_x,
+            center_y,
+        });
+    }
+
+    assert_eq!(
+        arcs.len(),
+        3,
+        "Expected 3 arcs after trim in three-arc case, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    let take_closest_arc = |pool: &mut Vec<ArcInfo>, tx: f64, ty: f64| -> ArcInfo {
+        let (idx, _) = pool
+            .iter()
+            .enumerate()
+            .map(|(i, a)| {
+                let d = ((a.center_x - tx) * (a.center_x - tx) + (a.center_y - ty) * (a.center_y - ty)).sqrt();
+                (i, d)
+            })
+            .min_by(|a, b| a.1.partial_cmp(&b.1).expect("distance should be finite"))
+            .expect("at least one arc expected");
+        pool.remove(idx)
+    };
+
+    let mut pool = arcs;
+    let arc1 = take_closest_arc(&mut pool, -1.93, 2.06);
+    let arc2 = take_closest_arc(&mut pool, 4.54, 2.10);
+    let arc3 = take_closest_arc(&mut pool, -0.76, 7.34);
+
+    let has_point_point = |a: ObjectId, b: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.len() == 2 && ids.contains(&a) && ids.contains(&b)
+        })
+    };
+
+    let has_point_segment = |point: ObjectId, segment: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.contains(&point) && ids.contains(&segment)
+        })
+    };
+
+    assert!(
+        has_point_point(arc2.end_id, arc1.start_id),
+        "Expected arc2.end to remain coincident with arc1.start, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_point(arc3.start_id, arc1.end_id),
+        "Expected arc3.start to remain coincident with arc1.end, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_segment(arc3.end_id, arc1.id),
+        "Expected arc3.end to be point-segment coincident with arc1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        !has_point_point(arc3.end_id, arc2.start_id),
+        "arc3.end should not remain point-point coincident with arc2.start after trim, got KCL:\n{}",
+        result.kcl_code
+    );
+}
