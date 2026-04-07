@@ -825,6 +825,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       path: {
         inputType: 'selection',
         selectionTypes: ['segment', 'path', 'helix'],
+        clearSelectionFirst: true,
         required: true,
         multiple: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
