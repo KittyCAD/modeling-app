@@ -1891,9 +1891,9 @@ sketch(on = YZ) {
   distance([arc1.center, line2.start]) == 3.87mm
   line3 = line(start = [var -5.61mm, var 5.38mm], end = [var -0.9mm, var 5.49mm])
   line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
-  line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
+  line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.9mm, var 5.49mm])
   distance([line4.end, line3.start]) == 11.98mm
-  coincident([line3.end, line5])
+  coincident([line5.end, line3.end])
   coincident([arc1.start, line1])
 }
 "#;
@@ -3111,6 +3111,69 @@ sketch001 = sketch(on = YZ) {
 }
 
 #[tokio::test]
+/// Regression: when a circle is converted to an arc during trim, pre-existing
+/// constraints should transfer from the circle to the new arc.
+async fn test_trim_circle_to_arc_transfers_constraints() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  circle1 = circle(start = [var -1.62mm, var 3.03mm], center = [var -3.29mm, var 5.8mm])
+  line1 = line(start = [var -0.35mm, var 2.72mm], end = [var -0.69mm, var -1.58mm])
+  line2 = line(start = [var -5.11mm, var 1.19mm], end = [var 0.52mm, var 9.59mm])
+  line3 = line(start = [var 0.07mm, var 5.3mm], end = [var 4.62mm, var 5.43mm])
+  coincident([line3.start, circle1])
+  line4 = line(start = [var -4.09mm, var 7.82mm], end = [var -4.18mm, var 5.89mm])
+  coincident([line4.end, circle1.center])
+  radius(circle1) == 3.66mm
+  tangent([line1, circle1])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.79, y: 10.65 }, Coords2d { x: -2.3, y: 8.0 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (_, arc_count, circle_count) = count_segment_kinds(&objects);
+
+    assert_eq!(
+        circle_count, 0,
+        "Expected original circle to be replaced by an arc, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        arc_count, 1,
+        "Expected a single replacement arc after trim, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    assert!(
+        result.kcl_code.contains("radius(arc1) == 3.66mm"),
+        "Expected radius constraint to transfer from circle1 to arc1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        result.kcl_code.contains("tangent([line1, arc1])") || result.kcl_code.contains("tangent([arc1, line1])"),
+        "Expected tangent constraint to transfer from circle1 to arc1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        result.kcl_code.contains("coincident([line3.start, arc1])")
+            || result.kcl_code.contains("coincident([arc1, line3.start])"),
+        "Expected point-segment coincident to transfer from circle1 to arc1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        result.kcl_code.contains("coincident([line4.end, arc1.center])")
+            || result.kcl_code.contains("coincident([arc1.center, line4.end])"),
+        "Expected center-point coincident to transfer from circle1.center to arc1.center, got KCL:\n{}",
+        result.kcl_code
+    );
+}
+
+#[tokio::test]
 /// Regression: three intersecting arcs should trim deterministically and preserve
 /// expected coincident relationships.
 async fn test_trim_three_arcs_intersecting_each_other() {
@@ -3240,6 +3303,167 @@ sketch002 = sketch(on = YZ) {
     assert!(
         !has_point_point(arc3.end_id, arc2.start_id),
         "arc3.end should not remain point-point coincident with arc2.start after trim, got KCL:\n{}",
+        result.kcl_code
+    );
+}
+
+#[tokio::test]
+/// Regression: arc/arc trim should update arc2 start and create a point-segment
+/// coincident from arc2.start to arc1 while preserving existing arc relationships.
+async fn test_trim_arc_arc_intersection_updates_start_and_preserves_constraints() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var -2.27mm, var 1.02mm], end = [var -5.86mm, var 3.53mm], center = [var -3.85mm, var 2.58mm])
+  arc2 = arc(start = [var 0.84mm, var 5.87mm], end = [var -2.27mm, var 1.02mm], center = [var 0.92mm, var 2.4mm])
+  coincident([arc2.end, arc1.start])
+  arc3 = arc(start = [var -5.86mm, var 3.53mm], end = [var -1.72mm, var 3.2mm], center = [var -3.46mm, var 7.43mm])
+  coincident([arc3.start, arc1.end])
+  coincident([arc3.end, arc1])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.48, y: 5.87 }, Coords2d { x: -0.61, y: 4.21 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+
+    #[derive(Clone, Copy, Debug)]
+    struct ArcInfo {
+        id: ObjectId,
+        start_id: ObjectId,
+        end_id: ObjectId,
+        center_x: f64,
+        center_y: f64,
+    }
+
+    let mut arcs: Vec<ArcInfo> = Vec::new();
+    for obj in &objects {
+        let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind else {
+            continue;
+        };
+        let crate::frontend::sketch::Segment::Arc(arc) = segment else {
+            continue;
+        };
+        let crate::frontend::sketch::SegmentCtor::Arc(ctor) = &arc.ctor else {
+            continue;
+        };
+        let (center_x, center_y) = match (&ctor.center.x, &ctor.center.y) {
+            (
+                crate::frontend::api::Expr::Var(x) | crate::frontend::api::Expr::Number(x),
+                crate::frontend::api::Expr::Var(y) | crate::frontend::api::Expr::Number(y),
+            ) => (x.value, y.value),
+            _ => panic!("arc centers should be numeric"),
+        };
+
+        arcs.push(ArcInfo {
+            id: obj.id,
+            start_id: arc.start,
+            end_id: arc.end,
+            center_x,
+            center_y,
+        });
+    }
+
+    assert_eq!(
+        arcs.len(),
+        3,
+        "Expected 3 arcs after trim in arc-arc regression case, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    let take_closest_arc = |pool: &mut Vec<ArcInfo>, tx: f64, ty: f64| -> ArcInfo {
+        let (idx, _) = pool
+            .iter()
+            .enumerate()
+            .map(|(i, a)| {
+                let d = ((a.center_x - tx) * (a.center_x - tx) + (a.center_y - ty) * (a.center_y - ty)).sqrt();
+                (i, d)
+            })
+            .min_by(|a, b| a.1.partial_cmp(&b.1).expect("distance should be finite"))
+            .expect("at least one arc expected");
+        pool.remove(idx)
+    };
+
+    let mut pool = arcs;
+    let arc1 = take_closest_arc(&mut pool, -3.85, 2.58);
+    let arc2 = take_closest_arc(&mut pool, 0.92, 2.40);
+    let arc3 = take_closest_arc(&mut pool, -3.46, 7.43);
+
+    let mut point_positions: std::collections::HashMap<ObjectId, Coords2d> = std::collections::HashMap::new();
+    for obj in &objects {
+        let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind else {
+            continue;
+        };
+        let crate::frontend::sketch::Segment::Point(point) = segment else {
+            continue;
+        };
+        point_positions.insert(
+            obj.id,
+            Coords2d {
+                x: point.position.x.value,
+                y: point.position.y.value,
+            },
+        );
+    }
+
+    let arc2_start = point_positions
+        .get(&arc2.start_id)
+        .copied()
+        .expect("arc2.start point should exist");
+    assert!(
+        ((arc2_start.x - -2.15) * (arc2_start.x - -2.15) + (arc2_start.y - 4.0) * (arc2_start.y - 4.0)).sqrt() < 0.4,
+        "Expected arc2.start to move near the trim/arc intersection, got arc2.start={:?}, KCL:\n{}",
+        arc2_start,
+        result.kcl_code
+    );
+
+    let has_point_point = |a: ObjectId, b: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.len() == 2 && ids.contains(&a) && ids.contains(&b)
+        })
+    };
+
+    let has_point_segment = |point: ObjectId, segment: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.contains(&point) && ids.contains(&segment)
+        })
+    };
+
+    assert!(
+        has_point_point(arc2.end_id, arc1.start_id),
+        "Expected arc2.end to remain coincident with arc1.start, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_point(arc3.start_id, arc1.end_id),
+        "Expected arc3.start to remain coincident with arc1.end, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_segment(arc3.end_id, arc1.id),
+        "Expected arc3.end to remain point-segment coincident with arc1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_segment(arc2.start_id, arc1.id),
+        "Expected arc2.start to become point-segment coincident with arc1 after trim, got KCL:\n{}",
         result.kcl_code
     );
 }

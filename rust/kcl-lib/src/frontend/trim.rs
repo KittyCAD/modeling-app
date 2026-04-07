@@ -697,8 +697,10 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
     point_arc_length / arc_length
 }
 
-/// Helper to calculate intersection between two arcs (via circle-circle intersection)
-pub fn arc_arc_intersection(
+/// Helper to calculate all intersections between two arcs (via circle-circle intersection).
+///
+/// Returns all valid points that lie on both arcs (0, 1, or 2).
+pub fn arc_arc_intersections(
     arc1_center: Coords2d,
     arc1_start: Coords2d,
     arc1_end: Coords2d,
@@ -706,7 +708,7 @@ pub fn arc_arc_intersection(
     arc2_start: Coords2d,
     arc2_end: Coords2d,
     epsilon: f64,
-) -> Option<Coords2d> {
+) -> Vec<Coords2d> {
     // Calculate radii
     let r1 = ((arc1_start.x - arc1_center.x) * (arc1_start.x - arc1_center.x)
         + (arc1_start.y - arc1_center.y) * (arc1_start.y - arc1_center.y))
@@ -723,13 +725,13 @@ pub fn arc_arc_intersection(
     // Check if circles intersect
     if d > r1 + r2 + epsilon || d < (r1 - r2).abs() - epsilon {
         // No intersection
-        return None;
+        return Vec::new();
     }
 
     // Check for degenerate cases
     if d < EPSILON_PARALLEL {
         // Concentric circles - no intersection (or infinite if same radius, but we treat as none)
-        return None;
+        return Vec::new();
     }
 
     // Calculate intersection points
@@ -739,14 +741,14 @@ pub fn arc_arc_intersection(
 
     // If h_sq is negative, no intersection
     if h_sq < 0.0 {
-        return None;
+        return Vec::new();
     }
 
     let h = h_sq.sqrt();
 
     // If h is NaN, no intersection
     if h.is_nan() {
-        return None;
+        return Vec::new();
     }
 
     // Unit vector from arc1Center to arc2Center
@@ -791,8 +793,33 @@ pub fn arc_arc_intersection(
         }
     }
 
-    // Return the first valid intersection (or None if none)
-    candidates.first().copied()
+    candidates
+}
+
+/// Helper to calculate one intersection between two arcs (if any).
+///
+/// This is kept for compatibility with existing call sites/tests that expect
+/// a single optional intersection.
+pub fn arc_arc_intersection(
+    arc1_center: Coords2d,
+    arc1_start: Coords2d,
+    arc1_end: Coords2d,
+    arc2_center: Coords2d,
+    arc2_start: Coords2d,
+    arc2_end: Coords2d,
+    epsilon: f64,
+) -> Option<Coords2d> {
+    arc_arc_intersections(
+        arc1_center,
+        arc1_start,
+        arc1_end,
+        arc2_center,
+        arc2_start,
+        arc2_end,
+        epsilon,
+    )
+    .first()
+    .copied()
 }
 
 /// Helper to calculate intersections between a full circle and an arc.
@@ -1665,8 +1692,8 @@ fn find_termination_in_direction(
                             }
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center
-                                && let Some(intersection) = arc_arc_intersection(
+                            if let Some(center) = segment_geometry.center {
+                                for intersection in arc_arc_intersections(
                                     center,
                                     segment_geometry.start,
                                     segment_geometry.end,
@@ -1674,21 +1701,21 @@ fn find_termination_in_direction(
                                     os,
                                     oe,
                                     EPSILON_POINT_ON_SEGMENT,
-                                )
-                            {
-                                let t = project_point_onto_arc(
-                                    intersection,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: CandidateType::Intersection,
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
+                                ) {
+                                    let t = project_point_onto_arc(
+                                        intersection,
+                                        center,
+                                        segment_geometry.start,
+                                        segment_geometry.end,
+                                    );
+                                    candidates.push(Candidate {
+                                        t,
+                                        point: intersection,
+                                        candidate_type: CandidateType::Intersection,
+                                        segment_id: Some(other_id),
+                                        point_id: None,
+                                    });
+                                }
                             }
                         }
                         Segment::Circle(_) => {
@@ -4516,10 +4543,10 @@ pub(crate) async fn execute_trim_operations_simple(
                     .find(|obj| obj.id == *circle_id)
                     .ok_or_else(|| format!("Failed to find original circle {}", circle_id.0))?;
 
-                let circle_ctor = match &original_circle.kind {
+                let (original_circle_start_id, original_circle_center_id, circle_ctor) = match &original_circle.kind {
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                         crate::frontend::sketch::Segment::Circle(circle) => match &circle.ctor {
-                            SegmentCtor::Circle(circle_ctor) => circle_ctor.clone(),
+                            SegmentCtor::Circle(circle_ctor) => (circle.start, circle.center, circle_ctor.clone()),
                             _ => return Err("Circle does not have a Circle ctor".to_string()),
                         },
                         _ => return Err("Original segment is not a circle".to_string()),
@@ -4575,9 +4602,9 @@ pub(crate) async fn execute_trim_operations_simple(
                     .iter()
                     .find(|obj| obj.id == new_arc_id)
                     .ok_or_else(|| format!("New arc segment not found {}", new_arc_id.0))?;
-                let (new_arc_start_id, new_arc_end_id) = match &new_arc_obj.kind {
+                let (new_arc_start_id, new_arc_end_id, new_arc_center_id) = match &new_arc_obj.kind {
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Arc(arc) => (arc.start, arc.end),
+                        crate::frontend::sketch::Segment::Arc(arc) => (arc.start, arc.end, arc.center),
                         _ => return Err("New segment is not an arc".to_string()),
                     },
                     _ => return Err("New arc object is not a segment".to_string()),
@@ -4618,6 +4645,178 @@ pub(crate) async fn execute_trim_operations_simple(
                     .await
                     .map_err(|e| format!("Failed to add end coincident on replaced arc: {}", e.error.message()))?;
                 invalidates_ids = invalidates_ids || c2_scene_graph_delta.invalidates_ids;
+
+                let mut termination_point_ids: Vec<ObjectId> = Vec::new();
+                for term in [arc_start_termination, arc_end_termination] {
+                    if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                        other_segment_point_id,
+                        ..
+                    } = term.as_ref()
+                    {
+                        termination_point_ids.push(*other_segment_point_id);
+                    }
+                }
+
+                // Migrate constraints that reference the original circle segment or points.
+                // This preserves authored constraints (e.g. radius/tangent/coincident) when
+                // a trim converts a circle into an arc.
+                let replace_segment_id = |id: ObjectId| -> ObjectId {
+                    if id == *circle_id {
+                        new_arc_id
+                    } else if id == original_circle_center_id {
+                        new_arc_center_id
+                    } else if id == original_circle_start_id {
+                        new_arc_start_id
+                    } else {
+                        id
+                    }
+                };
+
+                let mut migrated_constraints: Vec<Constraint> = Vec::new();
+                for obj in &current_scene_graph_delta.new_graph.objects {
+                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                        continue;
+                    };
+
+                    match constraint {
+                        Constraint::Coincident(coincident) => {
+                            if !coincident.segment_ids().any(|id| {
+                                id == *circle_id || id == original_circle_center_id || id == original_circle_start_id
+                            }) {
+                                continue;
+                            }
+
+                            // If the original coincident is circle<->point for a point that is
+                            // already used as a trim termination, endpoint coincident constraints
+                            // already preserve that relationship.
+                            if coincident.contains_segment(*circle_id)
+                                && coincident
+                                    .segment_ids()
+                                    .filter(|id| *id != *circle_id)
+                                    .any(|id| termination_point_ids.contains(&id))
+                            {
+                                continue;
+                            }
+
+                            let new_segments: Vec<crate::frontend::sketch::CoincidentSegment> = coincident
+                                .segments
+                                .iter()
+                                .map(|segment| match segment {
+                                    crate::frontend::sketch::CoincidentSegment::Segment(id) => {
+                                        crate::frontend::sketch::CoincidentSegment::Segment(replace_segment_id(*id))
+                                    }
+                                    crate::frontend::sketch::CoincidentSegment::Origin(origin) => {
+                                        crate::frontend::sketch::CoincidentSegment::Origin(*origin)
+                                    }
+                                })
+                                .collect();
+
+                            // Skip redundant migration when a previous point-segment circle
+                            // coincident would become point-segment arc coincident at an arc
+                            // endpoint that is already handled by explicit endpoint constraints.
+                            let migrated_ids: Vec<ObjectId> = new_segments
+                                .iter()
+                                .filter_map(|segment| match segment {
+                                    crate::frontend::sketch::CoincidentSegment::Segment(id) => Some(*id),
+                                    crate::frontend::sketch::CoincidentSegment::Origin(_) => None,
+                                })
+                                .collect();
+                            if migrated_ids.contains(&new_arc_id)
+                                && (migrated_ids.contains(&new_arc_start_id) || migrated_ids.contains(&new_arc_end_id))
+                            {
+                                continue;
+                            }
+
+                            migrated_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                                segments: new_segments,
+                            }));
+                        }
+                        Constraint::Distance(distance) => {
+                            if !distance
+                                .points
+                                .iter()
+                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            {
+                                continue;
+                            }
+                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            migrated_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
+                                points: new_points,
+                                distance: distance.distance,
+                                source: distance.source.clone(),
+                            }));
+                        }
+                        Constraint::HorizontalDistance(distance) => {
+                            if !distance
+                                .points
+                                .iter()
+                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            {
+                                continue;
+                            }
+                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            migrated_constraints.push(Constraint::HorizontalDistance(
+                                crate::frontend::sketch::Distance {
+                                    points: new_points,
+                                    distance: distance.distance,
+                                    source: distance.source.clone(),
+                                },
+                            ));
+                        }
+                        Constraint::VerticalDistance(distance) => {
+                            if !distance
+                                .points
+                                .iter()
+                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            {
+                                continue;
+                            }
+                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            migrated_constraints.push(Constraint::VerticalDistance(
+                                crate::frontend::sketch::Distance {
+                                    points: new_points,
+                                    distance: distance.distance,
+                                    source: distance.source.clone(),
+                                },
+                            ));
+                        }
+                        Constraint::Radius(radius) => {
+                            if radius.arc == *circle_id {
+                                migrated_constraints.push(Constraint::Radius(crate::frontend::sketch::Radius {
+                                    arc: new_arc_id,
+                                    radius: radius.radius,
+                                    source: radius.source.clone(),
+                                }));
+                            }
+                        }
+                        Constraint::Diameter(diameter) => {
+                            if diameter.arc == *circle_id {
+                                migrated_constraints.push(Constraint::Diameter(crate::frontend::sketch::Diameter {
+                                    arc: new_arc_id,
+                                    diameter: diameter.diameter,
+                                    source: diameter.source.clone(),
+                                }));
+                            }
+                        }
+                        Constraint::Tangent(tangent) => {
+                            if tangent.input.contains(circle_id) {
+                                let new_input = tangent.input.iter().map(|id| replace_segment_id(*id)).collect();
+                                migrated_constraints.push(Constraint::Tangent(crate::frontend::sketch::Tangent {
+                                    input: new_input,
+                                }));
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+
+                for constraint in migrated_constraints {
+                    let (_source_delta, migrated_scene_graph_delta) = frontend
+                        .add_constraint(ctx, version, sketch_id, constraint)
+                        .await
+                        .map_err(|e| format!("Failed to migrate circle constraint to arc: {}", e.error.message()))?;
+                    invalidates_ids = invalidates_ids || migrated_scene_graph_delta.invalidates_ids;
+                }
 
                 frontend
                     .delete_objects(ctx, version, sketch_id, Vec::new(), vec![*circle_id])
