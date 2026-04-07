@@ -2217,10 +2217,15 @@ function getSketchBlockOperationKey(op: Operation): string | null {
   const sketchBlockIndex = op.nodePath.steps.findIndex(
     (step) => step.type === 'SketchBlockBody'
   )
-  if (sketchBlockIndex < 0) {
-    return null
+  if (sketchBlockIndex >= 0) {
+    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
   }
-  return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex + 1))
+
+  if (op.type === 'SketchSolve') {
+    return JSON.stringify(op.nodePath.steps)
+  }
+
+  return null
 }
 
 export function isSketchBlockOperationGroup(items: Operation[]): boolean {
