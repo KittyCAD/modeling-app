@@ -1,5 +1,5 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   X_AXIS_TARGET,
   Y_AXIS_TARGET,
