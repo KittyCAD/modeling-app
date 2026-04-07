@@ -2945,9 +2945,7 @@ export const modelingMachine = setup({
         sketchSolveId: number
       }> => {
         if (!input || !input.artifactOrPlaneId) {
-          const errorMessage = 'No artifact or plane ID provided'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('No artifact or plane ID provided'))
         }
         const {
           artifactOrPlaneId,
@@ -2997,92 +2995,75 @@ export const modelingMachine = setup({
           }
         }
         if (!result) {
-          const errorMessage = 'Please select a valid sketch plane'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('Please select a valid sketch plane'))
         }
+
+        // Call newSketch API
+        const project = projectRef?.current
+        if (!project) {
+          return reject(new Error('No active project to start a sketch in'))
+        }
+
+        // Construct SketchCtor based on the result
+        let sketchArgs: SketchCtor
+        const setProgramOutcome = await rustContext.hackSetProgram(
+          kclManager.ast,
+          jsAppSettings(rustContext.settingsActor)
+        )
+        if (result.type === 'defaultPlane') {
+          sketchArgs = {
+            on: { default: toPlaneName(result.plane) },
+          }
+        } else {
+          if (setProgramOutcome.type !== 'Success') {
+            return Promise.reject(
+              new Error('Could not update SceneGraph before creating sketch')
+            )
+          }
+
+          const selectedArtifactId =
+            result.type === 'extrudeFace' ? result.faceId : result.planeId
+          const selectedSceneObject = setProgramOutcome.sceneGraph.objects.find(
+            (object) => object.artifact_id === selectedArtifactId
+          )
+
+          if (!selectedSceneObject) {
+            return Promise.reject(
+              new Error(
+                `Could not find SceneGraph object for artifact ${selectedArtifactId}`
+              )
+            )
+          }
+
+          sketchArgs = {
+            on: { object: selectedSceneObject.id },
+          }
+        }
+
+        const newSketchResult = await rustContext.newSketch(
+          0, // projectId - using 0 as placeholder
+          0, // fileId - using 0 as placeholder
+          0, // version - using 0 as placeholder
+          sketchArgs,
+          {
+            settings: {
+              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+            },
+          }
+        )
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        // Call newSketch API
-        let sketchId: number | undefined
-        try {
-          const project = projectRef?.current
-          if (!project) {
-            console.warn('No project available for newSketch call')
-          } else {
-            // Construct SketchCtor based on the result
-            let sketchArgs: SketchCtor
-
-            const setProgramOutcome = await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-            if (result.type === 'defaultPlane') {
-              sketchArgs = {
-                on: { default: toPlaneName(result.plane) },
-              }
-            } else {
-              if (setProgramOutcome.type !== 'Success') {
-                return Promise.reject(
-                  new Error(
-                    'Could not update SceneGraph before creating sketch'
-                  )
-                )
-              }
-
-              const selectedArtifactId =
-                result.type === 'extrudeFace' ? result.faceId : result.planeId
-              const selectedSceneObject =
-                setProgramOutcome.sceneGraph.objects.find(
-                  (object) => object.artifact_id === selectedArtifactId
-                )
-
-              if (!selectedSceneObject) {
-                return Promise.reject(
-                  new Error(
-                    `Could not find SceneGraph object for artifact ${selectedArtifactId}`
-                  )
-                )
-              }
-
-              sketchArgs = {
-                on: { object: selectedSceneObject.id },
-              }
-            }
-
-            const newSketchResult = await rustContext.newSketch(
-              0, // projectId - using 0 as placeholder
-              0, // fileId - using 0 as placeholder
-              0, // version - using 0 as placeholder
-              sketchArgs,
-              {
-                settings: {
-                  modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-                },
-              }
-            )
-            kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
-              shouldAddToHistory: false,
-            })
-            sketchId = newSketchResult.sketchId
-          }
-        } catch (error) {
-          console.error('Error calling newSketch:', error)
-        }
-
-        if (sketchId === undefined) {
-          const errorMessage = 'Failed to create sketch'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
+        kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
+          shouldAddToHistory: false,
+        })
 
         return {
           plane: result,
-          sketchSolveId: sketchId,
+          sketchSolveId: newSketchResult.sketchId,
         }
       }
     ),
@@ -7700,7 +7681,10 @@ export const modelingMachine = setup({
             }
           }),
         },
-        onError: 'Sketch no face',
+        onError: {
+          target: 'Sketch no face',
+          actions: 'toastError',
+        },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
           return {
