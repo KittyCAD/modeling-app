@@ -38,7 +38,6 @@ use crate::front::ObjectId;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::CircularDirection;
-use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::sketch::StraightLineParams;

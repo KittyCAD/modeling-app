@@ -386,14 +386,31 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": true,
-                  "center": [
-                    8.0000000119728,
-                    -0.000000000000002204364239931481
-                  ],
                   "from": [
                     5.000000008999869,
                     -0.000000000000001836970199823196
+                  ],
+                  "tag": null,
+                  "to": [
+                    5.00000002102672,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    8.00000002399965,
+                    -0.0000000000000003673940401082849
+                  ],
+                  "from": [
+                    5.00000002102672,
+                    0.0
                   ],
                   "radius": 3.0000000029729303,
                   "tag": {
@@ -405,8 +422,8 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "value": "b"
                   },
                   "to": [
-                    11.00000001494573,
-                    -0.0000000000000029391523201480507
+                    11.00000002697258,
+                    -0.0000000000000011021821203248548
                   ],
                   "type": "Arc",
                   "units": "mm"
