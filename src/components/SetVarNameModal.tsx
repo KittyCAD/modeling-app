@@ -102,7 +102,7 @@ export const SetVarNameModal = ({
                 onResolve({
                   variableName: newVariableName,
                 })
-                toast.success(`Added variable ${newVariableName}`)
+                toast.success(`Added variable ${newVariableName}.`)
               }}
             >
               <CreateNewVariable

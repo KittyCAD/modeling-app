@@ -118,7 +118,7 @@ const SignIn = () => {
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
-      toast.error('Error while trying to log in')
+      toast.error('Error while trying to log in.')
       return
     }
     setUserCode(userCodeToDisplay)
@@ -127,7 +127,7 @@ const SignIn = () => {
     const token = await electron.loginWithDeviceFlow().catch(reportError)
     if (!token) {
       console.error('No token received while trying to log in')
-      toast.error('Error while trying to log in')
+      toast.error('Error while trying to log in.')
       return
     }
 
