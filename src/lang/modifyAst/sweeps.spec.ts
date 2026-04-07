@@ -1179,8 +1179,7 @@ s2 = sketch(on = XZ) {
       expect(newCode).toContain(
         `sweep001 = sweep(s.line1, path = [s2.line1, s2.arc1], bodyType = SURFACE)`
       )
-      // TODO: enable once supported, see #10728
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
