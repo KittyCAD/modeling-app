@@ -53,6 +53,8 @@ import type { SourceRange } from '@src/lang/wasm'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
+  SYSTEM_HIGHLIGHT_COLOR,
+  SYSTEM_SELECTION_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -324,7 +326,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       settings: this.settings,
       sendSceneCommand: this.sendSceneCommand.bind(this),
-      setBackfaceColor: this.setBackfaceColor.bind(this),
+      setDefaultSystemProperties: this.setDefaultSystemProperties.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
@@ -422,32 +424,30 @@ export class ConnectionManager extends EventTarget {
 
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(theme)
+    const defaultSystemColor = getThemeColorForEngine(opposingTheme)
+    const setDefaultSystemPropertiesCmd = {
+      type: 'set_default_system_properties',
+      color: defaultSystemColor,
+      highlight_color: SYSTEM_HIGHLIGHT_COLOR,
+      selection_color: SYSTEM_SELECTION_COLOR,
+    } as const
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: 'setTheme - set_default_system_properties - started',
       metadata: {
-        cmd: {
-          type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
-        },
+        cmd: setDefaultSystemPropertiesCmd,
       },
     })
     await this.sendSceneCommand({
       cmd_id: uuidv4(),
       type: 'modeling_cmd_req',
-      cmd: {
-        type: 'set_default_system_properties',
-        color: getThemeColorForEngine(opposingTheme),
-      },
+      cmd: setDefaultSystemPropertiesCmd,
     })
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: 'setTheme - set_default_system_properties - done',
       metadata: {
-        cmd: {
-          type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
-        },
+        cmd: setDefaultSystemPropertiesCmd,
       },
     })
   }
@@ -464,26 +464,28 @@ export class ConnectionManager extends EventTarget {
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
   }
 
-  /** Set the default backface color in the engine, with debug logging */
-  async setBackfaceColor(color: string) {
-    const rgbaColor = hexToRgba(color)
-    if (!rgbaColor) {
+  /** Set default system properties in the engine, with debug logging */
+  async setDefaultSystemProperties(backfaceColor: string) {
+    const backfaceRgbaColor = hexToRgba(backfaceColor)
+    if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: 'setBackfaceColor, invalid hex color',
-        metadata: { color },
+        message: 'setDefaultSystemProperties, invalid backface hex color',
+        metadata: { backfaceColor },
       })
       return
     }
 
     const cmd = {
       type: 'set_default_system_properties',
-      backface_color: rgbaColor,
+      backface_color: backfaceRgbaColor,
+      highlight_color: SYSTEM_HIGHLIGHT_COLOR,
+      selection_color: SYSTEM_SELECTION_COLOR,
     } as const
     const debugLog = (event: string) =>
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: `setBackfaceColor - set_default_system_properties - ${event}`,
+        message: `setDefaultSystemProperties - set_default_system_properties - ${event}`,
         metadata: {
           cmd,
         },
@@ -492,7 +494,7 @@ export class ConnectionManager extends EventTarget {
     if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: 'setBackfaceColor, websocket is not ready',
+        message: 'setDefaultSystemProperties, websocket is not ready',
         metadata: {
           readyState: this.connection?.websocket?.readyState,
         },
