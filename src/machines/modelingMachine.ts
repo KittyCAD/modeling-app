@@ -2966,7 +2966,7 @@ export const modelingMachine = setup({
         } = input
         if (kclManager.hasParseErrors()) {
           const errorMessage =
-            'Unable to enter sketch while KCL has parse errors'
+            'Unable to enter sketch while KCL has parse errors.'
           toast.error(errorMessage)
           return reject(new Error(errorMessage))
         }
