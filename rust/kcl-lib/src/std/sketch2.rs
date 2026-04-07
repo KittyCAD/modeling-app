@@ -51,6 +51,8 @@ use crate::std::utils::untype_point;
 use crate::std::utils::untyped_point_to_mm;
 use crate::std_utils::untyped_point_to_unit;
 
+pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
+
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
 pub(crate) async fn create_segments_in_engine(
@@ -62,6 +64,12 @@ pub(crate) async fn create_segments_in_engine(
     exec_state: &mut ExecState,
     sketch_block_range: SourceRange,
 ) -> Result<Option<Sketch>, KclError> {
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    enum SegmentTraversal {
+        Forward,
+        Reverse,
+    }
+
     let mut outer_sketch: Option<Sketch> = None;
     for segment in segments.iter() {
         if segment.is_construction() {
@@ -69,8 +77,8 @@ pub(crate) async fn create_segments_in_engine(
             continue;
         }
 
-        // The start point.
-        let start = match &segment.kind {
+        // The start point for the segment's declared forward direction.
+        let forward_start = match &segment.kind {
             SegmentKind::Point { .. } => {
                 // TODO: In the engine, points currently need to be their own
                 // path. Skipping them for now.
@@ -87,46 +95,68 @@ pub(crate) async fn create_segments_in_engine(
         };
         let meta = segment.meta.first().unwrap_or(&default_meta);
         let range = meta.source_range;
+        let mut traversal = SegmentTraversal::Forward;
 
         if let Some(sketch) = &mut outer_sketch {
-            // TODO: Check if we're within tolerance of the last point. If so,
-            // we can skip moving the pen.
+            let forward_start_mm = point_to_mm(forward_start.clone());
+            let current_pen = sketch.current_pen_position()?;
+            let current_pen_mm = untyped_point_to_mm([current_pen.x, current_pen.y], current_pen.units);
 
-            // Move the path pen.
-            let id = exec_state.next_uuid();
-            if !exec_state.sketch_mode() {
-                exec_state
-                    .batch_modeling_cmd(
-                        ModelingCmdMeta::with_id(exec_state, ctx, range, id),
-                        ModelingCmd::from(
-                            mcmd::MovePathPen::builder()
-                                .path(sketch.id.into())
-                                .to(KPoint2d::from(point_to_mm(start.clone())).with_z(0.0).map(LengthUnit))
-                                .build(),
-                        ),
-                    )
-                    .await?;
-            }
-            // Store the current location in the sketch.
-            let previous_base = sketch.paths.last().map(|p| p.get_base()).unwrap_or(&sketch.start);
-            let base = BasePath {
-                from: previous_base.to,
-                to: point_to_len_unit(start, sketch.units),
-                units: previous_base.units,
-                tag: None,
-                geo_meta: GeoMeta {
-                    id,
-                    metadata: range.into(),
-                },
+            let entry_point = match &segment.kind {
+                SegmentKind::Line { end, .. } | SegmentKind::Arc { end, .. } => {
+                    let reverse_start_mm = point_to_mm(end.clone());
+                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        forward_start.clone()
+                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        traversal = SegmentTraversal::Reverse;
+                        end.clone()
+                    } else {
+                        forward_start.clone()
+                    }
+                }
+                SegmentKind::Circle { .. } => forward_start.clone(),
+                SegmentKind::Point { .. } => unreachable!("points are skipped earlier"),
             };
-            sketch.paths.push(Path::ToPoint { base });
-            sketch.synthetic_jump_path_ids.push(id);
+            let entry_point_mm = point_to_mm(entry_point.clone());
+
+            // If the next segment already starts where the pen is, preserve continuity by
+            // skipping both the engine pen move and the synthetic bookkeeping jump.
+            if distance(entry_point_mm, current_pen_mm) > SOLVER_CONVERGENCE_TOLERANCE {
+                let id = exec_state.next_uuid();
+                if !exec_state.sketch_mode() {
+                    exec_state
+                        .batch_modeling_cmd(
+                            ModelingCmdMeta::with_id(exec_state, ctx, range, id),
+                            ModelingCmd::from(
+                                mcmd::MovePathPen::builder()
+                                    .path(sketch.id.into())
+                                    .to(KPoint2d::from(entry_point_mm).with_z(0.0).map(LengthUnit))
+                                    .build(),
+                            ),
+                        )
+                        .await?;
+                }
+                // Store the current location in the sketch.
+                let previous_base = sketch.paths.last().map(|p| p.get_base()).unwrap_or(&sketch.start);
+                let base = BasePath {
+                    from: previous_base.to,
+                    to: point_to_len_unit(entry_point, sketch.units),
+                    units: previous_base.units,
+                    tag: None,
+                    geo_meta: GeoMeta {
+                        id,
+                        metadata: range.into(),
+                    },
+                };
+                sketch.paths.push(Path::ToPoint { base });
+                sketch.synthetic_jump_path_ids.push(id);
+            }
         } else {
             // Create a new path.
             let sketch = create_sketch(
                 sketch_engine_id,
                 sketch_surface.clone(),
-                start,
+                forward_start,
                 None,
                 !exec_state.sketch_mode(),
                 exec_state,
@@ -161,10 +191,14 @@ pub(crate) async fn create_segments_in_engine(
                 debug_assert!(false, "Points should have been skipped earlier");
                 continue;
             }
-            SegmentKind::Line { end, .. } => {
+            SegmentKind::Line { end, start, .. } => {
+                let to = match traversal {
+                    SegmentTraversal::Forward => end.clone(),
+                    SegmentTraversal::Reverse => start.clone(),
+                };
                 let sketch = straight_line(
                     segment.id,
-                    StraightLineParams::absolute(end.clone(), sketch.clone(), tag),
+                    StraightLineParams::absolute(to, sketch.clone(), tag),
                     !exec_state.sketch_mode(),
                     exec_state,
                     ctx,
@@ -195,14 +229,26 @@ pub(crate) async fn create_segments_in_engine(
                         vec![range],
                     )));
                 };
-                let start_in_center_unit = untyped_point_to_unit(start, start_unit, center_unit);
-                let end_in_center_unit = untyped_point_to_unit(end, end_unit, center_unit);
+                let (traversal_start, traversal_end, traversal_start_unit, traversal_end_unit) = match traversal {
+                    SegmentTraversal::Forward => (start, end, start_unit, end_unit),
+                    SegmentTraversal::Reverse => (end, start, end_unit, start_unit),
+                };
+                let start_in_center_unit = untyped_point_to_unit(traversal_start, traversal_start_unit, center_unit);
+                let end_in_center_unit = untyped_point_to_unit(traversal_end, traversal_end_unit, center_unit);
                 let start_radians =
                     libm::atan2(start_in_center_unit[1] - center[1], start_in_center_unit[0] - center[0]);
                 let mut end_radians = libm::atan2(end_in_center_unit[1] - center[1], end_in_center_unit[0] - center[0]);
-                // Sketch-solve arcs always go counterclockwise.
-                if end_radians <= start_radians {
-                    end_radians += std::f64::consts::TAU;
+                match traversal {
+                    SegmentTraversal::Forward => {
+                        if end_radians <= start_radians {
+                            end_radians += std::f64::consts::TAU;
+                        }
+                    }
+                    SegmentTraversal::Reverse => {
+                        if end_radians >= start_radians {
+                            end_radians -= std::f64::consts::TAU;
+                        }
+                    }
                 }
                 let radius_in_center_unit = distance(center, start_in_center_unit);
                 let sketch = relative_arc(
