@@ -102,19 +102,6 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.394380782855383,
-          "y": 0.32339081423467236,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -125,19 +112,6 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.586666666243411,
-          "y": 4.8082184890674515,
-          "z": 0.0
         }
       }
     },
@@ -292,19 +266,6 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 0.7499999974399996,
-          "y": 0.4999999952454599,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -322,19 +283,6 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 0.7499999959001682,
-          "y": 0.7499999944054598,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -345,19 +293,6 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 0.49999999309494414,
-          "y": 0.7499999944546123,
-          "z": 0.0
         }
       }
     },

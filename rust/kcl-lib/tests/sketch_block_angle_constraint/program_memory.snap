@@ -509,23 +509,6 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     1.31779667024565,
                     1.041242494895562
                   ],
-                  "tag": null,
-                  "to": [
-                    1.317796711585515,
-                    1.0412426910069752
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.317796711585515,
-                    1.0412426910069752
-                  ],
                   "tag": {
                     "commentStart": 197,
                     "end": 199,
@@ -535,8 +518,8 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     "value": "bo"
                   },
                   "to": [
-                    1.31779667024565,
-                    1.041242494895562
+                    1.317796711585515,
+                    1.0412426910069752
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -547,8 +530,8 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     "sourceRange": []
                   },
                   "from": [
-                    1.31779667024565,
-                    1.041242494895562
+                    1.317796711585515,
+                    1.0412426910069752
                   ],
                   "tag": null,
                   "to": [
