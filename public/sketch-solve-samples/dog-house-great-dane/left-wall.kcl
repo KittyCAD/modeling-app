@@ -100,4 +100,3 @@ sideDoorLeft = map(
       |> translate(x = sideDoorX, y = sideDoorY, z = 0)
   },
 )
-

@@ -1,3 +1,4 @@
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
   ApiObject,
   ExistingSegmentCtor,
@@ -5,28 +6,20 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isArray, roundOff } from '@src/lib/utils'
-import { Group, type Object3D, Vector2, Vector3 } from 'three'
-import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { Coords2d } from '@src/lang/util'
+import { type NumericSuffix, baseUnitToNumericSuffix } from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import {
-  buildSegmentCtorFromObject,
-  type SolveActionArgs,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
-import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
-import {
-  findContainedSegments,
-  findIntersectingSegments,
-  isIntersectionSelectionMode,
-  project3DToScreen,
-  removeSelectionBox,
-  type SelectionBoxVisualState,
-  updateSelectionBox,
-} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { isArray, roundOff } from '@src/lib/utils'
+import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   getCoincidentCluster,
   isConstraint,
@@ -35,29 +28,36 @@ import {
 import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
-  isInvisibleConstraintObject,
   isConstrainingSegment,
+  isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
-import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
-import type {
-  OnMoveCallbackArgs,
-  SceneInfra,
-} from '@src/clientSideScene/sceneInfra'
-import type { Coords2d } from '@src/lang/util'
 import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import { SKETCH_FILE_VERSION } from '@src/lib/constants'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  allowSnapping,
-  getSnappingCandidates,
+  type SolveActionArgs,
+  buildSegmentCtorFromObject,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
   type SnappingCandidate,
+  allowSnapping,
+  getCoincidentSegmentsForSnapTarget,
+  getSnappingCandidates,
+  isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import {
-  hideSnappingPreviewSprite,
-  updateSnappingPreviewSprite,
-} from '@src/machines/sketchSolve/snappingPreviewSprite'
+  type SelectionBoxVisualState,
+  findContainedSegments,
+  findIntersectingSegments,
+  isIntersectionSelectionMode,
+  project3DToScreen,
+  removeSelectionBox,
+  updateSelectionBox,
+} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { Group, type Object3D, Vector2, Vector3 } from 'three'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -174,17 +174,23 @@ function getDragPointSnappingCandidate({
   if (draggedEntityId === null) {
     return null
   }
-  if (
-    selectedIds.length >= 2 ||
-    (selectedIds.length === 1 && selectedIds[0] !== draggedEntityId)
-  ) {
-    // dragging more than 1 point -> not supported
-    return null
-  }
-
   const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
   if (!isPointSegment(draggedObject)) {
     // snapping only works with points for now
+    return null
+  }
+
+  const selectedIdsWithoutOwner = selectedIds.filter(
+    (selectedId) => selectedId !== draggedObject.kind.segment.owner
+  )
+  if (
+    selectedIdsWithoutOwner.length >= 2 ||
+    (selectedIdsWithoutOwner.length === 1 &&
+      selectedIdsWithoutOwner[0] !== draggedEntityId)
+  ) {
+    // Drag snapping only supports a single dragged point, but allow the point's
+    // owner segment to remain selected because arc/circle point drags often keep
+    // the parent segment selected in the move tool.
     return null
   }
 
@@ -201,7 +207,9 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) => !coincidentPointIds.includes(candidate.apiObject.id)
+      (candidate) =>
+        !isPointSnapTarget(candidate.target) ||
+        !coincidentPointIds.includes(candidate.target.pointId)
     ) ?? null
 
   return candidate
@@ -674,6 +682,7 @@ export function createOnDragCallback({
         settings
       ).catch((err) => {
         console.error('failed to edit segment', err)
+        toastSketchSolveError(err)
         return null
       })
 
@@ -819,7 +828,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
-      hideSnappingPreviewSprite(sketchSolveGroup)
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        target: null,
+      })
     }
   }
 
@@ -829,11 +842,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPoint: candidate?.apiObject ?? null,
+        target: candidate,
       })
     }
 
-    sendHoveredState(candidate?.apiObject.id ?? null)
+    sendHoveredState(
+      isPointSnapTarget(candidate?.target) ? candidate.target.pointId : null
+    )
   }
 
   const clearConstraintHoverPopups = () => {
@@ -932,8 +947,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          const result =
+          console.log(
+            'move tool snap target',
+            snappingCandidate?.target ?? null
+          )
+          const coincidentSegments =
             snappingCandidate && draggedEntityId !== null
+              ? getCoincidentSegmentsForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target
+                )
+              : null
+          const result =
+            snappingCandidate &&
+            draggedEntityId !== null &&
+            coincidentSegments !== null
               ? await (async () => {
                   const units = baseUnitToNumericSuffix(
                     context.kclManager.fileSettings.defaultLengthUnit
@@ -971,10 +999,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [
-                        draggedEntityId,
-                        snappingCandidate.apiObject.id,
-                      ],
+                      segments: coincidentSegments,
                     },
                     settings
                   )
@@ -995,6 +1020,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           })
         } catch (err) {
           console.error('error in onDragEnd sketchExecuteMock', err)
+          toastSketchSolveError(err)
         }
       },
     }),

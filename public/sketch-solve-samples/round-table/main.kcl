@@ -39,4 +39,3 @@ legProfile = sketch(on = legSketch) {
 }
 region003 = region(segments = [legProfile.circle1])
 legExtrude = extrude(region003, length = legHeight)
-

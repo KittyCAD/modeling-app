@@ -58,4 +58,3 @@ leg3 = clone(legExtrude)
   |> translate(x = 0, y = tableLength - legThickness, z = 0)
 leg4 = clone(legExtrude)
   |> translate(x = tableWidth - legThickness, y = tableLength - legThickness, z = 0)
-

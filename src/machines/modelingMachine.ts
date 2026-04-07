@@ -1,6 +1,12 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
+import {
+  type AnyActorRef,
+  assertEvent,
+  assign,
+  fromPromise,
+  setup,
+} from 'xstate'
 
 import type {
   SetSelections,
@@ -197,6 +203,7 @@ import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -443,6 +450,10 @@ export type ModelingMachineEvent =
       data: { tool: EquipTool | null }
     }
   | { type: 'delete selected' }
+
+function getSketchSolveActor(self: AnyActorRef) {
+  return self.getSnapshot().children.sketchSolveMachine
+}
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const OVERLAY_TIMEOUT_MS = 1_000
@@ -1909,6 +1920,15 @@ export const modelingMachine = setup({
       }
       return {}
     }),
+    'forward exit to sketch solve if active': ({ self }) => {
+      sendToActorIfActive(getSketchSolveActor(self), { type: 'exit' })
+    },
+    'forward escape to sketch solve if active': ({ self }) => {
+      sendToActorIfActive(getSketchSolveActor(self), { type: 'escape' })
+    },
+    'forward event to sketch solve if active': ({ self, event }) => {
+      sendToActorIfActive(getSketchSolveActor(self), event)
+    },
   },
   // end actions
   actors: {
@@ -2826,6 +2846,12 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return null
         const { plane, kclManager, engineCommandManager, wasmInstance } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors.'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
           const originalCode = kclManager.code
           const sketched =
@@ -2920,9 +2946,7 @@ export const modelingMachine = setup({
         sketchSolveId: number
       }> => {
         if (!input || !input.artifactOrPlaneId) {
-          const errorMessage = 'No artifact or plane ID provided'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('No artifact or plane ID provided.'))
         }
         const {
           artifactOrPlaneId,
@@ -2933,6 +2957,11 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        if (kclManager.hasParseErrors()) {
+          return reject(
+            new Error('Unable to enter sketch while KCL has parse errors.')
+          )
+        }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
@@ -2972,92 +3001,75 @@ export const modelingMachine = setup({
           }
         }
         if (!result) {
-          const errorMessage = 'Please select a valid sketch plane'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('Please select a valid sketch plane.'))
         }
+
+        // Call newSketch API
+        const project = projectRef?.current
+        if (!project) {
+          return reject(new Error('No active project to start a sketch in.'))
+        }
+
+        // Construct SketchCtor based on the result
+        let sketchArgs: SketchCtor
+        const setProgramOutcome = await rustContext.hackSetProgram(
+          kclManager.ast,
+          jsAppSettings(rustContext.settingsActor)
+        )
+        if (result.type === 'defaultPlane') {
+          sketchArgs = {
+            on: { default: toPlaneName(result.plane) },
+          }
+        } else {
+          if (setProgramOutcome.type !== 'Success') {
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
+            )
+          }
+
+          const selectedArtifactId =
+            result.type === 'extrudeFace' ? result.faceId : result.planeId
+          const selectedSceneObject = setProgramOutcome.sceneGraph.objects.find(
+            (object) => object.artifact_id === selectedArtifactId
+          )
+
+          if (!selectedSceneObject) {
+            return reject(
+              new Error(
+                `Could not find SceneGraph object for artifact ${selectedArtifactId}.`
+              )
+            )
+          }
+
+          sketchArgs = {
+            on: { object: selectedSceneObject.id },
+          }
+        }
+
+        const newSketchResult = await rustContext.newSketch(
+          0, // projectId - using 0 as placeholder
+          0, // fileId - using 0 as placeholder
+          0, // version - using 0 as placeholder
+          sketchArgs,
+          {
+            settings: {
+              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+            },
+          }
+        )
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        // Call newSketch API
-        let sketchId: number | undefined
-        try {
-          const project = projectRef?.current
-          if (!project) {
-            console.warn('No project available for newSketch call')
-          } else {
-            // Construct SketchCtor based on the result
-            let sketchArgs: SketchCtor
-
-            const setProgramOutcome = await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-            if (result.type === 'defaultPlane') {
-              sketchArgs = {
-                on: { default: toPlaneName(result.plane) },
-              }
-            } else {
-              if (setProgramOutcome.type !== 'Success') {
-                return Promise.reject(
-                  new Error(
-                    'Could not update SceneGraph before creating sketch'
-                  )
-                )
-              }
-
-              const selectedArtifactId =
-                result.type === 'extrudeFace' ? result.faceId : result.planeId
-              const selectedSceneObject =
-                setProgramOutcome.sceneGraph.objects.find(
-                  (object) => object.artifact_id === selectedArtifactId
-                )
-
-              if (!selectedSceneObject) {
-                return Promise.reject(
-                  new Error(
-                    `Could not find SceneGraph object for artifact ${selectedArtifactId}`
-                  )
-                )
-              }
-
-              sketchArgs = {
-                on: { object: selectedSceneObject.id },
-              }
-            }
-
-            const newSketchResult = await rustContext.newSketch(
-              0, // projectId - using 0 as placeholder
-              0, // fileId - using 0 as placeholder
-              0, // version - using 0 as placeholder
-              sketchArgs,
-              {
-                settings: {
-                  modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-                },
-              }
-            )
-            kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
-              shouldAddToHistory: false,
-            })
-            sketchId = newSketchResult.sketchId
-          }
-        } catch (error) {
-          console.error('Error calling newSketch:', error)
-        }
-
-        if (sketchId === undefined) {
-          const errorMessage = 'Failed to create sketch'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
+        kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
+          shouldAddToHistory: false,
+        })
 
         return {
           plane: result,
-          sketchSolveId: sketchId,
+          sketchSolveId: newSketchResult.sketchId,
         }
       }
     ),
@@ -6897,6 +6909,70 @@ export const modelingMachine = setup({
       initial: 'active',
       states: {
         active: {
+          on: {
+            Cancel: {
+              actions: ['forward escape to sketch solve if active'],
+              // Forward escape to sketch solve machine for hierarchical handling:
+              // - If tool equipped in ShowDraftLine: delete draft, return to ready
+              // - If tool equipped in ready: unequip tool
+              // - If no tool equipped (move and select): exit sketch mode
+            },
+            'Exit sketch': {
+              actions: ['forward exit to sketch solve if active'],
+              // Exit sketch immediately, bypassing tool unequip logic
+            },
+            'equip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'unequip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            coincident: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Fixed: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Tangent: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Parallel: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Perpendicular: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            LinesEqualLength: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Vertical: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Horizontal: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Dimension: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            HorizontalDistance: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            VerticalDistance: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            construction: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'toggle non-visual constraints': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'delete selected': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'update sketch outcome': {
+              actions: ['forward event to sketch solve if active'],
+            },
+          },
           invoke: {
             id: 'sketchSolveMachine',
             src: 'sketchSolveMachine',
@@ -6931,70 +7007,6 @@ export const modelingMachine = setup({
               actions: ['reset sketch metadata'],
             },
           },
-        },
-      },
-      on: {
-        Cancel: {
-          actions: [sendTo('sketchSolveMachine', { type: 'escape' })],
-          // Forward escape to sketch solve machine for hierarchical handling:
-          // - If tool equipped in ShowDraftLine: delete draft, return to ready
-          // - If tool equipped in ready: unequip tool
-          // - If no tool equipped (move and select): exit sketch mode
-        },
-        'Exit sketch': {
-          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
-          // Exit sketch immediately, bypassing tool unequip logic
-        },
-        'equip tool': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'unequip tool': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        coincident: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Fixed: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Tangent: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Parallel: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Perpendicular: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        LinesEqualLength: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Vertical: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Horizontal: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        Dimension: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        HorizontalDistance: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        VerticalDistance: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        construction: {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'toggle non-visual constraints': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'delete selected': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
-        },
-        'update sketch outcome': {
-          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
       description: `Actor defined in separate file`,
@@ -7672,7 +7684,10 @@ export const modelingMachine = setup({
             }
           }),
         },
-        onError: 'Sketch no face',
+        onError: {
+          target: 'Sketch no face',
+          actions: 'toastError',
+        },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
           return {

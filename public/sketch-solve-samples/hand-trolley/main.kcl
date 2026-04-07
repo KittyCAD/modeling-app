@@ -13,4 +13,3 @@ import "weldment.kcl" as weldment
 import "axle.kcl" as axle
 wheel
   |> patternCircular3d(instances = 2, axis = [0, 0, 1], center = [0, -3.67, 0])
-

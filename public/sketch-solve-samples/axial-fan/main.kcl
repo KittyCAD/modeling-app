@@ -14,4 +14,3 @@ import "fan.kcl" as fan
 fanHousing
 motor
 fan
-

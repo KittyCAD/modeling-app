@@ -11,7 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
@@ -81,7 +81,7 @@ pub(super) struct GlobalState {
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -237,12 +237,12 @@ impl ExecState {
     }
 
     /// Log a non-fatal error.
-    pub fn err(&mut self, e: CompilationError) {
-        self.global.errors.push(e);
+    pub fn err(&mut self, e: CompilationIssue) {
+        self.global.issues.push(e);
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+    pub fn warn(&mut self, mut e: CompilationIssue, name: &'static str) {
         debug_assert!(annotations::WARN_VALUES.contains(&name));
 
         if self.mod_local.allowed_warnings.contains(&name) {
@@ -255,14 +255,14 @@ impl ExecState {
             e.severity = Severity::Warning;
         }
 
-        self.global.errors.push(e);
+        self.global.issues.push(e);
     }
 
     pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
         let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
             return;
         };
-        let error = CompilationError {
+        let error = CompilationIssue {
             source_range,
             message: format!("Use of {feature_name} is experimental and may change or be removed."),
             suggestion: None,
@@ -270,11 +270,11 @@ impl ExecState {
             tag: crate::errors::Tag::None,
         };
 
-        self.global.errors.push(error);
+        self.global.issues.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
-        self.global.errors = std::mem::take(&mut self.global.errors)
+        self.global.issues = std::mem::take(&mut self.global.issues)
             .into_iter()
             .filter(|e| {
                 e.severity != Severity::Warning
@@ -284,8 +284,8 @@ impl ExecState {
             .collect();
     }
 
-    pub fn errors(&self) -> &[CompilationError] {
-        &self.global.errors
+    pub fn issues(&self) -> &[CompilationIssue] {
+        &self.global.issues
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -307,7 +307,7 @@ impl ExecState {
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
-            errors: self.global.errors,
+            issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
@@ -575,7 +575,7 @@ impl ExecState {
 
         KclErrorWithOutputs::new(
             error,
-            self.errors().to_vec(),
+            self.issues().to_vec(),
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
@@ -636,7 +636,12 @@ impl ExecState {
 
         // Move the artifacts into ExecState global to simplify cache
         // management.
-        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+        for (id, exec_artifact) in new_exec_artifacts {
+            // Only insert if it wasn't already present. We don't want to
+            // overwrite what was previously there. We haven't filled in node
+            // paths yet.
+            self.global.artifacts.artifacts.entry(id).or_insert(exec_artifact);
+        }
 
         let initial_graph = self.global.artifacts.graph.clone();
 
@@ -678,7 +683,7 @@ impl GlobalState {
             artifacts: Default::default(),
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
-            errors: Default::default(),
+            issues: Default::default(),
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,

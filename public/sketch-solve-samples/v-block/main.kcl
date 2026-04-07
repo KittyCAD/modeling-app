@@ -84,4 +84,3 @@ sideHoleProfile = circle(sideHoleSketch, center = [-sideHoleDistance / 2, sideHo
        axis = [1, 0],
      )
 sideHoles = extrude(sideHoleProfile, length = -vBlockWidth)
-

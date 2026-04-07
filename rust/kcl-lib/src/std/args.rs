@@ -8,7 +8,7 @@ use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::MetaSettings;
 use crate::ModuleId;
 use crate::SourceRange;
@@ -24,6 +24,7 @@ use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
+use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
@@ -87,7 +88,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -105,7 +106,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -1011,19 +1012,24 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
             KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
+                let mut sketches = vec![];
                 let mut helices = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Sketch { value } => sketches.push((**value).clone()),
                         KclValue::Helix { value } => helices.push((**value).clone()),
                         _ => return None,
                     }
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
+                } else if !sketches.is_empty() {
+                    Some(Self::SketchSet(sketches))
                 } else {
                     Some(Self::HelixSet(helices))
                 }
@@ -1087,7 +1093,10 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).or_else(|| case2(arg).map(Self::Edge))
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 
@@ -1100,7 +1109,10 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).or_else(|| case2(arg).map(Self::Edge))
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 

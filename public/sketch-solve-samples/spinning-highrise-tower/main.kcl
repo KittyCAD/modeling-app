@@ -98,4 +98,3 @@ facadeStart = facadeWidth / 2
 facadeGeometry = boxFn(plane = XY, width = facadeWidth, height = facadeHeight)
   |> patternTransform(instances = floorCount, transform = transformFn)
   |> appearance(color = "#151819")
-

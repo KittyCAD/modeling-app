@@ -177,4 +177,3 @@ handleSketch = sketch(on = XZ) {
 region007 = region(segments = [handleSketch.line1, handleSketch.arc2])
 handle = revolve(region007, angle = 360deg, axis = Y)
   |> appearance(color = "#f14f04")
-

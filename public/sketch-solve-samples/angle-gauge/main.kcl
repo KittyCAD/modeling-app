@@ -61,4 +61,3 @@ gauge(
   deltaX = xSpacing,
   deltaY = 0,
 )
-

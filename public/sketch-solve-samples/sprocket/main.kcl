@@ -68,4 +68,3 @@ fn sprocket(@nTeeth, bore) {
 
 // model an instance of the sprocket with 28 teeth and a 5/8 inch diameter center bore
 sprocket(28, bore = 5 / 8)
-

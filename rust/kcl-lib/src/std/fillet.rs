@@ -27,6 +27,7 @@ use crate::execution::TagIdentifier;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::csg::CsgAlgorithm;
 
 /// A tag or a uuid of an edge.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
@@ -93,19 +94,23 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,
     tags: Vec<EdgeReference>,
     tolerance: Option<TyF64>,
+    csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -150,6 +155,7 @@ async fn inner_fillet(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dFilletEdge::builder()
+                    .use_legacy(csg_algorithm.is_legacy())
                     .edge_ids(edge_ids.clone())
                     .extra_face_ids(extra_face_ids)
                     .strategy(Default::default())

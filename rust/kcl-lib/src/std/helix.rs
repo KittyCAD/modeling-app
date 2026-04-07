@@ -32,6 +32,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;

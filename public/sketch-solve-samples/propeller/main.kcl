@@ -92,4 +92,3 @@ blades = intersect([bladeRevolve, bladeTwist])
 // Apply wood appearance to the entire propeller model
 [hub, blades]
   |> appearance(color = "#8b5a2b")
-
