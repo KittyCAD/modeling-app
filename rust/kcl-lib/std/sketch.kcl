@@ -1803,7 +1803,7 @@ export fn sweep(
 /// lofted = loft([lowerRegion, upperRegion])
 /// ```
 /// ```
-/// // Demonstrates lofting between sketch blocks and the old sketched profile style.
+/// // Demonstrates surface lofts with shapes from sketch blocks.
 /// @settings(experimentalFeatures = allow)
 /// 
 /// // Loft a square, a circle, and another circle.
@@ -1822,21 +1822,14 @@ export fn sweep(
 ///   parallel([line1, line2])
 /// }
 /// 
-/// circleSketch0 = startSketchOn(offsetPlane(XY, offset = 2))
-///   |> circle(center = [sideLen / 2, sideLen / 2], radius = 0.5)
+/// circleSketch0 = sketch(on = offsetPlane(XY, offset = 2)) {
+///   circle1 = circle(start = [var 2.28mm, var 2.99mm], center = [var 1.98mm, var 2.03mm])
+/// }
 /// 
-/// circleSketch1 = startSketchOn(offsetPlane(XY, offset = 5))
-///   |> circle(center = [sideLen / 2, sideLen / 2], radius = 1)
-/// square = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
+/// squareRegion = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
+/// circleRegion = region(point = [1.6807mm, 1.0724mm], sketch = circleSketch0)
 /// 
-/// shape = loft(
-///   [
-///     square,
-///     circleSketch0,
-///     circleSketch1
-///   ],
-///   bodyType = SURFACE,
-/// )
+/// shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn loft(
