@@ -3,9 +3,8 @@ import {
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
 import {
+  SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
-  packRgbToColor,
 } from '@src/lib/constants'
 import { setupConstructionLineDashShader } from '@src/machines/sketchSolve/constructionDashShader'
 import {
@@ -20,9 +19,6 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
 
-const HOVER_COLOR = packRgbToColor(
-  SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
-)
 
 export type ConstraintLineStyle = 'solid' | 'dashed'
 
@@ -63,11 +59,11 @@ export class ConstraintResources {
     },
     selected: {
       arrow: new MeshBasicMaterial({
-        color: HOVER_COLOR,
+        color: SKETCH_HIGHLIGHT_COLOR,
         side: DoubleSide,
       }),
-      line: createLineMaterial(HOVER_COLOR),
-      lineDashed: createLineMaterial(HOVER_COLOR, true),
+      line: createLineMaterial(SKETCH_HIGHLIGHT_COLOR),
+      lineDashed: createLineMaterial(SKETCH_HIGHLIGHT_COLOR, true),
     },
   }
 
