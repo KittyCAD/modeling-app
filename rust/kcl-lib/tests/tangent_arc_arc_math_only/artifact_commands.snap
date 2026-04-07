@@ -110,26 +110,13 @@ description: Artifact commands tangent_arc_arc_math_only.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 5.00000002102672,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 8.00000002399965,
-            "y": -0.0000000000000003673940401082849
+            "x": 8.0000000119728,
+            "y": -0.000000000000002204364239931481
           },
           "radius": 3.0000000029729303,
           "start": {
