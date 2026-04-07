@@ -1802,10 +1802,47 @@ export fn sweep(
 ///
 /// lofted = loft([lowerRegion, upperRegion])
 /// ```
+/// ```
+/// // Demonstrates lofting between sketch blocks and the old sketched profile style.
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Loft a square, a circle, and another circle.
+/// sideLen = 4
+/// squareSketch = sketch(on = XY) {
+///   line1 = line(start = [var -0.02mm, var 4.02mm], end = [var 0mm, var 0mm])
+///   coincident([line1.end, ORIGIN])
+///   line2 = line(start = [var 4.02mm, var 0.03mm], end = [var 4.06mm, var 3.97mm])
+///   line3 = line(start = [var 4.06mm, var 3.97mm], end = [var -0.02mm, var 4.02mm])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.start])
+///   line4 = line(start = [var 0mm, var 0mm], end = [var 4.02mm, var 0.03mm])
+///   coincident([line4.start, line1.end])
+///   coincident([line4.end, line2.start])
+///   equalLength([line1, line2, line3, line4])
+///   parallel([line1, line2])
+/// }
+/// 
+/// circleSketch0 = startSketchOn(offsetPlane(XY, offset = 2))
+///   |> circle(center = [sideLen / 2, sideLen / 2], radius = 0.5)
+/// 
+/// circleSketch1 = startSketchOn(offsetPlane(XY, offset = 5))
+///   |> circle(center = [sideLen / 2, sideLen / 2], radius = 1)
+/// square = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
+/// 
+/// shape = loft(
+///   [
+///     square,
+///     circleSketch0,
+///     circleSketch1
+///   ],
+///   bodyType = SURFACE,
+/// )
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn loft(
-  /// Which sketches to loft. Must include at least 2 sketches.
-  @sketches: [Sketch; 2+],
+  /// Which sketches to loft (or segments, for surface lofts).
+  /// Must include at least 2 sketches.
+  @sketches: [Sketch | [Segment; 1+]; 2+],
   /// Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.
   vDegree?: number(Count) = 2,
   /// Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary.
