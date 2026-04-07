@@ -184,6 +184,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-loft-4",
     "std-sketch-loft-5",
     "std-sketch-loft-6",
+    "std-sketch-loft-7",
     "std-sketch-patternLinear2d-0",
     "std-sketch-patternLinear2d-1",
     "std-sketch-patternCircular2d-0",
