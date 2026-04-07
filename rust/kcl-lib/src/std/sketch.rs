@@ -1334,6 +1334,7 @@ pub(crate) async fn create_sketch(
         units,
         mirror: Default::default(),
         clone: Default::default(),
+        synthetic_jump_path_ids: vec![],
         meta: vec![source_range.into()],
         tags: Default::default(),
         start: current_path.clone(),
@@ -1401,7 +1402,7 @@ pub(crate) async fn inner_close(
 ) -> Result<Sketch, KclError> {
     if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
                 suggestion: None,
@@ -1448,7 +1449,7 @@ pub(crate) async fn inner_close(
         new_sketch.paths.push(current_path);
     } else if tag.is_some() {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "A tag declarator was specified, but no segment was created".to_string(),
                 suggestion: None,

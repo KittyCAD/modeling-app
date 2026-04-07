@@ -62,4 +62,3 @@ reduce(
     return accum + 1
   },
 )
-

@@ -326,4 +326,3 @@ lesProfile = sketch(on = lesSketch) {
 region017 = region(segments = [lesProfile.line1, lesProfile.line2])
 launchEscapeSystem = revolve(region017, angle = 360, axis = Y)
   |> appearance(%, color = '#FFFFFF')
-

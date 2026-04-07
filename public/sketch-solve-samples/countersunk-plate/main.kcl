@@ -54,4 +54,3 @@ fn countersink(@holePosition) {
 // Place a countersunk hole at each bolt hole position
 countersink(-boltSpacing / 2)
 countersink(boltSpacing / 2)
-

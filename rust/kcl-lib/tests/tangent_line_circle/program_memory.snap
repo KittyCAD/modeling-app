@@ -292,6 +292,47 @@ description: Variables in memory after executing tangent_line_circle.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
+                  "from": [
+                    -10.0,
+                    0.000000001000000002547721
+                  ],
+                  "tag": {
+                    "commentStart": 65,
+                    "end": 66,
+                    "moduleId": 0,
+                    "start": 65,
+                    "type": "TagDeclarator",
+                    "value": "l"
+                  },
+                  "to": [
+                    10.0,
+                    0.0000000010000000356144117
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    10.0,
+                    0.0000000010000000356144117
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    6.0000000170000005
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
                   "ccw": true,
                   "center": [
                     0.0,
@@ -351,12 +392,12 @@ description: Variables in memory after executing tangent_line_circle.kcl
               },
               "start": {
                 "from": [
-                  0.0,
-                  6.0000000170000005
+                  -10.0,
+                  0.000000001000000002547721
                 ],
                 "to": [
-                  0.0,
-                  6.0000000170000005
+                  -10.0,
+                  0.000000001000000002547721
                 ],
                 "units": "mm",
                 "tag": null,
@@ -369,6 +410,10 @@ description: Variables in memory after executing tangent_line_circle.kcl
                 "c": {
                   "type": "TagIdentifier",
                   "value": "c"
+                },
+                "l": {
+                  "type": "TagIdentifier",
+                  "value": "l"
                 }
               },
               "artifactId": "[uuid]",

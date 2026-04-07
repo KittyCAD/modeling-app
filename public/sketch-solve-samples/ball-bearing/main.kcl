@@ -89,4 +89,3 @@ outsideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2))
 
 region005 = region(segments = [outsideWallSketch.circle1])
 outsideWall = extrude(region005, length = overallThickness)
-

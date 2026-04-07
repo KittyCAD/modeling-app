@@ -2,17 +2,21 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  type ToolEvents,
-  type ToolContext,
-  type TOOL_ID,
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
   type SHOWING_RADIUS_PREVIEW,
-  showRadiusPreviewListener,
+  type TOOL_ID,
+  type ToolContext,
+  type ToolEvents,
   addPointListener,
+  createCircleActor,
   removePointListener,
   sendResultToParent,
-  createCircleActor,
+  showRadiusPreviewListener,
 } from '@src/machines/sketchSolve/tools/circleToolImpl'
-import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 export const toolId: typeof TOOL_ID = 'Circle tool'
 
@@ -25,11 +29,18 @@ export const machine = setup({
     events: {} as ToolEvents,
     input: {} as ToolInput,
   },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
+  },
   actions: {
     'show radius preview listener': showRadiusPreviewListener,
     'add point listener': addPointListener,
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     createCircle: fromPromise(createCircleActor),
@@ -38,6 +49,7 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     centerPointId: undefined,
     centerPoint: undefined,
+    centerSnapTarget: undefined,
     circleId: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
@@ -71,6 +83,7 @@ export const machine = setup({
             assertEvent(event, 'add point')
             return {
               centerPoint: event.data,
+              centerSnapTarget: event.snapTarget,
             }
           }),
         },
@@ -110,23 +123,36 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
+            centerSnapTarget: context.centerSnapTarget,
+            startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ready for center click',
-          actions: [
-            'send result to parent',
-            assign({
-              centerPoint: undefined,
-              centerPointId: undefined,
-              circleId: undefined,
-            }),
-          ],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: showingRadiusPreview,
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for center click',
+            actions: [
+              'send result to parent',
+              assign({
+                centerPoint: undefined,
+                centerPointId: undefined,
+                centerSnapTarget: undefined,
+                circleId: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: showingRadiusPreview,
+          actions: 'toast sketch solve error',
         },
-        onError: showingRadiusPreview,
       },
     },
 
