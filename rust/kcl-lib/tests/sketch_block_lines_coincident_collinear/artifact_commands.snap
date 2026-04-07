@@ -102,19 +102,6 @@ description: Artifact commands sketch_block_lines_coincident_collinear.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 10.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
