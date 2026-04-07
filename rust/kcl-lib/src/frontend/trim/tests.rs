@@ -2202,6 +2202,41 @@ fn find_first_circle_id(objects: &[crate::frontend::api::Object]) -> crate::fron
     panic!("No circle segment found in {} objects", objects.len());
 }
 
+fn count_segment_kinds(objects: &[crate::frontend::api::Object]) -> (usize, usize, usize) {
+    let mut line_count = 0;
+    let mut arc_count = 0;
+    let mut circle_count = 0;
+
+    for obj in objects {
+        let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind else {
+            continue;
+        };
+
+        match segment {
+            crate::frontend::sketch::Segment::Line(_) => line_count += 1,
+            crate::frontend::sketch::Segment::Arc(_) => arc_count += 1,
+            crate::frontend::sketch::Segment::Circle(_) => circle_count += 1,
+            _ => {}
+        }
+    }
+
+    (line_count, arc_count, circle_count)
+}
+
+fn count_coincident_constraints(objects: &[crate::frontend::api::Object]) -> usize {
+    objects
+        .iter()
+        .filter(|obj| {
+            matches!(
+                &obj.kind,
+                crate::frontend::api::ObjectKind::Constraint {
+                    constraint: crate::frontend::sketch::Constraint::Coincident(_)
+                }
+            )
+        })
+        .count()
+}
+
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 /// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
@@ -2817,4 +2852,116 @@ sketch001 = sketch(on = YZ) {
 "#;
 
     assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+/// Issue #10732 comment case 3 variant A:
+/// trimming through a standalone circle should delete the circle.
+async fn test_trim_circle_case_3a_delete_standalone_circle() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -3.73mm, var 2.21mm], center = [var -2.22mm, var 0.63mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.77, y: 4.3 }, Coords2d { x: -1.99, y: 1.71 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (_, arc_count, circle_count) = count_segment_kinds(&objects);
+
+    assert_eq!(
+        circle_count, 0,
+        "Expected trimmed standalone circle to be deleted, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        arc_count, 0,
+        "Expected no replacement arc when deleting standalone circle, got KCL:\n{}",
+        result.kcl_code
+    );
+}
+
+#[tokio::test]
+/// Issue #10732 comment case 3 variant B:
+/// trimming through a circle in a circle+line sketch should delete only the circle.
+async fn test_trim_circle_case_3b_delete_circle_keep_line() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -3.73mm, var 2.21mm], center = [var -2.22mm, var 0.63mm])
+  line1 = line(start = [var 0.01mm, var 3.31mm], end = [var -0.95mm, var 0.92mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.77, y: 4.3 }, Coords2d { x: -1.99, y: 1.71 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (line_count, arc_count, circle_count) = count_segment_kinds(&objects);
+
+    assert_eq!(
+        line_count, 1,
+        "Expected line to be preserved after circle deletion, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        circle_count, 0,
+        "Expected circle to be deleted, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        arc_count, 0,
+        "Expected no arc replacement when no intersection terminators exist, got KCL:\n{}",
+        result.kcl_code
+    );
+}
+
+#[tokio::test]
+/// Issue #10732 comment case 4:
+/// trimming one of two intersecting circles should convert the trimmed circle to an arc
+/// with coincident constraints at both circle-circle intersections.
+async fn test_trim_circle_case_4_circle_circle_intersections_convert_to_arc() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -0.35mm, var 0.6mm], center = [var -1.13mm, var 0.57mm])
+  circle2 = circle(start = [var -0.83mm, var 0.93mm], center = [var -0.16mm, var 1.56mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -0.69, y: 1.6 }, Coords2d { x: -0.73, y: 1.07 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (line_count, arc_count, circle_count) = count_segment_kinds(&objects);
+    let coincident_count = count_coincident_constraints(&objects);
+
+    assert_eq!(
+        line_count, 0,
+        "Expected no lines in final geometry for circle-circle case, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        circle_count, 1,
+        "Expected one remaining circle and one trimmed arc, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert_eq!(
+        arc_count, 1,
+        "Expected one trimmed arc from circle-circle intersection case, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        coincident_count >= 2,
+        "Expected at least two coincident constraints (arc endpoints to other circle), got KCL:\n{}",
+        result.kcl_code
+    );
 }

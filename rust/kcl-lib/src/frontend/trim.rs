@@ -859,6 +859,64 @@ pub fn circle_arc_intersections(
     intersections
 }
 
+/// Helper to calculate intersections between two full circles.
+///
+/// Returns 0, 1 (tangent), or 2 intersection points.
+pub fn circle_circle_intersections(
+    circle1_center: Coords2d,
+    circle1_radius: f64,
+    circle2_center: Coords2d,
+    circle2_radius: f64,
+    epsilon: f64,
+) -> Vec<Coords2d> {
+    let dx = circle2_center.x - circle1_center.x;
+    let dy = circle2_center.y - circle1_center.y;
+    let d = (dx * dx + dy * dy).sqrt();
+
+    if d > circle1_radius + circle2_radius + epsilon
+        || d < (circle1_radius - circle2_radius).abs() - epsilon
+        || d < EPSILON_PARALLEL
+    {
+        return Vec::new();
+    }
+
+    let a = (circle1_radius * circle1_radius - circle2_radius * circle2_radius + d * d) / (2.0 * d);
+    let h_sq = circle1_radius * circle1_radius - a * a;
+    if h_sq < 0.0 {
+        return Vec::new();
+    }
+
+    let h = if h_sq <= epsilon { 0.0 } else { h_sq.sqrt() };
+    if h.is_nan() {
+        return Vec::new();
+    }
+
+    let ux = dx / d;
+    let uy = dy / d;
+    let px = -uy;
+    let py = ux;
+
+    let mid_point = Coords2d {
+        x: circle1_center.x + a * ux,
+        y: circle1_center.y + a * uy,
+    };
+
+    let intersection1 = Coords2d {
+        x: mid_point.x + h * px,
+        y: mid_point.y + h * py,
+    };
+    let intersection2 = Coords2d {
+        x: mid_point.x - h * px,
+        y: mid_point.y - h * py,
+    };
+
+    let mut intersections = vec![intersection1];
+    if (intersection1.x - intersection2.x).abs() > epsilon || (intersection1.y - intersection2.y).abs() > epsilon {
+        intersections.push(intersection2);
+    }
+    intersections
+}
+
 /// Helper to extract coordinates from a point object in JSON format
 // Native type helper - get point coordinates from ObjectId
 fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId, default_unit: UnitLength) -> Option<Coords2d> {
@@ -1713,7 +1771,30 @@ fn find_termination_in_direction(
                                 }
                             }
                         }
-                        Segment::Circle(_) => {}
+                        Segment::Circle(_) => {
+                            if let Some(center) = segment_geometry.center {
+                                let radius = ((segment_geometry.start.x - center.x)
+                                    * (segment_geometry.start.x - center.x)
+                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
+                                    .sqrt();
+                                for intersection in circle_circle_intersections(
+                                    center,
+                                    radius,
+                                    oc,
+                                    other_radius,
+                                    EPSILON_POINT_ON_SEGMENT,
+                                ) {
+                                    let t = project_point_onto_circle(intersection, center, segment_geometry.start);
+                                    candidates.push(Candidate {
+                                        t,
+                                        point: intersection,
+                                        candidate_type: CandidateType::Intersection,
+                                        segment_id: Some(other_id),
+                                        point_id: None,
+                                    });
+                                }
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -2267,6 +2348,30 @@ where
     ));
     let mut invalidates_ids = false;
     let mut current_scene_graph_delta = initial_scene_graph_delta;
+    let circle_delete_fallback_strategy =
+        |error: &str, segment_id: ObjectId, scene_objects: &[Object]| -> Option<Vec<TrimOperation>> {
+            if !error.contains("No trim termination candidate found for circle") {
+                return None;
+            }
+            let is_circle = scene_objects
+                .iter()
+                .find(|obj| obj.id == segment_id)
+                .is_some_and(|obj| {
+                    matches!(
+                        obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Circle(_)
+                        }
+                    )
+                });
+            if is_circle {
+                Some(vec![TrimOperation::SimpleTrim {
+                    segment_to_trim_id: segment_id,
+                }])
+            } else {
+                None
+            }
+        };
 
     while start_index < points.len().saturating_sub(1) && iteration_count < max_iterations {
         iteration_count += 1;
@@ -2311,6 +2416,33 @@ where
                     Ok(terms) => terms,
                     Err(e) => {
                         crate::logln!("Error getting trim spawn terminations: {}", e);
+                        if let Some(strategy) = circle_delete_fallback_strategy(
+                            &e,
+                            *trim_spawn_seg_id,
+                            &current_scene_graph_delta.new_graph.objects,
+                        ) {
+                            match execute_operations(strategy, current_scene_graph_delta.clone()).await {
+                                Ok((source_delta, scene_graph_delta)) => {
+                                    last_result = Some((source_delta, scene_graph_delta.clone()));
+                                    invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
+                                    current_scene_graph_delta = scene_graph_delta;
+                                }
+                                Err(exec_err) => {
+                                    crate::logln!(
+                                        "Error executing circle-delete fallback trim operation: {}",
+                                        exec_err
+                                    );
+                                }
+                            }
+
+                            let old_start_index = start_index;
+                            start_index = *next_index;
+                            if start_index <= old_start_index {
+                                start_index = old_start_index + 1;
+                            }
+                            continue;
+                        }
+
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -2536,6 +2668,30 @@ pub async fn execute_trim_loop_with_context(
     let mut start_index = 0;
     let max_iterations = 1000;
     let mut iteration_count = 0;
+    let circle_delete_fallback_strategy =
+        |error: &str, segment_id: ObjectId, scene_objects: &[Object]| -> Option<Vec<TrimOperation>> {
+            if !error.contains("No trim termination candidate found for circle") {
+                return None;
+            }
+            let is_circle = scene_objects
+                .iter()
+                .find(|obj| obj.id == segment_id)
+                .is_some_and(|obj| {
+                    matches!(
+                        obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Circle(_)
+                        }
+                    )
+                });
+            if is_circle {
+                Some(vec![TrimOperation::SimpleTrim {
+                    segment_to_trim_id: segment_id,
+                }])
+            } else {
+                None
+            }
+        };
 
     let points = normalized_points.as_slice();
 
@@ -2578,6 +2734,42 @@ pub async fn execute_trim_loop_with_context(
                     Ok(terms) => terms,
                     Err(e) => {
                         crate::logln!("Error getting trim spawn terminations: {}", e);
+                        if let Some(strategy) = circle_delete_fallback_strategy(
+                            &e,
+                            *trim_spawn_seg_id,
+                            &current_scene_graph_delta.new_graph.objects,
+                        ) {
+                            match execute_trim_operations_simple(
+                                strategy.clone(),
+                                &current_scene_graph_delta,
+                                frontend,
+                                ctx,
+                                version,
+                                sketch_id,
+                            )
+                            .await
+                            {
+                                Ok((source_delta, scene_graph_delta)) => {
+                                    invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
+                                    last_result = Some((source_delta, scene_graph_delta.clone()));
+                                    current_scene_graph_delta = scene_graph_delta;
+                                }
+                                Err(exec_err) => {
+                                    crate::logln!(
+                                        "Error executing circle-delete fallback trim operation: {}",
+                                        exec_err
+                                    );
+                                }
+                            }
+
+                            let old_start_index = start_index;
+                            start_index = *next_index;
+                            if start_index <= old_start_index {
+                                start_index = old_start_index + 1;
+                            }
+                            continue;
+                        }
+
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -3262,6 +3454,19 @@ pub(crate) fn trim_strategy(
                 ..
             } => *trim_termination_coords,
         };
+
+        // If both sides resolve to essentially the same trim point (e.g., tangent-only hit),
+        // deleting the circle matches expected trim behavior better than creating a zero-length arc.
+        let trim_points_coincident = ((left_trim_coords.x - right_trim_coords.x)
+            * (left_trim_coords.x - right_trim_coords.x)
+            + (left_trim_coords.y - right_trim_coords.y) * (left_trim_coords.y - right_trim_coords.y))
+            .sqrt()
+            <= EPSILON_POINT_ON_SEGMENT * 10.0;
+        if trim_points_coincident {
+            return Ok(vec![TrimOperation::SimpleTrim {
+                segment_to_trim_id: trim_spawn_id,
+            }]);
+        }
 
         let circle_center_coords =
             get_position_coords_from_circle(trim_spawn_segment, CirclePoint::Center, objects, default_unit)
