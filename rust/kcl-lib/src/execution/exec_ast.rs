@@ -6,7 +6,7 @@ use ezpz::NonLinearSystemError;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -201,7 +201,7 @@ impl ExecutorContext {
                     }
                     if updated_angle {
                         exec_state.warn(
-                            CompilationError::err(
+                            CompilationIssue::err(
                                 annotation.as_source_range(),
                                 "Prefer to use explicit units for angles",
                             ),
@@ -209,7 +209,7 @@ impl ExecutorContext {
                         );
                     }
                 } else {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         annotation.as_source_range(),
                         "Settings can only be modified at the top level scope of a file",
                     ));
@@ -218,7 +218,7 @@ impl ExecutorContext {
                 if matches!(body_type, BodyType::Root) {
                     no_prelude = true;
                 } else {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         annotation.as_source_range(),
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
@@ -258,14 +258,14 @@ impl ExecutorContext {
                         }
                     }
                 } else {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         annotation.as_source_range(),
                         "Warnings can only be customized at the top level scope of a file",
                     ));
                 }
             } else {
                 exec_state.warn(
-                    CompilationError::err(annotation.as_source_range(), "Unknown annotation"),
+                    CompilationIssue::err(annotation.as_source_range(), "Unknown annotation"),
                     annotations::WARN_UNKNOWN_ATTR,
                 );
             }
@@ -668,7 +668,7 @@ impl ExecutorContext {
                         if matches!(body_type, BodyType::Root) {
                             exec_state.mod_local.module_exports.push(var_name);
                         } else {
-                            exec_state.err(CompilationError::err(
+                            exec_state.err(CompilationIssue::err(
                                 variable_declaration.as_source_range(),
                                 "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
                             ));
@@ -1027,7 +1027,7 @@ impl ExecutorContext {
                         metadata.source_range
                         ).await?.map(|v| v.continue_())
                         .unwrap_or_else(|| {
-                            exec_state.warn(CompilationError::err(
+                            exec_state.warn(CompilationIssue::err(
                                 metadata.source_range,
                                 "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
                             ),
@@ -1439,7 +1439,7 @@ impl Node<SketchBlock> {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
                         exec_state.warn(
-                            CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
                             annotations::WARN_SOLVER,
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
@@ -1488,7 +1488,7 @@ impl Node<SketchBlock> {
             } else {
                 format!("{}", &warning.content)
             };
-            exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
+            exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
         // Substitute solutions back into sketch variables.
         let sketch_engine_id = exec_state.next_uuid();
@@ -3602,7 +3602,7 @@ impl Node<BinaryExpression> {
         if ty == &NumericType::Unknown {
             let sr = self.as_source_range();
             exec_state.clear_units_warnings(&sr);
-            let mut err = CompilationError::err(
+            let mut err = CompilationIssue::err(
                 sr,
                 format!(
                     "{verb} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
@@ -4613,7 +4613,7 @@ c = ((PI * 2) / 3): number(deg)
 "#;
 
         let result = parse_execute(ast).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 2);
+        assert_eq!(result.exec_state.issues().len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4714,23 +4714,23 @@ y = x[0mm + 1]
 a = PI * 2
 "#;
         let result = parse_execute(warn).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 1);
-        assert_eq!(result.exec_state.errors()[0].severity, Severity::Warning);
+        assert_eq!(result.exec_state.issues().len(), 1);
+        assert_eq!(result.exec_state.issues()[0].severity, Severity::Warning);
 
         let allow = r#"
 @warnings(allow = unknownUnits)
 a = PI * 2
 "#;
         let result = parse_execute(allow).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 0);
+        assert_eq!(result.exec_state.issues().len(), 0);
 
         let deny = r#"
 @warnings(deny = [unknownUnits])
 a = PI * 2
 "#;
         let result = parse_execute(deny).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 1);
-        assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
+        assert_eq!(result.exec_state.issues().len(), 1);
+        assert_eq!(result.exec_state.issues()[0].severity, Severity::Error);
     }
 
     #[tokio::test(flavor = "multi_thread")]
