@@ -107,8 +107,6 @@ export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
 export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
   Math.round(val * 0.7)
 )
-/** The sketch mode revamp highlight rgb values as a string */
-export const SKETCH_HIGHLIGHT_RGB_STR = SKETCH_HIGHLIGHT_RGB.join(', ')
 /** The sketch mode revamp highlight rgb values as HEX */
 export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
 

@@ -66,6 +66,9 @@ import {
 } from '@src/lib/kcSdkGuards'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
+const DEFAULT_HIGHLIGHT_SYSTEM_COLOR = hexToRgba(DEFAULT_HIGHLIGHT_COLOR)
+const DEFAULT_SELECTION_SYSTEM_COLOR = hexToRgba(DEFAULT_SELECTION_COLOR)
+
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
@@ -104,7 +107,6 @@ export class ConnectionManager extends EventTarget {
     width: 256,
     height: 256,
   }
-
   get settings(): SettingsViaQueryString {
     const s = getSettingsFromActorContext(this.systemDeps.settingsActor)
     return {
@@ -427,9 +429,9 @@ export class ConnectionManager extends EventTarget {
     const opposingTheme = getOppositeTheme(theme)
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
     const highlightSystemColor =
-      hexToRgba(DEFAULT_HIGHLIGHT_COLOR) ?? defaultSystemColor
+      DEFAULT_HIGHLIGHT_SYSTEM_COLOR ?? defaultSystemColor
     const selectionSystemColor =
-      hexToRgba(DEFAULT_SELECTION_COLOR) ?? defaultSystemColor
+      DEFAULT_SELECTION_SYSTEM_COLOR ?? defaultSystemColor
     const setDefaultSystemPropertiesCmd = {
       type: 'set_default_system_properties',
       color: defaultSystemColor,
@@ -481,9 +483,7 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    const highlightSystemColor = hexToRgba(DEFAULT_HIGHLIGHT_COLOR)
-    const selectionSystemColor = hexToRgba(DEFAULT_SELECTION_COLOR)
-    if (!highlightSystemColor || !selectionSystemColor) {
+    if (!DEFAULT_HIGHLIGHT_SYSTEM_COLOR || !DEFAULT_SELECTION_SYSTEM_COLOR) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message:
@@ -499,8 +499,8 @@ export class ConnectionManager extends EventTarget {
     const cmd = {
       type: 'set_default_system_properties',
       backface_color: backfaceRgbaColor,
-      highlight_color: highlightSystemColor,
-      selection_color: selectionSystemColor,
+      highlight_color: DEFAULT_HIGHLIGHT_SYSTEM_COLOR,
+      selection_color: DEFAULT_SELECTION_SYSTEM_COLOR,
     } as const
     const debugLog = (event: string) =>
       EngineDebugger.addLog({
