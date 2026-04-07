@@ -693,81 +693,93 @@ mod sync {
 
     #[test]
     fn test_get_next_trim_spawn_line_intersection() {
-        use serde_json::json;
+        use kcl_error::SourceRange;
+
+        use crate::execution::ArtifactId;
+        use crate::frontend::api::Expr;
+        use crate::frontend::api::Number;
+        use crate::frontend::api::Object;
+        use crate::frontend::api::ObjectKind;
+        use crate::frontend::api::SourceRef;
+        use crate::frontend::sketch::Freedom;
+        use crate::frontend::sketch::Line;
+        use crate::frontend::sketch::LineCtor;
+        use crate::frontend::sketch::Point;
+        use crate::frontend::sketch::Point2d;
+        use crate::frontend::sketch::Segment;
+        use crate::frontend::sketch::SegmentCtor;
+        use crate::pretty::NumericSuffix;
+
+        let num = |v: f64| Number {
+            value: v,
+            units: NumericSuffix::None,
+        };
+        let expr = |v: f64| Expr::Number(num(v));
+        let make_obj = |id: usize, kind: ObjectKind| Object {
+            id: ObjectId(id),
+            kind,
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::from(SourceRange::default()),
+        };
 
         // Create a simple line segment object
-        let line_obj_json = json!({
-            "id": 0,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Line",
-                    "start": 1,
-                    "end": 2,
-                    "ctor": {
-                        "type": "Line",
-                        "start": { "x": { "type": "Number", "value": 0.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } },
-                        "end": { "x": { "type": "Number", "value": 10.0, "units": "None" }, "y": { "type": "Number", "value": 10.0, "units": "None" } }
-                    },
-                    "ctor_applicable": false,
-                    "construction": false
-                }
+        let line_obj = make_obj(
+            0,
+            ObjectKind::Segment {
+                segment: Segment::Line(Line {
+                    start: ObjectId(1),
+                    end: ObjectId(2),
+                    ctor: SegmentCtor::Line(LineCtor {
+                        start: Point2d {
+                            x: expr(0.0),
+                            y: expr(0.0),
+                        },
+                        end: Point2d {
+                            x: expr(10.0),
+                            y: expr(10.0),
+                        },
+                        construction: None,
+                    }),
+                    ctor_applicable: false,
+                    construction: false,
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
+        );
 
         // Create point objects for start and end
-        let start_point_json = json!({
-            "id": 1,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "type": "Number", "value": 0.0, "units": "None" },
-                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+        let start_point = make_obj(
+            1,
+            ObjectKind::Segment {
+                segment: Segment::Point(Point {
+                    position: Point2d {
+                        x: num(0.0),
+                        y: num(0.0),
                     },
-                    "ctor": null,
-                    "owner": null,
-                    "freedom": "Free",
-                    "constraints": []
-                }
+                    ctor: None,
+                    owner: None,
+                    freedom: Freedom::Free,
+                    constraints: vec![],
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
+        );
 
-        let end_point_json = json!({
-            "id": 2,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "type": "Number", "value": 10.0, "units": "None" },
-                        "y": { "type": "Number", "value": 10.0, "units": "None" }
+        let end_point = make_obj(
+            2,
+            ObjectKind::Segment {
+                segment: Segment::Point(Point {
+                    position: Point2d {
+                        x: num(10.0),
+                        y: num(10.0),
                     },
-                    "ctor": null,
-                    "owner": null,
-                    "freedom": "Free",
-                    "constraints": []
-                }
+                    ctor: None,
+                    owner: None,
+                    freedom: Freedom::Free,
+                    constraints: vec![],
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
-
-        // Deserialize JSON into Object types
-        let line_obj: Object = serde_json::from_value(line_obj_json).unwrap();
-        let start_point: Object = serde_json::from_value(start_point_json).unwrap();
-        let end_point: Object = serde_json::from_value(end_point_json).unwrap();
+        );
 
         let objects = vec![line_obj, start_point, end_point];
 
@@ -790,80 +802,92 @@ mod sync {
 
     #[test]
     fn test_get_next_trim_spawn_no_intersection() {
-        use serde_json::json;
+        use kcl_error::SourceRange;
+
+        use crate::execution::ArtifactId;
+        use crate::frontend::api::Expr;
+        use crate::frontend::api::Number;
+        use crate::frontend::api::Object;
+        use crate::frontend::api::ObjectKind;
+        use crate::frontend::api::SourceRef;
+        use crate::frontend::sketch::Freedom;
+        use crate::frontend::sketch::Line;
+        use crate::frontend::sketch::LineCtor;
+        use crate::frontend::sketch::Point;
+        use crate::frontend::sketch::Point2d;
+        use crate::frontend::sketch::Segment;
+        use crate::frontend::sketch::SegmentCtor;
+        use crate::pretty::NumericSuffix;
+
+        let num = |v: f64| Number {
+            value: v,
+            units: NumericSuffix::None,
+        };
+        let expr = |v: f64| Expr::Number(num(v));
+        let make_obj = |id: usize, kind: ObjectKind| Object {
+            id: ObjectId(id),
+            kind,
+            label: String::new(),
+            comments: String::new(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::from(SourceRange::default()),
+        };
 
         // Create a line segment that won't intersect
-        let line_obj_json = json!({
-            "id": 0,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Line",
-                    "start": 1,
-                    "end": 2,
-                    "ctor": {
-                        "type": "Line",
-                        "start": { "x": { "type": "Number", "value": 0.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } },
-                        "end": { "x": { "type": "Number", "value": 10.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } }
-                    },
-                    "ctor_applicable": false,
-                    "construction": false
-                }
+        let line_obj = make_obj(
+            0,
+            ObjectKind::Segment {
+                segment: Segment::Line(Line {
+                    start: ObjectId(1),
+                    end: ObjectId(2),
+                    ctor: SegmentCtor::Line(LineCtor {
+                        start: Point2d {
+                            x: expr(0.0),
+                            y: expr(0.0),
+                        },
+                        end: Point2d {
+                            x: expr(10.0),
+                            y: expr(0.0),
+                        },
+                        construction: None,
+                    }),
+                    ctor_applicable: false,
+                    construction: false,
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
+        );
 
-        let start_point_json = json!({
-            "id": 1,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "type": "Number", "value": 0.0, "units": "None" },
-                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+        let start_point = make_obj(
+            1,
+            ObjectKind::Segment {
+                segment: Segment::Point(Point {
+                    position: Point2d {
+                        x: num(0.0),
+                        y: num(0.0),
                     },
-                    "ctor": null,
-                    "owner": null,
-                    "freedom": "Free",
-                    "constraints": []
-                }
+                    ctor: None,
+                    owner: None,
+                    freedom: Freedom::Free,
+                    constraints: vec![],
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
+        );
 
-        let end_point_json = json!({
-            "id": 2,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "type": "Number", "value": 10.0, "units": "None" },
-                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+        let end_point = make_obj(
+            2,
+            ObjectKind::Segment {
+                segment: Segment::Point(Point {
+                    position: Point2d {
+                        x: num(10.0),
+                        y: num(0.0),
                     },
-                    "ctor": null,
-                    "owner": null,
-                    "freedom": "Free",
-                    "constraints": []
-                }
+                    ctor: None,
+                    owner: None,
+                    freedom: Freedom::Free,
+                    constraints: vec![],
+                }),
             },
-            "label": "",
-            "comments": "",
-            "artifact_id": "00000000-0000-0000-0000-000000000000",
-            "source": { "type": "Simple", "range": [0, 0, 0] }
-        });
-
-        // Deserialize JSON into Object types
-        let line_obj: Object = serde_json::from_value(line_obj_json).unwrap();
-        let start_point: Object = serde_json::from_value(start_point_json).unwrap();
-        let end_point: Object = serde_json::from_value(end_point_json).unwrap();
+        );
 
         let objects = vec![line_obj, start_point, end_point];
 

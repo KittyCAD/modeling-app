@@ -16,6 +16,8 @@ use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;
 pub use path::Step;
+#[cfg(feature = "artifact-graph")]
+pub(crate) use path::fill_node_paths;
 use serde::Deserialize;
 use serde::Serialize;
 use tower_lsp::lsp_types::Color;
@@ -68,6 +70,8 @@ pub struct Node<T> {
     pub start: usize,
     pub end: usize,
     pub module_id: ModuleId,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
     // Some comments are kept here, some are kept in NonCodeMeta, and some are ignored. See how each
@@ -85,6 +89,21 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
+            node_path: None,
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn with_node_path(inner: T, start: usize, end: usize, module_id: ModuleId, node_path: NodePath) -> Self {
+        Self {
+            inner,
+            start,
+            end,
+            module_id,
+            node_path: Some(node_path),
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
@@ -97,6 +116,7 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
+            node_path: None,
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
@@ -108,6 +128,7 @@ impl<T> Node<T> {
             inner,
             start: 0,
             end: 0,
+            node_path: None,
             module_id: ModuleId::default(),
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
@@ -121,6 +142,27 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
+            node_path: None,
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        })
+    }
+
+    #[cfg(test)]
+    pub fn boxed_with_node_path(
+        start: usize,
+        end: usize,
+        module_id: ModuleId,
+        node_path: NodePath,
+        inner: T,
+    ) -> BoxNode<T> {
+        Box::new(Node {
+            inner,
+            start,
+            end,
+            module_id,
+            node_path: Some(node_path),
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
@@ -163,6 +205,7 @@ impl<T> Node<T> {
             start: self.start,
             end: self.end,
             module_id: self.module_id,
+            node_path: self.node_path,
             outer_attrs: self.outer_attrs,
             pre_comments: self.pre_comments,
             comment_start: self.comment_start,
@@ -180,6 +223,7 @@ impl<T> Node<T> {
             start: self.start,
             end: self.end,
             module_id: self.module_id,
+            node_path: self.node_path.clone(),
             outer_attrs: self.outer_attrs.clone(),
             pre_comments: self.pre_comments.clone(),
             comment_start: self.start,
@@ -1190,6 +1234,30 @@ impl Expr {
             Expr::SketchBlock(expr) => expr.end,
             Expr::SketchVar(expr) => expr.end,
             Expr::None(none) => none.end,
+        }
+    }
+
+    pub(crate) fn node_path(&self) -> Option<&NodePath> {
+        match self {
+            Expr::Literal(node) => node.node_path.as_ref(),
+            Expr::Name(node) => node.node_path.as_ref(),
+            Expr::TagDeclarator(node) => node.node_path.as_ref(),
+            Expr::BinaryExpression(node) => node.node_path.as_ref(),
+            Expr::FunctionExpression(node) => node.node_path.as_ref(),
+            Expr::CallExpressionKw(node) => node.node_path.as_ref(),
+            Expr::PipeExpression(node) => node.node_path.as_ref(),
+            Expr::PipeSubstitution(node) => node.node_path.as_ref(),
+            Expr::ArrayExpression(node) => node.node_path.as_ref(),
+            Expr::ArrayRangeExpression(node) => node.node_path.as_ref(),
+            Expr::ObjectExpression(node) => node.node_path.as_ref(),
+            Expr::MemberExpression(node) => node.node_path.as_ref(),
+            Expr::UnaryExpression(node) => node.node_path.as_ref(),
+            Expr::IfExpression(node) => node.node_path.as_ref(),
+            Expr::LabelledExpression(node) => node.node_path.as_ref(),
+            Expr::AscribedExpression(node) => node.node_path.as_ref(),
+            Expr::SketchBlock(node) => node.node_path.as_ref(),
+            Expr::SketchVar(node) => node.node_path.as_ref(),
+            Expr::None(node) => node.node_path.as_ref(),
         }
     }
 

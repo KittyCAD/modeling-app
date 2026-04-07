@@ -1,6 +1,8 @@
 use serde::Serialize;
 
 #[cfg(feature = "artifact-graph")]
+use super::BinaryPart;
+#[cfg(feature = "artifact-graph")]
 use super::BodyItem;
 #[cfg(feature = "artifact-graph")]
 use super::Expr;
@@ -8,6 +10,10 @@ use super::Expr;
 use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::ProgramLookup;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Node;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Program;
 
 /// A traversal path through the AST to a node.
 ///
@@ -64,7 +70,9 @@ pub enum Step {
     LabeledExpressionExpr,
     LabeledExpressionLabel,
     AscribedExpressionExpr,
-    SketchBlock,
+    SketchBlockArgs,
+    SketchBlockBody,
+    SketchBlockBodyItem { index: usize },
     SketchVar,
 }
 
@@ -346,10 +354,21 @@ impl NodePath {
                 // TODO: Check the type annotation.
             }
             Expr::SketchBlock(node) => {
-                // TODO: sketch-api: implement arguments.
-                if node.contains_range(&range) {
-                    path.push(Step::SketchBlock);
-                    // TODO: sketch-api: implement body.
+                if node.iter_arguments().any(|(label, arg)| {
+                    label.map(|label| label.contains_range(&range)).unwrap_or(false) || arg.contains_range(&range)
+                }) {
+                    path.push(Step::SketchBlockArgs);
+                    // TODO: Should we dig deeper into the arguments?
+                    return Some(path);
+                }
+                if node.body.contains_range(&range) {
+                    path.push(Step::SketchBlockBody);
+                    for (i, item) in node.body.items.iter().enumerate() {
+                        if item.contains_range(&range) {
+                            path.push(Step::SketchBlockBodyItem { index: i });
+                            return Self::from_body_item(item, range, path);
+                        }
+                    }
                     return Some(path);
                 }
             }
@@ -373,6 +392,341 @@ impl NodePath {
     #[cfg(feature = "artifact-graph")]
     fn push(&mut self, step: Step) {
         self.steps.push(step);
+    }
+}
+
+/// Given a program and a [`SourceRange`], return the path to the node that
+/// contains the range.
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn fill_node_paths(program: &mut Node<Program>) {
+    for (i, item) in program.body.iter_mut().enumerate() {
+        let mut path = NodePath::default();
+        path.push(Step::ProgramBodyItem { index: i });
+        fill_node_paths_body_item(item, path);
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn fill_node_paths_body_item(item: &mut BodyItem, mut path: NodePath) {
+    match item {
+        BodyItem::ImportStatement(node) => {
+            node.node_path = Some(path);
+            // TODO: Traverse imports.
+        }
+        BodyItem::ExpressionStatement(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::ExpressionStatementExpr);
+            fill_node_paths_expr(&mut node.expression, path);
+        }
+        BodyItem::VariableDeclaration(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::VariableDeclarationDeclaration);
+            node.declaration.node_path = Some(path.clone());
+            path.push(Step::VariableDeclarationInit);
+            fill_node_paths_expr(&mut node.declaration.init, path);
+        }
+        BodyItem::TypeDeclaration(node) => {
+            node.node_path = Some(path);
+        }
+        BodyItem::ReturnStatement(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::ReturnStatementArg);
+            fill_node_paths_expr(&mut node.argument, path);
+        }
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn fill_node_paths_expr(expr: &mut Expr, mut path: NodePath) {
+    match expr {
+        Expr::Literal(node) => {
+            node.node_path = Some(path);
+        }
+        Expr::Name(node) => {
+            node.node_path = Some(path);
+        }
+        Expr::TagDeclarator(node) => {
+            node.node_path = Some(path);
+        }
+        Expr::BinaryExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut left_path = path.clone();
+            left_path.push(Step::BinaryLeft);
+            fill_node_paths_binary_part(&mut node.left, left_path);
+            path.push(Step::BinaryRight);
+            fill_node_paths_binary_part(&mut node.right, path);
+        }
+        Expr::FunctionExpression(node) => {
+            node.node_path = Some(path.clone());
+            if let Some(name) = &mut node.name {
+                let mut name_path = path.clone();
+                name_path.push(Step::FunctionExpressionName);
+                name.node_path = Some(name_path);
+            }
+            for (i, param) in node.params.iter_mut().enumerate() {
+                let mut param_path = path.clone();
+                param_path.push(Step::FunctionExpressionParam { index: i });
+                param.identifier.node_path = Some(param_path);
+            }
+            path.push(Step::FunctionExpressionBody);
+            node.body.node_path = Some(path.clone());
+            for (i, item) in node.body.body.iter_mut().enumerate() {
+                let mut item_path = path.clone();
+                item_path.push(Step::FunctionExpressionBodyItem { index: i });
+                fill_node_paths_body_item(item, item_path);
+            }
+        }
+        Expr::CallExpressionKw(node) => {
+            node.node_path = Some(path.clone());
+            let mut callee_path = path.clone();
+            callee_path.push(Step::CallKwCallee);
+            node.callee.node_path = Some(callee_path);
+            if let Some(unlabeled) = &mut node.unlabeled {
+                let mut unlabeled_path = path.clone();
+                unlabeled_path.push(Step::CallKwUnlabeledArg);
+                fill_node_paths_expr(unlabeled, unlabeled_path);
+            }
+            for (i, arg) in node.arguments.iter_mut().enumerate() {
+                let mut arg_path = path.clone();
+                arg_path.push(Step::CallKwArg { index: i });
+                fill_node_paths_expr(&mut arg.arg, arg_path);
+            }
+        }
+        Expr::PipeExpression(node) => {
+            node.node_path = Some(path.clone());
+            for (i, item) in node.body.iter_mut().enumerate() {
+                let mut item_path = path.clone();
+                item_path.push(Step::PipeBodyItem { index: i });
+                fill_node_paths_expr(item, item_path);
+            }
+        }
+        Expr::PipeSubstitution(node) => {
+            node.node_path = Some(path);
+        }
+        Expr::ArrayExpression(node) => {
+            node.node_path = Some(path.clone());
+            for (i, element) in node.elements.iter_mut().enumerate() {
+                let mut elem_path = path.clone();
+                elem_path.push(Step::ArrayElement { index: i });
+                fill_node_paths_expr(element, elem_path);
+            }
+        }
+        Expr::ArrayRangeExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut start_path = path.clone();
+            start_path.push(Step::ArrayRangeStart);
+            fill_node_paths_expr(&mut node.start_element, start_path);
+            path.push(Step::ArrayRangeEnd);
+            fill_node_paths_expr(&mut node.end_element, path);
+        }
+        Expr::ObjectExpression(node) => {
+            node.node_path = Some(path.clone());
+            for (i, property) in node.properties.iter_mut().enumerate() {
+                let mut prop_path = path.clone();
+                prop_path.push(Step::ObjectProperty { index: i });
+                property.node_path = Some(prop_path.clone());
+                let mut key_path = prop_path.clone();
+                key_path.push(Step::ObjectPropertyKey);
+                property.key.node_path = Some(key_path);
+                prop_path.push(Step::ObjectPropertyValue);
+                fill_node_paths_expr(&mut property.value, prop_path);
+            }
+        }
+        Expr::MemberExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut obj_path = path.clone();
+            obj_path.push(Step::MemberExpressionObject);
+            fill_node_paths_expr(&mut node.object, obj_path);
+            path.push(Step::MemberExpressionProperty);
+            fill_node_paths_expr(&mut node.property, path);
+        }
+        Expr::UnaryExpression(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::UnaryArg);
+            fill_node_paths_binary_part(&mut node.argument, path);
+        }
+        Expr::IfExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut cond_path = path.clone();
+            cond_path.push(Step::IfExpressionCondition);
+            fill_node_paths_expr(&mut node.cond, cond_path);
+            let mut then_path = path.clone();
+            then_path.push(Step::IfExpressionThen);
+            node.then_val.node_path = Some(then_path.clone());
+            fill_node_paths_body(&mut node.then_val.body, then_path);
+            for (i, else_if) in node.else_ifs.iter_mut().enumerate() {
+                let mut else_if_path = path.clone();
+                else_if_path.push(Step::IfExpressionElseIf { index: i });
+                else_if.node_path = Some(else_if_path.clone());
+                let mut cond_path = else_if_path.clone();
+                cond_path.push(Step::IfExpressionElseIfCond);
+                fill_node_paths_expr(&mut else_if.cond, cond_path);
+                else_if_path.push(Step::IfExpressionElseIfBody);
+                else_if.then_val.node_path = Some(else_if_path.clone());
+                fill_node_paths_body(&mut else_if.then_val.body, else_if_path);
+            }
+            path.push(Step::IfExpressionElse);
+            node.final_else.node_path = Some(path.clone());
+            fill_node_paths_body(&mut node.final_else.body, path);
+        }
+        Expr::LabelledExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut expr_path = path.clone();
+            expr_path.push(Step::LabeledExpressionExpr);
+            fill_node_paths_expr(&mut node.expr, expr_path);
+            path.push(Step::LabeledExpressionLabel);
+            node.label.node_path = Some(path);
+        }
+        Expr::AscribedExpression(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::AscribedExpressionExpr);
+            fill_node_paths_expr(&mut node.expr, path);
+        }
+        Expr::SketchBlock(node) => {
+            node.node_path = Some(path.clone());
+            for (label, arg) in node.iter_arguments_mut() {
+                let mut path = path.clone();
+                path.push(Step::SketchBlockArgs);
+                if let Some(label) = label {
+                    label.node_path = Some(path.clone());
+                }
+                fill_node_paths_expr(arg, path);
+            }
+            path.push(Step::SketchBlockBody);
+            node.body.node_path = Some(path.clone());
+            for (i, item) in node.body.items.iter_mut().enumerate() {
+                let mut item_path = path.clone();
+                item_path.push(Step::SketchBlockBodyItem { index: i });
+                fill_node_paths_body_item(item, item_path);
+            }
+        }
+        Expr::SketchVar(node) => {
+            path.push(Step::SketchVar);
+            node.node_path = Some(path);
+        }
+        Expr::None(node) => {
+            node.node_path = Some(path);
+        }
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn fill_node_paths_body(body: &mut [BodyItem], path: NodePath) {
+    for (i, item) in body.iter_mut().enumerate() {
+        let mut item_path = path.clone();
+        item_path.push(Step::ProgramBodyItem { index: i });
+        fill_node_paths_body_item(item, item_path);
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn fill_node_paths_binary_part(part: &mut BinaryPart, mut path: NodePath) {
+    match part {
+        BinaryPart::Literal(node) => {
+            node.node_path = Some(path);
+        }
+        BinaryPart::Name(node) => {
+            node.node_path = Some(path);
+        }
+        BinaryPart::BinaryExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut left_path = path.clone();
+            left_path.push(Step::BinaryLeft);
+            fill_node_paths_binary_part(&mut node.left, left_path);
+            path.push(Step::BinaryRight);
+            fill_node_paths_binary_part(&mut node.right, path);
+        }
+        BinaryPart::CallExpressionKw(node) => {
+            node.node_path = Some(path.clone());
+            let mut callee_path = path.clone();
+            callee_path.push(Step::CallKwCallee);
+            node.callee.node_path = Some(callee_path);
+            if let Some(unlabeled) = &mut node.unlabeled {
+                let mut unlabeled_path = path.clone();
+                unlabeled_path.push(Step::CallKwUnlabeledArg);
+                fill_node_paths_expr(unlabeled, unlabeled_path);
+            }
+            for (i, arg) in node.arguments.iter_mut().enumerate() {
+                let mut arg_path = path.clone();
+                arg_path.push(Step::CallKwArg { index: i });
+                fill_node_paths_expr(&mut arg.arg, arg_path);
+            }
+        }
+        BinaryPart::UnaryExpression(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::UnaryArg);
+            fill_node_paths_binary_part(&mut node.argument, path);
+        }
+        BinaryPart::MemberExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut obj_path = path.clone();
+            obj_path.push(Step::MemberExpressionObject);
+            fill_node_paths_expr(&mut node.object, obj_path);
+            path.push(Step::MemberExpressionProperty);
+            fill_node_paths_expr(&mut node.property, path);
+        }
+        BinaryPart::ArrayExpression(node) => {
+            node.node_path = Some(path.clone());
+            for (i, element) in node.elements.iter_mut().enumerate() {
+                let mut elem_path = path.clone();
+                elem_path.push(Step::ArrayElement { index: i });
+                fill_node_paths_expr(element, elem_path);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut start_path = path.clone();
+            start_path.push(Step::ArrayRangeStart);
+            fill_node_paths_expr(&mut node.start_element, start_path);
+            path.push(Step::ArrayRangeEnd);
+            fill_node_paths_expr(&mut node.end_element, path);
+        }
+        BinaryPart::ObjectExpression(node) => {
+            node.node_path = Some(path.clone());
+            for (i, property) in node.properties.iter_mut().enumerate() {
+                let mut prop_path = path.clone();
+                prop_path.push(Step::ObjectProperty { index: i });
+                property.node_path = Some(prop_path.clone());
+                let mut key_path = prop_path.clone();
+                key_path.push(Step::ObjectPropertyKey);
+                property.key.node_path = Some(key_path);
+                prop_path.push(Step::ObjectPropertyValue);
+                fill_node_paths_expr(&mut property.value, prop_path);
+            }
+        }
+        BinaryPart::IfExpression(node) => {
+            node.node_path = Some(path.clone());
+            let mut cond_path = path.clone();
+            cond_path.push(Step::IfExpressionCondition);
+            fill_node_paths_expr(&mut node.cond, cond_path);
+            let mut then_path = path.clone();
+            then_path.push(Step::IfExpressionThen);
+            node.then_val.node_path = Some(then_path.clone());
+            fill_node_paths_body(&mut node.then_val.body, then_path);
+            for (i, else_if) in node.else_ifs.iter_mut().enumerate() {
+                let mut else_if_path = path.clone();
+                else_if_path.push(Step::IfExpressionElseIf { index: i });
+                else_if.node_path = Some(else_if_path.clone());
+                let mut cond_path = else_if_path.clone();
+                cond_path.push(Step::IfExpressionElseIfCond);
+                fill_node_paths_expr(&mut else_if.cond, cond_path);
+                else_if_path.push(Step::IfExpressionElseIfBody);
+                else_if.then_val.node_path = Some(else_if_path.clone());
+                fill_node_paths_body(&mut else_if.then_val.body, else_if_path);
+            }
+            path.push(Step::IfExpressionElse);
+            node.final_else.node_path = Some(path.clone());
+            fill_node_paths_body(&mut node.final_else.body, path);
+        }
+        BinaryPart::AscribedExpression(node) => {
+            node.node_path = Some(path.clone());
+            path.push(Step::AscribedExpressionExpr);
+            fill_node_paths_expr(&mut node.expr, path);
+        }
+        BinaryPart::SketchVar(node) => {
+            path.push(Step::SketchVar);
+            node.node_path = Some(path);
+        }
     }
 }
 
@@ -452,6 +806,250 @@ mod tests {
                 ],
             }
         );
+    }
+
+    #[test]
+    fn test_fill_node_paths_simple() {
+        let code = "x = 5\n";
+        let parsed = crate::Program::parse_no_errs(code).unwrap();
+        let mut ast = parsed.ast;
+        fill_node_paths(&mut ast);
+
+        // VariableDeclaration
+        let var_decl = match &ast.body[0] {
+            BodyItem::VariableDeclaration(n) => n,
+            _ => panic!("expected VariableDeclaration"),
+        };
+        assert_eq!(
+            var_decl.node_path,
+            Some(NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 0 }]
+            })
+        );
+        // VariableDeclarator
+        assert_eq!(
+            var_decl.declaration.node_path,
+            Some(NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
+            })
+        );
+        // Init (Literal 5)
+        match &var_decl.declaration.init {
+            Expr::Literal(lit) => {
+                assert_eq!(
+                    lit.node_path,
+                    Some(NodePath {
+                        steps: vec![
+                            Step::ProgramBodyItem { index: 0 },
+                            Step::VariableDeclarationDeclaration,
+                            Step::VariableDeclarationInit,
+                        ],
+                    })
+                );
+            }
+            _ => panic!("expected Literal"),
+        }
+    }
+
+    #[test]
+    fn test_fill_node_paths_array() {
+        let code = "x = [1, 2, 3]\n";
+        let parsed = crate::Program::parse_no_errs(code).unwrap();
+        let mut ast = parsed.ast;
+        fill_node_paths(&mut ast);
+
+        let var_decl = match &ast.body[0] {
+            BodyItem::VariableDeclaration(n) => n,
+            _ => panic!("expected VariableDeclaration"),
+        };
+        let arr = match &var_decl.declaration.init {
+            Expr::ArrayExpression(n) => n,
+            _ => panic!("expected ArrayExpression"),
+        };
+        assert_eq!(
+            arr.node_path,
+            Some(NodePath {
+                steps: vec![
+                    Step::ProgramBodyItem { index: 0 },
+                    Step::VariableDeclarationDeclaration,
+                    Step::VariableDeclarationInit,
+                ],
+            })
+        );
+        // Second element
+        match &arr.elements[1] {
+            Expr::Literal(lit) => {
+                assert_eq!(
+                    lit.node_path,
+                    Some(NodePath {
+                        steps: vec![
+                            Step::ProgramBodyItem { index: 0 },
+                            Step::VariableDeclarationDeclaration,
+                            Step::VariableDeclarationInit,
+                            Step::ArrayElement { index: 1 },
+                        ],
+                    })
+                );
+            }
+            _ => panic!("expected Literal"),
+        }
+    }
+
+    #[test]
+    fn test_fill_node_paths_pipe_call() {
+        let code = "x = startSketchOn(XY)\n  |> line(endAbsolute = [0, 1])\n";
+        let parsed = crate::Program::parse_no_errs(code).unwrap();
+        let mut ast = parsed.ast;
+        fill_node_paths(&mut ast);
+
+        let var_decl = match &ast.body[0] {
+            BodyItem::VariableDeclaration(n) => n,
+            _ => panic!("expected VariableDeclaration"),
+        };
+        let pipe = match &var_decl.declaration.init {
+            Expr::PipeExpression(n) => n,
+            _ => panic!("expected PipeExpression"),
+        };
+        let base_path = vec![
+            Step::ProgramBodyItem { index: 0 },
+            Step::VariableDeclarationDeclaration,
+            Step::VariableDeclarationInit,
+        ];
+        assert_eq!(
+            pipe.node_path,
+            Some(NodePath {
+                steps: base_path.clone()
+            })
+        );
+
+        // Second pipe item (line call)
+        let line_call = match &pipe.body[1] {
+            Expr::CallExpressionKw(n) => n,
+            _ => panic!("expected CallExpressionKw"),
+        };
+        let mut call_path = base_path;
+        call_path.push(Step::PipeBodyItem { index: 1 });
+        assert_eq!(
+            line_call.node_path,
+            Some(NodePath {
+                steps: call_path.clone()
+            })
+        );
+
+        // Callee
+        let mut callee_path = call_path.clone();
+        callee_path.push(Step::CallKwCallee);
+        assert_eq!(line_call.callee.node_path, Some(NodePath { steps: callee_path }));
+
+        // Argument value ([0, 1])
+        let arr = match &line_call.arguments[0].arg {
+            Expr::ArrayExpression(n) => n,
+            _ => panic!("expected ArrayExpression"),
+        };
+        let mut arg_path = call_path.clone();
+        arg_path.push(Step::CallKwArg { index: 0 });
+        assert_eq!(
+            arr.node_path,
+            Some(NodePath {
+                steps: arg_path.clone()
+            })
+        );
+
+        // First array element (0)
+        match &arr.elements[0] {
+            Expr::Literal(lit) => {
+                let mut elem_path = arg_path;
+                elem_path.push(Step::ArrayElement { index: 0 });
+                assert_eq!(lit.node_path, Some(NodePath { steps: elem_path }));
+            }
+            _ => panic!("expected Literal"),
+        }
+    }
+
+    /// Verify that fill_node_paths produces the same paths as from_range for
+    /// leaf nodes in the cube.kcl test file.
+    #[test]
+    fn test_fill_node_paths_matches_from_range() {
+        let contents = std::fs::read_to_string("tests/misc/cube.kcl").unwrap();
+        let program = crate::Program::parse_no_errs(&contents).unwrap();
+        let mut ast = program.ast.clone();
+        fill_node_paths(&mut ast);
+
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
+
+        // Navigate to: myCube = cube(sideLength = 40, center = [0, 0])
+        //                                                          ^
+        // body[1] -> VarDecl -> declaration -> init -> CallKw -> args[1] -> arr -> elements[1]
+        let var_decl = match &ast.body[1] {
+            BodyItem::VariableDeclaration(n) => n,
+            _ => panic!("expected VariableDeclaration"),
+        };
+        let call = match &var_decl.declaration.init {
+            Expr::CallExpressionKw(n) => n,
+            _ => panic!("expected CallExpressionKw"),
+        };
+        let arr = match &call.arguments[1].arg {
+            Expr::ArrayExpression(n) => n,
+            _ => panic!("expected ArrayExpression"),
+        };
+        let elem = match &arr.elements[1] {
+            Expr::Literal(n) => n,
+            _ => panic!("expected Literal"),
+        };
+        // Compare fill_node_paths result with from_range result for this leaf.
+        let from_range_path = NodePath::from_range(&programs, 0, elem.as_source_range()).unwrap();
+        assert_eq!(elem.node_path.as_ref().unwrap(), &from_range_path);
+
+        // Navigate to: fn cube(sideLength, center) { ... }
+        //                                  ^^^^^^
+        // body[0] -> VarDecl -> declaration -> init -> FunctionExpr -> params[1]
+        let fn_decl = match &ast.body[0] {
+            BodyItem::VariableDeclaration(n) => n,
+            _ => panic!("expected VariableDeclaration"),
+        };
+        let func = match &fn_decl.declaration.init {
+            Expr::FunctionExpression(n) => n,
+            _ => panic!("expected FunctionExpression"),
+        };
+        let param_ident = &func.params[1].identifier;
+        let from_range_path = NodePath::from_range(&programs, 0, param_ident.as_source_range()).unwrap();
+        assert_eq!(param_ident.node_path.as_ref().unwrap(), &from_range_path);
+
+        // Navigate deep into pipe: |> line(endAbsolute = p1)
+        //                                                ^^
+        // body[0] -> VarDecl -> decl -> init -> FuncExpr -> body.body[7] -> ReturnStmt -> arg
+        //   -> PipeExpr -> body[2] -> CallKw -> args[0] -> arg (Name "p1")
+        let ret_stmt = match &func.body.body[7] {
+            BodyItem::ReturnStatement(n) => n,
+            _ => panic!("expected ReturnStatement"),
+        };
+        let pipe = match &ret_stmt.argument {
+            Expr::PipeExpression(n) => n,
+            _ => panic!("expected PipeExpression"),
+        };
+        let line_call = match &pipe.body[2] {
+            Expr::CallExpressionKw(n) => n,
+            _ => panic!("expected CallExpressionKw"),
+        };
+        let p1_arg = &line_call.arguments[0].arg;
+        let p1_range = match p1_arg {
+            Expr::Name(n) => n.as_source_range(),
+            _ => panic!("expected Name"),
+        };
+        let from_range_path = NodePath::from_range(&programs, 0, p1_range).unwrap();
+        let fill_path = match p1_arg {
+            Expr::Name(n) => n.node_path.as_ref().unwrap(),
+            _ => unreachable!(),
+        };
+        assert_eq!(fill_path, &from_range_path);
     }
 
     #[test]

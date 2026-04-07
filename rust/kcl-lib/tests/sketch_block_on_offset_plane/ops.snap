@@ -112,7 +112,17 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -186,7 +196,17 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -260,7 +280,17 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -334,7 +364,17 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -360,7 +400,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 4
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -386,7 +433,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -412,7 +466,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 6
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -438,7 +499,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 7
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -472,7 +540,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 8
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -506,7 +581,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 9
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -540,7 +622,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -574,7 +663,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 11
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -608,7 +704,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -642,7 +745,14 @@ description: Operations executed sketch_block_on_offset_plane.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 13
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -659,9 +769,6 @@ description: Operations executed sketch_block_on_offset_plane.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },

@@ -286,9 +286,9 @@ function CommandBarKclInput({
     if (!canSubmit || valueNode === null) {
       // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
       if (!canSubmit) {
-        toast.error('Unable to submit command')
+        toast.error('Unable to submit command.')
       } else if (valueNode === null) {
-        toast.error('Unable to submit undefined command value')
+        toast.error('Unable to submit undefined command value.')
       }
       return
     }

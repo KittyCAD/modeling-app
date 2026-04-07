@@ -425,7 +425,7 @@ export const ProjectExplorer = ({
             )
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
-            toast.error(`Failed to import ${file.name}`)
+            toast.error(`Failed to import ${file.name}.`)
           }
         }
 
@@ -442,7 +442,7 @@ export const ProjectExplorer = ({
         })
 
         toast.success(
-          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}`
+          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
         )
       }
     },
@@ -656,7 +656,7 @@ export const ProjectExplorer = ({
                   },
                 })
               } else {
-                toast.error('Failed to copy and paste the result is null')
+                toast.error('Failed to copy and paste the result is null.')
               }
             }
 
@@ -709,7 +709,7 @@ export const ProjectExplorer = ({
                   })
                 )
               } else {
-                toast.error('Failed to copy and paste the result is null')
+                toast.error('Failed to copy and paste the result is null.')
               }
             }
           },
