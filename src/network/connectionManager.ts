@@ -51,10 +51,10 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
 import {
-  DEFAULT_HIGHLIGHT_COLOR,
-  DEFAULT_SELECTION_COLOR,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
+  SYSTEM_HIGHLIGHT_COLOR,
+  SYSTEM_SELECTION_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -65,9 +65,6 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-
-const DEFAULT_HIGHLIGHT_SYSTEM_COLOR = hexToRgba(DEFAULT_HIGHLIGHT_COLOR)
-const DEFAULT_SELECTION_SYSTEM_COLOR = hexToRgba(DEFAULT_SELECTION_COLOR)
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -428,15 +425,11 @@ export class ConnectionManager extends EventTarget {
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(theme)
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
-    const highlightSystemColor =
-      DEFAULT_HIGHLIGHT_SYSTEM_COLOR ?? defaultSystemColor
-    const selectionSystemColor =
-      DEFAULT_SELECTION_SYSTEM_COLOR ?? defaultSystemColor
     const setDefaultSystemPropertiesCmd = {
       type: 'set_default_system_properties',
       color: defaultSystemColor,
-      highlight_color: highlightSystemColor,
-      selection_color: selectionSystemColor,
+      highlight_color: SYSTEM_HIGHLIGHT_COLOR,
+      selection_color: SYSTEM_SELECTION_COLOR,
     } as const
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -483,24 +476,11 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    if (!DEFAULT_HIGHLIGHT_SYSTEM_COLOR || !DEFAULT_SELECTION_SYSTEM_COLOR) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message:
-          'setDefaultSystemProperties, invalid default highlight/selection color',
-        metadata: {
-          defaultHighlightColor: DEFAULT_HIGHLIGHT_COLOR,
-          defaultSelectionColor: DEFAULT_SELECTION_COLOR,
-        },
-      })
-      return
-    }
-
     const cmd = {
       type: 'set_default_system_properties',
       backface_color: backfaceRgbaColor,
-      highlight_color: DEFAULT_HIGHLIGHT_SYSTEM_COLOR,
-      selection_color: DEFAULT_SELECTION_SYSTEM_COLOR,
+      highlight_color: SYSTEM_HIGHLIGHT_COLOR,
+      selection_color: SYSTEM_SELECTION_COLOR,
     } as const
     const debugLog = (event: string) =>
       EngineDebugger.addLog({

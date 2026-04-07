@@ -107,6 +107,22 @@ export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
 export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
   Math.round(val * 0.7)
 )
+
+/** Corresponding engine selections and highlights */
+export const SYSTEM_SELECTION_COLOR = {
+  r: SKETCH_SELECTION_RGB[0] / 255,
+  g: SKETCH_SELECTION_RGB[1] / 255,
+  b: SKETCH_SELECTION_RGB[2] / 255,
+  a: 1,
+}
+
+export const SYSTEM_HIGHLIGHT_COLOR = {
+  r: SKETCH_HIGHLIGHT_RGB[0] / 255,
+  g: SKETCH_HIGHLIGHT_RGB[1] / 255,
+  b: SKETCH_HIGHLIGHT_RGB[2] / 255,
+  a: 1,
+}
+
 /** The sketch mode revamp highlight rgb values as HEX */
 export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
 
@@ -341,10 +357,6 @@ export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
-// Default selection color
-export const DEFAULT_SELECTION_COLOR = '#FFB727'
-// Default highlight color
-export const DEFAULT_HIGHLIGHT_COLOR = '#B3801B'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl
