@@ -546,6 +546,65 @@ extrude001 = extrude(region001, length = 5)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call on a chamfer edgeCut face from sketch block code', async () => {
+      const chamferEdgeCutCode = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.52mm, var 0.57mm], end = [var 3.88mm, var 0.77mm])
+  line2 = line(start = [var 3.88mm, var 0.77mm], end = [var 3.88mm, var 3.12mm])
+  line3 = line(start = [var 3.88mm, var 3.12mm], end = [var 0.83mm, var 3.12mm])
+  line4 = line(start = [var 0.83mm, var 3.12mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line4.end, ORIGIN])
+}
+region001 = region(point = [1.9352069mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), length = 1)`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        chamferEdgeCutCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const chamferFace = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'edgeCut' && artifact.subType === 'chamfer'
+      )
+      if (!chamferFace) {
+        throw new Error('Could not find expected chamfer edgeCut face')
+      }
+
+      const faces = createSelectionFromArtifacts([chamferFace], artifactGraph)
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), length = 1, tag = $chamfer001Tag)`
+      )
+      expect(newCode).toContain(
+        `surface001 = deleteFace(chamfer001, faces = chamfer001Tag)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on the bracket without resolving to holes', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
