@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::front::Error;
 use kcl_lib::front::ExistingSegmentCtor;
@@ -139,7 +140,7 @@ impl Context {
         let result = guard
             .hack_set_program(&ctx, program)
             .await
-            .map_err(|e| format!("Failed to execute new program: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize hack set program result. {TRUE_BUG} Details: {e}"))?)
@@ -170,7 +171,7 @@ impl Context {
         let result = guard
             .execute_mock(&ctx, version, sketch)
             .await
-            .map_err(|e| format!("Failed to execute mock: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize execute mock result. {TRUE_BUG} Details: {e}"))?)
@@ -206,7 +207,7 @@ impl Context {
         let result = guard
             .new_sketch(&ctx, project, file, version, args)
             .await
-            .map_err(|e| format!("Failed to create new sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize new sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -242,7 +243,7 @@ impl Context {
         let result = guard
             .edit_sketch(&ctx, project, file, version, sketch)
             .await
-            .map_err(|e| format!("Failed to edit sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -267,7 +268,7 @@ impl Context {
         let result = guard
             .exit_sketch(&ctx, version, sketch)
             .await
-            .map_err(|e| format!("Failed to exit sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize exit sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -297,7 +298,7 @@ impl Context {
         let result = guard
             .delete_sketch(&ctx, version, sketch)
             .await
-            .map_err(|e| format!("Failed to delete sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize delete sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -331,7 +332,7 @@ impl Context {
         let result = guard
             .add_segment(&ctx, version, sketch, segment, label)
             .await
-            .map_err(|e| format!("Failed to add segment to sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add segment result. {TRUE_BUG} Details: {e}"))?)
@@ -364,7 +365,7 @@ impl Context {
         let result = guard
             .edit_segments(&ctx, version, sketch, segments)
             .await
-            .map_err(|e| format!("Failed to edit segments in sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
@@ -400,7 +401,7 @@ impl Context {
         let result = guard
             .delete_objects(&ctx, version, sketch, constraint_ids, segment_ids)
             .await
-            .map_err(|e| format!("Failed to delete objects in sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize delete objects result. {TRUE_BUG} Details: {e}"))?)
@@ -433,7 +434,7 @@ impl Context {
         let result = guard
             .add_constraint(&ctx, version, sketch, constraint)
             .await
-            .map_err(|e| format!("Failed to add constraint to sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -467,7 +468,7 @@ impl Context {
         let result = guard
             .edit_constraint(&ctx, version, sketch, constraint_id, value_expression.to_string())
             .await
-            .map_err(|e| format!("Failed to edit constraint in sketch: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -527,7 +528,7 @@ impl Context {
         let (_, initial_scene_graph_delta) = guard
             .execute_mock(&ctx, version, actual_sketch_id)
             .await
-            .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         // Convert [f64; 2] arrays to core Coords2d struct for kcl-lib functions
         let points_core: Vec<Coords2dCore> = points
@@ -555,7 +556,7 @@ impl Context {
                 guard
                     .execute_mock(&ctx, version, actual_sketch_id)
                     .await
-                    .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+                    .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?
             }
         };
 
@@ -570,7 +571,7 @@ impl Context {
             guard
                 .execute_mock(&ctx, version, actual_sketch_id)
                 .await
-                .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+                .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?
         } else {
             (source_delta, scene_graph_delta)
         };
@@ -660,7 +661,7 @@ impl Context {
         let result = guard
             .chain_segment(&ctx, version, sketch, previous_segment_end_point_id, segment, label)
             .await
-            .map_err(|e| format!("Failed to chain segment: {:?}", e))?;
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize chain segment result. {TRUE_BUG} Details: {e}"))?)

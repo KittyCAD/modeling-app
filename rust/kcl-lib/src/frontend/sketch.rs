@@ -4,17 +4,19 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::ExecutorContext;
+use crate::KclErrorWithOutputs;
 use crate::front::Plane;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
 use crate::frontend::api::Number;
 use crate::frontend::api::ObjectId;
 use crate::frontend::api::ProjectId;
-use crate::frontend::api::Result;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::Version;
+
+pub type ExecResult<T> = std::result::Result<T, KclErrorWithOutputs>;
 
 /// Information about a newly created segment for batch operations
 #[derive(Debug, Clone)]
@@ -33,7 +35,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,
@@ -42,7 +44,7 @@ pub trait SketchApi {
         file: FileId,
         version: Version,
         args: SketchCtor,
-    ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta, ObjectId)>;
 
     // Enters sketch mode
     async fn edit_sketch(
@@ -52,16 +54,21 @@ pub trait SketchApi {
         file: FileId,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<SceneGraphDelta>;
+    ) -> ExecResult<SceneGraphDelta>;
 
-    async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
+    async fn exit_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> ExecResult<SceneGraph>;
 
     async fn delete_sketch(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_segment(
         &mut self,
@@ -70,7 +77,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_segments(
         &mut self,
@@ -78,7 +85,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         segments: Vec<ExistingSegmentCtor>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_objects(
         &mut self,
@@ -87,7 +94,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         constraint_ids: Vec<ObjectId>,
         segment_ids: Vec<ObjectId>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_constraint(
         &mut self,
@@ -95,7 +102,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn chain_segment(
         &mut self,
@@ -105,7 +112,7 @@ pub trait SketchApi {
         previous_segment_end_point_id: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
         &mut self,
@@ -114,7 +121,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         constraint_id: ObjectId,
         value_expression: String,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
@@ -129,7 +136,7 @@ pub trait SketchApi {
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
         new_segment_info: NewSegmentInfo,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
@@ -141,7 +148,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
