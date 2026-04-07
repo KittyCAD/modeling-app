@@ -193,7 +193,7 @@ The number of minor grid lines per major grid line.
 
 The controls for how to navigate the 3D view.
 
-**Possible values:** `zoo`, `onshape`, `trackpad_friendly`, `apple_trackpad`, `solidworks`, `nx`, `creo`, `autocad`
+**Possible values:** `zoo`, `onshape`, `trackpad_friendly`, `solidworks`, `nx`, `creo`, `autocad`
 
 **Default:** None
 
