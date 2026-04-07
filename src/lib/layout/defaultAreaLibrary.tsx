@@ -17,6 +17,7 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Draggable } from '@kittycad/ui-components'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -43,6 +44,7 @@ function ModelingArea() {
   )
   return (
     <div
+      id={MODELING_AREA_CONTAINER_ID}
       ref={boundingRef}
       className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
     >

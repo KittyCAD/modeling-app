@@ -44,6 +44,10 @@ export type CommandBarMachineEvent =
       output: { argumentsToSubmit: { [x: string]: unknown } }
     }
   | {
+      type: 'Submit command from dialog'
+      data: { argumentsToSubmit: { [x: string]: unknown } }
+    }
+  | {
       type: 'Add argument'
       data: { argument: CommandArgumentWithName<unknown> }
     }
@@ -299,6 +303,44 @@ export const commandBarMachine = setup({
         return args
       },
     }),
+    'Set arguments to submit': assign({
+      argumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Submit command from dialog') {
+          return context.argumentsToSubmit
+        }
+        return {
+          ...context.argumentsToSubmit,
+          ...event.data.argumentsToSubmit,
+        }
+      },
+    }),
+    'Notify review validation error': ({ event }) => {
+      if (
+        event.type !== 'xstate.done.actor.validateArguments' ||
+        !event.output.reviewValidationError
+      ) {
+        return
+      }
+      toast.error(event.output.reviewValidationError)
+    },
+    'Notify argument validation error': ({ event }) => {
+      if (event.type !== 'xstate.error.actor.validateArguments') {
+        return
+      }
+      const argName =
+        event.error &&
+        typeof event.error === 'object' &&
+        'arg' in event.error &&
+        event.error.arg &&
+        typeof event.error.arg === 'object' &&
+        'name' in event.error.arg
+          ? String(event.error.arg.name)
+          : undefined
+      const message = argName
+        ? `Unable to validate "${argName}".`
+        : 'Unable to validate command arguments.'
+      toast.error(message)
+    },
   },
   guards: {
     'Command needs review': ({ context }) =>
@@ -313,6 +355,10 @@ export const commandBarMachine = setup({
         Object.keys(context.selectedCommand?.args).length === 0
       )
     },
+    'Use modeling dialog': ({ context }) =>
+      context.selectedCommand?.groupId === 'modeling' &&
+      !!context.selectedCommand?.args &&
+      Object.keys(context.selectedCommand.args).length > 0,
     'All arguments are skippable': ({ context }) => {
       return Object.values(context.selectedCommand!.args!).every(
         (argConfig) =>
@@ -353,6 +399,9 @@ export const commandBarMachine = setup({
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
+    'Has review validation error': ({ event }) =>
+      event.type === 'xstate.done.actor.validateArguments' &&
+      !!event.output.reviewValidationError,
   },
   actors: {
     'Validate argument': fromPromise(
@@ -589,6 +638,11 @@ export const commandBarMachine = setup({
           actions: ['Execute command', 'Clear selected command'],
         },
         {
+          target: 'Gathering arguments',
+          guard: 'Use modeling dialog',
+          actions: ['Set current argument to first non-skippable'],
+        },
+        {
           target: 'Checking Arguments',
           guard: 'All arguments are skippable',
         },
@@ -704,6 +758,37 @@ export const commandBarMachine = setup({
         ],
       },
     },
+
+    'Checking Arguments for Dialog': {
+      invoke: {
+        src: 'Validate all arguments',
+        id: 'validateArguments',
+        input: ({ context }) => context,
+        onDone: [
+          {
+            target: 'Gathering arguments',
+            guard: 'Has review validation error',
+            actions: [
+              'Set review validation error',
+              'Notify review validation error',
+            ],
+          },
+          {
+            target: 'Closed',
+            actions: ['Execute command', 'Clear selected command'],
+          },
+        ],
+        onError: [
+          {
+            target: 'Gathering arguments',
+            actions: [
+              'Set current argument to first non-skippable',
+              'Notify argument validation error',
+            ],
+          },
+        ],
+      },
+    },
   },
   on: {
     Close: {
@@ -720,6 +805,11 @@ export const commandBarMachine = setup({
     'Find and select command': {
       target: '.Command selected',
       actions: ['Find and select command', 'Initialize arguments to submit'],
+    },
+
+    'Submit command from dialog': {
+      target: '.Checking Arguments for Dialog',
+      actions: ['Set arguments to submit', 'Clear current argument'],
     },
 
     'Add commands': {
