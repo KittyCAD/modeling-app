@@ -189,9 +189,10 @@ pub mod pretty {
 pub mod front {
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
-    // Re-export trim module items
+    pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
-        FrontendState, SetProgramOutcome,
+        FrontendState,
+        SetProgramOutcome,
         api::{
             Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
             ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
@@ -202,6 +203,7 @@ pub mod front {
             Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent,
             Vertical,
         },
+        // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
