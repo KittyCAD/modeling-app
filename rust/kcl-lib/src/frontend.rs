@@ -53,8 +53,8 @@ use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
-use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
 use crate::frontend::sketch::Horizontal;
@@ -2548,8 +2548,8 @@ impl FrontendState {
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                        "Distance constraint must have exactly 2 points, got {}",
-                        distance.points.len()
+                    "Distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
                 )));
             }
         };
@@ -2882,8 +2882,8 @@ impl FrontendState {
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                        "Horizontal distance constraint must have exactly 2 points, got {}",
-                        distance.points.len()
+                    "Horizontal distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
                 )));
             }
         };
@@ -2944,8 +2944,8 @@ impl FrontendState {
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                        "Vertical distance constraint must have exactly 2 points, got {}",
-                        distance.points.len()
+                    "Vertical distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
                 )));
             }
         };

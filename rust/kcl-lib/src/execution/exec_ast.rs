@@ -3143,11 +3143,12 @@ impl Node<BinaryExpression> {
                                         point.vars.x.to_constraint_id(range)?,
                                         point.vars.y.to_constraint_id(range)?,
                                     );
-                                    let origin_point =
-                                        ezpz::datatypes::inputs::DatumPoint::new_xy(origin_x, origin_y);
-                                    sketch_block_state
-                                        .solver_constraints
-                                        .push(Constraint::Distance(solver_point, origin_point, n.n));
+                                    let origin_point = ezpz::datatypes::inputs::DatumPoint::new_xy(origin_x, origin_y);
+                                    sketch_block_state.solver_constraints.push(Constraint::Distance(
+                                        solver_point,
+                                        origin_point,
+                                        n.n,
+                                    ));
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
@@ -3485,20 +3486,18 @@ impl Node<BinaryExpression> {
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
                                 ) => {
                                     // horizontalDistance([point, ORIGIN]) == n means 0 - point.x = n, so point.x = -n.
-                                    sketch_block_state.solver_constraints.push(ezpz::Constraint::Fixed(
-                                        point.vars.x.to_constraint_id(range)?,
-                                        -n.n,
-                                    ));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, -n.n));
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
                                     crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
                                 ) => {
                                     // horizontalDistance([ORIGIN, point]) == n means point.x - 0 = n, so point.x = n.
-                                    sketch_block_state.solver_constraints.push(ezpz::Constraint::Fixed(
-                                        point.vars.x.to_constraint_id(range)?,
-                                        n.n,
-                                    ));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, n.n));
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
@@ -3603,19 +3602,17 @@ impl Node<BinaryExpression> {
                                     crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
                                 ) => {
-                                    sketch_block_state.solver_constraints.push(ezpz::Constraint::Fixed(
-                                        point.vars.y.to_constraint_id(range)?,
-                                        -n.n,
-                                    ));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, -n.n));
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
                                     crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
                                 ) => {
-                                    sketch_block_state.solver_constraints.push(ezpz::Constraint::Fixed(
-                                        point.vars.y.to_constraint_id(range)?,
-                                        n.n,
-                                    ));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, n.n));
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
