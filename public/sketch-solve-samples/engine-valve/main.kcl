@@ -17,89 +17,98 @@ valveRadius = valveDiameter / 2
 
 // Create the valve head
 valveSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 30mm], end = [var -3mm, var 30mm], construction = true)
   line2 = line(start = [var -3mm, var 30mm], end = [var -3mm, var 15mm])
   arc3 = arc(start = [var -12mm, var 3mm], end = [var -3mm, var 15mm], center = [var -15.49mm, var 14.99mm])
-  coincident([line2.end, arc3.end])
   arc4 = arc(start = [var -12mm, var 3mm], end = [var -15mm, var 0mm], center = [var -10.78mm, var -1.22mm])
-  coincident([arc3.start, arc4.start])
   line5 = line(start = [var -15mm, var 0mm], end = [var -10.5mm, var 0mm])
-  coincident([arc4.end, line5.start])
-  arc6 = arc(start = [var 0mm, var 1.66mm], end = [var -10.5mm, var 0mm], center = [var 1.16mm, var -39.7mm])
-  coincident([line5.end, arc6.end])
-  line7 = line(start = [var 0mm, var 1.66mm], end = [var 0mm, var 30mm])
-  coincident([arc6.start, line7.start])
-  tangent([arc3, arc4])
-  horizontal(line5)
   line3 = line(start = [var -10.5mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
-  coincident([line3.start, arc6.end])
-  coincident([line3.end, ORIGIN])
   line4 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1.66mm], construction = true)
-  coincident([line4.start, line3.end])
-  coincident([line4.end, arc6.start])
-  horizontal(line3)
-  vertical(line4)
-  horizontalDistance([line5.start, line4.start]) == valveDiameter / 2
-  verticalDistance([line4.start, line7.end]) == valveHeadLength
-  vertical(line7)
-  vertical(line2)
-  line1 = line(start = [var 0mm, var 30mm], end = [var -3mm, var 30mm], construction = true)
+  arc6 = arc(start = [var 0mm, var 1.66mm], end = [var -10.5mm, var 0mm], center = [var 1.16mm, var -39.7mm])
+  line7 = line(start = [var 0mm, var 1.66mm], end = [var 0mm, var 30mm])
+
+  line6 = line(start = [var 0mm, var 30mm], end = [var 3.42mm, var 81.04mm])
+  line8 = line(start = [var 0mm, var 80mm], end = [var -2.61mm, var 80.06mm])
+  line9 = line(start = [var -2.61mm, var 80.06mm], end = [var -2.61mm, var 78.22mm])
+  line10 = line(start = [var -2.61mm, var 78.22mm], end = [var -2.17mm, var 78.22mm])
+  line11 = line(start = [var -2.17mm, var 78.22mm], end = [var -2.09mm, var 77.54mm])
+  line12 = line(start = [var -2.09mm, var 77.54mm], end = [var -2.61mm, var 77.54mm])
+  line13 = line(start = [var -2.61mm, var 77.54mm], end = [var -2.59mm, var 76.6mm])
+  line14 = line(start = [var -2.59mm, var 76.6mm], end = [var -2.01mm, var 76.57mm])
+  line15 = line(start = [var -2.01mm, var 76.57mm], end = [var -2.01mm, var 75.7mm])
+  line16 = line(start = [var -2.01mm, var 75.7mm], end = [var -2.56mm, var 75.73mm])
+  line17 = line(start = [var -2.56mm, var 75.73mm], end = [var -2.48mm, var 74.6mm])
+  line18 = line(start = [var -2.48mm, var 74.6mm], end = [var -1.82mm, var 74.63mm])
+  line19 = line(start = [var -1.82mm, var 74.63mm], end = [var -1.99mm, var 73.77mm])
+  line20 = line(start = [var -1.82mm, var 73.71mm], end = [var -2.38mm, var 73.92mm])
+  line21 = line(start = [var -2.38mm, var 73.92mm], end = [var -2.51mm, var 71mm])
+  line22 = line(start = [var -1.77mm, var 71.22mm], end = [var -3.32mm, var 71.95mm])
+  line23 = line(start = [var -3.32mm, var 71.95mm], end = [var -3mm, var 30mm])
+
   coincident([line1.start, line7.end])
   coincident([line1.end, line2.start])
-  horizontal(line1)
-  horizontalDistance([line1.end, line1.start]) == valveHeadThickness / 2
-  line6 = line(start = [var 0mm, var 30mm], end = [var 3.42mm, var 81.04mm])
+  coincident([line2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, line5.start])
+  coincident([line5.end, arc6.end])
+  coincident([line3.start, arc6.end])
+  coincident([line3.end, ORIGIN])
+  coincident([line4.start, line3.end])
+  coincident([line4.end, arc6.start])
+  coincident([arc6.start, line7.start])
   coincident([line6.start, line7.end])
-  vertical(line6)
-  verticalDistance([line4.start, line6.end]) == 80
-  line8 = line(start = [var 0mm, var 80mm], end = [var -2.61mm, var 80.06mm])
   coincident([line8.start, line6.end])
-  line9 = line(start = [var -2.61mm, var 80.06mm], end = [var -2.61mm, var 78.22mm])
   coincident([line8.end, line9.start])
-  line10 = line(start = [var -2.61mm, var 78.22mm], end = [var -2.17mm, var 78.22mm])
   coincident([line9.end, line10.start])
-  line11 = line(start = [var -2.17mm, var 78.22mm], end = [var -2.09mm, var 77.54mm])
   coincident([line10.end, line11.start])
-  line12 = line(start = [var -2.09mm, var 77.54mm], end = [var -2.61mm, var 77.54mm])
   coincident([line11.end, line12.start])
-  line13 = line(start = [var -2.61mm, var 77.54mm], end = [var -2.59mm, var 76.6mm])
   coincident([line12.end, line13.start])
-  line14 = line(start = [var -2.59mm, var 76.6mm], end = [var -2.01mm, var 76.57mm])
   coincident([line13.end, line14.start])
-  line15 = line(start = [var -2.01mm, var 76.57mm], end = [var -2.01mm, var 75.7mm])
   coincident([line14.end, line15.start])
-  line16 = line(start = [var -2.01mm, var 75.7mm], end = [var -2.56mm, var 75.73mm])
   coincident([line15.end, line16.start])
-  line17 = line(start = [var -2.56mm, var 75.73mm], end = [var -2.48mm, var 74.6mm])
   coincident([line16.end, line17.start])
-  line18 = line(start = [var -2.48mm, var 74.6mm], end = [var -1.82mm, var 74.63mm])
   coincident([line17.end, line18.start])
-  line19 = line(start = [var -1.82mm, var 74.63mm], end = [var -1.75mm, var 73.95mm])
   coincident([line18.end, line19.start])
-  line20 = line(start = [var -1.75mm, var 73.95mm], end = [var -2.38mm, var 73.92mm])
   coincident([line19.end, line20.start])
-  line21 = line(start = [var -2.38mm, var 73.92mm], end = [var -2.51mm, var 71mm])
   coincident([line20.end, line21.start])
-  line22 = line(start = [var -1.77mm, var 71.22mm], end = [var -3.32mm, var 71.95mm])
   coincident([line21.end, line22.start])
-  line23 = line(start = [var -3.32mm, var 71.95mm], end = [var -3mm, var 30mm])
   coincident([line22.end, line23.start])
   coincident([line23.end, line2.start])
-  vertical(line23)
-  vertical(line21)
-  vertical(line19)
-  vertical(line17)
-  vertical(line15)
-  vertical(line13)
-  vertical(line11)
-  vertical(line9)
-  horizontal(line20)
-  horizontal(line18)
-  horizontal(line16)
-  horizontal(line14)
-  horizontal(line12)
-  horizontal(line10)
+
+  tangent([arc3, arc4])
+
+  horizontal(line1)
+  horizontal(line3)
+  horizontal(line5)
   horizontal(line8)
+  horizontal(line10)
+  horizontal(line12)
+  horizontal(line14)
+  horizontal(line16)
+  horizontal(line18)
+  horizontal(line20)
   horizontal(line22)
+
+  vertical(line2)
+  vertical(line4)
+  vertical(line6)
+  vertical(line7)
+  vertical(line9)
+  vertical(line11)
+  vertical(line13)
+  vertical(line15)
+  vertical(line17)
+  vertical(line19)
+  vertical(line21)
+  vertical(line23)
+
+  horizontalDistance([line5.start, line4.start]) == valveDiameter / 2
+  verticalDistance([line4.start, line7.end]) == valveHeadLength
+  horizontalDistance([line1.end, line1.start]) == valveHeadThickness / 2
+  verticalDistance([line4.start, line6.end]) == 80
+  verticalDistance([line23.start, line9.start]) == stemHeadLength
+  verticalDistance([line12.start, line11.start]) == stepLength
+
   equalLength([line19, line15, line11])
   equalLength([
     line20,
@@ -109,14 +118,8 @@ valveSketch = sketch(on = XZ) {
     line12,
     line10
   ])
-  verticalDistance([line23.start, line9.start]) == stemHeadLength
-  verticalDistance([line12.start, line11.start]) == stepLength
 }
 
-valveSectionRegion = region(segments = [
-  valveSketch.line1,
-  valveSketch.line2
-])
-hide(valveSketch)
+valveSectionRegion = region(segments = [valveSketch.line1, valveSketch.line2])
 
 valveHead = revolve(valveSectionRegion, angle = 360, axis = Y)
