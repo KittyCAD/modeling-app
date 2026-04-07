@@ -38,7 +38,6 @@ use crate::front::ObjectId;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::CircularDirection;
-use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::sketch::StraightLineParams;
@@ -51,6 +50,8 @@ use crate::std::utils::point_to_mm;
 use crate::std::utils::untype_point;
 use crate::std::utils::untyped_point_to_mm;
 use crate::std_utils::untyped_point_to_unit;
+
+pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
 
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
@@ -104,9 +105,9 @@ pub(crate) async fn create_segments_in_engine(
             let entry_point = match &segment.kind {
                 SegmentKind::Line { end, .. } | SegmentKind::Arc { end, .. } => {
                     let reverse_start_mm = point_to_mm(end.clone());
-                    if distance(forward_start_mm, current_pen_mm) <= DEFAULT_TOLERANCE_MM {
+                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
                         forward_start.clone()
-                    } else if distance(reverse_start_mm, current_pen_mm) <= DEFAULT_TOLERANCE_MM {
+                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
                         traversal = SegmentTraversal::Reverse;
                         end.clone()
                     } else {
@@ -120,7 +121,7 @@ pub(crate) async fn create_segments_in_engine(
 
             // If the next segment already starts where the pen is, preserve continuity by
             // skipping both the engine pen move and the synthetic bookkeeping jump.
-            if distance(entry_point_mm, current_pen_mm) > DEFAULT_TOLERANCE_MM {
+            if distance(entry_point_mm, current_pen_mm) > SOLVER_CONVERGENCE_TOLERANCE {
                 let id = exec_state.next_uuid();
                 if !exec_state.sketch_mode() {
                     exec_state
@@ -190,13 +191,10 @@ pub(crate) async fn create_segments_in_engine(
                 debug_assert!(false, "Points should have been skipped earlier");
                 continue;
             }
-            SegmentKind::Line { end, .. } => {
+            SegmentKind::Line { end, start, .. } => {
                 let to = match traversal {
                     SegmentTraversal::Forward => end.clone(),
-                    SegmentTraversal::Reverse => match &segment.kind {
-                        SegmentKind::Line { start, .. } => start.clone(),
-                        _ => unreachable!("line traversal only used for line segments"),
-                    },
+                    SegmentTraversal::Reverse => start.clone(),
                 };
                 let sketch = straight_line(
                     segment.id,
