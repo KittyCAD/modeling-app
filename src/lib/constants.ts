@@ -222,6 +222,13 @@ export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 
 /**
+ * Number of decimal places used when converting engine millimeter values
+ * to the active length unit for selection points.
+ * Sibling to rust/kcl-lib/src/std/mod.rs#DEFAULT_TOLERANCE_MM
+ */
+export const DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES = 7
+
+/**
  * When no annotation is in the KCL file to specify the defaults
  */
 export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
