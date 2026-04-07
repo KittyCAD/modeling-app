@@ -1437,7 +1437,7 @@ export async function selectionBodyFace(
       } else if (maybeImportNode.node.path.type === 'Foreign') {
         showSketchOnImportToast(maybeImportNode.node.path.path)
       } else if (maybeImportNode.node.path.type === 'Std') {
-        toast.error("can't sketch on this face")
+        toast.error("Can't sketch on this face.")
       } else {
         // force tsc error if more cases are added
         const _exhaustiveCheck: never = maybeImportNode.node.path

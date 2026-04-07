@@ -995,12 +995,12 @@ const OperationItem = ({
                         .then((result) => {
                           if (err(result)) {
                             toast.error(
-                              result.message || 'Error while unhiding'
+                              result.message || 'Error while unhiding.'
                             )
                           }
                         })
                         .catch((e) => {
-                          toast.error(e.message || 'Error while unhiding')
+                          toast.error(e.message || 'Error while unhiding.')
                         })
                     }
                   })

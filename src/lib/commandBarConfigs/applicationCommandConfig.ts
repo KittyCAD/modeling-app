@@ -43,7 +43,9 @@ function onSubmitKCLSampleCreation({
   isProjectNew: boolean
 }) {
   if (!kclSample) {
-    toast.error('The command could not be submitted, unable to find Zoo sample')
+    toast.error(
+      'The command could not be submitted, unable to find Zoo sample.'
+    )
     return
   }
   const pathParts = webSafePathSplit(sample)
@@ -161,7 +163,7 @@ export function createApplicationCommands({
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
           if (!kclSample || kclSample.files.length === 0) {
-            toast.error("Couldn't find KCL sample")
+            toast.error("Couldn't find KCL sample.")
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
@@ -348,7 +350,7 @@ export function createApplicationCommands({
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
-            'The command could not be submitted, unable to find Zoo sample'
+            'The command could not be submitted, unable to find Zoo sample.'
           )
           return
         }
@@ -553,7 +555,7 @@ export function createApplicationCommands({
         // it is often used in conjunction with other commands and actions
         // that occur on app load, and we don't want to spam the user.
       } else {
-        toast.error(`No layout found with ID "${data?.layoutId}"`)
+        toast.error(`No layout found with ID "${data?.layoutId}".`)
       }
     },
     args: {

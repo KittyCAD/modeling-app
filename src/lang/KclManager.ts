@@ -700,7 +700,7 @@ export class KclManager extends File {
             shouldWriteToDisk: false,
           })
 
-          toast('Reloading file from disk', { icon: '📁' })
+          toast('Reloading file from disk.', { icon: '📁' })
         }
       })
       .catch(reportRejection)
@@ -2310,7 +2310,7 @@ export class KclManager extends File {
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.warn('error saving file', err)
-              toast.error('Error saving file, please check file permissions')
+              toast.error('Error saving file, please check file permissions.')
               reject(err)
             })
         }, 1000)

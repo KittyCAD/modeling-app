@@ -1906,7 +1906,7 @@ export const modelingMachine = setup({
     'show sketch error toast': assign(() => {
       // toast message that stays open until closed programmatically
       const toastId = toast.error(
-        "Error in kcl script, sketch cannot be drawn until it's fixed",
+        "Error in kcl script, sketch cannot be drawn until it's fixed.",
         { duration: Infinity }
       )
       return {

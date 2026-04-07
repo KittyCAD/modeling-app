@@ -321,7 +321,7 @@ describe('DXF Export', () => {
         expect.any(Uint8Array)
       )
       expect(mockDeps.toast.success).toHaveBeenCalledWith(
-        'DXF export completed',
+        'DXF export completed.',
         { id: 'toast-id' }
       )
     })
@@ -337,7 +337,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find plane artifact')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch for DXF export'
+        'Could not find sketch for DXF export.'
       )
     })
 
@@ -362,7 +362,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find path IDs')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch profiles for DXF export'
+        'Could not find sketch profiles for DXF export.'
       )
 
       // Test case 2: plane artifact with pathIds but no path artifacts in graph
@@ -388,7 +388,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find sketch entities')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch entities for DXF export'
+        'Could not find sketch entities for DXF export.'
       )
     })
 
@@ -439,7 +439,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Engine command failed')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Failed to export sketch to DXF',
+        'Failed to export sketch to DXF.',
         { id: 'toast-id' }
       )
 
@@ -457,7 +457,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Network error')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Failed to export sketch to DXF',
+        'Failed to export sketch to DXF.',
         { id: 'toast-id' }
       )
     })

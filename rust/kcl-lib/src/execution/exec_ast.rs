@@ -103,6 +103,7 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
+use crate::std::sketch2::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::sketch2::create_segments_in_engine;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
@@ -1262,6 +1263,7 @@ impl Node<SketchBlock> {
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
+            use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
@@ -1281,7 +1283,7 @@ impl Node<SketchBlock> {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id,
-                source: range.into(),
+                source: SourceRef::new(self.into(), self.node_path.clone()),
             };
             exec_state.set_scene_object(sketch_scene_object);
 
@@ -1406,7 +1408,9 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = ezpz::Config::default().with_max_iterations(50);
+        let config = ezpz::Config::default()
+            .with_max_iterations(50)
+            .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
@@ -1654,7 +1658,12 @@ impl Node<SketchBlock> {
                     }
                 }
             }
-            let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+            let mut args = Args::new_no_args(
+                range,
+                self.node_path.clone(),
+                ctx.clone(),
+                Some("sketch block".to_owned()),
+            );
             args.labeled = labeled;
 
             let arg_on_value: KclValue =
@@ -1673,7 +1682,7 @@ impl Node<SketchBlock> {
             match &mut sketch_surface {
                 SketchSurface::Plane(plane) => {
                     // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
                 }
                 SketchSurface::Face(_) => {
                     // All faces should already be created in the engine.
@@ -1687,7 +1696,7 @@ impl Node<SketchBlock> {
             // sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
             #[cfg(feature = "artifact-graph")]
-            exec_state.add_placeholder_scene_object(sketch_id, range);
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
             // Store in memory so that it's cached.
             exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
@@ -1702,7 +1711,7 @@ impl Node<SketchBlock> {
             // due to objects in the body, the sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
             #[cfg(feature = "artifact-graph")]
-            exec_state.add_placeholder_scene_object(sketch_id, range);
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
             let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
 
@@ -2115,6 +2124,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2140,6 +2150,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2165,6 +2176,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2204,6 +2216,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2234,6 +2247,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2264,6 +2278,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2300,6 +2315,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2325,6 +2341,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2371,6 +2388,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2401,6 +2419,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2437,6 +2456,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2462,6 +2482,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2501,6 +2522,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2531,6 +2553,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2805,7 +2828,12 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone(), Some("union".to_owned()));
+                let args = Args::new_no_args(
+                    self.into(),
+                    self.node_path.clone(),
+                    ctx.clone(),
+                    Some("union".to_owned()),
+                );
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -2819,7 +2847,12 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone(), Some("subtract".to_owned()));
+                let args = Args::new_no_args(
+                    self.into(),
+                    self.node_path.clone(),
+                    ctx.clone(),
+                    Some("subtract".to_owned()),
+                );
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -2835,7 +2868,12 @@ impl Node<BinaryExpression> {
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
         {
             // Check if we have solids.
-            let args = Args::new_no_args(self.into(), ctx.clone(), Some("intersect".to_owned()));
+            let args = Args::new_no_args(
+                self.into(),
+                self.node_path.clone(),
+                ctx.clone(),
+                Some("intersect".to_owned()),
+            );
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
                 Default::default(),
@@ -3038,6 +3076,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Angle;
+                                use crate::front::SourceRef;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3069,7 +3108,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3105,6 +3144,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3136,7 +3176,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3321,6 +3361,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::CodeRef;
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
+                                use crate::front::SourceRef;
                                 let segment_object_id = match target_segment {
                                     CircularSegmentConstraintTarget::Arc { object_id, .. }
                                     | CircularSegmentConstraintTarget::Circle { object_id } => object_id,
@@ -3366,7 +3407,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3405,6 +3446,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3434,7 +3476,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3473,6 +3515,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3502,7 +3545,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
