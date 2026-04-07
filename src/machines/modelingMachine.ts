@@ -2945,7 +2945,7 @@ export const modelingMachine = setup({
         sketchSolveId: number
       }> => {
         if (!input || !input.artifactOrPlaneId) {
-          return reject(new Error('No artifact or plane ID provided'))
+          return reject(new Error('No artifact or plane ID provided.'))
         }
         const {
           artifactOrPlaneId,
