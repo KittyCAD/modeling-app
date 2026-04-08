@@ -3039,8 +3039,6 @@ export fn planeOf(
 
 /// Get the face of a solid.
 ///```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// triangle = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [2, 0])
@@ -3056,8 +3054,6 @@ export fn planeOf(
 /// //sketch(on = sideFace) {}
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// triangle = sketch(on = XY) {
 ///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
 ///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -3074,7 +3070,7 @@ export fn planeOf(
 ///
 /// face001 = faceOf(prism, face = triangleRegion.tags.line1)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, feature_tree = false)
 export fn faceOf(
   /// The solid that has the face.
   @solid: Solid,
