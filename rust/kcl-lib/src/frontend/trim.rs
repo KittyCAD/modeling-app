@@ -4220,7 +4220,8 @@ pub(crate) async fn execute_trim_operations_simple(
                                         {
                                             new_center_id.into()
                                         }
-                                        _ => *point,
+                                        crate::frontend::sketch::ConstraintSegment::Segment(_) => *point,
+                                        crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
                                     })
                                     .collect();
 
