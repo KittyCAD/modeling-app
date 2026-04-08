@@ -21,32 +21,28 @@ export const ShareButton = memo(function ShareButton() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const billingContext = billing.useContext()
-  const currentProjectName = app.projectSignal.value?.name || ''
+  const currentProject = app.projectSignal.value?.projectIORefSignal.value
 
   const allowOrgRestrict = !!billingContext.isOrg
-  const allowPassword = !!billingContext.hasSubscription
 
   const onShareClick = useCallback(() => {
     setIsDialogOpen(true)
   }, [])
 
   const onCopyShareLink = useCallback(
-    async ({
-      isRestrictedToOrg,
-      password,
-    }: {
-      isRestrictedToOrg: boolean
-      password?: string
-    }) => {
+    async ({ isRestrictedToOrg }: { isRestrictedToOrg: boolean }) => {
+      const wasmInstance = await kclManager.wasmInstancePromise
+
       return copyCurrentFileShareLink({
         token,
-        code: kclManager.code,
-        name: currentProjectName,
+        project: currentProject,
+        currentFilePath: kclManager.path,
+        currentFileContents: kclManager.code,
+        wasmInstance,
         isRestrictedToOrg,
-        password,
       })
     },
-    [currentProjectName, kclManager.code, token]
+    [currentProject, kclManager, token]
   )
 
   useHotkeys(shareHotkey, onShareClick, {
@@ -95,7 +91,6 @@ export const ShareButton = memo(function ShareButton() {
         onClose={() => setIsDialogOpen(false)}
         onSubmit={onCopyShareLink}
         allowOrgRestrict={allowOrgRestrict}
-        allowPassword={allowPassword}
         disabled={disabled}
       />
     </>

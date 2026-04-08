@@ -294,18 +294,19 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share part via Zoo link',
-      description: 'Create a link that contains a copy of the current file.',
+      displayName: 'Share file link',
+      description: 'Upload the current project and copy a shareable link.',
       groupId: 'code',
       needsReview: false,
       icon: 'link',
       onSubmit: (input) => {
         copyCurrentFileShareLink({
           token: commandProps.authToken,
-          code: commandProps.kclManager.code,
-          name: commandProps.projectData.project?.name || '',
+          project: commandProps.projectData.project,
+          currentFilePath: commandProps.kclManager.path,
+          currentFileContents: commandProps.kclManager.code,
+          wasmInstance: commandProps.wasmInstance,
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
-          password: input?.event.data.password,
         }).catch(reportRejection)
       },
     },
