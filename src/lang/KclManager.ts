@@ -812,6 +812,21 @@ export class KclManager extends File {
           this.modelingState?.matches('Sketch') ||
           this.modelingState?.matches('sketchSolveMode')
 
+        if (isCodeTheSame(code, this.code)) {
+          this.markFileCodeAsSynced(code)
+          return
+        }
+
+        if (this.hasUnsavedLocalChanges()) {
+          console.warn(
+            'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+          )
+          toast.error(
+            'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+          )
+          return
+        }
+
         if (!isCodeTheSame(code, this.code)) {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
@@ -822,6 +837,7 @@ export class KclManager extends File {
             // the file system and not the editor.
             shouldWriteToDisk: false,
           })
+          this.markFileCodeAsSynced(code)
 
           toast('Reloading file from disk.', { icon: '📁' })
         }
@@ -849,6 +865,7 @@ export class KclManager extends File {
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private _lastKnownFileCode = ''
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -1473,6 +1490,7 @@ export class KclManager extends File {
       // the file system and not the editor.
       shouldWriteToDisk: false,
     })
+    providedEditor.markFileCodeAsSynced(initialCode)
     return providedEditor
   }
 
@@ -1508,6 +1526,7 @@ export class KclManager extends File {
     this._editorView = this.createEditorView(initialCode)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
+    this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     this.systemDeps.wasmInstancePromise
@@ -1537,6 +1556,14 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.unwatch()
+  }
+
+  private markFileCodeAsSynced(code: string) {
+    this._lastKnownFileCode = normalizeLineEndings(code)
+  }
+
+  private hasUnsavedLocalChanges() {
+    return !isCodeTheSame(this.code, this._lastKnownFileCode)
   }
 
   clearAst() {
@@ -2876,7 +2903,10 @@ export class KclManager extends File {
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           this.unwatch()
           this.write(newCode)
-            .then(resolve)
+            .then(() => {
+              this.markFileCodeAsSynced(newCode)
+              resolve(undefined)
+            })
             .then(() => {
               // After a cooldown, start watching this file again on disk.
               this.timeoutRewatch = setTimeout(() => {

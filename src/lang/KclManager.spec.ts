@@ -1,10 +1,29 @@
+import { createEmptyAst } from '@src/editor/plugins/ast'
+import { File } from '@src/lang/KclManager'
 import type { Diagnostic } from '@codemirror/lint'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
+
+function createDeferred<T>() {
+  let resolve!: (value: T) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+
+  return { promise, resolve, reject }
+}
+
+async function flushPromises(count = 2) {
+  for (let i = 0; i < count; i += 1) {
+    await Promise.resolve()
+  }
+}
 
 function createDiagnostic(
   from: number,
@@ -18,6 +37,12 @@ function createDiagnostic(
     severity: 'error',
   }
 }
+
+afterEach(() => {
+  vi.clearAllMocks()
+  vi.clearAllTimers()
+  vi.useRealTimers()
+})
 
 describe('KclManager diagnostics', () => {
   it('filters out duplicated diagnostics', () => {
@@ -172,6 +197,133 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
+    expect(writeToFileSpy).not.toHaveBeenCalled()
+  })
+
+  it('debounces repeated direct editor edits down to one execution of the latest code', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('a')
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+
+    kclManager.engineCommandManager.started = false
+    kclManager.engineCommandManager.connection = { connected: true } as any
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 1, insert: 'b' },
+    })
+    kclManager.editorView.dispatch({
+      changes: { from: 2, to: 2, insert: 'c' },
+    })
+
+    expect(kclManager.code).toBe('abc')
+    expect(executeCodeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(999)
+    expect(executeCodeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
+    expect(executeCodeSpy).toHaveBeenCalledWith('abc')
+  })
+
+  it('debounces repeated programmatic updates so only the latest buffer is written', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/kcl-manager-write-test.kcl'
+    kclManager.engineCommandManager.started = true
+
+    kclManager.updateCodeEditor('first', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    kclManager.updateCodeEditor('second', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await vi.advanceTimersByTimeAsync(999)
+    expect(writeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+    expect(writeSpy).toHaveBeenCalledWith('second')
+  })
+
+  it('reloads clean editor state from disk watcher updates', async () => {
+    const { kclManager } = createKclManagerTestHarness('from disk')
+
+    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(kclManager as any).markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external edit')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(kclManager.code).toBe('external edit')
+  })
+
+  it('does not overwrite dirty editor state when an external reload resolves later', async () => {
+    const { kclManager } = createKclManagerTestHarness('local base')
+    const deferredRead = createDeferred<string>()
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+
+    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(kclManager as any).markFileCodeAsSynced('local base')
+
+    vi.spyOn(File.ioImplementations, 'read').mockReturnValue(
+      deferredRead.promise
+    )
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+    })
+
+    expect(updateCodeEditorSpy).toHaveBeenCalledTimes(1)
+
+    deferredRead.resolve('external edit')
+    await flushPromises()
+
+    expect(kclManager.code).toBe('local newer')
+    expect(updateCodeEditorSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('refuses to replace the editor with an empty AST unless deletion was explicit', async () => {
+    const { kclManager } = createKclManagerTestHarness('preserve me')
+    const writeToFileSpy = vi
+      .spyOn(kclManager, 'writeToFile')
+      .mockResolvedValue(undefined)
+
+    await kclManager.updateEditorWithAstAndWriteToFile(
+      createEmptyAst() as unknown as Parameters<
+        typeof kclManager.updateEditorWithAstAndWriteToFile
+      >[0]
+    )
+
+    expect(kclManager.code).toBe('preserve me')
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 })
