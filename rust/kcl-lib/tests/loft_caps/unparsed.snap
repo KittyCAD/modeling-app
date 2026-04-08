@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing loft_caps.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-17.5, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 5, tag = $seg01)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+plane001 = offsetPlane(YZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-17.29, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 4.79)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft002 = loft([profile001, profile002], tagEnd = $myTag)
+
+surface001 = deleteFace(loft002, faces = seg01)
