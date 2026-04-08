@@ -177,17 +177,29 @@ export class EditorFixture {
       })
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
-    const lines = await this.page.locator('.cm-line').all()
-
-    let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
     if (!findCode) {
-      // nuke everything
-      code = replaceCode
-    } else {
-      if (!lines) return
-      code = code.replace(findCode, replaceCode)
+      await this.codeContent.click()
+      await this.page.keyboard.press(
+        process.platform === 'darwin' ? 'Meta+A' : 'Control+A'
+      )
+      await this.page.keyboard.insertText(replaceCode)
+      return
     }
-    await this.codeContent.fill(code)
+
+    const targetText = findCode.endsWith('\n')
+      ? findCode.slice(0, -1)
+      : findCode
+
+    await this.codeContent.getByText(targetText).first().selectText()
+    if (replaceCode) {
+      await this.page.keyboard.insertText(replaceCode)
+      return
+    }
+
+    await this.page.keyboard.press('Delete')
+    if (findCode.endsWith('\n')) {
+      await this.page.keyboard.press('Delete')
+    }
   }
   checkIfPaneIsOpen() {
     return checkIfPaneIsOpen(this.page, this.paneButtonTestId)

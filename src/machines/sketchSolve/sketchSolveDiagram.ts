@@ -1,5 +1,4 @@
 import type {
-  ConstraintSegment,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -52,6 +51,7 @@ import {
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
@@ -73,6 +73,7 @@ function sendToolbarConstraintOutcome(
       data: {
         sourceDelta: result.kclSource,
         sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId: result.checkpointId ?? null,
       },
     })
   }
@@ -174,13 +175,14 @@ async function addAxisDistanceConstraint(
       distance: { value: distance, units },
       points: segmentsToConstrain.map(
         (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-      ),
+      ) as unknown as number[],
       source: {
         expr: distance.toString(),
         is_literal: true,
       },
     },
-    jsAppSettings(context.kclManager.systemDeps.settings)
+    jsAppSettings(context.kclManager.systemDeps.settings),
+    true
   )
   sendToolbarConstraintOutcome(self, result)
 }
@@ -200,7 +202,8 @@ async function addLineOrientationConstraint(
         type,
         line: id,
       },
-      jsAppSettings(context.kclManager.systemDeps.settings)
+      jsAppSettings(context.kclManager.systemDeps.settings),
+      true
     )
   }
   sendToolbarConstraintOutcome(self, result)
@@ -241,7 +244,8 @@ async function addFixedConstraint(
       type: 'Fixed',
       points: fixedInput,
     },
-    jsAppSettings(context.kclManager.systemDeps.settings)
+    jsAppSettings(context.kclManager.systemDeps.settings),
+    true
   )
   sendToolbarConstraintOutcome(self, result)
 }
@@ -432,7 +436,8 @@ export const sketchSolveMachine = setup({
                 type: 'Coincident',
                 segments: selectedIds,
               },
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             sendToolbarConstraintOutcome(self, result)
           }
@@ -468,17 +473,10 @@ export const sketchSolveMachine = setup({
               0,
               context.sketchId,
               tangentConstraint,
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
-            if (result) {
-              sendToActorIfActive(self, {
-                type: 'update sketch outcome',
-                data: {
-                  sourceDelta: result.kclSource,
-                  sceneGraphDelta: result.sceneGraphDelta,
-                },
-              })
-            }
+            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -516,7 +514,8 @@ export const sketchSolveMachine = setup({
                     0,
                     context.sketchId,
                     angleConstraint,
-                    jsAppSettings(context.kclManager.systemDeps.settings)
+                    jsAppSettings(context.kclManager.systemDeps.settings),
+                    true
                   )
                   sendToolbarConstraintOutcome(self, result)
                   return
@@ -596,7 +595,8 @@ export const sketchSolveMachine = setup({
                       is_literal: true,
                     },
                   },
-                  jsAppSettings(context.kclManager.systemDeps.settings)
+                  jsAppSettings(context.kclManager.systemDeps.settings),
+                  true
                 )
                 sendToolbarConstraintOutcome(self, result)
                 return
@@ -652,13 +652,14 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Distance',
                 distance: { value: distance, units },
-                points: pointsForDistance,
+                points: pointsForDistance as unknown as number[],
                 source: {
                   expr: distance.toString(),
                   is_literal: true,
                 },
               },
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             sendToolbarConstraintOutcome(self, result)
           }
@@ -699,7 +700,8 @@ export const sketchSolveMachine = setup({
                 type: 'Parallel',
                 lines: selectedIds,
               },
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             sendToolbarConstraintOutcome(self, result)
           }
@@ -720,7 +722,8 @@ export const sketchSolveMachine = setup({
                 type: 'Perpendicular',
                 lines: selectedIds,
               },
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             sendToolbarConstraintOutcome(self, result)
           }
@@ -741,7 +744,8 @@ export const sketchSolveMachine = setup({
                 type: 'LinesEqualLength',
                 lines: selectedIds,
               },
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             sendToolbarConstraintOutcome(self, result)
           }
@@ -885,7 +889,8 @@ export const sketchSolveMachine = setup({
             0,
             context.sketchId,
             segmentsToEdit,
-            jsAppSettings(context.kclManager.systemDeps.settings)
+            jsAppSettings(context.kclManager.systemDeps.settings),
+            true
           )
           .catch((err) => {
             console.error('failed to toggle construction geometry', err)
@@ -899,6 +904,7 @@ export const sketchSolveMachine = setup({
             data: {
               sourceDelta: result.kclSource,
               sceneGraphDelta: result.sceneGraphDelta,
+              checkpointId: result.checkpointId ?? null,
             },
           })
         }

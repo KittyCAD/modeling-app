@@ -82,6 +82,50 @@ pub struct SourceDelta {
     pub text: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct SketchCheckpointId(u64);
+
+impl SketchCheckpointId {
+    pub(crate) fn new(n: u64) -> Self {
+        Self(n)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchMutationOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct NewSketchOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub sketch_id: ObjectId,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EditSketchOutcome {
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreSketchCheckpointOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
