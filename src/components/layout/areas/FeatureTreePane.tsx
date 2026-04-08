@@ -30,7 +30,7 @@ import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -715,7 +715,7 @@ const OperationItem = ({
         targetSourceRange: item.sourceRange,
         systemDeps,
       }).catch((e) => {
-        toast.error(e)
+        toast.error(isErr(e) ? e.message : JSON.stringify(e))
       })
     }
   }
