@@ -579,9 +579,9 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
         ),
-        ("sketch2", "region") => (
-            |e, a| Box::pin(crate::std::sketch2::region(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::region"),
+        ("sketch", "region") => (
+            |e, a| Box::pin(crate::std::sketch::region(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::region"),
         ),
         ("solid", "isSurface") => (
             |e, a| Box::pin(crate::std::surfaces::is_surface(e, a).map(|r| r.map(KclValue::continue_))),

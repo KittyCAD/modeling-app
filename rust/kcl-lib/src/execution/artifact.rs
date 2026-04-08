@@ -28,7 +28,7 @@ use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
-use crate::std::sketch2::build_reverse_region_mapping;
+use crate::std::sketch::build_reverse_region_mapping;
 
 #[cfg(test)]
 mod mermaid_tests;
