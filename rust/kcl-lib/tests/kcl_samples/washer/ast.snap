@@ -91,43 +91,6 @@ description: Result of parsing washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "thicknessMax",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.038",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.038,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "thicknessNom",
             "start": 0,
             "type": "Identifier"
@@ -142,43 +105,6 @@ description: Result of parsing washer.kcl
             "type": "Literal",
             "value": {
               "value": 0.032,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "thicknessMin",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.024",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.024,
               "suffix": "None"
             }
           },
@@ -757,7 +683,7 @@ description: Result of parsing washer.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "4": [
+        "2": [
           {
             "commentStart": 0,
             "end": 0,
@@ -769,7 +695,7 @@ description: Result of parsing washer.kcl
             }
           }
         ],
-        "5": [
+        "3": [
           {
             "commentStart": 0,
             "end": 0,

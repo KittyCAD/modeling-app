@@ -110,19 +110,6 @@ impl<T> Node<T> {
         }
     }
 
-    pub fn new_node(start: usize, end: usize, module_id: ModuleId, inner: T) -> Self {
-        Self {
-            inner,
-            start,
-            end,
-            module_id,
-            node_path: None,
-            outer_attrs: Vec::new(),
-            pre_comments: Vec::new(),
-            comment_start: start,
-        }
-    }
-
     pub fn no_src(inner: T) -> Self {
         Self {
             inner,
