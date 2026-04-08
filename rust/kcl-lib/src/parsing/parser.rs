@@ -3734,13 +3734,21 @@ fn is_safe_sketch_block_binding_name(name: &str) -> bool {
     !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
 }
 
+fn is_safe_binding_name_anywhere(name: &str) -> bool {
+    !name.starts_with("__kcl")
+}
+
+fn is_safe_binding_name(name: &str) -> bool {
+    is_safe_binding_name_anywhere(name) && is_safe_sketch_block_binding_name(name)
+}
+
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let ident = identifier
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)?;
 
-    if !is_safe_sketch_block_binding_name(&ident.name) {
+    if !is_safe_binding_name(&ident.name) {
         ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
             format!("`{}` is a reserved name and cannot be defined.", &ident.name),
@@ -6487,6 +6495,18 @@ bar = 1
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_cannot_declare_vars_with_special_kcl_prefix() {
+        let program_source = "__kcl = 2";
+        let expected_src_start = program_source.find("_").unwrap();
+        let expected_src_end = expected_src_start + "__kcl".len();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert!(cause.err.message.contains("reserved name"));
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+        assert_eq!(cause.err.source_range.end(), expected_src_end);
     }
 
     #[test]
