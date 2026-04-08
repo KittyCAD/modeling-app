@@ -268,7 +268,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(2)
 
       // Second line segment
-      const [line2Start] = scene.makeMouseHelpers(0.5, 0.4, {
+      // Keep this start point away from the Y axis so origin/axis snapping
+      // does not inject an extra horizontalDistance constraint.
+      const [line2Start] = scene.makeMouseHelpers(0.6, 0.4, {
         format: 'ratio',
       })
       const [line2End] = scene.makeMouseHelpers(0.8, 0.3, {
