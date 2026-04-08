@@ -1,6 +1,7 @@
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::collections::VecDeque;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
@@ -24,11 +25,16 @@ use crate::execution::ArtifactGraph;
 use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::cache::SketchModeState;
+use crate::execution::cache::clear_mem_cache;
+use crate::execution::cache::read_old_memory;
+use crate::execution::cache::write_old_memory;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Distance;
+use crate::front::Error;
 use crate::front::ExecResult;
 use crate::front::FixedPoint;
 use crate::front::Freedom;
@@ -45,8 +51,10 @@ use crate::frontend::api::ObjectId;
 use crate::frontend::api::ObjectKind;
 use crate::frontend::api::Plane;
 use crate::frontend::api::ProjectId;
+use crate::frontend::api::RestoreSketchCheckpointOutcome;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
+use crate::frontend::api::SketchCheckpointId;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::SourceRef;
 use crate::frontend::api::Version;
@@ -71,6 +79,7 @@ use crate::frontend::traverse::MutateBodyItem;
 use crate::frontend::traverse::TraversalReturn;
 use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
+use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
@@ -80,6 +89,19 @@ use crate::walk::Visitable;
 pub(crate) mod api;
 pub(crate) mod modify;
 pub(crate) mod sketch;
+
+pub const MAX_SKETCH_CHECKPOINTS: usize = 100;
+
+#[derive(Debug, Clone)]
+struct SketchCheckpoint {
+    id: SketchCheckpointId,
+    source: SourceDelta,
+    program: Program,
+    scene_graph: SceneGraph,
+    exec_outcome: ExecOutcome,
+    point_freedom_cache: HashMap<ObjectId, Freedom>,
+    mock_memory: Option<SketchModeState>,
+}
 mod traverse;
 pub(crate) mod trim;
 
@@ -168,6 +190,7 @@ pub enum SetProgramOutcome {
     Success {
         scene_graph: Box<SceneGraph>,
         exec_outcome: Box<ExecOutcome>,
+        checkpoint_id: Option<SketchCheckpointId>,
     },
     #[serde(rename_all = "camelCase")]
     ExecFailure { error: Box<KclErrorWithOutputs> },
@@ -180,6 +203,8 @@ pub struct FrontendState {
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
+    sketch_checkpoints: VecDeque<SketchCheckpoint>,
+    sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
 
 impl Default for FrontendState {
@@ -201,6 +226,8 @@ impl FrontendState {
                 sketch_mode: Default::default(),
             },
             point_freedom_cache: HashMap::new(),
+            sketch_checkpoints: VecDeque::new(),
+            sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
     }
 
@@ -216,6 +243,67 @@ impl FrontendState {
             .flatten()
             .map(|settings| settings.default_length_units)
             .unwrap_or(UnitLength::Millimeters)
+    }
+
+    pub async fn create_sketch_checkpoint(&mut self, exec_outcome: ExecOutcome) -> api::Result<SketchCheckpointId> {
+        let checkpoint_id = SketchCheckpointId::new(self.sketch_checkpoint_id_gen.next_id());
+
+        let checkpoint = SketchCheckpoint {
+            id: checkpoint_id,
+            source: SourceDelta {
+                text: source_from_ast(&self.program.ast),
+            },
+            program: self.program.clone(),
+            scene_graph: self.scene_graph.clone(),
+            exec_outcome,
+            point_freedom_cache: self.point_freedom_cache.clone(),
+            mock_memory: read_old_memory().await,
+        };
+
+        self.sketch_checkpoints.push_back(checkpoint);
+        while self.sketch_checkpoints.len() > MAX_SKETCH_CHECKPOINTS {
+            self.sketch_checkpoints.pop_front();
+        }
+
+        Ok(checkpoint_id)
+    }
+
+    pub async fn restore_sketch_checkpoint(
+        &mut self,
+        checkpoint_id: SketchCheckpointId,
+    ) -> api::Result<RestoreSketchCheckpointOutcome> {
+        let checkpoint = self
+            .sketch_checkpoints
+            .iter()
+            .find(|checkpoint| checkpoint.id == checkpoint_id)
+            .cloned()
+            .ok_or_else(|| Error {
+                msg: format!("Sketch checkpoint not found: {checkpoint_id:?}"),
+            })?;
+
+        self.program = checkpoint.program;
+        self.scene_graph = checkpoint.scene_graph.clone();
+        self.point_freedom_cache = checkpoint.point_freedom_cache;
+
+        if let Some(mock_memory) = checkpoint.mock_memory {
+            write_old_memory(mock_memory).await;
+        } else {
+            clear_mem_cache().await;
+        }
+
+        Ok(RestoreSketchCheckpointOutcome {
+            source_delta: checkpoint.source,
+            scene_graph_delta: SceneGraphDelta {
+                new_graph: checkpoint.scene_graph,
+                new_objects: Vec::new(),
+                invalidates_ids: true,
+                exec_outcome: checkpoint.exec_outcome,
+            },
+        })
+    }
+
+    pub fn clear_sketch_checkpoints(&mut self) {
+        self.sketch_checkpoints.clear();
     }
 }
 
@@ -1265,15 +1353,24 @@ impl FrontendState {
         // API call.
         // This always uses engine execution (not mock) so that things are cached.
         // Engine execution now runs freedom analysis automatically.
+        // Keep existing checkpoints alive here. History may still reference
+        // older committed sketch states across a direct-edit boundary, and a
+        // checkpoint restore is a full state replacement anyway. We append a
+        // fresh baseline checkpoint after the full execution below.
         // Clear the freedom cache since IDs might have changed after direct editing
         // and we're about to run freedom analysis which will repopulate it.
         self.point_freedom_cache.clear();
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
+                let checkpoint_id = self
+                    .create_sketch_checkpoint(outcome.clone())
+                    .await
+                    .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.msg)))?;
                 Ok(SetProgramOutcome::Success {
                     scene_graph: Box::new(self.scene_graph.clone()),
                     exec_outcome: Box::new(outcome),
+                    checkpoint_id: Some(checkpoint_id),
                 })
             }
             Err(mut err) => {

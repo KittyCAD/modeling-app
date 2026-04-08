@@ -91,6 +91,7 @@ function createDragSnappingDeps() {
       getClientSceneScaleFactor: vi.fn(() => 1),
     } as unknown as SceneInfra,
     onUpdateDragSnapping: vi.fn(),
+    setLastPreviewSegmentsToEdit: vi.fn(),
   }
 }
 
@@ -275,12 +276,14 @@ describe('createOnDragStartCallback', () => {
   it('should track the drag start position, dragged entity id, and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
     const setDraggedEntityId = vi.fn()
+    const setLastPreviewSegmentsToEdit = vi.fn()
     const getHoveredId = vi.fn(() => 13)
     const dismissConstraintHoverPopup = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getHoveredId,
       dismissConstraintHoverPopup,
     })

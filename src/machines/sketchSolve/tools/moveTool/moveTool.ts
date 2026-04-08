@@ -316,7 +316,7 @@ function getZeroAxisDistanceConstraintWithOrigin(
       (obj) =>
         isConstraint(obj, constraintType) &&
         obj.kind.constraint.points.includes(pointId) &&
-        obj.kind.constraint.points.includes('ORIGIN') &&
+        obj.kind.constraint.points.includes('ORIGIN' as never) &&
         obj.kind.constraint.distance.value === 0
     ) ?? null
   )
@@ -331,11 +331,15 @@ function getZeroAxisDistanceConstraintWithOrigin(
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
   setDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
   getHoveredId,
   dismissConstraintHoverPopup,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   setDraggedEntityId: (entityId: number | null) => void
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
   getHoveredId: () => SketchSolveSelectionId | null
   dismissConstraintHoverPopup: () => void
 }): (arg: {
@@ -347,6 +351,7 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setLastPreviewSegmentsToEdit(null)
     const hoveredId = getHoveredId()
     setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
@@ -641,6 +646,7 @@ export function createOnDragCallback({
   getLastSuccessfulDragFromPoint,
   setLastSuccessfulDragFromPoint,
   getDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
   getContextData,
   editSegments,
   onNewSketchOutcome,
@@ -654,6 +660,9 @@ export function createOnDragCallback({
   getLastSuccessfulDragFromPoint: () => Vector2
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   getDraggedEntityId: () => number | null
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -776,9 +785,12 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
+        setLastPreviewSegmentsToEdit(null)
         setIsSolveInProgress(false)
         return
       }
+
+      setLastPreviewSegmentsToEdit(segmentsToEdit)
 
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
@@ -831,6 +843,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
+  const [getLastPreviewSegmentsToEdit, setLastPreviewSegmentsToEdit] =
+    createGetSet<Array<ExistingSegmentCtor> | null>(null)
   const constraintHoverPopupState: {
     lastHoveredTargetId: number | null
     entries: ConstraintHoverPopupEntry[]
@@ -1022,6 +1036,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getHoveredId: () => self.getSnapshot().context.hoveredId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
@@ -1040,18 +1055,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
           sendHoveredState(null)
 
           const snapshot = self.getSnapshot()
-          const sceneGraphDelta =
+          const currentSceneGraphDelta =
             snapshot.context.sketchExecOutcome?.sceneGraphDelta
           const snappingCandidate =
             allowSnapping(mouseEvent) &&
-            sceneGraphDelta &&
+            currentSceneGraphDelta &&
             intersectionPoint?.twoD
               ? getDragPointSnappingCandidate({
                   draggedEntityId,
                   selectedIds: getObjectSelectionIds(
                     snapshot.context.selectedIds
                   ),
-                  sceneGraphDelta,
+                  sceneGraphDelta: currentSceneGraphDelta,
                   sketchId: snapshot.context.sketchId,
                   mousePosition: [
                     intersectionPoint.twoD.x,
@@ -1061,7 +1076,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 })
               : null
 
-          const settings = jsAppSettings(context.rustContext.settingsActor)
           const units = baseUnitToNumericSuffix(
             context.kclManager.fileSettings.defaultLengthUnit
           )
@@ -1073,7 +1087,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   units
                 )
               : null
-          const result =
+          const settings = jsAppSettings(context.rustContext.settingsActor)
+          const result: {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
+          } =
             snappingCandidate &&
             draggedEntityId !== null &&
             snapConstraint !== null
@@ -1109,7 +1128,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     snapConstraint.type === 'HorizontalDistance' ||
                     snapConstraint.type === 'VerticalDistance'
                   ) {
-                    const objects = sceneGraphDelta?.new_graph.objects ?? []
+                    const objects =
+                      currentSceneGraphDelta?.new_graph.objects ?? []
                     const existingSameConstraint =
                       getZeroAxisDistanceConstraintWithOrigin(
                         draggedEntityId,
@@ -1169,13 +1189,69 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     SKETCH_FILE_VERSION,
                     context.sketchId,
                     snapConstraint,
-                    settings
+                    settings,
+                    true
                   )
                 })()
-              : await context.rustContext.sketchExecuteMock(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId
-                )
+              : await (async () => {
+                  const lastPreviewSegmentsToEdit =
+                    getLastPreviewSegmentsToEdit()
+                  if (lastPreviewSegmentsToEdit?.length) {
+                    return context.rustContext.editSegments(
+                      0,
+                      context.sketchId,
+                      lastPreviewSegmentsToEdit,
+                      settings,
+                      true
+                    )
+                  }
+
+                  if (!currentSceneGraphDelta) {
+                    return context.rustContext.sketchExecuteMock(
+                      SKETCH_FILE_VERSION,
+                      context.sketchId
+                    )
+                  }
+
+                  const objects = currentSceneGraphDelta.new_graph.objects
+                  const coincidentClusterPointIds =
+                    draggedEntityId !== null
+                      ? getCoincidentCluster(draggedEntityId, objects)
+                      : []
+                  const idsToEdit = new Set<number>()
+                  coincidentClusterPointIds.forEach((id) => {
+                    idsToEdit.add(id)
+                  })
+                  snapshot.context.selectedIds.forEach((id) => {
+                    if (isObjectSelectionId(id)) {
+                      idsToEdit.add(id)
+                    }
+                  })
+
+                  const segmentsToEdit: ExistingSegmentCtor[] = []
+                  for (const id of idsToEdit) {
+                    const obj = objects[id]
+                    if (!obj || obj.kind.type !== 'Segment') continue
+                    const ctor = buildSegmentCtorFromObject(obj, objects)
+                    if (!ctor) continue
+                    segmentsToEdit.push({ id, ctor })
+                  }
+
+                  if (segmentsToEdit.length === 0) {
+                    return context.rustContext.sketchExecuteMock(
+                      SKETCH_FILE_VERSION,
+                      context.sketchId
+                    )
+                  }
+
+                  return context.rustContext.editSegments(
+                    0,
+                    context.sketchId,
+                    segmentsToEdit,
+                    settings,
+                    true
+                  )
+                })()
 
           // Send the event to update the sketch outcome
           self.send({
@@ -1183,7 +1259,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             data: {
               sourceDelta: result.kclSource,
               sceneGraphDelta: result.sceneGraphDelta,
-              writeToDisk: false,
+              checkpointId: result.checkpointId ?? null,
             },
           })
         } catch (err) {
@@ -1198,6 +1274,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
       getDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {

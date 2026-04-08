@@ -18,6 +18,7 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
+  resetSketchSolvePointHandleCount,
   type SegmentRenderState,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
@@ -29,7 +30,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect } from '@codemirror/state'
+import { StateEffect, Transaction } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
@@ -169,6 +170,11 @@ export type UpdateSketchOutcomeEvent = {
      * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
+    /**
+     * Defaults to the same value as `writeToDisk`.
+     */
+    addToHistory?: boolean
+    checkpointId?: number | null
   }
 }
 
@@ -514,6 +520,7 @@ export function updateSceneGraphFromDelta({
   // If invalidates_ids is true, we need to delete everything and start fresh
   // because the old IDs can't be trusted
   if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
+    resetSketchSolvePointHandleCount()
     disposeGroupChildren(sketchSolveGroup)
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
@@ -530,6 +537,7 @@ export function updateSceneGraphFromDelta({
       return childId >= sceneGraphDelta.new_graph.objects.length
     })
     if (invalidateScene && sketchSolveGroup instanceof Group) {
+      resetSketchSolvePointHandleCount()
       disposeGroupChildren(sketchSolveGroup)
     }
   }
@@ -705,6 +713,7 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
     // no segments to clean
     return
   }
+  resetSketchSolvePointHandleCount()
   disposeGroupChildren(sketchSegments)
 }
 
@@ -1031,14 +1040,24 @@ const debouncedEditorUpdate = deferredCallback(
     text,
     kclManager,
     shouldWriteToDisk,
+    shouldAddToHistory,
+    spec,
   }: {
     text: string
     kclManager: KclManager
     shouldWriteToDisk: boolean
+    shouldAddToHistory: boolean
+    spec: { effects: StateEffect<unknown>[] }
   }) =>
-    kclManager.updateCodeEditor(text, {
-      shouldWriteToDisk,
-    }),
+    kclManager.updateCodeEditor(
+      text,
+      {
+        shouldWriteToDisk,
+        shouldAddToHistory,
+        shouldExecute: false,
+      },
+      spec
+    ),
   200
 )
 
@@ -1068,7 +1087,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   // This is wired through a CodeMirror StateEffect so that
   // an extension (in @src/editor/plugins/sketch.ts) can apply its
   // effects while undoing as well.
-  context.kclManager.dispatch({
+  const additionalSpec = {
+    sketchCheckpointId: event.data.checkpointId,
     effects: [
       updateSketchSceneGraphEffect.of({
         sceneGraphDelta: event.data.sceneGraphDelta,
@@ -1077,7 +1097,26 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         duringAreaSelectIds: context.duringAreaSelectIds,
       }),
     ],
-  })
+  }
+
+  const shouldWriteToDisk = event.data.writeToDisk !== false
+  const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+  const shouldDispatchSceneImmediately =
+    context.kclManager.code !== event.data.sourceDelta.text
+
+  if (shouldDispatchSceneImmediately) {
+    context.kclManager.dispatch({
+      annotations: Transaction.addToHistory.of(false),
+      effects: additionalSpec.effects,
+    })
+  }
+
+  const editorAdditionalSpec = shouldDispatchSceneImmediately
+    ? {
+        ...additionalSpec,
+        effects: [] as StateEffect<unknown>[],
+      }
+    : additionalSpec
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
   // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
@@ -1091,16 +1130,21 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
-      shouldWriteToDisk: event.data.writeToDisk !== false,
+      shouldWriteToDisk,
+      shouldAddToHistory,
+      spec: editorAdditionalSpec,
     })
   } else {
-    const shouldWriteToDisk = event.data.writeToDisk !== false
-
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
-      shouldExecute: false,
-      shouldWriteToDisk,
-    })
+    context.kclManager.updateCodeEditor(
+      event.data.sourceDelta.text,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk,
+        shouldAddToHistory,
+      },
+      editorAdditionalSpec
+    )
   }
 
   return {
@@ -1154,6 +1198,7 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
+          writeToDisk: false,
         },
       })
     }
