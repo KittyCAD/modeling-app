@@ -1352,6 +1352,72 @@ extrude001 = extrude(profile001, length = 1)
     expect(selection.artifact.type).toEqual('path')
   })
 
+  it('maps sketch block segment arguments to segment selections', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
+
+  it('maps sketch block segment array arguments to segment selections', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+  line2 = line(start = [var 21.94mm, var -21.01mm], end = [var 8.14mm, var 14.22mm])
+}
+extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Array')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(2)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(selections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
   it('should find the cap selection from simple extrude on face', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

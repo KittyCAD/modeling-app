@@ -1342,12 +1342,20 @@ export function retrieveSelectionsFromOpArg(
   let artifactIds: string[] = []
   if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
     artifactIds = [opArg.value.value.artifactId]
+  } else if (opArg.value.type === 'Segment') {
+    artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value
-      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
-      .map((v) => v.value.artifactId)
+    artifactIds = opArg.value.value.flatMap((v) => {
+      if (v.type === 'Solid' || v.type === 'Sketch') {
+        return [v.value.artifactId]
+      }
+      if (v.type === 'Segment') {
+        return [v.artifact_id]
+      }
+      return []
+    })
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
     artifactIds = [opArg.value.artifact_id]
   } else {
@@ -1365,11 +1373,9 @@ export function retrieveSelectionsFromOpArg(
       const correspondingWall = artifactGraph
         .values()
         .find((a) => a.type === 'wall' && a.segId === artifact?.id)
-      if (!correspondingWall) {
-        continue
+      if (correspondingWall) {
+        artifact = correspondingWall
       }
-
-      artifact = correspondingWall
     }
 
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
