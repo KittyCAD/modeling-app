@@ -367,8 +367,12 @@ export function addSweep({
     return pathVars
   }
 
+  const pathExpr = createVariableExpressionsArray(pathVars.exprs)
+  if (!pathExpr) {
+    return new Error("Couldn't retrieve path selection")
+  }
+
   // Extra labeled args expressions
-  const pathExpr = pathVars.exprs[0]
   const sectionalExpr =
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]

@@ -592,7 +592,7 @@ function handleRenameProject(
     )
 
     if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-      toast.error('Project names cannot start with a dot (.)')
+      toast.error('Project names cannot start with a period.')
       return
     }
 

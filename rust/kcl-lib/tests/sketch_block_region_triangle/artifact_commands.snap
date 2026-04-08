@@ -102,19 +102,6 @@ description: Artifact commands sketch_block_region_triangle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.394380782855383,
-          "y": 0.32339081423467236,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -125,19 +112,6 @@ description: Artifact commands sketch_block_region_triangle.kcl
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.586666666243411,
-          "y": 4.8082184890674515,
-          "z": 0.0
         }
       }
     },

@@ -204,7 +204,7 @@ export function OpenedProject() {
   useHotkeyWrapper(
     ['mod + s'],
     () => {
-      toast.success('Your work is auto-saved in real-time')
+      toast.success('Your work is auto-saved in real-time.')
     },
     kclManager
   )

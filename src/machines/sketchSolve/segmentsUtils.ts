@@ -1,9 +1,8 @@
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  packRgbToColor,
+  SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
 } from '@src/lib/constants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 
@@ -150,11 +149,7 @@ export function getSegmentColor({
 
   // Priority 2: Hover color
   if (isHovered) {
-    // Lighter version of selection color (70% brightness)
-    const hoverColor = packRgbToColor(
-      SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
-    )
-    return hoverColor
+    return SKETCH_HIGHLIGHT_COLOR
   }
 
   // Priority 3: Select color

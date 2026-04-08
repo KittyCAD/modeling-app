@@ -75,7 +75,17 @@ description: Operations executed sketch_block_circle_simple.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -95,9 +105,6 @@ description: Operations executed sketch_block_circle_simple.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },
