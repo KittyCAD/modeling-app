@@ -62,7 +62,10 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { createHistoryExtension } from '@src/editor/historyConfig'
+import {
+  createHistoryExtension,
+  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
+} from '@src/editor/historyConfig'
 
 import {
   invertedEffects,
@@ -702,7 +705,7 @@ export class KclManager extends File {
   }> = []
   private nextDirectSketchHistoryEntryId = 0
   private lastSketchCheckpointRestoreRequestId = 0
-  private sketchCheckpointLimit = 100
+  private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   lastSuccessfulCode: string = ''
   get code(): string {
     return this.editorView.state.doc.toString()

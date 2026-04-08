@@ -15,7 +15,7 @@ const CODEMIRROR_HISTORY_HEADROOM = 20
 // available. KclManager reconfigures both histories once wasm initialization
 // completes.
 // Source of truth for this is MAX_SKETCH_CHECKPOINTS in frontend.rs
-const FALLBACK_SKETCH_CHECKPOINT_LIMIT = 100
+export const FALLBACK_SKETCH_CHECKPOINT_LIMIT = 100
 
 export function historyMinDepthFromCheckpointLimit(
   checkpointLimit: number
