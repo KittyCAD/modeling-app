@@ -27,7 +27,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
-pub(crate) mod sketch2;
+pub(crate) mod solver;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -511,73 +511,73 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::appearance::hexString"),
         ),
-        ("sketch2", "point") => (
+        ("solver", "point") => (
             |e, a| Box::pin(crate::std::constraints::point(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::point"),
+            StdFnProps::default("std::solver::point"),
         ),
-        ("sketch2", "line") => (
+        ("solver", "line") => (
             |e, a| Box::pin(crate::std::constraints::line(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::line"),
+            StdFnProps::default("std::solver::line"),
         ),
-        ("sketch2", "arc") => (
+        ("solver", "arc") => (
             |e, a| Box::pin(crate::std::constraints::arc(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::arc"),
+            StdFnProps::default("std::solver::arc"),
         ),
-        ("sketch2", "circle") => (
+        ("solver", "circle") => (
             |e, a| Box::pin(crate::std::constraints::circle(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::circle"),
+            StdFnProps::default("std::solver::circle"),
         ),
-        ("sketch2", "coincident") => (
+        ("solver", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::coincident"),
+            StdFnProps::default("std::solver::coincident"),
         ),
-        ("sketch2", "distance") => (
+        ("solver", "distance") => (
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::distance"),
+            StdFnProps::default("std::solver::distance"),
         ),
-        ("sketch2", "radius") => (
+        ("solver", "radius") => (
             |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::radius"),
+            StdFnProps::default("std::solver::radius"),
         ),
-        ("sketch2", "diameter") => (
+        ("solver", "diameter") => (
             |e, a| Box::pin(crate::std::constraints::diameter(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::diameter"),
+            StdFnProps::default("std::solver::diameter"),
         ),
-        ("sketch2", "horizontalDistance") => (
+        ("solver", "horizontalDistance") => (
             |e, a| Box::pin(crate::std::constraints::horizontal_distance(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::horizontalDistance"),
+            StdFnProps::default("std::solver::horizontalDistance"),
         ),
-        ("sketch2", "verticalDistance") => (
+        ("solver", "verticalDistance") => (
             |e, a| Box::pin(crate::std::constraints::vertical_distance(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::verticalDistance"),
+            StdFnProps::default("std::solver::verticalDistance"),
         ),
-        ("sketch2", "equalLength") => (
+        ("solver", "equalLength") => (
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::equalLength"),
+            StdFnProps::default("std::solver::equalLength"),
         ),
-        ("sketch2", "angle") => (
+        ("solver", "angle") => (
             |e, a| Box::pin(crate::std::constraints::angle(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::angle"),
+            StdFnProps::default("std::solver::angle"),
         ),
-        ("sketch2", "tangent") => (
+        ("solver", "tangent") => (
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::tangent"),
+            StdFnProps::default("std::solver::tangent"),
         ),
-        ("sketch2", "horizontal") => (
+        ("solver", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::horizontal"),
+            StdFnProps::default("std::solver::horizontal"),
         ),
-        ("sketch2", "parallel") => (
+        ("solver", "parallel") => (
             |e, a| Box::pin(crate::std::constraints::parallel(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::parallel"),
+            StdFnProps::default("std::solver::parallel"),
         ),
-        ("sketch2", "perpendicular") => (
+        ("solver", "perpendicular") => (
             |e, a| Box::pin(crate::std::constraints::perpendicular(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::perpendicular"),
+            StdFnProps::default("std::solver::perpendicular"),
         ),
-        ("sketch2", "vertical") => (
+        ("solver", "vertical") => (
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::vertical"),
+            StdFnProps::default("std::solver::vertical"),
         ),
         ("sketch", "region") => (
             |e, a| Box::pin(crate::std::sketch::region(e, a).map(|r| r.map(KclValue::continue_))),

@@ -1,6 +1,6 @@
 ---
-title: "sketch2::tangent"
-subtitle: "Function in std::sketch2"
+title: "solver::tangent"
+subtitle: "Function in std::solver"
 excerpt: "Constrain two segments to be tangent."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain two segments to be tangent.
 
 ```kcl
-sketch2::tangent(@input: [Segment; 2])
+solver::tangent(@input: [Segment; 2])
 ```
 
 Supported input type pairs (unordered):
@@ -49,11 +49,11 @@ solid = extrude(region(point = [1mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::tangent function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-tangent0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::tangent function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-tangent0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-tangent0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-tangent0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
