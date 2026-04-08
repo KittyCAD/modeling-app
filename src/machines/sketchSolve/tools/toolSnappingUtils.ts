@@ -11,6 +11,10 @@ import {
   isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 type ToolSelf = {
@@ -28,12 +32,15 @@ type ToolSelf = {
     }
     send?: (event: {
       type: 'update hovered id'
-      data: { hoveredId: number | null }
+      data: { hoveredId: SketchSolveSelectionId | null }
     }) => void
   }
 }
 
-export function sendHoveredId(self: ToolSelf, hoveredId: number | null) {
+function sendHoveredId(
+  self: ToolSelf,
+  hoveredId: SketchSolveSelectionId | null
+) {
   self._parent?.send?.({
     type: 'update hovered id',
     data: {
@@ -46,12 +53,13 @@ export function sendHoveredSnappingCandidate(
   self: ToolSelf,
   snappingCandidate: SnappingCandidate | null
 ) {
-  sendHoveredId(
-    self,
-    isPointSnapTarget(snappingCandidate?.target)
-      ? snappingCandidate.target.pointId
-      : null
-  )
+  let hoveredId: SketchSolveSelectionId | null = null
+  if (snappingCandidate?.target.type === ORIGIN_TARGET) {
+    hoveredId = ORIGIN_TARGET
+  } else if (isPointSnapTarget(snappingCandidate?.target)) {
+    hoveredId = snappingCandidate.target.pointId
+  }
+  sendHoveredId(self, hoveredId)
 }
 
 export function getBestSnappingCandidate({
@@ -115,7 +123,7 @@ export function updateToolSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra,
-    target,
+    snappingCandidate: target,
   })
 }
 

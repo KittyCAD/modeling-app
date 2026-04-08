@@ -2072,6 +2072,13 @@ pub struct ConstrainablePoint2d {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
+pub enum ConstrainablePoint2dOrOrigin {
+    Point(ConstrainablePoint2d),
+    Origin,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
     pub vars: [crate::front::Point2d<SketchVarId>; 2],
@@ -2247,7 +2254,7 @@ pub enum SketchConstraintKind {
         line1: ConstrainableLine2d,
     },
     Distance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
@@ -2256,10 +2263,10 @@ pub enum SketchConstraintKind {
         points: [ConstrainablePoint2d; 2],
     },
     HorizontalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     VerticalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
 }
 

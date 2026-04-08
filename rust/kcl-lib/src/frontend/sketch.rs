@@ -344,7 +344,7 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub segments: Vec<CoincidentSegment>,
+    pub segments: Vec<ConstraintSegment>,
 }
 
 impl Coincident {
@@ -352,16 +352,16 @@ impl Coincident {
         self.segments
             .iter()
             .filter_map(|segment| match segment {
-                CoincidentSegment::Segment(id) => Some(*id),
-                CoincidentSegment::Origin(_) => None,
+                ConstraintSegment::Segment(id) => Some(*id),
+                ConstraintSegment::Origin(_) => None,
             })
             .collect()
     }
 
     pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.segments.iter().filter_map(|segment| match segment {
-            CoincidentSegment::Segment(id) => Some(*id),
-            CoincidentSegment::Origin(_) => None,
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
         })
     }
 
@@ -373,12 +373,12 @@ impl Coincident {
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
-pub enum CoincidentSegment {
+pub enum ConstraintSegment {
     Segment(ObjectId),
     Origin(OriginLiteral),
 }
 
-impl CoincidentSegment {
+impl ConstraintSegment {
     pub const ORIGIN: Self = Self::Origin(OriginLiteral::Origin);
 }
 
@@ -389,7 +389,7 @@ pub enum OriginLiteral {
     Origin,
 }
 
-impl From<ObjectId> for CoincidentSegment {
+impl From<ObjectId> for ConstraintSegment {
     fn from(value: ObjectId) -> Self {
         Self::Segment(value)
     }
@@ -398,9 +398,22 @@ impl From<ObjectId> for CoincidentSegment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
-    pub points: Vec<ObjectId>,
+    pub points: Vec<ConstraintSegment>,
     pub distance: Number,
     pub source: ConstraintSource,
+}
+
+impl Distance {
+    pub fn point_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.points.iter().filter_map(|point| match point {
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
+        })
+    }
+
+    pub fn contains_point(&self, point_id: ObjectId) -> bool {
+        self.point_ids().any(|id| id == point_id)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
