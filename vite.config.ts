@@ -72,6 +72,7 @@ export default defineConfig(({ command, mode }) => {
         '@kittycad/codemirror-lsp-client':
           '/packages/codemirror-lsp-client/src',
         '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
+        '@kittycad/ui-components': '/packages/ui-components/src',
         '@rust': '/rust',
         '@e2e': '/e2e',
         '@src': '/src',

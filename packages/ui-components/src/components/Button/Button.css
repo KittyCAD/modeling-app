@@ -1,0 +1,116 @@
+.zds-button {
+  --zds-button-background: linear-gradient(135deg, #1d4766, #3378b0);
+  --zds-button-border: transparent;
+  --zds-button-color: #fdfcf9;
+  --zds-button-shadow: 0 12px 28px rgb(29 71 102 / 0.18);
+  appearance: none;
+  align-items: center;
+  background: var(--zds-button-background);
+  border: 1px solid var(--zds-button-border);
+  border-radius: 999px;
+  box-shadow: var(--zds-button-shadow);
+  color: var(--zds-button-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 650;
+  gap: 0.625rem;
+  justify-content: center;
+  line-height: 1.1;
+  min-height: 2.75rem;
+  padding: 0.75rem 1.1rem;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+  white-space: nowrap;
+}
+
+.zds-button:hover:not(:disabled) {
+  box-shadow: 0 14px 32px rgb(29 71 102 / 0.24);
+  transform: translateY(-1px);
+}
+
+.zds-button:focus-visible {
+  outline: 3px solid rgb(66 153 225 / 0.35);
+  outline-offset: 3px;
+}
+
+.zds-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.zds-button--full-width {
+  width: 100%;
+}
+
+.zds-button--tone-primary.zds-button--emphasis-solid {
+  --zds-button-background: linear-gradient(135deg, #1d4766, #3378b0);
+  --zds-button-color: #fdfcf9;
+}
+
+.zds-button--tone-primary.zds-button--emphasis-outline {
+  --zds-button-background: rgb(253 252 249 / 0.7);
+  --zds-button-border: #3378b0;
+  --zds-button-color: #1d4766;
+  --zds-button-shadow: none;
+}
+
+.zds-button--tone-primary.zds-button--emphasis-ghost {
+  --zds-button-background: transparent;
+  --zds-button-color: #1d4766;
+  --zds-button-shadow: none;
+}
+
+.zds-button--tone-neutral.zds-button--emphasis-solid {
+  --zds-button-background: linear-gradient(135deg, #2f3744, #566174);
+  --zds-button-color: #fbf8f2;
+}
+
+.zds-button--tone-neutral.zds-button--emphasis-outline {
+  --zds-button-background: rgb(255 255 255 / 0.65);
+  --zds-button-border: #566174;
+  --zds-button-color: #2f3744;
+  --zds-button-shadow: none;
+}
+
+.zds-button--tone-neutral.zds-button--emphasis-ghost {
+  --zds-button-background: transparent;
+  --zds-button-color: #2f3744;
+  --zds-button-shadow: none;
+}
+
+.zds-button--tone-danger.zds-button--emphasis-solid {
+  --zds-button-background: linear-gradient(135deg, #8a2d26, #c25045);
+  --zds-button-color: #fff8f6;
+}
+
+.zds-button--tone-danger.zds-button--emphasis-outline {
+  --zds-button-background: rgb(255 245 243 / 0.75);
+  --zds-button-border: #c25045;
+  --zds-button-color: #8a2d26;
+  --zds-button-shadow: none;
+}
+
+.zds-button--tone-danger.zds-button--emphasis-ghost {
+  --zds-button-background: transparent;
+  --zds-button-color: #8a2d26;
+  --zds-button-shadow: none;
+}
+
+.zds-button__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zds-button__visual {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1rem;
+}

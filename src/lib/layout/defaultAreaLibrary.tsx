@@ -5,7 +5,7 @@ import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -17,14 +17,23 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Draggable } from '@kittycad/ui-components'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { CustomIcon } from '@src/components/CustomIcon'
+
+const Handle = () => (
+  <div className="flex justify-center hover:bg-2">
+    <CustomIcon name="three-dots" className="w-6 h-6 text-3" />
+  </div>
+)
 
 function ModelingArea() {
   const { auth } = useApp()
   const { state, send } = useModelingContext()
   const authToken = auth.useToken()
+  const boundingRef = useRef<HTMLDivElement>(null)
   const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
     DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
   )
@@ -33,8 +42,18 @@ function ModelingArea() {
     (1 - sketchSolveStreamDimming) * 100
   )
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div
+      ref={boundingRef}
+      className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
+    >
       <Toolbar />
+      <Draggable
+        containerRef={boundingRef}
+        Handle={<Handle />}
+        className="self-end relative z-50 pointer-events-auto w-full max-w-sm m-4 border b-5 rounded shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+      >
+        <p className="m-2">This is a draggable box</p>
+      </Draggable>
       <ConnectionStream
         authToken={authToken}
         sketchSolveStreamDimming={sketchSolveStreamDimming}
