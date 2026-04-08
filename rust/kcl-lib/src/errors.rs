@@ -370,26 +370,32 @@ impl IntoDiagnostic for KclErrorWithOutputs {
                     .source_files
                     .get(&source_range.module_id())
                     .cloned()
-                    .unwrap_or(ModuleSource {
-                        source: code.to_string(),
-                        path: self.filenames.get(&source_range.module_id()).unwrap().clone(),
+                    .or_else(|| {
+                        self.filenames
+                            .get(&source_range.module_id())
+                            .cloned()
+                            .map(|path| ModuleSource {
+                                source: code.to_string(),
+                                path,
+                            })
                     });
-                let mut filename = source.path.to_string();
-                if !filename.starts_with("file://") {
-                    filename = format!("file:///{}", filename.trim_start_matches("/"));
-                }
 
-                let related_information = if let Ok(uri) = url::Url::parse(&filename) {
-                    Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
-                        location: tower_lsp::lsp_types::Location {
-                            uri,
-                            range: source_range.to_lsp_range(&source.source),
-                        },
-                        message: message.to_string(),
-                    }])
-                } else {
-                    None
-                };
+                let related_information = source.and_then(|source| {
+                    let mut filename = source.path.to_string();
+                    if !filename.starts_with("file://") {
+                        filename = format!("file:///{}", filename.trim_start_matches("/"));
+                    }
+
+                    url::Url::parse(&filename).ok().map(|uri| {
+                        vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                            location: tower_lsp::lsp_types::Location {
+                                uri,
+                                range: source_range.to_lsp_range(&source.source),
+                            },
+                            message: message.to_string(),
+                        }]
+                    })
+                });
 
                 Diagnostic {
                     range: source_range.to_lsp_range(code),
@@ -881,5 +887,24 @@ impl From<CompilationIssue> for KclErrorDetails {
             backtrace,
             message: err.message,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn missing_filename_mapping_does_not_panic_when_building_diagnostics() {
+        let error = KclErrorWithOutputs::no_outputs(KclError::new_semantic(KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![SourceRange::new(0, 1, ModuleId::from_usize(9))],
+        )));
+
+        let diagnostics = error.to_lsp_diagnostics("x");
+
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].message, "boom");
+        assert_eq!(diagnostics[0].related_information, None);
     }
 }
