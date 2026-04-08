@@ -1418,6 +1418,49 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
     expect(selections.graphSelections[1].artifact?.type).toBe('segment')
   })
 
+  it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.31mm, var 5.27mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, ORIGIN])
+  line2 = line(start = [var 4.03mm, var 6.68mm], end = [var -3.31mm, var 5.27mm])
+  coincident([line2.end, line1.start])
+}
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 11.49mm])
+  coincident([line1.start, ORIGIN])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  arc1 = arc(start = [var 2.33mm, var 18.25mm], end = [var 0mm, var 11.49mm], center = [var 10.95mm, var 11.49mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sketch002.arc1], bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'sweep'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.path) {
+      throw new Error('Sweep operation or path argument not found')
+    }
+
+    const pathSelections = retrieveSelectionsFromOpArg(
+      op.labeledArgs.path,
+      artifactGraph
+    )
+    if (err(pathSelections)) throw pathSelections
+
+    expect(pathSelections.graphSelections).toHaveLength(2)
+    expect(pathSelections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(pathSelections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
   it('should find the cap selection from simple extrude on face', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

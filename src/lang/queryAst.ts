@@ -1340,7 +1340,11 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
-  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+  if (
+    opArg.value.type === 'Solid' ||
+    opArg.value.type === 'Sketch' ||
+    opArg.value.type === 'Helix'
+  ) {
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'Segment') {
     artifactIds = [opArg.value.artifact_id]
@@ -1348,10 +1352,13 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
     artifactIds = opArg.value.value.flatMap((v) => {
-      if (v.type === 'Solid' || v.type === 'Sketch') {
+      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
         return [v.value.artifactId]
       }
       if (v.type === 'Segment') {
+        return [v.artifact_id]
+      }
+      if (v.type === 'TagIdentifier' && v.artifact_id) {
         return [v.artifact_id]
       }
       return []
