@@ -366,19 +366,15 @@ impl IntoDiagnostic for KclErrorWithOutputs {
         source_ranges
             .into_iter()
             .map(|source_range| {
-                let source = self
-                    .source_files
-                    .get(&source_range.module_id())
-                    .cloned()
-                    .or_else(|| {
-                        self.filenames
-                            .get(&source_range.module_id())
-                            .cloned()
-                            .map(|path| ModuleSource {
-                                source: code.to_string(),
-                                path,
-                            })
-                    });
+                let source = self.source_files.get(&source_range.module_id()).cloned().or_else(|| {
+                    self.filenames
+                        .get(&source_range.module_id())
+                        .cloned()
+                        .map(|path| ModuleSource {
+                            source: code.to_string(),
+                            path,
+                        })
+                });
 
                 let related_information = source.and_then(|source| {
                     let mut filename = source.path.to_string();
@@ -904,7 +900,7 @@ mod tests {
         let diagnostics = error.to_lsp_diagnostics("x");
 
         assert_eq!(diagnostics.len(), 1);
-        assert_eq!(diagnostics[0].message, "boom");
+        assert_eq!(diagnostics[0].message, "semantic: boom");
         assert_eq!(diagnostics[0].related_information, None);
     }
 }
