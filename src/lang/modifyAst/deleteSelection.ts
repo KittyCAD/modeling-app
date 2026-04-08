@@ -43,6 +43,7 @@ export async function deleteSelectionPromise({
     try {
       const settings = jsAppSettings(systemDeps.rustContext.settingsActor)
       switch (selection.artifact.type) {
+        // TODO: slot regions in here as well and hopefully more
         case 'sketchBlock':
           result = await systemDeps.rustContext.deleteSketch(
             SKETCH_FILE_VERSION,

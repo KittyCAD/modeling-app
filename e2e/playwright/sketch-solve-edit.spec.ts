@@ -571,6 +571,31 @@ sketch001 = sketch(on = XZ) {
         page.locator('.cm-lint-marker-error').first()
       ).not.toBeInViewport()
     })
+
+    await test.step('Delete extrude from feature tree', async () => {
+      await toolbar.openFeatureTreePane()
+      const extrudeOp = toolbar.featureTreePane
+        .getByRole('button', { name: /^(Extrude|extrude001)$/ })
+        .first()
+      await expect(extrudeOp).toBeVisible()
+      await extrudeOp.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('extrude(')
+    })
+
+    await test.step('Delete region from feature tree and expect original code', async () => {
+      await toolbar.openFeatureTreePane()
+      const regionOp = toolbar.featureTreePane
+        .getByRole('button', { name: /^(Region|region001)$/ })
+        .first()
+      await expect(regionOp).toBeVisible()
+      await regionOp.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('region(')
+      await editor.expectEditor.toContain(square, { shouldNormalise: true })
+    })
   })
 
   test('can extrude sketch regions with defaultLengthUnit = inches', async ({
