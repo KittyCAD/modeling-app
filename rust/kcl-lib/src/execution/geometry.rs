@@ -20,6 +20,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::NodePath;
 use crate::engine::DEFAULT_PLANE_INFO;
 use crate::engine::PlaneName;
 use crate::errors::KclError;
@@ -2095,6 +2096,8 @@ pub struct UnsolvedSegment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]
+    pub node_path: Option<NodePath>,
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2149,6 +2152,8 @@ pub struct Segment {
     pub sketch: Option<Sketch>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }

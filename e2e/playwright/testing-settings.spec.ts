@@ -591,7 +591,7 @@ test.describe(
             })
             await button.click()
             const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}`
+              `Updated per-file units to ${unitOfMeasure}.`
             )
             await expect(toastMessage).toBeVisible()
           }
@@ -868,7 +868,7 @@ fn cube`
           await unitsChangeButton(editedInlineUnits.long).click()
           await expect(
             page.getByText(
-              `Updated per-file units to ${editedInlineUnits.short}`
+              `Updated per-file units to ${editedInlineUnits.short}.`
             )
           ).toBeVisible()
         })

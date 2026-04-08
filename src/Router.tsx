@@ -190,8 +190,8 @@ function CoreDump() {
           ),
           {
             loading: 'Submitting support ticket...',
-            success: 'Support ticket created successfully',
-            error: 'Error while creating support ticket',
+            success: 'Support ticket created successfully.',
+            error: 'Error while creating support ticket.',
           },
           {
             success: {
