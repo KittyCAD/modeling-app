@@ -15,6 +15,103 @@ import { FlatCompat } from '@eslint/eslintrc'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+const relativeImportPackageRoots = ['src/lib/extensions']
+const relativeImportPackageRootPaths = relativeImportPackageRoots.map((root) =>
+  path.resolve(__dirname, root)
+)
+
+function getRelativeImportPackageRoot(filename) {
+  const absoluteFilename = path.resolve(filename)
+
+  for (const rootPath of relativeImportPackageRootPaths) {
+    if (
+      absoluteFilename === rootPath ||
+      absoluteFilename.startsWith(`${rootPath}${path.sep}`)
+    ) {
+      return rootPath
+    }
+  }
+
+  return null
+}
+
+const workspaceRules = {
+  'no-relative-outside-package-root': {
+    meta: {
+      type: 'problem',
+      docs: {
+        description:
+          'Allow relative imports only when they stay inside the same package-like folder.',
+      },
+      schema: [],
+      messages: {
+        outsidePackageRoot:
+          'Relative import "{{importPath}}" escapes package root "{{packageRoot}}". Use an absolute import instead.',
+      },
+    },
+    create(context) {
+      const filename =
+        context.filename && context.filename !== '<input>'
+          ? context.filename
+          : context.getFilename()
+      const packageRoot = getRelativeImportPackageRoot(filename)
+
+      if (!packageRoot) {
+        return {}
+      }
+
+      function checkSource(sourceNode) {
+        const importPath = sourceNode.value
+
+        if (
+          typeof importPath !== 'string' ||
+          (!importPath.startsWith('./') && !importPath.startsWith('../'))
+        ) {
+          return
+        }
+
+        const resolvedPath = path.resolve(path.dirname(filename), importPath)
+        const relativeToRoot = path.relative(packageRoot, resolvedPath)
+
+        if (
+          relativeToRoot.startsWith('..') ||
+          path.isAbsolute(relativeToRoot)
+        ) {
+          context.report({
+            node: sourceNode,
+            messageId: 'outsidePackageRoot',
+            data: {
+              importPath,
+              packageRoot: path.relative(__dirname, packageRoot),
+            },
+          })
+        }
+      }
+
+      return {
+        ImportDeclaration(node) {
+          checkSource(node.source)
+        },
+        ExportAllDeclaration(node) {
+          if (node.source) {
+            checkSource(node.source)
+          }
+        },
+        ExportNamedDeclaration(node) {
+          if (node.source) {
+            checkSource(node.source)
+          }
+        },
+        ImportExpression(node) {
+          if (node.source.type === 'Literal') {
+            checkSource(node.source)
+          }
+        },
+      }
+    },
+  },
+}
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
@@ -44,6 +141,9 @@ export default defineConfig([
     ),
 
     plugins: {
+      workspace: {
+        rules: workspaceRules,
+      },
       'react-perf': reactPerf,
       'css-modules': fixupPluginRules(cssModules),
       'jsx-a11y': fixupPluginRules(jsxA11Y),
@@ -204,6 +304,14 @@ export default defineConfig([
 
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
+    },
+  },
+  {
+    files: relativeImportPackageRoots.map((root) => `${root}/**/*.{ts,tsx}`),
+    rules: {
+      'no-restricted-imports': 'off',
+      'suggest-no-throw/suggest-no-throw': 'off',
+      'workspace/no-relative-outside-package-root': 'error',
     },
   },
   {

@@ -3,6 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 export function StatusBar({
@@ -47,6 +48,7 @@ export const defaultStatusBarItemClassNames =
 function StatusBarItem(
   props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
 ) {
+  const location = useLocation()
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
@@ -147,7 +149,9 @@ function StatusBarItem(
       return (
         <ActionButton
           Element={props.element}
-          to={props.href}
+          to={
+            props.href instanceof Function ? props.href(location) : props.href
+          }
           iconStart={
             'icon' in props
               ? props.icon && {
