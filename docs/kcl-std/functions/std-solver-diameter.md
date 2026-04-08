@@ -1,6 +1,6 @@
 ---
-title: "sketch2::diameter"
-subtitle: "Function in std::sketch2"
+title: "solver::diameter"
+subtitle: "Function in std::solver"
 excerpt: "Constrain the diameter of an arc or circle segment. Accepts a single arc or circle segment and constrains the distance from its center to its start point. Note: Diameter uses the same solver constraint as radius (distance between two points), but is stored as a separate constraint type for proper UI display."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain the diameter of an arc or circle segment. Accepts a single arc or circle segment and constrains the distance from its center to its start point. Note: Diameter uses the same solver constraint as radius (distance between two points), but is stored as a separate constraint type for proper UI display.
 
 ```kcl
-sketch2::diameter(@points: Segment)
+solver::diameter(@points: Segment)
 ```
 
 
@@ -47,11 +47,11 @@ solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::diameter function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-diameter0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::diameter function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-diameter0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-diameter0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-diameter0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

@@ -1,6 +1,6 @@
 ---
-title: "sketch2::fixed"
-subtitle: "Constant in std::sketch2"
+title: "solver::fixed"
+subtitle: "Constant in std::solver"
 excerpt: "Constrain a point to be fixed to a position."
 layout: manual
 ---
@@ -8,7 +8,7 @@ layout: manual
 Constrain a point to be fixed to a position.
 
 ```kcl
-sketch2::fixed
+solver::fixed
 ```
 
 `fixed()` is an alias for `coincident()`. By convention, `fixed()` is used when one of the points is a known location, not solved with constraints and not another point in the sketch.
