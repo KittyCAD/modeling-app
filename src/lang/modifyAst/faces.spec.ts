@@ -614,6 +614,84 @@ face001 = faceId(extrude001, index = 6)
 surface001 = deleteFace(extrude001, faces = [rectangleSegmentA001, face001])`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
+
+    it('should add a deleteFace call for loft start cap', async () => {
+      const code = `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-17.5, 0])
+  |> yLine(length = 7.5, tag = $seg03)
+  |> xLine(length = 5, tag = $seg01)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+plane001 = offsetPlane(YZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-17.29, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 4.79)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft002 = loft([profile001, profile002])
+
+surface001 = deleteFace(loft002, faces = seg02)
+surface002 = deleteFace(loft002, faces = seg03)
+`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const capStart = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap' && artifact.subType === 'start'
+      )
+      if (!capStart) {
+        throw new Error('Could not find expected loft start cap selection')
+      }
+
+      const capStartSelection = createSelectionFromArtifacts(
+        [capStart],
+        artifactGraph
+      )
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: capStartSelection,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-17.5, 0])
+  |> yLine(length = 7.5, tag = $seg03)
+  |> xLine(length = 5, tag = $seg01)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+plane001 = offsetPlane(YZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-17.29, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 4.79)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft002 = loft([profile001, profile002], tagStart = $capStart001)
+
+surface001 = deleteFace(loft002, faces = seg02)
+surface002 = deleteFace(loft002, faces = seg03)
+surface003 = deleteFace(loft002, faces = capStart001)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
   })
 
   describe('Testing addHole', () => {
