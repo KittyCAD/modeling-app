@@ -3196,6 +3196,11 @@ export const modelingMachine = setup({
                 },
               }
             )
+            if (!editSketchResult) {
+              const errorMessage = 'Failed to edit sketch'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
             kclManager.updateCodeEditor(
               kclManager.code,
               {
@@ -3207,16 +3212,17 @@ export const modelingMachine = setup({
               }
             )
           }
-          if (!editSketchResult) {
-            const errorMessage = 'Failed to edit sketch'
-            toast.error(errorMessage)
-            return reject(new Error(errorMessage))
-          }
         } catch (error) {
           console.error('Error calling editSketch:', error)
           return reject(
             error instanceof Error ? error : new Error('Failed to edit sketch')
           )
+        }
+
+        if (!editSketchResult) {
+          const errorMessage = 'Failed to edit sketch'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
         }
 
         return {
