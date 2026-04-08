@@ -1,19 +1,23 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import {
+  DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_LEADER_LINE,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
-  isPointSegment,
-  pointToVec3,
-  type DistanceConstraint,
-} from '@src/machines/sketchSolve/constraints/constraintUtils'
-import {
   createDimensionLine,
+  updateConstraintLinePositions,
   updateDimensionLine,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
-import { DISTANCE_CONSTRAINT_LEADER_LINE } from '@src/clientSideScene/sceneConstants'
+import {
+  type DistanceConstraint,
+  isPointSegment,
+  pointToVec3,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { type Group, Vector3 } from 'three'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
@@ -44,15 +48,32 @@ export class DistanceConstraintBuilder {
     if (points) {
       const { p1, p2, distance } = points
       const { start, end, perp } = getDirections(obj, p1, p2, scale)
+      const isCollapsedZeroAxisDistance =
+        obj.kind.constraint.distance.value === 0 &&
+        (obj.kind.constraint.type === 'HorizontalDistance' ||
+          obj.kind.constraint.type === 'VerticalDistance')
       group.visible = true
       this.resources.updateConstraintGroup(
         group,
         obj.id,
         selectedIds,
-        hoveredId
+        hoveredId,
+        isCollapsedZeroAxisDistance ? 'dashed' : 'solid'
       )
       updateDimensionLine(start, end, group, obj, scale, sceneInfra, distance)
-      this.updateLeaderLines(start, end, perp, p1, p2, group, scale)
+      if (isCollapsedZeroAxisDistance) {
+        this.updateCollapsedZeroDistanceLine(start, perp, p1, p2, group, scale)
+      }
+      this.updateLeaderLines(
+        start,
+        end,
+        perp,
+        p1,
+        p2,
+        group,
+        scale,
+        isCollapsedZeroAxisDistance
+      )
     }
   }
 
@@ -60,17 +81,21 @@ export class DistanceConstraintBuilder {
     const materials = this.resources.materials
 
     const leadGeom1 = new LineGeometry()
-    leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine1 = new Line2(leadGeom1, materials.default.line)
     leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
     leadLine1.userData.hitObjects = 'auto'
+    leadLine1.userData.segmentStart = new Vector3()
+    leadLine1.userData.segmentEnd = new Vector3()
+    updateConstraintLinePositions(leadLine1, [0, 0, 0, 100, 100, 0])
     group.add(leadLine1)
 
     const leadGeom2 = new LineGeometry()
-    leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine2 = new Line2(leadGeom2, materials.default.line)
     leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
     leadLine2.userData.hitObjects = 'auto'
+    leadLine2.userData.segmentStart = new Vector3()
+    leadLine2.userData.segmentEnd = new Vector3()
+    updateConstraintLinePositions(leadLine2, [0, 0, 0, 100, 100, 0])
     group.add(leadLine2)
   }
 
@@ -81,8 +106,21 @@ export class DistanceConstraintBuilder {
     p1: Vector3,
     p2: Vector3,
     group: Group,
-    scale: number
+    scale: number,
+    hidden = false
   ) {
+    const leadLines = group.children.filter(
+      (child) => child.userData.type === DISTANCE_CONSTRAINT_LEADER_LINE
+    )
+    const leadLine1 = leadLines[0] as Line2
+    const leadLine2 = leadLines[1] as Line2
+
+    leadLine1.visible = !hidden
+    leadLine2.visible = !hidden
+    if (hidden) {
+      return
+    }
+
     // Leader lines
     const extension = perp
       .clone()
@@ -91,15 +129,70 @@ export class DistanceConstraintBuilder {
     const leadEnd1 = start.clone().add(extension)
     const leadEnd2 = end.clone().add(extension)
 
-    const leadLines = group.children.filter(
-      (child) => child.userData.type === DISTANCE_CONSTRAINT_LEADER_LINE
-    )
-    const leadLine1 = leadLines[0] as Line2
-    const leadLine2 = leadLines[1] as Line2
+    updateConstraintLinePositions(leadLine1, [
+      p1.x,
+      p1.y,
+      0,
+      leadEnd1.x,
+      leadEnd1.y,
+      0,
+    ])
 
-    leadLine1.geometry.setPositions([p1.x, p1.y, 0, leadEnd1.x, leadEnd1.y, 0])
-    leadLine2.geometry.setPositions([p2.x, p2.y, 0, leadEnd2.x, leadEnd2.y, 0])
+    updateConstraintLinePositions(leadLine2, [
+      p2.x,
+      p2.y,
+      0,
+      leadEnd2.x,
+      leadEnd2.y,
+      0,
+    ])
   }
+
+  private updateCollapsedZeroDistanceLine(
+    start: Vector3,
+    perp: Vector3,
+    p1: Vector3,
+    p2: Vector3,
+    group: Group,
+    scale: number
+  ) {
+    const collapsedLine = group.children.find(
+      (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
+    ) as Line2 | undefined
+    if (!collapsedLine) {
+      return
+    }
+
+    const direction = perp.clone().normalize()
+    const lineEnd = start
+      .clone()
+      .add(direction.clone().multiplyScalar(LEADER_LINE_OVERHANG * scale))
+    const lineStart = getCollapsedZeroDistanceLineStart(
+      [p1.x, p1.y],
+      [p2.x, p2.y],
+      [direction.x, direction.y]
+    )
+
+    updateConstraintLinePositions(collapsedLine, [
+      lineStart[0],
+      lineStart[1],
+      0,
+      lineEnd.x,
+      lineEnd.y,
+      0,
+    ])
+  }
+}
+
+function getCollapsedZeroDistanceLineStart(
+  p1: readonly [number, number],
+  p2: readonly [number, number],
+  direction: readonly [number, number]
+): [number, number] {
+  const p1Projection = p1[0] * direction[0] + p1[1] * direction[1]
+  const p2Projection = p2[0] * direction[0] + p2[1] * direction[1]
+
+  return p1Projection <= p2Projection ? [p1[0], p1[1]] : [p2[0], p2[1]]
 }
 
 export function getDistanceEndPoints(
@@ -108,17 +201,29 @@ export function getDistanceEndPoints(
 ) {
   const constraint = obj.kind.constraint
   const [p1Id, p2Id] = constraint.points
-  const p1Obj = objects[p1Id]
-  const p2Obj = objects[p2Id]
+  const p1 = getDistanceConstraintPointPosition(p1Id, objects)
+  const p2 = getDistanceConstraintPointPosition(p2Id, objects)
 
-  if (isPointSegment(p1Obj) && isPointSegment(p2Obj)) {
+  if (p1 && p2) {
     return {
-      p1: pointToVec3(p1Obj),
-      p2: pointToVec3(p2Obj),
+      p1,
+      p2,
       distance: constraint.distance,
     }
   }
   return null
+}
+
+function getDistanceConstraintPointPosition(
+  pointId: number | 'ORIGIN',
+  objects: ApiObject[]
+) {
+  if (pointId === 'ORIGIN') {
+    return new Vector3(0, 0, 0)
+  }
+
+  const pointObject = objects[pointId]
+  return isPointSegment(pointObject) ? pointToVec3(pointObject) : null
 }
 
 function getDirections(

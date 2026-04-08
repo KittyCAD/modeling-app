@@ -10,7 +10,7 @@ layout: manual
 Constrain the vertical distance between two points.
 
 ```kcl
-sketch2::verticalDistance(@points: [Segment; 2])
+sketch2::verticalDistance(@points: [Segment | Point2d; 2])
 ```
 
 
@@ -19,7 +19,7 @@ sketch2::verticalDistance(@points: [Segment; 2])
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2] | Two sketch points whose Y-axis separation should match the value set with `==`. | Yes |
+| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`, whose Y-axis separation should match the value set with `==`. | Yes |
 
 
 ### Examples
