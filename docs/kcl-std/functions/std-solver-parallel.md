@@ -1,6 +1,6 @@
 ---
-title: "sketch2::parallel"
-subtitle: "Function in std::sketch2"
+title: "solver::parallel"
+subtitle: "Function in std::solver"
 excerpt: "Constrain lines to be parallel."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain lines to be parallel.
 
 ```kcl
-sketch2::parallel(@input: [Segment; 2+])
+solver::parallel(@input: [Segment; 2+])
 ```
 
 Currently limited to two lines.
@@ -46,11 +46,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::parallel function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-parallel0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::parallel function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-parallel0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-parallel0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-parallel0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

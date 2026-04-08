@@ -1,6 +1,6 @@
 ---
-title: "sketch2::verticalDistance"
-subtitle: "Function in std::sketch2"
+title: "solver::verticalDistance"
+subtitle: "Function in std::solver"
 excerpt: "Constrain the vertical distance between two points."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain the vertical distance between two points.
 
 ```kcl
-sketch2::verticalDistance(@points: [Segment | Point2d; 2])
+solver::verticalDistance(@points: [Segment | Point2d; 2])
 ```
 
 
@@ -46,11 +46,11 @@ solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::verticalDistance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-verticalDistance0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::verticalDistance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-verticalDistance0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-verticalDistance0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-verticalDistance0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

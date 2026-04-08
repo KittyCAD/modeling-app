@@ -103,8 +103,8 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
-use crate::std::sketch2::SOLVER_CONVERGENCE_TOLERANCE;
-use crate::std::sketch2::create_segments_in_engine;
+use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
+use crate::std::solver::create_segments_in_engine;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -1757,7 +1757,7 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
-        let path = vec!["std".to_owned(), "sketch2".to_owned()];
+        let path = vec!["std".to_owned(), "solver".to_owned()];
         let resolved_path = ModulePath::from_std_import_path(&path)?;
         let module_id = ctx
             .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
