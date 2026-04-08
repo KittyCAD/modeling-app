@@ -20,9 +20,7 @@ export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
 @(experimental = true)
-export import region from "std::sketch2"
-@(experimental = true)
-export import "std::sketch2"
+export import "std::solver"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
@@ -174,13 +172,13 @@ export CW = "cw": string
 /// ```
 /// ```
 /// @settings(experimentalFeatures = allow)
-/// 
+///
 /// // Demonstrate building a helix where the central axis is a line defined in a sketch block.
 /// // First, here's the sketch block with a line:
 /// sketch002 = sketch(on = XZ) {
 ///   line1 = line(start = [var -0.82mm, var 3.4mm], end = [var -1.58mm, var -5.24mm])
 /// }
-/// 
+///
 /// // Create a helix around the line in the sketch above.
 /// helixPath = helix(
 ///   angleStart = 0,
@@ -190,7 +188,7 @@ export CW = "cw": string
 ///   radius = 5,
 ///   axis = sketch002.line1,
 /// )
-/// 
+///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn(XZ)
 ///   |> circle(center = [5, 0], radius = 0.5)
@@ -390,7 +388,7 @@ export fn offsetPlane(
 ///
 /// sketch002 = clone(sketch001)
 /// |> translate(x = 0, y = 0, z = 20)
-/// 
+///
 /// fillet(
 /// sketch002,
 /// radius = 2,
@@ -537,9 +535,9 @@ export fn offsetPlane(
 ///        roughness = 50
 ///    )
 /// ```
-/// 
+///
 /// ```kcl
-/// // Clone an array of sketches and solids 
+/// // Clone an array of sketches and solids
 /// exampleSketch = startSketchOn(XY)
 ///  |> startProfile(at = [0, 0])
 ///  |> line(end = [10, 0])
@@ -554,15 +552,15 @@ export fn offsetPlane(
 ///   |> line(end = [-10, 0])
 ///   |> close()
 ///   |> extrude(length = 5)
-/// 
-/// 
+///
+///
 /// inputArray = [ exampleSketch, exampleSolid]
 /// outputArray = clone(inputArray)
-/// 
+///
 /// outputArray[0]
 /// |> translate(xyz = [10, 10, 10])
 /// |> extrude(length = 5)
-/// 
+///
 /// clonedSolid = outputArray[1]
 /// |> translate(xyz = [-10, -10, -10])
 ///
@@ -571,10 +569,10 @@ export fn offsetPlane(
 /// // Clone an array that includes an imported geometry, solid and sketch.
 /// ```kcl
 /// import "tests/inputs/cube.sldprt" as cube
-/// 
+///
 /// geom = cube
 /// |> translate(xyz = [1000, 50 , 50])
-/// 
+///
 /// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -582,7 +580,7 @@ export fn offsetPlane(
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
 ///   |> close()
-/// 
+///
 /// exampleSolid = startSketchOn(XY)
 ///   |> startProfile(at = [-15, 0])
 ///   |> line(end = [10, 0])
@@ -590,11 +588,11 @@ export fn offsetPlane(
 ///   |> line(end = [-10, 0])
 ///   |> close()
 ///   |> extrude(length = 5)
-/// 
-/// 
+///
+///
 /// inputArray = [ exampleSketch, exampleSolid, geom ]
 /// outputArray = clone(inputArray)
-/// 
+///
 /// outputArray[0]
 /// |> translate(xyz = [10, 10, 10])
 /// |> extrude(length = 5)
@@ -662,7 +660,7 @@ export fn assert(
 /// cylinder = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 4.09, tag = $seg01)
 ///   |> extrude(length = 5)
-/// 
+///
 /// // Delete the face at index 2
 /// // (the top face)
 /// deleteFace(cylinder, faces = [faceId(cylinder, index = 2)])
@@ -706,4 +704,3 @@ export fn edgeId(
   /// Query the edge closest to this point. Uses absolute global coordinates.
   closestTo?: Point3d,
 ): Edge {}
-

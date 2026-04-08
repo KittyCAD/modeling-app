@@ -1,6 +1,6 @@
 ---
-title: "sketch2::horizontal"
-subtitle: "Function in std::sketch2"
+title: "solver::horizontal"
+subtitle: "Function in std::solver"
 excerpt: "Constrain a line to be horizontal."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain a line to be horizontal.
 
 ```kcl
-sketch2::horizontal(@input: Segment)
+solver::horizontal(@input: Segment)
 ```
 
 
@@ -46,11 +46,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::horizontal function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-horizontal0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::horizontal function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-horizontal0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-horizontal0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-horizontal0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

@@ -1,16 +1,16 @@
 ---
-title: "sketch2::point"
-subtitle: "Function in std::sketch2"
-excerpt: "Create a point in a sketch."
+title: "solver::distance"
+subtitle: "Function in std::solver"
+excerpt: "Constrain the distance between two points."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Create a point in a sketch.
+Constrain the distance between two points.
 
 ```kcl
-sketch2::point(at: Point2d): Segment
+solver::distance(@points: [Segment | Point2d; 2])
 ```
 
 
@@ -19,11 +19,7 @@ sketch2::point(at: Point2d): Segment
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `at` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point's position in the sketch's local 2D coordinate system. | Yes |
-
-### Returns
-
-[`Segment`](/docs/kcl-std/types/std-types-Segment) - A segment in a sketch created in a sketch block. It may be a line, arc, point, or other segment type.
+| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`, whose separation should match the value set with `==`. | Yes |
 
 
 ### Examples
@@ -40,21 +36,21 @@ profile = sketch(on = XY) {
   coincident([edge2.end, edge3.start])
   coincident([edge3.end, edge4.start])
   coincident([edge4.end, edge1.start])
-  inside = point(at = [var 1mm, var 1mm])
+  distance([edge1.start, edge2.end]) == 5mm
 }
 
-solid = extrude(region(point = profile.inside), length = 2)
+solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::point function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-point0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::distance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-distance0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-point0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-distance0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

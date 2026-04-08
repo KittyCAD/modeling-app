@@ -13,18 +13,18 @@
 #
 # List of all samples:
 #
-# angle-gauge/
+angle-gauge/
 # axial-fan/
-# ball-bearing/
+ball-bearing/
 # bench/
-# bench-for-kids/
-# bike-hub-washer/
+bench-for-kids/
+bike-hub-washer/
 # bone-plate/
 # bottle/
-# box/
-# bracket/
+box/
+bracket/
 # bracket-with-slot/
-# c-shape-solid/
+c-shape-solid/
 # camshaft/
 # car-wheel-assembly/
 # cassette/
@@ -32,7 +32,7 @@
 # coilover-assembly/
 # cold-plate/
 # color-cube/
-# cone/
+cone/
 # contra-rotor/
 # counterdrilled-weldment/
 countersunk-plate/
@@ -45,7 +45,7 @@ cylinder/
 # dodecahedron/
 # dog-house-great-dane/
 # enclosure/
-# engine-valve/
+engine-valve/
 # exhaust-manifold/
 # field-monitor-stand/
 # flange/
@@ -141,7 +141,7 @@ torus/
 # utility-sink/
 v-block/
 # walkie-talkie/
-# washer/
+washer/
 wedge/
 # wheel-hub/
 # wing-spar/

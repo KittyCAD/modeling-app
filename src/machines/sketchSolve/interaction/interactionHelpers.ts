@@ -229,7 +229,7 @@ export function getSketchHoverDistance(scale: number) {
 }
 
 /**
- * Finds the closest apiObject to mousePosition (which is given in sketch space).
+ * Finds the closest apiObject to mousePosition within hoverDistance (which is given in sketch space).
  * Uses ApiObjects instead of the three.js scene.
  * Constraints still use the three.js group to avoid having to set up its hit areas manually.
  */
