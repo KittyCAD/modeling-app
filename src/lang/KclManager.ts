@@ -200,6 +200,19 @@ type MinimalDocumentChange = {
   insert: string
 }
 
+/**
+ * Computes the smallest single replacement that turns `currentCode` into
+ * `nextCode` by preserving the longest shared prefix and suffix.
+ *
+ * We use this when dispatching CodeMirror updates so history, selection
+ * mapping, and plugin updates operate on the narrowest possible text change
+ * instead of a full-document replace on every sketch/code sync.
+ *
+ * If there are multiple disjoint edits, this still collapses them into a single
+ * replacement range, so the text between those edits is included in the change.
+ * That is less minimal than a true diff, but keeps the update logic simple and
+ * avoids tracking multiple document changes for one editor transaction.
+ */
 function buildMinimalDocumentChange(
   currentCode: string,
   nextCode: string
