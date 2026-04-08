@@ -542,7 +542,7 @@ sketch001 = sketch(on = XZ) {
         currentArgValue: '5',
         commandName: 'Extrude',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 region',
           Length: '5',
         },
         highlightedHeaderArg: 'length',
@@ -552,7 +552,7 @@ sketch001 = sketch(on = XZ) {
         stage: 'review',
         commandName: 'Extrude',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 region',
           Length: '5',
         },
       })
@@ -618,7 +618,7 @@ sketch001 = sketch(on = XZ) {
         currentArgValue: '5',
         commandName: 'Extrude',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 region',
           Length: '5',
         },
         highlightedHeaderArg: 'length',
@@ -628,7 +628,7 @@ sketch001 = sketch(on = XZ) {
         stage: 'review',
         commandName: 'Extrude',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 region',
           Length: '5',
         },
       })

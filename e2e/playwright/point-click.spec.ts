@@ -2322,7 +2322,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2335,7 +2335,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2354,7 +2354,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2366,7 +2366,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
