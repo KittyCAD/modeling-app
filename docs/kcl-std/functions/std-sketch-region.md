@@ -1,14 +1,6 @@
 ---
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
 title: "region"
 subtitle: "Function in std::sketch"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-title: "sketch2::region"
-subtitle: "Function in std::sketch2"
-========
-title: "solver::region"
-subtitle: "Function in std::solver"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
 excerpt: "Create a region from closed segments."
 layout: manual
 ---
@@ -18,13 +10,7 @@ layout: manual
 Create a region from closed segments.
 
 ```kcl
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
 region(
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-sketch2::region(
-========
-solver::region(
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   point?: Point2d | Segment,
   segments?: [Segment; 1+],
   intersectionIndex?: number(_),
@@ -81,25 +67,11 @@ extrude(r, length = 5)
 
 <model-viewer
   class="kcl-example"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   alt="Example showing a rendered KCL program that uses the region function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region0_output.gltf"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region0_output.gltf"
-========
-  alt="Example showing a rendered KCL program that uses the solver::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-region0_output.gltf"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   ar
   environment-image="/moon_1k.hdr"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region0.png"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region0.png"
-========
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-region0.png"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -131,25 +103,11 @@ extrude(r, length = 3)
 
 <model-viewer
   class="kcl-example"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   alt="Example showing a rendered KCL program that uses the region function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region1_output.gltf"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region1_output.gltf"
-========
-  alt="Example showing a rendered KCL program that uses the solver::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-region1_output.gltf"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   ar
   environment-image="/moon_1k.hdr"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region1.png"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region1.png"
-========
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-region1.png"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -174,25 +132,11 @@ extrude(r, length = 2)
 
 <model-viewer
   class="kcl-example"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   alt="Example showing a rendered KCL program that uses the region function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region2_output.gltf"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region2_output.gltf"
-========
-  alt="Example showing a rendered KCL program that uses the solver::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-region2_output.gltf"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   ar
   environment-image="/moon_1k.hdr"
-<<<<<<<< HEAD:docs/kcl-std/functions/std-sketch-region.md
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region2.png"
-|||||||| parent of 69f6e02979 (Redo docs):docs/kcl-std/functions/std-sketch2-region.md
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region2.png"
-========
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-region2.png"
->>>>>>>> 69f6e02979 (Redo docs):docs/kcl-std/functions/std-solver-region.md
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
