@@ -173,7 +173,7 @@ pub struct Backend {
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
-    /// The stdlib completions inside a sketch block, where `sketch2::*`
+    /// The stdlib completions inside a sketch block, where `solver::*`
     /// shadows the regular sketch stdlib.
     pub sketch_block_stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -1765,11 +1765,11 @@ enum StdlibCompletionContext {
 }
 
 fn is_sketch2_doc(doc: &crate::docs::kcl_doc::DocData) -> bool {
-    doc.qual_name().starts_with("std::sketch2::")
+    doc.qual_name().starts_with("std::solver::")
 }
 
 fn strip_sketch2_prefix(value: &str) -> String {
-    value.strip_prefix("sketch2::").unwrap_or(value).to_owned()
+    value.strip_prefix("solver::").unwrap_or(value).to_owned()
 }
 
 fn rewrite_completion_for_sketch_block(mut completion: CompletionItem) -> CompletionItem {

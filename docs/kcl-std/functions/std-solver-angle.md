@@ -1,6 +1,6 @@
 ---
-title: "sketch2::angle"
-subtitle: "Function in std::sketch2"
+title: "solver::angle"
+subtitle: "Function in std::solver"
 excerpt: "Constrain lines to meet at a given angle."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Constrain lines to meet at a given angle.
 
 ```kcl
-sketch2::angle(@input: [Segment; 2])
+solver::angle(@input: [Segment; 2])
 ```
 
 
@@ -44,11 +44,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::angle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-angle0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::angle function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-angle0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-angle0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-angle0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
