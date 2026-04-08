@@ -111,6 +111,28 @@ description: Operations executed sketch_block_on_face.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 2
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -867,23 +889,7 @@ description: Operations executed sketch_block_on_face.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 2,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     }
   ],
   "std::math": [

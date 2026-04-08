@@ -5,6 +5,28 @@ description: Operations executed sketch_block_region_triangle.kcl
 {
   "rust/kcl-lib/tests/sketch_block_region_triangle/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -478,23 +500,7 @@ description: Operations executed sketch_block_region_triangle.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     }
   ],
   "std::math": [

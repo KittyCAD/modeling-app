@@ -5,6 +5,28 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
 {
   "rust/kcl-lib/tests/sketch_on_face_of_region_extrude_one_to_one/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -478,23 +500,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -527,6 +533,28 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
           {
             "type": "ProgramBodyItem",
             "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 17
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1389,23 +1417,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 17,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
