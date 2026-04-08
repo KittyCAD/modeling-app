@@ -1,18 +1,45 @@
+import { type KclProjectShareLinkAccessMode, users } from '@kittycad/lib'
+import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
-import type { FileLinkParams } from '@src/lib/links'
-import { createCreateFileUrl, createShortlink } from '@src/lib/links'
+import env from '@src/env'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  readProjectSettingsFile,
+  writeProjectSettingsFile,
+} from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type CopyCurrentFileShareLinkArgs = FileLinkParams & {
+export type CopyCurrentFileShareLinkArgs = {
   token: string
+  project: Project | undefined
+  currentFilePath: string
+  currentFileContents: string
+  wasmInstance: ModuleType
+  isRestrictedToOrg: boolean
 }
 
-/**
- * Temporary adapter around the legacy shortlink flow.
- * Swap this implementation to the project upload + share-links APIs once the
- * updated TS client exposes those endpoints.
- */
+type ProjectSettingsCloud = Record<
+  string,
+  {
+    project_id?: string
+  }
+>
+
+type UploadFile = {
+  name: string
+  data: Blob
+}
+
+type ProjectUpsertBody = {
+  title: string
+  description: string
+}
+
 export async function copyCurrentFileShareLink(
   args: CopyCurrentFileShareLinkArgs
 ): Promise<boolean> {
@@ -23,27 +50,458 @@ export async function copyCurrentFileShareLink(
     return false
   }
 
-  const shareUrl = createCreateFileUrl(args)
-  const shortlink = await createShortlink(
-    args.token,
-    shareUrl.toString(),
-    args.isRestrictedToOrg,
-    args.password
-  )
+  if (!args.project) {
+    toast.error('You need an open project to share this file.', {
+      duration: 5000,
+    })
+    return false
+  }
+  const project = args.project
 
-  if (err(shortlink)) {
-    toast.error(shortlink.message, {
+  const environmentName = getCurrentEnvironmentName()
+  if (err(environmentName)) {
+    toast.error(environmentName.message, {
       duration: 5000,
     })
     return false
   }
 
-  await globalThis.navigator.clipboard.writeText(shortlink.url)
-  toast.success(
-    'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
-    {
+  const uploadFiles = await buildProjectUploadFiles({
+    project,
+    currentFilePath: args.currentFilePath,
+    currentFileContents: args.currentFileContents,
+    wasmInstance: args.wasmInstance,
+  })
+  if (err(uploadFiles)) {
+    toast.error(uploadFiles.message, {
       duration: 5000,
-    }
+    })
+    return false
+  }
+
+  const client = createKCClient(args.token)
+  const existingProjectId = await getCloudProjectIdForEnvironment(
+    project.path,
+    args.wasmInstance,
+    environmentName
   )
+  if (err(existingProjectId)) {
+    toast.error(existingProjectId.message, {
+      duration: 5000,
+    })
+    return false
+  }
+
+  let projectId: string
+  if (existingProjectId) {
+    const projectBody = await getProjectUpsertBody({
+      client,
+      project,
+      projectId: existingProjectId,
+    })
+    if (err(projectBody)) {
+      toast.error(projectBody.message, {
+        duration: 5000,
+      })
+      return false
+    }
+
+    const projectResp = await kcCall(() =>
+      upsertUserProject({
+        client,
+        id: existingProjectId,
+        body: projectBody,
+        files: uploadFiles,
+      })
+    )
+    if (err(projectResp)) {
+      toast.error(projectResp.message, {
+        duration: 5000,
+      })
+      return false
+    }
+
+    projectId = existingProjectId
+  } else {
+    const projectBody = getDefaultProjectUpsertBody(project)
+    const projectResp = await kcCall(() =>
+      upsertUserProject({
+        client,
+        body: projectBody,
+        files: uploadFiles,
+      })
+    )
+    if (err(projectResp)) {
+      toast.error(projectResp.message, {
+        duration: 5000,
+      })
+      return false
+    }
+
+    projectId = projectResp.id
+    const persisted = await persistCloudProjectIdForEnvironment(
+      project.path,
+      args.wasmInstance,
+      environmentName,
+      projectId
+    )
+    if (err(persisted)) {
+      toast.error(persisted.message, {
+        duration: 5000,
+      })
+      return false
+    }
+  }
+
+  const accessMode: KclProjectShareLinkAccessMode = args.isRestrictedToOrg
+    ? 'organization_only'
+    : 'anyone_with_link'
+
+  const shareLink = await getOrCreateProjectShareLink({
+    client,
+    projectId,
+    accessMode,
+  })
+  if (err(shareLink)) {
+    toast.error(shareLink.message, {
+      duration: 5000,
+    })
+    return false
+  }
+
+  await globalThis.navigator.clipboard.writeText(shareLink.url)
+  toast.success('Link copied to clipboard.', {
+    duration: 5000,
+  })
   return true
+}
+
+async function getProjectUpsertBody({
+  client,
+  project,
+  projectId,
+}: {
+  client: ReturnType<typeof createKCClient>
+  project: Project
+  projectId: string
+}): Promise<ProjectUpsertBody | Error> {
+  const remoteProject = await kcCall(() =>
+    users.get_user_project({
+      client,
+      id: projectId,
+    })
+  )
+  if (err(remoteProject)) {
+    return remoteProject
+  }
+
+  return {
+    title: remoteProject.title || getDefaultProjectTitle(project),
+    description: remoteProject.description || '',
+  }
+}
+
+function getDefaultProjectUpsertBody(project: Project): ProjectUpsertBody {
+  return {
+    title: getDefaultProjectTitle(project),
+    description: '',
+  }
+}
+
+function getDefaultProjectTitle(project: Project) {
+  return project.name || getPathLeaf(project.path) || 'project'
+}
+
+async function upsertUserProject({
+  client,
+  id,
+  body,
+  files,
+}: {
+  client: ReturnType<typeof createKCClient>
+  id?: string
+  body: ProjectUpsertBody
+  files: UploadFile[]
+}): Promise<{ id: string } | Error> {
+  const formData = new FormData()
+  formData.append(
+    'body',
+    new Blob([JSON.stringify(body)], { type: 'application/json' }),
+    'body.json'
+  )
+
+  for (const file of files) {
+    formData.append(file.name, file.data, file.name)
+  }
+
+  const apiPath = id ? `/user/projects/${id}` : '/user/projects'
+  const baseUrl = client.baseUrl || 'https://api.zoo.dev'
+  const requestUrl = new URL(apiPath, baseUrl).toString()
+  const headers: Record<string, string> = {}
+  if (client.token) {
+    headers.Authorization = `Bearer ${client.token}`
+  }
+
+  const fetchImpl = client.fetch || globalThis.fetch
+  const response = await fetchImpl(requestUrl, {
+    method: id ? 'PUT' : 'POST',
+    headers,
+    body: formData,
+  })
+  if (!response.ok) {
+    return new Error(await getApiErrorMessage(response))
+  }
+
+  return response.json() as Promise<{ id: string }>
+}
+
+async function getOrCreateProjectShareLink({
+  client,
+  projectId,
+  accessMode,
+}: {
+  client: ReturnType<typeof createKCClient>
+  projectId: string
+  accessMode: KclProjectShareLinkAccessMode
+}) {
+  const existingResp = await kcCall(() =>
+    users.list_user_project_share_links({
+      client,
+      id: projectId,
+    })
+  )
+
+  if (!err(existingResp)) {
+    const existing = existingResp.find(
+      (link) => link.access_mode === accessMode
+    )
+    if (existing) {
+      return existing
+    }
+  }
+
+  return kcCall(() =>
+    users.create_user_project_share_link({
+      client,
+      id: projectId,
+      body: { access_mode: accessMode },
+    })
+  )
+}
+
+async function buildProjectUploadFiles({
+  project,
+  currentFilePath,
+  currentFileContents,
+  wasmInstance,
+}: Omit<
+  CopyCurrentFileShareLinkArgs,
+  'token' | 'isRestrictedToOrg' | 'project'
+> & {
+  project: Project
+}): Promise<UploadFile[] | Error> {
+  if (!project.children) {
+    return new Error('This project does not have any files to share.')
+  }
+
+  const files: UploadFile[] = await Promise.all(
+    flattenProjectFiles(project.children).map(async (fileEntry) => {
+      const relativePath = toProjectRelativePath(project.path, fileEntry.path)
+      const data =
+        fileEntry.path === currentFilePath
+          ? new Blob([currentFileContents], {
+              type: getMimeType(fileEntry.name),
+            })
+          : new Blob([cloneFileBytes(await fsZds.readFile(fileEntry.path))], {
+              type: getMimeType(fileEntry.name),
+            })
+
+      return {
+        name: relativePath,
+        data,
+      }
+    })
+  )
+
+  const hasProjectSettings = files.some(
+    (file) => file.name === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (hasProjectSettings) {
+    return files
+  }
+
+  const projectToml = await getProjectTomlContents(project.path, wasmInstance)
+  if (err(projectToml)) {
+    return projectToml
+  }
+
+  return [
+    ...files,
+    {
+      name: PROJECT_SETTINGS_FILE_NAME,
+      data: new Blob([projectToml], { type: 'text/plain' }),
+    },
+  ]
+}
+
+async function getProjectTomlContents(
+  projectPath: string,
+  wasmInstance: ModuleType
+): Promise<string | Error> {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+
+  try {
+    return await fsZds.readFile(projectTomlPath, { encoding: 'utf-8' })
+  } catch {
+    const projectSettings = await readProjectSettingsFile(
+      projectPath,
+      wasmInstance
+    )
+    const serialized = serializeProjectConfiguration(
+      projectSettings,
+      wasmInstance
+    )
+    if (err(serialized)) {
+      return serialized
+    }
+
+    return serialized
+  }
+}
+
+async function getCloudProjectIdForEnvironment(
+  projectPath: string,
+  wasmInstance: ModuleType,
+  environmentName: string
+): Promise<string | undefined | Error> {
+  try {
+    const projectSettings = await readProjectSettingsFile(
+      projectPath,
+      wasmInstance
+    )
+    const cloud = (projectSettings.cloud ?? {}) as ProjectSettingsCloud
+    return cloud[environmentName]?.project_id
+  } catch (error) {
+    return new Error(
+      `Failed to read local project settings: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+}
+
+async function persistCloudProjectIdForEnvironment(
+  projectPath: string,
+  wasmInstance: ModuleType,
+  environmentName: string,
+  projectId: string
+) {
+  try {
+    const projectSettings = await readProjectSettingsFile(
+      projectPath,
+      wasmInstance
+    )
+    const cloud = { ...(projectSettings.cloud ?? {}) } as ProjectSettingsCloud
+    cloud[environmentName] = {
+      ...(cloud[environmentName] ?? {}),
+      project_id: projectId,
+    }
+
+    const serialized = serializeProjectConfiguration(
+      {
+        ...projectSettings,
+        cloud,
+      },
+      wasmInstance
+    )
+    if (err(serialized)) {
+      return serialized
+    }
+
+    await writeProjectSettingsFile(projectPath, serialized)
+    return true
+  } catch (error) {
+    return new Error(
+      `Failed to save local cloud project binding: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+}
+
+function flattenProjectFiles(fileEntries: FileEntry[]): FileEntry[] {
+  const files: FileEntry[] = []
+
+  for (const entry of fileEntries) {
+    if (entry.children) {
+      files.push(...flattenProjectFiles(entry.children))
+      continue
+    }
+
+    files.push(entry)
+  }
+
+  return files
+}
+
+function cloneFileBytes(fileBytes: Uint8Array) {
+  return Uint8Array.from(fileBytes)
+}
+
+async function getApiErrorMessage(response: Response) {
+  try {
+    const body = await response.json()
+    if (
+      body &&
+      typeof body === 'object' &&
+      'message' in body &&
+      typeof body.message === 'string'
+    ) {
+      return body.message
+    }
+  } catch {}
+
+  try {
+    const text = await response.text()
+    if (text) {
+      return text
+    }
+  } catch {}
+
+  return `Project upload failed (${response.status})`
+}
+
+function toProjectRelativePath(projectPath: string, filePath: string) {
+  return fsZds.relative(projectPath, filePath).replaceAll(fsZds.sep, '/')
+}
+
+function getPathLeaf(path: string) {
+  return path.split(fsZds.sep).filter(Boolean).at(-1)
+}
+
+function getCurrentEnvironmentName(): string | Error {
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+  if (baseDomain) {
+    return baseDomain
+  }
+
+  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
+  if (apiBaseUrl) {
+    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
+  }
+
+  return new Error('Could not determine the active API environment.')
+}
+
+function getMimeType(fileName: string) {
+  const extension = fsZds.extname(fileName).toLowerCase()
+  if (extension === '.kcl' || extension === '.toml') {
+    return 'text/plain'
+  }
+  if (extension === '.png') {
+    return 'image/png'
+  }
+  if (extension === '.jpg' || extension === '.jpeg') {
+    return 'image/jpeg'
+  }
+  if (extension === '.webp') {
+    return 'image/webp'
+  }
+  return 'application/octet-stream'
 }
