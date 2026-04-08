@@ -302,8 +302,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -333,8 +332,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -368,8 +366,7 @@ export default class RustContext {
         sketchId: result[2],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -394,8 +391,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -415,8 +411,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -444,8 +439,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -476,8 +470,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -507,8 +500,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -540,8 +532,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -571,8 +562,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -604,8 +594,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -639,8 +628,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -679,8 +667,7 @@ export default class RustContext {
         operationsPerformed: result.operations_performed,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }

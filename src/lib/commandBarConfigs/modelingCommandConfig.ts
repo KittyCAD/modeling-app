@@ -824,10 +824,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['path', 'helix'],
-        selectionFilter: ['object'],
+        selectionTypes: ['segment', 'path', 'helix'],
+        clearSelectionFirst: true,
         required: true,
-        multiple: false,
+        multiple: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {

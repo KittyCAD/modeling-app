@@ -63,18 +63,18 @@ export const KclEditorPaneContents = () => {
 
 function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   if (!kclManager.codeSignal.value) {
-    toast.error('No code available to copy')
+    toast.error('No code available to copy.')
     return
   }
 
   if (!globalThis?.navigator?.clipboard?.writeText) {
-    toast.error('Clipboard functionality not available in your browser')
+    toast.error('Clipboard functionality not available in your browser.')
     return
   }
 
   navigator.clipboard
     .writeText(kclManager.codeSignal.value)
-    .then(() => toast.success(`Copied current file's code to clipboard`))
+    .then(() => toast.success(`Copied current file's code to clipboard.`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
     )

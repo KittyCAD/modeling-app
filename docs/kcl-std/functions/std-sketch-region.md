@@ -1,6 +1,6 @@
 ---
-title: "sketch2::region"
-subtitle: "Function in std::sketch2"
+title: "region"
+subtitle: "Function in std::sketch"
 excerpt: "Create a region from closed segments."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 Create a region from closed segments.
 
 ```kcl
-sketch2::region(
+region(
   point?: Point2d | Segment,
   segments?: [Segment; 1+],
   intersectionIndex?: number(_),
@@ -67,11 +67,11 @@ extrude(r, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -103,11 +103,11 @@ extrude(r, length = 3)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region1_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region1.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -132,11 +132,11 @@ extrude(r, length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region2_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region2.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

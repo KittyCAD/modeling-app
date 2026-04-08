@@ -4,17 +4,19 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::ExecutorContext;
+use crate::KclErrorWithOutputs;
 use crate::front::Plane;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
 use crate::frontend::api::Number;
 use crate::frontend::api::ObjectId;
 use crate::frontend::api::ProjectId;
-use crate::frontend::api::Result;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::Version;
+
+pub type ExecResult<T> = std::result::Result<T, KclErrorWithOutputs>;
 
 /// Information about a newly created segment for batch operations
 #[derive(Debug, Clone)]
@@ -33,7 +35,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,
@@ -42,7 +44,7 @@ pub trait SketchApi {
         file: FileId,
         version: Version,
         args: SketchCtor,
-    ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta, ObjectId)>;
 
     // Enters sketch mode
     async fn edit_sketch(
@@ -52,16 +54,21 @@ pub trait SketchApi {
         file: FileId,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<SceneGraphDelta>;
+    ) -> ExecResult<SceneGraphDelta>;
 
-    async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
+    async fn exit_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> ExecResult<SceneGraph>;
 
     async fn delete_sketch(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_segment(
         &mut self,
@@ -70,7 +77,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_segments(
         &mut self,
@@ -78,7 +85,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         segments: Vec<ExistingSegmentCtor>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_objects(
         &mut self,
@@ -87,7 +94,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         constraint_ids: Vec<ObjectId>,
         segment_ids: Vec<ObjectId>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_constraint(
         &mut self,
@@ -95,7 +102,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn chain_segment(
         &mut self,
@@ -105,7 +112,7 @@ pub trait SketchApi {
         previous_segment_end_point_id: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
         &mut self,
@@ -114,7 +121,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         constraint_id: ObjectId,
         value_expression: String,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
@@ -129,7 +136,7 @@ pub trait SketchApi {
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
         new_segment_info: NewSegmentInfo,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
@@ -141,7 +148,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -337,7 +344,7 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub segments: Vec<CoincidentSegment>,
+    pub segments: Vec<ConstraintSegment>,
 }
 
 impl Coincident {
@@ -345,16 +352,16 @@ impl Coincident {
         self.segments
             .iter()
             .filter_map(|segment| match segment {
-                CoincidentSegment::Segment(id) => Some(*id),
-                CoincidentSegment::Origin(_) => None,
+                ConstraintSegment::Segment(id) => Some(*id),
+                ConstraintSegment::Origin(_) => None,
             })
             .collect()
     }
 
     pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.segments.iter().filter_map(|segment| match segment {
-            CoincidentSegment::Segment(id) => Some(*id),
-            CoincidentSegment::Origin(_) => None,
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
         })
     }
 
@@ -366,12 +373,12 @@ impl Coincident {
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
-pub enum CoincidentSegment {
+pub enum ConstraintSegment {
     Segment(ObjectId),
     Origin(OriginLiteral),
 }
 
-impl CoincidentSegment {
+impl ConstraintSegment {
     pub const ORIGIN: Self = Self::Origin(OriginLiteral::Origin);
 }
 
@@ -382,7 +389,7 @@ pub enum OriginLiteral {
     Origin,
 }
 
-impl From<ObjectId> for CoincidentSegment {
+impl From<ObjectId> for ConstraintSegment {
     fn from(value: ObjectId) -> Self {
         Self::Segment(value)
     }
@@ -391,9 +398,22 @@ impl From<ObjectId> for CoincidentSegment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
-    pub points: Vec<ObjectId>,
+    pub points: Vec<ConstraintSegment>,
     pub distance: Number,
     pub source: ConstraintSource,
+}
+
+impl Distance {
+    pub fn point_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.points.iter().filter_map(|point| match point {
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
+        })
+    }
+
+    pub fn contains_point(&self, point_id: ObjectId) -> bool {
+        self.point_ids().any(|id| id == point_id)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

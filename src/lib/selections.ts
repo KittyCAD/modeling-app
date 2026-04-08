@@ -24,6 +24,7 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getSettingsAnnotation,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -33,6 +34,7 @@ import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getSketchBlockForPathArtifact,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -51,6 +53,7 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
+import { DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -62,6 +65,7 @@ import {
   isArray,
   isNonNullable,
   isOverlap,
+  mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
@@ -79,7 +83,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import isEqual from 'react-fast-compare'
+import type { KclManager } from '@src/lang/KclManager'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -123,13 +127,22 @@ async function getRegionQueryPointForRegion(
 async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
-  const point = await getRegionQueryPointForRegion(
+  const queryPointMm = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
   )
-  if (!point) return null
+  if (!queryPointMm) return null
+  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  if (err(settings) || !settings.defaultLengthUnit) return null
+  const point: Point2d = {
+    x: mmToBaseUnit(queryPointMm.x, decimals, settings.defaultLengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, settings.defaultLengthUnit),
+  }
 
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
@@ -140,14 +153,7 @@ async function getEngineRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
-  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
-  const sketch = artifactGraph
-    .values()
-    .find(
-      (a) =>
-        a.type === 'sketchBlock' &&
-        isEqual(a.codeRef.pathToNode, path.codeRef.pathToNode)
-    )
+  const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
   if (!sketch) return null
 
   return {
@@ -216,15 +222,18 @@ export function isEngineRegionSelection(
 export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
   {
-    artifactGraph,
     engineCommandManager,
+    kclManager,
     rustContext,
+    wasmInstance,
   }: {
-    artifactGraph: ArtifactGraph
     engineCommandManager: ConnectionManager
+    kclManager: KclManager
     rustContext: RustContext
+    wasmInstance: ModuleType
   }
 ): Promise<ModelingMachineEvent | null> {
+  const { ast, artifactGraph } = kclManager
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -268,7 +277,9 @@ export async function getEventForSelectWithPoint(
     const regionSelection = await getEngineRegionSelectionFromEntity(
       data.entity_id,
       artifactGraph,
-      engineCommandManager
+      ast,
+      engineCommandManager,
+      wasmInstance
     )
     if (regionSelection) {
       return {
@@ -1418,7 +1429,7 @@ export async function selectionBodyFace(
       } else if (maybeImportNode.node.path.type === 'Foreign') {
         showSketchOnImportToast(maybeImportNode.node.path.path)
       } else if (maybeImportNode.node.path.type === 'Std') {
-        toast.error("can't sketch on this face")
+        toast.error("Can't sketch on this face.")
       } else {
         // force tsc error if more cases are added
         const _exhaustiveCheck: never = maybeImportNode.node.path

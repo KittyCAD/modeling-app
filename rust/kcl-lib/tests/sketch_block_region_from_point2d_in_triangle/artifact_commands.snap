@@ -102,19 +102,6 @@ description: Artifact commands sketch_block_region_from_point2d_in_triangle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.3967460225035526,
-          "y": -0.06852748084837883,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -125,19 +112,6 @@ description: Artifact commands sketch_block_region_from_point2d_in_triangle.kcl
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.5950000411833656,
-          "y": 4.78705495217822,
-          "z": 0.0
         }
       }
     },

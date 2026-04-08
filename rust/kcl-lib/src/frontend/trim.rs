@@ -2354,10 +2354,9 @@ pub(crate) fn trim_strategy(
             // even when this segment is trimmed. Only constraints that measure distances between
             // points on the same segment (e.g., segment length constraints) should be deleted.
             let points_owned_by_segment: Vec<bool> = distance
-                .points
-                .iter()
+                .point_ids()
                 .map(|point_id| {
-                    if let Some(point_obj) = objects.iter().find(|o| o.id == *point_id)
+                    if let Some(point_obj) = objects.iter().find(|o| o.id == point_id)
                         && let ObjectKind::Segment { segment } = &point_obj.kind
                         && let Segment::Point(point) = segment
                         && let Some(owner_id) = point.owner
@@ -3304,7 +3303,7 @@ pub(crate) fn trim_strategy(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.points.contains(&center_id)
+                    && distance.contains_point(center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -3525,7 +3524,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         vec![*segment_to_trim_id], // segment_ids
                     )
                     .await
-                    .map_err(|e| format!("Failed to delete segment: {}", e.msg))
+                    .map_err(|e| format!("Failed to delete segment: {}", e.error.message()))
             }
             TrimOperation::EditSegment {
                 segment_id,
@@ -3620,7 +3619,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                     delete_constraint_ids,
                                 )
                                 .await
-                                .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.msg))
+                                .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.error.message()))
                         } else {
                             // Not same segment/endpoint - execute EditSegment normally
                             let segment_to_edit = ExistingSegmentCtor {
@@ -3631,7 +3630,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             frontend
                                 .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                                 .await
-                                .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                                .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                         }
                     } else {
                         // Not followed by AddCoincidentConstraint - execute EditSegment normally
@@ -3643,7 +3642,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         frontend
                             .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                             .await
-                            .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                            .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                     }
                 } else {
                     // No following op to batch with - execute EditSegment normally
@@ -3655,7 +3654,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     frontend
                         .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                         .await
-                        .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                        .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
             }
             TrimOperation::AddCoincidentConstraint {
@@ -3715,7 +3714,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 frontend
                     .add_constraint(ctx, version, sketch_id, constraint)
                     .await
-                    .map_err(|e| format!("Failed to add constraint: {}", e.msg))
+                    .map_err(|e| format!("Failed to add constraint: {}", e.error.message()))
             }
             TrimOperation::DeleteConstraints { constraint_ids } => {
                 // Delete constraints
@@ -3730,7 +3729,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         Vec::new(), // segment_ids
                     )
                     .await
-                    .map_err(|e| format!("Failed to delete constraints: {}", e.msg))
+                    .map_err(|e| format!("Failed to delete constraints: {}", e.error.message()))
             }
             TrimOperation::SplitSegment {
                 segment_id,
@@ -3784,7 +3783,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.points.contains(&original_center_id)
+                            && distance.contains_point(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -3857,7 +3856,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 let (_add_source_delta, add_scene_graph_delta) = frontend
                     .add_segment(ctx, version, sketch_id, new_segment_ctor, None)
                     .await
-                    .map_err(|e| format!("Failed to add new segment: {}", e.msg))?;
+                    .map_err(|e| format!("Failed to add new segment: {}", e.error.message()))?;
 
                 // Step 3: Find the newly created segment
                 let new_segment_id = *add_scene_graph_delta
@@ -3927,7 +3926,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         }],
                     )
                     .await
-                    .map_err(|e| format!("Failed to edit segment: {}", e.msg))?;
+                    .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
                 // Track invalidates_ids from edit_segments call
                 invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
 
@@ -4168,8 +4167,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.points.contains(&original_start_id);
-                        let references_end = distance.points.contains(&original_end_id);
+                        let references_start = distance.contains_point(original_start_id);
+                        let references_end = distance.contains_point(original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push((distance.distance, distance.source.clone()));
@@ -4181,7 +4180,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                            points: vec![original_start_id, new_segment_end_point_id],
+                            points: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             source,
                         }));
@@ -4198,9 +4197,9 @@ pub(crate) async fn execute_trim_operations_simple(
                                     .iter()
                                     .map(|segment| {
                                         if *segment
-                                            == crate::frontend::sketch::CoincidentSegment::Segment(original_center_id)
+                                            == crate::frontend::sketch::ConstraintSegment::Segment(original_center_id)
                                         {
-                                            crate::frontend::sketch::CoincidentSegment::Segment(new_center_id)
+                                            crate::frontend::sketch::ConstraintSegment::Segment(new_center_id)
                                         } else {
                                             *segment
                                         }
@@ -4212,10 +4211,18 @@ pub(crate) async fn execute_trim_operations_simple(
                                 }));
                             }
                             Constraint::Distance(distance) => {
-                                let new_points: Vec<ObjectId> = distance
+                                let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
                                     .points
                                     .iter()
-                                    .map(|pt| if *pt == original_center_id { new_center_id } else { *pt })
+                                    .map(|point| match *point {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(id)
+                                            if id == original_center_id =>
+                                        {
+                                            new_center_id.into()
+                                        }
+                                        crate::frontend::sketch::ConstraintSegment::Segment(_) => *point,
+                                        crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
+                                    })
                                     .collect();
 
                                 batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
@@ -4312,7 +4319,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         },
                     )
                     .await
-                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg));
+                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.error.message()));
                 // Track invalidates_ids from batch_split_segment_operations call
                 if let Ok((_, ref batch_delta)) = batch_result {
                     invalidates_ids = invalidates_ids || batch_delta.invalidates_ids;
