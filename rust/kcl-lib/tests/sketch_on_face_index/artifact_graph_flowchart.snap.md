@@ -1,22 +1,22 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[74, 92, 0]<br>Consumed: true"]
+    2["Path<br>[33, 51, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    3["Segment<br>[74, 92, 0]"]
+    3["Segment<br>[33, 51, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     4[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[262, 282, 0]<br>Consumed: true"]
+    11["Path<br>[221, 241, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    12["Segment<br>[262, 282, 0]"]
+    12["Segment<br>[221, 241, 0]"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     13[Solid2d]
   end
-  1["Plane<br>[51, 68, 0]"]
+  1["Plane<br>[10, 27, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  5["Sweep Extrusion<br>[98, 117, 0]<br>Consumed: false"]
+  5["Sweep Extrusion<br>[57, 76, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   6[Wall]
     %% face_code_ref=Missing NodePath
@@ -26,7 +26,7 @@ flowchart LR
     %% face_code_ref=[ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  14["Sweep Extrusion<br>[286, 307, 0]<br>Consumed: false"]
+  14["Sweep Extrusion<br>[245, 266, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
   15[Wall]
     %% face_code_ref=Missing NodePath
@@ -34,9 +34,9 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   17["SweepEdge Opposite"]
   18["SweepEdge Adjacent"]
-  19["EdgeCut Fillet<br>[373, 423, 0]"]
+  19["EdgeCut Fillet<br>[332, 382, 0]"]
     %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr]
-  20["StartSketchOnFace<br>[224, 258, 0]"]
+  20["StartSketchOnFace<br>[183, 217, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
