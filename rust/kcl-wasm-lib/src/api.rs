@@ -130,6 +130,7 @@ impl Context {
 
         let program: Program =
             serde_json::from_str(program_ast_json).map_err(|e| format!("Could not deserialize KCL AST: {e}"))?;
+        let program = program.fill_node_paths();
 
         let ctx = self
             .create_executor_ctx(settings, None, false)
@@ -612,6 +613,7 @@ impl Context {
 
         let program: Program = serde_json::from_str(program_ast_json)
             .map_err(|e| JsValue::from_str(&format!("Could not deserialize KCL AST: {e}")))?;
+        let program = program.fill_node_paths();
 
         // Create executor context (not mock mode, so it can use the cache)
         let ctx = self

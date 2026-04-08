@@ -122,7 +122,7 @@ export function UnitsMenu() {
                           shouldExecute: true,
                           shouldResetCamera: true,
                         })
-                        toast.success(`Updated per-file units to ${unit}`)
+                        toast.success(`Updated per-file units to ${unit}.`)
                       }
                       popover.close()
                     }}

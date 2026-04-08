@@ -1,8 +1,8 @@
 ```mermaid
 flowchart LR
   1["Plane<br>[41, 80, 0]"]
-    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlock]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
   2["SketchBlock<br>[41, 80, 0]"]
-    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlock]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
   1 <--x 2
 ```

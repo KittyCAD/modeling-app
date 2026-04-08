@@ -101,7 +101,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               shouldExecute: true,
               shouldResetCamera: true,
             })
-            toast.success(`Updated per-file units to ${data.unit}`)
+            toast.success(`Updated per-file units to ${data.unit}.`)
           }
         } else {
           toast.error(
@@ -171,7 +171,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 }
 
                 toast.success(
-                  `Updated file experimental features level to ${data.level}`
+                  `Updated file experimental features level to ${data.level}.`
                 )
               })
               .catch(reportRejection)

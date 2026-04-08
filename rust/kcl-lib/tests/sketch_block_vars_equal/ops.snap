@@ -18,9 +18,6 @@ description: Operations executed sketch_block_vars_equal.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },
