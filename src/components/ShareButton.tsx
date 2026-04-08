@@ -1,10 +1,11 @@
+import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { copyCurrentFileShareLink } from '@src/lib/share'
+import { copyCurrentFileShareLink, publishCurrentProject } from '@src/lib/share'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -24,6 +25,7 @@ export const ShareButton = memo(function ShareButton() {
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
 
   const allowOrgRestrict = !!billingContext.isOrg
+  const billingLoading = billingContext.hasSubscription === undefined
 
   const onShareClick = useCallback(() => {
     setIsDialogOpen(true)
@@ -45,53 +47,68 @@ export const ShareButton = memo(function ShareButton() {
     [currentProject, kclManager, token]
   )
 
+  const onPublishProject = useCallback(async () => {
+    const wasmInstance = await kclManager.wasmInstancePromise
+
+    return publishCurrentProject({
+      token,
+      project: currentProject,
+      currentFilePath: kclManager.path,
+      currentFileContents: kclManager.code,
+      wasmInstance,
+    })
+  }, [currentProject, kclManager, token])
+
   useHotkeys(shareHotkey, onShareClick, {
     scopes: ['modeling'],
   })
 
   const ast = kclManager.astSignal.value
-
-  // It doesn't make sense for the user to be able to click on this
-  // until we get what their subscription allows for.
-  const disabled =
-    ast.body.some((n) => n.type === 'ImportStatement') ||
-    billingContext.hasSubscription === undefined
+  const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
 
   return (
     <>
-      <div className="relative hidden sm:flex">
-        <button
-          type="button"
-          onClick={onShareClick}
-          disabled={disabled}
-          className="relative group flex gap-1 items-center py-0 pl-0.5 pr-1.5 rounded-l-full bg-chalkboard-10/80 border border-solid active:border-primary dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100"
-          data-testid="share-button"
+      <Popover className="relative hidden sm:flex">
+        <Popover.Button
+          as="div"
+          className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
         >
-          <CustomIcon name="link" className="w-5 h-5" />
-          <span className="flex-1">Share</span>
-          <Tooltip
-            position="bottom-right"
-            contentClassName="max-w-none flex items-center gap-4"
+          <button
+            type="button"
+            onClick={onShareClick}
+            disabled={billingLoading}
+            className="flex gap-1 items-center py-0 pl-0.5 pr-1.5 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid active:border-primary"
+            data-testid="share-button"
           >
-            <span className="flex-1">
-              {disabled
-                ? `Share links are not currently supported for multi-file assemblies`
-                : `Share this file`}
-            </span>
-            {!disabled && (
-              <kbd className="hotkey text-xs capitalize">
-                {hotkeyDisplay(shareHotkey, platform)}
-              </kbd>
-            )}
-          </Tooltip>
-        </button>
-      </div>
+            <CustomIcon name="link" className="w-5 h-5" />
+            <span className="flex-1">Share</span>
+            <Tooltip
+              position="bottom-right"
+              contentClassName="max-w-none flex items-center gap-4"
+            >
+              <span className="flex-1">
+                {billingLoading
+                  ? 'Loading share options'
+                  : shareDisabled
+                    ? `Share links are not currently supported for multi-file assemblies, but you can still publish this project`
+                    : `Share or publish this project`}
+              </span>
+              {!billingLoading && (
+                <kbd className="hotkey text-xs capitalize">
+                  {hotkeyDisplay(shareHotkey, platform)}
+                </kbd>
+              )}
+            </Tooltip>
+          </button>
+        </Popover.Button>
+      </Popover>
       <ShareDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onSubmit={onCopyShareLink}
+        onCopyLink={onCopyShareLink}
+        onPublish={onPublishProject}
         allowOrgRestrict={allowOrgRestrict}
-        disabled={disabled}
+        shareDisabled={shareDisabled}
       />
     </>
   )

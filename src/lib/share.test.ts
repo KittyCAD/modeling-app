@@ -56,6 +56,10 @@ const mockState = vi.hoisted(() => ({
     title: 'Bracket',
     description: 'Existing description',
   })),
+  publishUserProject: vi.fn(async () => ({
+    id: 'project-created',
+    publication_status: 'pending_review',
+  })),
   listUserProjectShareLinks: vi.fn(
     async (_args: { client?: unknown; id: string }): Promise<ShareLink[]> => []
   ),
@@ -100,6 +104,7 @@ vi.mock('@src/lib/kcClient', () => ({
 vi.mock('@kittycad/lib', () => ({
   users: {
     get_user_project: mockState.getUserProject,
+    publish_user_project: mockState.publishUserProject,
     list_user_project_share_links: mockState.listUserProjectShareLinks,
     create_user_project_share_link: mockState.createUserProjectShareLink,
   },
@@ -135,7 +140,7 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
-import { copyCurrentFileShareLink } from '@src/lib/share'
+import { copyCurrentFileShareLink, publishCurrentProject } from '@src/lib/share'
 
 function makeProject(): Project {
   return {
@@ -322,6 +327,44 @@ describe('copyCurrentFileShareLink', () => {
     expect(mockState.writeText).not.toHaveBeenCalled()
     expect(mockState.toastError).toHaveBeenCalledWith(
       'You need to be signed in to share a file.',
+      { duration: 5000 }
+    )
+  })
+})
+
+describe('publishCurrentProject', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockState.readProjectSettingsFile.mockResolvedValue({})
+  })
+
+  it('uploads the project and submits it for review', async () => {
+    const published = await publishCurrentProject({
+      token: 'token-123',
+      project: makeProject(),
+      currentFilePath: '/projects/bracket/main.kcl',
+      currentFileContents: 'part001 = startSketchOn(XY)',
+      wasmInstance: {} as never,
+    })
+
+    expect(published).toBe(true)
+    expect(mockState.projectFetch).toHaveBeenCalledWith(
+      'https://api.dev.zoo.dev/user/projects',
+      expect.objectContaining({
+        method: 'POST',
+      })
+    )
+    expect(mockState.publishUserProject).toHaveBeenCalledWith({
+      client: {
+        mocked: true,
+        token: 'token-123',
+        baseUrl: 'https://api.dev.zoo.dev',
+        fetch: mockState.projectFetch,
+      },
+      id: 'project-created',
+    })
+    expect(mockState.toastSuccess).toHaveBeenCalledWith(
+      'Project submitted for review.',
       { duration: 5000 }
     )
   })
