@@ -2027,4 +2027,28 @@ return 42"#;
         let index = position_to_char_index(position, code);
         assert_eq!(index, 0);
     }
+
+    #[test]
+    fn test_position_to_char_index_clamps_to_end_of_line() {
+        let code = "abc\ndef";
+        let position = Position::new(0, 99);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 3);
+    }
+
+    #[test]
+    fn test_position_to_char_index_clamps_to_eof() {
+        let code = "abc\ndef";
+        let position = Position::new(99, 99);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, code.len());
+    }
+
+    #[test]
+    fn test_position_to_char_index_uses_utf8_boundaries() {
+        let code = "é(";
+        let position = Position::new(0, 1);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 2);
+    }
 }

@@ -3899,6 +3899,67 @@ async fn kcl_test_kcl_lsp_completions_number_literal() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_kcl_lsp_completions_non_ascii_line() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "é".to_string(),
+            },
+        })
+        .await;
+
+    let _ = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_non_ascii_line() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "é(".to_string(),
+            },
+        })
+        .await;
+
+    let _ = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_kcl_lsp_multi_file_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
@@ -4114,6 +4175,42 @@ startSketchOn(XY)
     }
 
     server.executor_ctx().await.clone().unwrap().close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_hover_non_ascii_line() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "untitled:Untitled-1".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "/*é*/startSketchOn(XY)".to_string(),
+            },
+        })
+        .await;
+
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 5 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    let tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) =
+        hover.expect("expected hover").contents
+    else {
+        panic!("Expected hover markup");
+    };
+    assert!(value.contains("startSketchOn"), "found `{value}`");
 }
 
 #[tokio::test(flavor = "multi_thread")]

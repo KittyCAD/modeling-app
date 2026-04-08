@@ -888,6 +888,8 @@ impl From<CompilationIssue> for KclErrorDetails {
 
 #[cfg(test)]
 mod tests {
+    use indexmap::IndexMap;
+
     use super::*;
 
     #[test]
@@ -902,5 +904,40 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].message, "semantic: boom");
         assert_eq!(diagnostics[0].related_information, None);
+    }
+
+    #[test]
+    fn cross_module_diagnostic_uses_safe_ranges_for_main_and_related_code() {
+        let module_id = ModuleId::from_usize(9);
+        let mut error = KclErrorWithOutputs::no_outputs(KclError::new_semantic(KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![SourceRange::new(5, 7, module_id)],
+        )));
+        error.filenames = IndexMap::from([(module_id, ModulePath::Std { value: "sketch".to_owned() })]);
+        error.source_files = IndexMap::from([(
+            module_id,
+            ModuleSource {
+                path: ModulePath::Std { value: "sketch".to_owned() },
+                source: "abcdefghij".to_owned(),
+            },
+        )]);
+
+        let diagnostics = error.to_lsp_diagnostics("x");
+
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].range.start, tower_lsp::lsp_types::Position::new(0, 1));
+        assert_eq!(diagnostics[0].range.end, tower_lsp::lsp_types::Position::new(0, 1));
+        assert_eq!(
+            diagnostics[0]
+                .related_information
+                .as_ref()
+                .expect("expected related info for source file")[0]
+                .location
+                .range,
+            tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position::new(0, 5),
+                end: tower_lsp::lsp_types::Position::new(0, 7),
+            }
+        );
     }
 }

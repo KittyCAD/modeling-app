@@ -106,3 +106,38 @@ impl ToLspRange for crate::SourceRange {
         }
     }
 }
+
+#[cfg(test)]
+mod range_tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn source_range_offsets_past_eof_clamp_to_eof() {
+        let code = "ab\ncd";
+        let range = crate::SourceRange::new(999, 999, crate::ModuleId::default()).to_lsp_range(code);
+
+        assert_eq!(
+            range,
+            Range {
+                start: Position::new(1, 2),
+                end: Position::new(1, 2),
+            }
+        );
+    }
+
+    #[test]
+    fn source_range_offsets_inside_utf8_codepoint_clamp_to_char_boundary() {
+        let code = "aé";
+        let range = crate::SourceRange::new(2, 2, crate::ModuleId::default()).to_lsp_range(code);
+
+        assert_eq!(
+            range,
+            Range {
+                start: Position::new(0, 1),
+                end: Position::new(0, 1),
+            }
+        );
+    }
+}
