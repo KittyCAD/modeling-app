@@ -486,8 +486,6 @@ closedShell = revolve(
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 ringProfile = sketch(on = XZ) {
   edge1 = line(start = [var 4mm, var 0mm], end = [var 7mm, var 0mm])
   edge2 = line(start = [var 7mm, var 0mm], end = [var 7mm, var 4mm])
@@ -519,8 +517,6 @@ ring = revolve(ringRegion, axis = Y)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Sketch some disconnected lines in a sketch block.
 originalSketch = sketch(on = YZ) {
   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
@@ -561,8 +557,6 @@ revolve(
 
 ```kcl
 // Use a solved constraint line as the axis of a revolve.
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])

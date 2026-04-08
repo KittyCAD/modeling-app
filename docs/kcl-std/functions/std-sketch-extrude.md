@@ -509,8 +509,6 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
@@ -545,8 +543,6 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Sketch some disconnected lines in a sketch block.
 originalSketch = sketch(on = YZ) {
   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
