@@ -772,7 +772,7 @@ export function getSelectionCountByType(
       graphSelection.artifact.type === 'path' &&
       graphSelection.artifact.subType === 'region'
     ) {
-      incrementOrInitializeSelectionType('path.region')
+      incrementOrInitializeSelectionType('pathRegion')
       return
     }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
@@ -1103,7 +1103,7 @@ const semanticEntityNames: {
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
-  region: ['path.region', 'engineRegion'],
+  region: ['pathRegion', 'engineRegion'],
   edge: [
     'segment',
     'sweepEdge',
