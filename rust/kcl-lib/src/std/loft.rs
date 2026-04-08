@@ -283,6 +283,7 @@ mod tests {
             sketch: None,
             tag: None,
             meta: vec![],
+            node_path: None,
         };
         KclValue::Segment {
             value: Box::new(AbstractSegment {
