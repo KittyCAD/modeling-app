@@ -6,6 +6,7 @@ import {
   createLiteral,
   createLocalName,
   createArrayExpression,
+  createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -389,26 +390,6 @@ function buildEdgeExpr(
     )
   }
 
-  const tagResult = modifyAstWithTagsForSelection(
-    ast,
-    graphEdgeSelection,
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  if (err(tagResult)) return tagResult
-  if (tagResult.exprs.length !== 1) {
-    return new Error('Expected exactly one tag for each blend edge.')
-  }
-
-  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
-  if (edgeExpr.type === 'Name') {
-    return {
-      modifiedAst: tagResult.modifiedAst,
-      edgeExpr,
-    }
-  }
-
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
     graphEdgeSelection,
     artifactGraph
@@ -435,14 +416,74 @@ function buildEdgeExpr(
   if (sourceSurfaceVars.exprs.length !== 1) {
     return new Error('Expected exactly one source surface for each blend edge.')
   }
+  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-  const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+  const sourceSurfaceNode =
+    edgeArtifact.type === 'sweepEdge'
+      ? getNodeFromPath<CallExpressionKw>(
+          ast,
+          sourceSurfaceArtifact.codeRef.pathToNode,
+          wasmInstance,
+          ['CallExpressionKw']
+        )
+      : null
+  const sweepInput =
+    sourceSurfaceNode &&
+    !err(sourceSurfaceNode) &&
+    sourceSurfaceNode.node.type === 'CallExpressionKw'
+      ? sourceSurfaceNode.node.unlabeled
+      : null
+  const sketchSegmentName =
+    sweepInput &&
+    sweepInput.type === 'MemberExpression' &&
+    sweepInput.property.type === 'Name'
+      ? sweepInput.property.name.name
+      : null
+  if (sketchSegmentName) {
+    const sketchTagExpr = createMemberExpression(
+      createMemberExpression(
+        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+        'tags'
+      ),
+      sketchSegmentName
+    )
+    const edgeExpr =
+      edgeArtifact.type === 'sweepEdge' && edgeArtifact.subType === 'adjacent'
+        ? sketchTagExpr
+        : getEdgeTagCall(sketchTagExpr, edgeArtifact)
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        structuredClone(sourceSurfaceExpr),
+        [createLabeledArg('edge', edgeExpr)]
+      ),
+    }
+  }
+
+  const tagResult = modifyAstWithTagsForSelection(
+    ast,
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  if (err(tagResult)) return tagResult
+  if (tagResult.exprs.length !== 1) {
+    return new Error('Expected exactly one tag for each blend edge.')
+  }
+
+  const edgeExpr =
+    edgeArtifact.type === 'sweepEdge' && edgeArtifact.subType === 'adjacent'
+      ? tagResult.exprs[0]
+      : getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
 
   return {
     modifiedAst: tagResult.modifiedAst,
     edgeExpr: createCallExpressionStdLibKw(
       'getBoundedEdge',
-      sourceSurfaceExpr,
+      structuredClone(sourceSurfaceExpr),
       [createLabeledArg('edge', edgeExpr)]
     ),
   }

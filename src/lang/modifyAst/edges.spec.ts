@@ -115,6 +115,20 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> angledLine(angle = 0deg, length = 2)
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
+  const sketchSolveSurfacesForBlend = `@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+sketch1 = sketch(on = XY) {
+  line1 = line(start = [var -1.02mm, var -2mm], end = [var 1mm, var -2mm])
+  horizontal(line1)
+}
+
+sketch2 = sketch(on = XZ) {
+  line1 = line(start = [var -2mm, var 2.01mm], end = [var 1.99mm, var 2.01mm])
+  horizontal(line1)
+}
+
+sq1 = extrude(sketch1.line1, bodyType = SURFACE, length = 0.4)
+sq2 = extrude(sketch2.line1, bodyType = SURFACE, length = 0.4)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -856,6 +870,7 @@ chamfer001 = chamfer(
         throw newCode
       }
       expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -911,6 +926,101 @@ chamfer001 = chamfer(
       expect(newCode).toContain('blend001 = blend([')
       expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
       expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call between surfaces from sketch solve segments', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgesBody1 = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgesBody2 = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+      const edges = createSelectionFromArtifacts(
+        [sweepEdgesBody1!, sweepEdgesBody2!],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(sq1, edge = sq1.sketch.tags.line1),
+  getBoundedEdge(sq2, edge = sq2.sketch.tags.line1)
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call with opposite wrappers from last sweep edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgesBody1 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgesBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+
+      const edges = createSelectionFromArtifacts(
+        [sweepEdgesBody1!, sweepEdgesBody2!],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(sq1, edge = getOppositeEdge(sq1.sketch.tags.line1)),
+  getBoundedEdge(sq2, edge = getOppositeEdge(sq2.sketch.tags.line1))
+])`
+      )
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
