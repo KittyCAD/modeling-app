@@ -365,6 +365,7 @@ mod tests {
             sketch_id: exec_state.next_uuid(),
             sketch: None,
             tag: None,
+            node_path: None,
             meta: vec![],
         };
         KclValue::Segment {

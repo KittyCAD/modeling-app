@@ -18,6 +18,11 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  updateSelectedIds,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function createTestMouseEvent(detail = 1): MouseEvent {
   return new MouseEvent('click', {
@@ -92,6 +97,7 @@ function createDragSnappingDeps() {
 function setUpMoveToolCallbacks({
   apiObjects = [],
   hoveredId = null,
+  selectedIds = [],
   isAreaSelectActive = false,
   sketchId = 0,
   showNonVisualConstraints = false,
@@ -100,6 +106,7 @@ function setUpMoveToolCallbacks({
 }: {
   apiObjects?: ApiObject[]
   hoveredId?: number | null
+  selectedIds?: Array<SketchSolveSelectionId>
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
@@ -149,7 +156,7 @@ function setUpMoveToolCallbacks({
       hoveredId,
       constraintHoverPopups,
       showNonVisualConstraints,
-      selectedIds: [],
+      selectedIds,
       duringAreaSelectIds: [],
       sketchId,
       draftEntities: undefined,
@@ -170,12 +177,13 @@ function setUpMoveToolCallbacks({
         }
       }
       if (event.type === 'update selected ids') {
-        if (event.data.selectedIds !== undefined) {
-          snapshot.context.selectedIds = event.data.selectedIds
-        }
-        if (event.data.duringAreaSelectIds !== undefined) {
-          snapshot.context.duringAreaSelectIds = event.data.duringAreaSelectIds
-        }
+        Object.assign(
+          snapshot.context,
+          updateSelectedIds({
+            context: snapshot.context,
+            event,
+          } as any)
+        )
       }
     }),
   }
@@ -339,7 +347,7 @@ function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -385,7 +393,7 @@ function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -425,7 +433,7 @@ function createCircleApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -442,7 +450,7 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -481,7 +489,7 @@ function createLineApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -1396,7 +1404,7 @@ describe('createOnDragCallback', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
     const sceneGraphDelta = createSceneGraphDelta([sketchObject])
     const getContextData = vi.fn(() => ({
@@ -1487,6 +1495,59 @@ describe('createOnClickCallback', () => {
     // Clicking on empty space should clear selection, allowing user to start fresh
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select the origin when clicking near it', async () => {
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+
+    const callback = createOnClickCallback({
+      ...createOnClickDeps(),
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [ORIGIN_TARGET],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select a point at the origin instead of the origin target', async () => {
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const pointAtOrigin = createPointApiObject({ id: 1, x: 0, y: 0 })
+
+    const callback = createOnClickCallback({
+      ...createOnClickDeps([pointAtOrigin]),
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [1],
       duringAreaSelectIds: [],
     })
   })
@@ -1747,6 +1808,43 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     expect(send).toHaveBeenCalledWith({
       type: 'update hovered id',
       data: { hoveredId: 5 },
+    })
+  })
+
+  it('should update hovered id when moving onto the origin', () => {
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [],
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: ORIGIN_TARGET },
+    })
+  })
+
+  it('should update hovered id to a point at the origin instead of the origin target', () => {
+    const pointAtOrigin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [pointAtOrigin],
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: 1 },
     })
   })
 

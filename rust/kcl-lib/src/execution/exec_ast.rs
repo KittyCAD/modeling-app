@@ -1263,6 +1263,7 @@ impl Node<SketchBlock> {
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
+            use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
@@ -1282,7 +1283,7 @@ impl Node<SketchBlock> {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id,
-                source: range.into(),
+                source: SourceRef::new(self.into(), self.node_path.clone()),
             };
             exec_state.set_scene_object(sketch_scene_object);
 
@@ -1657,7 +1658,12 @@ impl Node<SketchBlock> {
                     }
                 }
             }
-            let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+            let mut args = Args::new_no_args(
+                range,
+                self.node_path.clone(),
+                ctx.clone(),
+                Some("sketch block".to_owned()),
+            );
             args.labeled = labeled;
 
             let arg_on_value: KclValue =
@@ -1676,7 +1682,7 @@ impl Node<SketchBlock> {
             match &mut sketch_surface {
                 SketchSurface::Plane(plane) => {
                     // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
                 }
                 SketchSurface::Face(_) => {
                     // All faces should already be created in the engine.
@@ -1690,7 +1696,7 @@ impl Node<SketchBlock> {
             // sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
             #[cfg(feature = "artifact-graph")]
-            exec_state.add_placeholder_scene_object(sketch_id, range);
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
             // Store in memory so that it's cached.
             exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
@@ -1705,7 +1711,7 @@ impl Node<SketchBlock> {
             // due to objects in the body, the sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
             #[cfg(feature = "artifact-graph")]
-            exec_state.add_placeholder_scene_object(sketch_id, range);
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
             let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
 
@@ -2118,6 +2124,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2143,6 +2150,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2168,6 +2176,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2207,6 +2216,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2237,6 +2247,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2267,6 +2278,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2303,6 +2315,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2328,6 +2341,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2374,6 +2388,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2404,6 +2419,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2440,6 +2456,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2465,6 +2482,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2504,6 +2522,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2534,6 +2553,7 @@ impl Node<MemberExpression> {
                                         sketch_id: segment.sketch_id,
                                         sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
+                                        node_path: segment.node_path.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2808,7 +2828,12 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone(), Some("union".to_owned()));
+                let args = Args::new_no_args(
+                    self.into(),
+                    self.node_path.clone(),
+                    ctx.clone(),
+                    Some("union".to_owned()),
+                );
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -2822,7 +2847,12 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone(), Some("subtract".to_owned()));
+                let args = Args::new_no_args(
+                    self.into(),
+                    self.node_path.clone(),
+                    ctx.clone(),
+                    Some("subtract".to_owned()),
+                );
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -2838,7 +2868,12 @@ impl Node<BinaryExpression> {
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
         {
             // Check if we have solids.
-            let args = Args::new_no_args(self.into(), ctx.clone(), Some("intersect".to_owned()));
+            let args = Args::new_no_args(
+                self.into(),
+                self.node_path.clone(),
+                ctx.clone(),
+                Some("intersect".to_owned()),
+            );
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
                 Default::default(),
@@ -3041,6 +3076,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Angle;
+                                use crate::front::SourceRef;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3072,7 +3108,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3082,16 +3118,7 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_constraint = Constraint::Distance(solver_pt0, solver_pt1, n.n);
-
+                            let sketch_var_ty = solver_numeric_type(exec_state);
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3100,7 +3127,78 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Distance(solver_pt0, solver_pt1, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                )
+                                | (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    let origin_x_id = sketch_block_state.next_sketch_var_id();
+                                    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                        value: Box::new(crate::execution::SketchVar {
+                                            id: origin_x_id,
+                                            initial_value: 0.0,
+                                            ty: sketch_var_ty,
+                                            meta: vec![],
+                                        }),
+                                    });
+                                    let origin_y_id = sketch_block_state.next_sketch_var_id();
+                                    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                        value: Box::new(crate::execution::SketchVar {
+                                            id: origin_y_id,
+                                            initial_value: 0.0,
+                                            ty: sketch_var_ty,
+                                            meta: vec![],
+                                        }),
+                                    });
+                                    let origin_x = origin_x_id.to_constraint_id(range)?;
+                                    let origin_y = origin_y_id.to_constraint_id(range)?;
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Fixed(origin_x, 0.0));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Fixed(origin_y, 0.0));
+                                    let solver_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        point.vars.x.to_constraint_id(range)?,
+                                        point.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let origin_point = ezpz::datatypes::inputs::DatumPoint::new_xy(origin_x, origin_y);
+                                    sketch_block_state.solver_constraints.push(Constraint::Distance(
+                                        solver_point,
+                                        origin_point,
+                                        n.n,
+                                    ));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "distance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3108,6 +3206,8 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3115,7 +3215,24 @@ impl Node<BinaryExpression> {
                                     return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                                 };
                                 let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
@@ -3139,7 +3256,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3324,6 +3441,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::CodeRef;
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
+                                use crate::front::SourceRef;
                                 let segment_object_id = match target_segment {
                                     CircularSegmentConstraintTarget::Arc { object_id, .. }
                                     | CircularSegmentConstraintTarget::Circle { object_id } => object_id,
@@ -3369,7 +3487,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3379,19 +3497,6 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            // Horizontal distance: p1.x - p0.x = n
-                            // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
-                            // So we swap the points to get p1.x - p0.x = n
-                            let solver_constraint = ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
-
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3400,7 +3505,51 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    // horizontalDistance([point, ORIGIN]) == n means 0 - point.x = n, so point.x = -n.
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, -n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    // horizontalDistance([ORIGIN, point]) == n means point.x - 0 = n, so point.x = n.
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "horizontalDistance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3408,9 +3557,28 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
@@ -3437,7 +3605,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );
@@ -3447,19 +3615,6 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            // Vertical distance: p1.y - p0.y = n
-                            // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
-                            // So we swap the points to get p1.y - p0.y = n
-                            let solver_constraint = ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
-
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3468,7 +3623,49 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, -n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "verticalDistance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3476,9 +3673,28 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
@@ -3505,7 +3721,7 @@ impl Node<BinaryExpression> {
                                         label: Default::default(),
                                         comments: Default::default(),
                                         artifact_id,
-                                        source: range.into(),
+                                        source: SourceRef::new(range, self.node_path.clone()),
                                     },
                                     range,
                                 );

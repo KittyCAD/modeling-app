@@ -101,7 +101,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -204,7 +214,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -241,7 +261,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -278,7 +305,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -315,7 +349,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 4
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -418,7 +459,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -521,7 +572,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -558,7 +619,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 7
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -595,7 +663,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 8
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -632,7 +707,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 9
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -661,7 +743,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
           }
         ]
       },
@@ -690,7 +782,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 11
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
           }
         ]
       },
@@ -719,7 +821,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
           }
         ]
       },
@@ -748,7 +860,17 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 13
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
           }
         ]
       },
@@ -785,7 +907,14 @@ description: Operations executed tangent_circle_circle.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 17
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -805,9 +934,6 @@ description: Operations executed tangent_circle_circle.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },
