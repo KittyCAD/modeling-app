@@ -196,7 +196,7 @@ export function getSnappingCandidates(
     // findClosestApiObjects. This is fine because Array.sort is stable but we may want
     // to ensure that more explicitly here as well.
     // Eg. in the case of 2 coincident points findClosestApiObjects ensures the one with
-    // the higherid gets comest first.
+    // the higher ID comes first.
     return a.distance - b.distance
   })
 }
