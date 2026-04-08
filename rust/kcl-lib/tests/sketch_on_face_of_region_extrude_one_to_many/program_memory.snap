@@ -125,7 +125,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "from": [
                 29.668887996034876,
-                0.00000000000000005572734116716498
+                0.000000000000000027865596450687793
               ],
               "radius": 15.641685610263224,
               "tag": {
@@ -155,7 +155,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "from": [
                 29.668887996034876,
-                0.00000000000000005572734116716498
+                0.000000000000000027865596450687793
               ],
               "radius": 15.641685610263224,
               "tag": {
@@ -413,7 +413,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             ],
             "from": [
               29.668887996034876,
-              0.00000000000000005572734116716498
+              0.000000000000000027865596450687793
             ],
             "radius": 15.641685610263224,
             "tag": {
@@ -443,7 +443,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             ],
             "from": [
               29.668887996034876,
-              0.00000000000000005572734116716498
+              0.000000000000000027865596450687793
             ],
             "radius": 15.641685610263224,
             "tag": {
@@ -844,7 +844,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   ],
                   "from": [
                     29.668887996034876,
-                    0.00000000000000005572734116716498
+                    0.000000000000000027865596450687793
                   ],
                   "radius": 15.641685610263224,
                   "tag": {
@@ -874,7 +874,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   ],
                   "from": [
                     29.668887996034876,
-                    0.00000000000000005572734116716498
+                    0.000000000000000027865596450687793
                   ],
                   "radius": 15.641685610263224,
                   "tag": {
@@ -1155,7 +1155,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "from": [
                 29.668887996034876,
-                0.00000000000000005572734116716498
+                0.000000000000000027865596450687793
               ],
               "radius": 15.641685610263224,
               "tag": {
@@ -1185,7 +1185,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "from": [
                 29.668887996034876,
-                0.00000000000000005572734116716498
+                0.000000000000000027865596450687793
               ],
               "radius": 15.641685610263224,
               "tag": {
@@ -1363,7 +1363,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           ],
           "from": [
             29.668887996034876,
-            0.00000000000000005572734116716498
+            0.000000000000000027865596450687793
           ],
           "radius": 15.641685610263224,
           "tag": {
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           ],
           "from": [
             29.668887996034876,
-            0.00000000000000005572734116716498
+            0.000000000000000027865596450687793
           ],
           "radius": 15.641685610263224,
           "tag": {
@@ -1726,7 +1726,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 ],
                 "from": [
                   29.668887996034876,
-                  0.00000000000000005572734116716498
+                  0.000000000000000027865596450687793
                 ],
                 "radius": 15.641685610263224,
                 "tag": {
@@ -1756,7 +1756,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 ],
                 "from": [
                   29.668887996034876,
-                  0.00000000000000005572734116716498
+                  0.000000000000000027865596450687793
                 ],
                 "radius": 15.641685610263224,
                 "tag": {
@@ -2343,23 +2343,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    29.668887996034876,
-                    0.000000000000000027865596450687793
-                  ],
-                  "tag": null,
-                  "to": [
-                    29.668887996034876,
-                    0.00000000000000005572734116716498
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
                   "ccw": true,
                   "center": [
                     14.834443998017436,
@@ -2367,7 +2350,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   ],
                   "from": [
                     29.668887996034876,
-                    0.00000000000000005572734116716498
+                    0.000000000000000027865596450687793
                   ],
                   "radius": 15.641685610263224,
                   "tag": {
@@ -2703,7 +2686,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -2733,7 +2716,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3058,7 +3041,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3088,7 +3071,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3413,7 +3396,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3443,7 +3426,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3768,7 +3751,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3798,7 +3781,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           ],
                           "from": [
                             29.668887996034876,
-                            0.00000000000000005572734116716498
+                            0.000000000000000027865596450687793
                           ],
                           "radius": 15.641685610263224,
                           "tag": {
@@ -3965,23 +3948,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.96,
                     0.53
                   ],
-                  "tag": null,
-                  "to": [
-                    0.96,
-                    0.53
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.96,
-                    0.53
-                  ],
                   "tag": {
                     "commentStart": 769,
                     "end": 774,
@@ -4006,23 +3972,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.96,
                     1.03
                   ],
-                  "tag": null,
-                  "to": [
-                    0.96,
-                    1.03
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.96,
-                    1.03
-                  ],
                   "tag": {
                     "commentStart": 850,
                     "end": 855,
@@ -4031,23 +3980,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
-                  "to": [
-                    0.46,
-                    1.03
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.46,
-                    1.03
-                  ],
-                  "tag": null,
                   "to": [
                     0.46,
                     1.03
@@ -4201,7 +4133,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         ],
                         "from": [
                           29.668887996034876,
-                          0.00000000000000005572734116716498
+                          0.000000000000000027865596450687793
                         ],
                         "radius": 15.641685610263224,
                         "tag": {
@@ -4231,7 +4163,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         ],
                         "from": [
                           29.668887996034876,
-                          0.00000000000000005572734116716498
+                          0.000000000000000027865596450687793
                         ],
                         "radius": 15.641685610263224,
                         "tag": {

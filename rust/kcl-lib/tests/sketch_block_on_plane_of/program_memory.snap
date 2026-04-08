@@ -757,23 +757,6 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     1.0,
                     0.0
                   ],
-                  "tag": null,
-                  "to": [
-                    1.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.0,
-                    0.0
-                  ],
                   "tag": {
                     "commentStart": 390,
                     "end": 395,
@@ -798,23 +781,6 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     1.0,
                     1.0
                   ],
-                  "tag": null,
-                  "to": [
-                    1.0,
-                    1.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.0,
-                    1.0
-                  ],
                   "tag": {
                     "commentStart": 457,
                     "end": 462,
@@ -823,23 +789,6 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
-                  "to": [
-                    0.0,
-                    1.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    1.0
-                  ],
-                  "tag": null,
                   "to": [
                     0.0,
                     1.0

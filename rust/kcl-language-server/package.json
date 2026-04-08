@@ -126,7 +126,7 @@
     "esbuild": "^0.27.5",
     "glob": "^13.0.6",
     "mocha": "^11.1.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

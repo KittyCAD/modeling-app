@@ -1155,6 +1155,7 @@ impl SketchBlock {
                 start: Default::default(),
                 end: Default::default(),
                 module_id: Default::default(),
+                node_path: None,
                 outer_attrs: Default::default(),
                 pre_comments: Default::default(),
                 comment_start: Default::default(),
