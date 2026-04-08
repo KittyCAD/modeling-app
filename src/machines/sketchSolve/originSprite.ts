@@ -113,10 +113,12 @@ export function createSketchSolveOriginSpriteSvgDataUrl(
   const backgroundFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
   const originColor =
     spriteState === 'hovered'
-      ? `rgb(${SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)).join(', ')})`
+      ? `rgb(${SKETCH_SELECTION_RGB.map((val) => Math.min(255, Math.round(val * 1.1))).join(', ')})`
       : spriteState === 'selected'
         ? `rgb(${SKETCH_SELECTION_RGB.join(', ')})`
-        : '#D9D9D9'
+        : theme === Themes.Light
+          ? '#D9D9D9'
+          : '#121212'
   const svg = `
     <svg
       xmlns="http://www.w3.org/2000/svg"
