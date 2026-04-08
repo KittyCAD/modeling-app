@@ -1,9 +1,10 @@
-import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { copyCurrentFileShareLink } from '@src/lib/share'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -11,53 +12,44 @@ const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
-  const { billing, commands } = useApp()
+  const app = useApp()
+  const { auth, billing } = app
   const { kclManager } = useSingletons()
   const platform = usePlatform()
+  const token = auth.useToken()
 
-  const [showOptions, setShowOptions] = useState(false)
-  const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
-  const [password, setPassword] = useState('')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const billingContext = billing.useContext()
+  const currentProjectName = app.projectSignal.value?.name || ''
 
   const allowOrgRestrict = !!billingContext.isOrg
   const allowPassword = !!billingContext.hasSubscription
-  const hasOptions = allowOrgRestrict || allowPassword
 
-  // Prevents Organization and Pro tier users from one-click sharing,
-  // and give them a chance to set a password and restrict to org.
-  const onShareClickFreeOrUnknownRestricted = useCallback(() => {
-    if (hasOptions) {
-      setShowOptions(true)
-      return
-    }
+  const onShareClick = useCallback(() => {
+    setIsDialogOpen(true)
+  }, [])
 
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        name: 'share-file-link',
-        groupId: 'code',
-        isRestrictedToOrg: false,
-      },
-    })
-  }, [hasOptions, commands])
-
-  const onShareClickProOrOrganization = useCallback(() => {
-    setShowOptions(false)
-
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        name: 'share-file-link',
-        groupId: 'code',
+  const onCopyShareLink = useCallback(
+    async ({
+      isRestrictedToOrg,
+      password,
+    }: {
+      isRestrictedToOrg: boolean
+      password?: string
+    }) => {
+      return copyCurrentFileShareLink({
+        token,
+        code: kclManager.code,
+        name: currentProjectName,
         isRestrictedToOrg,
         password,
-      },
-    })
-  }, [isRestrictedToOrg, password, commands])
+      })
+    },
+    [currentProjectName, kclManager.code, token]
+  )
 
-  useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
+  useHotkeys(shareHotkey, onShareClick, {
     scopes: ['modeling'],
   })
 
@@ -70,16 +62,13 @@ export const ShareButton = memo(function ShareButton() {
     billingContext.hasSubscription === undefined
 
   return (
-    <Popover className="relative hidden sm:flex">
-      <Popover.Button
-        as="div"
-        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
-      >
+    <>
+      <div className="relative hidden sm:flex">
         <button
           type="button"
-          onClick={onShareClickFreeOrUnknownRestricted}
+          onClick={onShareClick}
           disabled={disabled}
-          className="flex gap-1 items-center py-0 pl-0.5 pr-1.5 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid active:border-primary"
+          className="relative group flex gap-1 items-center py-0 pl-0.5 pr-1.5 rounded-l-full bg-chalkboard-10/80 border border-solid active:border-primary dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100"
           data-testid="share-button"
         >
           <CustomIcon name="link" className="w-5 h-5" />
@@ -91,7 +80,7 @@ export const ShareButton = memo(function ShareButton() {
             <span className="flex-1">
               {disabled
                 ? `Share links are not currently supported for multi-file assemblies`
-                : `Share part via Zoo link`}
+                : `Share this file`}
             </span>
             {!disabled && (
               <kbd className="hotkey text-xs capitalize">
@@ -100,59 +89,15 @@ export const ShareButton = memo(function ShareButton() {
             )}
           </Tooltip>
         </button>
-      </Popover.Button>
-      {showOptions && (
-        <Popover.Panel
-          focus={true}
-          className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
-        border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
-        shadow-lg`}
-        >
-          <div className="flex flex-col px-2">
-            <div className="flex flex-row gap-1 items-center">
-              <CustomIcon name="lockClosed" className="w-6 h-6" />
-              <input
-                disabled={!allowPassword}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck="false"
-                className={`${allowPassword ? 'cursor-pointer' : 'cursor-not-allowed'} text-xs w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0`}
-                type="text"
-                placeholder="Set a password"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="org-only"
-                className="pl-1 inline-flex items-center"
-              >
-                <input
-                  disabled={!allowOrgRestrict}
-                  checked={isRestrictedToOrg}
-                  onChange={(_) => setIsRestrictedToOrg(!isRestrictedToOrg)}
-                  type="checkbox"
-                  name="org-only"
-                  className="form-checkbox"
-                />
-                <span
-                  className={`text-xs ml-2 ${allowOrgRestrict ? 'cursor-pointer' : 'cursor-not-allowed text-chalkboard-50'}`}
-                >
-                  Org. only access
-                </span>
-              </label>
-              {!allowOrgRestrict && (
-                <Tooltip>Upgrade to Organization to use this feature.</Tooltip>
-              )}
-            </div>
-            <button disabled={disabled} onClick={onShareClickProOrOrganization}>
-              Generate
-            </button>
-          </div>
-        </Popover.Panel>
-      )}
-    </Popover>
+      </div>
+      <ShareDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={onCopyShareLink}
+        allowOrgRestrict={allowOrgRestrict}
+        allowPassword={allowPassword}
+        disabled={disabled}
+      />
+    </>
   )
 })
