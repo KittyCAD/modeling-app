@@ -1,5 +1,4 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Fragment, useEffect, useState } from 'react'
 
@@ -10,20 +9,24 @@ export interface ShareDialogSubmitArgs {
 type ShareDialogProps = {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (args: ShareDialogSubmitArgs) => Promise<boolean>
+  onCopyLink: (args: ShareDialogSubmitArgs) => Promise<boolean>
+  onPublish: () => Promise<boolean>
   allowOrgRestrict: boolean
-  disabled?: boolean
+  shareDisabled?: boolean
 }
 
 export function ShareDialog({
   isOpen,
   onClose,
-  onSubmit,
+  onCopyLink,
+  onPublish,
   allowOrgRestrict,
-  disabled = false,
+  shareDisabled = false,
 }: ShareDialogProps) {
   const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [activeAction, setActiveAction] = useState<'copy' | 'publish' | null>(
+    null
+  )
 
   useEffect(() => {
     if (isOpen) {
@@ -31,26 +34,44 @@ export function ShareDialog({
     }
 
     setIsRestrictedToOrg(false)
-    setIsSubmitting(false)
+    setActiveAction(null)
   }, [isOpen])
 
-  const copyDisabled = disabled || isSubmitting
+  const isSubmitting = activeAction !== null
+  const copyDisabled = shareDisabled || isSubmitting
+  const publishDisabled = isSubmitting
 
-  async function handleSubmit() {
+  async function handleCopyLink() {
     if (copyDisabled) {
       return
     }
 
-    setIsSubmitting(true)
+    setActiveAction('copy')
     try {
-      const copied = await onSubmit({
+      const copied = await onCopyLink({
         isRestrictedToOrg,
       })
       if (copied) {
         onClose()
       }
     } finally {
-      setIsSubmitting(false)
+      setActiveAction(null)
+    }
+  }
+
+  async function handlePublish() {
+    if (publishDisabled) {
+      return
+    }
+
+    setActiveAction('publish')
+    try {
+      const published = await onPublish()
+      if (published) {
+        onClose()
+      }
+    } finally {
+      setActiveAction(null)
     }
   }
 
@@ -89,72 +110,76 @@ export function ShareDialog({
               leaveTo="opacity-0 translate-y-2 scale-[0.98]"
             >
               <Dialog.Panel className="w-full max-w-2xl overflow-hidden rounded-xl border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-2xl dark:border-chalkboard-70 dark:bg-chalkboard-100 dark:text-chalkboard-10">
-                <div className="flex items-center justify-between border-b border-chalkboard-20 px-5 py-4 dark:border-chalkboard-80">
-                  <div>
+                <div className="flex items-start justify-between border-b border-chalkboard-20 px-5 py-4 dark:border-chalkboard-80">
+                  <div className="max-w-[30rem] pr-4">
                     <Dialog.Title className="text-base font-medium">
-                      Share this file
+                      Share this project
                     </Dialog.Title>
                     <p className="mt-1 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-                      Create a shareable link that opens a copy in Zoo.
+                      Copy a shareable link or submit this project for public
+                      review.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <ActionButton
-                      Element="button"
-                      type="button"
-                      iconStart={{ icon: 'link' }}
-                      disabled={copyDisabled}
-                      onClick={() => {
-                        void handleSubmit()
-                      }}
-                    >
-                      {isSubmitting ? 'Copying...' : 'Copy link'}
-                    </ActionButton>
+                  <div className="flex shrink-0 items-center gap-2 self-start">
                     <button
                       type="button"
-                      className="rounded p-1 text-chalkboard-70 hover:bg-chalkboard-20 hover:text-chalkboard-100 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-chalkboard-10"
+                      disabled={copyDisabled}
+                      className="inline-flex h-8 items-center gap-2 whitespace-nowrap rounded border border-chalkboard-30 px-3 text-xs font-medium text-chalkboard-100 hover:bg-chalkboard-20 disabled:cursor-not-allowed disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:disabled:text-chalkboard-50"
+                      onClick={() => {
+                        void handleCopyLink()
+                      }}
+                    >
+                      <CustomIcon
+                        name="link"
+                        className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
+                      />
+                      {activeAction === 'copy' ? 'Copying...' : 'Copy link'}
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded p-1.5 text-chalkboard-70 hover:bg-chalkboard-20 hover:text-chalkboard-100 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-chalkboard-10"
                       onClick={onClose}
                       disabled={isSubmitting}
                       aria-label="Close share dialog"
                     >
-                      <CustomIcon name="close" className="h-5 w-5" />
+                      <CustomIcon name="close" className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
 
                 <form
-                  className="px-5 py-5"
+                  className="space-y-4 px-5 py-5"
                   onSubmit={(event) => {
                     event.preventDefault()
-                    void handleSubmit()
+                    void handleCopyLink()
                   }}
                 >
-                  <div className="rounded-xl border border-chalkboard-20 bg-chalkboard-10/60 p-4 dark:border-chalkboard-80 dark:bg-chalkboard-90">
+                  <section className="rounded-xl border border-chalkboard-20 bg-chalkboard-10/60 p-4 dark:border-chalkboard-80 dark:bg-chalkboard-90">
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-chalkboard-60 dark:text-chalkboard-50">
                       Who has access
                     </p>
 
                     <div className="mt-4 space-y-3">
-                      <div className="flex items-start gap-3 rounded-lg border border-chalkboard-20 px-3 py-3 dark:border-chalkboard-80">
+                      <div className="flex items-center gap-3 rounded-lg border border-chalkboard-20 px-4 py-3 dark:border-chalkboard-80">
                         <CustomIcon
                           name="link"
-                          className="mt-0.5 h-5 w-5 text-chalkboard-70 dark:text-chalkboard-40"
+                          className="h-5 w-5 text-chalkboard-70 dark:text-chalkboard-40"
                         />
                         <div className="flex-1">
                           <p className="text-sm font-medium">
                             Anyone with the link
                           </p>
                           <p className="mt-1 text-xs text-chalkboard-70 dark:text-chalkboard-40">
-                            They can open a copy of this file in Zoo.
+                            They can open a copy of this project in Zoo.
                           </p>
                         </div>
-                        <span className="text-sm text-chalkboard-70 dark:text-chalkboard-40">
+                        <span className="shrink-0 text-sm text-chalkboard-70 dark:text-chalkboard-40">
                           can view
                         </span>
                       </div>
 
                       <label
-                        className={`flex items-start gap-3 rounded-lg border px-3 py-3 ${
+                        className={`flex items-start gap-3 rounded-lg border px-4 py-3 ${
                           allowOrgRestrict
                             ? 'cursor-pointer border-chalkboard-20 dark:border-chalkboard-80'
                             : 'cursor-not-allowed border-chalkboard-20/70 opacity-60 dark:border-chalkboard-80/70'
@@ -167,7 +192,7 @@ export function ShareDialog({
                           onChange={() =>
                             setIsRestrictedToOrg((current) => !current)
                           }
-                          className="mt-1 form-checkbox"
+                          className="mt-1 h-4 w-4 form-checkbox"
                         />
                         <div className="flex-1">
                           <p className="text-sm font-medium">
@@ -184,14 +209,41 @@ export function ShareDialog({
                         </div>
                       </label>
                     </div>
-                  </div>
+                  </section>
 
-                  {disabled && (
-                    <p className="mt-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
+                  {shareDisabled && (
+                    <p className="text-sm text-chalkboard-70 dark:text-chalkboard-40">
                       Share links are not currently supported for multi-file
-                      assemblies.
+                      assemblies, but you can still publish this project for
+                      review.
                     </p>
                   )}
+
+                  <section className="rounded-xl border border-chalkboard-20 bg-chalkboard-10/60 p-4 dark:border-chalkboard-80 dark:bg-chalkboard-90">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-chalkboard-60 dark:text-chalkboard-50">
+                          Publish to Aquarium
+                        </p>
+                        <p className="mt-2 text-sm text-chalkboard-70 dark:text-chalkboard-40">
+                          Submit this project for review so it can be approved
+                          for public listing.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={publishDisabled}
+                        className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded border border-chalkboard-30 px-3 text-xs font-medium text-chalkboard-100 hover:bg-chalkboard-20 disabled:cursor-not-allowed disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:disabled:text-chalkboard-50"
+                        onClick={() => {
+                          void handlePublish()
+                        }}
+                      >
+                        {activeAction === 'publish'
+                          ? 'Publishing...'
+                          : 'Publish'}
+                      </button>
+                    </div>
+                  </section>
                 </form>
               </Dialog.Panel>
             </Transition.Child>

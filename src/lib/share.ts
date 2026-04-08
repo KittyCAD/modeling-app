@@ -23,6 +23,15 @@ export type CopyCurrentFileShareLinkArgs = {
   isRestrictedToOrg: boolean
 }
 
+export type PublishCurrentProjectArgs = Omit<
+  CopyCurrentFileShareLinkArgs,
+  'isRestrictedToOrg'
+>
+
+type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
+  project: Project
+}
+
 type ProjectSettingsCloud = Record<
   string,
   {
@@ -56,101 +65,16 @@ export async function copyCurrentFileShareLink(
     })
     return false
   }
-  const project = args.project
 
-  const environmentName = getCurrentEnvironmentName()
-  if (err(environmentName)) {
-    toast.error(environmentName.message, {
-      duration: 5000,
-    })
-    return false
-  }
-
-  const uploadFiles = await buildProjectUploadFiles({
-    project,
-    currentFilePath: args.currentFilePath,
-    currentFileContents: args.currentFileContents,
-    wasmInstance: args.wasmInstance,
+  const uploadedProject = await ensureCurrentProjectUploaded({
+    ...args,
+    project: args.project,
   })
-  if (err(uploadFiles)) {
-    toast.error(uploadFiles.message, {
+  if (err(uploadedProject)) {
+    toast.error(uploadedProject.message, {
       duration: 5000,
     })
     return false
-  }
-
-  const client = createKCClient(args.token)
-  const existingProjectId = await getCloudProjectIdForEnvironment(
-    project.path,
-    args.wasmInstance,
-    environmentName
-  )
-  if (err(existingProjectId)) {
-    toast.error(existingProjectId.message, {
-      duration: 5000,
-    })
-    return false
-  }
-
-  let projectId: string
-  if (existingProjectId) {
-    const projectBody = await getProjectUpsertBody({
-      client,
-      project,
-      projectId: existingProjectId,
-    })
-    if (err(projectBody)) {
-      toast.error(projectBody.message, {
-        duration: 5000,
-      })
-      return false
-    }
-
-    const projectResp = await kcCall(() =>
-      upsertUserProject({
-        client,
-        id: existingProjectId,
-        body: projectBody,
-        files: uploadFiles,
-      })
-    )
-    if (err(projectResp)) {
-      toast.error(projectResp.message, {
-        duration: 5000,
-      })
-      return false
-    }
-
-    projectId = existingProjectId
-  } else {
-    const projectBody = getDefaultProjectUpsertBody(project)
-    const projectResp = await kcCall(() =>
-      upsertUserProject({
-        client,
-        body: projectBody,
-        files: uploadFiles,
-      })
-    )
-    if (err(projectResp)) {
-      toast.error(projectResp.message, {
-        duration: 5000,
-      })
-      return false
-    }
-
-    projectId = projectResp.id
-    const persisted = await persistCloudProjectIdForEnvironment(
-      project.path,
-      args.wasmInstance,
-      environmentName,
-      projectId
-    )
-    if (err(persisted)) {
-      toast.error(persisted.message, {
-        duration: 5000,
-      })
-      return false
-    }
   }
 
   const accessMode: KclProjectShareLinkAccessMode = args.isRestrictedToOrg
@@ -158,8 +82,8 @@ export async function copyCurrentFileShareLink(
     : 'anyone_with_link'
 
   const shareLink = await getOrCreateProjectShareLink({
-    client,
-    projectId,
+    client: uploadedProject.client,
+    projectId: uploadedProject.projectId,
     accessMode,
   })
   if (err(shareLink)) {
@@ -174,6 +98,151 @@ export async function copyCurrentFileShareLink(
     duration: 5000,
   })
   return true
+}
+
+export async function publishCurrentProject(
+  args: PublishCurrentProjectArgs
+): Promise<boolean> {
+  if (!args.token) {
+    toast.error('You need to be signed in to publish a project.', {
+      duration: 5000,
+    })
+    return false
+  }
+
+  if (!args.project) {
+    toast.error('You need an open project to publish.', {
+      duration: 5000,
+    })
+    return false
+  }
+
+  const uploadedProject = await ensureCurrentProjectUploaded({
+    ...args,
+    project: args.project,
+  })
+  if (err(uploadedProject)) {
+    toast.error(uploadedProject.message, {
+      duration: 5000,
+    })
+    return false
+  }
+
+  const publishedProject = await kcCall(() =>
+    users.publish_user_project({
+      client: uploadedProject.client,
+      id: uploadedProject.projectId,
+    })
+  )
+  if (err(publishedProject)) {
+    toast.error(publishedProject.message, {
+      duration: 5000,
+    })
+    return false
+  }
+
+  toast.success(
+    publishedProject.publication_status === 'published'
+      ? 'Project published.'
+      : 'Project submitted for review.',
+    {
+      duration: 5000,
+    }
+  )
+
+  return true
+}
+
+async function ensureCurrentProjectUploaded(
+  args: CurrentProjectUploadArgs
+): Promise<
+  | {
+      client: ReturnType<typeof createKCClient>
+      projectId: string
+    }
+  | Error
+> {
+  const project = args.project
+  const environmentName = getCurrentEnvironmentName()
+  if (err(environmentName)) {
+    return environmentName
+  }
+
+  const uploadFiles = await buildProjectUploadFiles({
+    project,
+    currentFilePath: args.currentFilePath,
+    currentFileContents: args.currentFileContents,
+    wasmInstance: args.wasmInstance,
+  })
+  if (err(uploadFiles)) {
+    return uploadFiles
+  }
+
+  const client = createKCClient(args.token)
+  const existingProjectId = await getCloudProjectIdForEnvironment(
+    project.path,
+    args.wasmInstance,
+    environmentName
+  )
+  if (err(existingProjectId)) {
+    return existingProjectId
+  }
+
+  if (existingProjectId) {
+    const projectBody = await getProjectUpsertBody({
+      client,
+      project,
+      projectId: existingProjectId,
+    })
+    if (err(projectBody)) {
+      return projectBody
+    }
+
+    const projectResp = await kcCall(() =>
+      upsertUserProject({
+        client,
+        id: existingProjectId,
+        body: projectBody,
+        files: uploadFiles,
+      })
+    )
+    if (err(projectResp)) {
+      return projectResp
+    }
+
+    return {
+      client,
+      projectId: existingProjectId,
+    }
+  }
+
+  const projectBody = getDefaultProjectUpsertBody(project)
+  const projectResp = await kcCall(() =>
+    upsertUserProject({
+      client,
+      body: projectBody,
+      files: uploadFiles,
+    })
+  )
+  if (err(projectResp)) {
+    return projectResp
+  }
+
+  const projectId = projectResp.id
+  const persisted = await persistCloudProjectIdForEnvironment(
+    project.path,
+    args.wasmInstance,
+    environmentName,
+    projectId
+  )
+  if (err(persisted)) {
+    return persisted
+  }
+
+  return {
+    client,
+    projectId,
+  }
 }
 
 async function getProjectUpsertBody({
