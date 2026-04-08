@@ -10,20 +10,24 @@ export interface ShareDialogSubmitArgs {
 type ShareDialogProps = {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (args: ShareDialogSubmitArgs) => Promise<boolean>
+  onCopyLink: (args: ShareDialogSubmitArgs) => Promise<boolean>
+  onPublish: () => Promise<boolean>
   allowOrgRestrict: boolean
-  disabled?: boolean
+  shareDisabled?: boolean
 }
 
 export function ShareDialog({
   isOpen,
   onClose,
-  onSubmit,
+  onCopyLink,
+  onPublish,
   allowOrgRestrict,
-  disabled = false,
+  shareDisabled = false,
 }: ShareDialogProps) {
   const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [activeAction, setActiveAction] = useState<'copy' | 'publish' | null>(
+    null
+  )
 
   useEffect(() => {
     if (isOpen) {
@@ -31,26 +35,44 @@ export function ShareDialog({
     }
 
     setIsRestrictedToOrg(false)
-    setIsSubmitting(false)
+    setActiveAction(null)
   }, [isOpen])
 
-  const copyDisabled = disabled || isSubmitting
+  const isSubmitting = activeAction !== null
+  const copyDisabled = shareDisabled || isSubmitting
+  const publishDisabled = isSubmitting
 
-  async function handleSubmit() {
+  async function handleCopyLink() {
     if (copyDisabled) {
       return
     }
 
-    setIsSubmitting(true)
+    setActiveAction('copy')
     try {
-      const copied = await onSubmit({
+      const copied = await onCopyLink({
         isRestrictedToOrg,
       })
       if (copied) {
         onClose()
       }
     } finally {
-      setIsSubmitting(false)
+      setActiveAction(null)
+    }
+  }
+
+  async function handlePublish() {
+    if (publishDisabled) {
+      return
+    }
+
+    setActiveAction('publish')
+    try {
+      const published = await onPublish()
+      if (published) {
+        onClose()
+      }
+    } finally {
+      setActiveAction(null)
     }
   }
 
@@ -92,10 +114,11 @@ export function ShareDialog({
                 <div className="flex items-center justify-between border-b border-chalkboard-20 px-5 py-4 dark:border-chalkboard-80">
                   <div>
                     <Dialog.Title className="text-base font-medium">
-                      Share this file
+                      Share this project
                     </Dialog.Title>
                     <p className="mt-1 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-                      Create a shareable link that opens a copy in Zoo.
+                      Copy a shareable link or submit this project for public
+                      review.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -105,10 +128,10 @@ export function ShareDialog({
                       iconStart={{ icon: 'link' }}
                       disabled={copyDisabled}
                       onClick={() => {
-                        void handleSubmit()
+                        void handleCopyLink()
                       }}
                     >
-                      {isSubmitting ? 'Copying...' : 'Copy link'}
+                      {activeAction === 'copy' ? 'Copying...' : 'Copy link'}
                     </ActionButton>
                     <button
                       type="button"
@@ -126,7 +149,7 @@ export function ShareDialog({
                   className="px-5 py-5"
                   onSubmit={(event) => {
                     event.preventDefault()
-                    void handleSubmit()
+                    void handleCopyLink()
                   }}
                 >
                   <div className="rounded-xl border border-chalkboard-20 bg-chalkboard-10/60 p-4 dark:border-chalkboard-80 dark:bg-chalkboard-90">
@@ -145,7 +168,7 @@ export function ShareDialog({
                             Anyone with the link
                           </p>
                           <p className="mt-1 text-xs text-chalkboard-70 dark:text-chalkboard-40">
-                            They can open a copy of this file in Zoo.
+                            They can open a copy of this project in Zoo.
                           </p>
                         </div>
                         <span className="text-sm text-chalkboard-70 dark:text-chalkboard-40">
@@ -186,12 +209,39 @@ export function ShareDialog({
                     </div>
                   </div>
 
-                  {disabled && (
+                  {shareDisabled && (
                     <p className="mt-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
                       Share links are not currently supported for multi-file
-                      assemblies.
+                      assemblies, but you can still publish this project for
+                      review.
                     </p>
                   )}
+
+                  <div className="mt-4 rounded-xl border border-chalkboard-20 bg-chalkboard-10/60 p-4 dark:border-chalkboard-80 dark:bg-chalkboard-90">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-chalkboard-60 dark:text-chalkboard-50">
+                          Publish to Aquarium
+                        </p>
+                        <p className="mt-2 text-sm text-chalkboard-70 dark:text-chalkboard-40">
+                          Submit this project for review so it can be approved
+                          for public listing.
+                        </p>
+                      </div>
+                      <ActionButton
+                        Element="button"
+                        type="button"
+                        disabled={publishDisabled}
+                        onClick={() => {
+                          void handlePublish()
+                        }}
+                      >
+                        {activeAction === 'publish'
+                          ? 'Publishing...'
+                          : 'Publish'}
+                      </ActionButton>
+                    </div>
+                  </div>
                 </form>
               </Dialog.Panel>
             </Transition.Child>
