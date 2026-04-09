@@ -9,15 +9,17 @@ Project specific settings for the app. These live in `project.toml` in the base 
 ## Project Configuration Structure
 
 ```toml
-[settings.app]
-# Set the appearance of the application
-name = "My Awesome Project"
+[cloud."zoo.dev"]
+project_id = "6ddf6fb1-4b7c-4945-bb5b-b3265577b34e"
 
-[settings.app.appearance]
-# Use dark mode theme
-theme = "dark" 
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+[cloud."dev.zoo.dev"]
+project_id = "f1573aa5-2e77-4a2d-a092-116fad864bf0"
+
+[settings.meta]
+id = "b7af85a2-9e10-49f6-94fe-a0c8b3c0ea5f"
+
+[settings.app]
+show_debug_panel = true
 
 [settings.modeling]
 # Use inches as the default measurement unit
@@ -26,6 +28,18 @@ base_unit = "in"
 ```
 
 ## Available Settings
+
+### cloud
+
+Environment-scoped cloud metadata keyed by environment name. Use quoted table
+names for dotted environments, for example `[cloud."zoo.dev"]`.
+
+#### <environment>.project_id
+
+
+
+
+**Default:** None
 
 ### settings
 
@@ -212,15 +226,17 @@ Whether to wrap text in the editor or overflow with scroll.
 ## Complete Example
 
 ```toml
-[settings.app]
-# Set the appearance of the application
-name = "My Awesome Project"
+[cloud."zoo.dev"]
+project_id = "6ddf6fb1-4b7c-4945-bb5b-b3265577b34e"
 
-[settings.app.appearance]
-# Use dark mode theme
-theme = "dark" 
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+[cloud."dev.zoo.dev"]
+project_id = "f1573aa5-2e77-4a2d-a092-116fad864bf0"
+
+[settings.meta]
+id = "b7af85a2-9e10-49f6-94fe-a0c8b3c0ea5f"
+
+[settings.app]
+show_debug_panel = true
 
 [settings.modeling]
 # Use inches as the default measurement unit
