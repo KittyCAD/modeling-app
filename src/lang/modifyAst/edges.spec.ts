@@ -1107,69 +1107,6 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    // TODO: figure out how to go about these cases, I don't think the artifacts are holding enough info atm
-    it.fails(
-      'should add a blend call with previous-adjacent wrappers from primitive edges',
-      async () => {
-        const { artifactGraph, ast } = await getAstAndArtifactGraph(
-          sketchSolveSurfacesForBlend,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-
-        const sweeps = [...artifactGraph.values()].filter(
-          (a) => a.type === 'sweep'
-        )
-        expect(sweeps.length).toBe(2)
-
-        const primitiveEdgeSelections: NonCodeSelection[] = [
-          {
-            entityId: 'blend-primitive-edge-previous-1',
-            parentEntityId: sweeps[0].id,
-            primitiveIndex: 0,
-            primitiveType: 'edge',
-            type: 'enginePrimitive',
-          },
-          {
-            entityId: 'blend-primitive-edge-previous-2',
-            parentEntityId: sweeps[1].id,
-            primitiveIndex: 0,
-            primitiveType: 'edge',
-            type: 'enginePrimitive',
-          },
-        ]
-
-        const edges: Selections = {
-          graphSelections: [],
-          otherSelections: primitiveEdgeSelections,
-        }
-
-        const result = addBlend({
-          ast,
-          artifactGraph,
-          edges,
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(result)) {
-          throw result
-        }
-
-        const newCode = recast(result.modifiedAst, instanceInThisFile)
-        if (err(newCode)) {
-          throw newCode
-        }
-        expect(newCode).toContain(
-          `blend001 = blend([
-  getBoundedEdge(extrude001, edge = getPreviousAdjacentEdge(extrude001.sketch.tags.line1)),
-  getBoundedEdge(extrude002, edge = getPreviousAdjacentEdge(extrude002.sketch.tags.line1))
-])`
-        )
-        expect(newCode).not.toContain('edgeId(')
-
-        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-      }
-    )
-
     it('should fail when fewer than two edges are selected', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
