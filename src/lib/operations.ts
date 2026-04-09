@@ -1983,6 +1983,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Mirror 2D',
     icon: 'mirror',
   },
+  region: {
+    label: 'Region',
+    // TODO: add a region icon
+    icon: 'oneDot',
+    // TODO: add a prepareToEdit function
+    // prepareToEdit: prepareToEditRegion,
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',

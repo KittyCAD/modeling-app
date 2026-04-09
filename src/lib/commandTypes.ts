@@ -50,11 +50,12 @@ export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
 export type CommandSelectionType =
   | Artifact['type']
+  | 'pathRegion'
   | 'primitiveFace'
   | 'primitiveEdge'
   | 'enginePrimitiveFace'
   | 'enginePrimitiveEdge'
-  | 'region'
+  | 'engineRegion'
 export type FileFilter = {
   name: string
   extensions: string[]

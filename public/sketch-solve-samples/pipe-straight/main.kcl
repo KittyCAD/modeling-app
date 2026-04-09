@@ -1,0 +1,69 @@
+// Horizontal Pipe Spool
+// Short, straight pipe section with two identical flat, bolted end flanges; used to connect flanged equipment or piping runs and to set a precise face-to-face length in real systems.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+pipeOutsideDiameter = 90
+pipeWallThickness = 10
+
+flangeOutsideDiameter = 130
+flangeThickness = 20
+
+boltHoleCount = 16
+boltHoleDiameter = 12
+boltCircleDiameter = pipeOutsideDiameter + (flangeOutsideDiameter - pipeOutsideDiameter) / 2
+
+pipeInsideDiameter = pipeOutsideDiameter - (2 * pipeWallThickness)
+flangeInsideDiameter = pipeInsideDiameter
+pipeLength = 150
+
+pipeSectionSketch = sketch(on = YZ) {
+  pipeOuterCircle = circle(start = [var 43.63mm, var 16.93mm], center = [var 0mm, var 0mm])
+  coincident([pipeOuterCircle.center, ORIGIN])
+  pipeInnerCircle = circle(start = [var 31.64mm, var -16.26mm], center = [var 0mm, var 0mm])
+  coincident([pipeInnerCircle.center, ORIGIN])
+  radius(pipeOuterCircle) == pipeOutsideDiameter / 2
+  radius(pipeInnerCircle) == pipeInsideDiameter / 2
+}
+pipeRegion = region(
+  point = [
+    (pipeInsideDiameter + pipeWallThickness) / 2,
+    0
+  ],
+  sketch = pipeSectionSketch,
+)
+pipeBody = extrude(pipeRegion, length = pipeLength, symmetric = true)
+hide(pipeSectionSketch)
+
+flangeSketch = sketch(on = YZ) {
+  flangeOuterCircle = circle(start = [var 43.63mm, var 16.93mm], center = [var 0mm, var 0mm])
+  coincident([flangeOuterCircle.center, ORIGIN])
+  flangeInnerCircle = circle(start = [var 31.64mm, var -16.26mm], center = [var 0mm, var 0mm])
+  coincident([flangeInnerCircle.center, ORIGIN])
+  radius(flangeOuterCircle) == flangeOutsideDiameter / 2
+  radius(flangeInnerCircle) == flangeInsideDiameter / 2
+}
+flangeRegion = region(point = [(flangeInsideDiameter + 10) / 2, 0], sketch = flangeSketch)
+flangeBody = extrude(flangeRegion, length = flangeThickness, symmetric = true)
+hide(flangeSketch)
+
+boltHoleSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 57.02mm, var 4.06mm], center = [var 52.5mm, var 0.11mm])
+  line1 = line(start = [var 52.07mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line1.start, circle1.center])
+  coincident([line1.end, ORIGIN])
+  horizontal(line1)
+  radius(circle1) == boltHoleDiameter / 2
+  horizontalDistance([line1.end, line1.start]) == boltCircleDiameter / 2
+}
+boltRegion = region(segments = [boltHoleSketch.circle1])
+boltHoleBody = extrude(boltRegion, length = flangeThickness, symmetric = true)
+boltHoleBodies = patternCircular3d(boltHoleBody, instances = boltHoleCount, axis = X)
+flangeBodyWithHoles = subtract([flangeBody], tools = [boltHoleBodies])
+hide(boltHoleSketch)
+
+rightEndFlange = flangeBodyWithHoles
+  |> translate(x = (pipeLength + flangeThickness) / 2, global = true)
+leftEndFlange = clone(rightEndFlange)
+  |> rotate(axis = Y, angle = 180deg)

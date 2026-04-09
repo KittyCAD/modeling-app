@@ -1,16 +1,14 @@
 ---
-title: "sketch2::vertical"
-subtitle: "Function in std::sketch2"
+title: "solver::vertical"
+subtitle: "Function in std::solver"
 excerpt: "Constrain a line to be vertical."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain a line to be vertical.
 
 ```kcl
-sketch2::vertical(@input: Segment)
+solver::vertical(@input: Segment)
 ```
 
 
@@ -25,8 +23,6 @@ sketch2::vertical(@input: Segment)
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -46,11 +42,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::vertical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-vertical0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::vertical function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-vertical0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-vertical0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-vertical0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

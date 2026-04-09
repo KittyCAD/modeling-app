@@ -1,16 +1,14 @@
 ---
-title: "sketch2::region"
-subtitle: "Function in std::sketch2"
+title: "region"
+subtitle: "Function in std::sketch"
 excerpt: "Create a region from closed segments."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a region from closed segments.
 
 ```kcl
-sketch2::region(
+region(
   point?: Point2d | Segment,
   segments?: [Segment; 1+],
   intersectionIndex?: number(_),
@@ -46,8 +44,6 @@ segment.
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -67,11 +63,11 @@ extrude(r, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -79,8 +75,6 @@ extrude(r, length = 5)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 trapezoid = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -103,11 +97,11 @@ extrude(r, length = 3)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region1_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region1.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -115,8 +109,6 @@ extrude(r, length = 3)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   arc1 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 6mm])
@@ -132,11 +124,11 @@ extrude(r, length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region2_output.gltf"
+  alt="Example showing a rendered KCL program that uses the region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region2.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

@@ -2,7 +2,6 @@ import type {
   ApiConstraint,
   ApiObject,
   Number as ConstraintNumber,
-  ConstraintSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
@@ -17,6 +16,7 @@ import {
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { Group } from 'three'
 
 export const X_AXIS_TARGET = 'x-axis'
@@ -77,7 +77,7 @@ export function getConstraintForSnapTarget(
     case X_AXIS_TARGET:
       return {
         type: 'VerticalDistance',
-        points: [segmentId, 'ORIGIN'],
+        points: [segmentId, 'ORIGIN'] as unknown as [number, number],
         distance: { value: 0, units },
         source: {
           expr: `0${units.toLowerCase()}`,
@@ -87,7 +87,7 @@ export function getConstraintForSnapTarget(
     case Y_AXIS_TARGET:
       return {
         type: 'HorizontalDistance',
-        points: [segmentId, 'ORIGIN'],
+        points: [segmentId, 'ORIGIN'] as unknown as [number, number],
         distance: { value: 0, units },
         source: {
           expr: `0${units.toLowerCase()}`,

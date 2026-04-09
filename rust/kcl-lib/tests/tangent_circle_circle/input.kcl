@@ -22,8 +22,7 @@ s = sketch(on = XY) {
   radius(b_bot) == 3mm
 
   // Fix frame to remove rigid-body ambiguity.
-  a_top.center.at[0] == 0mm
-  a_top.center.at[1] == 0mm
+  fixed([a_top.center, [0mm, 0mm]])
   b_top.center.at[1] == 0mm
 
   tangent([a_top, b_top])
