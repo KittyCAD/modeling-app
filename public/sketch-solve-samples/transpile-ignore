@@ -13,18 +13,18 @@
 #
 # List of all samples:
 #
-# angle-gauge/
+angle-gauge/
 # axial-fan/
-# ball-bearing/
+ball-bearing/
 # bench/
-# bench-for-kids/
-# bike-hub-washer/
+bench-for-kids/
+bike-hub-washer/
 # bone-plate/
 # bottle/
-# box/
-# bracket/
+box/
+bracket/
 # bracket-with-slot/
-# c-shape-solid/
+c-shape-solid/
 # camshaft/
 # car-wheel-assembly/
 # cassette/
@@ -32,31 +32,32 @@
 # coilover-assembly/
 # cold-plate/
 # color-cube/
-# cone/
+cone/
 # contra-rotor/
 # counterdrilled-weldment/
-# countersunk-plate/
+countersunk-plate/
 # cpu-cooler/
 # crash-box/
 # curtain-wall-anchor-plate/
 # cycloidal-gear/
-# cylinder/
+cylinder/
 # desk-edge-stopper/
 # dodecahedron/
 # dog-house-great-dane/
 # enclosure/
-# engine-valve/
+engine-valve/
 # exhaust-manifold/
 # field-monitor-stand/
 # flange/
 # flat-bladed-impeller/
 # french-press/
+fun-stacker-toy/
 # gallows-bracket/
-# gas-impeller/
+gas-impeller/
 # gear-rack/
 # gingerbread-man/
 # gingerbread-man-cookie-cutter/
-# golf-tee/
+golf-tee/
 # gridfinity-baseplate/
 # gridfinity-bins/
 # gridfinity-bins-stacking-lip/
@@ -89,6 +90,7 @@
 # pipe/
 # pipe-flange-assembly/
 # pipe-manifold/
+pipe-straight
 # poopy-shoe/
 # propellant-line-brackets/
 # propeller/
@@ -140,7 +142,7 @@ torus/
 # utility-sink/
 v-block/
 # walkie-talkie/
-# washer/
+washer/
 wedge/
 # wheel-hub/
 # wing-spar/

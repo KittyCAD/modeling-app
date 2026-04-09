@@ -1,6 +1,6 @@
 ---
-title: "sketch2::ORIGIN"
-subtitle: "Constant in std::sketch2"
+title: "solver::ORIGIN"
+subtitle: "Constant in std::solver"
 excerpt: "The origin point in a sketch."
 layout: manual
 ---
@@ -10,7 +10,7 @@ layout: manual
 The origin point in a sketch.
 
 ```kcl
-sketch2::ORIGIN: Point2d
+solver::ORIGIN: Point2d
 ```
 
 

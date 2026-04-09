@@ -551,15 +551,18 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
                 expression,
             )
             .map(|(key, value)| {
-                Node::new_node(
-                    key.start,
-                    value.end(),
-                    key.module_id,
+                let start = key.start;
+                let end = value.end();
+                let module_id = key.module_id;
+                Node::new(
                     ObjectProperty {
                         key,
                         value,
                         digest: None,
                     },
+                    start,
+                    end,
+                    module_id,
                 )
             }),
             comma_sep,
@@ -1277,15 +1280,18 @@ fn array_end_start(i: &mut TokenSlice) -> ModalResult<Node<ArrayRangeExpression>
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    Ok(Node::new_node(
-        key.start,
-        key.end,
-        key.module_id,
+    let start = key.start;
+    let end = key.end;
+    let module_id = key.module_id;
+    Ok(Node::new(
         ObjectProperty {
             value: Expr::Name(Box::new(key.clone().into())),
             key,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -1332,15 +1338,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         })
     })?;
 
-    let result = Node::new_node(
-        key.start,
-        expr.end(),
-        key.module_id,
+    let start = key.start;
+    let end = expr.end();
+    let module_id = key.module_id;
+    let result = Node::new(
         ObjectProperty {
             key,
             value: expr,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     );
 
     if sep.token_type == TokenType::Colon {
@@ -2574,11 +2583,12 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(Node::new_node(
-        ret.start,
-        argument.end(),
-        ret.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         ReturnStatement { argument, digest: None },
+        ret.start,
+        end,
+        ret.module_id,
     ))
 }
 
@@ -2809,20 +2819,21 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
     let end = val.end();
     let module_id = id.module_id;
+    let declaration_start = id.start;
     Ok(Node::boxed(
         start,
         end,
         module_id,
         VariableDeclaration {
-            declaration: Node::new_node(
-                id.start,
-                end,
-                module_id,
+            declaration: Node::new(
                 VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
                 },
+                declaration_start,
+                end,
+                module_id,
             ),
             visibility,
             kind,
@@ -3099,15 +3110,16 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
         .parse_next(i)?;
     ignore_whitespace(i);
     let argument = operand.parse_next(i)?;
-    Ok(Node::new_node(
-        op_token.start,
-        argument.end(),
-        op_token.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         UnaryExpression {
             operator,
             argument,
             digest: None,
         },
+        op_token.start,
+        end,
+        op_token.module_id,
     ))
 }
 
@@ -3180,14 +3192,17 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(Node::new_node(
-        val.start(),
-        val.end(),
-        val.module_id(),
+    let start = val.start();
+    let end = val.end();
+    let module_id = val.module_id();
+    Ok(Node::new(
         ExpressionStatement {
             expression: val,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -3501,11 +3516,14 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             }),
         // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let result = Node::new_node(
-                ident.start,
-                ident.end,
-                ident.module_id,
+            let start = ident.start;
+            let end = ident.end;
+            let module_id = ident.module_id;
+            let result = Node::new(
                 PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
+                start,
+                end,
+                module_id,
             );
 
             if *result == PrimitiveType::None {
@@ -3716,13 +3734,21 @@ fn is_safe_sketch_block_binding_name(name: &str) -> bool {
     !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
 }
 
+fn is_safe_binding_name_anywhere(name: &str) -> bool {
+    !name.starts_with("__kcl")
+}
+
+fn is_safe_binding_name(name: &str) -> bool {
+    is_safe_binding_name_anywhere(name) && is_safe_sketch_block_binding_name(name)
+}
+
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let ident = identifier
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)?;
 
-    if !is_safe_sketch_block_binding_name(&ident.name) {
+    if !is_safe_binding_name(&ident.name) {
         ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
             format!("`{}` is a reserved name and cannot be defined.", &ident.name),
@@ -3818,10 +3844,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
-            let result = Node::new_node(
-                fn_name.start,
-                end,
-                fn_name.module_id,
+            let start = fn_name.start;
+            let module_id = fn_name.module_id;
+            let result = Node::new(
                 CallExpressionKw {
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
@@ -3829,6 +3854,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     digest: None,
                     non_code_meta: Default::default(),
                 },
+                start,
+                end,
+                module_id,
             );
             return Ok(result);
         }
@@ -3946,10 +3974,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    let result = Node::new_node(
-        fn_name.start,
-        end,
-        fn_name.module_id,
+    let start = fn_name.start;
+    let module_id = fn_name.module_id;
+    let result = Node::new(
         CallExpressionKw {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
@@ -3957,6 +3984,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             digest: None,
             non_code_meta,
         },
+        start,
+        end,
+        module_id,
     );
 
     let callee_str = result.callee.name.name.to_string();
@@ -6465,6 +6495,18 @@ bar = 1
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_cannot_declare_vars_with_special_kcl_prefix() {
+        let program_source = "__kcl = 2";
+        let expected_src_start = program_source.find("_").unwrap();
+        let expected_src_end = expected_src_start + "__kcl".len();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert!(cause.err.message.contains("reserved name"));
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+        assert_eq!(cause.err.source_range.end(), expected_src_end);
     }
 
     #[test]

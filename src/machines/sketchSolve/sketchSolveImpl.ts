@@ -21,6 +21,12 @@ import {
   type SegmentRenderState,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
+import {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
 import { StateEffect } from '@codemirror/state'
@@ -74,6 +80,14 @@ import {
   fromPromise,
 } from 'xstate'
 
+export {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  type SketchSpecialTarget,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
+
 export type EquipTool = keyof typeof equipTools
 
 // Type for the spawn function used in XState setup actions
@@ -111,7 +125,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids'
       data: {
-        selectedIds?: Array<number>
+        selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
       }
@@ -119,7 +133,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update hovered id'
       data: {
-        hoveredId: number | null
+        hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
       }
     }
@@ -188,9 +202,9 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
-  hoveredId: number | null
+  hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
@@ -463,7 +477,7 @@ function initSegmentGroup({
 export interface IUpdateSketchSceneGraph {
   sceneGraphDelta: SceneGraphDelta
   context: SketchSolveContext
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
 }
 export const updateSketchSceneGraphEffect =
@@ -492,6 +506,9 @@ export function updateSceneGraphFromDelta({
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
 
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
   const draftEntityIds = context.draftEntities?.segmentIds
 
   // If invalidates_ids is true, we need to delete everything and start fresh
@@ -518,7 +535,12 @@ export function updateSceneGraphFromDelta({
   }
 
   if (sketchSolveGroup instanceof Group) {
-    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
   }
 
   currentSketchObjects.forEach((obj) => {
@@ -529,7 +551,7 @@ export function updateSceneGraphFromDelta({
 
     // Combine selectedIds and duringAreaSelectIds for highlighting
     const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
+      new Set([...getObjectSelectionIds(selectedIds), ...duringAreaSelectIds])
     )
 
     // Render constraints
@@ -557,7 +579,7 @@ export function updateSceneGraphFromDelta({
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -707,7 +729,7 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
       const first = event.data.selectedIds[0]
       if (
         event.data.selectedIds.length === 1 &&
-        first &&
+        first !== undefined &&
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
@@ -740,14 +762,31 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   )
   const factor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
 
   // Get draft entity IDs from context
   const draftEntityIds = context.draftEntities?.segmentIds
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
+  }
 
   currentSketchObjects.forEach((obj) => {
     if (obj.kind.type === 'Sketch') {
@@ -767,7 +806,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -851,13 +890,24 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
   const scaleFactor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
 
-  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
+  updateOriginSprite(
+    sketchSolveGroup,
+    scaleFactor,
+    context.sceneInfra.theme,
+    getOriginSpriteState(context)
+  )
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {
@@ -907,7 +957,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         scaleFactor,
         context.sceneInfra,
         allSelectedIds,
-        context.hoveredId,
+        hoveredObjectId,
         getInvisibleConstraintDisplayState(context)
       )
     }
@@ -924,10 +974,12 @@ function getInvisibleConstraintDisplayState(
 }
 
 function getHoveredSegmentIds(
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   objects: ApiObject[]
 ): number[] {
-  const hoveredObject = hoveredId !== null ? objects[hoveredId] : null
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
   return isInvisibleConstraintObject(hoveredObject)
     ? findSegmentsForInvisibleConstraint(hoveredObject, objects)
     : []
@@ -935,9 +987,9 @@ function getHoveredSegmentIds(
 
 function getSegmentRenderState(
   segmentId: number,
-  selectedIds: Array<number>,
+  selectedIds: Array<SketchSolveSelectionId>,
   duringAreaSelectIds: Array<number>,
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   hoveredSegmentIds: Array<number>,
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
@@ -950,6 +1002,18 @@ function getSegmentRenderState(
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }
+}
+
+function getOriginSpriteState(
+  context: Pick<SketchSolveContext, 'hoveredId' | 'selectedIds'>
+) {
+  if (context.hoveredId === ORIGIN_TARGET) {
+    return 'hovered' as const
+  }
+  if (context.selectedIds.includes(ORIGIN_TARGET)) {
+    return 'selected' as const
+  }
+  return 'default' as const
 }
 
 function getSketchSolveScaleFactor(context: SketchSolveContext): number {

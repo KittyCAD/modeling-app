@@ -38,6 +38,7 @@ ImportItem { identifier (ImportItemAs identifier)? }
 expression[@isGroup=Expression] {
   String |
   Number |
+  SketchVar { kw<"var"> AddOp? Number } |
   VariableName |
   TagDeclarator |
   kw<"true"> | kw<"false"> | kw<"nil"> |
@@ -52,6 +53,7 @@ expression[@isGroup=Expression] {
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
   IfExpression { kw<"if"> expression Body kw<"else"> Body } |
+  SketchBlockExpression { kw<"sketch"> ArgumentList Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
@@ -97,7 +99,10 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
 @tokens {
   String[isolate] { "'" ("\\" _ | !['\\])* "'" | '"' ("\\" _ | !["\\])* '"' }
 
-  Number { "." @digit+ | @digit+ ("." @digit+)? }
+  Number {
+    ("." @digit+ | @digit+ ("." @digit+)?)
+    ("inch" | "mm" | "cm" | "m" | "in" | "ft" | "yd" | "deg" | "rad" | "_" | "?")?
+  }
   @precedence { Number, "." }
 
   AddOp { "+" | "-" }

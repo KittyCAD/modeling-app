@@ -1,25 +1,25 @@
 ---
-title: "sketch2::vertical"
-subtitle: "Function in std::sketch2"
-excerpt: "Constrain a line to be vertical."
+title: "solver::perpendicular"
+subtitle: "Function in std::solver"
+excerpt: "Constrain lines to be perpendicular."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Constrain a line to be vertical.
+Constrain lines to be perpendicular.
 
 ```kcl
-sketch2::vertical(@input: Segment)
+solver::perpendicular(@input: [Segment; 2+])
 ```
 
-
+Currently limited to two lines.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The line segment that should remain vertical. | Yes |
+| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain perpendicular. Currently limited to two lines. | Yes |
 
 
 ### Examples
@@ -36,7 +36,7 @@ profile = sketch(on = XY) {
   coincident([edge2.end, edge3.start])
   coincident([edge3.end, edge4.start])
   coincident([edge4.end, edge1.start])
-  vertical(edge2)
+  perpendicular([edge1, edge2])
 }
 
 solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
@@ -46,11 +46,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::vertical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-vertical0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::perpendicular function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-perpendicular0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-vertical0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-perpendicular0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
