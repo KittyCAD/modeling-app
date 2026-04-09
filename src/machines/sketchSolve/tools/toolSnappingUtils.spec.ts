@@ -14,17 +14,16 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
     id,
     kind: {
       type: 'Sketch',
-      sketch: {
-        path: {
-          from: { type: 'SketchModePlane', value: 'XY' },
-        },
-      },
+      args: { on: { default: 'xy' } },
+      constraints: [3],
+      plane: 8,
+      segments: [0, 1, 2],
     },
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
-  } as ApiObject
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  } satisfies ApiObject
 }
 
 describe('toolSnappingUtils', () => {
