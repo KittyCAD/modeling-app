@@ -2510,90 +2510,95 @@ box = extrude(region001, length = 30)`
     }
   )
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/issues/10728 is closed
-  test.fixme(
-    'Blend point-and-click',
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
-      const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
-      const initialCode = `sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
-}
-hide(sketch001)
-surface001 = extrude(sketch001.line1, length = 2, bodyType = SURFACE)
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    // It makes more sense to keep this as a sketch v1 test as we can directly select from code instead of px clicks
+    // We're not testing sketch solve stuff here, just the Blend command e2e. Sketch solve tests are at
+    // src/lang/modifyAst/edges.spec.ts
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
-sketch002 = sketch(on = XZ) {
-  line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])
-}
-hide(sketch002)
-surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-      const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
 
-      async function selectEdgesFromBothSurfaces() {
-        const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
-        await editor.selectText(firstSurfaceEdge)
-        await page.keyboard.down(multiCursorKey)
-        await page.getByText(secondSurfaceEdge).click()
-        await page.keyboard.up(multiCursorKey)
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Click blend in the surface toolbar group', async () => {
-        await toolbar.selectSurface('blend-surface')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'edges',
-          currentArgValue: '',
-          headerArguments: {
-            Edges: '',
-          },
-          highlightedHeaderArg: 'edges',
-          commandName: 'Blend',
-        })
-      })
-
-      await test.step('Select two edges through the command bar flow', async () => {
-        await selectEdgesFromBothSurfaces()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Edges: '2 edges',
-          },
-          commandName: 'Blend',
-        })
-        await cmdBar.submit()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Check blend code was added', async () => {
-        await editor.expectEditor.toContain(blendDeclaration)
-      })
-
-      await test.step('Delete blend via feature tree selection', async () => {
-        await editor.closePane()
-        await toolbar.openFeatureTreePane()
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'blend001',
-          0
-        )
-        await operationButton.click()
-        await page.keyboard.press('Delete')
-        await scene.settled(cmdBar)
-        await editor.expectEditor.not.toContain(blendDeclaration)
-      })
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
     }
-  )
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 edges',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
+    })
+  })
 
   test('Flip Surface point-and-click', async ({
     context,
