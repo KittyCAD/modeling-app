@@ -2612,7 +2612,6 @@ export class KclManager extends File {
     shouldClearHistory: false,
     shouldAddToHistory: true,
   }
-  changes: ChangeSpec[] = []
   private getCheckpointHistoryEffect(
     resolvedOptions: UpdateCodeEditorOptions,
     additionalSpec?: UpdateCodeEditorAdditionalSpec
@@ -2827,8 +2826,6 @@ export class KclManager extends File {
     if (resolvedOptions.shouldClearHistory) {
       this.clearLocalHistory()
     }
-
-    this.changes.push(changes)
 
     this.editorView.dispatch({
       changes,
