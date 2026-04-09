@@ -316,7 +316,7 @@ function getZeroAxisDistanceConstraintWithOrigin(
       (obj) =>
         isConstraint(obj, constraintType) &&
         obj.kind.constraint.points.includes(pointId) &&
-        obj.kind.constraint.points.includes('ORIGIN' as never) &&
+        obj.kind.constraint.points.includes('ORIGIN') &&
         obj.kind.constraint.distance.value === 0
     ) ?? null
   )
