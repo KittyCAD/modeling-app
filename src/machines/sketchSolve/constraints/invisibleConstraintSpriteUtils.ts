@@ -200,7 +200,8 @@ function getCoincidentHighlightedSegmentIds(
   constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
   objects: ApiObject[]
 ) {
-  const pointIds = getCoincidentSegmentIds(constraint).filter((id) =>
+  const coincidentSegmentIds = getCoincidentSegmentIds(constraint)
+  const pointIds = coincidentSegmentIds.filter((id) =>
     isPointSegment(objects[id])
   )
   const ownerSegmentIds = pointIds.flatMap((pointId) => {
@@ -213,7 +214,7 @@ function getCoincidentHighlightedSegmentIds(
     return ownerId !== null ? [ownerId] : []
   })
 
-  return [...pointIds, ...ownerSegmentIds]
+  return [...coincidentSegmentIds, ...ownerSegmentIds]
 }
 
 // Returns if the given non-visual constraint is constraining the given segment.

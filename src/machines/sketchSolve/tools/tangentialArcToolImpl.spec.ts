@@ -352,7 +352,7 @@ describe('tangentialArcToolImpl', () => {
         input: {
           arcId: 4,
           endPoint: [1, 1],
-          endSnapTarget: { type: 'point', pointId: 99 },
+          endSnapTarget: { type: 'point', id: 99 },
           tangentInfo: {
             ownerId: 5,
             tangentStart: {

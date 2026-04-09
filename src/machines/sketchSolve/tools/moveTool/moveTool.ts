@@ -50,10 +50,12 @@ import {
   type SnappingCandidate,
   allowSnapping,
   getConstraintForSnapTarget,
+  getObjectIdForSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
-  isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -277,6 +279,13 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedSegmentIds = new Set<number>()
+  for (const pointId of coincidentPointIds) {
+    const point = sceneGraphDelta.new_graph.objects[pointId]
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
+      excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
 
   const currentSketchObjects = getCurrentSketchObjectsById(
     sceneGraphDelta.new_graph.objects,
@@ -286,9 +295,17 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) =>
-        !isPointSnapTarget(candidate.target) ||
-        !coincidentPointIds.includes(candidate.target.pointId)
+      (candidate) => {
+        if (candidate.target.type === 'point') {
+          return !coincidentPointIds.includes(candidate.target.id)
+        }
+
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        return (
+          snapTargetSegmentId === null ||
+          !excludedSegmentIds.has(snapTargetSegmentId)
+        )
+      }
     ) ?? null
 
   return candidate
@@ -306,6 +323,25 @@ function hasCoincidentConstraintWithOrigin(
   )
 }
 
+function hasCoincidentConstraintForSnapTarget(
+  pointId: number,
+  target: SnappingCandidate['target'],
+  objects: ApiObject[]
+) {
+  const coincidentSegments = getCoincidentSegmentsForSnapTarget(pointId, target)
+  if (coincidentSegments === null) {
+    return false
+  }
+
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      coincidentSegments.every((segment) =>
+        (obj.kind.constraint.segments as ConstraintSegment[]).includes(segment)
+      )
+  )
+}
+
 function getZeroAxisDistanceConstraintWithOrigin(
   pointId: number,
   constraintType: 'HorizontalDistance' | 'VerticalDistance',
@@ -316,7 +352,9 @@ function getZeroAxisDistanceConstraintWithOrigin(
       (obj) =>
         isConstraint(obj, constraintType) &&
         obj.kind.constraint.points.includes(pointId) &&
-        obj.kind.constraint.points.includes('ORIGIN') &&
+        (obj.kind.constraint.points as Array<number | 'ORIGIN'>).includes(
+          'ORIGIN'
+        ) &&
         obj.kind.constraint.distance.value === 0
     ) ?? null
   )
@@ -972,9 +1010,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     sendHoveredState(
       candidate?.target?.type === ORIGIN_TARGET
         ? ORIGIN_TARGET
-        : isPointSnapTarget(candidate?.target)
-          ? candidate.target.pointId
-          : null
+        : getObjectIdForSnapTarget(candidate?.target)
     )
   }
 
@@ -1192,13 +1228,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 }
               }
             } else {
-              result = await context.rustContext.addConstraint(
-                SKETCH_FILE_VERSION,
-                context.sketchId,
-                snapConstraint,
-                settings,
-                true
-              )
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              if (
+                hasCoincidentConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target,
+                  objects
+                )
+              ) {
+                result = editResult
+              } else {
+                result = await context.rustContext.addConstraint(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId,
+                  snapConstraint,
+                  settings,
+                  true
+                )
+              }
             }
           } else {
             const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
