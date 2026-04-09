@@ -1011,6 +1011,10 @@ export function getKclVersion(wasmInstance: ModuleType): string {
   return wasmInstance.get_kcl_version()
 }
 
+export function getSketchCheckpointLimit(wasmInstance: ModuleType): number {
+  return wasmInstance.sketch_checkpoint_limit()
+}
+
 /**
  * Serialize a project configuration to a TOML string.
  */
