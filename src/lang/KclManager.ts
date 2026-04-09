@@ -1082,7 +1082,7 @@ export class KclManager extends File {
         (tr) => tr.isUserEvent('undo') || tr.isUserEvent('redo')
       )
       const isSketchSolveMode = this.modelingState?.matches('sketchSolveMode')
-      const shouldSkipExecutionForDirectSketchHistoryReplay =
+      const isDirectSketchHistoryReplay =
         isSketchSolveMode &&
         update.transactions.some(
           (tr) =>
@@ -1095,16 +1095,15 @@ export class KclManager extends File {
                 )
             )
         )
-      const shouldIgnoreSkipExecutionForHistoryReplay =
+      const isNonSketchHistoryReplay =
         isUndoRedoHistoryReplay && !isSketchSolveMode
-      const effectiveSkipExecutionAnnotation =
-        hasSkipExecutionAnnotation && !shouldIgnoreSkipExecutionForHistoryReplay
-      if (!effectiveSkipExecutionAnnotation) {
-        if (shouldSkipExecutionForDirectSketchHistoryReplay) {
-          return
-        }
-        this.deferredExecution({ newCode, shouldResetCamera })
-      }
+      const shouldSkipExecutionForAnnotation =
+        hasSkipExecutionAnnotation && !isNonSketchHistoryReplay
+
+      if (isDirectSketchHistoryReplay) return
+      if (shouldSkipExecutionForAnnotation) return
+
+      this.deferredExecution({ newCode, shouldResetCamera })
     }
   })
 
