@@ -5355,8 +5355,8 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
 
         frontend.clear_sketch_checkpoints();
         assert!(frontend.sketch_checkpoints.is_empty());
-        assert!(frontend.restore_sketch_checkpoint(checkpoint_a).await.is_err());
-        assert!(frontend.restore_sketch_checkpoint(checkpoint_b).await.is_err());
+        frontend.restore_sketch_checkpoint(checkpoint_a).await.unwrap_err();
+        frontend.restore_sketch_checkpoint(checkpoint_b).await.unwrap_err();
 
         ctx.close().await;
         mock_ctx.close().await;
