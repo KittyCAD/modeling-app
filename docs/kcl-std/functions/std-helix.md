@@ -130,8 +130,6 @@ helix(
 ![Rendered example of helix 3](/kcl-test-outputs/serial_test_example_fn_std-helix3.png)
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Demonstrate building a helix where the central axis is a line defined in a sketch block.
 // First, here's the sketch block with a line:
 sketch002 = sketch(on = XZ) {

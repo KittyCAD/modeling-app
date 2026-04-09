@@ -440,8 +440,6 @@ sketch001 = startSketchOn(XY)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 shellProfile = sketch(on = XY) {
   outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
   connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
