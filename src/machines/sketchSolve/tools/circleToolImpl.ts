@@ -46,6 +46,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -210,6 +211,7 @@ export function sendResultToParent({
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     error?: string
   }
 
@@ -246,6 +248,7 @@ export function sendResultToParent({
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        checkpointId: output.checkpointId ?? null,
       },
     }
     self._parent?.send(sendData)
@@ -278,6 +281,7 @@ export async function createCircleActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -319,7 +323,8 @@ export async function createCircleActor({
       sketchId,
       segmentCtor,
       'circle',
-      settings
+      settings,
+      true
     )
 
     const circleObjId = result.sceneGraphDelta.new_objects.find((objId) => {
@@ -348,6 +353,7 @@ export async function createCircleActor({
 
     let latestKclSource = result.kclSource
     let latestSceneGraphDelta = result.sceneGraphDelta
+    let latestCheckpointId = result.checkpointId ?? null
     const snapConstraintNewObjects: number[] = []
 
     for (const { segmentId, snapTarget } of snapTargets) {
@@ -366,10 +372,12 @@ export async function createCircleActor({
           type: 'Coincident',
           segments: coincidentSegments,
         },
-        settings
+        settings,
+        true
       )
       latestKclSource = snapResult.kclSource
       latestSceneGraphDelta = snapResult.sceneGraphDelta
+      latestCheckpointId = snapResult.checkpointId ?? latestCheckpointId
       snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
     }
 
@@ -386,6 +394,7 @@ export async function createCircleActor({
           ...snapConstraintNewObjects,
         ],
       },
+      checkpointId: latestCheckpointId,
     }
   } catch (error) {
     console.error('Failed to create circle:', error)

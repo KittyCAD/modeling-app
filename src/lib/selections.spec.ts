@@ -1433,13 +1433,13 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
-  test('coalesces profile-like selections under profile', () => {
+  test('does not coalesce region selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
       otherSelections: [
         {
-          type: 'region',
+          type: 'engineRegion',
           id: 'region-1',
           point: { x: 0, y: 0 },
           sketchId: 'sketch-1',
@@ -1448,7 +1448,24 @@ describe('getSelectionTypeDisplayText', () => {
     }
 
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '2 profiles'
+      '1 region, 1 profile'
+    )
+  })
+
+  test('treats path artifacts with region subtype as region selections', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        {
+          artifact: { type: 'path', subType: 'region' } as Artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '1 region'
     )
   })
 

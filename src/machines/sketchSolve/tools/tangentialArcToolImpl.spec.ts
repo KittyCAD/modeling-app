@@ -395,7 +395,8 @@ describe('tangentialArcToolImpl', () => {
           type: 'Tangent',
           input: [5, 4],
         },
-        expect.anything()
+        expect.anything(),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'tangent' },
@@ -403,6 +404,7 @@ describe('tangentialArcToolImpl', () => {
           ...createSceneGraphDelta([], [12]),
           new_objects: [4, 10, 11, 12],
         },
+        checkpointId: null,
       })
     })
   })
