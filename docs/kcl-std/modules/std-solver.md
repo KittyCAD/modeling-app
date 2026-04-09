@@ -5,8 +5,6 @@ excerpt: "Functions for sketch mode 2.0 (constraints version) "
 layout: manual
 ---
 
-**WARNING:** This module is experimental and may change or be removed.
-
 Functions for sketch mode 2.0 (constraints version) 
 
 

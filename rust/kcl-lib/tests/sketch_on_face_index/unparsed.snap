@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_on_face_index.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 mySolid = startSketchOn(XY)
   |> circle(radius = 1)
   |> extrude(length = 1)

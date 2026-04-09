@@ -187,6 +187,7 @@ pub mod pretty {
 }
 
 pub mod front {
+    pub use crate::frontend::MAX_SKETCH_CHECKPOINTS;
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
@@ -194,8 +195,10 @@ pub mod front {
         FrontendState,
         SetProgramOutcome,
         api::{
-            Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
-            ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
+            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, LifecycleApi, NewSketchOutcome, Number,
+            Object, ObjectId, ObjectKind, Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph,
+            SceneGraphDelta, Settings, SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version,
+            Wall,
         },
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Fixed,

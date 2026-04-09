@@ -158,6 +158,17 @@ pub(crate) struct SketchModeState {
     pub scene_objects: Vec<Object>,
 }
 
+#[cfg(test)]
+impl SketchModeState {
+    pub(crate) fn new_for_tests() -> Self {
+        Self {
+            stack: Stack::new_for_tests(),
+            module_infos: ModuleInfoMap::default(),
+            scene_objects: Vec::new(),
+        }
+    }
+}
+
 /// The result of a cache check.
 #[derive(Debug, Clone, PartialEq)]
 #[allow(clippy::large_enum_variant)]

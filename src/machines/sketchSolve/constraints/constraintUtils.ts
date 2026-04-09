@@ -3,7 +3,6 @@ import type {
   FixedPoint,
   ApiObject,
   Coincident,
-  ConstraintSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -16,6 +15,7 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 

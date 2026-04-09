@@ -5,8 +5,6 @@ excerpt: "Constrain lines to meet at a given angle."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain lines to meet at a given angle.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::angle(@input: [Segment; 2])
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])

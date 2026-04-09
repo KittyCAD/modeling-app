@@ -5,8 +5,6 @@ excerpt: "Constrain the radius of an arc segment. Accepts a single arc segment a
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain the radius of an arc segment. Accepts a single arc segment and constrains the distance from its center to its start point.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::radius(@points: Segment)
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -4mm, var 0mm], end = [var 4mm, var 0mm])
   arch = arc(start = [var 4mm, var 0mm], end = [var -4mm, var 0mm], center = [var 0mm, var 0mm])

@@ -261,7 +261,7 @@ extrude002 = extrude(seg01, length = 3)`)
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -938,7 +938,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -988,7 +988,7 @@ sketch002 = sketch(on = XZ) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -1357,13 +1357,13 @@ t = sketch(on = plane001) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch1!.id,
           },
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-2',
             point: { x: 1, y: 1 },
             sketchId: sketch2!.id,
@@ -1650,7 +1650,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -2016,7 +2016,7 @@ sketch001 = sketch(on = XZ) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: -2.48, y: -1.8875 },
             sketchId: sketch.id,
