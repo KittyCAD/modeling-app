@@ -5112,6 +5112,8 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
+    use crate::execution::cache::clear_mem_cache;
+    use crate::execution::cache::read_old_memory;
     use crate::front::Distance;
     use crate::front::Fixed;
     use crate::front::FixedPoint;
@@ -5188,6 +5190,312 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         } else {
             panic!("Object is not a sketch: {:?}", object);
         }
+    }
+
+    fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
+        LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number { value: start_x, units }),
+                y: Expr::Number(Number { value: start_y, units }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number { value: end_x, units }),
+                y: Expr::Number(Number { value: end_y, units }),
+            },
+            construction: None,
+        }
+    }
+
+    async fn create_sketch_with_single_line(
+        frontend: &mut FrontendState,
+        ctx: &ExecutorContext,
+        mock_ctx: &ExecutorContext,
+        version: Version,
+    ) -> (ObjectId, ObjectId, SourceDelta, SceneGraphDelta) {
+        frontend.program = Program::empty();
+
+        let sketch_args = SketchCtor {
+            on: Plane::Default(PlaneName::Xy),
+        };
+        let (_src_delta, _scene_delta, sketch_id) = frontend
+            .new_sketch(ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        let segment = SegmentCtor::Line(make_line_ctor(0.0, 0.0, 10.0, 10.0, NumericSuffix::Mm));
+        let (source_delta, scene_graph_delta) = frontend
+            .add_segment(mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        let line_id = *scene_graph_delta
+            .new_objects
+            .last()
+            .expect("Expected line object id to be created");
+
+        (sketch_id, line_id, source_delta, scene_graph_delta)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_checkpoint_round_trip_restores_state() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let (sketch_id, line_id, source_delta, scene_graph_delta) =
+            create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
+
+        let expected_source = source_delta.text.clone();
+        let expected_scene_graph = frontend.scene_graph.clone();
+        let expected_exec_outcome = scene_graph_delta.exec_outcome.clone();
+        let expected_point_freedom_cache = frontend.point_freedom_cache.clone();
+
+        let checkpoint_id = frontend
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+
+        let edited_segments = vec![ExistingSegmentCtor {
+            id: line_id,
+            ctor: SegmentCtor::Line(make_line_ctor(1.0, 2.0, 13.0, 14.0, NumericSuffix::Mm)),
+        }];
+        let (edited_source, _edited_scene) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, edited_segments)
+            .await
+            .unwrap();
+        assert_ne!(edited_source.text, expected_source);
+
+        let restored = frontend.restore_sketch_checkpoint(checkpoint_id).await.unwrap();
+
+        assert_eq!(restored.source_delta.text, expected_source);
+        assert_eq!(restored.scene_graph_delta.new_graph, expected_scene_graph);
+        assert!(restored.scene_graph_delta.invalidates_ids);
+        assert_eq!(restored.scene_graph_delta.exec_outcome, expected_exec_outcome);
+        assert_eq!(frontend.scene_graph, expected_scene_graph);
+        assert_eq!(frontend.point_freedom_cache, expected_point_freedom_cache);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_checkpoints_prune_oldest_entries() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
+            create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
+
+        let mut checkpoint_ids = Vec::new();
+        for _ in 0..(MAX_SKETCH_CHECKPOINTS + 3) {
+            checkpoint_ids.push(
+                frontend
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .unwrap(),
+            );
+        }
+
+        assert_eq!(frontend.sketch_checkpoints.len(), MAX_SKETCH_CHECKPOINTS);
+        assert!(checkpoint_ids.windows(2).all(|ids| ids[0] < ids[1]));
+
+        let oldest_retained = checkpoint_ids[3];
+        assert_eq!(
+            frontend.sketch_checkpoints.front().map(|checkpoint| checkpoint.id),
+            Some(oldest_retained)
+        );
+
+        let evicted_restore = frontend.restore_sketch_checkpoint(checkpoint_ids[0]).await;
+        assert!(evicted_restore.is_err());
+        assert!(evicted_restore.unwrap_err().msg.contains("Sketch checkpoint not found"));
+
+        frontend
+            .restore_sketch_checkpoint(*checkpoint_ids.last().unwrap())
+            .await
+            .unwrap();
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_restore_sketch_checkpoint_missing_id_returns_error() {
+        let mut frontend = FrontendState::new();
+        let missing_checkpoint = SketchCheckpointId::new(999);
+
+        let err = frontend
+            .restore_sketch_checkpoint(missing_checkpoint)
+            .await
+            .expect_err("Expected restore to fail for missing checkpoint");
+
+        assert!(err.msg.contains("Sketch checkpoint not found"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_clear_sketch_checkpoints_removes_all_restore_points() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
+            create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
+
+        let checkpoint_a = frontend
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+        let checkpoint_b = frontend
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+        assert_eq!(frontend.sketch_checkpoints.len(), 2);
+
+        frontend.clear_sketch_checkpoints();
+        assert!(frontend.sketch_checkpoints.is_empty());
+        assert!(frontend.restore_sketch_checkpoint(checkpoint_a).await.is_err());
+        assert!(frontend.restore_sketch_checkpoint(checkpoint_b).await.is_err());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hack_set_program_keeps_old_checkpoints_and_adds_fresh_baseline() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let (_sketch_id, _line_id, source_delta, scene_graph_delta) =
+            create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
+        let old_source = source_delta.text.clone();
+        let old_checkpoint = frontend
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+        let initial_checkpoint_count = frontend.sketch_checkpoints.len();
+
+        let new_program = Program::parse(
+            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  point(at = [1mm, 2mm])\n}\n",
+        )
+        .unwrap()
+        .0
+        .unwrap();
+
+        let result = frontend.hack_set_program(&ctx, new_program).await.unwrap();
+        let SetProgramOutcome::Success {
+            checkpoint_id: Some(new_checkpoint),
+            ..
+        } = result
+        else {
+            panic!("Expected Success with a fresh checkpoint baseline");
+        };
+
+        assert_eq!(frontend.sketch_checkpoints.len(), initial_checkpoint_count + 1);
+
+        let old_restore = frontend.restore_sketch_checkpoint(old_checkpoint).await.unwrap();
+        assert_eq!(old_restore.source_delta.text, old_source);
+
+        let new_restore = frontend.restore_sketch_checkpoint(new_checkpoint).await.unwrap();
+        assert!(new_restore.source_delta.text.contains("point(at = [1mm, 2mm])"));
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hack_set_program_exec_failure_does_not_add_checkpoint() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let (_sketch_id, _line_id, _source_delta, scene_graph_delta) =
+            create_sketch_with_single_line(&mut frontend, &ctx, &mock_ctx, version).await;
+        let old_checkpoint = frontend
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+        let checkpoint_count_before = frontend.sketch_checkpoints.len();
+
+        let failing_program = Program::parse(
+            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])\n}\n\nbad = missing_name\n",
+        )
+        .unwrap()
+        .0
+        .unwrap();
+
+        let result = frontend.hack_set_program(&ctx, failing_program).await.unwrap();
+        assert!(matches!(result, SetProgramOutcome::ExecFailure { .. }));
+        assert_eq!(frontend.sketch_checkpoints.len(), checkpoint_count_before);
+        frontend.restore_sketch_checkpoint(old_checkpoint).await.unwrap();
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_restore_sketch_checkpoint_restores_and_clears_mock_memory() {
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        let program = Program::parse(
+            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])\n}\n",
+        )
+        .unwrap()
+        .0
+        .unwrap();
+        let set_program_outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected sketch object to exist")
+            .id;
+        let SetProgramOutcome::Success { exec_outcome, .. } = set_program_outcome else {
+            panic!("Expected successful baseline program execution");
+        };
+
+        clear_mem_cache().await;
+        assert!(read_old_memory().await.is_none());
+
+        let checkpoint_without_mock_memory = frontend
+            .create_sketch_checkpoint((*exec_outcome).clone())
+            .await
+            .unwrap();
+
+        let mock_scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+        assert!(read_old_memory().await.is_some());
+
+        let checkpoint_with_mock_memory = frontend
+            .create_sketch_checkpoint(mock_scene_delta.exec_outcome.clone())
+            .await
+            .unwrap();
+
+        clear_mem_cache().await;
+        assert!(read_old_memory().await.is_none());
+
+        frontend
+            .restore_sketch_checkpoint(checkpoint_with_mock_memory)
+            .await
+            .unwrap();
+        assert!(read_old_memory().await.is_some());
+
+        frontend
+            .restore_sketch_checkpoint(checkpoint_without_mock_memory)
+            .await
+            .unwrap();
+        assert!(read_old_memory().await.is_none());
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

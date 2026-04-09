@@ -1323,6 +1323,7 @@ export class KclManager extends File {
             tr.isUserEvent('undo') || tr.isUserEvent('redo')
           const isSketchSolveMode =
             this.modelingState?.matches('sketchSolveMode')
+          const isNonSketchHistoryReplay = isHistoryReplay && !isSketchSolveMode
           const checkpointId =
             effect.value.redoAdditionalSpec?.sketchCheckpointId ??
             effect.value.redoCheckpointId
@@ -1333,24 +1334,30 @@ export class KclManager extends File {
                   sketchCheckpointId: checkpointId,
                 }
               : effect.value.redoAdditionalSpec
-          if (vu.state.doc.toString() !== effect.value.redoCode) {
+          const docAlreadyMatchesReplay =
+            vu.state.doc.toString() === effect.value.redoCode
+          if (!docAlreadyMatchesReplay) {
             this.updateCodeEditor(
               effect.value.redoCode,
               {
                 shouldAddToHistory: false,
                 shouldClearHistory: false,
-                shouldExecute:
-                  isHistoryReplay && !isSketchSolveMode
-                    ? true
-                    : effect.value.options.shouldExecute,
+                shouldExecute: isNonSketchHistoryReplay
+                  ? true
+                  : effect.value.options.shouldExecute,
                 shouldResetCamera: effect.value.options.shouldResetCamera,
                 shouldWriteToDisk: effect.value.options.shouldWriteToDisk,
               },
               replayAdditionalSpec
             )
+          } else if (isNonSketchHistoryReplay) {
+            this.deferredExecution({
+              newCode: effect.value.redoCode,
+              shouldResetCamera: effect.value.options.shouldResetCamera,
+            })
           }
 
-          if (isHistoryReplay) {
+          if (isHistoryReplay && isSketchSolveMode) {
             void this.restoreSketchCheckpointForHistory(checkpointId)
           }
         }
