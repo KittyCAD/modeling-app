@@ -138,10 +138,13 @@ async function getEngineRegionSelectionFromEntity(
   if (!queryPointMm) return null
   const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
   const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings) || !settings.defaultLengthUnit) return null
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : 'mm'
   const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, settings.defaultLengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, settings.defaultLengthUnit),
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
   const parentEntityId = await getParentEntityIdForEntity(
