@@ -623,14 +623,15 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
-            highlight_edges: settings.modeling.highlight_edges.into(),
-            enable_ssao: settings.modeling.enable_ssao.into(),
-            show_grid: settings.modeling.show_scale_grid,
+            highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling_settings.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling_settings.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.modeling.fixed_size_grid,
+            fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
         }
     }
 }
@@ -644,9 +645,9 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            highlight_edges: modeling.highlight_edges.into(),
-            enable_ssao: modeling.enable_ssao.into(),
-            show_grid: modeling.show_scale_grid,
+            highlight_edges: modeling.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,

@@ -121,10 +121,10 @@ The default color to use for surface backfaces.
 
 ##### base_unit
 
-The default unit to use in modeling dimensions.
+The default unit to use in modeling dimensions. If not given, defaults to millimeters.
 
 
-**Default:** `mm`
+**Default:** None
 
 ##### camera_orbit
 
