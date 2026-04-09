@@ -293,6 +293,115 @@ fn trim_plan_modifies_geometry(plan: &TrimPlan) -> bool {
     )
 }
 
+fn rewrite_object_id(id: ObjectId, rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>) -> ObjectId {
+    rewrite_map.get(&id).copied().unwrap_or(id)
+}
+
+fn rewrite_constraint_segment(
+    segment: crate::frontend::sketch::ConstraintSegment,
+    rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
+) -> crate::frontend::sketch::ConstraintSegment {
+    match segment {
+        crate::frontend::sketch::ConstraintSegment::Segment(id) => {
+            crate::frontend::sketch::ConstraintSegment::Segment(rewrite_object_id(id, rewrite_map))
+        }
+        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+            crate::frontend::sketch::ConstraintSegment::Origin(origin)
+        }
+    }
+}
+
+fn rewrite_constraint_segments(
+    segments: &[crate::frontend::sketch::ConstraintSegment],
+    rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
+) -> Vec<crate::frontend::sketch::ConstraintSegment> {
+    segments
+        .iter()
+        .copied()
+        .map(|segment| rewrite_constraint_segment(segment, rewrite_map))
+        .collect()
+}
+
+fn constraint_segments_reference_any(
+    segments: &[crate::frontend::sketch::ConstraintSegment],
+    ids: &std::collections::HashSet<ObjectId>,
+) -> bool {
+    segments.iter().any(|segment| match segment {
+        crate::frontend::sketch::ConstraintSegment::Segment(id) => ids.contains(id),
+        crate::frontend::sketch::ConstraintSegment::Origin(_) => false,
+    })
+}
+
+fn rewrite_constraint_with_map(
+    constraint: &Constraint,
+    rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
+) -> Option<Constraint> {
+    match constraint {
+        Constraint::Coincident(coincident) => Some(Constraint::Coincident(crate::frontend::sketch::Coincident {
+            segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
+        })),
+        Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
+            points: rewrite_constraint_segments(&distance.points, rewrite_map),
+            distance: distance.distance,
+            source: distance.source.clone(),
+        })),
+        Constraint::HorizontalDistance(distance) => {
+            Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
+                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                distance: distance.distance,
+                source: distance.source.clone(),
+            }))
+        }
+        Constraint::VerticalDistance(distance) => {
+            Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
+                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                distance: distance.distance,
+                source: distance.source.clone(),
+            }))
+        }
+        Constraint::Radius(radius) => Some(Constraint::Radius(crate::frontend::sketch::Radius {
+            arc: rewrite_object_id(radius.arc, rewrite_map),
+            radius: radius.radius,
+            source: radius.source.clone(),
+        })),
+        Constraint::Diameter(diameter) => Some(Constraint::Diameter(crate::frontend::sketch::Diameter {
+            arc: rewrite_object_id(diameter.arc, rewrite_map),
+            diameter: diameter.diameter,
+            source: diameter.source.clone(),
+        })),
+        Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
+            input: tangent
+                .input
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+        })),
+        Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
+            lines: parallel
+                .lines
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+        })),
+        Constraint::Perpendicular(perpendicular) => {
+            Some(Constraint::Perpendicular(crate::frontend::sketch::Perpendicular {
+                lines: perpendicular
+                    .lines
+                    .iter()
+                    .map(|id| rewrite_object_id(*id, rewrite_map))
+                    .collect(),
+            }))
+        }
+        Constraint::Horizontal(horizontal) => Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal {
+            line: rewrite_object_id(horizontal.line, rewrite_map),
+        })),
+        Constraint::Vertical(vertical) => Some(Constraint::Vertical(crate::frontend::sketch::Vertical {
+            line: rewrite_object_id(vertical.line, rewrite_map),
+        })),
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
@@ -4406,17 +4515,12 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Migrate constraints that reference the original circle segment or points.
                 // This preserves authored constraints (e.g. radius/tangent/coincident) when
                 // a trim converts a circle into an arc.
-                let replace_segment_id = |id: ObjectId| -> ObjectId {
-                    if id == *circle_id {
-                        new_arc_id
-                    } else if id == original_circle_center_id {
-                        new_arc_center_id
-                    } else if id == original_circle_start_id {
-                        new_arc_start_id
-                    } else {
-                        id
-                    }
-                };
+                let rewrite_map = std::collections::HashMap::from([
+                    (*circle_id, new_arc_id),
+                    (original_circle_center_id, new_arc_center_id),
+                    (original_circle_start_id, new_arc_start_id),
+                ]);
+                let rewrite_ids: std::collections::HashSet<ObjectId> = rewrite_map.keys().copied().collect();
 
                 let mut migrated_constraints: Vec<Constraint> = Vec::new();
                 for obj in &current_scene_graph_delta.new_graph.objects {
@@ -4426,9 +4530,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                     match constraint {
                         Constraint::Coincident(coincident) => {
-                            if !coincident.segment_ids().any(|id| {
-                                id == *circle_id || id == original_circle_center_id || id == original_circle_start_id
-                            }) {
+                            if !constraint_segments_reference_any(&coincident.segments, &rewrite_ids) {
                                 continue;
                             }
 
@@ -4444,23 +4546,17 @@ pub(crate) async fn execute_trim_operations_simple(
                                 continue;
                             }
 
-                            let new_segments: Vec<crate::frontend::sketch::ConstraintSegment> = coincident
-                                .segments
-                                .iter()
-                                .map(|segment| match segment {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
-                                    }
-                                    crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
-                                        crate::frontend::sketch::ConstraintSegment::Origin(*origin)
-                                    }
-                                })
-                                .collect();
+                            let Some(Constraint::Coincident(migrated_coincident)) =
+                                rewrite_constraint_with_map(constraint, &rewrite_map)
+                            else {
+                                continue;
+                            };
 
                             // Skip redundant migration when a previous point-segment circle
                             // coincident would become point-segment arc coincident at an arc
                             // endpoint that is already handled by explicit endpoint constraints.
-                            let migrated_ids: Vec<ObjectId> = new_segments
+                            let migrated_ids: Vec<ObjectId> = migrated_coincident
+                                .segments
                                 .iter()
                                 .filter_map(|segment| match segment {
                                     crate::frontend::sketch::ConstraintSegment::Segment(id) => Some(*id),
@@ -4473,104 +4569,51 @@ pub(crate) async fn execute_trim_operations_simple(
                                 continue;
                             }
 
-                            migrated_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                                segments: new_segments,
-                            }));
+                            migrated_constraints.push(Constraint::Coincident(migrated_coincident));
                         }
                         Constraint::Distance(distance) => {
-                            if !distance.contains_point(original_circle_center_id)
-                                && !distance.contains_point(original_circle_start_id)
-                            {
+                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
                                 continue;
                             }
-                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
-                                .points
-                                .iter()
-                                .map(|point| match point {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
-                                    }
-                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
-                                })
-                                .collect();
-                            migrated_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                                points: new_points,
-                                distance: distance.distance,
-                                source: distance.source.clone(),
-                            }));
+                            if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                migrated_constraints.push(migrated);
+                            }
                         }
                         Constraint::HorizontalDistance(distance) => {
-                            if !distance.contains_point(original_circle_center_id)
-                                && !distance.contains_point(original_circle_start_id)
-                            {
+                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
                                 continue;
                             }
-                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
-                                .points
-                                .iter()
-                                .map(|point| match point {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
-                                    }
-                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
-                                })
-                                .collect();
-                            migrated_constraints.push(Constraint::HorizontalDistance(
-                                crate::frontend::sketch::Distance {
-                                    points: new_points,
-                                    distance: distance.distance,
-                                    source: distance.source.clone(),
-                                },
-                            ));
+                            if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                migrated_constraints.push(migrated);
+                            }
                         }
                         Constraint::VerticalDistance(distance) => {
-                            if !distance.contains_point(original_circle_center_id)
-                                && !distance.contains_point(original_circle_start_id)
-                            {
+                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
                                 continue;
                             }
-                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
-                                .points
-                                .iter()
-                                .map(|point| match point {
-                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
-                                    }
-                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
-                                })
-                                .collect();
-                            migrated_constraints.push(Constraint::VerticalDistance(
-                                crate::frontend::sketch::Distance {
-                                    points: new_points,
-                                    distance: distance.distance,
-                                    source: distance.source.clone(),
-                                },
-                            ));
+                            if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                migrated_constraints.push(migrated);
+                            }
                         }
                         Constraint::Radius(radius) => {
                             if radius.arc == *circle_id {
-                                migrated_constraints.push(Constraint::Radius(crate::frontend::sketch::Radius {
-                                    arc: new_arc_id,
-                                    radius: radius.radius,
-                                    source: radius.source.clone(),
-                                }));
+                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                    migrated_constraints.push(migrated);
+                                }
                             }
                         }
                         Constraint::Diameter(diameter) => {
                             if diameter.arc == *circle_id {
-                                migrated_constraints.push(Constraint::Diameter(crate::frontend::sketch::Diameter {
-                                    arc: new_arc_id,
-                                    diameter: diameter.diameter,
-                                    source: diameter.source.clone(),
-                                }));
+                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                    migrated_constraints.push(migrated);
+                                }
                             }
                         }
                         Constraint::Tangent(tangent) => {
                             if tangent.input.contains(circle_id) {
-                                let new_input = tangent.input.iter().map(|id| replace_segment_id(*id)).collect();
-                                migrated_constraints.push(Constraint::Tangent(crate::frontend::sketch::Tangent {
-                                    input: new_input,
-                                }));
+                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
+                                    migrated_constraints.push(migrated);
+                                }
                             }
                         }
                         _ => {}
@@ -5049,53 +5092,17 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Migrate center point constraints for arcs
                 if let Some(new_center_id) = new_segment_center_point_id {
                     for (constraint, original_center_id) in center_point_constraints_to_migrate {
-                        match constraint {
-                            Constraint::Coincident(coincident) => {
-                                let new_segments = coincident
-                                    .segments
-                                    .iter()
-                                    .map(|segment| {
-                                        if *segment
-                                            == crate::frontend::sketch::ConstraintSegment::Segment(original_center_id)
-                                        {
-                                            crate::frontend::sketch::ConstraintSegment::Segment(new_center_id)
-                                        } else {
-                                            *segment
-                                        }
-                                    })
-                                    .collect();
-
-                                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                                    segments: new_segments,
-                                }));
+                        let center_rewrite_map = std::collections::HashMap::from([(original_center_id, new_center_id)]);
+                        if let Some(rewritten) = rewrite_constraint_with_map(&constraint, &center_rewrite_map) {
+                            if matches!(rewritten, Constraint::Coincident(_) | Constraint::Distance(_)) {
+                                batch_constraints.push(rewritten);
                             }
-                            Constraint::Distance(distance) => {
-                                let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
-                                    .points
-                                    .iter()
-                                    .map(|point| match *point {
-                                        crate::frontend::sketch::ConstraintSegment::Segment(id)
-                                            if id == original_center_id =>
-                                        {
-                                            new_center_id.into()
-                                        }
-                                        crate::frontend::sketch::ConstraintSegment::Segment(_) => *point,
-                                        crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
-                                    })
-                                    .collect();
-
-                                batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                                    points: new_points,
-                                    distance: distance.distance,
-                                    source: distance.source.clone(),
-                                }));
-                            }
-                            _ => {}
                         }
                     }
                 }
 
                 // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
+                let angle_rewrite_map = std::collections::HashMap::from([(*segment_id, new_segment_id)]);
                 for obj in &edit_scene_graph_delta.new_graph.objects {
                     let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
@@ -5110,52 +5117,17 @@ pub(crate) async fn execute_trim_operations_simple(
                     };
 
                     if should_migrate {
-                        let migrated_constraint = match constraint {
-                            Constraint::Parallel(parallel) => {
-                                let new_lines: Vec<ObjectId> = parallel
-                                    .lines
-                                    .iter()
-                                    .map(|line_id| {
-                                        if *line_id == *segment_id {
-                                            new_segment_id
-                                        } else {
-                                            *line_id
-                                        }
-                                    })
-                                    .collect();
-                                Constraint::Parallel(crate::frontend::sketch::Parallel { lines: new_lines })
+                        if let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map) {
+                            if matches!(
+                                migrated_constraint,
+                                Constraint::Parallel(_)
+                                    | Constraint::Perpendicular(_)
+                                    | Constraint::Horizontal(_)
+                                    | Constraint::Vertical(_)
+                            ) {
+                                batch_constraints.push(migrated_constraint);
                             }
-                            Constraint::Perpendicular(perpendicular) => {
-                                let new_lines: Vec<ObjectId> = perpendicular
-                                    .lines
-                                    .iter()
-                                    .map(|line_id| {
-                                        if *line_id == *segment_id {
-                                            new_segment_id
-                                        } else {
-                                            *line_id
-                                        }
-                                    })
-                                    .collect();
-                                Constraint::Perpendicular(crate::frontend::sketch::Perpendicular { lines: new_lines })
-                            }
-                            Constraint::Horizontal(horizontal) => {
-                                if horizontal.line == *segment_id {
-                                    Constraint::Horizontal(crate::frontend::sketch::Horizontal { line: new_segment_id })
-                                } else {
-                                    continue;
-                                }
-                            }
-                            Constraint::Vertical(vertical) => {
-                                if vertical.line == *segment_id {
-                                    Constraint::Vertical(crate::frontend::sketch::Vertical { line: new_segment_id })
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => continue,
-                        };
-                        batch_constraints.push(migrated_constraint);
+                        }
                     }
                 }
 
