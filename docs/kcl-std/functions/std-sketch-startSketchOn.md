@@ -377,8 +377,6 @@ subtract(cube001, tools = cube002)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 baseProfile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

@@ -95,12 +95,12 @@ pipe-straight
 # propellant-line-brackets/
 # propeller/
 # racing-seat-brackets/
-# rack-blanking-panel/
-# radial-flow-centrifugal-impeller/
-# rectangle-table/
-# round-table/
-# router-template-cross-bar/
-# router-template-slate/
+rack-blanking-panel/
+radial-flow-centrifugal-impeller/
+rectangle-table/
+round-table/
+router-template-cross-bar/
+router-template-slate/
 # sash-window/
 # saturn-v/
 scrub-daddy-holder/

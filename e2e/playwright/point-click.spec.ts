@@ -124,9 +124,7 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
   }) => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])`
@@ -153,7 +151,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 path',
+            Profiles: '1 region',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -165,7 +163,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
           },
           commandName: 'Extrude',
         })
@@ -178,7 +176,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -190,7 +188,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -333,9 +331,7 @@ region001 = region(segments = [sketch001.circle1])`
     async ({ context, page, homePage, editor, toolbar, scene, cmdBar }) => {
       page.on('console', console.log)
 
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-  closedSketch = sketch(on = XZ) {
+      const initialCode = `  closedSketch = sketch(on = XZ) {
     circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
   }
   openSketch = sketch(on = XY) {
@@ -419,9 +415,7 @@ region001 = region(segments = [sketch001.circle1])`
     scene,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch002 = sketch(on = XY) {
+    const initialCode = `sketch002 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -712,9 +706,7 @@ sketch001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -892,9 +884,7 @@ extrude001 = extrude(region001, length = 100)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -940,7 +930,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 paths' },
+        headerArguments: { Profiles: '2 regions' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1012,9 +1002,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     cmdBar,
   }) => {
     const circleCode = `circle1 = circle(start = [var 0.1mm, var -1mm], center = [var 0mm, var -1mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-helix001 = helix(
+    const initialCode = `helix001 = helix(
   axis = X,
   radius = 1,
   length = 10,
@@ -1056,7 +1044,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1069,7 +1057,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1079,7 +1067,7 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '1 helix',
         },
         stage: 'review',
@@ -1138,9 +1126,7 @@ region001 = region(segments = [sketch001.circle1])`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1392,9 +1378,7 @@ extrude001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
 }
 hide(sketch001)
@@ -1452,9 +1436,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1579,9 +1561,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1681,7 +1661,7 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -1943,7 +1923,7 @@ extrude001 = extrude(region001, length = -12)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -2075,7 +2055,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
@@ -2270,9 +2250,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2322,7 +2300,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2335,7 +2313,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2354,7 +2332,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2366,7 +2344,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2422,9 +2400,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   test.fixme(
     `Translate point-and-click with segment-to-body coercion`,
     async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
   line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
   coincident([line1.end, line2.start])
@@ -2473,7 +2449,7 @@ box = extrude(region001, length = 30)`
         })
 
         await expect(page.getByText('1 path selected')).toBeVisible()
-        await expect(toolbar.selectionStatus).toContainText('1 path')
+        await expect(toolbar.selectionStatus).toContainText('1 region')
       })
 
       await test.step('Complete command flow', async () => {
@@ -2482,7 +2458,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
             },
             commandName: 'Translate',
             reviewValidationError:
@@ -2497,7 +2473,7 @@ box = extrude(region001, length = 30)`
             currentArgKey: 'x',
             currentArgValue: '0',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '',
             },
             highlightedHeaderArg: 'x',
@@ -2511,7 +2487,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '50',
             },
             commandName: 'Translate',
@@ -2534,92 +2510,95 @@ box = extrude(region001, length = 30)`
     }
   )
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/issues/10728 is closed
-  test.fixme(
-    'Blend point-and-click',
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
-      const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
-}
-hide(sketch001)
-surface001 = extrude(sketch001.line1, length = 2, bodyType = SURFACE)
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    // It makes more sense to keep this as a sketch v1 test as we can directly select from code instead of px clicks
+    // We're not testing sketch solve stuff here, just the Blend command e2e. Sketch solve tests are at
+    // src/lang/modifyAst/edges.spec.ts
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
-sketch002 = sketch(on = XZ) {
-  line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])
-}
-hide(sketch002)
-surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-      const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
 
-      async function selectEdgesFromBothSurfaces() {
-        const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
-        await editor.selectText(firstSurfaceEdge)
-        await page.keyboard.down(multiCursorKey)
-        await page.getByText(secondSurfaceEdge).click()
-        await page.keyboard.up(multiCursorKey)
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Click blend in the surface toolbar group', async () => {
-        await toolbar.selectSurface('blend-surface')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'edges',
-          currentArgValue: '',
-          headerArguments: {
-            Edges: '',
-          },
-          highlightedHeaderArg: 'edges',
-          commandName: 'Blend',
-        })
-      })
-
-      await test.step('Select two edges through the command bar flow', async () => {
-        await selectEdgesFromBothSurfaces()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Edges: '2 edges',
-          },
-          commandName: 'Blend',
-        })
-        await cmdBar.submit()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Check blend code was added', async () => {
-        await editor.expectEditor.toContain(blendDeclaration)
-      })
-
-      await test.step('Delete blend via feature tree selection', async () => {
-        await editor.closePane()
-        await toolbar.openFeatureTreePane()
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'blend001',
-          0
-        )
-        await operationButton.click()
-        await page.keyboard.press('Delete')
-        await scene.settled(cmdBar)
-        await editor.expectEditor.not.toContain(blendDeclaration)
-      })
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
     }
-  )
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 edges',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
+    })
+  })
 
   test('Flip Surface point-and-click', async ({
     context,
@@ -2630,9 +2609,7 @@ surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -6.79mm, var 0mm], end = [var 4.67mm, var 10.74mm])
   line2 = line(start = [var 4.67mm, var 10.74mm], end = [var 7.24mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -2719,9 +2696,7 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 6.07mm, var 1.66mm])
   line2 = line(start = [var 6.07mm, var 1.66mm], end = [var 6.07mm, var -3.67mm])
   coincident([line1.end, line2.start])
@@ -2799,9 +2774,7 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -2918,9 +2891,7 @@ extrude001 = extrude(region001, length = 1)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -3430,9 +3401,7 @@ solid001 = extrude(region001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -4757,9 +4726,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])

@@ -5,8 +5,6 @@ excerpt: "Create a circular arc. The arc segment always sweeps counterclockwise 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
 
 ```kcl
@@ -37,8 +35,6 @@ solver::arc(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   top = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 5mm])

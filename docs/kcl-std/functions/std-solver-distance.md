@@ -5,8 +5,6 @@ excerpt: "Constrain the distance between two points."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain the distance between two points.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::distance(@points: [Segment | Point2d; 2])
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])

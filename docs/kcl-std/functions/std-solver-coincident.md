@@ -5,8 +5,6 @@ excerpt: "Constrain points, or a point and a segment to be coincident."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain points, or a point and a segment to be coincident.
 
 ```kcl
@@ -26,8 +24,6 @@ A single [`Point2d`](/docs/kcl-std/types/std-types-Point2d) (e.g. `[1mm, 2.5mm]`
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
