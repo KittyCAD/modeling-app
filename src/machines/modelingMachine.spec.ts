@@ -1587,5 +1587,68 @@ sketch001 = sketch(on = YZ) {
         'engineToClient'
       )
     })
+
+    it('disables camera orbit controls in sketch solve mode', async () => {
+      const {
+        instance,
+        kclManager,
+        rustContext,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      } = await buildTheWorldAndNoEngineConnection()
+
+      kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode = true
+
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: instance,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      })
+      context.store.useSketchSolveMode = { current: true } as any
+      context.store.defaultUnit = { current: 'mm' } as any
+      context.projectRef = { current: {} as any }
+
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(async () => ({
+            plane: {
+              type: 'defaultPlane',
+              plane: 'XY',
+              planeId: 'test-plane-id',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+              origin: [0, 0, 0],
+            } as any,
+            sketchSolveId: 1,
+          })),
+        },
+      })
+
+      const actor = createActor(machine, { input: context }).start()
+
+      actor.send({ type: 'Enter sketch' })
+      actor.send({
+        type: 'Select sketch solve plane',
+        data: 'test-plane-id',
+      })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+        'clientToEngine'
+      )
+    })
   })
 })
