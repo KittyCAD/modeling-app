@@ -2635,6 +2635,24 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
         )
     }
 
+    fn has_binary_operator_after_optional_ascription(i: &mut TokenSlice) -> bool {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+
+        if peek(colon).parse_next(i).is_ok() && (colon, opt(whitespace), type_).parse_next(i).is_err() {
+            i.reset(&checkpoint);
+            return false;
+        }
+
+        let _ = opt(whitespace).parse_next(i);
+        let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
+            let _ = opt(whitespace).parse_next(i);
+            i.peek_token().as_ref().is_some_and(can_start_operand_token)
+        });
+        i.reset(&checkpoint);
+        has_binary_operator
+    }
+
     let start = i.checkpoint();
     let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -2643,15 +2661,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
     .context(expected("a KCL value"))
     .parse_next(i)?;
 
-    let checkpoint = i.checkpoint();
-    let _ = opt(whitespace).parse_next(i);
-    let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
-        let _ = opt(whitespace).parse_next(i);
-        i.peek_token().as_ref().is_some_and(can_start_operand_token)
-    });
-    i.reset(&checkpoint);
-
-    if has_binary_operator {
+    if has_binary_operator_after_optional_ascription(i) {
         i.reset(&start);
         expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
     }
@@ -5501,6 +5511,12 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_z_percent_parens() {
         assert_err("z%)", "Unexpected token: %", [1, 2]);
+    }
+
+    #[test]
+    fn test_parse_ascription_in_binop() {
+        crate::parsing::top_level_parse("foo = tan(0): number(rad) - 4deg").unwrap();
+        crate::parsing::top_level_parse("foo = tan(0): rad - 4deg").unwrap();
     }
 
     #[test]
