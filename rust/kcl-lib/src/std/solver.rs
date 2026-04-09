@@ -279,7 +279,9 @@ pub(crate) async fn create_segments_in_engine(
                 let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
                 let from = start_in_center_unit;
 
-                let id = exec_state.next_uuid();
+                // Keep the command/artifact ID aligned with the segment ID so
+                // operation args can resolve back into the artifact graph.
+                let id = segment.id;
 
                 exec_state
                     .batch_modeling_cmd(
