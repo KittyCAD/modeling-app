@@ -53,7 +53,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
-import { DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -141,7 +144,7 @@ async function getEngineRegionSelectionFromEntity(
   const lengthUnit =
     !isErr(settings) && settings.defaultLengthUnit
       ? settings.defaultLengthUnit
-      : 'mm'
+      : DEFAULT_DEFAULT_LENGTH_UNIT
   const point: Point2d = {
     x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
     y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
