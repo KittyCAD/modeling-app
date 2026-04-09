@@ -1344,7 +1344,7 @@ fn load_curve_handle(
     default_unit: UnitLength,
 ) -> Result<CurveHandle, String> {
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
-        return Err("Object is not a segment".to_string());
+        return Err("Object is not a segment".to_owned());
     };
 
     match segment {
@@ -4110,34 +4110,12 @@ pub(crate) fn build_trim_plan(
     ))
 }
 
-#[allow(dead_code)]
-pub(crate) fn trim_strategy(
-    trim_spawn_id: ObjectId,
-    trim_spawn_coords: Coords2d,
-    trim_spawn_segment: &Object,
-    left_side: &TrimTermination,
-    right_side: &TrimTermination,
-    objects: &[Object],
-    default_unit: UnitLength,
-) -> Result<Vec<TrimOperation>, String> {
-    let plan = build_trim_plan(
-        trim_spawn_id,
-        trim_spawn_coords,
-        trim_spawn_segment,
-        left_side,
-        right_side,
-        objects,
-        default_unit,
-    )?;
-    Ok(lower_trim_plan(&plan))
-}
-
 /// Execute the trim operations determined by the trim strategy
 ///
 /// Once we have a trim strategy, it then needs to be executed. This function is separate just to keep
-/// one function just collecting info (`trim_strategy`), and the other actually mutating things.
+/// one phase just collecting info (`build_trim_plan` + `lower_trim_plan`), and the other actually mutating things.
 ///
-/// This function takes the list of trim operations from `trim_strategy` and executes them, which may include:
+/// This function takes the list of trim operations from `lower_trim_plan` and executes them, which may include:
 /// - Deleting segments (SimpleTrim)
 /// - Editing segment endpoints (EditSegment)
 /// - Adding coincident constraints (AddCoincidentConstraint)
