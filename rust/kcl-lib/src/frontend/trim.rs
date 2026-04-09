@@ -176,6 +176,123 @@ pub struct ConstraintToMigrate {
     pub attach_to_endpoint: AttachToEndpoint,
 }
 
+/// Semantic trim plan produced by analysis/planning before lowering to frontend operations.
+#[derive(Debug, Clone)]
+pub enum TrimPlan {
+    DeleteSegment {
+        segment_id: ObjectId,
+    },
+    TailCut {
+        segment_id: ObjectId,
+        endpoint_changed: EndpointChanged,
+        ctor: SegmentCtor,
+        segment_or_point_to_make_coincident_to: ObjectId,
+        intersecting_endpoint_point_id: Option<ObjectId>,
+        constraint_ids_to_delete: Vec<ObjectId>,
+    },
+    ReplaceCircleWithArc {
+        circle_id: ObjectId,
+        arc_start_coords: Coords2d,
+        arc_end_coords: Coords2d,
+        arc_start_termination: Box<TrimTermination>,
+        arc_end_termination: Box<TrimTermination>,
+    },
+    SplitSegment {
+        segment_id: ObjectId,
+        left_trim_coords: Coords2d,
+        right_trim_coords: Coords2d,
+        original_end_coords: Coords2d,
+        left_side: Box<TrimTermination>,
+        right_side: Box<TrimTermination>,
+        left_side_coincident_data: CoincidentData,
+        right_side_coincident_data: CoincidentData,
+        constraints_to_migrate: Vec<ConstraintToMigrate>,
+        constraints_to_delete: Vec<ObjectId>,
+    },
+}
+
+fn lower_trim_plan(plan: &TrimPlan) -> Vec<TrimOperation> {
+    match plan {
+        TrimPlan::DeleteSegment { segment_id } => vec![TrimOperation::SimpleTrim {
+            segment_to_trim_id: *segment_id,
+        }],
+        TrimPlan::TailCut {
+            segment_id,
+            endpoint_changed,
+            ctor,
+            segment_or_point_to_make_coincident_to,
+            intersecting_endpoint_point_id,
+            constraint_ids_to_delete,
+        } => {
+            let mut ops = vec![
+                TrimOperation::EditSegment {
+                    segment_id: *segment_id,
+                    ctor: ctor.clone(),
+                    endpoint_changed: *endpoint_changed,
+                },
+                TrimOperation::AddCoincidentConstraint {
+                    segment_id: *segment_id,
+                    endpoint_changed: *endpoint_changed,
+                    segment_or_point_to_make_coincident_to: *segment_or_point_to_make_coincident_to,
+                    intersecting_endpoint_point_id: *intersecting_endpoint_point_id,
+                },
+            ];
+            if !constraint_ids_to_delete.is_empty() {
+                ops.push(TrimOperation::DeleteConstraints {
+                    constraint_ids: constraint_ids_to_delete.clone(),
+                });
+            }
+            ops
+        }
+        TrimPlan::ReplaceCircleWithArc {
+            circle_id,
+            arc_start_coords,
+            arc_end_coords,
+            arc_start_termination,
+            arc_end_termination,
+        } => vec![TrimOperation::ReplaceCircleWithArc {
+            circle_id: *circle_id,
+            arc_start_coords: *arc_start_coords,
+            arc_end_coords: *arc_end_coords,
+            arc_start_termination: arc_start_termination.clone(),
+            arc_end_termination: arc_end_termination.clone(),
+        }],
+        TrimPlan::SplitSegment {
+            segment_id,
+            left_trim_coords,
+            right_trim_coords,
+            original_end_coords,
+            left_side,
+            right_side,
+            left_side_coincident_data,
+            right_side_coincident_data,
+            constraints_to_migrate,
+            constraints_to_delete,
+        } => vec![TrimOperation::SplitSegment {
+            segment_id: *segment_id,
+            left_trim_coords: *left_trim_coords,
+            right_trim_coords: *right_trim_coords,
+            original_end_coords: *original_end_coords,
+            left_side: left_side.clone(),
+            right_side: right_side.clone(),
+            left_side_coincident_data: left_side_coincident_data.clone(),
+            right_side_coincident_data: right_side_coincident_data.clone(),
+            constraints_to_migrate: constraints_to_migrate.clone(),
+            constraints_to_delete: constraints_to_delete.clone(),
+        }],
+    }
+}
+
+fn trim_plan_modifies_geometry(plan: &TrimPlan) -> bool {
+    matches!(
+        plan,
+        TrimPlan::DeleteSegment { .. }
+            | TrimPlan::TailCut { .. }
+            | TrimPlan::ReplaceCircleWithArc { .. }
+            | TrimPlan::SplitSegment { .. }
+    )
+}
+
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
@@ -2124,7 +2241,7 @@ where
                     .find(|obj| obj.id == *trim_spawn_seg_id)
                     .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id.0))?;
 
-                let strategy = match trim_strategy(
+                let plan = match build_trim_plan(
                     *trim_spawn_seg_id,
                     *trim_spawn_coords,
                     trim_spawn_segment,
@@ -2133,7 +2250,7 @@ where
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
                 ) {
-                    Ok(ops) => ops,
+                    Ok(plan) => plan,
                     Err(e) => {
                         crate::logln!("Error determining trim strategy: {}", e);
                         let old_start_index = start_index;
@@ -2144,18 +2261,11 @@ where
                         continue;
                     }
                 };
+                let strategy = lower_trim_plan(&plan);
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = strategy.iter().any(|op| {
-                    matches!(
-                        op,
-                        TrimOperation::SimpleTrim { .. }
-                            | TrimOperation::EditSegment { .. }
-                            | TrimOperation::SplitSegment { .. }
-                            | TrimOperation::ReplaceCircleWithArc { .. }
-                    )
-                });
+                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
 
                 // Execute operations via callback
                 match execute_operations(strategy, current_scene_graph_delta.clone()).await {
@@ -2460,7 +2570,7 @@ pub async fn execute_trim_loop_with_context(
                     .find(|obj| obj.id == *trim_spawn_seg_id)
                     .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id.0))?;
 
-                let strategy = match trim_strategy(
+                let plan = match build_trim_plan(
                     *trim_spawn_seg_id,
                     *trim_spawn_coords,
                     trim_spawn_segment,
@@ -2469,7 +2579,7 @@ pub async fn execute_trim_loop_with_context(
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
                 ) {
-                    Ok(ops) => ops,
+                    Ok(plan) => plan,
                     Err(e) => {
                         crate::logln!("Error determining trim strategy: {}", e);
                         let old_start_index = start_index;
@@ -2480,18 +2590,11 @@ pub async fn execute_trim_loop_with_context(
                         continue;
                     }
                 };
+                let strategy = lower_trim_plan(&plan);
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = strategy.iter().any(|op| {
-                    matches!(
-                        op,
-                        TrimOperation::SimpleTrim { .. }
-                            | TrimOperation::EditSegment { .. }
-                            | TrimOperation::SplitSegment { .. }
-                            | TrimOperation::ReplaceCircleWithArc { .. }
-                    )
-                });
+                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
 
                 // Execute operations
                 match execute_trim_operations_simple(
@@ -2594,7 +2697,7 @@ pub async fn execute_trim_loop_with_context(
 /// - Coincident constraints on either side need to be migrated to the correct side
 /// - Angle based constraints (parallel, perpendicular, horizontal, vertical), need to be applied to both sides of the trim
 /// - If the segment getting split is an arc, and there's a constraints applied to an arc's center, this should be applied to both arcs after they are split.
-pub(crate) fn trim_strategy(
+pub(crate) fn build_trim_plan(
     trim_spawn_id: ObjectId,
     trim_spawn_coords: Coords2d,
     trim_spawn_segment: &Object,
@@ -2602,14 +2705,14 @@ pub(crate) fn trim_strategy(
     right_side: &TrimTermination,
     objects: &[Object],
     default_unit: UnitLength,
-) -> Result<Vec<TrimOperation>, String> {
+) -> Result<TrimPlan, String> {
     // Simple trim: both sides are endpoints
     if matches!(left_side, TrimTermination::SegEndPoint { .. })
         && matches!(right_side, TrimTermination::SegEndPoint { .. })
     {
-        return Ok(vec![TrimOperation::SimpleTrim {
-            segment_to_trim_id: trim_spawn_id,
-        }]);
+        return Ok(TrimPlan::DeleteSegment {
+            segment_id: trim_spawn_id,
+        });
     }
 
     // Helper to check if a side is an intersection or coincident
@@ -3031,8 +3134,6 @@ pub(crate) fn trim_strategy(
             Vec::new()
         };
 
-        let mut operations: Vec<TrimOperation> = Vec::new();
-
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
@@ -3081,20 +3182,6 @@ pub(crate) fn trim_strategy(
                 return Err("Unsupported segment type for edit".to_string());
             }
         };
-        operations.push(TrimOperation::EditSegment {
-            segment_id: trim_spawn_id,
-            ctor: new_ctor,
-            endpoint_changed: endpoint_to_change,
-        });
-
-        // Add coincident constraint
-        let add_coincident = TrimOperation::AddCoincidentConstraint {
-            segment_id: trim_spawn_id,
-            endpoint_changed: endpoint_to_change,
-            segment_or_point_to_make_coincident_to: intersecting_seg_id,
-            intersecting_endpoint_point_id: coincident_data.intersecting_endpoint_point_id,
-        };
-        operations.push(add_coincident);
 
         // Delete old constraints
         let mut all_constraint_ids_to_delete: Vec<ObjectId> = Vec::new();
@@ -3108,13 +3195,14 @@ pub(crate) fn trim_strategy(
         let distance_constraint_ids = find_distance_constraints_for_segment(trim_spawn_id);
         all_constraint_ids_to_delete.extend(distance_constraint_ids);
 
-        if !all_constraint_ids_to_delete.is_empty() {
-            operations.push(TrimOperation::DeleteConstraints {
-                constraint_ids: all_constraint_ids_to_delete,
-            });
-        }
-
-        return Ok(operations);
+        return Ok(TrimPlan::TailCut {
+            segment_id: trim_spawn_id,
+            endpoint_changed: endpoint_to_change,
+            ctor: new_ctor,
+            segment_or_point_to_make_coincident_to: intersecting_seg_id,
+            intersecting_endpoint_point_id: coincident_data.intersecting_endpoint_point_id,
+            constraint_ids_to_delete: all_constraint_ids_to_delete,
+        });
     }
 
     // Circle trim: both sides must terminate on intersections/coincident points.
@@ -3164,9 +3252,9 @@ pub(crate) fn trim_strategy(
             .sqrt()
             <= EPSILON_POINT_ON_SEGMENT * 10.0;
         if trim_points_coincident {
-            return Ok(vec![TrimOperation::SimpleTrim {
-                segment_to_trim_id: trim_spawn_id,
-            }]);
+            return Ok(TrimPlan::DeleteSegment {
+                segment_id: trim_spawn_id,
+            });
         }
 
         let circle_center_coords =
@@ -3202,13 +3290,13 @@ pub(crate) fn trim_strategy(
             )
         };
 
-        return Ok(vec![TrimOperation::ReplaceCircleWithArc {
+        return Ok(TrimPlan::ReplaceCircleWithArc {
             circle_id: trim_spawn_id,
             arc_start_coords,
             arc_end_coords,
             arc_start_termination,
             arc_end_termination,
-        }]);
+        });
     }
 
     // Split segment: both sides intersect
@@ -3879,7 +3967,7 @@ pub(crate) fn trim_strategy(
 
         // Create split segment operation
         let constraints_to_delete: Vec<ObjectId> = constraints_to_delete_set.iter().copied().collect();
-        let operations = vec![TrimOperation::SplitSegment {
+        let plan = TrimPlan::SplitSegment {
             segment_id: trim_spawn_id,
             left_trim_coords,
             right_trim_coords,
@@ -3898,9 +3986,9 @@ pub(crate) fn trim_strategy(
             },
             constraints_to_migrate,
             constraints_to_delete,
-        }];
+        };
 
-        return Ok(operations);
+        return Ok(plan);
     }
 
     // Only three strategy cases should exist: simple trim (endpoint/endpoint),
@@ -3911,6 +3999,28 @@ pub(crate) fn trim_strategy(
         "Unsupported trim termination combination: left={:?} right={:?}",
         left_side, right_side
     ))
+}
+
+#[allow(dead_code)]
+pub(crate) fn trim_strategy(
+    trim_spawn_id: ObjectId,
+    trim_spawn_coords: Coords2d,
+    trim_spawn_segment: &Object,
+    left_side: &TrimTermination,
+    right_side: &TrimTermination,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Result<Vec<TrimOperation>, String> {
+    let plan = build_trim_plan(
+        trim_spawn_id,
+        trim_spawn_coords,
+        trim_spawn_segment,
+        left_side,
+        right_side,
+        objects,
+        default_unit,
+    )?;
+    Ok(lower_trim_plan(&plan))
 }
 
 /// Execute the trim operations determined by the trim strategy
