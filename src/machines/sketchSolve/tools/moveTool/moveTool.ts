@@ -53,9 +53,9 @@ import {
   getObjectIdForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
-  isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -296,7 +296,7 @@ function getDragPointSnappingCandidate({
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
-        if (isPointSnapTarget(candidate.target)) {
+        if (candidate.target.type === 'point') {
           return !coincidentPointIds.includes(candidate.target.id)
         }
 
@@ -337,7 +337,7 @@ function hasCoincidentConstraintForSnapTarget(
     (obj) =>
       isConstraint(obj, 'Coincident') &&
       coincidentSegments.every((segment) =>
-        obj.kind.constraint.segments.includes(segment)
+        (obj.kind.constraint.segments as ConstraintSegment[]).includes(segment)
       )
   )
 }
@@ -352,7 +352,9 @@ function getZeroAxisDistanceConstraintWithOrigin(
       (obj) =>
         isConstraint(obj, constraintType) &&
         obj.kind.constraint.points.includes(pointId) &&
-        obj.kind.constraint.points.includes('ORIGIN') &&
+        (obj.kind.constraint.points as Array<number | 'ORIGIN'>).includes(
+          'ORIGIN'
+        ) &&
         obj.kind.constraint.distance.value === 0
     ) ?? null
   )

@@ -62,13 +62,21 @@ export function isPointSnapTarget(
   return target?.type === 'point'
 }
 
+function isCoincidentSnapTarget(
+  target: SnapTarget | null | undefined
+): target is CoincidentSnapTarget {
+  return (
+    target?.type === 'point' ||
+    target?.type === 'line' ||
+    target?.type === 'arc' ||
+    target?.type === 'circle'
+  )
+}
+
 export function getObjectIdForSnapTarget(
   target: SnapTarget | null | undefined
 ): number | null {
-  return target !== null &&
-    target !== undefined &&
-    'id' in target &&
-    typeof target.id === 'number'
+  return isCoincidentSnapTarget(target) && typeof target.id === 'number'
     ? target.id
     : null
 }
@@ -85,9 +93,11 @@ export function getCoincidentSegmentsForSnapTarget(
     return null
   }
 
-  return target.type === ORIGIN_TARGET
-    ? [segmentId, 'ORIGIN']
-    : [segmentId, target.id]
+  if (target.type === ORIGIN_TARGET) {
+    return [segmentId, 'ORIGIN']
+  }
+
+  return isCoincidentSnapTarget(target) ? [segmentId, target.id] : null
 }
 
 export function getConstraintForSnapTarget(
@@ -246,11 +256,11 @@ export function getSnappingCandidates(
     sceneInfra.getClientSceneScaleFactor(sketchSceneGroup)
   )
   const originDistance = distance2d(mousePosition, [0, 0])
-  const originCandidates =
+  const originCandidates: SnappingCandidate[] =
     originDistance <= hoverDistance
       ? [
           {
-            target: { type: ORIGIN_TARGET },
+            target: { type: ORIGIN_TARGET } satisfies OriginSnapTarget,
             distance: originDistance,
             position: [0, 0] as Coords2d,
           },
@@ -258,11 +268,11 @@ export function getSnappingCandidates(
       : []
 
   const xAxisDistance = Math.abs(mousePosition[1])
-  const xAxisCandidates =
+  const xAxisCandidates: SnappingCandidate[] =
     xAxisDistance <= hoverDistance
       ? [
           {
-            target: { type: X_AXIS_TARGET },
+            target: { type: X_AXIS_TARGET } satisfies AxisSnapTarget,
             distance: xAxisDistance,
             position: [mousePosition[0], 0] as Coords2d,
           },
@@ -270,11 +280,11 @@ export function getSnappingCandidates(
       : []
 
   const yAxisDistance = Math.abs(mousePosition[0])
-  const yAxisCandidates =
+  const yAxisCandidates: SnappingCandidate[] =
     yAxisDistance <= hoverDistance
       ? [
           {
-            target: { type: Y_AXIS_TARGET },
+            target: { type: Y_AXIS_TARGET } satisfies AxisSnapTarget,
             distance: yAxisDistance,
             position: [0, mousePosition[1]] as Coords2d,
           },

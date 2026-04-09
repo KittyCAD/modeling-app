@@ -10,7 +10,6 @@ import {
   allowSnapping,
   getObjectIdForSnapTarget,
   getSnappingCandidates,
-  isPointSnapTarget,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -112,7 +111,7 @@ export function getBestSnappingCandidate({
   return (
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
-        if (isPointSnapTarget(candidate.target)) {
+        if (candidate.target.type === 'point') {
           return !excludedPointIdSet.has(candidate.target.id)
         }
 
