@@ -33,6 +33,157 @@ async fn assert_trim_result_default_sketch(base_kcl_code: &str, trim_points: &[C
 mod sync {
     use crate::frontend::trim::*;
 
+    fn make_number_mm(v: f64) -> crate::frontend::api::Number {
+        crate::frontend::api::Number {
+            value: v,
+            units: crate::pretty::NumericSuffix::Mm,
+        }
+    }
+
+    fn make_expr_mm(v: f64) -> crate::frontend::api::Expr {
+        crate::frontend::api::Expr::Number(make_number_mm(v))
+    }
+
+    fn make_object(id: usize, kind: crate::frontend::api::ObjectKind) -> crate::frontend::api::Object {
+        use kcl_error::SourceRange;
+
+        use crate::execution::ArtifactId;
+        use crate::frontend::api::SourceRef;
+
+        crate::frontend::api::Object {
+            id: ObjectId(id),
+            kind,
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::from(SourceRange::default()),
+        }
+    }
+
+    fn make_point_segment(id: usize, x: f64, y: f64) -> crate::frontend::api::Object {
+        make_object(
+            id,
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::Point(crate::frontend::sketch::Point {
+                    position: crate::frontend::sketch::Point2d {
+                        x: make_number_mm(x),
+                        y: make_number_mm(y),
+                    },
+                    ctor: None,
+                    owner: None,
+                    freedom: crate::frontend::sketch::Freedom::Free,
+                    constraints: Vec::new(),
+                }),
+            },
+        )
+    }
+
+    fn make_line_segment(
+        id: usize,
+        start_id: usize,
+        end_id: usize,
+        start: Coords2d,
+        end: Coords2d,
+    ) -> crate::frontend::api::Object {
+        let ctor = crate::frontend::sketch::SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+            start: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(start.x),
+                y: make_expr_mm(start.y),
+            },
+            end: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(end.x),
+                y: make_expr_mm(end.y),
+            },
+            construction: None,
+        });
+
+        make_object(
+            id,
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::Line(crate::frontend::sketch::Line {
+                    start: ObjectId(start_id),
+                    end: ObjectId(end_id),
+                    ctor,
+                    ctor_applicable: false,
+                    construction: false,
+                }),
+            },
+        )
+    }
+
+    fn make_arc_segment(
+        id: usize,
+        start_id: usize,
+        end_id: usize,
+        center_id: usize,
+        start: Coords2d,
+        end: Coords2d,
+        center: Coords2d,
+    ) -> crate::frontend::api::Object {
+        let ctor = crate::frontend::sketch::SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+            start: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(start.x),
+                y: make_expr_mm(start.y),
+            },
+            end: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(end.x),
+                y: make_expr_mm(end.y),
+            },
+            center: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(center.x),
+                y: make_expr_mm(center.y),
+            },
+            construction: None,
+        });
+
+        make_object(
+            id,
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::Arc(crate::frontend::sketch::Arc {
+                    start: ObjectId(start_id),
+                    end: ObjectId(end_id),
+                    center: ObjectId(center_id),
+                    ctor,
+                    ctor_applicable: false,
+                    construction: false,
+                }),
+            },
+        )
+    }
+
+    fn make_circle_segment(
+        id: usize,
+        start_id: usize,
+        center_id: usize,
+        start: Coords2d,
+        center: Coords2d,
+    ) -> crate::frontend::api::Object {
+        let ctor = crate::frontend::sketch::SegmentCtor::Circle(crate::frontend::sketch::CircleCtor {
+            start: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(start.x),
+                y: make_expr_mm(start.y),
+            },
+            center: crate::frontend::sketch::Point2d {
+                x: make_expr_mm(center.x),
+                y: make_expr_mm(center.y),
+            },
+            construction: None,
+        });
+
+        make_object(
+            id,
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::Circle(crate::frontend::sketch::Circle {
+                    start: ObjectId(start_id),
+                    center: ObjectId(center_id),
+                    ctor,
+                    ctor_applicable: false,
+                    construction: false,
+                }),
+            },
+        )
+    }
+
     #[test]
     fn test_is_point_on_line_segment_exactly_on_segment() {
         let point = Coords2d { x: 5.0, y: 5.0 };
@@ -689,6 +840,212 @@ mod sync {
         // In this case, the arcs may or may not intersect depending on geometry
         // The important thing is that the function returns Option<Coords2d>
         assert!(result.is_none() || result.is_some());
+    }
+
+    #[test]
+    fn test_load_curve_handle_normalizes_line_arc_circle() {
+        let line = make_line_segment(0, 1, 2, Coords2d { x: 0.0, y: 0.0 }, Coords2d { x: 10.0, y: 0.0 });
+        let line_start = make_point_segment(1, 0.0, 0.0);
+        let line_end = make_point_segment(2, 10.0, 0.0);
+
+        let arc = make_arc_segment(
+            3,
+            4,
+            5,
+            6,
+            Coords2d { x: 1.0, y: 0.0 },
+            Coords2d { x: 0.0, y: 1.0 },
+            Coords2d { x: 0.0, y: 0.0 },
+        );
+        let arc_start = make_point_segment(4, 1.0, 0.0);
+        let arc_end = make_point_segment(5, 0.0, 1.0);
+        let arc_center = make_point_segment(6, 0.0, 0.0);
+
+        let circle = make_circle_segment(7, 8, 9, Coords2d { x: 2.0, y: 0.0 }, Coords2d { x: 0.0, y: 0.0 });
+        let circle_start = make_point_segment(8, 2.0, 0.0);
+        let circle_center = make_point_segment(9, 0.0, 0.0);
+
+        let objects = vec![
+            line,
+            line_start,
+            line_end,
+            arc,
+            arc_start,
+            arc_end,
+            arc_center,
+            circle,
+            circle_start,
+            circle_center,
+        ];
+
+        let line_curve = load_curve_handle(&objects[0], &objects, UnitLength::Millimeters).expect("load line curve");
+        assert_eq!(line_curve.kind, CurveKind::Line);
+        assert_eq!(line_curve.domain, CurveDomain::Open);
+        assert!(line_curve.center.is_none());
+        assert!(line_curve.radius.is_none());
+        assert!((line_curve.start.x - 0.0).abs() < 1e-6);
+        assert!((line_curve.end.x - 10.0).abs() < 1e-6);
+
+        let arc_curve = load_curve_handle(&objects[3], &objects, UnitLength::Millimeters).expect("load arc curve");
+        assert_eq!(arc_curve.kind, CurveKind::Circular);
+        assert_eq!(arc_curve.domain, CurveDomain::Open);
+        assert!(arc_curve.center.is_some());
+        assert!((arc_curve.radius.expect("arc radius") - 1.0).abs() < 1e-6);
+
+        let circle_curve =
+            load_curve_handle(&objects[7], &objects, UnitLength::Millimeters).expect("load circle curve");
+        assert_eq!(circle_curve.kind, CurveKind::Circular);
+        assert_eq!(circle_curve.domain, CurveDomain::Closed);
+        assert!(circle_curve.center.is_some());
+        assert!((circle_curve.radius.expect("circle radius") - 2.0).abs() < 1e-6);
+        assert!((circle_curve.end.x - circle_curve.start.x).abs() < 1e-6);
+        assert!((circle_curve.end.y - circle_curve.start.y).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_curve_polyline_and_curve_curve_intersections_are_generic() {
+        let circle = make_circle_segment(0, 1, 2, Coords2d { x: 1.0, y: 0.0 }, Coords2d { x: 0.0, y: 0.0 });
+        let circle_start = make_point_segment(1, 1.0, 0.0);
+        let circle_center = make_point_segment(2, 0.0, 0.0);
+        let line = make_line_segment(3, 4, 5, Coords2d { x: -2.0, y: 0.0 }, Coords2d { x: 2.0, y: 0.0 });
+        let line_start = make_point_segment(4, -2.0, 0.0);
+        let line_end = make_point_segment(5, 2.0, 0.0);
+        let objects = vec![circle, circle_start, circle_center, line, line_start, line_end];
+
+        let circle_curve = load_curve_handle(&objects[0], &objects, UnitLength::Millimeters).expect("circle curve");
+        let line_curve = load_curve_handle(&objects[3], &objects, UnitLength::Millimeters).expect("line curve");
+
+        let polyline_hits = curve_polyline_intersections(
+            circle_curve,
+            &[Coords2d { x: -2.0, y: 0.0 }, Coords2d { x: 2.0, y: 0.0 }],
+            EPSILON_POINT_ON_SEGMENT,
+        );
+        assert_eq!(polyline_hits.len(), 2);
+        assert!(polyline_hits.iter().all(|(_, seg_i)| *seg_i == 0));
+
+        let curve_hits = curve_curve_intersections(circle_curve, line_curve, EPSILON_POINT_ON_SEGMENT);
+        assert_eq!(curve_hits.len(), 2);
+        assert!(curve_hits.iter().any(|p| (p.x - -1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
+        assert!(curve_hits.iter().any(|p| (p.x - 1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
+    }
+
+    #[test]
+    fn test_build_trim_plan_and_lowering_for_simple_and_tail_cut() {
+        let line = make_line_segment(0, 1, 2, Coords2d { x: 0.0, y: 0.0 }, Coords2d { x: 10.0, y: 0.0 });
+        let line_start = make_point_segment(1, 0.0, 0.0);
+        let line_end = make_point_segment(2, 10.0, 0.0);
+        let intersecting_point = make_point_segment(10, 5.0, 0.0);
+        let objects = vec![line.clone(), line_start, line_end, intersecting_point];
+
+        let seg_end_left = TrimTermination::SegEndPoint {
+            trim_termination_coords: Coords2d { x: 0.0, y: 0.0 },
+        };
+        let seg_end_right = TrimTermination::SegEndPoint {
+            trim_termination_coords: Coords2d { x: 10.0, y: 0.0 },
+        };
+
+        let delete_plan = build_trim_plan(
+            ObjectId(0),
+            Coords2d { x: 5.0, y: 0.0 },
+            &line,
+            &seg_end_left,
+            &seg_end_right,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("build delete plan");
+
+        match delete_plan {
+            TrimPlan::DeleteSegment { segment_id } => assert_eq!(segment_id, ObjectId(0)),
+            other => panic!("expected delete plan, got {:?}", other),
+        }
+
+        let left_intersection = TrimTermination::Intersection {
+            trim_termination_coords: Coords2d { x: 3.0, y: 0.0 },
+            intersecting_seg_id: ObjectId(10),
+        };
+        let tail_cut_plan = build_trim_plan(
+            ObjectId(0),
+            Coords2d { x: 5.0, y: 0.0 },
+            &line,
+            &left_intersection,
+            &seg_end_right,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("build tail-cut plan");
+
+        match &tail_cut_plan {
+            TrimPlan::TailCut {
+                segment_id,
+                endpoint_changed,
+                segment_or_point_to_make_coincident_to,
+                ..
+            } => {
+                assert_eq!(*segment_id, ObjectId(0));
+                assert_eq!(*endpoint_changed, EndpointChanged::End);
+                assert_eq!(*segment_or_point_to_make_coincident_to, ObjectId(10));
+            }
+            other => panic!("expected tail-cut plan, got {:?}", other),
+        }
+
+        let lowered = lower_trim_plan(&tail_cut_plan);
+        assert!(
+            matches!(lowered.first(), Some(TrimOperation::EditSegment { .. })),
+            "first op should be EditSegment, got {:?}",
+            lowered.first()
+        );
+        assert!(
+            matches!(lowered.get(1), Some(TrimOperation::AddCoincidentConstraint { .. })),
+            "second op should be AddCoincidentConstraint, got {:?}",
+            lowered.get(1)
+        );
+    }
+
+    #[test]
+    fn test_rewrite_constraint_with_map_rewrites_ids_consistently() {
+        let rewrite_map = std::collections::HashMap::from([(ObjectId(1), ObjectId(101)), (ObjectId(2), ObjectId(202))]);
+
+        let coincident = Constraint::Coincident(crate::frontend::sketch::Coincident {
+            segments: vec![
+                crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(1)),
+                crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(99)),
+            ],
+        });
+        let distance = Constraint::Distance(crate::frontend::sketch::Distance {
+            points: vec![
+                crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(2)),
+                crate::frontend::sketch::ConstraintSegment::Origin(crate::frontend::sketch::OriginLiteral::Origin),
+            ],
+            distance: make_number_mm(4.0),
+            source: crate::frontend::sketch::ConstraintSource::default(),
+        });
+        let tangent = Constraint::Tangent(crate::frontend::sketch::Tangent {
+            input: vec![ObjectId(1), ObjectId(2), ObjectId(77)],
+        });
+
+        let Some(Constraint::Coincident(rewritten_coincident)) = rewrite_constraint_with_map(&coincident, &rewrite_map)
+        else {
+            panic!("expected coincident rewrite");
+        };
+        let coincident_ids: Vec<ObjectId> = rewritten_coincident.segment_ids().collect();
+        assert!(coincident_ids.contains(&ObjectId(101)));
+        assert!(coincident_ids.contains(&ObjectId(99)));
+
+        let Some(Constraint::Distance(rewritten_distance)) = rewrite_constraint_with_map(&distance, &rewrite_map)
+        else {
+            panic!("expected distance rewrite");
+        };
+        let rewritten_distance_ids: Vec<ObjectId> = rewritten_distance.point_ids().collect();
+        assert!(rewritten_distance_ids.contains(&ObjectId(202)));
+
+        let Some(Constraint::Tangent(rewritten_tangent)) = rewrite_constraint_with_map(&tangent, &rewrite_map) else {
+            panic!("expected tangent rewrite");
+        };
+        assert_eq!(
+            rewritten_tangent.input,
+            vec![ObjectId(101), ObjectId(202), ObjectId(77)]
+        );
     }
 
     #[test]
