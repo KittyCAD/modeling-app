@@ -124,9 +124,7 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
   }) => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])`
@@ -333,9 +331,7 @@ region001 = region(segments = [sketch001.circle1])`
     async ({ context, page, homePage, editor, toolbar, scene, cmdBar }) => {
       page.on('console', console.log)
 
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-  closedSketch = sketch(on = XZ) {
+      const initialCode = `  closedSketch = sketch(on = XZ) {
     circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
   }
   openSketch = sketch(on = XY) {
@@ -419,9 +415,7 @@ region001 = region(segments = [sketch001.circle1])`
     scene,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch002 = sketch(on = XY) {
+    const initialCode = `sketch002 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -712,9 +706,7 @@ sketch001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -892,9 +884,7 @@ extrude001 = extrude(region001, length = 100)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -1012,9 +1002,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     cmdBar,
   }) => {
     const circleCode = `circle1 = circle(start = [var 0.1mm, var -1mm], center = [var 0mm, var -1mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-helix001 = helix(
+    const initialCode = `helix001 = helix(
   axis = X,
   radius = 1,
   length = 10,
@@ -1138,9 +1126,7 @@ region001 = region(segments = [sketch001.circle1])`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1392,9 +1378,7 @@ extrude001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
 }
 hide(sketch001)
@@ -1452,9 +1436,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1579,9 +1561,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1681,7 +1661,7 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -1943,7 +1923,7 @@ extrude001 = extrude(region001, length = -12)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -2075,7 +2055,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
@@ -2270,9 +2250,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2422,9 +2400,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   test.fixme(
     `Translate point-and-click with segment-to-body coercion`,
     async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
   line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
   coincident([line1.end, line2.start])
@@ -2633,9 +2609,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -6.79mm, var 0mm], end = [var 4.67mm, var 10.74mm])
   line2 = line(start = [var 4.67mm, var 10.74mm], end = [var 7.24mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -2722,9 +2696,7 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 6.07mm, var 1.66mm])
   line2 = line(start = [var 6.07mm, var 1.66mm], end = [var 6.07mm, var -3.67mm])
   coincident([line1.end, line2.start])
@@ -2802,9 +2774,7 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -2921,9 +2891,7 @@ extrude001 = extrude(region001, length = 1)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -3433,9 +3401,7 @@ solid001 = extrude(region001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -4760,9 +4726,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])
