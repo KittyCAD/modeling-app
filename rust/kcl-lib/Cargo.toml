@@ -162,6 +162,10 @@ name = "compiler_benchmark_criterion"
 harness = false
 
 [[bench]]
+name = "frontend"
+harness = false
+
+[[bench]]
 name = "digest_benchmark"
 harness = false
 
