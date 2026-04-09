@@ -3482,17 +3482,6 @@ pub(crate) fn trim_strategy(
 
     // Circle trim: both sides must terminate on intersections/coincident points.
     // A circle cannot be "split" into two circles; it is converted into a single arc.
-    //
-    // A trim line going through a circle only has two outcomes, it either
-    // deletes the circle entirely (because something is intersecting it),
-    // or the circle is converted to an arc.
-    //
-    // Circles are never split because they form a ring, cut somewhere in
-    // the ring always loops around, in cases where a trim line going
-    // through both sides of a circle and it sure looks like it's been
-    // split. The serial nature of this algorithm means it's actually being
-    // converted to an arc on the first intersection with the trim line, and
-    // then later it's the arc that's getting split.
     if matches!(segment, Segment::Circle(_)) {
         let left_side_intersects = is_intersect_or_coincident(left_side);
         let right_side_intersects = is_intersect_or_coincident(right_side);
