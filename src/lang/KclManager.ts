@@ -1224,7 +1224,16 @@ export class KclManager extends File {
     }
   })
 
-  private directSketchHistoryExtension = (() => {
+  /**
+   * Adds history bookkeeping for direct text edits made while sketch solve mode
+   * is active.
+   *
+   * This is separate from `executeKclEffect`: execution decides when a document
+   * change should run, while this extension gives a direct editor transaction a
+   * stable history identity so undo/redo can restore the matching Rust sketch
+   * checkpoint for that edit.
+   */
+  private sketchModeDirectEditHistoryExtension = (() => {
     const markDirectSketchEdits = EditorState.transactionExtender.of((tr) => {
       if (!this.modelingState?.matches('sketchSolveMode')) {
         return null
@@ -1412,7 +1421,7 @@ export class KclManager extends File {
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
       this.writeToFileListener,
-      this.directSketchHistoryExtension,
+      this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
       this.sketchCheckpointHistoryExtension,
       this.clearSelectionsOnEmptyDoc,
