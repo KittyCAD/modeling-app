@@ -5,8 +5,6 @@ excerpt: "Create a region from closed segments."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a region from closed segments.
 
 ```kcl
@@ -46,8 +44,6 @@ segment.
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -79,8 +75,6 @@ extrude(r, length = 5)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 trapezoid = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -115,8 +109,6 @@ extrude(r, length = 3)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   arc1 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 6mm])

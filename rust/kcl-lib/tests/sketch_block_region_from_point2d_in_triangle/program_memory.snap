@@ -66,10 +66,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
             -0.06852748084846844
           ],
           "tag": {
-            "commentStart": 65,
-            "end": 70,
+            "commentStart": 24,
+            "end": 29,
             "moduleId": 0,
-            "start": 65,
+            "start": 24,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -90,10 +90,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
             -0.06852748084842362
           ],
           "tag": {
-            "commentStart": 137,
-            "end": 142,
+            "commentStart": 96,
+            "end": 101,
             "moduleId": 0,
-            "start": 137,
+            "start": 96,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -114,10 +114,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
             4.787054952178176
           ],
           "tag": {
-            "commentStart": 254,
-            "end": 259,
+            "commentStart": 213,
+            "end": 218,
             "moduleId": 0,
-            "start": 254,
+            "start": 213,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -577,10 +577,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     -0.06852748084846844
                   ],
                   "tag": {
-                    "commentStart": 65,
-                    "end": 70,
+                    "commentStart": 24,
+                    "end": 29,
                     "moduleId": 0,
-                    "start": 65,
+                    "start": 24,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -601,10 +601,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     -0.06852748084842362
                   ],
                   "tag": {
-                    "commentStart": 137,
-                    "end": 142,
+                    "commentStart": 96,
+                    "end": 101,
                     "moduleId": 0,
-                    "start": 137,
+                    "start": 96,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -625,10 +625,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     4.787054952178176
                   ],
                   "tag": {
-                    "commentStart": 254,
-                    "end": 259,
+                    "commentStart": 213,
+                    "end": 218,
                     "moduleId": 0,
-                    "start": 254,
+                    "start": 213,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },

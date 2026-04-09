@@ -9,8 +9,7 @@ s = sketch(on = XY) {
   radius(b) == 3mm
 
   // Fix a reference frame and let tangent solve b's x-position.
-  a.center.at[0] == 0mm
-  a.center.at[1] == 0mm
+  fixed([a.center, [0mm, 0mm]])
   b.center.at[1] == 0mm
 
   tangent([a, b])

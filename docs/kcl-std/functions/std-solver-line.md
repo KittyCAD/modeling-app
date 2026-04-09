@@ -5,8 +5,6 @@ excerpt: "Create a straight line segment in a sketch."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a straight line segment in a sketch.
 
 ```kcl
@@ -35,8 +33,6 @@ solver::line(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])

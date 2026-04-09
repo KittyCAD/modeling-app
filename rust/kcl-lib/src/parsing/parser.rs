@@ -3797,7 +3797,6 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     digest: _,
                 },
         } = fn_call;
-        ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         if let Some(unlabeled) = unlabeled {
             ParseContext::err(CompilationIssue::err(
                 unlabeled.into(),

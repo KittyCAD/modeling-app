@@ -5,8 +5,6 @@ excerpt: "Constrain lines to be parallel."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain lines to be parallel.
 
 ```kcl
@@ -25,8 +23,6 @@ Currently limited to two lines.
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   right = line(start = [var 5mm, var 0mm], end = [var 4mm, var 3mm])
