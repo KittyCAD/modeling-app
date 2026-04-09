@@ -689,24 +689,20 @@ describe('createOnDragCallback', () => {
       source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     } as ApiObject
 
-    const {
-      onDragStart,
-      onDragEnd,
-      rustContext,
-      send,
-    } = setUpMoveToolCallbacks({
-      apiObjects: [
-        lineTargetStart,
-        lineTargetEnd,
-        lineTarget,
-        draggedStart,
-        draggedPoint,
-        draggedLine,
-        coincidentConstraint,
-      ],
-      hoveredId: 4,
-      selectedIds: [4],
-    })
+    const { onDragStart, onDragEnd, rustContext, send } =
+      setUpMoveToolCallbacks({
+        apiObjects: [
+          lineTargetStart,
+          lineTargetEnd,
+          lineTarget,
+          draggedStart,
+          draggedPoint,
+          draggedLine,
+          coincidentConstraint,
+        ],
+        hoveredId: 4,
+        selectedIds: [4],
+      })
 
     const editResult = {
       kclSource: { text: 'edited' },
@@ -747,12 +743,12 @@ describe('createOnDragCallback', () => {
     expect(rustContext.addConstraint).not.toHaveBeenCalled()
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
-      type: 'update sketch outcome',
-      data: expect.objectContaining({
-        sourceDelta: editResult.kclSource,
-        sceneGraphDelta: editResult.sceneGraphDelta,
-      }),
-    })
+        type: 'update sketch outcome',
+        data: expect.objectContaining({
+          sourceDelta: editResult.kclSource,
+          sceneGraphDelta: editResult.sceneGraphDelta,
+        }),
+      })
     )
   })
 

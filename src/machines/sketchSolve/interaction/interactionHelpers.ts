@@ -100,9 +100,8 @@ export function getClosestPointOnArcSegment(
     }
   }
 
-  const closestPoint = distance2d(point, start) <= distance2d(point, end)
-    ? [...start]
-    : [...end]
+  const closestPoint =
+    distance2d(point, start) <= distance2d(point, end) ? [...start] : [...end]
   return {
     closestPoint,
     distance: distance2d(point, closestPoint),

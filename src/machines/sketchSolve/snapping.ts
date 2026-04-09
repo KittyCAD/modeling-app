@@ -85,7 +85,9 @@ export function getCoincidentSegmentsForSnapTarget(
     return null
   }
 
-  return target.type === ORIGIN_TARGET ? [segmentId, 'ORIGIN'] : [segmentId, target.id]
+  return target.type === ORIGIN_TARGET
+    ? [segmentId, 'ORIGIN']
+    : [segmentId, target.id]
 }
 
 export function getConstraintForSnapTarget(
