@@ -108,7 +108,7 @@ describe('threePointArcToolImpl', () => {
           throughPoint: [1, 1],
           throughPointId: 2,
           endPoint: [2, 0],
-          endSnapTarget: { type: 'point', pointId: 99 },
+          endSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
