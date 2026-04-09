@@ -679,7 +679,7 @@ sketch001 = sketch(on = XY) {
         throw new Error('Expected added line to exist before direct edit')
       }
 
-      await editor.replaceCode(`${lineToRemove}\n`, '')
+      await editor.replaceCodeByTyping(`${lineToRemove}\n`, '')
       await expect(pointHandles).toHaveCount(4)
 
       const codeAfterDirectEdit = await editor.getCurrentCode()

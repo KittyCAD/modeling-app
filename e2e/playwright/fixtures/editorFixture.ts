@@ -177,29 +177,34 @@ export class EditorFixture {
       })
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
+    const lines = await this.page.locator('.cm-line').all()
+
+    let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
     if (!findCode) {
-      await this.codeContent.click()
-      await this.page.keyboard.press(
-        process.platform === 'darwin' ? 'Meta+A' : 'Control+A'
-      )
-      await this.page.keyboard.insertText(replaceCode)
-      return
+      code = replaceCode
+    } else {
+      code = code.replace(findCode, replaceCode)
     }
-
-    const targetText = findCode.endsWith('\n')
-      ? findCode.slice(0, -1)
-      : findCode
-
-    await this.codeContent.getByText(targetText).first().selectText()
-    if (replaceCode) {
-      await this.page.keyboard.insertText(replaceCode)
-      return
+    await this.codeContent.fill(code)
+  }
+  replaceCodeByTyping = async (findCode: string, replaceCode: string) => {
+    if (!(await this.checkIfPaneIsOpen())) {
+      await this.openPane()
     }
-
-    await this.page.keyboard.press('Delete')
-    if (findCode.endsWith('\n')) {
-      await this.page.keyboard.press('Delete')
-    }
+    await this.page.evaluate(
+      ({ findCode, replaceCode }) => {
+        const editorView = window.kclManager.editorView
+        const currentCode = editorView.state.doc.toString()
+        const from = currentCode.indexOf(findCode)
+        if (from === -1) {
+          throw new Error(`Could not find code to replace: ${findCode}`)
+        }
+        editorView.dispatch({
+          changes: { from, to: from + findCode.length, insert: replaceCode },
+        })
+      },
+      { findCode, replaceCode }
+    )
   }
   checkIfPaneIsOpen() {
     return checkIfPaneIsOpen(this.page, this.paneButtonTestId)
