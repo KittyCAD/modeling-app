@@ -16,7 +16,6 @@ use crate::KclError;
 use crate::KclErrorWithOutputs;
 use crate::Program;
 use crate::collections::AhashIndexSet;
-use crate::exec::WarningLevel;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
 #[cfg(feature = "artifact-graph")]
@@ -383,9 +382,6 @@ impl SketchApi for FrontendState {
             non_code_meta: Default::default(),
             digest: None,
         };
-        // Ensure that we allow experimental features since the sketch block
-        // won't work without it.
-        new_ast.set_experimental_features(Some(WarningLevel::Allow));
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
         let sketch_name = next_free_name_with_padding("sketch", &defined_names)
@@ -5584,9 +5580,7 @@ bad = missing_name
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   point(at = [1in, 2in])
 }
 "
@@ -5621,9 +5615,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   point(at = [3in, 4in])
 }
 "
@@ -5700,9 +5692,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -5749,9 +5739,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   line(start = [1mm, 2mm], end = [13mm, 14mm])
 }
 "
@@ -5838,9 +5826,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
 }
 "
@@ -5900,9 +5886,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
 }
 "
@@ -5964,9 +5948,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 "
@@ -6011,9 +5993,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
 }
 "
@@ -6027,9 +6007,7 @@ sketch001 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_circle() {
-        let initial_source = "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+        let initial_source = "sketch001 = sketch(on = XY) {
   circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 ";
@@ -6057,9 +6035,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
 }
 "
         );
@@ -6073,9 +6049,7 @@ sketch001 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_circle_via_point() {
-        let initial_source = "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+        let initial_source = "sketch001 = sketch(on = XY) {
   circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 ";
@@ -6137,9 +6111,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   circle(start = [var 7mm, var 1mm], center = [var 0mm, var 0mm])
 }
 "
@@ -6151,9 +6123,7 @@ sketch001 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_line_when_sketch_block_uses_variable() {
-        let initial_source = "@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {}
+        let initial_source = "s = sketch(on = XY) {}
 ";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
@@ -6198,9 +6168,7 @@ s = sketch(on = XY) {}
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
+            "s = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -6277,9 +6245,7 @@ s = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+            "sketch001 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -6287,11 +6253,7 @@ sketch001 = sketch(on = XY) {
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-"
-        );
+        assert_eq!(src_delta.text.as_str(), "");
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -6300,9 +6262,7 @@ sketch001 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_sketch_when_sketch_block_uses_variable() {
-        let initial_source = "@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {}
+        let initial_source = "s = sketch(on = XY) {}
 ";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
@@ -6318,11 +6278,7 @@ s = sketch(on = XY) {}
         let sketch_id = sketch_object.id;
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
-"
-        );
+        assert_eq!(src_delta.text.as_str(), "");
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -6332,8 +6288,6 @@ s = sketch(on = XY) {}
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_when_editing_its_start_point() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -6377,8 +6331,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
 }
@@ -6394,8 +6346,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_when_editing_its_end_point() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -6438,8 +6388,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
 }
@@ -6460,8 +6408,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_with_coincident_feedback() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6507,8 +6453,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
@@ -6532,8 +6476,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_point_without_var() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
@@ -6563,8 +6505,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
   point(at = [var 5mm, var 6mm])
@@ -6581,8 +6521,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_point_with_var() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point1 = point(at = [var 3, var 4])
@@ -6612,8 +6550,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
   point(at = [var 5mm, var 6mm])
@@ -6630,8 +6566,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_multiple_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point1 = point(at = [var 3, var 4])
@@ -6663,8 +6597,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 5mm, var 6mm])
 }
@@ -6680,8 +6612,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_coincident_constraint() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
@@ -6712,8 +6642,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1mm, var 2mm])
   point2 = point(at = [var 3mm, var 4mm])
@@ -6731,8 +6659,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_cascades_to_coincident_constraint() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6761,8 +6687,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 }
@@ -6782,8 +6706,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_cascades_to_distance_constraint() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6812,8 +6734,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 }
@@ -6833,8 +6753,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_preserves_multiline_equal_length_constraint() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6864,8 +6782,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
   line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
@@ -6894,8 +6810,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_lines_removes_multiline_equal_length_constraint_below_minimum() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6926,8 +6840,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 }
@@ -6945,8 +6857,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_line_coincident_constraint() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -6976,8 +6886,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
   line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
@@ -6994,8 +6902,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_two_points_coincident() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point(at = [3, 4])
@@ -7027,8 +6933,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [3, 4])
@@ -7050,8 +6954,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_point_origin_coincident_preserves_order() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
 }
@@ -7061,8 +6963,6 @@ sketch(on = XY) {
             (
                 true,
                 "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   coincident([ORIGIN, point1])
@@ -7072,8 +6972,6 @@ sketch(on = XY) {
             (
                 false,
                 "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   coincident([point1, ORIGIN])
@@ -7130,8 +7028,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_coincident_of_line_end_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -7163,8 +7059,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -7186,8 +7080,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_coincident_of_line_point_and_circle_segment() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
@@ -7250,8 +7142,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
@@ -7421,8 +7311,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_distance_two_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
@@ -7460,8 +7348,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
@@ -7483,8 +7369,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_horizontal_distance_two_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
@@ -7522,8 +7406,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
@@ -7545,8 +7427,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_single_arc_segment() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
 }
@@ -7595,8 +7475,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
   radius(arc1) == 5mm
@@ -7617,8 +7495,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_vertical_distance_two_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
@@ -7656,8 +7532,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
@@ -7679,8 +7553,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_fixed_standalone_point() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
 }
@@ -7726,8 +7598,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   fixed([point1, [2mm, 3mm]])
@@ -7748,8 +7618,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_fixed_multiple_points() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
@@ -7812,8 +7680,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
@@ -7836,8 +7702,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_fixed_owned_point() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -7883,8 +7747,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   fixed([line1.start, [2mm, 3mm]])
@@ -7910,8 +7772,6 @@ sketch(on = XY) {
 
         // Test: Single point should error
         let initial_source_point = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
 }
@@ -7939,8 +7799,6 @@ sketch(on = XY) {
 
         // Test: Single line segment should error (only arc segments supported)
         let initial_source_line = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -7973,8 +7831,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_diameter_single_arc_segment() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
 }
@@ -8023,8 +7879,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
   diameter(arc1) == 10mm
@@ -8050,8 +7904,6 @@ sketch(on = XY) {
 
         // Test: Single point should error
         let initial_source_point = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   point(at = [var 1, var 2])
 }
@@ -8079,8 +7931,6 @@ sketch(on = XY) {
 
         // Test: Single line segment should error (only arc segments supported)
         let initial_source_line = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -8113,8 +7963,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_line_horizontal() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -8142,8 +7990,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   horizontal(line1)
@@ -8164,8 +8010,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_line_vertical() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
@@ -8193,8 +8037,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   vertical(line1)
@@ -8215,8 +8057,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_lines_equal_length() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8248,8 +8088,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8271,8 +8109,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_constraint_multi_line_equal_length() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8305,8 +8141,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8340,8 +8174,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_lines_parallel() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8373,8 +8205,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8396,8 +8226,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_lines_perpendicular() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8429,8 +8257,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8452,8 +8278,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_lines_angle() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8491,8 +8315,6 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             // The lack indentation is a formatter bug.
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
@@ -8514,8 +8336,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_segments_tangent() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
   arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
@@ -8547,8 +8367,6 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
@@ -8570,8 +8388,6 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_face_simple() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 len = 2mm
 cube = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -8628,8 +8444,6 @@ face = faceOf(cube, face = side)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_wall_artifact_from_region_extrude() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = YZ) {
   line1 = line(start = [0, 0], end = [0, 1])
   line2 = line(start = [0, 1], end = [1, 1])
@@ -8663,8 +8477,6 @@ extrude001 = extrude(region001, length = 5)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_wall_artifact_from_split_region_extrude() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = YZ) {
   line1 = line(start = [var 0.49, var -0.39], end = [var 6.52, var -0.39])
   line2 = line(start = [var 6.52, var -0.39], end = [var 6.52, var 4.9])
@@ -8708,8 +8520,6 @@ extrude001 = extrude(region001, length = 5)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_plane_incremental() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 len = 2mm
 cube = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -8752,8 +8562,6 @@ plane = planeOf(cube, face = side)
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 len = 2mm
 cube = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -8797,8 +8605,6 @@ sketch001 = sketch(on = plane) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_uses_unique_variable_name() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch1 = sketch(on = XY) {
 }
 ";
@@ -8822,8 +8628,6 @@ sketch1 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch1 = sketch(on = XY) {
 }
 sketch001 = sketch(on = YZ) {
@@ -8837,8 +8641,6 @@ sketch001 = sketch(on = YZ) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_twice_using_same_plane() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 sketch1 = sketch(on = XY) {
 }
 ";
@@ -8862,8 +8664,6 @@ sketch1 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 sketch1 = sketch(on = XY) {
 }
 sketch001 = sketch(on = XY) {
@@ -8877,8 +8677,6 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_mode_reuses_cached_on_expression() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 width = 2mm
 sketch(on = offsetPlane(XY, offset = width)) {
   line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])
@@ -8920,8 +8718,6 @@ sketch(on = offsetPlane(XY, offset = width)) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_multiple_sketch_blocks() {
         let initial_source = "\
-@settings(experimentalFeatures = allow)
-
 // Cube that requires the engine.
 width = 2
 sketch001 = startSketchOn(XY)
@@ -9024,8 +8820,6 @@ sketch2 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 // Cube that requires the engine.
 width = 2
 sketch001 = startSketchOn(XY)
@@ -9067,8 +8861,6 @@ sketch2 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 // Cube that requires the engine.
 width = 2
 sketch001 = startSketchOn(XY)
@@ -9156,8 +8948,6 @@ sketch2 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 // Cube that requires the engine.
 width = 2
 sketch001 = startSketchOn(XY)
@@ -9199,8 +8989,6 @@ sketch2 = sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-
 // Cube that requires the engine.
 width = 2
 sketch001 = startSketchOn(XY)
@@ -9247,7 +9035,7 @@ sketch2 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_after_settings_edit_sketch_add_point() {
         // Extra newlines after @settings line - this shifts all source ranges.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9308,7 +9096,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_after_settings_add_line_to_empty_sketch() {
         // Extra newlines after @settings, with an empty sketch block.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9369,7 +9157,7 @@ s = sketch(on = XY) {}
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_between_operations_edit_line() {
         // Extra newlines between @settings and sketch, and inside the sketch block.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 sketch001 = sketch(on = XY) {
@@ -9461,7 +9249,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_delete_segment() {
         // Extra whitespace before and after the sketch block.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9507,7 +9295,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unformatted_source_add_arc() {
         // Source with inconsistent whitespace - tabs, extra spaces, multiple blank lines.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9581,7 +9369,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_add_circle() {
         // Extra blank lines between settings and sketch.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9644,7 +9432,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_add_constraint() {
         // Extra newlines with a sketch containing two lines - add a coincident constraint.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
@@ -9726,7 +9514,7 @@ sketch001 = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_add_line_then_edit_line() {
         // Extra newlines after @settings - add a line, then edit it.
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "@settings(defaultLengthUnit = mm)
 
 
 
