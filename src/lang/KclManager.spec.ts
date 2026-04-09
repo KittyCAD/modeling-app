@@ -1,5 +1,5 @@
 import { createEmptyAst } from '@src/editor/plugins/ast'
-import { File } from '@src/lang/KclManager'
+import { File, KclManager } from '@src/lang/KclManager'
 import type { Diagnostic } from '@codemirror/lint'
 import type {
   SceneGraphDelta,
@@ -29,6 +29,10 @@ async function flushPromises(count = 2) {
   }
 }
 
+function getRecoverySnapshotKey(path: string) {
+  return `kclRecovery:${path}`
+}
+
 function createDiagnostic(
   from: number,
   to: number,
@@ -46,6 +50,7 @@ afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
   vi.useRealTimers()
+  localStorage?.clear()
 })
 
 describe('KclManager diagnostics', () => {
@@ -240,7 +245,9 @@ describe('KclManager diagnostics', () => {
     const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
 
     kclManager.path = '/tmp/kcl-manager-write-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
     kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
 
     kclManager.updateCodeEditor('first', {
       shouldExecute: false,
@@ -388,5 +395,88 @@ describe('KclManager diagnostics', () => {
 
     expect(kclManager.code).toBe('local newer')
     expect(modelingSendSpy).not.toHaveBeenCalled()
+  })
+
+  it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    const originalWasmPromise = kclManager.wasmInstancePromise
+    const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
+    const ast = await kclManager.safeParse('x = 2')
+
+    expect(ast).not.toBeNull()
+
+    kclManager.wasmInstancePromise = deferredWasm.promise
+
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+      shouldAddToHistory: false,
+    })
+
+    deferredWasm.resolve(await originalWasmPromise)
+    await pendingRewrite
+
+    expect(kclManager.code).toBe('local newer')
+  })
+
+  it('skips disk writes when the on-disk file changed since the last sync', async () => {
+    vi.useFakeTimers()
+
+    const path = '/tmp/kcl-manager-cas-write-test.kcl'
+    const { kclManager } = createKclManagerTestHarness('disk base')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    kclManager.engineCommandManager.started = true
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(writeSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('local newer')
+    expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
+  })
+
+  it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
+    const path = '/tmp/kcl-manager-recovery-test.kcl'
+    const recoveryKey = getRecoverySnapshotKey(path)
+    const { kclManager } = createKclManagerTestHarness('disk base')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+
+    kclManager.updateCodeEditor('recovered newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+      shouldAddToHistory: false,
+    })
+
+    const persistedSnapshot = localStorage.getItem(recoveryKey)
+    expect(persistedSnapshot).toContain('recovered newer')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+
+    const reopened = await KclManager.fromFile(
+      new File(path, 99),
+      (kclManager as any).systemDeps
+    )
+
+    expect(reopened.code).toBe('recovered newer')
+    expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
   })
 })
