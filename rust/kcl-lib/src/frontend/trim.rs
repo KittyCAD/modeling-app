@@ -4596,24 +4596,24 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::Radius(radius) => {
-                            if radius.arc == *circle_id {
-                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
-                                    migrated_constraints.push(migrated);
-                                }
+                            if radius.arc == *circle_id
+                                && let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map)
+                            {
+                                migrated_constraints.push(migrated);
                             }
                         }
                         Constraint::Diameter(diameter) => {
-                            if diameter.arc == *circle_id {
-                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
-                                    migrated_constraints.push(migrated);
-                                }
+                            if diameter.arc == *circle_id
+                                && let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map)
+                            {
+                                migrated_constraints.push(migrated);
                             }
                         }
                         Constraint::Tangent(tangent) => {
-                            if tangent.input.contains(circle_id) {
-                                if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
-                                    migrated_constraints.push(migrated);
-                                }
+                            if tangent.input.contains(circle_id)
+                                && let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map)
+                            {
+                                migrated_constraints.push(migrated);
                             }
                         }
                         _ => {}
@@ -5093,10 +5093,10 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(new_center_id) = new_segment_center_point_id {
                     for (constraint, original_center_id) in center_point_constraints_to_migrate {
                         let center_rewrite_map = std::collections::HashMap::from([(original_center_id, new_center_id)]);
-                        if let Some(rewritten) = rewrite_constraint_with_map(&constraint, &center_rewrite_map) {
-                            if matches!(rewritten, Constraint::Coincident(_) | Constraint::Distance(_)) {
-                                batch_constraints.push(rewritten);
-                            }
+                        if let Some(rewritten) = rewrite_constraint_with_map(&constraint, &center_rewrite_map)
+                            && matches!(rewritten, Constraint::Coincident(_) | Constraint::Distance(_))
+                        {
+                            batch_constraints.push(rewritten);
                         }
                     }
                 }
@@ -5116,18 +5116,17 @@ pub(crate) async fn execute_trim_operations_simple(
                         _ => false,
                     };
 
-                    if should_migrate {
-                        if let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map) {
-                            if matches!(
-                                migrated_constraint,
-                                Constraint::Parallel(_)
-                                    | Constraint::Perpendicular(_)
-                                    | Constraint::Horizontal(_)
-                                    | Constraint::Vertical(_)
-                            ) {
-                                batch_constraints.push(migrated_constraint);
-                            }
-                        }
+                    if should_migrate
+                        && let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map)
+                        && matches!(
+                            migrated_constraint,
+                            Constraint::Parallel(_)
+                                | Constraint::Perpendicular(_)
+                                | Constraint::Horizontal(_)
+                                | Constraint::Vertical(_)
+                        )
+                    {
+                        batch_constraints.push(migrated_constraint);
                     }
                 }
 
