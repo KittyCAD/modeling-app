@@ -94,9 +94,7 @@ async function dragBetweenRatios(
   await page.mouse.up()
 }
 
-const TEST_CODE = `@settings(experimentalFeatures = allow)
-
-mySketch = startSketchOn(XZ)
+const TEST_CODE = `mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
 sketch(on = XZ) {
@@ -120,10 +118,9 @@ const userSettingsToml = settingsToToml({
 })
 
 function withDefaultLengthUnitInches(code: string): string {
-  return code.replace(
-    '@settings(experimentalFeatures = allow)',
-    '@settings(defaultLengthUnit = in, experimentalFeatures = allow)'
-  )
+  return `@settings(defaultLengthUnit = in)
+    
+${code}`
 }
 
 test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
@@ -227,8 +224,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
     tronApp,
   }) => {
-    const INITIAL_CODE = `@settings(experimentalFeatures = allow)
-`
+    const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
@@ -436,8 +432,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
     tronApp,
   }) => {
-    const INITIAL_CODE = `@settings(experimentalFeatures = allow)
-`
+    const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
 
@@ -541,9 +536,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
     tronApp,
   }) => {
-    const INITIAL_CODE = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
 }
 `
@@ -776,8 +769,7 @@ sketch001 = sketch(on = XY) {
     tronApp,
   }) => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-    const INITIAL_CODE = `@settings(experimentalFeatures = allow)
-`
+    const INITIAL_CODE = ''
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
       if (tronApp) {
@@ -1215,9 +1207,7 @@ sketch001 = sketch(on = XY) {
     toolbar,
     tronApp,
   }) => {
-    const CONSTRAINT_TEST_CODE = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const CONSTRAINT_TEST_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
   line2 = line(start = [var -10.75mm, var 2.17mm], end = [var -9.21mm, var 2.05mm])
   line3 = line(start = [var -10.86mm, var 0.39mm], end = [var -9.48mm, var 0.39mm])
@@ -1532,9 +1522,7 @@ sketch001 = sketch(on = XY) {
     toolbar,
     tronApp,
   }) => {
-    const TRIM_TEST_CODE = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    const TRIM_TEST_CODE = `sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -8.66mm, var 2.52mm], end = [var -8.77mm, var -2.76mm])
   line(start = [var -6.49mm, var 2.4mm], end = [var -6.45mm, var -2.72mm])
   line2 = line(start = [var -10mm, var -0.31mm], end = [var -5.38mm, var 0.2mm])
@@ -1657,9 +1645,7 @@ sketch001 = sketch(on = YZ) {
     toolbar,
   }) => {
     await test.step('Set up the app with test code', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const code = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
@@ -1729,9 +1715,7 @@ sketch001 = sketch(on = XY) {
     })
   })
 
-  const square = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+  const square = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.05mm, var -1.99mm], end = [var 2.1mm, var -1.99mm])
   line2 = line(start = [var 2.1mm, var -1.99mm], end = [var 2.1mm, var 2.23mm])
   line3 = line(start = [var 2.1mm, var 2.23mm], end = [var -2.05mm, var 2.23mm])

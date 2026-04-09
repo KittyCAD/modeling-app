@@ -1353,9 +1353,7 @@ extrude001 = extrude(profile001, length = 1)
   })
 
   it('maps sketch block segment arguments to edge selections', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
 }
 extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
@@ -1388,9 +1386,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
   it.fails(
     'maps sketch block a circle argument to an edge selection',
     async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 4.52mm, var 3.82mm], center = [var 2.96mm, var 3.38mm])
 }
 
@@ -1427,9 +1423,7 @@ bodyType = SURFACE,
   )
 
   it('maps sketch block segment array arguments to edge selections', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
   line2 = line(start = [var 21.94mm, var -21.01mm], end = [var 8.14mm, var 14.22mm])
 }
@@ -1461,9 +1455,7 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
   })
 
   it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const code = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.31mm, var 5.27mm], end = [var 0mm, var 0mm])
   coincident([line1.end, ORIGIN])
   line2 = line(start = [var 4.03mm, var 6.68mm], end = [var -3.31mm, var 5.27mm])
