@@ -86,7 +86,6 @@ import {
   Transaction,
   type TransactionSpec,
 } from '@codemirror/state'
-import type { ChangeSpec } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { EditorView, drawSelection, keymap } from '@codemirror/view'
 import {
