@@ -22,16 +22,13 @@ describe('snapping', () => {
   describe('getCoincidentSegmentsForSnapTarget', () => {
     it('supports line, arc, and circle snap targets', () => {
       expect(
-        getCoincidentSegmentsForSnapTarget(5, { type: 'line', lineId: 10 })
+        getCoincidentSegmentsForSnapTarget(5, { type: 'line', id: 10 })
       ).toEqual([5, 10])
       expect(
-        getCoincidentSegmentsForSnapTarget(5, { type: 'arc', arcId: 11 })
+        getCoincidentSegmentsForSnapTarget(5, { type: 'arc', id: 11 })
       ).toEqual([5, 11])
       expect(
-        getCoincidentSegmentsForSnapTarget(5, {
-          type: 'circle',
-          circleId: 12,
-        })
+        getCoincidentSegmentsForSnapTarget(5, { type: 'circle', id: 12 })
       ).toEqual([5, 12])
     })
   })
@@ -49,7 +46,7 @@ describe('snapping', () => {
       )
 
       expect(result[0]).toEqual({
-        target: { type: 'line', lineId: 3 },
+        target: { type: 'line', id: 3 },
         distance: 5,
         position: [12, 20],
       })
@@ -67,7 +64,7 @@ describe('snapping', () => {
         createMockSceneInfra()
       )
 
-      expect(result[0]?.target).toEqual({ type: 'arc', arcId: 4 })
+      expect(result[0]?.target).toEqual({ type: 'arc', id: 4 })
       expect(result[0]?.position[0]).toBeCloseTo(21.213203, 5)
       expect(result[0]?.position[1]).toBeCloseTo(21.213203, 5)
     })
@@ -83,7 +80,7 @@ describe('snapping', () => {
         createMockSceneInfra()
       )
 
-      expect(result[0]?.target).toEqual({ type: 'circle', circleId: 3 })
+      expect(result[0]?.target).toEqual({ type: 'circle', id: 3 })
       expect(result[0]?.position[0]).toBeCloseTo(40, 5)
       expect(result[0]?.position[1]).toBeCloseTo(70, 5)
     })
@@ -100,8 +97,8 @@ describe('snapping', () => {
         createMockSceneInfra()
       )
 
-      expect(result[0]?.target).toEqual({ type: 'point', pointId: 4 })
-      expect(result[1]?.target).toEqual({ type: 'line', lineId: 3 })
+      expect(result[0]?.target).toEqual({ type: 'point', id: 4 })
+      expect(result[1]?.target).toEqual({ type: 'line', id: 3 })
     })
   })
 })

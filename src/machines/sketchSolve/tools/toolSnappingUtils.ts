@@ -4,10 +4,11 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   allowSnapping,
-  getSegmentIdForSnapTarget,
+  getObjectIdForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
   type SnappingCandidate,
@@ -57,8 +58,8 @@ export function sendHoveredSnappingCandidate(
   let hoveredId: SketchSolveSelectionId | null = null
   if (snappingCandidate?.target.type === ORIGIN_TARGET) {
     hoveredId = ORIGIN_TARGET
-  } else if (isPointSnapTarget(snappingCandidate?.target)) {
-    hoveredId = snappingCandidate.target.pointId
+  } else {
+    hoveredId = getObjectIdForSnapTarget(snappingCandidate?.target)
   }
   sendHoveredId(self, hoveredId)
 }
@@ -103,12 +104,7 @@ export function getBestSnappingCandidate({
 
   for (const pointId of excludedPointIdSet) {
     const point = currentSketchObjects[pointId]
-    if (
-      point &&
-      point.kind.type === 'Segment' &&
-      point.kind.segment.type === 'Point' &&
-      point.kind.segment.owner !== null
-    ) {
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIdSet.add(point.kind.segment.owner)
     }
   }
@@ -117,10 +113,10 @@ export function getBestSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (isPointSnapTarget(candidate.target)) {
-          return !excludedPointIdSet.has(candidate.target.pointId)
+          return !excludedPointIdSet.has(candidate.target.id)
         }
 
-        const snapTargetSegmentId = getSegmentIdForSnapTarget(candidate.target)
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
         return (
           snapTargetSegmentId === null ||
           !excludedSegmentIdSet.has(snapTargetSegmentId)

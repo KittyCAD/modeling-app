@@ -424,7 +424,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       sendHoveredSnappingCandidate(self, {
         target: {
           type: 'point',
-          pointId: tangentTarget.apiObject.id,
+          id: tangentTarget.apiObject.id,
         },
         distance: 0,
         position: pointToCoords2d(tangentTarget.apiObject),
@@ -434,7 +434,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         target: {
           target: {
             type: 'point',
-            pointId: tangentTarget.apiObject.id,
+            id: tangentTarget.apiObject.id,
           },
           distance: 0,
           position: tangentTarget.tangentInfo.tangentStart.position,

@@ -1,7 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { getBestSnappingCandidate } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import {
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 import {
   createLineApiObject,
   createMockSceneInfra,
@@ -27,6 +30,30 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
 }
 
 describe('toolSnappingUtils', () => {
+  it('sends the snapped segment id for non-point snapping targets', () => {
+    const send = vi.fn()
+
+    sendHoveredSnappingCandidate(
+      {
+        _parent: {
+          send,
+        },
+      },
+      {
+        target: { type: 'line', id: 6 },
+        distance: 2,
+        position: [32, 55],
+      }
+    )
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 6,
+      },
+    })
+  })
+
   it('skips the excluded point owner segment and falls through to another segment target', () => {
     const draftStart = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
     const draftEnd = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
@@ -63,7 +90,7 @@ describe('toolSnappingUtils', () => {
       excludedPointIds: [2],
     })
 
-    expect(candidate?.target).toEqual({ type: 'line', lineId: 6 })
+    expect(candidate?.target).toEqual({ type: 'line', id: 6 })
     expect(candidate?.position).toEqual([32, 55])
   })
 })

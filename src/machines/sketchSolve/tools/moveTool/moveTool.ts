@@ -50,7 +50,8 @@ import {
   type SnappingCandidate,
   allowSnapping,
   getConstraintForSnapTarget,
-  getSegmentIdForSnapTarget,
+  getObjectIdForSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
@@ -281,12 +282,7 @@ function getDragPointSnappingCandidate({
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
-    if (
-      point &&
-      point.kind.type === 'Segment' &&
-      point.kind.segment.type === 'Point' &&
-      point.kind.segment.owner !== null
-    ) {
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIds.add(point.kind.segment.owner)
     }
   }
@@ -301,10 +297,10 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (isPointSnapTarget(candidate.target)) {
-          return !coincidentPointIds.includes(candidate.target.pointId)
+          return !coincidentPointIds.includes(candidate.target.id)
         }
 
-        const snapTargetSegmentId = getSegmentIdForSnapTarget(candidate.target)
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
         return (
           snapTargetSegmentId === null ||
           !excludedSegmentIds.has(snapTargetSegmentId)
@@ -324,6 +320,25 @@ function hasCoincidentConstraintWithOrigin(
       isConstraint(obj, 'Coincident') &&
       obj.kind.constraint.segments.includes(pointId) &&
       obj.kind.constraint.segments.includes('ORIGIN')
+  )
+}
+
+function hasCoincidentConstraintForSnapTarget(
+  pointId: number,
+  target: SnappingCandidate['target'],
+  objects: ApiObject[]
+) {
+  const coincidentSegments = getCoincidentSegmentsForSnapTarget(pointId, target)
+  if (coincidentSegments === null) {
+    return false
+  }
+
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      coincidentSegments.every((segment) =>
+        obj.kind.constraint.segments.includes(segment)
+      )
   )
 }
 
@@ -993,9 +1008,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     sendHoveredState(
       candidate?.target?.type === ORIGIN_TARGET
         ? ORIGIN_TARGET
-        : isPointSnapTarget(candidate?.target)
-          ? candidate.target.pointId
-          : null
+        : getObjectIdForSnapTarget(candidate?.target)
     )
   }
 
@@ -1213,13 +1226,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 }
               }
             } else {
-              result = await context.rustContext.addConstraint(
-                SKETCH_FILE_VERSION,
-                context.sketchId,
-                snapConstraint,
-                settings,
-                true
-              )
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              if (
+                hasCoincidentConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target,
+                  objects
+                )
+              ) {
+                result = editResult
+              } else {
+                result = await context.rustContext.addConstraint(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId,
+                  snapConstraint,
+                  settings,
+                  true
+                )
+              }
             }
           } else {
             const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
