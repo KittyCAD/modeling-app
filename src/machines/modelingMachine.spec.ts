@@ -1598,8 +1598,6 @@ sketch001 = sketch(on = YZ) {
         machineManager,
       } = await buildTheWorldAndNoEngineConnection()
 
-      kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode = true
-
       const context = generateModelingMachineDefaultContext({
         kclManager,
         rustContext,
