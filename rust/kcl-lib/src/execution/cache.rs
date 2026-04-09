@@ -164,6 +164,8 @@ impl SketchModeState {
         Self {
             stack: Stack::new_for_tests(),
             module_infos: ModuleInfoMap::default(),
+            path_to_source_id: Default::default(),
+            id_to_source: Default::default(),
             scene_objects: Vec::new(),
         }
     }
