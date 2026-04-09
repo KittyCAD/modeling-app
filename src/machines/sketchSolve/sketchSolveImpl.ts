@@ -1083,10 +1083,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     'Sketch solver failed to find a solution'
   )
 
-  // Update scene immediately - no delay, no flicker
-  // This is wired through a CodeMirror StateEffect so that
-  // an extension (in @src/editor/plugins/sketch.ts) can apply its
-  // effects while undoing as well.
+  // If the incoming KCL differs from the current editor doc, apply the scene
+  // immediately for responsiveness, but keep that scene-only dispatch out of
+  // history. Checkpoint-backed undo is the only restore mechanism for
+  // committed sketch edits.
   const additionalSpec = {
     sketchCheckpointId: event.data.checkpointId,
     effects: [
@@ -1111,6 +1111,9 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     })
   }
 
+  // Strip scene effects from the follow-up editor update when we already
+  // dispatched them above. This avoids double-applying the same scene delta
+  // and creating extra scene-only history entries.
   const editorAdditionalSpec = shouldDispatchSceneImmediately
     ? {
         ...additionalSpec,
