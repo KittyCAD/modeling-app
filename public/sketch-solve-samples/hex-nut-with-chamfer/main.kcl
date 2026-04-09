@@ -106,4 +106,4 @@ nutWithChamfer = intersect([nutSolid, chamferedCircularSolid])
 appearance(nutWithChamfer, color = "#0040ff")
 
 hide(hexProfile)
-hide(chamferCircleSketch
+hide(chamferCircleSketch)
