@@ -24,6 +24,7 @@ import type {
 } from '@src/lang/wasm'
 import {
   emptyExecState,
+  execStateFromRust,
   getKclVersion,
   getSketchCheckpointLimit,
   parse,
@@ -965,6 +966,17 @@ export class KclManager extends File {
     if (ds === this._sketchSolveDiagnostics.value) return
     this._sketchSolveDiagnostics.value = ds
     this.setDiagnosticsForCurrentErrors()
+  }
+
+  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+    const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
+
+    this.execState = execState
+    this.lastSuccessfulVariables = execState.variables
+    this.lastSuccessfulOperations = execState.operations
+    this.lastSuccessfulCode = code
+    this.dispatchUpdateOperations(execState.operations)
+    void this.updateArtifactGraph(execState.artifactGraph)
   }
 
   hasErrors(): boolean {
