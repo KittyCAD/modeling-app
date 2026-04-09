@@ -4557,11 +4557,11 @@ pub(crate) async fn execute_trim_operations_simple(
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                         crate::frontend::sketch::Segment::Circle(circle) => match &circle.ctor {
                             SegmentCtor::Circle(circle_ctor) => (circle.start, circle.center, circle_ctor.clone()),
-                            _ => return Err("Circle does not have a Circle ctor".to_owned()),
+                            _ => return Err("Circle does not have a Circle ctor".to_string()),
                         },
-                        _ => return Err("Original segment is not a circle".to_owned()),
+                        _ => return Err("Original segment is not a circle".to_string()),
                     },
-                    _ => return Err("Original object is not a segment".to_owned()),
+                    _ => return Err("Original object is not a segment".to_string()),
                 };
 
                 let units = match &circle_ctor.start.x {
@@ -4604,7 +4604,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                 )
                             })
                     })
-                    .ok_or_else(|| "Failed to find newly created arc segment".to_owned())?;
+                    .ok_or_else(|| "Failed to find newly created arc segment".to_string())?;
 
                 let new_arc_obj = add_scene_graph_delta
                     .new_graph
@@ -4615,9 +4615,9 @@ pub(crate) async fn execute_trim_operations_simple(
                 let (new_arc_start_id, new_arc_end_id, new_arc_center_id) = match &new_arc_obj.kind {
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                         crate::frontend::sketch::Segment::Arc(arc) => (arc.start, arc.end, arc.center),
-                        _ => return Err("New segment is not an arc".to_owned()),
+                        _ => return Err("New segment is not an arc".to_string()),
                     },
-                    _ => return Err("New arc object is not a segment".to_owned()),
+                    _ => return Err("New arc object is not a segment".to_string()),
                 };
 
                 let constraint_segments_for =
@@ -4633,7 +4633,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                 ..
                             } => Ok(vec![arc_endpoint_id.into(), (*other_segment_point_id).into()]),
                             TrimTermination::SegEndPoint { .. } => {
-                                Err("Circle replacement endpoint cannot terminate at seg endpoint".to_owned())
+                                Err("Circle replacement endpoint cannot terminate at seg endpoint".to_string())
                             }
                         }
                     };
