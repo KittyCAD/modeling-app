@@ -4612,7 +4612,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 let constraint_segments_for =
                     |arc_endpoint_id: ObjectId,
                      term: &TrimTermination|
-                     -> Result<Vec<crate::frontend::sketch::CoincidentSegment>, String> {
+                     -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
                         match term {
                             TrimTermination::Intersection {
                                 intersecting_seg_id, ..
@@ -4697,15 +4697,15 @@ pub(crate) async fn execute_trim_operations_simple(
                                 continue;
                             }
 
-                            let new_segments: Vec<crate::frontend::sketch::CoincidentSegment> = coincident
+                            let new_segments: Vec<crate::frontend::sketch::ConstraintSegment> = coincident
                                 .segments
                                 .iter()
                                 .map(|segment| match segment {
-                                    crate::frontend::sketch::CoincidentSegment::Segment(id) => {
-                                        crate::frontend::sketch::CoincidentSegment::Segment(replace_segment_id(*id))
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
                                     }
-                                    crate::frontend::sketch::CoincidentSegment::Origin(origin) => {
-                                        crate::frontend::sketch::CoincidentSegment::Origin(*origin)
+                                    crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+                                        crate::frontend::sketch::ConstraintSegment::Origin(*origin)
                                     }
                                 })
                                 .collect();
@@ -4716,8 +4716,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             let migrated_ids: Vec<ObjectId> = new_segments
                                 .iter()
                                 .filter_map(|segment| match segment {
-                                    crate::frontend::sketch::CoincidentSegment::Segment(id) => Some(*id),
-                                    crate::frontend::sketch::CoincidentSegment::Origin(_) => None,
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => Some(*id),
+                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => None,
                                 })
                                 .collect();
                             if migrated_ids.contains(&new_arc_id)
@@ -4731,14 +4731,21 @@ pub(crate) async fn execute_trim_operations_simple(
                             }));
                         }
                         Constraint::Distance(distance) => {
-                            if !distance
-                                .points
-                                .iter()
-                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            if !distance.contains_point(original_circle_center_id)
+                                && !distance.contains_point(original_circle_start_id)
                             {
                                 continue;
                             }
-                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
+                                .points
+                                .iter()
+                                .map(|point| match point {
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
+                                    }
+                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
+                                })
+                                .collect();
                             migrated_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
                                 points: new_points,
                                 distance: distance.distance,
@@ -4746,14 +4753,21 @@ pub(crate) async fn execute_trim_operations_simple(
                             }));
                         }
                         Constraint::HorizontalDistance(distance) => {
-                            if !distance
-                                .points
-                                .iter()
-                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            if !distance.contains_point(original_circle_center_id)
+                                && !distance.contains_point(original_circle_start_id)
                             {
                                 continue;
                             }
-                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
+                                .points
+                                .iter()
+                                .map(|point| match point {
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
+                                    }
+                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
+                                })
+                                .collect();
                             migrated_constraints.push(Constraint::HorizontalDistance(
                                 crate::frontend::sketch::Distance {
                                     points: new_points,
@@ -4763,14 +4777,21 @@ pub(crate) async fn execute_trim_operations_simple(
                             ));
                         }
                         Constraint::VerticalDistance(distance) => {
-                            if !distance
-                                .points
-                                .iter()
-                                .any(|id| *id == original_circle_center_id || *id == original_circle_start_id)
+                            if !distance.contains_point(original_circle_center_id)
+                                && !distance.contains_point(original_circle_start_id)
                             {
                                 continue;
                             }
-                            let new_points = distance.points.iter().map(|id| replace_segment_id(*id)).collect();
+                            let new_points: Vec<crate::frontend::sketch::ConstraintSegment> = distance
+                                .points
+                                .iter()
+                                .map(|point| match point {
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id) => {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(replace_segment_id(*id))
+                                    }
+                                    crate::frontend::sketch::ConstraintSegment::Origin(_) => *point,
+                                })
+                                .collect();
                             migrated_constraints.push(Constraint::VerticalDistance(
                                 crate::frontend::sketch::Distance {
                                     points: new_points,
