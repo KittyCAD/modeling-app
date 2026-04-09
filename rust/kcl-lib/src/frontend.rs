@@ -5112,9 +5112,9 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
+    use crate::execution::cache::SketchModeState;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
-    use crate::execution::cache::SketchModeState;
     use crate::execution::cache::write_old_memory;
     use crate::front::Distance;
     use crate::front::Fixed;
