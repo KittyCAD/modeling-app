@@ -1181,6 +1181,226 @@ fn load_curve_handle(
     }
 }
 
+fn project_point_onto_curve(curve: CurveHandle, point: Coords2d) -> Result<f64, String> {
+    curve.project_for_trim(point)
+}
+
+fn curve_contains_point(curve: CurveHandle, point: Coords2d, epsilon: f64) -> bool {
+    match (curve.kind, curve.domain) {
+        (CurveKind::Line, CurveDomain::Open) => {
+            let t = project_point_onto_segment(point, curve.start, curve.end);
+            (0.0..=1.0).contains(&t) && perpendicular_distance_to_segment(point, curve.start, curve.end) <= epsilon
+        }
+        (CurveKind::Circular, CurveDomain::Open) => curve
+            .center
+            .is_some_and(|center| is_point_on_arc(point, center, curve.start, curve.end, epsilon)),
+        (CurveKind::Circular, CurveDomain::Closed) => curve.center.is_some_and(|center| {
+            let radius = curve
+                .radius
+                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            is_point_on_circle(point, center, radius, epsilon)
+        }),
+        (CurveKind::Line, CurveDomain::Closed) => false,
+    }
+}
+
+fn curve_line_segment_intersections(
+    curve: CurveHandle,
+    line_start: Coords2d,
+    line_end: Coords2d,
+    epsilon: f64,
+) -> Vec<(f64, Coords2d)> {
+    match (curve.kind, curve.domain) {
+        (CurveKind::Line, CurveDomain::Open) => {
+            line_segment_intersection(line_start, line_end, curve.start, curve.end, epsilon)
+                .map(|intersection| {
+                    (
+                        project_point_onto_segment(intersection, line_start, line_end),
+                        intersection,
+                    )
+                })
+                .into_iter()
+                .collect()
+        }
+        (CurveKind::Circular, CurveDomain::Open) => curve
+            .center
+            .and_then(|center| line_arc_intersection(line_start, line_end, center, curve.start, curve.end, epsilon))
+            .map(|intersection| {
+                (
+                    project_point_onto_segment(intersection, line_start, line_end),
+                    intersection,
+                )
+            })
+            .into_iter()
+            .collect(),
+        (CurveKind::Circular, CurveDomain::Closed) => {
+            let Some(center) = curve.center else {
+                return Vec::new();
+            };
+            let radius = curve
+                .radius
+                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            line_circle_intersections(line_start, line_end, center, radius, epsilon)
+        }
+        (CurveKind::Line, CurveDomain::Closed) => Vec::new(),
+    }
+}
+
+fn curve_polyline_intersections(curve: CurveHandle, polyline: &[Coords2d], epsilon: f64) -> Vec<(Coords2d, usize)> {
+    let mut intersections = Vec::new();
+
+    for i in 0..polyline.len().saturating_sub(1) {
+        let p1 = polyline[i];
+        let p2 = polyline[i + 1];
+        for (_, intersection) in curve_line_segment_intersections(curve, p1, p2, epsilon) {
+            intersections.push((intersection, i));
+        }
+    }
+
+    intersections
+}
+
+fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f64) -> Vec<Coords2d> {
+    match (curve.kind, curve.domain, other.kind, other.domain) {
+        (CurveKind::Line, CurveDomain::Open, CurveKind::Line, CurveDomain::Open) => {
+            line_segment_intersection(curve.start, curve.end, other.start, other.end, epsilon)
+                .into_iter()
+                .collect()
+        }
+        (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => other
+            .center
+            .and_then(|other_center| {
+                line_arc_intersection(curve.start, curve.end, other_center, other.start, other.end, epsilon)
+            })
+            .into_iter()
+            .collect(),
+        (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Closed) => {
+            let Some(other_center) = other.center else {
+                return Vec::new();
+            };
+            let other_radius = other.radius.unwrap_or_else(|| {
+                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+            });
+            line_circle_intersections(curve.start, curve.end, other_center, other_radius, epsilon)
+                .into_iter()
+                .map(|(_, point)| point)
+                .collect()
+        }
+        (CurveKind::Circular, CurveDomain::Open, CurveKind::Line, CurveDomain::Open) => curve
+            .center
+            .and_then(|curve_center| {
+                line_arc_intersection(other.start, other.end, curve_center, curve.start, curve.end, epsilon)
+            })
+            .into_iter()
+            .collect(),
+        (CurveKind::Circular, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => {
+            let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
+                return Vec::new();
+            };
+            arc_arc_intersections(
+                curve_center,
+                curve.start,
+                curve.end,
+                other_center,
+                other.start,
+                other.end,
+                epsilon,
+            )
+        }
+        (CurveKind::Circular, CurveDomain::Open, CurveKind::Circular, CurveDomain::Closed) => {
+            let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
+                return Vec::new();
+            };
+            let other_radius = other.radius.unwrap_or_else(|| {
+                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+            });
+            circle_arc_intersections(
+                other_center,
+                other_radius,
+                curve_center,
+                curve.start,
+                curve.end,
+                epsilon,
+            )
+        }
+        (CurveKind::Circular, CurveDomain::Closed, CurveKind::Line, CurveDomain::Open) => {
+            let Some(curve_center) = curve.center else {
+                return Vec::new();
+            };
+            let curve_radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+            });
+            line_circle_intersections(other.start, other.end, curve_center, curve_radius, epsilon)
+                .into_iter()
+                .map(|(_, point)| point)
+                .collect()
+        }
+        (CurveKind::Circular, CurveDomain::Closed, CurveKind::Circular, CurveDomain::Open) => {
+            let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
+                return Vec::new();
+            };
+            let curve_radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+            });
+            circle_arc_intersections(
+                curve_center,
+                curve_radius,
+                other_center,
+                other.start,
+                other.end,
+                epsilon,
+            )
+        }
+        (CurveKind::Circular, CurveDomain::Closed, CurveKind::Circular, CurveDomain::Closed) => {
+            let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
+                return Vec::new();
+            };
+            let curve_radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+            });
+            let other_radius = other.radius.unwrap_or_else(|| {
+                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+            });
+            circle_circle_intersections(curve_center, curve_radius, other_center, other_radius, epsilon)
+        }
+        _ => Vec::new(),
+    }
+}
+
+fn segment_endpoint_points(
+    segment_obj: &Object,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Vec<(ObjectId, Coords2d)> {
+    let ObjectKind::Segment { segment } = &segment_obj.kind else {
+        return Vec::new();
+    };
+
+    match segment {
+        Segment::Line(line) => {
+            let mut points = Vec::new();
+            if let Some(start) = get_position_coords_for_line(segment_obj, LineEndpoint::Start, objects, default_unit) {
+                points.push((line.start, start));
+            }
+            if let Some(end) = get_position_coords_for_line(segment_obj, LineEndpoint::End, objects, default_unit) {
+                points.push((line.end, end));
+            }
+            points
+        }
+        Segment::Arc(arc) => {
+            let mut points = Vec::new();
+            if let Some(start) = get_position_coords_from_arc(segment_obj, ArcPoint::Start, objects, default_unit) {
+                points.push((arc.start, start));
+            }
+            if let Some(end) = get_position_coords_from_arc(segment_obj, ArcPoint::End, objects, default_unit) {
+                points.push((arc.end, end));
+            }
+            points
+        }
+        _ => Vec::new(),
+    }
+}
+
 /// Find the next trim spawn (intersection) between trim line and scene segments
 ///
 /// When a user draws a trim line, we loop over each pairs of points of the trim line,
@@ -1214,76 +1434,25 @@ pub fn get_next_trim_spawn(
     objects: &[Object],
     default_unit: UnitLength,
 ) -> TrimItem {
+    let scene_curves: Vec<CurveHandle> = objects
+        .iter()
+        .filter_map(|obj| load_curve_handle(obj, objects, default_unit).ok())
+        .collect();
+
     // Loop through polyline segments starting from startIndex
     for i in start_index..points.len().saturating_sub(1) {
         let p1 = points[i];
         let p2 = points[i + 1];
 
         // Check this polyline segment against all scene segments
-        for obj in objects.iter() {
-            // Check if it's a Segment
-            let ObjectKind::Segment { segment } = &obj.kind else {
-                continue;
-            };
-
-            // Handle Line segments
-            if let Segment::Line(_line) = segment {
-                let start_point = get_position_coords_for_line(obj, LineEndpoint::Start, objects, default_unit);
-                let end_point = get_position_coords_for_line(obj, LineEndpoint::End, objects, default_unit);
-
-                if let (Some(start), Some(end)) = (start_point, end_point)
-                    && let Some(intersection) = line_segment_intersection(p1, p2, start, end, EPSILON_POINT_ON_SEGMENT)
-                {
-                    // Get segment ID from object
-                    let seg_id = obj.id;
-
-                    return TrimItem::Spawn {
-                        trim_spawn_seg_id: seg_id,
-                        trim_spawn_coords: intersection,
-                        next_index: i, // Return current index to re-check same polyline segment
-                    };
-                }
-            }
-
-            // Handle Arc segments
-            if let Segment::Arc(_arc) = segment {
-                let center_point = get_position_coords_from_arc(obj, ArcPoint::Center, objects, default_unit);
-                let start_point = get_position_coords_from_arc(obj, ArcPoint::Start, objects, default_unit);
-                let end_point = get_position_coords_from_arc(obj, ArcPoint::End, objects, default_unit);
-
-                if let (Some(center), Some(start), Some(end)) = (center_point, start_point, end_point)
-                    && let Some(intersection) =
-                        line_arc_intersection(p1, p2, center, start, end, EPSILON_POINT_ON_SEGMENT)
-                {
-                    // Get segment ID from object
-                    let seg_id = obj.id;
-
-                    return TrimItem::Spawn {
-                        trim_spawn_seg_id: seg_id,
-                        trim_spawn_coords: intersection,
-                        next_index: i, // Return current index to re-check same polyline segment
-                    };
-                }
-            }
-
-            // Handle Circle segments
-            if let Segment::Circle(_circle) = segment {
-                let center_point = get_position_coords_from_circle(obj, CirclePoint::Center, objects, default_unit);
-                let start_point = get_position_coords_from_circle(obj, CirclePoint::Start, objects, default_unit);
-
-                if let (Some(center), Some(start)) = (center_point, start_point) {
-                    let radius = ((start.x - center.x) * (start.x - center.x)
-                        + (start.y - center.y) * (start.y - center.y))
-                        .sqrt();
-                    let intersections = line_circle_intersections(p1, p2, center, radius, EPSILON_POINT_ON_SEGMENT);
-                    if let Some((_, intersection)) = intersections.first() {
-                        return TrimItem::Spawn {
-                            trim_spawn_seg_id: obj.id,
-                            trim_spawn_coords: *intersection,
-                            next_index: i,
-                        };
-                    }
-                }
+        for curve in &scene_curves {
+            let intersections = curve_line_segment_intersections(*curve, p1, p2, EPSILON_POINT_ON_SEGMENT);
+            if let Some((_, intersection)) = intersections.first() {
+                return TrimItem::Spawn {
+                    trim_spawn_seg_id: curve.segment_id,
+                    trim_spawn_coords: *intersection,
+                    next_index: i,
+                };
             }
         }
     }
@@ -1364,11 +1533,6 @@ pub fn get_trim_spawn_terminations(
         }
     };
 
-    // Get segment coordinates using native types
-    let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
-        return Err(format!("Trim spawn segment {} is not a segment", trim_spawn_seg_id.0));
-    };
-
     let trim_curve = load_curve_handle(trim_spawn_seg, objects, default_unit).map_err(|e| {
         format!(
             "Failed to load trim spawn segment {} as normalized curve: {}",
@@ -1376,55 +1540,11 @@ pub fn get_trim_spawn_terminations(
         )
     })?;
 
-    let segment_start = trim_curve.start;
-    let segment_end = trim_curve.end;
-    let segment_center = trim_curve.center;
-
     // Find intersection point between polyline and trim spawn segment
     // trimSpawnCoords is a polyline, so we check each segment
     // We need to find ALL intersections and use a consistent one to avoid
     // different results for different trim lines in the same area
-    let mut all_intersections: Vec<(Coords2d, usize)> = Vec::new();
-
-    for i in 0..trim_spawn_coords.len().saturating_sub(1) {
-        let p1 = trim_spawn_coords[i];
-        let p2 = trim_spawn_coords[i + 1];
-
-        match segment {
-            Segment::Line(_) => {
-                if let Some(intersection) =
-                    line_segment_intersection(p1, p2, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT)
-                {
-                    all_intersections.push((intersection, i));
-                }
-            }
-            Segment::Arc(_) => {
-                if let Some(center) = segment_center
-                    && let Some(intersection) =
-                        line_arc_intersection(p1, p2, center, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT)
-                {
-                    all_intersections.push((intersection, i));
-                }
-            }
-            Segment::Circle(_) => {
-                if let Some(center) = segment_center {
-                    let radius = trim_curve.radius.ok_or_else(|| {
-                        format!(
-                            "Trim spawn segment {} missing radius for circle intersection",
-                            trim_spawn_seg_id.0
-                        )
-                    })?;
-                    for (_, intersection) in line_circle_intersections(p1, p2, center, radius, EPSILON_POINT_ON_SEGMENT)
-                    {
-                        all_intersections.push((intersection, i));
-                    }
-                }
-            }
-            Segment::Point(_) => {
-                // Points don't have intersections with line segments in the trim context.
-            }
-        }
-    }
+    let all_intersections = curve_polyline_intersections(trim_curve, trim_spawn_coords, EPSILON_POINT_ON_SEGMENT);
 
     // Use the intersection that's closest to the middle of the polyline
     // This ensures consistent results regardless of which segment intersects first
@@ -1453,34 +1573,24 @@ pub fn get_trim_spawn_terminations(
     };
 
     // Project intersection point onto segment to get parametric position
-    let intersection_t = trim_curve.project_for_trim(intersection_point)?;
+    let intersection_t = project_point_onto_curve(trim_curve, intersection_point)?;
 
     // Find terminations on both sides
     let left_termination = find_termination_in_direction(
         trim_spawn_seg,
-        intersection_point,
+        trim_curve,
         intersection_t,
         TrimDirection::Left,
         objects,
-        SegmentGeometry {
-            start: segment_start,
-            end: segment_end,
-            center: segment_center,
-        },
         default_unit,
     )?;
 
     let right_termination = find_termination_in_direction(
         trim_spawn_seg,
-        intersection_point,
+        trim_curve,
         intersection_t,
         TrimDirection::Right,
         objects,
-        SegmentGeometry {
-            start: segment_start,
-            end: segment_end,
-            center: segment_center,
-        },
         default_unit,
     )?;
 
@@ -1488,14 +1598,6 @@ pub fn get_trim_spawn_terminations(
         left_side: left_termination,
         right_side: right_termination,
     })
-}
-
-/// Segment geometry information
-#[derive(Debug, Clone, Copy)]
-struct SegmentGeometry {
-    start: Coords2d,
-    end: Coords2d,
-    center: Option<Coords2d>,
 }
 
 /// Helper to find trim termination in a given direction from the intersection point
@@ -1552,11 +1654,10 @@ struct SegmentGeometry {
 /// If no candidates are found in a direction, defaults to "segEndPoint".
 fn find_termination_in_direction(
     trim_spawn_seg: &Object,
-    _intersection_point: Coords2d,
+    trim_curve: CurveHandle,
     intersection_t: f64,
     direction: TrimDirection,
     objects: &[Object],
-    segment_geometry: SegmentGeometry,
     default_unit: UnitLength,
 ) -> Result<TrimTermination, String> {
     // Use native types
@@ -1588,14 +1689,14 @@ fn find_termination_in_direction(
         Segment::Line(line) => {
             candidates.push(Candidate {
                 t: 0.0,
-                point: segment_geometry.start,
+                point: trim_curve.start,
                 candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(line.start),
             });
             candidates.push(Candidate {
                 t: 1.0,
-                point: segment_geometry.end,
+                point: trim_curve.end,
                 candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(line.end),
@@ -1605,14 +1706,14 @@ fn find_termination_in_direction(
             // For arcs, endpoints are at t=0 and t=1 conceptually
             candidates.push(Candidate {
                 t: 0.0,
-                point: segment_geometry.start,
+                point: trim_curve.start,
                 candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(arc.start),
             });
             candidates.push(Candidate {
                 t: 1.0,
-                point: segment_geometry.end,
+                point: trim_curve.end,
                 candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(arc.end),
@@ -1627,535 +1728,49 @@ fn find_termination_in_direction(
     // Get trim spawn segment ID for comparison
     let trim_spawn_seg_id = trim_spawn_seg.id;
 
-    // Find intersections with other segments using native types
+    // Find intersections and coincident endpoint candidates against all other segments.
     for other_seg in objects.iter() {
-        // Skip if same segment or not a segment
         let other_id = other_seg.id;
-
         if other_id == trim_spawn_seg_id {
             continue;
         }
 
-        let ObjectKind::Segment { segment: other_segment } = &other_seg.kind else {
-            continue;
-        };
-
-        // Handle Line-Line, Line-Arc, Arc-Line, Arc-Arc intersections
-        match other_segment {
-            Segment::Line(_) => {
-                let other_start = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects, default_unit);
-                let other_end = get_position_coords_for_line(other_seg, LineEndpoint::End, objects, default_unit);
-                if let (Some(os), Some(oe)) = (other_start, other_end) {
-                    match segment {
-                        Segment::Line(_) => {
-                            if let Some(intersection) = line_segment_intersection(
-                                segment_geometry.start,
-                                segment_geometry.end,
-                                os,
-                                oe,
-                                EPSILON_POINT_ON_SEGMENT,
-                            ) {
-                                let t = project_point_onto_segment(
-                                    intersection,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: CandidateType::Intersection,
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center
-                                && let Some(intersection) = line_arc_intersection(
-                                    os,
-                                    oe,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                )
-                            {
-                                let t = project_point_onto_arc(
-                                    intersection,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: CandidateType::Intersection,
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                for (_, intersection) in
-                                    line_circle_intersections(os, oe, center, radius, EPSILON_POINT_ON_SEGMENT)
-                                {
-                                    let t = project_point_onto_circle(intersection, center, segment_geometry.start);
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: CandidateType::Intersection,
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
+        if let Ok(other_curve) = load_curve_handle(other_seg, objects, default_unit) {
+            for intersection in curve_curve_intersections(trim_curve, other_curve, EPSILON_POINT_ON_SEGMENT) {
+                let Ok(t) = project_point_onto_curve(trim_curve, intersection) else {
+                    continue;
+                };
+                candidates.push(Candidate {
+                    t,
+                    point: intersection,
+                    candidate_type: CandidateType::Intersection,
+                    segment_id: Some(other_id),
+                    point_id: None,
+                });
             }
-            Segment::Arc(_) => {
-                let other_start = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects, default_unit);
-                let other_end = get_position_coords_from_arc(other_seg, ArcPoint::End, objects, default_unit);
-                let other_center = get_position_coords_from_arc(other_seg, ArcPoint::Center, objects, default_unit);
-                if let (Some(os), Some(oe), Some(oc)) = (other_start, other_end, other_center) {
-                    match segment {
-                        Segment::Line(_) => {
-                            if let Some(intersection) = line_arc_intersection(
-                                segment_geometry.start,
-                                segment_geometry.end,
-                                oc,
-                                os,
-                                oe,
-                                EPSILON_POINT_ON_SEGMENT,
-                            ) {
-                                let t = project_point_onto_segment(
-                                    intersection,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: CandidateType::Intersection,
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                for intersection in arc_arc_intersections(
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    oc,
-                                    os,
-                                    oe,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                ) {
-                                    let t = project_point_onto_arc(
-                                        intersection,
-                                        center,
-                                        segment_geometry.start,
-                                        segment_geometry.end,
-                                    );
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: CandidateType::Intersection,
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                for intersection in
-                                    circle_arc_intersections(center, radius, oc, os, oe, EPSILON_POINT_ON_SEGMENT)
-                                {
-                                    let t = project_point_onto_circle(intersection, center, segment_geometry.start);
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: CandidateType::Intersection,
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            Segment::Circle(_) => {
-                let other_start = get_position_coords_from_circle(other_seg, CirclePoint::Start, objects, default_unit);
-                let other_center =
-                    get_position_coords_from_circle(other_seg, CirclePoint::Center, objects, default_unit);
-                if let (Some(os), Some(oc)) = (other_start, other_center) {
-                    let other_radius = ((os.x - oc.x) * (os.x - oc.x) + (os.y - oc.y) * (os.y - oc.y)).sqrt();
-
-                    match segment {
-                        Segment::Line(_) => {
-                            for (_, intersection) in line_circle_intersections(
-                                segment_geometry.start,
-                                segment_geometry.end,
-                                oc,
-                                other_radius,
-                                EPSILON_POINT_ON_SEGMENT,
-                            ) {
-                                let t = project_point_onto_segment(
-                                    intersection,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: CandidateType::Intersection,
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                for intersection in circle_arc_intersections(
-                                    oc,
-                                    other_radius,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                ) {
-                                    let t = project_point_onto_arc(
-                                        intersection,
-                                        center,
-                                        segment_geometry.start,
-                                        segment_geometry.end,
-                                    );
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: CandidateType::Intersection,
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                for intersection in circle_circle_intersections(
-                                    center,
-                                    radius,
-                                    oc,
-                                    other_radius,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                ) {
-                                    let t = project_point_onto_circle(intersection, center, segment_geometry.start);
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: CandidateType::Intersection,
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
         }
 
-        // Check for coincident points (check BEFORE intersections for priority)
-        // Check Line segment endpoints
-        match other_segment {
-            Segment::Line(line) => {
-                let other_start_id = line.start;
-                let other_end_id = line.end;
-
-                // Check if other segment's start endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) =
-                        get_position_coords_for_line(other_seg, LineEndpoint::Start, objects, default_unit)
-                {
-                    let (t, is_on_segment) = match segment {
-                        Segment::Line(_) => {
-                            let t =
-                                project_point_onto_segment(other_start, segment_geometry.start, segment_geometry.end);
-                            let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(
-                                    other_start,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                ) <= EPSILON_POINT_ON_SEGMENT;
-                            (t, is_on)
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let t = project_point_onto_arc(
-                                    other_start,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                let is_on = is_point_on_arc(
-                                    other_start,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                );
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                let t = project_point_onto_circle(other_start, center, segment_geometry.start);
-                                let is_on = is_point_on_circle(other_start, center, radius, EPSILON_POINT_ON_SEGMENT);
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        _ => continue,
-                    };
-
-                    if is_on_segment {
-                        candidates.push(Candidate {
-                            t,
-                            point: other_start,
-                            candidate_type: CandidateType::Coincident,
-                            segment_id: Some(other_id),
-                            point_id: Some(other_start_id),
-                        });
-                    }
-                }
-
-                // Check if other segment's end endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) =
-                        get_position_coords_for_line(other_seg, LineEndpoint::End, objects, default_unit)
-                {
-                    let (t, is_on_segment) = match segment {
-                        Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_end, segment_geometry.start, segment_geometry.end);
-                            let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(
-                                    other_end,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                ) <= EPSILON_POINT_ON_SEGMENT;
-                            (t, is_on)
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let t = project_point_onto_arc(
-                                    other_end,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                let is_on = is_point_on_arc(
-                                    other_end,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                );
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                let t = project_point_onto_circle(other_end, center, segment_geometry.start);
-                                let is_on = is_point_on_circle(other_end, center, radius, EPSILON_POINT_ON_SEGMENT);
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        _ => continue,
-                    };
-
-                    if is_on_segment {
-                        candidates.push(Candidate {
-                            t,
-                            point: other_end,
-                            candidate_type: CandidateType::Coincident,
-                            segment_id: Some(other_id),
-                            point_id: Some(other_end_id),
-                        });
-                    }
-                }
+        for (other_point_id, other_point) in segment_endpoint_points(other_seg, objects, default_unit) {
+            if !is_point_coincident_with_segment_native(other_point_id, trim_spawn_seg_id, objects) {
+                continue;
             }
-            Segment::Arc(arc) => {
-                let other_start_id = arc.start;
-                let other_end_id = arc.end;
-
-                // Check if other segment's start endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) =
-                        get_position_coords_from_arc(other_seg, ArcPoint::Start, objects, default_unit)
-                {
-                    let (t, is_on_segment) = match segment {
-                        Segment::Line(_) => {
-                            let t =
-                                project_point_onto_segment(other_start, segment_geometry.start, segment_geometry.end);
-                            let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(
-                                    other_start,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                ) <= EPSILON_POINT_ON_SEGMENT;
-                            (t, is_on)
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let t = project_point_onto_arc(
-                                    other_start,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                let is_on = is_point_on_arc(
-                                    other_start,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                );
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                let t = project_point_onto_circle(other_start, center, segment_geometry.start);
-                                let is_on = is_point_on_circle(other_start, center, radius, EPSILON_POINT_ON_SEGMENT);
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        _ => continue,
-                    };
-
-                    if is_on_segment {
-                        candidates.push(Candidate {
-                            t,
-                            point: other_start,
-                            candidate_type: CandidateType::Coincident,
-                            segment_id: Some(other_id),
-                            point_id: Some(other_start_id),
-                        });
-                    }
-                }
-
-                // Check if other segment's end endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) =
-                        get_position_coords_from_arc(other_seg, ArcPoint::End, objects, default_unit)
-                {
-                    let (t, is_on_segment) = match segment {
-                        Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_end, segment_geometry.start, segment_geometry.end);
-                            let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(
-                                    other_end,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                ) <= EPSILON_POINT_ON_SEGMENT;
-                            (t, is_on)
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let t = project_point_onto_arc(
-                                    other_end,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                );
-                                let is_on = is_point_on_arc(
-                                    other_end,
-                                    center,
-                                    segment_geometry.start,
-                                    segment_geometry.end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                );
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        Segment::Circle(_) => {
-                            if let Some(center) = segment_geometry.center {
-                                let radius = ((segment_geometry.start.x - center.x)
-                                    * (segment_geometry.start.x - center.x)
-                                    + (segment_geometry.start.y - center.y) * (segment_geometry.start.y - center.y))
-                                    .sqrt();
-                                let t = project_point_onto_circle(other_end, center, segment_geometry.start);
-                                let is_on = is_point_on_circle(other_end, center, radius, EPSILON_POINT_ON_SEGMENT);
-                                (t, is_on)
-                            } else {
-                                continue;
-                            }
-                        }
-                        _ => continue,
-                    };
-
-                    if is_on_segment {
-                        candidates.push(Candidate {
-                            t,
-                            point: other_end,
-                            candidate_type: CandidateType::Coincident,
-                            segment_id: Some(other_id),
-                            point_id: Some(other_end_id),
-                        });
-                    }
-                }
+            if !curve_contains_point(trim_curve, other_point, EPSILON_POINT_ON_SEGMENT) {
+                continue;
             }
-            _ => {}
+            let Ok(t) = project_point_onto_curve(trim_curve, other_point) else {
+                continue;
+            };
+            candidates.push(Candidate {
+                t,
+                point: other_point,
+                candidate_type: CandidateType::Coincident,
+                segment_id: Some(other_id),
+                point_id: Some(other_point_id),
+            });
         }
     }
 
-    let is_circle_segment = matches!(segment, Segment::Circle(_));
+    let is_circle_segment = trim_curve.domain == CurveDomain::Closed;
 
     // Filter candidates to exclude the intersection point itself and those on the wrong side.
     // Use a slightly larger epsilon to account for numerical precision variations.
@@ -2226,8 +1841,8 @@ fn find_termination_in_direction(
             }
             // No trim termination found, default to segment endpoint
             let endpoint = match direction {
-                TrimDirection::Left => segment_geometry.start,
-                TrimDirection::Right => segment_geometry.end,
+                TrimDirection::Left => trim_curve.start,
+                TrimDirection::Right => trim_curve.end,
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -2245,58 +1860,23 @@ fn find_termination_in_direction(
         let intersecting_seg = objects.iter().find(|obj| obj.id == seg_id);
 
         if let Some(intersecting_seg) = intersecting_seg {
-            let mut is_other_seg_endpoint = false;
             // Use a larger epsilon for checking if intersection is at another segment's endpoint
             let endpoint_epsilon = EPSILON_POINT_ON_SEGMENT * 1000.0; // 0.001mm
-
-            if let ObjectKind::Segment { segment: other_segment } = &intersecting_seg.kind {
-                match other_segment {
-                    Segment::Line(_) => {
-                        if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_for_line(intersecting_seg, LineEndpoint::Start, objects, default_unit),
-                            get_position_coords_for_line(intersecting_seg, LineEndpoint::End, objects, default_unit),
-                        ) {
-                            let dist_to_start = ((closest_candidate.point.x - other_start.x)
-                                * (closest_candidate.point.x - other_start.x)
-                                + (closest_candidate.point.y - other_start.y)
-                                    * (closest_candidate.point.y - other_start.y))
-                                .sqrt();
-                            let dist_to_end = ((closest_candidate.point.x - other_end.x)
-                                * (closest_candidate.point.x - other_end.x)
-                                + (closest_candidate.point.y - other_end.y)
-                                    * (closest_candidate.point.y - other_end.y))
-                                .sqrt();
-                            is_other_seg_endpoint = dist_to_start < endpoint_epsilon || dist_to_end < endpoint_epsilon;
-                        }
-                    }
-                    Segment::Arc(_) => {
-                        if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_from_arc(intersecting_seg, ArcPoint::Start, objects, default_unit),
-                            get_position_coords_from_arc(intersecting_seg, ArcPoint::End, objects, default_unit),
-                        ) {
-                            let dist_to_start = ((closest_candidate.point.x - other_start.x)
-                                * (closest_candidate.point.x - other_start.x)
-                                + (closest_candidate.point.y - other_start.y)
-                                    * (closest_candidate.point.y - other_start.y))
-                                .sqrt();
-                            let dist_to_end = ((closest_candidate.point.x - other_end.x)
-                                * (closest_candidate.point.x - other_end.x)
-                                + (closest_candidate.point.y - other_end.y)
-                                    * (closest_candidate.point.y - other_end.y))
-                                .sqrt();
-                            is_other_seg_endpoint = dist_to_start < endpoint_epsilon || dist_to_end < endpoint_epsilon;
-                        }
-                    }
-                    _ => {}
-                }
-            }
+            let is_other_seg_endpoint = segment_endpoint_points(intersecting_seg, objects, default_unit)
+                .into_iter()
+                .any(|(_, endpoint)| {
+                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).powi(2)
+                        + (closest_candidate.point.y - endpoint.y).powi(2))
+                    .sqrt();
+                    dist_to_endpoint < endpoint_epsilon
+                });
 
             // If the intersection point is another segment's endpoint (even without coincident constraint),
             // return segEndPoint instead of intersection
             if is_other_seg_endpoint {
                 let endpoint = match direction {
-                    TrimDirection::Left => segment_geometry.start,
-                    TrimDirection::Right => segment_geometry.end,
+                    TrimDirection::Left => trim_curve.start,
+                    TrimDirection::Right => trim_curve.end,
                 };
                 return Ok(TrimTermination::SegEndPoint {
                     trim_termination_coords: endpoint,
@@ -2310,8 +1890,8 @@ fn find_termination_in_direction(
             TrimDirection::Right => 1.0,
         };
         let endpoint = match direction {
-            TrimDirection::Left => segment_geometry.start,
-            TrimDirection::Right => segment_geometry.end,
+            TrimDirection::Left => trim_curve.start,
+            TrimDirection::Right => trim_curve.end,
         };
         let dist_to_endpoint_param = (closest_candidate.t - endpoint_t).abs();
         let dist_to_endpoint_coords = ((closest_candidate.point.x - endpoint.x)
@@ -2341,8 +1921,8 @@ fn find_termination_in_direction(
             // Intersection is at endpoint - check if there's a coincident constraint
             // or if it's just a numerical precision issue
             let endpoint = match direction {
-                TrimDirection::Left => segment_geometry.start,
-                TrimDirection::Right => segment_geometry.end,
+                TrimDirection::Left => trim_curve.start,
+                TrimDirection::Right => trim_curve.end,
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -2352,8 +1932,8 @@ fn find_termination_in_direction(
 
     // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
     let endpoint = match direction {
-        TrimDirection::Left => segment_geometry.start,
-        TrimDirection::Right => segment_geometry.end,
+        TrimDirection::Left => trim_curve.start,
+        TrimDirection::Right => trim_curve.end,
     };
     if !is_circle_segment && closest_candidate.candidate_type == CandidateType::Endpoint {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
