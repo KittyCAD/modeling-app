@@ -1088,170 +1088,174 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 )
               : null
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          const result: {
+          let result: {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
             checkpointId?: number | null
-          } =
+          }
+
+          if (
             snappingCandidate &&
             draggedEntityId !== null &&
             snapConstraint !== null
-              ? await (async () => {
-                  const [x, y] = snappingCandidate.position
-                  const editResult = await context.rustContext.editSegments(
-                    0,
-                    context.sketchId,
-                    [
-                      {
-                        id: draggedEntityId,
-                        ctor: {
-                          type: 'Point',
-                          position: {
-                            x: {
-                              type: 'Var',
-                              value: roundOff(x),
-                              units,
-                            },
-                            y: {
-                              type: 'Var',
-                              value: roundOff(y),
-                              units,
-                            },
-                          },
-                        },
+          ) {
+            const [x, y] = snappingCandidate.position
+            const editResult = await context.rustContext.editSegments(
+              0,
+              context.sketchId,
+              [
+                {
+                  id: draggedEntityId,
+                  ctor: {
+                    type: 'Point',
+                    position: {
+                      x: {
+                        type: 'Var',
+                        value: roundOff(x),
+                        units,
                       },
-                    ],
+                      y: {
+                        type: 'Var',
+                        value: roundOff(y),
+                        units,
+                      },
+                    },
+                  },
+                },
+              ],
+              settings
+            )
+
+            if (
+              snapConstraint.type === 'HorizontalDistance' ||
+              snapConstraint.type === 'VerticalDistance'
+            ) {
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              const existingSameConstraint =
+                getZeroAxisDistanceConstraintWithOrigin(
+                  draggedEntityId,
+                  snapConstraint.type,
+                  objects
+                )
+              if (existingSameConstraint) {
+                // Same zero distance constraint already exists -> don't add it again
+                result = editResult
+              } else {
+                const oppositeConstraintType =
+                  snapConstraint.type === 'HorizontalDistance'
+                    ? 'VerticalDistance'
+                    : 'HorizontalDistance'
+                const existingOppositeConstraint =
+                  getZeroAxisDistanceConstraintWithOrigin(
+                    draggedEntityId,
+                    oppositeConstraintType,
+                    objects
+                  )
+                if (existingOppositeConstraint) {
+                  // If there is already a 0 distance opposite constraint:
+                  // delete that and add a Coincident constraint instead.
+                  const deleteResult = await context.rustContext.deleteObjects(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    [existingOppositeConstraint.id],
+                    [],
                     settings
                   )
 
-                  if (
-                    snapConstraint.type === 'HorizontalDistance' ||
-                    snapConstraint.type === 'VerticalDistance'
-                  ) {
-                    const objects =
-                      currentSceneGraphDelta?.new_graph.objects ?? []
-                    const existingSameConstraint =
-                      getZeroAxisDistanceConstraintWithOrigin(
-                        draggedEntityId,
-                        snapConstraint.type,
-                        objects
-                      )
-                    if (existingSameConstraint) {
-                      // Same zero distance constraint already exists -> don't add it again
-                      return editResult
-                    }
+                  const addResult = await context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    {
+                      type: 'Coincident',
+                      segments: [draggedEntityId, 'ORIGIN'],
+                    },
+                    settings
+                  )
 
-                    const oppositeConstraintType =
-                      snapConstraint.type === 'HorizontalDistance'
-                        ? 'VerticalDistance'
-                        : 'HorizontalDistance'
-                    const existingOppositeConstraint =
-                      getZeroAxisDistanceConstraintWithOrigin(
-                        draggedEntityId,
-                        oppositeConstraintType,
-                        objects
-                      )
-                    if (existingOppositeConstraint) {
-                      // If there is already a 0 distance opposite constraint:
-                      // delete that and add a Coincident constraint instead.
-                      const deleteResult =
-                        await context.rustContext.deleteObjects(
-                          SKETCH_FILE_VERSION,
-                          context.sketchId,
-                          [existingOppositeConstraint.id],
-                          [],
-                          settings
-                        )
-
-                      const addResult = await context.rustContext.addConstraint(
-                        SKETCH_FILE_VERSION,
-                        context.sketchId,
-                        {
-                          type: 'Coincident',
-                          segments: [draggedEntityId, 'ORIGIN'],
-                        },
-                        settings
-                      )
-
-                      return {
-                        kclSource: addResult.kclSource,
-                        sceneGraphDelta: {
-                          ...addResult.sceneGraphDelta,
-                          invalidates_ids:
-                            deleteResult.sceneGraphDelta.invalidates_ids ||
-                            addResult.sceneGraphDelta.invalidates_ids,
-                        },
-                      }
-                    }
+                  result = {
+                    kclSource: addResult.kclSource,
+                    sceneGraphDelta: {
+                      ...addResult.sceneGraphDelta,
+                      invalidates_ids:
+                        deleteResult.sceneGraphDelta.invalidates_ids ||
+                        addResult.sceneGraphDelta.invalidates_ids,
+                    },
                   }
-
-                  return context.rustContext.addConstraint(
+                } else {
+                  result = await context.rustContext.addConstraint(
                     SKETCH_FILE_VERSION,
                     context.sketchId,
                     snapConstraint,
                     settings,
                     true
                   )
-                })()
-              : await (async () => {
-                  const lastPreviewSegmentsToEdit =
-                    getLastPreviewSegmentsToEdit()
-                  if (lastPreviewSegmentsToEdit?.length) {
-                    return context.rustContext.editSegments(
-                      0,
-                      context.sketchId,
-                      lastPreviewSegmentsToEdit,
-                      settings,
-                      true
-                    )
-                  }
+                }
+              }
+            } else {
+              result = await context.rustContext.addConstraint(
+                SKETCH_FILE_VERSION,
+                context.sketchId,
+                snapConstraint,
+                settings,
+                true
+              )
+            }
+          } else {
+            const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
+            if (lastPreviewSegmentsToEdit?.length) {
+              result = await context.rustContext.editSegments(
+                0,
+                context.sketchId,
+                lastPreviewSegmentsToEdit,
+                settings,
+                true
+              )
+            } else if (!currentSceneGraphDelta) {
+              result = await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
+              )
+            } else {
+              const objects = currentSceneGraphDelta.new_graph.objects
+              const coincidentClusterPointIds =
+                draggedEntityId !== null
+                  ? getCoincidentCluster(draggedEntityId, objects)
+                  : []
+              const idsToEdit = new Set<number>()
+              coincidentClusterPointIds.forEach((id) => {
+                idsToEdit.add(id)
+              })
+              snapshot.context.selectedIds.forEach((id) => {
+                if (isObjectSelectionId(id)) {
+                  idsToEdit.add(id)
+                }
+              })
 
-                  if (!currentSceneGraphDelta) {
-                    return context.rustContext.sketchExecuteMock(
-                      SKETCH_FILE_VERSION,
-                      context.sketchId
-                    )
-                  }
+              const segmentsToEdit: ExistingSegmentCtor[] = []
+              for (const id of idsToEdit) {
+                const obj = objects[id]
+                if (!obj || obj.kind.type !== 'Segment') continue
+                const ctor = buildSegmentCtorFromObject(obj, objects)
+                if (!ctor) continue
+                segmentsToEdit.push({ id, ctor })
+              }
 
-                  const objects = currentSceneGraphDelta.new_graph.objects
-                  const coincidentClusterPointIds =
-                    draggedEntityId !== null
-                      ? getCoincidentCluster(draggedEntityId, objects)
-                      : []
-                  const idsToEdit = new Set<number>()
-                  coincidentClusterPointIds.forEach((id) => {
-                    idsToEdit.add(id)
-                  })
-                  snapshot.context.selectedIds.forEach((id) => {
-                    if (isObjectSelectionId(id)) {
-                      idsToEdit.add(id)
-                    }
-                  })
-
-                  const segmentsToEdit: ExistingSegmentCtor[] = []
-                  for (const id of idsToEdit) {
-                    const obj = objects[id]
-                    if (!obj || obj.kind.type !== 'Segment') continue
-                    const ctor = buildSegmentCtorFromObject(obj, objects)
-                    if (!ctor) continue
-                    segmentsToEdit.push({ id, ctor })
-                  }
-
-                  if (segmentsToEdit.length === 0) {
-                    return context.rustContext.sketchExecuteMock(
-                      SKETCH_FILE_VERSION,
-                      context.sketchId
-                    )
-                  }
-
-                  return context.rustContext.editSegments(
-                    0,
-                    context.sketchId,
-                    segmentsToEdit,
-                    settings,
-                    true
-                  )
-                })()
+              if (segmentsToEdit.length === 0) {
+                result = await context.rustContext.sketchExecuteMock(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId
+                )
+              } else {
+                result = await context.rustContext.editSegments(
+                  0,
+                  context.sketchId,
+                  segmentsToEdit,
+                  settings,
+                  true
+                )
+              }
+            }
+          }
 
           // Send the event to update the sketch outcome
           self.send({
