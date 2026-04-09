@@ -160,8 +160,6 @@ part001 = cube(pos = [0, 0], scale = 20)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 baseProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

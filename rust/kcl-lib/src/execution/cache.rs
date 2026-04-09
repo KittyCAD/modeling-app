@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use indexmap::IndexMap;
 use itertools::EitherOrBoth;
 use itertools::Itertools;
 use tokio::sync::RwLock;
@@ -15,6 +16,9 @@ use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
 use crate::execution::state::{self as exec_state};
 use crate::front::Object;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
+use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
@@ -145,6 +149,10 @@ pub(crate) struct SketchModeState {
     pub stack: Stack,
     /// The module info map.
     pub module_infos: ModuleInfoMap,
+    /// Map from source file path to module ID.
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
+    /// Map from module ID to source file contents.
+    pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// The scene objects.
     #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub scene_objects: Vec<Object>,
@@ -156,6 +164,8 @@ impl SketchModeState {
         Self {
             stack: Stack::new_for_tests(),
             module_infos: ModuleInfoMap::default(),
+            path_to_source_id: Default::default(),
+            id_to_source: Default::default(),
             scene_objects: Vec::new(),
         }
     }
