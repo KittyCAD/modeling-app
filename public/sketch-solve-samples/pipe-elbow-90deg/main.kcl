@@ -1,0 +1,122 @@
+// 90 Degree Pipe Elbow
+// Quarter-turn elbow with two bolted flanges on a 94 x 71 mm pipe section.
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+elbowBendAngleDegrees = 90
+elbowCenterlineBendRadius = 80
+pipeOutsideDiameter = 94
+pipeWallThickness = 11.5
+
+flangeOutsideDiameter = 130
+flangeThickness = 20
+boltHoleCount = 16
+boltHoleDiameter = 12
+boltCircleDiameter = pipeOutsideDiameter + (flangeOutsideDiameter - pipeOutsideDiameter) / 2
+
+pipeInsideDiameter = pipeOutsideDiameter - (2 * pipeWallThickness)
+flangeInsideDiameter = pipeInsideDiameter
+
+elbowSectionSketch = sketch(on = XY) {
+  elbowOuterCircle = circle(start = [var 107.34mm, var -15.97mm], center = [var 63mm, var 0mm])
+  elbowCenterGuide = line(start = [var 0mm, var 0mm], end = [var 63mm, var 0mm], construction = true)
+  coincident([elbowCenterGuide.start, ORIGIN])
+  coincident([
+    elbowCenterGuide.end,
+    elbowOuterCircle.center
+  ])
+  horizontal(elbowCenterGuide)
+  horizontalDistance([
+  elbowCenterGuide.start,
+  elbowCenterGuide.end
+]) == elbowCenterlineBendRadius
+
+  elbowInnerCircle = circle(start = [var 93.57mm, var 17.89mm], center = [var 62.79mm, var 0.22mm])
+  coincident([
+    elbowInnerCircle.center,
+    elbowOuterCircle.center
+  ])
+
+  radius(elbowOuterCircle) == pipeOutsideDiameter / 2
+  radius(elbowInnerCircle) == pipeInsideDiameter / 2
+}
+elbowSectionRegion = region(
+  point = [
+    elbowCenterlineBendRadius + (pipeInsideDiameter + pipeWallThickness) / 2,
+    0mm
+  ],
+  sketch = elbowSectionSketch,
+)
+elbowBody = revolve(elbowSectionRegion, axis = Y, angle = -elbowBendAngleDegrees)
+
+flangeSketch = sketch(on = YZ) {
+  flangeOuterCircle = circle(start = [var 66.34mm, var 51.18mm], center = [var 0mm, var 63mm])
+  flangeCenterGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 63mm], construction = true)
+  coincident([flangeCenterGuide.start, ORIGIN])
+  coincident([
+    flangeCenterGuide.end,
+    flangeOuterCircle.center
+  ])
+  vertical(flangeCenterGuide)
+  verticalDistance([
+  flangeCenterGuide.start,
+  flangeCenterGuide.end
+]) == elbowCenterlineBendRadius
+  flangeInnerCircle = circle(start = [var 37.73mm, var 77.31mm], center = [var 0mm, var 63mm])
+  coincident([
+    flangeInnerCircle.center,
+    flangeOuterCircle.center
+  ])
+  radius(flangeOuterCircle) == flangeOutsideDiameter / 2
+  radius(flangeInnerCircle) == flangeInsideDiameter / 2
+}
+
+flangeRegion = region(
+  point = [
+    0mm,
+    elbowCenterlineBendRadius + (flangeInsideDiameter + pipeWallThickness) / 2
+  ],
+  sketch = flangeSketch,
+)
+flangeBlank = extrude(flangeRegion, length = -flangeThickness)
+
+boltHoleSketchPlane = startSketchOn(YZ)
+boltHoleSketch = sketch(on = boltHoleSketchPlane) {
+  boltHoleCircle = circle(start = [var 58.5mm, var 63mm], center = [var 53.5mm, var 63mm])
+  boltHoleCenterGuide = line(start = [var 0mm, var 63mm], end = [var 53.5mm, var 63mm], construction = true)
+  boltHoleOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 63mm], construction = true)
+  
+  coincident([boltHoleCenterGuide.end, boltHoleCircle.center])
+  coincident([boltHoleOffsetGuide.start, ORIGIN])
+  coincident([boltHoleOffsetGuide.end, boltHoleCenterGuide.start])
+  
+  horizontal(boltHoleCenterGuide)
+  vertical(boltHoleOffsetGuide)
+  
+  horizontalDistance([boltHoleCenterGuide.start, boltHoleCenterGuide.end]) == boltCircleDiameter / 2
+  verticalDistance([boltHoleOffsetGuide.start, boltHoleOffsetGuide.end]) == elbowCenterlineBendRadius
+  radius(boltHoleCircle) == boltHoleDiameter / 2
+}
+
+boltHoleRegion = region(
+  point = [
+    boltCircleDiameter / 2,
+    elbowCenterlineBendRadius
+  ],
+  sketch = boltHoleSketch,
+)
+boltHoleBody = extrude(boltHoleRegion, length = -flangeThickness)
+boltHoleBodies = patternCircular3d(
+  boltHoleBody,
+  instances = boltHoleCount,
+  axis = X,
+  center = [0, 0, elbowCenterlineBendRadius],
+)
+verticalFlange = subtract([flangeBlank], tools = [boltHoleBodies])
+
+horizontalFlange = clone(verticalFlange)
+  |> rotate(axis = Y, angle = -90deg, global = true)
+  |> rotate(axis = Z, angle = 180deg, global = true)
+
+hide(elbowSectionSketch)
+hide(flangeSketch)
