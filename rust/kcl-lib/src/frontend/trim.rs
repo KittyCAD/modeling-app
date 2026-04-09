@@ -1061,6 +1061,126 @@ pub fn get_position_coords_from_circle(
     get_point_coords_from_native(objects, point_id, default_unit)
 }
 
+/// Internal normalized curve kind used by trim.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CurveKind {
+    Line,
+    Circular,
+}
+
+/// Internal curve domain used by trim.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CurveDomain {
+    Open,
+    Closed,
+}
+
+/// Internal normalized curve representation loaded from a scene segment.
+#[derive(Debug, Clone, Copy)]
+struct CurveHandle {
+    segment_id: ObjectId,
+    kind: CurveKind,
+    domain: CurveDomain,
+    start: Coords2d,
+    end: Coords2d,
+    center: Option<Coords2d>,
+    radius: Option<f64>,
+}
+
+impl CurveHandle {
+    fn project_for_trim(self, point: Coords2d) -> Result<f64, String> {
+        match (self.kind, self.domain) {
+            (CurveKind::Line, CurveDomain::Open) => Ok(project_point_onto_segment(point, self.start, self.end)),
+            (CurveKind::Circular, CurveDomain::Open) => {
+                let center = self
+                    .center
+                    .ok_or_else(|| format!("Curve {} missing center for arc projection", self.segment_id.0))?;
+                Ok(project_point_onto_arc(point, center, self.start, self.end))
+            }
+            (CurveKind::Circular, CurveDomain::Closed) => {
+                let center = self
+                    .center
+                    .ok_or_else(|| format!("Curve {} missing center for circle projection", self.segment_id.0))?;
+                Ok(project_point_onto_circle(point, center, self.start))
+            }
+            (CurveKind::Line, CurveDomain::Closed) => Err(format!(
+                "Invalid curve state: line {} cannot be closed",
+                self.segment_id.0
+            )),
+        }
+    }
+}
+
+/// Load a normalized curve handle from a segment object.
+fn load_curve_handle(
+    segment_obj: &Object,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Result<CurveHandle, String> {
+    let ObjectKind::Segment { segment } = &segment_obj.kind else {
+        return Err("Object is not a segment".to_string());
+    };
+
+    match segment {
+        Segment::Line(_) => {
+            let start = get_position_coords_for_line(segment_obj, LineEndpoint::Start, objects, default_unit)
+                .ok_or_else(|| format!("Could not get line start for segment {}", segment_obj.id.0))?;
+            let end = get_position_coords_for_line(segment_obj, LineEndpoint::End, objects, default_unit)
+                .ok_or_else(|| format!("Could not get line end for segment {}", segment_obj.id.0))?;
+            Ok(CurveHandle {
+                segment_id: segment_obj.id,
+                kind: CurveKind::Line,
+                domain: CurveDomain::Open,
+                start,
+                end,
+                center: None,
+                radius: None,
+            })
+        }
+        Segment::Arc(_) => {
+            let start = get_position_coords_from_arc(segment_obj, ArcPoint::Start, objects, default_unit)
+                .ok_or_else(|| format!("Could not get arc start for segment {}", segment_obj.id.0))?;
+            let end = get_position_coords_from_arc(segment_obj, ArcPoint::End, objects, default_unit)
+                .ok_or_else(|| format!("Could not get arc end for segment {}", segment_obj.id.0))?;
+            let center = get_position_coords_from_arc(segment_obj, ArcPoint::Center, objects, default_unit)
+                .ok_or_else(|| format!("Could not get arc center for segment {}", segment_obj.id.0))?;
+            let radius =
+                ((start.x - center.x) * (start.x - center.x) + (start.y - center.y) * (start.y - center.y)).sqrt();
+            Ok(CurveHandle {
+                segment_id: segment_obj.id,
+                kind: CurveKind::Circular,
+                domain: CurveDomain::Open,
+                start,
+                end,
+                center: Some(center),
+                radius: Some(radius),
+            })
+        }
+        Segment::Circle(_) => {
+            let start = get_position_coords_from_circle(segment_obj, CirclePoint::Start, objects, default_unit)
+                .ok_or_else(|| format!("Could not get circle start for segment {}", segment_obj.id.0))?;
+            let center = get_position_coords_from_circle(segment_obj, CirclePoint::Center, objects, default_unit)
+                .ok_or_else(|| format!("Could not get circle center for segment {}", segment_obj.id.0))?;
+            let radius =
+                ((start.x - center.x) * (start.x - center.x) + (start.y - center.y) * (start.y - center.y)).sqrt();
+            Ok(CurveHandle {
+                segment_id: segment_obj.id,
+                kind: CurveKind::Circular,
+                domain: CurveDomain::Closed,
+                start,
+                // Closed curves have no true "end"; keep current trim semantics by mirroring start.
+                end: start,
+                center: Some(center),
+                radius: Some(radius),
+            })
+        }
+        Segment::Point(_) => Err(format!(
+            "Point segment {} cannot be used as trim curve",
+            segment_obj.id.0
+        )),
+    }
+}
+
 /// Find the next trim spawn (intersection) between trim line and scene segments
 ///
 /// When a user draws a trim line, we loop over each pairs of points of the trim line,
@@ -1249,63 +1369,16 @@ pub fn get_trim_spawn_terminations(
         return Err(format!("Trim spawn segment {} is not a segment", trim_spawn_seg_id.0));
     };
 
-    let (segment_start, segment_end, segment_center) = match segment {
-        Segment::Line(_) => {
-            let start = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::Start, objects, default_unit)
-                .ok_or_else(|| {
-                    format!(
-                        "Could not get start coordinates for line segment {}",
-                        trim_spawn_seg_id.0
-                    )
-                })?;
-            let end = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::End, objects, default_unit)
-                .ok_or_else(|| format!("Could not get end coordinates for line segment {}", trim_spawn_seg_id.0))?;
-            (start, end, None)
-        }
-        Segment::Arc(_) => {
-            let start = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Start, objects, default_unit)
-                .ok_or_else(|| {
-                    format!(
-                        "Could not get start coordinates for arc segment {}",
-                        trim_spawn_seg_id.0
-                    )
-                })?;
-            let end = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::End, objects, default_unit)
-                .ok_or_else(|| format!("Could not get end coordinates for arc segment {}", trim_spawn_seg_id.0))?;
-            let center = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Center, objects, default_unit)
-                .ok_or_else(|| {
-                    format!(
-                        "Could not get center coordinates for arc segment {}",
-                        trim_spawn_seg_id.0
-                    )
-                })?;
-            (start, end, Some(center))
-        }
-        Segment::Circle(_) => {
-            let start = get_position_coords_from_circle(trim_spawn_seg, CirclePoint::Start, objects, default_unit)
-                .ok_or_else(|| {
-                    format!(
-                        "Could not get start coordinates for circle segment {}",
-                        trim_spawn_seg_id.0
-                    )
-                })?;
-            let center = get_position_coords_from_circle(trim_spawn_seg, CirclePoint::Center, objects, default_unit)
-                .ok_or_else(|| {
-                    format!(
-                        "Could not get center coordinates for circle segment {}",
-                        trim_spawn_seg_id.0
-                    )
-                })?;
-            // Circles have no "end" point, but we store start in both fields for shared plumbing.
-            (start, start, Some(center))
-        }
-        _ => {
-            return Err(format!(
-                "Trim spawn segment {} is not a Line, Arc, or Circle",
-                trim_spawn_seg_id.0
-            ));
-        }
-    };
+    let trim_curve = load_curve_handle(trim_spawn_seg, objects, default_unit).map_err(|e| {
+        format!(
+            "Failed to load trim spawn segment {} as normalized curve: {}",
+            trim_spawn_seg_id.0, e
+        )
+    })?;
+
+    let segment_start = trim_curve.start;
+    let segment_end = trim_curve.end;
+    let segment_center = trim_curve.center;
 
     // Find intersection point between polyline and trim spawn segment
     // trimSpawnCoords is a polyline, so we check each segment
@@ -1335,9 +1408,12 @@ pub fn get_trim_spawn_terminations(
             }
             Segment::Circle(_) => {
                 if let Some(center) = segment_center {
-                    let radius = ((segment_start.x - center.x) * (segment_start.x - center.x)
-                        + (segment_start.y - center.y) * (segment_start.y - center.y))
-                        .sqrt();
+                    let radius = trim_curve.radius.ok_or_else(|| {
+                        format!(
+                            "Trim spawn segment {} missing radius for circle intersection",
+                            trim_spawn_seg_id.0
+                        )
+                    })?;
                     for (_, intersection) in line_circle_intersections(p1, p2, center, radius, EPSILON_POINT_ON_SEGMENT)
                     {
                         all_intersections.push((intersection, i));
@@ -1377,26 +1453,7 @@ pub fn get_trim_spawn_terminations(
     };
 
     // Project intersection point onto segment to get parametric position
-    let intersection_t = match segment {
-        Segment::Line(_) => project_point_onto_segment(intersection_point, segment_start, segment_end),
-        Segment::Arc(_) => {
-            if let Some(center) = segment_center {
-                project_point_onto_arc(intersection_point, center, segment_start, segment_end)
-            } else {
-                return Err("Arc segment missing center".to_string());
-            }
-        }
-        Segment::Circle(_) => {
-            if let Some(center) = segment_center {
-                project_point_onto_circle(intersection_point, center, segment_start)
-            } else {
-                return Err("Circle segment missing center".to_string());
-            }
-        }
-        _ => {
-            return Err("Invalid segment type for trim spawn".to_string());
-        }
-    };
+    let intersection_t = trim_curve.project_for_trim(intersection_point)?;
 
     // Find terminations on both sides
     let left_termination = find_termination_in_direction(

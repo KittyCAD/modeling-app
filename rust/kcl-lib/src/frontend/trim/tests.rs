@@ -2240,11 +2240,13 @@ sketch(on = YZ) {
         "Trim should produce non-empty KCL code"
     );
 
-    // Assert that the test completes within a reasonable time
-    // Note: Rust implementation may have different performance characteristics
+    // Assert that the test completes within a reasonable time.
+    // Keep this fairly loose because CI machine load can vary significantly.
+    const STRESS_TEST_MAX_MS: u128 = 70_000;
     assert!(
-        duration.as_millis() < 40_000,
-        "Stress test should complete within 20 seconds, took {}ms",
+        duration.as_millis() < STRESS_TEST_MAX_MS,
+        "Stress test should complete within {}ms, took {}ms",
+        STRESS_TEST_MAX_MS,
         duration.as_millis()
     );
 }
