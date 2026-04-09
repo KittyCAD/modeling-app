@@ -1,7 +1,7 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { distance2d, dot2d, subVec } from '@src/lib/utils2d'
+import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import { getAngleDiff, isArray } from '@src/lib/utils'
 import {
   getArcPoints,
@@ -90,10 +90,7 @@ export function getClosestPointOnArcSegment(
   const isWithinArcSweep = pointSweepAngle <= sweepAngle
 
   if (isWithinArcSweep) {
-    const closestPoint: Coords2d = [
-      center[0] + radius * Math.cos(pointAngle),
-      center[1] + radius * Math.sin(pointAngle),
-    ]
+    const closestPoint: Coords2d = polar2d(center, radius, pointAngle)
     return {
       closestPoint,
       distance: Math.abs(distance2d(point, center) - radius),
