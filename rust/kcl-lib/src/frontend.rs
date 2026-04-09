@@ -5114,6 +5114,8 @@ mod tests {
     use crate::engine::PlaneName;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
+    use crate::execution::cache::SketchModeState;
+    use crate::execution::cache::write_old_memory;
     use crate::front::Distance;
     use crate::front::Fixed;
     use crate::front::FixedPoint;
@@ -5441,21 +5443,14 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     async fn test_restore_sketch_checkpoint_restores_and_clears_mock_memory() {
         let mut frontend = FrontendState::new();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        let version = Version(0);
-        let project_id = ProjectId(0);
-        let file_id = FileId(0);
 
         let program = Program::parse(
-            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])\n}\n",
+            "@settings(experimentalFeatures = allow)\n\nwidth = 2mm\nsketch001 = sketch(on = offsetPlane(XY, offset = width)) {\n  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])\n  distance([line1.start, line1.end]) == width\n}\n",
         )
         .unwrap()
         .0
         .unwrap();
         let set_program_outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
-            .expect("Expected sketch object to exist")
-            .id;
         let SetProgramOutcome::Success { exec_outcome, .. } = set_program_outcome else {
             panic!("Expected successful baseline program execution");
         };
@@ -5468,14 +5463,11 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             .await
             .unwrap();
 
-        let mock_scene_delta = frontend
-            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
-            .await
-            .unwrap();
+        write_old_memory(SketchModeState::new_for_tests()).await;
         assert!(read_old_memory().await.is_some());
 
         let checkpoint_with_mock_memory = frontend
-            .create_sketch_checkpoint(mock_scene_delta.exec_outcome.clone())
+            .create_sketch_checkpoint((*exec_outcome).clone())
             .await
             .unwrap();
 
@@ -5495,7 +5487,6 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         assert!(read_old_memory().await.is_none());
 
         ctx.close().await;
-        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
