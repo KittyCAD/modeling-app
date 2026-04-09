@@ -234,6 +234,7 @@ function setUpMoveToolCallbacks({
       selected?: Group
     }) => void,
     onAreaSelect: callbacks.onAreaSelect as (args: {
+      mouseEvent?: MouseEvent
       startPoint: { twoD: Vector2; threeD: Vector3 }
       currentPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
@@ -2435,6 +2436,31 @@ describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
       data: { duringAreaSelectIds: [5] },
     })
     expect(getObjectByName).toHaveBeenCalledTimes(1)
+  })
+
+  it('should ignore area select updates during right-click drag', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onAreaSelect, send, getObjectByName } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+    })
+
+    onAreaSelect({
+      mouseEvent: new MouseEvent('mousemove', { buttons: 2 }),
+      startPoint: {
+        twoD: new Vector2(-5, -5),
+        threeD: new Vector3(-5, -5, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(15, 5),
+        threeD: new Vector3(15, 5, 0),
+      },
+    })
+
+    expect(send).not.toHaveBeenCalled()
+    expect(getObjectByName).not.toHaveBeenCalled()
   })
 
   it('should not treat an arc as contained when its sweep extends outside the box', () => {
