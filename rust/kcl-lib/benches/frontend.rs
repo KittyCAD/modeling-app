@@ -17,7 +17,7 @@ use kcl_lib::front::Version;
 use kcl_lib::pretty::NumericSuffix;
 
 fn bench_edit_segments(c: &mut Criterion) {
-    c.bench_function(&"bench_edit_segment".to_string(), move |b| {
+    c.bench_function("bench_edit_segment", move |b| {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let (mut frontend, mock_ctx, version, sketch_id, segments) = rt.block_on(async {
             let mut frontend = FrontendState::new();
@@ -28,10 +28,7 @@ fn bench_edit_segments(c: &mut Criterion) {
             let program = Program::parse(source).unwrap().0.unwrap();
             let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
             match outcome {
-                kcl_lib::front::SetProgramOutcome::Success {
-                    scene_graph: _,
-                    exec_outcome: _,
-                } => {}
+                kcl_lib::front::SetProgramOutcome::Success { .. } => {}
                 kcl_lib::front::SetProgramOutcome::ExecFailure { error } => panic!("{}", error.to_string()),
             };
 

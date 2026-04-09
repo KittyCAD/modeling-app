@@ -13,7 +13,7 @@ pub fn bench_parse(c: &mut Criterion) {
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("koch snowflake", LSYSTEM_KOCH_SNOWFLAKE_PROGRAM),
         ("nested function calls", NESTED_FN_CALLS),
-        ("big sketch block", BIG_SKETCH_BLOCK),
+        ("big_sketch_block", BIG_SKETCH_BLOCK),
     ] {
         c.bench_function(&format!("parse_{name}"), move |b| {
             b.iter(move || {
