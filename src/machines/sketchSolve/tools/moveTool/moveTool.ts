@@ -1430,7 +1430,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         sendHoveredState(hoveredId)
       }
     },
-    onAreaSelectStart: ({ startPoint }) => {
+    onAreaSelectStart: ({ startPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
       const scaledStartPoint = startPoint.threeD
         .clone()
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
@@ -1449,7 +1453,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       }
     },
-    onAreaSelect: ({ startPoint, currentPoint }) => {
+    onAreaSelect: ({ startPoint, currentPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
       const startCoords: Coords2d = [startPoint.twoD.x, startPoint.twoD.y]
       const currentCoords: Coords2d = [currentPoint.twoD.x, currentPoint.twoD.y]
       const scaledStartPoint = startPoint.threeD
@@ -1509,9 +1517,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       }
     },
-    onAreaSelectEnd: () => {
+    onAreaSelectEnd: ({ mouseEvent }) => {
       // Remove selection box visual
       removeSelectionBox(selectionBoxState)
+
+      // Ignore non-primary button drags so right-click pan doesn't modify selection.
+      if (mouseEvent && mouseEvent.button !== 0) {
+        self.send({
+          type: 'update selected ids',
+          data: { duringAreaSelectIds: [] },
+        })
+        return
+      }
 
       // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
       const snapshot = self.getSnapshot()

@@ -2059,19 +2059,34 @@ description: Result of parsing tangent_circle_circle.kcl
                   "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
                       "commentStart": 0,
-                      "computed": true,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
+                      "name": {
                         "commentStart": 0,
-                        "computed": false,
                         "end": 0,
                         "moduleId": 0,
-                        "object": {
+                        "name": "fixed",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
                           "commentStart": 0,
                           "computed": false,
                           "end": 0,
@@ -2116,192 +2131,54 @@ description: Result of parsing tangent_circle_circle.kcl
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        "property": {
-                          "abs_path": false,
+                        {
                           "commentStart": 0,
+                          "elements": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "0mm",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "Mm"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "0mm",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "Mm"
+                              }
+                            }
+                          ],
                           "end": 0,
                           "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "at",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
                         }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
+                      ],
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   "moduleId": 0,
                   "preComments": [
                     "// Fix frame to remove rigid-body ambiguity."
                   ],
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "commentStart": 0,
-                      "computed": true,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "a_top",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "center",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "at",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -2550,7 +2427,7 @@ description: Result of parsing tangent_circle_circle.kcl
                       }
                     }
                   ],
-                  "16": [
+                  "15": [
                     {
                       "commentStart": 0,
                       "end": 0,

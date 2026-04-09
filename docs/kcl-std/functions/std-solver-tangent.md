@@ -5,8 +5,6 @@ excerpt: "Constrain two segments to be tangent."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain two segments to be tangent.
 
 ```kcl
@@ -30,8 +28,6 @@ Supported input type pairs (unordered):
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   guideArc = arc(start = [var 0mm, var 2mm], end = [var 2mm, var 0mm], center = [var 2mm, var 2mm])
   tangentLine = line(start = [var 0mm, var 2mm], end = [var 0mm, var 4mm])

@@ -35,8 +35,6 @@ getBoundedEdge(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = YZ) {
   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])

@@ -285,8 +285,6 @@ sweep(
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = YZ) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm])
   edge2 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 2mm])
@@ -324,8 +322,6 @@ swept = sweep(profileRegion, path)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Demonstrates using sweeps with segments from sketch blocks.
 
 // Sketch a square
@@ -373,7 +369,6 @@ sweep(mySquare, path = sketch002.line1)
 
 ```kcl
 // Demonstrates sweeping along a multi-segment path from a sketch block.
-@settings(experimentalFeatures = allow)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
@@ -419,8 +414,6 @@ sweep(mySquare, path)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Demonstrates surface sweeps of open profiles.
 
 // Sketch a square

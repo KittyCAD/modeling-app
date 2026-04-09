@@ -5,8 +5,6 @@ excerpt: "Constrain the diameter of an arc or circle segment. Accepts a single a
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain the diameter of an arc or circle segment. Accepts a single arc or circle segment and constrains the distance from its center to its start point. Note: Diameter uses the same solver constraint as radius (distance between two points), but is stored as a separate constraint type for proper UI display.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::diameter(@points: Segment)
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   guide = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
   diameter(guide) == 4mm
