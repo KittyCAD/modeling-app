@@ -184,7 +184,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       const centerX = segmentBox.x + segmentBox.width / 2
       const centerY = segmentBox.y + segmentBox.height / 2
 
-      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 11 })
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
       await editor.expectEditor.toContain(lineToEdit)
 
       await page.mouse.move(centerX, centerY)
@@ -200,7 +200,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
       const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
-      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 8 })
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
       await editor.expectEditor.toContain(lineToEdit)
 
       await page.mouse.move(midpoint.x, midpoint.y)
