@@ -904,6 +904,42 @@ impl ExecutorContext {
         Ok(())
     }
 
+    fn restore_mock_memory(
+        exec_state: &mut ExecState,
+        mem: cache::SketchModeState,
+        _mock_config: &MockConfig,
+    ) -> Result<(), KclErrorWithOutputs> {
+        *exec_state.mut_stack() = mem.stack;
+        exec_state.global.module_infos = mem.module_infos;
+        exec_state.global.path_to_source_id = mem.path_to_source_id;
+        exec_state.global.id_to_source = mem.id_to_source;
+        #[cfg(feature = "artifact-graph")]
+        {
+            let len = _mock_config
+                .sketch_block_id
+                .map(|sketch_block_id| sketch_block_id.0)
+                .unwrap_or(0);
+            if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+                exec_state
+                    .global
+                    .root_module_artifacts
+                    .restore_scene_objects(scene_objects);
+            } else {
+                let message = format!(
+                    "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                    mem.scene_objects.len(),
+                    len
+                );
+                debug_assert!(false, "{message}");
+                return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                    KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+                )));
+            }
+        }
+
+        Ok(())
+    }
+
     pub async fn run_mock(
         &self,
         program: &crate::Program,
@@ -918,33 +954,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => {
-                    *exec_state.mut_stack() = mem.stack;
-                    exec_state.global.module_infos = mem.module_infos;
-                    #[cfg(feature = "artifact-graph")]
-                    {
-                        let len = mock_config
-                            .sketch_block_id
-                            .map(|sketch_block_id| sketch_block_id.0)
-                            .unwrap_or(0);
-                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state
-                                .global
-                                .root_module_artifacts
-                                .restore_scene_objects(scene_objects);
-                        } else {
-                            let message = format!(
-                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
-                                mem.scene_objects.len(),
-                                len
-                            );
-                            debug_assert!(false, "{message}");
-                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
-                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
-                            )));
-                        }
-                    }
-                }
+                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -963,6 +973,8 @@ impl ExecutorContext {
 
         let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
+        let path_to_source_id = exec_state.global.path_to_source_id.clone();
+        let id_to_source = exec_state.global.id_to_source.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -973,6 +985,8 @@ impl ExecutorContext {
         let state = cache::SketchModeState {
             stack,
             module_infos,
+            path_to_source_id,
+            id_to_source,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1551,6 +1565,8 @@ impl ExecutorContext {
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
+                path_to_source_id: exec_state.global.path_to_source_id.clone(),
+                id_to_source: exec_state.global.id_to_source.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
@@ -3073,6 +3089,35 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(ids, ids2, "Generated IDs should match");
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_restore_preserves_module_maps() {
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let cold_start = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
+
+        let mem = cache::read_old_memory().await.unwrap();
+        assert!(
+            mem.path_to_source_id.len() > 3,
+            "expected prelude imports to populate multiple modules, got {:?}",
+            mem.path_to_source_id
+        );
+
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
+
+        assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
+        assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.module_infos, mem.module_infos);
+
+        clear_mem_cache().await;
+        ctx.close().await;
     }
 
     #[cfg(feature = "artifact-graph")]

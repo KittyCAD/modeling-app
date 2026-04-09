@@ -48,10 +48,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 139,
-            "end": 144,
+            "commentStart": 98,
+            "end": 103,
             "moduleId": 0,
-            "start": 139,
+            "start": 98,
             "type": "TagDeclarator",
             "value": "side"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 139,
-              "end": 144,
+              "commentStart": 98,
+              "end": 103,
               "moduleId": 0,
-              "start": 139,
+              "start": 98,
               "type": "TagDeclarator",
               "value": "side"
             },
@@ -734,10 +734,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 327,
-                    "end": 332,
+                    "commentStart": 286,
+                    "end": 291,
                     "moduleId": 0,
-                    "start": 327,
+                    "start": 286,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -758,10 +758,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 390,
-                    "end": 395,
+                    "commentStart": 349,
+                    "end": 354,
                     "moduleId": 0,
-                    "start": 390,
+                    "start": 349,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -782,10 +782,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 457,
-                    "end": 462,
+                    "commentStart": 416,
+                    "end": 421,
                     "moduleId": 0,
-                    "start": 457,
+                    "start": 416,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -806,10 +806,10 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 524,
-                    "end": 529,
+                    "commentStart": 483,
+                    "end": 488,
                     "moduleId": 0,
-                    "start": 524,
+                    "start": 483,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },

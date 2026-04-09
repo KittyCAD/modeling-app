@@ -244,8 +244,6 @@ loft([profile001, profile002, profile003], bodyType = SURFACE)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 lowerProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -291,8 +289,6 @@ lofted = loft([lowerRegion, upperRegion])
 
 ```kcl
 // Demonstrates surface lofts with shapes from sketch blocks.
-@settings(experimentalFeatures = allow)
-
 // Loft a square, a circle, and another circle.
 sideLen = 4
 squareSketch = sketch(on = XY) {
@@ -336,7 +332,7 @@ shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 
 ```kcl
 // Demonstrates surface lofting of segments from multiple sketch blocks.
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 sketch002 = sketch(on = XY) {
   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])

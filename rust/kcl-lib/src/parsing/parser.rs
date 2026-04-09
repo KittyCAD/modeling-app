@@ -2593,13 +2593,78 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
+    fn is_binary_operator_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Operator, "/")
+                | (TokenType::Operator, "*")
+                | (TokenType::Operator, "%")
+                | (TokenType::Operator, "^")
+                | (TokenType::Operator, "==")
+                | (TokenType::Operator, "!=")
+                | (TokenType::Operator, ">")
+                | (TokenType::Operator, ">=")
+                | (TokenType::Operator, "<")
+                | (TokenType::Operator, "<=")
+                | (TokenType::Operator, "|")
+                | (TokenType::Operator, "&")
+                | (TokenType::Operator, "||")
+                | (TokenType::Operator, "&&")
+        )
+    }
+
+    fn can_start_operand_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Word, _)
+                | (TokenType::String, _)
+                | (TokenType::Number, _)
+                | (TokenType::Bang, _)
+                | (TokenType::DoubleColon, _)
+                | (TokenType::Brace, "(")
+                | (TokenType::Brace, "[")
+                | (TokenType::Brace, "{")
+                | (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Keyword, "if")
+                | (TokenType::Keyword, "true")
+                | (TokenType::Keyword, "false")
+                | (TokenType::Keyword, "var")
+        )
+    }
+
+    fn has_binary_operator_after_optional_ascription(i: &mut TokenSlice) -> bool {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+
+        if peek(colon).parse_next(i).is_ok() && (colon, opt(whitespace), type_).parse_next(i).is_err() {
+            i.reset(&checkpoint);
+            return false;
+        }
+
+        let _ = opt(whitespace).parse_next(i);
+        let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
+            let _ = opt(whitespace).parse_next(i);
+            i.peek_token().as_ref().is_some_and(can_start_operand_token)
+        });
+        i.reset(&checkpoint);
+        has_binary_operator
+    }
+
+    let start = i.checkpoint();
     let mut expr = alt((
-        binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
     .parse_next(i)?;
+
+    if has_binary_operator_after_optional_ascription(i) {
+        i.reset(&start);
+        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+    }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
@@ -3797,7 +3862,6 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     digest: _,
                 },
         } = fn_call;
-        ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         if let Some(unlabeled) = unlabeled {
             ParseContext::err(CompilationIssue::err(
                 unlabeled.into(),
@@ -5447,6 +5511,12 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_z_percent_parens() {
         assert_err("z%)", "Unexpected token: %", [1, 2]);
+    }
+
+    #[test]
+    fn test_parse_ascription_in_binop() {
+        crate::parsing::top_level_parse("foo = tan(0): number(rad) - 4deg").unwrap();
+        crate::parsing::top_level_parse("foo = tan(0): rad - 4deg").unwrap();
     }
 
     #[test]
