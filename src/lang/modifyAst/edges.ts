@@ -452,6 +452,7 @@ function buildEdgeExpr(
   }
   const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
+  // Sketch-solve surface case: builing a sweep###.sketch.tags.line# expression
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
     sourceSurfaceArtifact as Artifact,
     ast,
@@ -477,6 +478,7 @@ function buildEdgeExpr(
     }
   }
 
+  // Regular path
   const tagResult = modifyAstWithTagsForSelection(
     ast,
     graphEdgeSelection,
