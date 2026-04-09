@@ -16,7 +16,7 @@ use kcl_lib::front::SketchApi;
 use kcl_lib::front::Version;
 use kcl_lib::pretty::NumericSuffix;
 
-fn bench_frontend(c: &mut Criterion) {
+fn bench_edit_segments(c: &mut Criterion) {
     c.bench_function(&"bench_edit_segment".to_string(), move |b| {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let (mut frontend, mock_ctx, version, sketch_id, segments) = rt.block_on(async {
@@ -80,5 +80,5 @@ fn bench_frontend(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_frontend);
+criterion_group!(benches, bench_edit_segments);
 criterion_main!(benches);
