@@ -325,6 +325,40 @@ function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
 }
 
+function getSketchSegmentNameFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): string | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (
+    !sweepInput ||
+    sweepInput.type !== 'MemberExpression' ||
+    sweepInput.property.type !== 'Name'
+  ) {
+    return null
+  }
+
+  return sweepInput.property.name.name
+}
+
 function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
@@ -418,27 +452,11 @@ function buildEdgeExpr(
   }
   const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-  const sourceSurfaceNode =
-    edgeArtifact.type === 'sweepEdge'
-      ? getNodeFromPath<CallExpressionKw>(
-          ast,
-          sourceSurfaceArtifact.codeRef.pathToNode,
-          wasmInstance,
-          ['CallExpressionKw']
-        )
-      : null
-  const sweepInput =
-    sourceSurfaceNode &&
-    !err(sourceSurfaceNode) &&
-    sourceSurfaceNode.node.type === 'CallExpressionKw'
-      ? sourceSurfaceNode.node.unlabeled
-      : null
-  const sketchSegmentName =
-    sweepInput &&
-    sweepInput.type === 'MemberExpression' &&
-    sweepInput.property.type === 'Name'
-      ? sweepInput.property.name.name
-      : null
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sourceSurfaceArtifact as Artifact,
+    ast,
+    wasmInstance
+  )
   if (sketchSegmentName) {
     const sketchTagExpr = createMemberExpression(
       createMemberExpression(
@@ -447,10 +465,7 @@ function buildEdgeExpr(
       ),
       sketchSegmentName
     )
-    const edgeExpr =
-      edgeArtifact.type === 'sweepEdge' && edgeArtifact.subType === 'adjacent'
-        ? sketchTagExpr
-        : getEdgeTagCall(sketchTagExpr, edgeArtifact)
+    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
 
     return {
       modifiedAst: ast,
@@ -474,10 +489,7 @@ function buildEdgeExpr(
     return new Error('Expected exactly one tag for each blend edge.')
   }
 
-  const edgeExpr =
-    edgeArtifact.type === 'sweepEdge' && edgeArtifact.subType === 'adjacent'
-      ? tagResult.exprs[0]
-      : getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
+  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
 
   return {
     modifiedAst: tagResult.modifiedAst,
