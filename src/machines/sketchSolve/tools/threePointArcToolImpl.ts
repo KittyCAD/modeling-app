@@ -43,12 +43,14 @@ type AddDraftPointOutput = {
   sceneGraphDelta: SceneGraphDelta
   pointId: number
   point: Coords2d
+  checkpointId?: number | null
 }
 
 type CreateArcOutput = {
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
   arcId: number
+  checkpointId?: number | null
 }
 
 type ErrorOutput = {
@@ -61,6 +63,7 @@ type ToolDoneOutput = {
   pointId?: number
   point?: Coords2d
   arcId?: number
+  checkpointId?: number | null
 }
 
 export type ToolEvents =
@@ -215,6 +218,7 @@ async function editArcWithThreePoints({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | ErrorOutput
 > {
@@ -487,6 +491,8 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
     data: {
       sourceDelta: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
+      ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
     },
   }
   self._parent?.send(sendData)
@@ -737,6 +743,7 @@ export async function finalizeArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | ErrorOutput
 > {
@@ -826,7 +833,8 @@ export async function finalizeArcActor({
       type: 'Coincident',
       segments: [throughPointId, arcId],
     },
-    settings
+    settings,
+    startPointId === undefined
   )
   latestKclSource = constraintResult.kclSource
   latestSceneGraphDelta = constraintResult.sceneGraphDelta
@@ -839,6 +847,7 @@ export async function finalizeArcActor({
         ...latestSceneGraphDelta,
         new_objects: newObjects,
       },
+      checkpointId: constraintResult.checkpointId ?? null,
     }
   }
 
@@ -847,7 +856,8 @@ export async function finalizeArcActor({
     sketchId,
     [],
     [startPointId],
-    settings
+    settings,
+    true
   )
 
   return {
@@ -856,5 +866,6 @@ export async function finalizeArcActor({
       ...deleteResult.sceneGraphDelta,
       new_objects: [...newObjects, ...deleteResult.sceneGraphDelta.new_objects],
     },
+    checkpointId: deleteResult.checkpointId ?? null,
   }
 }

@@ -1,16 +1,14 @@
 ---
-title: "sketch2::point"
-subtitle: "Function in std::sketch2"
+title: "solver::point"
+subtitle: "Function in std::solver"
 excerpt: "Create a point in a sketch."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a point in a sketch.
 
 ```kcl
-sketch2::point(at: Point2d): Segment
+solver::point(at: Point2d): Segment
 ```
 
 
@@ -29,8 +27,6 @@ sketch2::point(at: Point2d): Segment
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -50,11 +46,11 @@ solid = extrude(region(point = profile.inside), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::point function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-point0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::point function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-point0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-point0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-point0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

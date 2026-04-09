@@ -1,16 +1,14 @@
 ---
-title: "sketch2::tangent"
-subtitle: "Function in std::sketch2"
+title: "solver::tangent"
+subtitle: "Function in std::solver"
 excerpt: "Constrain two segments to be tangent."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain two segments to be tangent.
 
 ```kcl
-sketch2::tangent(@input: [Segment; 2])
+solver::tangent(@input: [Segment; 2])
 ```
 
 Supported input type pairs (unordered):
@@ -30,8 +28,6 @@ Supported input type pairs (unordered):
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   guideArc = arc(start = [var 0mm, var 2mm], end = [var 2mm, var 0mm], center = [var 2mm, var 2mm])
   tangentLine = line(start = [var 0mm, var 2mm], end = [var 0mm, var 4mm])
@@ -49,11 +45,11 @@ solid = extrude(region(point = [1mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::tangent function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-tangent0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::tangent function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-tangent0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-tangent0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-tangent0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

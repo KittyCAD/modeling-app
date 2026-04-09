@@ -32,10 +32,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 72,
-              "end": 77,
+              "commentStart": 31,
+              "end": 36,
               "moduleId": 0,
-              "start": 72,
+              "start": 31,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -46,10 +46,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 155,
-              "end": 160,
+              "commentStart": 114,
+              "end": 119,
               "moduleId": 0,
-              "start": 155,
+              "start": 114,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -60,10 +60,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 275,
-              "end": 280,
+              "commentStart": 234,
+              "end": 239,
               "moduleId": 0,
-              "start": 275,
+              "start": 234,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -85,10 +85,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 0.323390814234285
               ],
               "tag": {
-                "commentStart": 72,
-                "end": 77,
+                "commentStart": 31,
+                "end": 36,
                 "moduleId": 0,
-                "start": 72,
+                "start": 31,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -109,10 +109,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 0.3233908142344787
               ],
               "tag": {
-                "commentStart": 155,
-                "end": 160,
+                "commentStart": 114,
+                "end": 119,
                 "moduleId": 0,
-                "start": 155,
+                "start": 114,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -133,10 +133,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 4.808218489067258
               ],
               "tag": {
-                "commentStart": 275,
-                "end": 280,
+                "commentStart": 234,
+                "end": 239,
                 "moduleId": 0,
-                "start": 275,
+                "start": 234,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -282,10 +282,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 72,
-              "end": 77,
+              "commentStart": 31,
+              "end": 36,
               "moduleId": 0,
-              "start": 72,
+              "start": 31,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -296,10 +296,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 155,
-              "end": 160,
+              "commentStart": 114,
+              "end": 119,
               "moduleId": 0,
-              "start": 155,
+              "start": 114,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -310,10 +310,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 275,
-              "end": 280,
+              "commentStart": 234,
+              "end": 239,
               "moduleId": 0,
-              "start": 275,
+              "start": 234,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -335,10 +335,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 0.323390814234285
               ],
               "tag": {
-                "commentStart": 72,
-                "end": 77,
+                "commentStart": 31,
+                "end": 36,
                 "moduleId": 0,
-                "start": 72,
+                "start": 31,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -359,10 +359,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 0.3233908142344787
               ],
               "tag": {
-                "commentStart": 155,
-                "end": 160,
+                "commentStart": 114,
+                "end": 119,
                 "moduleId": 0,
-                "start": 155,
+                "start": 114,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -383,10 +383,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 4.808218489067258
               ],
               "tag": {
-                "commentStart": 275,
-                "end": 280,
+                "commentStart": 234,
+                "end": 239,
                 "moduleId": 0,
-                "start": 275,
+                "start": 234,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -503,10 +503,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 72,
-            "end": 77,
+            "commentStart": 31,
+            "end": 36,
             "moduleId": 0,
-            "start": 72,
+            "start": 31,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -517,10 +517,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 155,
-            "end": 160,
+            "commentStart": 114,
+            "end": 119,
             "moduleId": 0,
-            "start": 155,
+            "start": 114,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -531,10 +531,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 275,
-            "end": 280,
+            "commentStart": 234,
+            "end": 239,
             "moduleId": 0,
-            "start": 275,
+            "start": 234,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -556,10 +556,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.323390814234285
             ],
             "tag": {
-              "commentStart": 72,
-              "end": 77,
+              "commentStart": 31,
+              "end": 36,
               "moduleId": 0,
-              "start": 72,
+              "start": 31,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -580,10 +580,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.3233908142344787
             ],
             "tag": {
-              "commentStart": 155,
-              "end": 160,
+              "commentStart": 114,
+              "end": 119,
               "moduleId": 0,
-              "start": 155,
+              "start": 114,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -604,10 +604,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               4.808218489067258
             ],
             "tag": {
-              "commentStart": 275,
-              "end": 280,
+              "commentStart": 234,
+              "end": 239,
               "moduleId": 0,
-              "start": 275,
+              "start": 234,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -702,10 +702,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 698,
-            "end": 703,
+            "commentStart": 657,
+            "end": 662,
             "moduleId": 0,
-            "start": 698,
+            "start": 657,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -716,10 +716,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 784,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 779,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -730,10 +730,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 860,
-            "end": 865,
+            "commentStart": 819,
+            "end": 824,
             "moduleId": 0,
-            "start": 860,
+            "start": 819,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -744,10 +744,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 941,
-            "end": 946,
+            "commentStart": 900,
+            "end": 905,
             "moduleId": 0,
-            "start": 941,
+            "start": 900,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -769,10 +769,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.49999999756
             ],
             "tag": {
-              "commentStart": 698,
-              "end": 703,
+              "commentStart": 657,
+              "end": 662,
               "moduleId": 0,
-              "start": 698,
+              "start": 657,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -793,10 +793,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.49999999621546
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 784,
+              "commentStart": 738,
+              "end": 743,
               "moduleId": 0,
-              "start": 779,
+              "start": 738,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -817,10 +817,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.7499999947654599
             ],
             "tag": {
-              "commentStart": 860,
-              "end": 865,
+              "commentStart": 819,
+              "end": 824,
               "moduleId": 0,
-              "start": 860,
+              "start": 819,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -841,10 +841,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               0.7499999945746123
             ],
             "tag": {
-              "commentStart": 941,
-              "end": 946,
+              "commentStart": 900,
+              "end": 905,
               "moduleId": 0,
-              "start": 941,
+              "start": 900,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -884,10 +884,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 72,
-                  "end": 77,
+                  "commentStart": 31,
+                  "end": 36,
                   "moduleId": 0,
-                  "start": 72,
+                  "start": 31,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -898,10 +898,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 155,
-                  "end": 160,
+                  "commentStart": 114,
+                  "end": 119,
                   "moduleId": 0,
-                  "start": 155,
+                  "start": 114,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -912,10 +912,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 275,
-                  "end": 280,
+                  "commentStart": 234,
+                  "end": 239,
                   "moduleId": 0,
-                  "start": 275,
+                  "start": 234,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -937,10 +937,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.323390814234285
                   ],
                   "tag": {
-                    "commentStart": 72,
-                    "end": 77,
+                    "commentStart": 31,
+                    "end": 36,
                     "moduleId": 0,
-                    "start": 72,
+                    "start": 31,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -961,10 +961,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.3233908142344787
                   ],
                   "tag": {
-                    "commentStart": 155,
-                    "end": 160,
+                    "commentStart": 114,
+                    "end": 119,
                     "moduleId": 0,
-                    "start": 155,
+                    "start": 114,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -985,10 +985,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     4.808218489067258
                   ],
                   "tag": {
-                    "commentStart": 275,
-                    "end": 280,
+                    "commentStart": 234,
+                    "end": 239,
                     "moduleId": 0,
-                    "start": 275,
+                    "start": 234,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1132,10 +1132,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.49999999756
           ],
           "tag": {
-            "commentStart": 698,
-            "end": 703,
+            "commentStart": 657,
+            "end": 662,
             "moduleId": 0,
-            "start": 698,
+            "start": 657,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.49999999621546
           ],
           "tag": {
-            "commentStart": 779,
-            "end": 784,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 779,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1180,10 +1180,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.7499999947654599
           ],
           "tag": {
-            "commentStart": 860,
-            "end": 865,
+            "commentStart": 819,
+            "end": 824,
             "moduleId": 0,
-            "start": 860,
+            "start": 819,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1204,10 +1204,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.7499999945746123
           ],
           "tag": {
-            "commentStart": 941,
-            "end": 946,
+            "commentStart": 900,
+            "end": 905,
             "moduleId": 0,
-            "start": 941,
+            "start": 900,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1247,10 +1247,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 72,
-                "end": 77,
+                "commentStart": 31,
+                "end": 36,
                 "moduleId": 0,
-                "start": 72,
+                "start": 31,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -1261,10 +1261,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 155,
-                "end": 160,
+                "commentStart": 114,
+                "end": 119,
                 "moduleId": 0,
-                "start": 155,
+                "start": 114,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -1275,10 +1275,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 275,
-                "end": 280,
+                "commentStart": 234,
+                "end": 239,
                 "moduleId": 0,
-                "start": 275,
+                "start": 234,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -1300,10 +1300,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   0.323390814234285
                 ],
                 "tag": {
-                  "commentStart": 72,
-                  "end": 77,
+                  "commentStart": 31,
+                  "end": 36,
                   "moduleId": 0,
-                  "start": 72,
+                  "start": 31,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1324,10 +1324,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   0.3233908142344787
                 ],
                 "tag": {
-                  "commentStart": 155,
-                  "end": 160,
+                  "commentStart": 114,
+                  "end": 119,
                   "moduleId": 0,
-                  "start": 155,
+                  "start": 114,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1348,10 +1348,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   4.808218489067258
                 ],
                 "tag": {
-                  "commentStart": 275,
-                  "end": 280,
+                  "commentStart": 234,
+                  "end": 239,
                   "moduleId": 0,
-                  "start": 275,
+                  "start": 234,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -1584,10 +1584,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 72,
-                          "end": 77,
+                          "commentStart": 31,
+                          "end": 36,
                           "moduleId": 0,
-                          "start": 72,
+                          "start": 31,
                           "type": "TagDeclarator",
                           "value": "line1"
                         },
@@ -1598,10 +1598,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 155,
-                          "end": 160,
+                          "commentStart": 114,
+                          "end": 119,
                           "moduleId": 0,
-                          "start": 155,
+                          "start": 114,
                           "type": "TagDeclarator",
                           "value": "line2"
                         },
@@ -1612,10 +1612,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 275,
-                          "end": 280,
+                          "commentStart": 234,
+                          "end": 239,
                           "moduleId": 0,
-                          "start": 275,
+                          "start": 234,
                           "type": "TagDeclarator",
                           "value": "line3"
                         },
@@ -1637,10 +1637,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.323390814234285
                           ],
                           "tag": {
-                            "commentStart": 72,
-                            "end": 77,
+                            "commentStart": 31,
+                            "end": 36,
                             "moduleId": 0,
-                            "start": 72,
+                            "start": 31,
                             "type": "TagDeclarator",
                             "value": "line1"
                           },
@@ -1661,10 +1661,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.3233908142344787
                           ],
                           "tag": {
-                            "commentStart": 155,
-                            "end": 160,
+                            "commentStart": 114,
+                            "end": 119,
                             "moduleId": 0,
-                            "start": 155,
+                            "start": 114,
                             "type": "TagDeclarator",
                             "value": "line2"
                           },
@@ -1685,10 +1685,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             4.808218489067258
                           ],
                           "tag": {
-                            "commentStart": 275,
-                            "end": 280,
+                            "commentStart": 234,
+                            "end": 239,
                             "moduleId": 0,
-                            "start": 275,
+                            "start": 234,
                             "type": "TagDeclarator",
                             "value": "line3"
                           },
@@ -1889,10 +1889,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 72,
-                          "end": 77,
+                          "commentStart": 31,
+                          "end": 36,
                           "moduleId": 0,
-                          "start": 72,
+                          "start": 31,
                           "type": "TagDeclarator",
                           "value": "line1"
                         },
@@ -1903,10 +1903,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 155,
-                          "end": 160,
+                          "commentStart": 114,
+                          "end": 119,
                           "moduleId": 0,
-                          "start": 155,
+                          "start": 114,
                           "type": "TagDeclarator",
                           "value": "line2"
                         },
@@ -1917,10 +1917,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 275,
-                          "end": 280,
+                          "commentStart": 234,
+                          "end": 239,
                           "moduleId": 0,
-                          "start": 275,
+                          "start": 234,
                           "type": "TagDeclarator",
                           "value": "line3"
                         },
@@ -1942,10 +1942,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.323390814234285
                           ],
                           "tag": {
-                            "commentStart": 72,
-                            "end": 77,
+                            "commentStart": 31,
+                            "end": 36,
                             "moduleId": 0,
-                            "start": 72,
+                            "start": 31,
                             "type": "TagDeclarator",
                             "value": "line1"
                           },
@@ -1966,10 +1966,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.3233908142344787
                           ],
                           "tag": {
-                            "commentStart": 155,
-                            "end": 160,
+                            "commentStart": 114,
+                            "end": 119,
                             "moduleId": 0,
-                            "start": 155,
+                            "start": 114,
                             "type": "TagDeclarator",
                             "value": "line2"
                           },
@@ -1990,10 +1990,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             4.808218489067258
                           ],
                           "tag": {
-                            "commentStart": 275,
-                            "end": 280,
+                            "commentStart": 234,
+                            "end": 239,
                             "moduleId": 0,
-                            "start": 275,
+                            "start": 234,
                             "type": "TagDeclarator",
                             "value": "line3"
                           },
@@ -2194,10 +2194,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 72,
-                          "end": 77,
+                          "commentStart": 31,
+                          "end": 36,
                           "moduleId": 0,
-                          "start": 72,
+                          "start": 31,
                           "type": "TagDeclarator",
                           "value": "line1"
                         },
@@ -2208,10 +2208,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 155,
-                          "end": 160,
+                          "commentStart": 114,
+                          "end": 119,
                           "moduleId": 0,
-                          "start": 155,
+                          "start": 114,
                           "type": "TagDeclarator",
                           "value": "line2"
                         },
@@ -2222,10 +2222,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 275,
-                          "end": 280,
+                          "commentStart": 234,
+                          "end": 239,
                           "moduleId": 0,
-                          "start": 275,
+                          "start": 234,
                           "type": "TagDeclarator",
                           "value": "line3"
                         },
@@ -2247,10 +2247,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.323390814234285
                           ],
                           "tag": {
-                            "commentStart": 72,
-                            "end": 77,
+                            "commentStart": 31,
+                            "end": 36,
                             "moduleId": 0,
-                            "start": 72,
+                            "start": 31,
                             "type": "TagDeclarator",
                             "value": "line1"
                           },
@@ -2271,10 +2271,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.3233908142344787
                           ],
                           "tag": {
-                            "commentStart": 155,
-                            "end": 160,
+                            "commentStart": 114,
+                            "end": 119,
                             "moduleId": 0,
-                            "start": 155,
+                            "start": 114,
                             "type": "TagDeclarator",
                             "value": "line2"
                           },
@@ -2295,10 +2295,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             4.808218489067258
                           ],
                           "tag": {
-                            "commentStart": 275,
-                            "end": 280,
+                            "commentStart": 234,
+                            "end": 239,
                             "moduleId": 0,
-                            "start": 275,
+                            "start": 234,
                             "type": "TagDeclarator",
                             "value": "line3"
                           },
@@ -2499,10 +2499,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 72,
-                          "end": 77,
+                          "commentStart": 31,
+                          "end": 36,
                           "moduleId": 0,
-                          "start": 72,
+                          "start": 31,
                           "type": "TagDeclarator",
                           "value": "line1"
                         },
@@ -2513,10 +2513,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 155,
-                          "end": 160,
+                          "commentStart": 114,
+                          "end": 119,
                           "moduleId": 0,
-                          "start": 155,
+                          "start": 114,
                           "type": "TagDeclarator",
                           "value": "line2"
                         },
@@ -2527,10 +2527,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 275,
-                          "end": 280,
+                          "commentStart": 234,
+                          "end": 239,
                           "moduleId": 0,
-                          "start": 275,
+                          "start": 234,
                           "type": "TagDeclarator",
                           "value": "line3"
                         },
@@ -2552,10 +2552,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.323390814234285
                           ],
                           "tag": {
-                            "commentStart": 72,
-                            "end": 77,
+                            "commentStart": 31,
+                            "end": 36,
                             "moduleId": 0,
-                            "start": 72,
+                            "start": 31,
                             "type": "TagDeclarator",
                             "value": "line1"
                           },
@@ -2576,10 +2576,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             0.3233908142344787
                           ],
                           "tag": {
-                            "commentStart": 155,
-                            "end": 160,
+                            "commentStart": 114,
+                            "end": 119,
                             "moduleId": 0,
-                            "start": 155,
+                            "start": 114,
                             "type": "TagDeclarator",
                             "value": "line2"
                           },
@@ -2600,10 +2600,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                             4.808218489067258
                           ],
                           "tag": {
-                            "commentStart": 275,
-                            "end": 280,
+                            "commentStart": 234,
+                            "end": 239,
                             "moduleId": 0,
-                            "start": 275,
+                            "start": 234,
                             "type": "TagDeclarator",
                             "value": "line3"
                           },
@@ -2716,10 +2716,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.49999999756
                   ],
                   "tag": {
-                    "commentStart": 698,
-                    "end": 703,
+                    "commentStart": 657,
+                    "end": 662,
                     "moduleId": 0,
-                    "start": 698,
+                    "start": 657,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2740,10 +2740,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.49999999621546
                   ],
                   "tag": {
-                    "commentStart": 779,
-                    "end": 784,
+                    "commentStart": 738,
+                    "end": 743,
                     "moduleId": 0,
-                    "start": 779,
+                    "start": 738,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2764,10 +2764,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.7499999947654599
                   ],
                   "tag": {
-                    "commentStart": 860,
-                    "end": 865,
+                    "commentStart": 819,
+                    "end": 824,
                     "moduleId": 0,
-                    "start": 860,
+                    "start": 819,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2788,10 +2788,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.7499999945746123
                   ],
                   "tag": {
-                    "commentStart": 941,
-                    "end": 946,
+                    "commentStart": 900,
+                    "end": 905,
                     "moduleId": 0,
-                    "start": 941,
+                    "start": 900,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2831,10 +2831,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 72,
-                        "end": 77,
+                        "commentStart": 31,
+                        "end": 36,
                         "moduleId": 0,
-                        "start": 72,
+                        "start": 31,
                         "type": "TagDeclarator",
                         "value": "line1"
                       },
@@ -2845,10 +2845,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 155,
-                        "end": 160,
+                        "commentStart": 114,
+                        "end": 119,
                         "moduleId": 0,
-                        "start": 155,
+                        "start": 114,
                         "type": "TagDeclarator",
                         "value": "line2"
                       },
@@ -2859,10 +2859,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 275,
-                        "end": 280,
+                        "commentStart": 234,
+                        "end": 239,
                         "moduleId": 0,
-                        "start": 275,
+                        "start": 234,
                         "type": "TagDeclarator",
                         "value": "line3"
                       },
@@ -2884,10 +2884,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           0.323390814234285
                         ],
                         "tag": {
-                          "commentStart": 72,
-                          "end": 77,
+                          "commentStart": 31,
+                          "end": 36,
                           "moduleId": 0,
-                          "start": 72,
+                          "start": 31,
                           "type": "TagDeclarator",
                           "value": "line1"
                         },
@@ -2908,10 +2908,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           0.3233908142344787
                         ],
                         "tag": {
-                          "commentStart": 155,
-                          "end": 160,
+                          "commentStart": 114,
+                          "end": 119,
                           "moduleId": 0,
-                          "start": 155,
+                          "start": 114,
                           "type": "TagDeclarator",
                           "value": "line2"
                         },
@@ -2932,10 +2932,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                           4.808218489067258
                         ],
                         "tag": {
-                          "commentStart": 275,
-                          "end": 280,
+                          "commentStart": 234,
+                          "end": 239,
                           "moduleId": 0,
-                          "start": 275,
+                          "start": 234,
                           "type": "TagDeclarator",
                           "value": "line3"
                         },
@@ -3447,10 +3447,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.323390814234285
                   ],
                   "tag": {
-                    "commentStart": 72,
-                    "end": 77,
+                    "commentStart": 31,
+                    "end": 36,
                     "moduleId": 0,
-                    "start": 72,
+                    "start": 31,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3471,10 +3471,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     0.3233908142344787
                   ],
                   "tag": {
-                    "commentStart": 155,
-                    "end": 160,
+                    "commentStart": 114,
+                    "end": 119,
                     "moduleId": 0,
-                    "start": 155,
+                    "start": 114,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3495,10 +3495,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     4.808218489067258
                   ],
                   "tag": {
-                    "commentStart": 275,
-                    "end": 280,
+                    "commentStart": 234,
+                    "end": 239,
                     "moduleId": 0,
-                    "start": 275,
+                    "start": 234,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3599,10 +3599,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.323390814234285
           ],
           "tag": {
-            "commentStart": 72,
-            "end": 77,
+            "commentStart": 31,
+            "end": 36,
             "moduleId": 0,
-            "start": 72,
+            "start": 31,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3623,10 +3623,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             0.3233908142344787
           ],
           "tag": {
-            "commentStart": 155,
-            "end": 160,
+            "commentStart": 114,
+            "end": 119,
             "moduleId": 0,
-            "start": 155,
+            "start": 114,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3647,10 +3647,10 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             4.808218489067258
           ],
           "tag": {
-            "commentStart": 275,
-            "end": 280,
+            "commentStart": 234,
+            "end": 239,
             "moduleId": 0,
-            "start": 275,
+            "start": 234,
             "type": "TagDeclarator",
             "value": "line3"
           },

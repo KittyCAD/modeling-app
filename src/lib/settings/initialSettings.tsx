@@ -33,7 +33,6 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { hexToRgba } from '@src/lib/utils'
 
 /**
@@ -541,16 +540,15 @@ export function createSettings() {
         },
       }),
       /**
-       * Determines if new sketches should use the experimental solver-based sketch mode.
-       * On staging, this setting cannot be disabled except by Playwright tests.
-       * On production, users can opt in but classic sketch mode remains the default.
+       * Determines if new sketches should use the solver-based sketch mode.
+       * This setting is hidden and cannot be disabled except by Playwright tests.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? 'both' : undefined,
-        defaultValue: IS_STAGING_OR_DEBUG && !isPlaywright(),
+        hideOnPlatform: 'both',
+        defaultValue: !isPlaywright(),
         description:
-          'Default to the experimental solver-based sketch mode for all new sketches.',
+          'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

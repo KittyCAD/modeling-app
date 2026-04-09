@@ -35,12 +35,12 @@ c-shape-solid/
 cone/
 # contra-rotor/
 # counterdrilled-weldment/
-# countersunk-plate/
+countersunk-plate/
 # cpu-cooler/
 # crash-box/
 # curtain-wall-anchor-plate/
 # cycloidal-gear/
-# cylinder/
+cylinder/
 # desk-edge-stopper/
 # dodecahedron/
 # dog-house-great-dane/
@@ -51,12 +51,13 @@ engine-valve/
 # flange/
 # flat-bladed-impeller/
 # french-press/
+fun-stacker-toy/
 # gallows-bracket/
-# gas-impeller/
+gas-impeller/
 # gear-rack/
 # gingerbread-man/
 # gingerbread-man-cookie-cutter/
-# golf-tee/
+golf-tee/
 # gridfinity-baseplate/
 # gridfinity-bins/
 # gridfinity-bins-stacking-lip/
@@ -89,16 +90,17 @@ engine-valve/
 # pipe/
 # pipe-flange-assembly/
 # pipe-manifold/
+pipe-straight
 # poopy-shoe/
 # propellant-line-brackets/
 # propeller/
 # racing-seat-brackets/
-# rack-blanking-panel/
-# radial-flow-centrifugal-impeller/
-# rectangle-table/
-# round-table/
-# router-template-cross-bar/
-# router-template-slate/
+rack-blanking-panel/
+radial-flow-centrifugal-impeller/
+rectangle-table/
+round-table/
+router-template-cross-bar/
+router-template-slate/
 # sash-window/
 # saturn-v/
 scrub-daddy-holder/

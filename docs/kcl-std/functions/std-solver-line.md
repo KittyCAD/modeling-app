@@ -1,16 +1,14 @@
 ---
-title: "sketch2::line"
-subtitle: "Function in std::sketch2"
+title: "solver::line"
+subtitle: "Function in std::solver"
 excerpt: "Create a straight line segment in a sketch."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a straight line segment in a sketch.
 
 ```kcl
-sketch2::line(
+solver::line(
   start: Point2d,
   end: Point2d,
   construction?: bool,
@@ -35,8 +33,6 @@ sketch2::line(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
@@ -55,11 +51,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::line function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-line0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::line function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-line0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-line0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-line0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
