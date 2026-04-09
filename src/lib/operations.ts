@@ -2175,7 +2175,7 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-function getSketchBlockOperationKey(op: Operation): string | null {
+export function getSketchBlockOperationKey(op: Operation): string | null {
   if (!('nodePath' in op)) {
     return null
   }
