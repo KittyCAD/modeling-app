@@ -279,8 +279,6 @@ pub(crate) async fn create_segments_in_engine(
                 let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
                 let from = start_in_center_unit;
 
-                // Keep the command/artifact ID aligned with the segment ID so
-                // operation args can resolve back into the artifact graph.
                 let id = segment.id;
 
                 exec_state
