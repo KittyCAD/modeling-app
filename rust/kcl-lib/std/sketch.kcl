@@ -3170,7 +3170,7 @@ export fn faceOf(
 /// r = region(point = s.arc1.center)
 /// extrude(r, length = 2)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn region(
   /// A point that is within the region's boundary.
   point?: Point2d | Segment,

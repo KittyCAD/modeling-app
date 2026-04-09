@@ -153,7 +153,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 path',
+            Profiles: '1 region',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -165,7 +165,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
           },
           commandName: 'Extrude',
         })
@@ -178,7 +178,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -190,7 +190,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -940,7 +940,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 paths' },
+        headerArguments: { Profiles: '2 regions' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1056,7 +1056,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1069,7 +1069,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1079,7 +1079,7 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '1 helix',
         },
         stage: 'review',
@@ -2322,7 +2322,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2335,7 +2335,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2354,7 +2354,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2366,7 +2366,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2473,7 +2473,7 @@ box = extrude(region001, length = 30)`
         })
 
         await expect(page.getByText('1 path selected')).toBeVisible()
-        await expect(toolbar.selectionStatus).toContainText('1 path')
+        await expect(toolbar.selectionStatus).toContainText('1 region')
       })
 
       await test.step('Complete command flow', async () => {
@@ -2482,7 +2482,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
             },
             commandName: 'Translate',
             reviewValidationError:
@@ -2497,7 +2497,7 @@ box = extrude(region001, length = 30)`
             currentArgKey: 'x',
             currentArgValue: '0',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '',
             },
             highlightedHeaderArg: 'x',
@@ -2511,7 +2511,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '50',
             },
             commandName: 'Translate',
