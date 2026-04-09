@@ -1,6 +1,10 @@
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File } from '@src/lang/KclManager'
 import type { Diagnostic } from '@codemirror/lint'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -325,5 +329,64 @@ describe('KclManager diagnostics', () => {
 
     expect(kclManager.code).toBe('preserve me')
     expect(writeToFileSpy).not.toHaveBeenCalled()
+  })
+
+  it('drops stale sketch checkpoint restores when a newer local edit lands first', async () => {
+    const { kclManager } = createKclManagerTestHarness('checkpoint base')
+    const deferredRestore = createDeferred<{
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
+    }>()
+    const modelingSendSpy = vi.fn((event: unknown) => {
+      if (
+        typeof event === 'object' &&
+        event !== null &&
+        'type' in event &&
+        event.type === 'update sketch outcome' &&
+        'data' in event
+      ) {
+        const data = event.data as {
+          sourceDelta: SourceDelta
+        }
+        kclManager.updateCodeEditor(data.sourceDelta.text, {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+          shouldResetCamera: false,
+          shouldAddToHistory: false,
+        })
+      }
+    })
+
+    kclManager.modelingState = {
+      matches: (value: unknown) => value === 'sketchSolveMode',
+    } as any
+    kclManager.modelingSend = modelingSendSpy
+
+    vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint').mockReturnValue(
+      deferredRestore.promise
+    )
+
+    void (kclManager as any).restoreSketchCheckpointForHistory(42)
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+      shouldAddToHistory: false,
+    })
+
+    deferredRestore.resolve({
+      kclSource: { text: 'checkpoint older' },
+      sceneGraphDelta: {
+        new_graph: [] as unknown as SceneGraphDelta['new_graph'],
+        new_objects: [],
+        invalidates_ids: true,
+        exec_outcome: [] as unknown as SceneGraphDelta['exec_outcome'],
+      },
+    })
+    await flushPromises()
+
+    expect(kclManager.code).toBe('local newer')
+    expect(modelingSendSpy).not.toHaveBeenCalled()
   })
 })

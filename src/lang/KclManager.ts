@@ -686,6 +686,7 @@ export class KclManager extends File {
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
+  private _documentVersion = 0
   private lastCommittedCode = ''
   private lastCommittedAdditionalSpec:
     | UpdateCodeEditorAdditionalSpec
@@ -1054,6 +1055,7 @@ export class KclManager extends File {
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
+      this._documentVersion += 1
       this._code.value = newCode
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
@@ -2701,10 +2703,12 @@ export class KclManager extends File {
     }
 
     const requestId = ++this.lastSketchCheckpointRestoreRequestId
+    const requestedDocumentVersion = this._documentVersion
     try {
       const result =
         await this.rustContext.restoreSketchCheckpoint(checkpointId)
       if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+      if (requestedDocumentVersion !== this._documentVersion) return
 
       this.sendModelingEvent({
         type: 'update sketch outcome',
@@ -2730,6 +2734,7 @@ export class KclManager extends File {
         )
 
         if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+        if (requestedDocumentVersion !== this._documentVersion) return
         if (setProgramOutcome.type !== 'Success') return
 
         this.sendModelingEvent({
