@@ -2593,13 +2593,68 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
+    fn is_binary_operator_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Operator, "/")
+                | (TokenType::Operator, "*")
+                | (TokenType::Operator, "%")
+                | (TokenType::Operator, "^")
+                | (TokenType::Operator, "==")
+                | (TokenType::Operator, "!=")
+                | (TokenType::Operator, ">")
+                | (TokenType::Operator, ">=")
+                | (TokenType::Operator, "<")
+                | (TokenType::Operator, "<=")
+                | (TokenType::Operator, "|")
+                | (TokenType::Operator, "&")
+                | (TokenType::Operator, "||")
+                | (TokenType::Operator, "&&")
+        )
+    }
+
+    fn can_start_operand_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Word, _)
+                | (TokenType::String, _)
+                | (TokenType::Number, _)
+                | (TokenType::Bang, _)
+                | (TokenType::DoubleColon, _)
+                | (TokenType::Brace, "(")
+                | (TokenType::Brace, "[")
+                | (TokenType::Brace, "{")
+                | (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Keyword, "if")
+                | (TokenType::Keyword, "true")
+                | (TokenType::Keyword, "false")
+                | (TokenType::Keyword, "var")
+        )
+    }
+
+    let start = i.checkpoint();
     let mut expr = alt((
-        binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
     .parse_next(i)?;
+
+    let checkpoint = i.checkpoint();
+    let _ = opt(whitespace).parse_next(i);
+    let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
+        let _ = opt(whitespace).parse_next(i);
+        i.peek_token().as_ref().is_some_and(can_start_operand_token)
+    });
+    i.reset(&checkpoint);
+
+    if has_binary_operator {
+        i.reset(&start);
+        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+    }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
