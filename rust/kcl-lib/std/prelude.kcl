@@ -170,8 +170,6 @@ export CW = "cw": string
 ///  )
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
-///
 /// // Demonstrate building a helix where the central axis is a line defined in a sketch block.
 /// // First, here's the sketch block with a line:
 /// sketch002 = sketch(on = XZ) {

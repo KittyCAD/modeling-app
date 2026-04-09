@@ -1007,8 +1007,6 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// shellProfile = sketch(on = XY) {
 ///   outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
 ///   connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
