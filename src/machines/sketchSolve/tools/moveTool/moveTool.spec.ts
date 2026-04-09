@@ -1233,6 +1233,133 @@ describe('createOnDragCallback', () => {
     )
   })
 
+  it('should not drag-snap a point back onto its own owner line', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const start = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
+    const end = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      start,
+      end,
+      line,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 55),
+        threeD: new Vector3(30, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(null)
+  })
+
+  it('should drag-snap a point to another line target', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const start = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
+    const end = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const otherStart = createPointApiObject({ id: 4, x: 32, y: 30, owner: 6 })
+    const otherEnd = createPointApiObject({ id: 5, x: 32, y: 70, owner: 6 })
+    const otherLine = createLineApiObject({ id: 6, start: 4, end: 5 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      start,
+      end,
+      line,
+      otherStart,
+      otherEnd,
+      otherLine,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 55),
+        threeD: new Vector3(30, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'line', lineId: 6 },
+        position: [32, 55],
+      })
+    )
+  })
+
   it('should send event to update sketch outcome after successful edit', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()

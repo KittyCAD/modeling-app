@@ -50,6 +50,7 @@ import {
   type SnappingCandidate,
   allowSnapping,
   getConstraintForSnapTarget,
+  getSegmentIdForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
@@ -277,6 +278,18 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedSegmentIds = new Set<number>()
+  for (const pointId of coincidentPointIds) {
+    const point = sceneGraphDelta.new_graph.objects[pointId]
+    if (
+      point &&
+      point.kind.type === 'Segment' &&
+      point.kind.segment.type === 'Point' &&
+      point.kind.segment.owner !== null
+    ) {
+      excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
 
   const currentSketchObjects = getCurrentSketchObjectsById(
     sceneGraphDelta.new_graph.objects,
@@ -286,9 +299,17 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) =>
-        !isPointSnapTarget(candidate.target) ||
-        !coincidentPointIds.includes(candidate.target.pointId)
+      (candidate) => {
+        if (isPointSnapTarget(candidate.target)) {
+          return !coincidentPointIds.includes(candidate.target.pointId)
+        }
+
+        const snapTargetSegmentId = getSegmentIdForSnapTarget(candidate.target)
+        return (
+          snapTargetSegmentId === null ||
+          !excludedSegmentIds.has(snapTargetSegmentId)
+        )
+      }
     ) ?? null
 
   return candidate

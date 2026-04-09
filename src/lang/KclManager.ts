@@ -1116,6 +1116,7 @@ export class KclManager extends File {
       // these are short term hacks while in rapid development for sketch revamp
       // should be clean up.
       try {
+        debugger
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
           const setProgramOutcome = await this.rustContext.hackSetProgram(

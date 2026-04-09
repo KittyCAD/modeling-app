@@ -7,6 +7,7 @@ import type { Coords2d } from '@src/lang/util'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   allowSnapping,
+  getSegmentIdForSnapTarget,
   getSnappingCandidates,
   isPointSnapTarget,
   type SnappingCandidate,
@@ -94,16 +95,37 @@ export function getBestSnappingCandidate({
 
   const currentSketchObjects = getCurrentSketchObjectsById(objects, sketchId)
   const excludedPointIdSet = new Set(excludedPointIds)
+  const excludedSegmentIdSet = new Set<number>()
 
   for (const pointId of getExcludedPointIds?.(currentSketchObjects) ?? []) {
     excludedPointIdSet.add(pointId)
   }
 
+  for (const pointId of excludedPointIdSet) {
+    const point = currentSketchObjects[pointId]
+    if (
+      point &&
+      point.kind.type === 'Segment' &&
+      point.kind.segment.type === 'Point' &&
+      point.kind.segment.owner !== null
+    ) {
+      excludedSegmentIdSet.add(point.kind.segment.owner)
+    }
+  }
+
   return (
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) =>
-        !isPointSnapTarget(candidate.target) ||
-        !excludedPointIdSet.has(candidate.target.pointId)
+      (candidate) => {
+        if (isPointSnapTarget(candidate.target)) {
+          return !excludedPointIdSet.has(candidate.target.pointId)
+        }
+
+        const snapTargetSegmentId = getSegmentIdForSnapTarget(candidate.target)
+        return (
+          snapTargetSegmentId === null ||
+          !excludedSegmentIdSet.has(snapTargetSegmentId)
+        )
+      }
     ) ?? null
   )
 }
