@@ -55,6 +55,8 @@ const mockState = vi.hoisted(() => ({
   getUserProject: vi.fn(async () => ({
     title: 'Bracket',
     description: 'Existing description',
+    publication_status: 'draft',
+    updated_at: '2026-04-09T15:00:00Z',
   })),
   publishUserProject: vi.fn(async () => ({
     id: 'project-created',
@@ -140,7 +142,11 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
-import { copyCurrentFileShareLink, publishCurrentProject } from '@src/lib/share'
+import {
+  copyCurrentFileShareLink,
+  getCurrentProjectPublicationDetails,
+  publishCurrentProject,
+} from '@src/lib/share'
 
 function makeProject(): Project {
   return {
@@ -367,5 +373,54 @@ describe('publishCurrentProject', () => {
       'Project submitted for review.',
       { duration: 5000 }
     )
+  })
+})
+
+describe('getCurrentProjectPublicationDetails', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns publication details for the current environment binding', async () => {
+    mockState.readProjectSettingsFile.mockResolvedValue({
+      cloud: {
+        'dev.zoo.dev': {
+          project_id: 'project-existing',
+        },
+      },
+    })
+    mockState.getUserProject.mockResolvedValue({
+      title: 'Bracket',
+      description: 'Existing description',
+      publication_status: 'published',
+      updated_at: '2026-04-09T15:00:00Z',
+      published_at: '2026-04-07T12:34:56Z',
+    })
+
+    const details = await getCurrentProjectPublicationDetails({
+      token: 'token-123',
+      project: makeProject(),
+      wasmInstance: {} as never,
+    })
+
+    expect(details).toEqual({
+      projectId: 'project-existing',
+      publicationStatus: 'published',
+      updatedAt: '2026-04-09T15:00:00Z',
+      publishedAt: '2026-04-07T12:34:56Z',
+    })
+  })
+
+  it('returns null when there is no bound cloud project for this environment', async () => {
+    mockState.readProjectSettingsFile.mockResolvedValue({})
+
+    const details = await getCurrentProjectPublicationDetails({
+      token: 'token-123',
+      project: makeProject(),
+      wasmInstance: {} as never,
+    })
+
+    expect(details).toBeNull()
+    expect(mockState.getUserProject).not.toHaveBeenCalled()
   })
 })

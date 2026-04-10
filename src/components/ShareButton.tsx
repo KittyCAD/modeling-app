@@ -5,8 +5,14 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { copyCurrentFileShareLink, publishCurrentProject } from '@src/lib/share'
-import { memo, useCallback, useState } from 'react'
+import {
+  copyCurrentFileShareLink,
+  type CurrentProjectPublicationDetails,
+  getCurrentProjectPublicationDetails,
+  publishCurrentProject,
+} from '@src/lib/share'
+import { err } from '@src/lib/trap'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
@@ -20,6 +26,10 @@ export const ShareButton = memo(function ShareButton() {
   const token = auth.useToken()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [publicationDetails, setPublicationDetails] =
+    useState<CurrentProjectPublicationDetails | null>(null)
+  const [isLoadingPublicationDetails, setIsLoadingPublicationDetails] =
+    useState(false)
 
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
@@ -62,6 +72,53 @@ export const ShareButton = memo(function ShareButton() {
   useHotkeys(shareHotkey, onShareClick, {
     scopes: ['modeling'],
   })
+
+  useEffect(() => {
+    let isCancelled = false
+
+    if (!isDialogOpen) {
+      setPublicationDetails(null)
+      setIsLoadingPublicationDetails(false)
+      return
+    }
+
+    if (!token || !currentProject) {
+      setPublicationDetails(null)
+      setIsLoadingPublicationDetails(false)
+      return
+    }
+
+    setIsLoadingPublicationDetails(true)
+    void (async () => {
+      const wasmInstance = await kclManager.wasmInstancePromise
+      if (isCancelled) {
+        return
+      }
+
+      const details = await getCurrentProjectPublicationDetails({
+        token,
+        project: currentProject,
+        wasmInstance,
+      })
+
+      if (isCancelled) {
+        return
+      }
+
+      if (err(details)) {
+        console.error('Failed to load project publication details', details)
+        setPublicationDetails(null)
+      } else {
+        setPublicationDetails(details)
+      }
+
+      setIsLoadingPublicationDetails(false)
+    })()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentProject, isDialogOpen, kclManager, token])
 
   const ast = kclManager.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
@@ -109,6 +166,8 @@ export const ShareButton = memo(function ShareButton() {
         onPublish={onPublishProject}
         allowOrgRestrict={allowOrgRestrict}
         shareDisabled={shareDisabled}
+        publicationDetails={publicationDetails}
+        isLoadingPublicationDetails={isLoadingPublicationDetails}
       />
     </>
   )

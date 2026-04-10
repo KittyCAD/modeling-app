@@ -1,4 +1,8 @@
-import { type KclProjectShareLinkAccessMode, users } from '@kittycad/lib'
+import {
+  type KclProjectPublicationStatus,
+  type KclProjectShareLinkAccessMode,
+  users,
+} from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
@@ -27,6 +31,13 @@ export type PublishCurrentProjectArgs = Omit<
   CopyCurrentFileShareLinkArgs,
   'isRestrictedToOrg'
 >
+
+export type CurrentProjectPublicationDetails = {
+  projectId: string
+  publicationStatus: KclProjectPublicationStatus
+  publishedAt?: string
+  updatedAt: string
+}
 
 type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
@@ -151,6 +162,56 @@ export async function publishCurrentProject(
   )
 
   return true
+}
+
+export async function getCurrentProjectPublicationDetails({
+  token,
+  project,
+  wasmInstance,
+}: {
+  token: string
+  project: Project | undefined
+  wasmInstance: ModuleType
+}): Promise<CurrentProjectPublicationDetails | null | Error> {
+  if (!token || !project) {
+    return null
+  }
+
+  const environmentName = getCurrentEnvironmentName()
+  if (err(environmentName)) {
+    return environmentName
+  }
+
+  const projectId = await getCloudProjectIdForEnvironment(
+    project.path,
+    wasmInstance,
+    environmentName
+  )
+  if (err(projectId)) {
+    return projectId
+  }
+
+  if (!projectId) {
+    return null
+  }
+
+  const client = createKCClient(token)
+  const remoteProject = await kcCall(() =>
+    users.get_user_project({
+      client,
+      id: projectId,
+    })
+  )
+  if (err(remoteProject)) {
+    return remoteProject
+  }
+
+  return {
+    projectId,
+    publicationStatus: remoteProject.publication_status,
+    publishedAt: getPublishedAt(remoteProject),
+    updatedAt: remoteProject.updated_at,
+  }
 }
 
 async function ensureCurrentProjectUploaded(
@@ -279,6 +340,19 @@ function getDefaultProjectUpsertBody(project: Project): ProjectUpsertBody {
 
 function getDefaultProjectTitle(project: Project) {
   return project.name || getPathLeaf(project.path) || 'project'
+}
+
+function getPublishedAt(project: unknown) {
+  if (
+    project &&
+    typeof project === 'object' &&
+    'published_at' in project &&
+    typeof project.published_at === 'string'
+  ) {
+    return project.published_at
+  }
+
+  return undefined
 }
 
 async function upsertUserProject({

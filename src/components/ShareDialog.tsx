@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import type { CurrentProjectPublicationDetails } from '@src/lib/share'
 import { Fragment, useEffect, useState } from 'react'
 
 export interface ShareDialogSubmitArgs {
@@ -13,6 +14,8 @@ type ShareDialogProps = {
   onPublish: () => Promise<boolean>
   allowOrgRestrict: boolean
   shareDisabled?: boolean
+  publicationDetails?: CurrentProjectPublicationDetails | null
+  isLoadingPublicationDetails?: boolean
 }
 
 export function ShareDialog({
@@ -22,6 +25,8 @@ export function ShareDialog({
   onPublish,
   allowOrgRestrict,
   shareDisabled = false,
+  publicationDetails = null,
+  isLoadingPublicationDetails = false,
 }: ShareDialogProps) {
   const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
   const [activeAction, setActiveAction] = useState<'copy' | 'publish' | null>(
@@ -40,6 +45,13 @@ export function ShareDialog({
   const isSubmitting = activeAction !== null
   const copyDisabled = shareDisabled || isSubmitting
   const publishDisabled = isSubmitting
+  const publishButtonLabel = getPublishButtonLabel(
+    publicationDetails?.publicationStatus
+  )
+  const publishPrompt = getPublishPrompt({
+    publicationDetails,
+    isLoadingPublicationDetails,
+  })
 
   async function handleCopyLink() {
     if (copyDisabled) {
@@ -226,8 +238,7 @@ export function ShareDialog({
                           Publish to Aquarium
                         </p>
                         <p className="mt-2 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-                          Submit this project for review so it can be approved
-                          for public listing.
+                          {publishPrompt}
                         </p>
                       </div>
                       <button
@@ -240,7 +251,7 @@ export function ShareDialog({
                       >
                         {activeAction === 'publish'
                           ? 'Publishing...'
-                          : 'Publish'}
+                          : publishButtonLabel}
                       </button>
                     </div>
                   </section>
@@ -252,4 +263,67 @@ export function ShareDialog({
       </Dialog>
     </Transition>
   )
+}
+
+function getPublishButtonLabel(
+  publicationStatus?: CurrentProjectPublicationDetails['publicationStatus']
+) {
+  switch (publicationStatus) {
+    case 'published':
+      return 'Update published version'
+    case 'pending_review':
+      return 'Update review submission'
+    case 'rejected':
+      return 'Resubmit for review'
+    default:
+      return 'Publish'
+  }
+}
+
+function getPublishPrompt({
+  publicationDetails,
+  isLoadingPublicationDetails,
+}: {
+  publicationDetails: CurrentProjectPublicationDetails | null
+  isLoadingPublicationDetails: boolean
+}) {
+  if (isLoadingPublicationDetails) {
+    return 'Checking whether this project has already been published.'
+  }
+
+  if (!publicationDetails) {
+    return 'Submit this project for review so it can be approved for public listing.'
+  }
+
+  switch (publicationDetails.publicationStatus) {
+    case 'published': {
+      const publishedOn = publicationDetails.publishedAt
+        ? formatDate(publicationDetails.publishedAt)
+        : null
+      return publishedOn
+        ? `This project was last published on ${publishedOn}. Publish again to update the public version.`
+        : 'This project has already been published. Publish again to update the public version.'
+    }
+    case 'pending_review':
+      return `This project was last submitted for review on ${formatDate(publicationDetails.updatedAt)}. Publish again to update the pending review version.`
+    case 'rejected':
+      return 'This project has been submitted before. Publish again to resubmit it for approval.'
+    case 'deleted':
+      return 'This project was previously published. Publish again to submit a new version for review.'
+    default:
+      return 'Submit this project for review so it can be approved for public listing.'
+  }
+}
+
+function formatDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.valueOf())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
 }
