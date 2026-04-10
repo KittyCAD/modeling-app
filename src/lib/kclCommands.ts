@@ -1,37 +1,37 @@
 import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import {
+  type PathToNode,
+  type VariableDeclarator,
   changeDefaultUnits,
   isPathToNode,
   pathToNodeFromRustNodePath,
-  type PathToNode,
-  type VariableDeclarator,
 } from '@src/lang/wasm'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
-import { copyFileShareLink } from '@src/lib/links'
+import fsZds from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type { KclManager } from '@src/lang/KclManager'
+import { copyCurrentFileShareLink } from '@src/lib/share'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { Project } from '@src/lib/project'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import fsZds from '@src/lib/fs-zds'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 interface KclCommandConfig {
@@ -294,18 +294,19 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share part via Zoo link',
-      description: 'Create a link that contains a copy of the current file.',
+      displayName: 'Share file link',
+      description: 'Upload the current project and copy a shareable link.',
       groupId: 'code',
       needsReview: false,
       icon: 'link',
       onSubmit: (input) => {
-        copyFileShareLink({
+        copyCurrentFileShareLink({
           token: commandProps.authToken,
-          code: commandProps.kclManager.code,
-          name: commandProps.projectData.project?.name || '',
+          project: commandProps.projectData.project,
+          currentFilePath: commandProps.kclManager.path,
+          currentFileContents: commandProps.kclManager.code,
+          wasmInstance: commandProps.wasmInstance,
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
-          password: input?.event.data.password,
         }).catch(reportRejection)
       },
     },
