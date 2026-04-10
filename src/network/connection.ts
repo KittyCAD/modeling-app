@@ -44,6 +44,32 @@ interface IDeferredPromise {
   reject: (value: any) => void
 }
 
+const TRANSPORT_DEBUG_COMMAND_TYPES = new Set([
+  'camera_drag_start',
+  'camera_drag_move',
+  'handle_mouse_drag_move',
+  'highlight_set_entity',
+  'mouse_move',
+  'default_camera_zoom',
+  'default_camera_look_at',
+  'default_camera_perspective_settings',
+])
+
+function getTransportDebugMetadata(message: WebSocketRequest) {
+  if (message.type !== 'modeling_cmd_req') {
+    return null
+  }
+
+  if (!TRANSPORT_DEBUG_COMMAND_TYPES.has(message.cmd.type)) {
+    return null
+  }
+
+  return {
+    cmdId: message.cmd_id,
+    cmdType: message.cmd.type,
+  }
+}
+
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
@@ -902,41 +928,122 @@ export class Connection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: WebSocketRequest) {
+    const transportDebug = getTransportDebugMetadata(message)
+
     if (!this.unreliableDataChannel) {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'unreliable-drop-missing-data-channel',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+          },
+        })
+      }
       console.warn('race condition my guy, unreliableSend')
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'connecting') {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'unreliable-drop-connecting',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+            dataChannelState: this.unreliableDataChannel.readyState,
+          },
+        })
+      }
       console.warn('sending message while unreliableDataChannel is connecting')
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'closing') {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'unreliable-drop-closing',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+            dataChannelState: this.unreliableDataChannel.readyState,
+          },
+        })
+      }
       console.warn('sending message while unreliableDataChannel is closing')
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'closed') {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'unreliable-drop-closed',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+            dataChannelState: this.unreliableDataChannel.readyState,
+          },
+        })
+      }
       console.warn('unreliableDataChannel is closed, rejecting the send.')
       return
     }
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
+    if (transportDebug) {
+      EngineDebugger.addLog({
+        label: 'connection.transport',
+        message: 'unreliable-send',
+        metadata: {
+          ...transportDebug,
+          connectionId: this.id,
+          dataChannelState: this.unreliableDataChannel.readyState,
+        },
+      })
+    }
     this.unreliableDataChannel?.send(
       typeof message === 'string' ? message : JSON.stringify(message)
     )
   }
 
   send(message: WebSocketRequest) {
+    const transportDebug = getTransportDebugMetadata(message)
+
     if (!this.websocket) {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'websocket-drop-missing-websocket',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+          },
+        })
+      }
       console.warn('send, websocket is undefined')
       return
     }
 
     // Not connected, don't send anything
     if (this.websocket.readyState !== WebSocket.OPEN) {
+      if (transportDebug) {
+        EngineDebugger.addLog({
+          label: 'connection.transport',
+          message: 'websocket-drop-not-open',
+          metadata: {
+            ...transportDebug,
+            connectionId: this.id,
+            readyState: this.websocket.readyState,
+            peerConnectionState: this.peerConnection?.connectionState ?? null,
+            dataChannelState: this.unreliableDataChannel?.readyState ?? null,
+          },
+        })
+      }
       EngineDebugger.addLog({
         label: 'websocket',
         message: 'readyState is not WebSocket.OPEN',
@@ -955,6 +1062,19 @@ export class Connection extends EventTarget {
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
+    if (transportDebug) {
+      EngineDebugger.addLog({
+        label: 'connection.transport',
+        message: 'websocket-send',
+        metadata: {
+          ...transportDebug,
+          connectionId: this.id,
+          readyState: this.websocket.readyState,
+          peerConnectionState: this.peerConnection?.connectionState ?? null,
+          dataChannelState: this.unreliableDataChannel?.readyState ?? null,
+        },
+      })
+    }
     this.websocket?.send(
       typeof message === 'string' ? message : JSON.stringify(message)
     )

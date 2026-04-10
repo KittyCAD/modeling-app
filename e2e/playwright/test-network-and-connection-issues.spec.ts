@@ -42,7 +42,7 @@ async function collectIdleDisconnectDebugState(page: Page) {
       code: w.kclManager?.code ?? '',
       debugSnapshot: w.engineCommandManager?.getDebugSnapshot?.() ?? null,
       recentCommandLogs: (w.engineCommandManager?.commandLogs ?? []).slice(-50),
-      recentEngineLogs: (w.engineDebugger?.logs ?? []).slice(-100),
+      recentEngineLogs: (w.engineDebugger?.logs ?? []).slice(-300),
     }
   })
 }
@@ -488,6 +488,15 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
 
           await test.info().attach('idle-disconnect-debug-state', {
             body: JSON.stringify(debugState, null, 2),
+            contentType: 'application/json',
+          })
+
+          await test.info().attach('idle-disconnect-pending-command-events', {
+            body: JSON.stringify(
+              debugState.debugSnapshot?.recentPendingCommandEvents ?? [],
+              null,
+              2
+            ),
             contentType: 'application/json',
           })
 
