@@ -66,10 +66,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             0.323390814234285
           ],
           "tag": {
-            "commentStart": 65,
-            "end": 70,
+            "commentStart": 24,
+            "end": 29,
             "moduleId": 0,
-            "start": 65,
+            "start": 24,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -90,10 +90,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             0.3233908142344787
           ],
           "tag": {
-            "commentStart": 148,
-            "end": 153,
+            "commentStart": 107,
+            "end": 112,
             "moduleId": 0,
-            "start": 148,
+            "start": 107,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -114,10 +114,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             4.808218489067258
           ],
           "tag": {
-            "commentStart": 268,
-            "end": 273,
+            "commentStart": 227,
+            "end": 232,
             "moduleId": 0,
-            "start": 268,
+            "start": 227,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -577,10 +577,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     0.323390814234285
                   ],
                   "tag": {
-                    "commentStart": 65,
-                    "end": 70,
+                    "commentStart": 24,
+                    "end": 29,
                     "moduleId": 0,
-                    "start": 65,
+                    "start": 24,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -601,10 +601,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     0.3233908142344787
                   ],
                   "tag": {
-                    "commentStart": 148,
-                    "end": 153,
+                    "commentStart": 107,
+                    "end": 112,
                     "moduleId": 0,
-                    "start": 148,
+                    "start": 107,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -625,10 +625,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     4.808218489067258
                   ],
                   "tag": {
-                    "commentStart": 268,
-                    "end": 273,
+                    "commentStart": 227,
+                    "end": 232,
                     "moduleId": 0,
-                    "start": 268,
+                    "start": 227,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },

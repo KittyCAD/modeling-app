@@ -242,8 +242,6 @@
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// baseProfile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -722,8 +720,6 @@ export fn ellipse(
 /// extrude(closedProfile, length = 5, bodyType = SURFACE)
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
 ///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
@@ -742,8 +738,6 @@ export fn ellipse(
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
-///
 /// // Sketch some disconnected lines in a sketch block.
 /// originalSketch = sketch(on = YZ) {
 ///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
@@ -1013,8 +1007,6 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// shellProfile = sketch(on = XY) {
 ///   outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
 ///   connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
@@ -1029,8 +1021,6 @@ export fn extrude(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// ringProfile = sketch(on = XZ) {
 ///   edge1 = line(start = [var 4mm, var 0mm], end = [var 7mm, var 0mm])
 ///   edge2 = line(start = [var 7mm, var 0mm], end = [var 7mm, var 4mm])
@@ -1046,8 +1036,6 @@ export fn extrude(
 /// ring = revolve(ringRegion, axis = Y)
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
-///
 /// // Sketch some disconnected lines in a sketch block.
 /// originalSketch = sketch(on = YZ) {
 ///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
@@ -1062,8 +1050,6 @@ export fn extrude(
 /// ```
 /// ```
 /// // Use a solved constraint line as the axis of a revolve.
-/// @settings(experimentalFeatures = allow)
-///
 /// sketch001 = sketch(on = XZ) {
 ///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
 ///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
@@ -1264,8 +1250,6 @@ export fn getCommonEdge(
 /// Get a bounded edge of a surface used for the [blend](/docs/kcl-std/functions/std-solid-blend) operation. A bounded edge is a reference to an existing edge that can be clipped at both ends. This will result in only the non-clipped portion of the edge being used during the blend.
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// sketch001 = sketch(on = YZ) {
 ///   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
 ///   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
@@ -1521,8 +1505,6 @@ export fn polygon(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// profile = sketch(on = YZ) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm])
 ///   edge2 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 2mm])
@@ -1544,7 +1526,6 @@ export fn polygon(
 /// swept = sweep(profileRegion, path)
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
 /// // Demonstrates using sweeps with segments from sketch blocks.
 ///
 /// // Sketch a square
@@ -1576,7 +1557,6 @@ export fn polygon(
 /// ```
 /// ```
 /// // Demonstrates sweeping along a multi-segment path from a sketch block.
-/// @settings(experimentalFeatures = allow)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
@@ -1606,7 +1586,6 @@ export fn polygon(
 /// sweep(mySquare, path)
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
 /// // Demonstrates surface sweeps of open profiles.
 ///
 /// // Sketch a square
@@ -1773,8 +1752,6 @@ export fn sweep(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// lowerProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -1804,8 +1781,6 @@ export fn sweep(
 /// ```
 /// ```
 /// // Demonstrates surface lofts with shapes from sketch blocks.
-/// @settings(experimentalFeatures = allow)
-/// 
 /// // Loft a square, a circle, and another circle.
 /// sideLen = 4
 /// squareSketch = sketch(on = XY) {
@@ -1833,7 +1808,7 @@ export fn sweep(
 /// ```
 /// ```
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 /// 
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -3025,8 +3000,6 @@ export fn ellipticPoint(
 /// |> extrude(length = 1)
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// baseProfile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -3064,8 +3037,6 @@ export fn planeOf(
 
 /// Get the face of a solid.
 ///```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// triangle = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [2, 0])
@@ -3081,8 +3052,6 @@ export fn planeOf(
 /// //sketch(on = sideFace) {}
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// triangle = sketch(on = XY) {
 ///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
 ///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -3099,7 +3068,7 @@ export fn planeOf(
 ///
 /// face001 = faceOf(prism, face = triangleRegion.tags.line1)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, feature_tree = false)
 export fn faceOf(
   /// The solid that has the face.
   @solid: Solid,
@@ -3119,8 +3088,6 @@ export fn faceOf(
 /// segment.
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// triangle = sketch(on = XY) {
 ///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
 ///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -3137,8 +3104,6 @@ export fn faceOf(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// trapezoid = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -3158,8 +3123,6 @@ export fn faceOf(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// s = sketch(on = XY) {
 ///   line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
 ///   arc1 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 6mm])
@@ -3170,7 +3133,7 @@ export fn faceOf(
 /// r = region(point = s.arc1.center)
 /// extrude(r, length = 2)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn region(
   /// A point that is within the region's boundary.
   point?: Point2d | Segment,

@@ -5,8 +5,6 @@ excerpt: "Constrain the horizontal distance between two points."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain the horizontal distance between two points.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::horizontalDistance(@points: [Segment | Point2d; 2])
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

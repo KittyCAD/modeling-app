@@ -68,26 +68,27 @@ golf-tee/
 # helium-tank/
 # herringbone-gear/
 # herringbone-planetary-gearset/
-# hex-nut/
-# hex-nut-with-chamfer/
+hex-nut/
+hex-nut-with-chamfer/
 # holder-rod-angle/
-# i-beam/
+i-beam/
 # inner-thread/
 # keyboard/
 # kitt/
 # lattice-cubic/
-# lego/
+lego/
 # linear-shelf-system/
 # liquid-impeller/
 # makeup-mirror/
 # modular-shelf-grid/
 # mug/
 # multi-axis-robot/
-# parametric-shelf-unit/
+parametric-shelf-unit/
 # pdu-faceplate/
 # pergola/
 # pillow-block-bearing/
-# pipe/
+pipe/
+pipe-elbow-90deg/
 # pipe-flange-assembly/
 # pipe-manifold/
 pipe-straight
@@ -95,12 +96,12 @@ pipe-straight
 # propellant-line-brackets/
 # propeller/
 # racing-seat-brackets/
-# rack-blanking-panel/
-# radial-flow-centrifugal-impeller/
-# rectangle-table/
-# round-table/
-# router-template-cross-bar/
-# router-template-slate/
+rack-blanking-panel/
+radial-flow-centrifugal-impeller/
+rectangle-table/
+round-table/
+router-template-cross-bar/
+router-template-slate/
 # sash-window/
 # saturn-v/
 scrub-daddy-holder/

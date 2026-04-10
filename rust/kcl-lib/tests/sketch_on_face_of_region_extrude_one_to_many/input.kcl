@@ -1,9 +1,6 @@
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 29.67mm, var 0mm])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed([line1.start, [0, 0]])
   horizontal(line1)
   arc1 = arc(start = [var 29.67mm, var 0mm], end = [var 0mm, var 0mm], center = [var 14.83mm, var 4.96mm])
   coincident([line1.end, arc1.start])

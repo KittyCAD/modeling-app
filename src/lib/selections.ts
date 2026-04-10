@@ -53,7 +53,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
-import { DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -138,10 +141,13 @@ async function getEngineRegionSelectionFromEntity(
   if (!queryPointMm) return null
   const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
   const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings) || !settings.defaultLengthUnit) return null
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
   const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, settings.defaultLengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, settings.defaultLengthUnit),
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
   const parentEntityId = await getParentEntityIdForEntity(
