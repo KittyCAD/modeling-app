@@ -2,6 +2,7 @@ use pyo3::pyclass;
 use pyo3::pymethods;
 
 /// Overall constraint status of a sketch.
+#[allow(clippy::enum_variant_names)] // Variant names mirror kcl_lib::ConstraintKind for 1:1 Python API mapping.
 #[pyclass(eq, eq_int)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConstraintKind {
