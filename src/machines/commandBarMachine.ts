@@ -17,22 +17,30 @@ import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
-function handleCommandSubmitResult(commandName: string, result: unknown) {
-  if (!result) return
+type CommandSubmitPromise = PromiseLike<unknown>
 
-  if (
+function isCommandSubmitPromise(
+  result: unknown
+): result is CommandSubmitPromise {
+  return (
     typeof result === 'object' &&
     result !== null &&
     'then' in result &&
     typeof result.then === 'function'
-  ) {
-    ;(result as Promise<unknown>)
+  )
+}
+
+function handleCommandSubmitResult(commandName: string, result: unknown) {
+  if (!result) return
+
+  if (isCommandSubmitPromise(result)) {
+    Promise.resolve(result)
       .then((resolved) => {
         if (resolved instanceof Error) {
           toast.error(resolved.message)
         }
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         reportRejection(error)
         toast.error(`Failed to execute command: ${commandName}`)
       })
