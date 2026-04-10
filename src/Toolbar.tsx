@@ -22,6 +22,7 @@ import type {
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
 import {
+  isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
   useToolbarConfig,
@@ -90,6 +91,10 @@ const Toolbar_ = memo(
     const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
       props.state
     )
+    const disableSketchToolbar =
+      isSketchToolbarTransitioning(props.state) &&
+      (toolbarConfigurationName === 'sketching' ||
+        toolbarConfigurationName === 'sketchSolve')
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
@@ -188,6 +193,7 @@ const Toolbar_ = memo(
         )
         const isDisabled =
           disableAllButtons ||
+          disableSketchToolbar ||
           !isConfiguredAvailable ||
           maybeIconConfig.disabled?.(props.state, wasmInstance) === true
 
@@ -228,6 +234,7 @@ const Toolbar_ = memo(
     }, [
       toolbarConfigurationName,
       disableAllButtons,
+      disableSketchToolbar,
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
@@ -243,16 +250,19 @@ const Toolbar_ = memo(
 
     return (
       <menu
+        aria-disabled={disableSketchToolbar}
         data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
+          disableSketchToolbar ? 'opacity-50' : ''
+        }`}
       >
         <ul
           ref={toolbarButtonsRef}
-          className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
-          }
+          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
+            disableSketchToolbar ? 'pointer-events-none' : ''
+          }`}
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {

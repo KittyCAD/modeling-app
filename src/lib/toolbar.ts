@@ -49,6 +49,14 @@ export const modelingMachineStateToToolbarModeName = (
   return toolbarConfigurationName
 }
 
+export const isSketchToolbarTransitioning = (
+  state: StateFrom<typeof modelingMachine>
+): boolean =>
+  state.matches('animating to plane') ||
+  state.matches('animating to existing sketch') ||
+  state.matches('animating to sketch solve mode') ||
+  state.matches('animating to existing sketch solve')
+
 export type ToolbarDropdown = {
   id: string
   array: ToolbarItem[]
