@@ -17,6 +17,7 @@ import {
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  getSketchBlockOperationKey,
   groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
@@ -234,9 +235,11 @@ export const FeatureTreePaneContents = memo(() => {
               })()
 
               if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+                const sketchGroupKey =
+                  getSketchBlockOperationKey(opOrList[0]) ?? key
                 return (
                   <SketchBlockOperationGroup
-                    key={key}
+                    key={sketchGroupKey}
                     items={opOrList}
                     code={operationsCode}
                     sketchNoFace={sketchNoFace}
