@@ -2783,6 +2783,13 @@ export class KclManager extends File {
         additionalSpec?.sketchCheckpointId != null
 
       if (shouldCreateCheckpointOnlyHistoryCommit) {
+        if (additionalSpec?.effects?.length) {
+          this.editorView.dispatch({
+            annotations: [Transaction.addToHistory.of(false)],
+            effects: additionalSpec.effects,
+          })
+        }
+
         this.editorView.dispatch({
           annotations: [
             Transaction.addToHistory.of(true),

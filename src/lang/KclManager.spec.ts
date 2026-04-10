@@ -1,3 +1,4 @@
+import { StateEffect } from '@codemirror/state'
 import type { Diagnostic } from '@codemirror/lint'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -173,5 +174,40 @@ describe('KclManager diagnostics', () => {
     })
 
     expect(writeToFileSpy).not.toHaveBeenCalled()
+  })
+
+  it('dispatches additional effects when creating a checkpoint-only history commit', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+    const testEffect = StateEffect.define<string>()
+    const effectInstance = testEffect.of('scene-update')
+
+    kclManager.updateCodeEditor(
+      'persist me',
+      {
+        shouldAddToHistory: true,
+        shouldWriteToDisk: false,
+        shouldExecute: false,
+        shouldResetCamera: false,
+      },
+      {
+        sketchCheckpointId: 42,
+        effects: [effectInstance],
+      }
+    )
+
+    expect(
+      dispatchSpy.mock.calls.some((call) => {
+        const spec = call[0]
+        if (!spec || typeof spec !== 'object' || !('effects' in spec)) {
+          return false
+        }
+
+        const effects = Array.isArray(spec.effects)
+          ? spec.effects
+          : [spec.effects]
+        return effects.some((effect) => effect === effectInstance)
+      })
+    ).toBe(true)
   })
 })
