@@ -1,3 +1,6 @@
+// 7x10 mini lathe wall holder
+// A storage rack designed to hold quick change tools
+
 @settings(experimentalFeatures = allow)
 
 cutPlaneDepth02 = -10

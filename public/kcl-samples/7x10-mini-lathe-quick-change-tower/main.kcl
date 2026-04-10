@@ -1,3 +1,6 @@
+// 7x10 mini lathe quick change tower
+// Allows for switching between turning, boring, parting tools quickly
+
 @settings(experimentalFeatures = allow)
 
 c3 = 48.1

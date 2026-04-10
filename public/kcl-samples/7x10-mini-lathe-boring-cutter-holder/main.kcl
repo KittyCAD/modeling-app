@@ -1,3 +1,6 @@
+// 7x10 mini lathe boring cutter holder
+// The holder to clasp a boring cutter for a lathe
+
 @settings(experimentalFeatures = allow)
 
 blockDepth = 25

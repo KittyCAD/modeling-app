@@ -1,3 +1,6 @@
+// 7x10 mini lathe hight nut selector
+// Ensures the cutting tool tip is aligned with the centerline of the piece
+
 @settings(experimentalFeatures = allow)
 
 betweenCircles = 4.395
