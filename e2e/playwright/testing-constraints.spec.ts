@@ -191,8 +191,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
         const addVariable = testName === 'Add variable'
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -297,8 +299,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
         const addVariable = testName === 'Add variable'
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -415,8 +419,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
           'create-new-variable-checkbox'
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -524,8 +530,10 @@ profile001 = startProfile(sketch001, at = [-70, -10])
           'create-new-variable-checkbox'
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
