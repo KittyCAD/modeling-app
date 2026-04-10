@@ -1,4 +1,4 @@
-import { expect, describe, test } from 'vitest'
+import { expect, describe, test, vi } from 'vitest'
 
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -12,6 +12,7 @@ import {
   findLastRangeStartingBefore,
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1490,5 +1491,25 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
+  })
+})
+
+describe('selectSketchPlane', () => {
+  test('routes offset plane ids into sketch solve when sketch solve mode is enabled', async () => {
+    const modelingSend = vi.fn()
+    const getFaceDetails = vi.fn()
+
+    await selectSketchPlane('plane001', true, {
+      artifactGraph: new Map(),
+      rustContext: { defaultPlanes: null },
+      sceneEntitiesManager: { getFaceDetails },
+      sceneInfra: { modelingSend },
+    } as any)
+
+    expect(modelingSend).toHaveBeenCalledWith({
+      type: 'Select sketch solve plane',
+      data: 'plane001',
+    })
+    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })
