@@ -195,7 +195,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -226,6 +226,7 @@ impl DocData {
     }
 
     /// The effective documentation category, considering any `doc_category` override.
+    #[cfg(test)]
     pub fn doc_category(&self) -> DocCategory {
         match self {
             DocData::Fn(f) => f.properties.doc_category.unwrap_or(DocCategory::Functions),
@@ -235,7 +236,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn file_name(&self) -> String {
         format!(
             "{}/{}",
@@ -244,7 +245,7 @@ impl DocData {
         )
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn example_name(&self) -> String {
         format!(
             "{}_{}",
@@ -254,7 +255,7 @@ impl DocData {
     }
 
     /// The path to the module through which the item is accessed, e.g., `std::sketch`
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn mod_name(&self) -> String {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
@@ -270,7 +271,7 @@ impl DocData {
         q[0..q.rfind("::").unwrap()].to_owned()
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn hide(&self) -> bool {
         match self {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
@@ -332,7 +333,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -470,6 +471,7 @@ impl ConstData {
 pub struct ModData {
     pub name: String,
     /// How the module is indexed, etc.
+    #[allow(dead_code)]
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
@@ -509,7 +511,7 @@ impl ModData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -747,6 +749,7 @@ impl DocCategory {
         }
     }
 
+    #[cfg(test)]
     fn file_prefix(self) -> &'static str {
         match self {
             DocCategory::Functions => "functions",
@@ -756,6 +759,7 @@ impl DocCategory {
         }
     }
 
+    #[cfg(test)]
     fn example_prefix(self) -> &'static str {
         match self {
             DocCategory::Functions => "fn",
@@ -786,10 +790,11 @@ pub struct Properties {
     pub doc_category: Option<DocCategory>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
+    #[allow(dead_code)]
     pub norun: bool,
+    #[allow(dead_code)]
     pub no3d: bool,
     pub inline: bool,
 }
@@ -989,7 +994,6 @@ impl ArgData {
 }
 
 impl ArgKind {
-    #[allow(dead_code)]
     pub fn required(self) -> bool {
         match self {
             ArgKind::Special => true,
@@ -1050,7 +1054,6 @@ impl TyData {
         }
     }
 
-    #[allow(dead_code)]
     pub fn qual_name(&self) -> &str {
         if self.properties.impl_kind == annotations::Impl::Primitive {
             &self.name
