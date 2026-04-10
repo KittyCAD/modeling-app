@@ -1,0 +1,165 @@
+@settings(experimentalFeatures = allow)
+
+cutPlaneDepth02 = -10
+cutPlaneDepth = -5
+h2CutDepth = 6.756 + cutPlaneDepth * -1
+r2 = 2
+r1 = 3.966
+d1 = 4.034
+blockWedgeCut = 25
+blockHeight = 29
+cutPlane = blockHeight + 5
+actualCutDepthFromOffsetPlane = cutPlane - blockHeight + blockWedgeCut
+blockDepth = 13.7
+cutPlaneDepthR2 = blockDepth + 1 + cutPlaneDepth02 * -1
+h1CutDepth = blockDepth + cutPlaneDepth * -1 + 1
+blockWidth = 60
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 60mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 60mm, var 0mm], end = [var 60mm, var 29mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 60mm, var 29mm], end = [var 0mm, var 29mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 29mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  vertical(line4)
+  vertical(line2)
+  distance([line1.start, line1.end]) == blockWidth
+  distance([line2.start, line2.end]) == blockHeight
+}
+region001 = region(point = [30mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = blockDepth)
+plane001 = offsetPlane(XY, offset = cutPlane)
+sketch002 = sketch(on = plane001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 16.32mm, var 0mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  horizontal(line1)
+  horizontal(line1)
+  distance([line1.start, line1.end]) == 16.322
+  line4 = line(start = [var 16.32mm, var 0mm], end = [var 16.32mm, var 7.1mm])
+  vertical(line4)
+  line7 = line(start = [var 16.32mm, var 0mm], end = [var 14.04mm, var -6.1mm])
+  coincident([line7.start, line1.end])
+  line8 = line(start = [var 14.04mm, var -6.1mm], end = [var 47.1mm, var -6.1mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 47.1mm, var -6.1mm], end = [var 43.68mm, var 0mm])
+  coincident([line8.end, line9.start])
+  horizontal(line8)
+  line2 = line(start = [var 16.32mm, var 7.1mm], end = [var 30mm, var 7.1mm])
+  coincident([line2.start, line4.end])
+  line3 = line(start = [var 30mm, var 7.1mm], end = [var 43.68mm, var 7.1mm])
+  coincident([line2.end, line3.start])
+  line5 = line(start = [var 43.68mm, var 7.1mm], end = [var 43.68mm, var 0mm])
+  coincident([line3.end, line5.start])
+  coincident([line5.end, line9.end])
+  vertical(line5)
+  vertical(line4)
+  horizontal(line2)
+  horizontal(line3)
+  distance([line2.start, line2.end]) == 13.6785
+  distance([line3.start, line3.end]) == 13.6785
+  coincident([line4.start, line7.start])
+  horizontal(line8)
+  distance([line8.start, line8.end]) == 33.057
+  line6 = line(start = [var 16.32mm, var 0mm], end = [var 43.68mm, var 0mm], construction = true)
+  coincident([line6.start, line4.start])
+  coincident([line6.end, line5.end])
+  horizontal(line6)
+  line10 = line(start = [var 29.87mm, var -6.1mm], end = [var 29.87mm, var 0mm], construction = true)
+  vertical(line10)
+  coincident([line10.start, line8])
+  coincident([line10.end, line6])
+  distance([line10.start, line10.end]) == 6.1
+}
+region002 = region(point = [16.3245mm, 3.55mm], sketch = sketch002)
+extrude002 = extrude(region002, length = -actualCutDepthFromOffsetPlane)
+solid001 = subtract(extrude001, tools = extrude002)
+plane002 = offsetPlane(XZ, offset = cutPlaneDepth)
+sketch003 = sketch(on = plane002) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 29mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0mm, var 29mm], end = [var 8mm, var 29mm], construction = true)
+  coincident([line1.end, line2.start])
+  horizontal(line2)
+  vertical(line1)
+  distance([line1.start, line1.end]) == blockHeight
+  distance([line2.start, line2.end]) == d1 + r1
+  line3 = line(start = [var 8mm, var 29mm], end = [var 8mm, var 21mm], construction = true)
+  coincident([line3.start, line2.end])
+  vertical(line3)
+  distance([line3.start, line3.end]) == d1 + r1
+  circle1 = circle(start = [var 11.51mm, var 22.85mm], center = [var 8mm, var 21mm])
+  coincident([circle1.center, line3.end])
+  radius(circle1) == r1
+  line4 = line(start = [var 0mm, var 0mm], end = [var 60mm, var 0mm], construction = true)
+  coincident([line4.start, line1.start])
+  line5 = line(start = [var 60mm, var 0mm], end = [var 60mm, var 29mm], construction = true)
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 60mm, var 29mm], end = [var 52mm, var 29mm], construction = true)
+  coincident([line5.end, line6.start])
+  horizontal(line4)
+  distance([line4.start, line4.end]) == blockWidth
+  vertical(line5)
+  distance([line5.start, line5.end]) == blockHeight
+  horizontal(line6)
+  distance([line6.start, line6.end]) == d1 + r1
+  line7 = line(start = [var 52mm, var 29mm], end = [var 52mm, var 21mm], construction = true)
+  coincident([line7.start, line6.end])
+  vertical(line7)
+  distance([line7.start, line7.end]) == d1 + r1
+  circle2 = circle(start = [var 55.22mm, var 23.32mm], center = [var 52mm, var 21mm])
+  coincident([circle2.center, line7.end])
+  radius(circle2) == r1
+}
+region003 = region(point = [48.7842415mm, 18.683056mm], sketch = sketch003)
+extrude003 = extrude(region003, length = h2CutDepth)
+region004 = region(point = [4.4937107mm, 19.1519558mm], sketch = sketch003)
+extrude004 = extrude(region004, length = h2CutDepth)
+solid002 = subtract(solid001, tools = [extrude003, extrude004])
+
+plane003 = offsetPlane(XZ, offset = cutPlaneDepth02)
+sketch004 = sketch(on = plane003) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 29mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0mm, var 29mm], end = [var 8mm, var 29mm], construction = true)
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 8mm, var 29mm], end = [var 8mm, var 21mm], construction = true)
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 0mm], end = [var 60mm, var 0mm], construction = true)
+  coincident([line4.start, line1.start])
+  line5 = line(start = [var 60mm, var 0mm], end = [var 60mm, var 29mm], construction = true)
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 60mm, var 29mm], end = [var 52mm, var 29mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 52mm, var 29mm], end = [var 52mm, var 21mm], construction = true)
+  coincident([line6.end, line7.start])
+  vertical(line1)
+  vertical(line5)
+  vertical(line7)
+  vertical(line3)
+  horizontal(line2)
+  horizontal(line6)
+  horizontal(line4)
+  distance([line4.start, line4.end]) == blockWidth
+  distance([line1.start, line1.end]) == blockHeight
+  distance([line5.start, line5.end]) == blockHeight
+  distance([line2.start, line2.end]) == d1 + r1
+  distance([line3.start, line3.end]) == d1 + r1
+  distance([line6.start, line6.end]) == d1 + r1
+  distance([line7.start, line7.end]) == d1 + r1
+  circle1 = circle(start = [var 9.78mm, var 21.92mm], center = [var 8mm, var 21mm])
+  coincident([circle1.center, line3.end])
+  radius(circle1) == r2
+  circle2 = circle(start = [var 53.88mm, var 21.68mm], center = [var 52mm, var 21mm])
+  coincident([circle2.center, line7.end])
+  radius(circle2) == r2
+}
+region005 = region(point = [6.2255048mm, 20.0828452mm], sketch = sketch004)
+extrude005 = extrude(region005, length = cutPlaneDepthR2)
+region006 = region(point = [50.1215985mm, 20.3205782mm], sketch = sketch004)
+extrude006 = extrude(region006, length = cutPlaneDepthR2)
+solid003 = subtract(solid002, tools = [extrude006, extrude005])
