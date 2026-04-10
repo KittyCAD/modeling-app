@@ -2330,7 +2330,7 @@ fn radius_guess(
         - sketch_var_initial_value(sketch_vars, center[0], exec_state, range)?;
     let dy = sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?
         - sketch_var_initial_value(sketch_vars, center[1], exec_state, range)?;
-    Ok(dx.hypot(dy))
+    Ok(libm::hypot(dx, dy))
 }
 
 pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -2352,7 +2352,10 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
     ) -> Result<(EqualRadiusInput, ObjectId), KclError> {
         let KclValue::Segment { value: segment } = segment_value else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "equalRadius() arguments must be segments".to_owned(),
+                format!(
+                    "equalRadius() arguments must be segments but found {}",
+                    segment_value.human_friendly_type()
+                ),
                 vec![range],
             )));
         };
@@ -2409,8 +2412,11 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
                     unsolved.object_id,
                 ))
             }
-            _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                "equalRadius() currently supports only arc and circle segments".to_owned(),
+            other => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "equalRadius() currently supports only arc and circle segments, you provided {}",
+                    other.human_friendly_kind_with_article()
+                ),
                 vec![range],
             ))),
         }

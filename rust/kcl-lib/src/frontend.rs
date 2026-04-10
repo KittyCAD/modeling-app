@@ -3388,7 +3388,8 @@ impl FrontendState {
             .ok_or_else(|| KclError::refactor(format!("Segment not found: {segment_id:?}")))?;
         let ObjectKind::Segment { segment } = &segment_object.kind else {
             return Err(KclError::refactor(format!(
-                "Object is not a segment: {segment_object:?}"
+                "Object is not a segment, it was {}",
+                segment_object.kind.human_friendly_kind_with_article()
             )));
         };
 
@@ -3397,7 +3398,8 @@ impl FrontendState {
             Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(KclError::refactor(format!(
-                    "equalRadius supports only arc/circle segments, got: {segment:?}"
+                    "equalRadius supports only arc/circle segments, got {}",
+                    segment.human_friendly_kind_with_article()
                 )));
             }
         };

@@ -2137,6 +2137,19 @@ pub enum UnsolvedSegmentKind {
     },
 }
 
+impl UnsolvedSegmentKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point { .. } => "a Point",
+            Self::Line { .. } => "a Line",
+            Self::Arc { .. } => "an Arc",
+            Self::Circle { .. } => "a Circle",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
