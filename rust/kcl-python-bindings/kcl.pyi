@@ -859,59 +859,6 @@ async def mock_execute_code(code:builtins.str) -> builtins.bool:
     Mock execute the kcl code.
     """
 
-class ConstraintKind(Enum):
-    r"""
-    Overall constraint status of a sketch.
-    """
-    FullyConstrained = ...
-    UnderConstrained = ...
-    OverConstrained = ...
-
-class SketchConstraintStatus:
-    r"""
-    Per-sketch summary of constraint freedom analysis.
-
-    Note: a sketch with no countable segments (total_count == 0) is reported
-    as FullyConstrained. This is vacuously true — there are no free or
-    conflicting segments. Check total_count == 0 to distinguish this from a
-    genuinely constrained sketch.
-    """
-    @property
-    def name(self) -> builtins.str: ...
-    @property
-    def status(self) -> ConstraintKind: ...
-    @property
-    def free_count(self) -> builtins.int: ...
-    @property
-    def conflict_count(self) -> builtins.int: ...
-    @property
-    def total_count(self) -> builtins.int: ...
-
-class SketchConstraintReport:
-    r"""
-    Grouped report of all sketches by constraint status.
-    """
-    @property
-    def fully_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
-    @property
-    def under_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
-    @property
-    def over_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
-    def total_sketches(self) -> builtins.int:
-        r"""
-        Total number of sketches across all categories.
-        """
-
-async def get_sketch_constraint_status(path:builtins.str) -> SketchConstraintReport:
-    r"""
-    Execute a kcl file and return a report of sketch constraint status.
-    """
-
-async def get_sketch_constraint_status_code(code:builtins.str) -> SketchConstraintReport:
-    r"""
-    Execute kcl code and return a report of sketch constraint status.
-    """
-
 async def parse(path:builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code from a file path.
