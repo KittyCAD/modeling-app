@@ -184,10 +184,19 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .execute_mock(&ctx, version, sketch)
             .await
             .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+        let checkpoint_id = guard
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: Some(checkpoint_id),
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize execute mock result. {TRUE_BUG} Details: {e}"))?)
