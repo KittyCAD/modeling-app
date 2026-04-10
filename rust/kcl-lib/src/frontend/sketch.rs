@@ -355,6 +355,7 @@ pub enum Constraint {
     Distance(Distance),
     Angle(Angle),
     Diameter(Diameter),
+    EqualRadius(EqualRadius),
     Fixed(Fixed),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
@@ -473,6 +474,12 @@ pub struct Diameter {
     pub diameter: Number,
     #[serde(default)]
     pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct EqualRadius {
+    pub input: Vec<ObjectId>,
 }
 
 /// Multiple fixed constraints, allowing callers to add fixed constraints on

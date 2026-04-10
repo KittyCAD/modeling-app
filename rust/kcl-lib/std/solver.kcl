@@ -273,6 +273,25 @@ export fn equalLength(
   @lines: [Segment; 2+],
 ) {}
 
+/// Constrain circular segments to have equal radius.
+///
+/// ```kcl
+/// sketch1 = sketch(on = XY) {
+///   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])
+///   circle2 = circle(start = [var 10mm, var 0mm], center = [var 6mm, var 0mm])
+///   equalRadius([circle1, circle2])
+///   tangent([circle1, circle2])
+/// }
+///
+/// solid1 = extrude(region(point = sketch1.circle1.center, sketch = sketch1), length = 2)
+/// solid2 = extrude(region(point = sketch1.circle2.center, sketch = sketch1), length = 2)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn equalRadius(
+  /// Two or more arc or circle segments that should share the same radius.
+  @input: [Segment; 2+],
+) {}
+
 /// Constrain lines to be parallel.
 ///
 /// Currently limited to two lines.
