@@ -1722,6 +1722,10 @@ export class ConnectionManager extends EventTarget {
    */
   waitForAllCommands() {
     const startSnapshot = this.getDebugSnapshot()
+    const modelingPendingCommands = Object.values(this.pendingCommands).filter(
+      (pending) => !pending.isSceneCommand
+    )
+
     EngineDebugger.addLog({
       label: 'connectionManager.waitForAllCommands',
       message: 'start',
