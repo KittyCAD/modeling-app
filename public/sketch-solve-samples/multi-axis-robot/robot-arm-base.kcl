@@ -39,15 +39,6 @@ sketch004 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch004.line1, sketch004.line2])
 sketch001 = extrude(region001, length = basePlateThickness)
-  |> chamfer(
-       length = baseChamfer,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
-       ],
-     )
 
 // Base Motor for actuating first joint
 sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
@@ -55,10 +46,32 @@ sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
 }
 region002 = region(segments = [sketch002.circle1])
 extrude002 = extrude(region002, length = baseHeight - basePlateThickness - 1.5)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
+
 sketch003 = sketch(on = startSketchOn(extrude002, face = END)) {
   circle1 = circle(start = [var 0.5in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [sketch003.circle1])
 extrude003 = extrude(region003, length = 1)
   |> appearance(color = "#754110", roughness = 90, metalness = 90)
+chamfer001 = chamfer(
+  sketch001,
+  tags = [
+    getCommonEdge(faces = [
+      region001.tags.line2,
+      region001.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line3,
+      region001.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line3,
+      region001.tags.line4
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line4,
+      region001.tags.line2
+    ])
+  ],
+  length = 1,
+)
