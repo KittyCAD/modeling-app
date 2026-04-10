@@ -310,7 +310,11 @@ impl Line {
     pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
         let start = lookup(self.start);
         let end = lookup(self.end);
-        debug_assert!(start.is_some(), "Line start point {:?} not found in scene graph", self.start);
+        debug_assert!(
+            start.is_some(),
+            "Line start point {:?} not found in scene graph",
+            self.start
+        );
         debug_assert!(end.is_some(), "Line end point {:?} not found in scene graph", self.end);
         start.unwrap_or(Freedom::Free).merge(end.unwrap_or(Freedom::Free))
     }
@@ -353,10 +357,21 @@ impl Arc {
         let start = lookup(self.start);
         let end = lookup(self.end);
         let center = lookup(self.center);
-        debug_assert!(start.is_some(), "Arc start point {:?} not found in scene graph", self.start);
+        debug_assert!(
+            start.is_some(),
+            "Arc start point {:?} not found in scene graph",
+            self.start
+        );
         debug_assert!(end.is_some(), "Arc end point {:?} not found in scene graph", self.end);
-        debug_assert!(center.is_some(), "Arc center point {:?} not found in scene graph", self.center);
-        start.unwrap_or(Freedom::Free).merge(end.unwrap_or(Freedom::Free)).merge(center.unwrap_or(Freedom::Free))
+        debug_assert!(
+            center.is_some(),
+            "Arc center point {:?} not found in scene graph",
+            self.center
+        );
+        start
+            .unwrap_or(Freedom::Free)
+            .merge(end.unwrap_or(Freedom::Free))
+            .merge(center.unwrap_or(Freedom::Free))
     }
 }
 
@@ -388,8 +403,16 @@ impl Circle {
     pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
         let start = lookup(self.start);
         let center = lookup(self.center);
-        debug_assert!(start.is_some(), "Circle start point {:?} not found in scene graph", self.start);
-        debug_assert!(center.is_some(), "Circle center point {:?} not found in scene graph", self.center);
+        debug_assert!(
+            start.is_some(),
+            "Circle start point {:?} not found in scene graph",
+            self.start
+        );
+        debug_assert!(
+            center.is_some(),
+            "Circle center point {:?} not found in scene graph",
+            self.center
+        );
         start.unwrap_or(Freedom::Free).merge(center.unwrap_or(Freedom::Free))
     }
 }

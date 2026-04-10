@@ -353,7 +353,9 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        use crate::front::{Freedom, ObjectKind, Segment};
+        use crate::front::Freedom;
+        use crate::front::ObjectKind;
+        use crate::front::Segment;
 
         // Closure to look up a point's freedom by ObjectId.
         let lookup = |id: ObjectId| -> Option<Freedom> {
@@ -390,12 +392,11 @@ impl ExecOutcome {
                 };
                 // Skip owned points — their freedom is already captured by
                 // the parent geometry (Line/Arc/Circle) that looks them up.
-                if let Segment::Point(p) = segment {
-                    if p.owner.is_some() {
+                if let Segment::Point(p) = segment
+                    && p.owner.is_some() {
                         continue;
                     }
-                }
-                let freedom = segment.freedom(&lookup);
+                let freedom = segment.freedom(lookup);
                 total_count += 1;
                 match freedom {
                     Freedom::Free => free_count += 1,
