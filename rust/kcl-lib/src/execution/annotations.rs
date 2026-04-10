@@ -32,6 +32,7 @@ pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
 pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
+pub(crate) const DOC_CATEGORY: &str = "doc_category";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_COORDS: &str = "coords";
@@ -341,9 +342,14 @@ pub(super) fn get_fn_attrs(
                 continue;
             }
 
+            // doc_category is handled by the docs generator, not execution.
+            if &*p.key.name == DOC_CATEGORY {
+                continue;
+            }
+
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, found `{}`",
+                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, {DOC_CATEGORY}, found `{}`",
                     &*p.key.name,
                 ),
                 vec![source_range],

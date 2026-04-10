@@ -7,6 +7,7 @@ use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::ConstData;
+use super::kcl_doc::DocCategory;
 use super::kcl_doc::DocData;
 use super::kcl_doc::ExampleProperties;
 use super::kcl_doc::FnData;
@@ -118,10 +119,12 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         }
 
         let group = match d {
-            DocData::Fn(_) => functions.entry(d.mod_name()).or_default(),
-            DocData::Ty(_) => types.entry(d.mod_name()).or_default(),
-            DocData::Const(_) => constants.entry(d.mod_name()).or_default(),
             DocData::Mod(_) => continue,
+            _ => match d.doc_category() {
+                DocCategory::Functions => functions.entry(d.mod_name()).or_default(),
+                DocCategory::Types => types.entry(d.mod_name()).or_default(),
+                DocCategory::Constants => constants.entry(d.mod_name()).or_default(),
+            },
         };
 
         group.push((

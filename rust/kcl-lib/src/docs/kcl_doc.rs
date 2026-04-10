@@ -225,23 +225,43 @@ impl DocData {
         }
     }
 
+    /// The effective documentation category, considering any `doc_category` override.
+    pub fn doc_category(&self) -> DocCategory {
+        let override_ = match self {
+            DocData::Fn(f) => f.properties.doc_category,
+            DocData::Const(c) => c.properties.doc_category,
+            DocData::Ty(t) => t.properties.doc_category,
+            DocData::Mod(_) => None,
+        };
+        override_.unwrap_or(match self {
+            DocData::Fn(_) => DocCategory::Functions,
+            DocData::Const(_) => DocCategory::Constants,
+            DocData::Ty(_) => DocCategory::Types,
+            DocData::Mod(_) => unreachable!(),
+        })
+    }
+
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
-            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
             DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
+            _ => format!(
+                "{}/{}",
+                self.doc_category().file_prefix(),
+                self.qual_name().replace("::", "-")
+            ),
         }
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
         match self {
-            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
             DocData::Mod(_) => unimplemented!(),
+            _ => format!(
+                "{}_{}",
+                self.doc_category().example_prefix(),
+                self.qual_name().replace("::", "-")
+            ),
         }
     }
 
@@ -400,6 +420,7 @@ impl ConstData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -428,7 +449,11 @@ impl ConstData {
                 detail: self.value.clone(),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::CONSTANT),
+            kind: Some(match self.properties.doc_category {
+                Some(DocCategory::Functions) => CompletionItemKind::FUNCTION,
+                Some(DocCategory::Types) => CompletionItemKind::STRUCT,
+                _ => CompletionItemKind::CONSTANT,
+            }),
             detail: Some(detail),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -491,6 +516,7 @@ impl ModData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: Default::default(),
+                doc_category: None,
             },
         }
     }
@@ -580,6 +606,7 @@ impl FnData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -709,6 +736,40 @@ impl FnData {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DocCategory {
+    Functions,
+    Constants,
+    Types,
+}
+
+impl DocCategory {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "functions" => Some(DocCategory::Functions),
+            "consts" => Some(DocCategory::Constants),
+            "types" => Some(DocCategory::Types),
+            _ => None,
+        }
+    }
+
+    fn file_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "functions",
+            DocCategory::Constants => "consts",
+            DocCategory::Types => "types",
+        }
+    }
+
+    fn example_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "fn",
+            DocCategory::Constants => "const",
+            DocCategory::Types => "ty",
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
@@ -717,6 +778,7 @@ pub struct Properties {
     #[allow(dead_code)]
     pub exported: bool,
     pub impl_kind: annotations::Impl,
+    pub doc_category: Option<DocCategory>,
 }
 
 #[allow(dead_code)]
@@ -973,6 +1035,7 @@ impl TyData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
@@ -1047,6 +1110,7 @@ trait ApplyMeta {
     fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
+    fn doc_category(&mut self, doc_category: DocCategory);
 
     fn with_comments(&mut self, comments: &[String]) {
         if comments.iter().all(|s| s.is_empty()) {
@@ -1177,6 +1241,13 @@ trait ApplyMeta {
                                 self.doc_hidden(b);
                             }
                         }
+                        annotations::DOC_CATEGORY => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(cat) = DocCategory::from_str(s)
+                            {
+                                self.doc_category(cat);
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -1210,6 +1281,10 @@ impl ApplyMeta for ConstData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for FnData {
@@ -1239,6 +1314,10 @@ impl ApplyMeta for FnData {
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for ModData {
@@ -1266,6 +1345,8 @@ impl ApplyMeta for ModData {
     }
 
     fn impl_kind(&mut self, _: annotations::Impl) {}
+
+    fn doc_category(&mut self, _: DocCategory) {}
 }
 
 impl ApplyMeta for TyData {
@@ -1294,6 +1375,10 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
     }
 }
 
@@ -1328,6 +1413,10 @@ impl ApplyMeta for ArgData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
+        unreachable!();
+    }
+
+    fn doc_category(&mut self, _doc_category: DocCategory) {
         unreachable!();
     }
 }
