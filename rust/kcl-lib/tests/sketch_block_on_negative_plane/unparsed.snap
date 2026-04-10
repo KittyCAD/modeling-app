@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_block_on_negative_plane.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 sketch(on = -XY) {
   // Square
   line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])

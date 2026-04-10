@@ -372,6 +372,7 @@ describe('centerArcToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
         },
       })
 
@@ -422,6 +423,7 @@ describe('centerArcToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
           writeToDisk: false,
         },
       })
@@ -500,7 +502,7 @@ describe('centerArcToolImpl', () => {
           centerPoint: [0, 0],
           startPoint: [10, 0],
           centerSnapTarget: { type: 'origin' },
-          startSnapTarget: { type: 'point', pointId: 99 },
+          startSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
@@ -588,7 +590,7 @@ describe('centerArcToolImpl', () => {
           centerPoint: [0, 0],
           endPoint: [0, 10],
           sceneGraphDelta: inputSceneGraphDelta,
-          endSnapTarget: { type: 'point', pointId: 99 },
+          endSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
@@ -603,7 +605,8 @@ describe('centerArcToolImpl', () => {
           type: 'Coincident',
           segments: [2, 99],
         },
-        expect.anything()
+        expect.anything(),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'snap' },
@@ -611,6 +614,7 @@ describe('centerArcToolImpl', () => {
           ...createSceneGraphDelta([], [20]),
           new_objects: [4, 20],
         },
+        checkpointId: null,
       })
     })
   })

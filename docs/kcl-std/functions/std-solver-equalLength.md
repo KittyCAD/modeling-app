@@ -1,16 +1,14 @@
 ---
-title: "sketch2::equalLength"
-subtitle: "Function in std::sketch2"
+title: "solver::equalLength"
+subtitle: "Function in std::solver"
 excerpt: "Constrain lines to have equal length."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain lines to have equal length.
 
 ```kcl
-sketch2::equalLength(@lines: [Segment; 2+])
+solver::equalLength(@lines: [Segment; 2+])
 ```
 
 
@@ -25,8 +23,6 @@ sketch2::equalLength(@lines: [Segment; 2+])
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
   side1 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 4mm])
@@ -45,11 +41,11 @@ solid = extrude(region(point = [0mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::equalLength function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-equalLength0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::equalLength function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-equalLength0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-equalLength0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-equalLength0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

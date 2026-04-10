@@ -32,7 +32,7 @@ export type EnginePrimitiveSelection = {
 }
 
 export interface EngineRegionSelection {
-  type: 'region'
+  type: 'engineRegion'
   id: string
   point: Point2d
   sketchId: ArtifactId

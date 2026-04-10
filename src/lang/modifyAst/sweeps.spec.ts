@@ -105,9 +105,7 @@ profile002 = rectangle(
   height = 2,
 )`
 
-  const triangleRegion = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
+  const triangleRegion = `s = sketch(on = XY) {
   line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
   line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
   coincident([line1.end, line2.start])
@@ -261,7 +259,7 @@ extrude002 = extrude(seg01, length = 3)`)
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -938,7 +936,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -988,7 +986,7 @@ sketch002 = sketch(on = XZ) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -1020,9 +1018,7 @@ sweep001 = sweep(region001, path = sketch002.line1)`
     })
 
     it('should add a sweep call from region001 with sketch solve line and arc path segments', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var -2.38mm, var 2.51mm], center = [var 0mm, var 0mm])
   coincident([circle1.center, ORIGIN])
 }
@@ -1357,13 +1353,13 @@ t = sketch(on = plane001) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch1!.id,
           },
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-2',
             point: { x: 1, y: 1 },
             sketchId: sketch2!.id,
@@ -1471,9 +1467,7 @@ loft001 = loft([region001, region002])`
     })
 
     it('should add a basic loft call with surface bodyType on sketch solve segments', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const code = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   coincident([line1.start, ORIGIN])
   horizontal(line1)
@@ -1650,7 +1644,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: sketch!.id,
@@ -1986,9 +1980,7 @@ revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
     })
 
     it('should add revolve call around a sketch block segment reference', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+      const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
@@ -2016,7 +2008,7 @@ sketch001 = sketch(on = XZ) {
         graphSelections: [],
         otherSelections: [
           {
-            type: 'region',
+            type: 'engineRegion',
             id: 'region-1',
             point: { x: -2.48, y: -1.8875 },
             sketchId: sketch.id,
@@ -2232,9 +2224,7 @@ helix001 = helix(
     })
 
     it('should return edge selection from member-expression axis op argument', async () => {
-      const revolveCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+      const revolveCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])

@@ -1,16 +1,14 @@
 ---
-title: "sketch2::circle"
-subtitle: "Function in std::sketch2"
+title: "solver::circle"
+subtitle: "Function in std::solver"
 excerpt: "Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it.
 
 ```kcl
-sketch2::circle(
+solver::circle(
   start: Point2d,
   center: Point2d,
   construction?: bool,
@@ -35,8 +33,6 @@ sketch2::circle(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
   edge1 = line(start = [var -3mm, var -2mm], end = [var 3mm, var -2mm])
@@ -56,11 +52,11 @@ solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::circle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-circle0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::circle function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-circle0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-circle0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-circle0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

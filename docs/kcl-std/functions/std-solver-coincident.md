@@ -1,16 +1,14 @@
 ---
-title: "sketch2::coincident"
-subtitle: "Function in std::sketch2"
+title: "solver::coincident"
+subtitle: "Function in std::solver"
 excerpt: "Constrain points, or a point and a segment to be coincident."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain points, or a point and a segment to be coincident.
 
 ```kcl
-sketch2::coincident(@points: [Segment | Point2d; 2])
+solver::coincident(@points: [Segment | Point2d; 2])
 ```
 
 Supports two points, or one point and one segment (line/arc).
@@ -26,8 +24,6 @@ A single [`Point2d`](/docs/kcl-std/types/std-types-Point2d) (e.g. `[1mm, 2.5mm]`
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -46,11 +42,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::coincident function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-coincident0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::coincident function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-coincident0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-coincident0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-coincident0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

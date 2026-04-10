@@ -1,6 +1,7 @@
 import { invertedEffects } from '@codemirror/commands'
 import {
   Compartment,
+  Transaction,
   type Extension,
   type StateEffect,
 } from '@codemirror/state'
@@ -8,6 +9,7 @@ import {
   updateSceneGraphFromDelta,
   updateSketchSceneGraphEffect,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { EditorView } from 'codemirror'
 
 export const sketchSceneGraphCompartment = new Compartment()
@@ -26,6 +28,10 @@ function sketchGraphExtension(): Extension {
     }
   })
   const undoableExecution = invertedEffects.of((tr) => {
+    if (tr.effects.some((e) => e.is(sketchCheckpointHistoryEffect))) {
+      return []
+    }
+
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
       if (e.is(updateSketchSceneGraphEffect)) {
@@ -43,5 +49,6 @@ export function toggleSketchExtension(ev: EditorView, active: boolean) {
     effects: sketchSceneGraphCompartment.reconfigure(
       active ? sketchGraphExtension() : []
     ),
+    annotations: Transaction.addToHistory.of(false),
   })
 }

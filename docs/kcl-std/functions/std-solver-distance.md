@@ -1,16 +1,14 @@
 ---
-title: "sketch2::horizontal"
-subtitle: "Function in std::sketch2"
-excerpt: "Constrain a line to be horizontal."
+title: "solver::distance"
+subtitle: "Function in std::solver"
+excerpt: "Constrain the distance between two points."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
-Constrain a line to be horizontal.
+Constrain the distance between two points.
 
 ```kcl
-sketch2::horizontal(@input: Segment)
+solver::distance(@points: [Segment | Point2d; 2])
 ```
 
 
@@ -19,14 +17,12 @@ sketch2::horizontal(@input: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The line segment that should remain horizontal. | Yes |
+| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`, whose separation should match the value set with `==`. | Yes |
 
 
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -36,7 +32,7 @@ profile = sketch(on = XY) {
   coincident([edge2.end, edge3.start])
   coincident([edge3.end, edge4.start])
   coincident([edge4.end, edge1.start])
-  horizontal(edge1)
+  distance([edge1.start, edge2.end]) == 5mm
 }
 
 solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
@@ -46,11 +42,11 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::horizontal function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-horizontal0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::distance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-distance0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-horizontal0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-distance0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

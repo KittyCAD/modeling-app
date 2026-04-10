@@ -24,6 +24,21 @@ struct TrimOutcome {
     source_delta: SourceDelta,
     scene_graph_delta: SceneGraphDelta,
     operations_performed: bool,
+    checkpoint_id: Option<kcl_lib::front::SketchCheckpointId>,
+}
+
+#[wasm_bindgen]
+pub fn sketch_checkpoint_limit() -> usize {
+    kcl_lib::front::MAX_SKETCH_CHECKPOINTS
+}
+
+fn js_value_from_serde<T: serde::Serialize>(value: &T) -> JsValue {
+    match JsValue::from_serde(value) {
+        Ok(value) => value,
+        Err(err) => JsValue::from_str(&format!(
+            "Could not serialize wasm error payload. {TRUE_BUG} Details: {err}"
+        )),
+    }
 }
 
 #[wasm_bindgen]
@@ -205,10 +220,20 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta, sketch_id) = guard
             .new_sketch(&ctx, project, file, version, args)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = guard
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::NewSketchOutcome {
+            source_delta,
+            scene_graph_delta,
+            sketch_id,
+            checkpoint_id: Some(checkpoint_id),
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize new sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -241,10 +266,18 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let scene_graph_delta = guard
             .edit_sketch(&ctx, project, file, version, sketch)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = guard
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::EditSketchOutcome {
+            scene_graph_delta,
+            checkpoint_id: Some(checkpoint_id),
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -314,6 +347,7 @@ impl Context {
         segment_json: &str,
         label: Option<String>,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -330,10 +364,25 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .add_segment(&ctx, version, sketch, segment, label)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add segment result. {TRUE_BUG} Details: {e}"))?)
@@ -347,6 +396,7 @@ impl Context {
         sketch_json: &str,
         segments_json: &str,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -363,10 +413,25 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .edit_segments(&ctx, version, sketch, segments)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
@@ -381,6 +446,7 @@ impl Context {
         constraint_ids_json: &str,
         segment_ids_json: &str,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -399,10 +465,25 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .delete_objects(&ctx, version, sketch, constraint_ids, segment_ids)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize delete objects result. {TRUE_BUG} Details: {e}"))?)
@@ -416,6 +497,7 @@ impl Context {
         sketch_json: &str,
         constraint_json: &str,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -432,10 +514,25 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .add_constraint(&ctx, version, sketch, constraint)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -450,6 +547,7 @@ impl Context {
         constraint_id_json: &str,
         value_expression: &str,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -466,10 +564,25 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .edit_constraint(&ctx, version, sketch, constraint_id, value_expression.to_string())
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -577,11 +690,23 @@ impl Context {
             (source_delta, scene_graph_delta)
         };
 
+        let checkpoint_id = if operations_performed {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e| format!("Failed to create sketch checkpoint: {:?}", e))?,
+            )
+        } else {
+            None
+        };
+
         // Return both source_delta and sceneGraphDelta
         let result = TrimOutcome {
             source_delta,
             scene_graph_delta,
             operations_performed,
+            checkpoint_id,
         };
 
         Ok(JsValue::from_serde(&result)
@@ -641,6 +766,7 @@ impl Context {
         segment_json: &str,
         label: Option<String>,
         settings: &str,
+        create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -660,12 +786,55 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let result = guard
+        let (source_delta, scene_graph_delta) = guard
             .chain_segment(&ctx, version, sketch, previous_segment_end_point_id, segment, label)
             .await
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize chain segment result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
+    pub async fn restore_sketch_checkpoint(&self, checkpoint_id_json: &str) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let checkpoint_id: kcl_lib::front::SketchCheckpointId = serde_json::from_str(checkpoint_id_json)
+            .map_err(|e| format!("Could not deserialize checkpoint id: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .restore_sketch_checkpoint(checkpoint_id)
+            .await
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize sketch checkpoint restore result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
+    pub async fn clear_sketch_checkpoints(&self) -> Result<(), JsValue> {
+        console_error_panic_hook::set_once();
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        guard.clear_sketch_checkpoints();
+        Ok(())
     }
 }

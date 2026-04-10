@@ -1,16 +1,14 @@
 ---
-title: "sketch2::arc"
-subtitle: "Function in std::sketch2"
+title: "solver::arc"
+subtitle: "Function in std::solver"
 excerpt: "Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
 
 ```kcl
-sketch2::arc(
+solver::arc(
   start: Point2d,
   end: Point2d,
   center: Point2d,
@@ -37,8 +35,6 @@ sketch2::arc(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   top = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 5mm])
@@ -53,11 +49,11 @@ solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sketch2::arc function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-arc0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the solver::arc function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-arc0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-arc0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-arc0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

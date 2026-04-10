@@ -82,6 +82,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -423,7 +424,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       sendHoveredSnappingCandidate(self, {
         target: {
           type: 'point',
-          pointId: tangentTarget.apiObject.id,
+          id: tangentTarget.apiObject.id,
         },
         distance: 0,
         position: pointToCoords2d(tangentTarget.apiObject),
@@ -433,7 +434,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         target: {
           target: {
             type: 'point',
-            pointId: tangentTarget.apiObject.id,
+            id: tangentTarget.apiObject.id,
           },
           distance: 0,
           position: tangentTarget.tangentInfo.tangentStart.position,
@@ -630,6 +631,7 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     error?: string
   }
 
@@ -642,6 +644,8 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
     data: {
       sourceDelta: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
+      ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
     },
   }
   self._parent?.send(sendData)
@@ -808,6 +812,7 @@ export async function finalizeArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -945,7 +950,8 @@ export async function finalizeArcActor({
         type: 'Tangent',
         input: [tangentSegmentId, arcId],
       },
-      settings
+      settings,
+      true
     )
 
     return {
@@ -957,6 +963,7 @@ export async function finalizeArcActor({
           ...tangentResult.sceneGraphDelta.new_objects,
         ],
       },
+      checkpointId: tangentResult.checkpointId ?? null,
     }
   } catch (error) {
     console.error('Failed to finalize tangential arc:', error)

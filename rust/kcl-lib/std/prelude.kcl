@@ -19,8 +19,7 @@ export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
-@(experimental = true)
-export import "std::sketch2"
+export import "std::solver"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
@@ -171,8 +170,6 @@ export CW = "cw": string
 ///  )
 /// ```
 /// ```
-/// @settings(experimentalFeatures = allow)
-///
 /// // Demonstrate building a helix where the central axis is a line defined in a sketch block.
 /// // First, here's the sketch block with a line:
 /// sketch002 = sketch(on = XZ) {
