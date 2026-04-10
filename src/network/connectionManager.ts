@@ -70,6 +70,39 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+const WEBSOCKET_READY_STATE_LABELS = ['connecting', 'open', 'closing', 'closed']
+
+export interface EngineConnectionDebugSnapshot {
+  started: boolean
+  pendingCommandCount: number
+  inSequence: number
+  outSequence: number
+  responseMapCount: number
+  pendingCommands: Array<{
+    id: string
+    requestType: string
+    commandTypes: string[]
+    requestCount: number
+    ageMs: number
+    isSceneCommand: boolean
+  }>
+  connection: {
+    hasConnection: boolean
+    connectionId: string | null
+    connected: boolean
+    hasMediaStream: boolean
+    websocketReadyState: number | null
+    websocketReadyStateLabel: string | null
+    peerConnectionState: string | null
+    iceConnectionState: string | null
+    iceGatheringState: string | null
+    signalingState: string | null
+    unreliableDataChannelState: string | null
+    ping: number | undefined
+    pong: number | undefined
+  }
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -152,6 +185,88 @@ export class ConnectionManager extends EventTarget {
 
   set camControlsCameraChange(cb: () => void) {
     this._camControlsCameraChange = cb
+  }
+
+  private summarizePendingCommand(command: EngineCommand): {
+    requestType: string
+    commandTypes: string[]
+    requestCount: number
+  } {
+    if (command.type === 'modeling_cmd_req') {
+      return {
+        requestType: command.type,
+        commandTypes: [command.cmd.type],
+        requestCount: 1,
+      }
+    }
+
+    if (command.type === 'modeling_cmd_batch_req') {
+      const uniqueCommandTypes = Array.from(
+        new Set(command.requests.map(({ cmd }) => cmd.type))
+      )
+
+      return {
+        requestType: command.type,
+        commandTypes: uniqueCommandTypes,
+        requestCount: command.requests.length,
+      }
+    }
+
+    return {
+      requestType: command.type,
+      commandTypes: [],
+      requestCount: 1,
+    }
+  }
+
+  getDebugSnapshot(): EngineConnectionDebugSnapshot {
+    const connection = this.connection
+    const now = Date.now()
+    const websocketReadyState = connection?.websocket?.readyState ?? null
+
+    return {
+      started: this.started,
+      pendingCommandCount: Object.keys(this.pendingCommands).length,
+      inSequence: this.inSequence,
+      outSequence: this.outSequence,
+      responseMapCount: Object.keys(this.responseMap).length,
+      pendingCommands: Object.entries(this.pendingCommands)
+        .map(([id, pending]) => {
+          const summary = this.summarizePendingCommand(pending.command)
+
+          return {
+            id,
+            requestType: summary.requestType,
+            commandTypes: summary.commandTypes,
+            requestCount: summary.requestCount,
+            ageMs: now - pending.createdAt,
+            isSceneCommand: pending.isSceneCommand,
+          }
+        })
+        .sort((a, b) => b.ageMs - a.ageMs),
+      connection: {
+        hasConnection: Boolean(connection),
+        connectionId: connection?.id ?? null,
+        connected: connection?.connected ?? false,
+        hasMediaStream: Boolean(connection?.mediaStream),
+        websocketReadyState,
+        websocketReadyStateLabel:
+          websocketReadyState === null
+            ? null
+            : (WEBSOCKET_READY_STATE_LABELS[websocketReadyState] ?? 'unknown'),
+        peerConnectionState:
+          connection?.peerConnection?.connectionState ?? null,
+        iceConnectionState:
+          connection?.peerConnection?.iceConnectionState ?? null,
+        iceGatheringState:
+          connection?.peerConnection?.iceGatheringState ?? null,
+        signalingState: connection?.peerConnection?.signalingState ?? null,
+        unreliableDataChannelState:
+          connection?.unreliableDataChannel?.readyState ?? null,
+        ping: connection?.ping,
+        pong: connection?.pong,
+      },
+    }
   }
 
   async start({
@@ -741,6 +856,7 @@ export class ConnectionManager extends EventTarget {
       command: message.command,
       range: message.range,
       idToRangeMap: message.idToRangeMap,
+      createdAt: Date.now(),
       isSceneCommand,
     }
 
@@ -1370,9 +1486,30 @@ export class ConnectionManager extends EventTarget {
    * When this is done when we build the artifact map synchronously.
    */
   waitForAllCommands() {
+    const startSnapshot = this.getDebugSnapshot()
+    EngineDebugger.addLog({
+      label: 'connectionManager.waitForAllCommands',
+      message: 'start',
+      metadata: {
+        pendingCommandCount: startSnapshot.pendingCommandCount,
+        pendingCommands: startSnapshot.pendingCommands.slice(0, 25),
+      },
+    })
+
     return Promise.all(
       Object.values(this.pendingCommands).map((a) => a.promise)
-    )
+    ).then((result) => {
+      const endSnapshot = this.getDebugSnapshot()
+      EngineDebugger.addLog({
+        label: 'connectionManager.waitForAllCommands',
+        message: 'resolved',
+        metadata: {
+          pendingCommandCount: endSnapshot.pendingCommandCount,
+          pendingCommands: endSnapshot.pendingCommands.slice(0, 25),
+        },
+      })
+      return result
+    })
   }
 
   /**

@@ -214,6 +214,14 @@ export class Connection extends EventTarget {
     return this._pingIntervalId
   }
 
+  get ping() {
+    return this._pingPongSpan.ping
+  }
+
+  get pong() {
+    return this._pingPongSpan.pong
+  }
+
   /**
    * Starts when onDataChannelOpen is ready in the peerConnection
    */
