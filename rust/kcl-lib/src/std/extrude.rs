@@ -53,7 +53,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
-use crate::std::sketch2::create_segments_in_engine;
+use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1087,6 +1087,7 @@ mod tests {
             sketch_id: exec_state.next_uuid(),
             sketch: None,
             tag: None,
+            node_path: None,
             meta: vec![],
         };
         KclValue::Segment {

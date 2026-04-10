@@ -50,7 +50,7 @@ function stdlibInSketchBlock(name: string, index = 0): Operation {
           type: 'ExpressionStatementExpr',
         },
         {
-          type: 'SketchBlock',
+          type: 'SketchBlockBody',
         },
       ],
     },

@@ -486,10 +486,10 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     3.870891596316077
                   ],
                   "tag": {
-                    "commentStart": 169,
-                    "end": 171,
+                    "commentStart": 128,
+                    "end": 130,
                     "moduleId": 0,
-                    "start": 169,
+                    "start": 128,
                     "type": "TagDeclarator",
                     "value": "ao"
                   },
@@ -509,34 +509,17 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     1.31779667024565,
                     1.041242494895562
                   ],
-                  "tag": null,
-                  "to": [
-                    1.317796711585515,
-                    1.0412426910069752
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.317796711585515,
-                    1.0412426910069752
-                  ],
                   "tag": {
-                    "commentStart": 197,
-                    "end": 199,
+                    "commentStart": 156,
+                    "end": 158,
                     "moduleId": 0,
-                    "start": 197,
+                    "start": 156,
                     "type": "TagDeclarator",
                     "value": "bo"
                   },
                   "to": [
-                    1.31779667024565,
-                    1.041242494895562
+                    1.317796711585515,
+                    1.0412426910069752
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -547,8 +530,8 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     "sourceRange": []
                   },
                   "from": [
-                    1.31779667024565,
-                    1.041242494895562
+                    1.317796711585515,
+                    1.0412426910069752
                   ],
                   "tag": null,
                   "to": [
@@ -568,10 +551,10 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                     0.1466339480431578
                   ],
                   "tag": {
-                    "commentStart": 225,
-                    "end": 227,
+                    "commentStart": 184,
+                    "end": 186,
                     "moduleId": 0,
-                    "start": 225,
+                    "start": 184,
                     "type": "TagDeclarator",
                     "value": "co"
                   },

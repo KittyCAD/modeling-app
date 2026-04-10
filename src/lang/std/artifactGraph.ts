@@ -777,6 +777,74 @@ export function getFaceCodeRef(
   return null
 }
 
+export function hasSamePathToNode(
+  left: PathToNode,
+  right: PathToNode
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      ([leftValue, leftType], index) =>
+        leftValue === right[index][0] && leftType === right[index][1]
+    )
+  )
+}
+
+export function getArtifactsMatchingPathToNode(
+  pathToNode: PathToNode,
+  artifactGraph: ArtifactGraph
+): Artifact[] {
+  return [...artifactGraph.values()].filter(
+    (artifact) =>
+      'codeRef' in artifact &&
+      hasSamePathToNode(artifact.codeRef.pathToNode, pathToNode)
+  )
+}
+
+export function getSketchBlockForPathArtifact(
+  pathArtifact: Extract<Artifact, { type: 'path' }>,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  // TODO: replace this pathToNode match once the artifact graph can map a Path to its SketchBlock directly.
+  return getArtifactsMatchingPathToNode(
+    pathArtifact.codeRef.pathToNode,
+    artifactGraph
+  ).find(
+    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+      artifact.type === 'sketchBlock'
+  )
+}
+
+export function getSketchBlockForArtifact(
+  artifact: Artifact | undefined,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  if (!artifact) {
+    return undefined
+  }
+
+  if (artifact.type === 'sketchBlock') {
+    return artifact
+  }
+
+  if (artifact.type === 'path') {
+    return getSketchBlockForPathArtifact(artifact, artifactGraph)
+  }
+
+  if (artifact.type === 'segment' || artifact.type === 'solid2d') {
+    const path = getArtifactOfTypes(
+      { key: artifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) {
+      return undefined
+    }
+    return getSketchBlockForPathArtifact(path, artifactGraph)
+  }
+
+  return undefined
+}
+
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
  * This is useful for commands that only work with bodies, but users may have faces or edges selected.

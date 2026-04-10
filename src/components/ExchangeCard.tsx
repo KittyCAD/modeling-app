@@ -43,10 +43,10 @@ export const ButtonCopy = (props: IButtonCopyProps) => (
       }
       navigator.clipboard.writeText(props.content).then(
         () => {
-          toast.success('Copied response to clipboard')
+          toast.success('Copied response to clipboard.')
         },
         () => {
-          toast.error('Failed to copy response to clipboard')
+          toast.error('Failed to copy response to clipboard.')
         }
       )
     }}

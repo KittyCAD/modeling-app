@@ -7,21 +7,17 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  findOperationArtifact,
-  findOperationPlaneArtifact,
-  isOffsetPlane,
-} from '@src/lang/queryAst'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
-  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  getSketchBlockOperationKey,
   groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
@@ -32,10 +28,9 @@ import {
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -54,6 +49,7 @@ import { Disclosure } from '@headlessui/react'
 import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
+  resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
@@ -239,9 +235,11 @@ export const FeatureTreePaneContents = memo(() => {
               })()
 
               if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+                const sketchGroupKey =
+                  getSketchBlockOperationKey(opOrList[0]) ?? key
                 return (
                   <SketchBlockOperationGroup
-                    key={key}
+                    key={sketchGroupKey}
                     items={opOrList}
                     code={operationsCode}
                     sketchNoFace={sketchNoFace}
@@ -550,6 +548,8 @@ const OperationItem = ({
   useSignals()
   const { layout } = useApp()
   const { kclManager, commandBarActor } = systemDeps
+  const useSketchSolveMode =
+    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -591,7 +591,11 @@ const OperationItem = ({
             item,
             kclManager.artifactGraph
           )
-          const result = await selectOffsetSketchPlane(artifact, systemDeps)
+          const result = await selectSketchPlane(
+            artifact?.id,
+            useSketchSolveMode,
+            kclManager
+          )
           if (err(result)) {
             console.error(result)
           }
@@ -605,7 +609,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
+    [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -719,7 +723,7 @@ const OperationItem = ({
         targetSourceRange: item.sourceRange,
         systemDeps,
       }).catch((e) => {
-        toast.error(e)
+        toast.error(isErr(e) ? e.message : JSON.stringify(e))
       })
     }
   }
@@ -736,7 +740,7 @@ const OperationItem = ({
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
       }
     }
   }
@@ -937,13 +941,11 @@ const OperationItem = ({
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
-  const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.artifactGraph
-      ? findOperationArtifact(item, kclManager.artifactGraph)
-      : undefined
-  const hideOperation = operationArtifact
-    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
-    : undefined
+  const visibilityState = resolveFeatureTreeVisibility({
+    item,
+    operations: kclManager.operations ?? [],
+    artifactGraph: kclManager.artifactGraph,
+  })
 
   return (
     <OperationItemWrapper
@@ -980,33 +982,33 @@ const OperationItem = ({
       disabled={!enabled}
       size={size}
       visibilityToggle={
-        item.type === 'StdLibCall' && item.name === 'helix'
+        visibilityState.canToggleVisibility
           ? {
-              visible: hideOperation === undefined,
+              visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
                 selectOperation()
                   .then(() => {
-                    if (hideOperation === undefined) {
+                    if (visibilityState.hideOperation === undefined) {
                       onHide({
                         ast: kclManager.ast,
                         artifactGraph: kclManager.artifactGraph,
                         modelingActor,
                       })
-                    } else if (operationArtifact !== undefined) {
+                    } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
-                        hideOperation,
-                        targetArtifact: operationArtifact,
+                        hideOperation: visibilityState.hideOperation,
+                        targetArtifact: visibilityState.targetArtifact,
                         kclManager,
                       })
                         .then((result) => {
                           if (err(result)) {
                             toast.error(
-                              result.message || 'Error while unhiding'
+                              result.message || 'Error while unhiding.'
                             )
                           }
                         })
                         .catch((e) => {
-                          toast.error(e.message || 'Error while unhiding')
+                          toast.error(e.message || 'Error while unhiding.')
                         })
                     }
                   })

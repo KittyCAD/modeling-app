@@ -22,7 +22,7 @@
     "@codemirror/language": "^6.12.3",
     "@codemirror/state": "^6.5.4",
     "@lezer/highlight": "^1.2.1",
-    "typescript": "^5.7.2"
+    "typescript": "^6.0.2"
   },
   "devDependencies": {
     "@lezer/generator": "^1.7.3",

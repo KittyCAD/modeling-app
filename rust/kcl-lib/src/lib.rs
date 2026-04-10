@@ -187,14 +187,18 @@ pub mod pretty {
 }
 
 pub mod front {
+    pub use crate::frontend::MAX_SKETCH_CHECKPOINTS;
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
-    // Re-export trim module items
+    pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
-        FrontendState, SetProgramOutcome,
+        FrontendState,
+        SetProgramOutcome,
         api::{
-            Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
-            ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
+            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, LifecycleApi, NewSketchOutcome, Number,
+            Object, ObjectId, ObjectKind, Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph,
+            SceneGraphDelta, Settings, SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version,
+            Wall,
         },
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Fixed,
@@ -202,6 +206,7 @@ pub mod front {
             Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent,
             Vertical,
         },
+        // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
@@ -331,6 +336,17 @@ impl Program {
         let module_infos = indexmap::IndexMap::new();
         let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
         NodePath::from_range(&programs, cached_body_items, range)
+    }
+
+    /// Fill node paths and consume the input so that the program without paths
+    /// isn't accidentally used. Filling node paths happens automatically during
+    /// parsing. Calling this is only needed after the caller invalidates the
+    /// node paths such as by mutating an AST or by making a round-trip through
+    /// serialization.
+    #[cfg(feature = "artifact-graph")]
+    pub fn fill_node_paths(mut self) -> Program {
+        parsing::ast::types::fill_node_paths(&mut self.ast);
+        self
     }
 
     pub fn recast(&self) -> String {

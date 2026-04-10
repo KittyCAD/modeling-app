@@ -1,4 +1,5 @@
 use crate::SourceRange;
+use crate::parsing::ast::types::NodePath as AstNodePath;
 use crate::parsing::ast::types::NodeRef;
 use crate::parsing::ast::types::NodeRefMut;
 use crate::parsing::ast::types::{self};
@@ -273,6 +274,98 @@ impl TryFrom<&NodeMut<'_>> for SourceRange {
 
             // Note: This is different from the immutable version.
             NodeMut::ElseIf(n) => SourceRange::new(n.cond.start(), n.then_val.end, n.then_val.module_id),
+
+            // The KclNone type here isn't an actual node, so it has no
+            // start/end information.
+            NodeMut::KclNone(_) => return Err(Self::Error::NoSourceForAKclNone),
+        })
+    }
+}
+
+impl TryFrom<&Node<'_>> for Option<AstNodePath> {
+    type Error = AstNodeError;
+
+    fn try_from(node: &Node) -> Result<Self, Self::Error> {
+        Ok(match node {
+            Node::Program(n) => n.node_path.clone(),
+            Node::ImportStatement(n) => n.node_path.clone(),
+            Node::ExpressionStatement(n) => n.node_path.clone(),
+            Node::VariableDeclaration(n) => n.node_path.clone(),
+            Node::TypeDeclaration(n) => n.node_path.clone(),
+            Node::ReturnStatement(n) => n.node_path.clone(),
+            Node::VariableDeclarator(n) => n.node_path.clone(),
+            Node::NumericLiteral(n) => n.node_path.clone(),
+            Node::Literal(n) => n.node_path.clone(),
+            Node::TagDeclarator(n) => n.node_path.clone(),
+            Node::Identifier(n) => n.node_path.clone(),
+            Node::Name(n) => n.node_path.clone(),
+            Node::BinaryExpression(n) => n.node_path.clone(),
+            Node::FunctionExpression(n) => n.node_path.clone(),
+            Node::CallExpressionKw(n) => n.node_path.clone(),
+            Node::PipeExpression(n) => n.node_path.clone(),
+            Node::PipeSubstitution(n) => n.node_path.clone(),
+            Node::ArrayExpression(n) => n.node_path.clone(),
+            Node::ArrayRangeExpression(n) => n.node_path.clone(),
+            Node::ObjectExpression(n) => n.node_path.clone(),
+            Node::MemberExpression(n) => n.node_path.clone(),
+            Node::UnaryExpression(n) => n.node_path.clone(),
+            Node::Parameter(_) => return Err(Self::Error::NoSourceForAKclNone),
+            Node::ObjectProperty(n) => n.node_path.clone(),
+            Node::IfExpression(n) => n.node_path.clone(),
+            Node::LabelledExpression(n) => n.node_path.clone(),
+            Node::AscribedExpression(n) => n.node_path.clone(),
+            Node::SketchBlock(n) => n.node_path.clone(),
+            Node::Block(n) => n.node_path.clone(),
+            Node::SketchVar(n) => n.node_path.clone(),
+
+            // This is broken too
+            Node::ElseIf(_) => return Err(Self::Error::NoSourceForAKclNone),
+
+            // The KclNone type here isn't an actual node, so it has no
+            // start/end information.
+            Node::KclNone(_) => return Err(Self::Error::NoSourceForAKclNone),
+        })
+    }
+}
+
+impl TryFrom<&NodeMut<'_>> for Option<AstNodePath> {
+    type Error = AstNodeError;
+
+    fn try_from(node: &NodeMut) -> Result<Self, Self::Error> {
+        Ok(match node {
+            NodeMut::Program(n) => n.node_path.clone(),
+            NodeMut::ImportStatement(n) => n.node_path.clone(),
+            NodeMut::ExpressionStatement(n) => n.node_path.clone(),
+            NodeMut::VariableDeclaration(n) => n.node_path.clone(),
+            NodeMut::TypeDeclaration(n) => n.node_path.clone(),
+            NodeMut::ReturnStatement(n) => n.node_path.clone(),
+            NodeMut::VariableDeclarator(n) => n.node_path.clone(),
+            NodeMut::NumericLiteral(n) => n.node_path.clone(),
+            NodeMut::Literal(n) => n.node_path.clone(),
+            NodeMut::TagDeclarator(n) => n.node_path.clone(),
+            NodeMut::Identifier(n) => n.node_path.clone(),
+            NodeMut::Name(n) => n.node_path.clone(),
+            NodeMut::BinaryExpression(n) => n.node_path.clone(),
+            NodeMut::FunctionExpression(n) => n.node_path.clone(),
+            NodeMut::CallExpressionKw(n) => n.node_path.clone(),
+            NodeMut::PipeExpression(n) => n.node_path.clone(),
+            NodeMut::PipeSubstitution(n) => n.node_path.clone(),
+            NodeMut::ArrayExpression(n) => n.node_path.clone(),
+            NodeMut::ArrayRangeExpression(n) => n.node_path.clone(),
+            NodeMut::ObjectExpression(n) => n.node_path.clone(),
+            NodeMut::MemberExpression(n) => n.node_path.clone(),
+            NodeMut::UnaryExpression(n) => n.node_path.clone(),
+            NodeMut::Parameter(_) => return Err(Self::Error::NoSourceForAKclNone),
+            NodeMut::ObjectProperty(n) => n.node_path.clone(),
+            NodeMut::IfExpression(n) => n.node_path.clone(),
+            NodeMut::LabelledExpression(n) => n.node_path.clone(),
+            NodeMut::AscribedExpression(n) => n.node_path.clone(),
+            NodeMut::SketchBlock(n) => n.node_path.clone(),
+            NodeMut::Block(n) => n.node_path.clone(),
+            NodeMut::SketchVar(n) => n.node_path.clone(),
+
+            // Note: This is different from the immutable version.
+            NodeMut::ElseIf(_) => return Err(Self::Error::NoSourceForAKclNone),
 
             // The KclNone type here isn't an actual node, so it has no
             // start/end information.

@@ -256,40 +256,6 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.800000000000001,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 3.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 7.8,
             "y": 0.0,
             "z": 0.0

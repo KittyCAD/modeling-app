@@ -235,6 +235,10 @@ export type ModelingMachineEvent =
       data: ArtifactId
     }
   | {
+      type: 'Edit sketch solve'
+      data: { artifactId: ArtifactId }
+    }
+  | {
       type: 'Set selection'
       data: SetSelections
     }
@@ -1283,8 +1287,21 @@ export const modelingMachine = setup({
       // (note the orbit controls are always active though)
       context.kclManager.sceneInfra.resetMouseListeners()
     },
+    'restore modeling camera controls': ({ context }) => {
+      const camControls = context.kclManager.sceneInfra.camControls
+      camControls.enablePan = true
+      camControls.enableRotate = true
+      camControls.syncDirection = 'engineToClient'
+    },
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+    },
+    'disable rotate for sketch solve mode': ({ context }) => {
+      // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
+      // so block orbit input until those controls are synchronized.
+      // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
+      context.kclManager.sceneInfra.camControls.enableRotate =
+        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -1906,7 +1923,7 @@ export const modelingMachine = setup({
     'show sketch error toast': assign(() => {
       // toast message that stays open until closed programmatically
       const toastId = toast.error(
-        "Error in kcl script, sketch cannot be drawn until it's fixed",
+        "Error in kcl script, sketch cannot be drawn until it's fixed.",
         { duration: Infinity }
       )
       return {
@@ -1937,46 +1954,51 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
-
-        // When cancelling the sketch mode we should disable sketch mode within the engine.
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'sketch_mode_disable' },
-        })
-
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        if (store.cameraProjection?.current === 'perspective') {
-          await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-        }
-
-        kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
-
-        // TODO: Re-evaluate if this pause/play logic is needed.
-        // TODO: Do I need this video element?
-        store.videoElement?.pause()
-
-        await kclManager
-          .executeCode()
-          .then(() => {
-            if (
-              !engineCommandManager.started &&
-              engineCommandManager.connection?.websocket?.readyState ===
-                WebSocket.CLOSED
-            )
-              return
-
-            store.videoElement?.play().catch((e: Error) => {
-              console.warn('Video playing was prevented', e)
-            })
+        try {
+          // When cancelling the sketch mode we should disable sketch mode within the engine.
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'sketch_mode_disable' },
           })
-          .catch(reportRejection)
-        kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-        kclManager.sceneEntitiesManager.removeSketchGrid()
-        kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
-        kclManager.sceneEntitiesManager.resetOverlays()
-        kclManager.sceneInfra.stop()
+
+          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+          if (store.cameraProjection?.current === 'perspective') {
+            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          }
+
+          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+
+          // TODO: Re-evaluate if this pause/play logic is needed.
+          // TODO: Do I need this video element?
+          store.videoElement?.pause()
+
+          await kclManager
+            .executeCode()
+            .then(() => {
+              if (
+                !engineCommandManager.started &&
+                engineCommandManager.connection?.websocket?.readyState ===
+                  WebSocket.CLOSED
+              )
+                return
+
+              store.videoElement?.play().catch((e: Error) => {
+                console.warn('Video playing was prevented', e)
+              })
+            })
+            .catch(reportRejection)
+        } finally {
+          const camControls = kclManager.sceneInfra.camControls
+          kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          kclManager.sceneEntitiesManager.removeSketchGrid()
+          camControls.enablePan = true
+          camControls.enableRotate = true
+          camControls.syncDirection = 'engineToClient'
+          kclManager.sceneEntitiesManager.resetOverlays()
+          kclManager.sceneInfra.stop()
+        }
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -2846,6 +2868,12 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return null
         const { plane, kclManager, engineCommandManager, wasmInstance } = input
+        if (kclManager.hasParseErrors()) {
+          const errorMessage =
+            'Unable to enter sketch while KCL has parse errors.'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
           const originalCode = kclManager.code
           const sketched =
@@ -2940,9 +2968,7 @@ export const modelingMachine = setup({
         sketchSolveId: number
       }> => {
         if (!input || !input.artifactOrPlaneId) {
-          const errorMessage = 'No artifact or plane ID provided'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('No artifact or plane ID provided.'))
         }
         const {
           artifactOrPlaneId,
@@ -2953,6 +2979,11 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        if (kclManager.hasParseErrors()) {
+          return reject(
+            new Error('Unable to enter sketch while KCL has parse errors.')
+          )
+        }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
@@ -2992,92 +3023,82 @@ export const modelingMachine = setup({
           }
         }
         if (!result) {
-          const errorMessage = 'Please select a valid sketch plane'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
+          return reject(new Error('Please select a valid sketch plane.'))
         }
+
+        // Call newSketch API
+        const project = projectRef?.current
+        if (!project) {
+          return reject(new Error('No active project to start a sketch in.'))
+        }
+
+        // Construct SketchCtor based on the result
+        let sketchArgs: SketchCtor
+        const setProgramOutcome = await rustContext.hackSetProgram(
+          kclManager.ast,
+          jsAppSettings(rustContext.settingsActor)
+        )
+        if (result.type === 'defaultPlane') {
+          sketchArgs = {
+            on: { default: toPlaneName(result.plane) },
+          }
+        } else {
+          if (setProgramOutcome.type !== 'Success') {
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
+            )
+          }
+
+          const selectedArtifactId =
+            result.type === 'extrudeFace' ? result.faceId : result.planeId
+          const selectedSceneObject = setProgramOutcome.sceneGraph.objects.find(
+            (object) => object.artifact_id === selectedArtifactId
+          )
+
+          if (!selectedSceneObject) {
+            return reject(
+              new Error(
+                `Could not find SceneGraph object for artifact ${selectedArtifactId}.`
+              )
+            )
+          }
+
+          sketchArgs = {
+            on: { object: selectedSceneObject.id },
+          }
+        }
+
+        await rustContext.clearSketchCheckpoints()
+        const newSketchResult = await rustContext.newSketch(
+          0, // projectId - using 0 as placeholder
+          0, // fileId - using 0 as placeholder
+          0, // version - using 0 as placeholder
+          sketchArgs,
+          {
+            settings: {
+              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+            },
+          }
+        )
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        // Call newSketch API
-        let sketchId: number | undefined
-        try {
-          const project = projectRef?.current
-          if (!project) {
-            console.warn('No project available for newSketch call')
-          } else {
-            // Construct SketchCtor based on the result
-            let sketchArgs: SketchCtor
-
-            const setProgramOutcome = await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-            if (result.type === 'defaultPlane') {
-              sketchArgs = {
-                on: { default: toPlaneName(result.plane) },
-              }
-            } else {
-              if (setProgramOutcome.type !== 'Success') {
-                return Promise.reject(
-                  new Error(
-                    'Could not update SceneGraph before creating sketch'
-                  )
-                )
-              }
-
-              const selectedArtifactId =
-                result.type === 'extrudeFace' ? result.faceId : result.planeId
-              const selectedSceneObject =
-                setProgramOutcome.sceneGraph.objects.find(
-                  (object) => object.artifact_id === selectedArtifactId
-                )
-
-              if (!selectedSceneObject) {
-                return Promise.reject(
-                  new Error(
-                    `Could not find SceneGraph object for artifact ${selectedArtifactId}`
-                  )
-                )
-              }
-
-              sketchArgs = {
-                on: { object: selectedSceneObject.id },
-              }
-            }
-
-            const newSketchResult = await rustContext.newSketch(
-              0, // projectId - using 0 as placeholder
-              0, // fileId - using 0 as placeholder
-              0, // version - using 0 as placeholder
-              sketchArgs,
-              {
-                settings: {
-                  modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-                },
-              }
-            )
-            kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
-              shouldAddToHistory: false,
-            })
-            sketchId = newSketchResult.sketchId
+        kclManager.updateCodeEditor(
+          newSketchResult.kclSource.text,
+          {
+            shouldAddToHistory: true,
+          },
+          {
+            sketchCheckpointId: newSketchResult.checkpointId ?? null,
           }
-        } catch (error) {
-          console.error('Error calling newSketch:', error)
-        }
-
-        if (sketchId === undefined) {
-          const errorMessage = 'Failed to create sketch'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
+        )
 
         return {
           plane: result,
-          sketchSolveId: sketchId,
+          sketchSolveId: newSketchResult.sketchId,
         }
       }
     ),
@@ -3159,17 +3180,23 @@ export const modelingMachine = setup({
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         // Call editSketch API
-        let editSketchSceneGraph: SceneGraphDelta | undefined
+        let editSketchResult:
+          | {
+              sceneGraphDelta: SceneGraphDelta
+              checkpointId?: number | null
+            }
+          | undefined
         try {
           const project = projectRef?.current
           if (!project) {
             console.warn('No project available for editSketch call')
           } else {
+            await rustContext.clearSketchCheckpoints()
             await rustContext.hackSetProgram(
               kclManager.ast,
               jsAppSettings(rustContext.settingsActor)
             )
-            editSketchSceneGraph = await rustContext.editSketch(
+            editSketchResult = await rustContext.editSketch(
               0, // projectId
               0, // fileId
               0, // version
@@ -3180,12 +3207,21 @@ export const modelingMachine = setup({
                 },
               }
             )
-            // Note: editSketch doesn't return kclSource, so we don't update the editor
-          }
-          if (!editSketchSceneGraph) {
-            const errorMessage = 'Failed to edit sketch'
-            toast.error(errorMessage)
-            return reject(new Error(errorMessage))
+            if (!editSketchResult) {
+              const errorMessage = 'Failed to edit sketch'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            kclManager.updateCodeEditor(
+              kclManager.code,
+              {
+                shouldAddToHistory: false,
+                shouldWriteToDisk: false,
+              },
+              {
+                sketchCheckpointId: editSketchResult.checkpointId ?? null,
+              }
+            )
           }
         } catch (error) {
           console.error('Error calling editSketch:', error)
@@ -3194,10 +3230,16 @@ export const modelingMachine = setup({
           )
         }
 
+        if (!editSketchResult) {
+          const errorMessage = 'Failed to edit sketch'
+          toast.error(errorMessage)
+          return reject(new Error(errorMessage))
+        }
+
         return {
           plane: planeData,
           sketchSolveId: sketchId,
-          initialSceneGraphDelta: editSketchSceneGraph,
+          initialSceneGraphDelta: editSketchResult.sceneGraphDelta,
         }
       }
     ),
@@ -5360,6 +5402,14 @@ export const modelingMachine = setup({
   states: {
     idle: {
       on: {
+        'Edit sketch solve': {
+          target: 'animating to existing sketch solve',
+          actions: [
+            ({ context }) => {
+              context.kclManager.sceneInfra.animate()
+            },
+          ],
+        },
         'Enter sketch': [
           {
             target: 'animating to existing sketch solve',
@@ -5524,7 +5574,10 @@ export const modelingMachine = setup({
         'Prompt-to-edit': 'Applying Prompt-to-edit',
       },
 
-      entry: 'reset client scene mouse handlers',
+      entry: [
+        'restore modeling camera controls',
+        'reset client scene mouse handlers',
+      ],
 
       states: {
         hidePlanes: {
@@ -6913,7 +6966,10 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: ['clientToEngine cam sync direction'],
+      entry: [
+        'clientToEngine cam sync direction',
+        'disable rotate for sketch solve mode',
+      ],
       initial: 'active',
       states: {
         active: {
@@ -7002,10 +7058,7 @@ export const modelingMachine = setup({
           invoke: {
             id: 'sketchExit',
             src: 'sketchExit',
-            input: ({ context }) => {
-              console.log('sketchExit actor input prepared')
-              return { context }
-            },
+            input: ({ context }) => ({ context }),
             onDone: {
               target: '#Modeling.idle',
               actions: ['reset sketch metadata'],
@@ -7692,7 +7745,10 @@ export const modelingMachine = setup({
             }
           }),
         },
-        onError: 'Sketch no face',
+        onError: {
+          target: 'Sketch no face',
+          actions: 'toastError',
+        },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
           return {
@@ -7712,6 +7768,16 @@ export const modelingMachine = setup({
       invoke: {
         src: 'animate-to-existing-sketch-solve',
         input: ({ event, context }) => {
+          if (event.type === 'Edit sketch solve') {
+            return {
+              artifactId: event.data.artifactId,
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              engineCommandManager: context.engineCommandManager,
+              defaultUnit: context.store.defaultUnit,
+              projectRef: context.projectRef,
+            }
+          }
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
             const artifact =
@@ -7795,7 +7861,6 @@ export const modelingMachine = setup({
     'sketch solve tool changed': {
       reenter: false,
       actions: assign(({ event }) => {
-        console.log('sketch solve tool changed', event)
         if (event.type !== 'sketch solve tool changed') return {}
         return {
           sketchSolveToolName: event.data.tool,

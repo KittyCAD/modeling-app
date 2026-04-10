@@ -591,7 +591,7 @@ test.describe(
             })
             await button.click()
             const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}`
+              `Updated per-file units to ${unitOfMeasure}.`
             )
             await expect(toastMessage).toBeVisible()
           }
@@ -866,11 +866,7 @@ fn cube`
         await test.step(`Change units setting via lower-right control`, async () => {
           await unitsIndicator.click()
           await unitsChangeButton(editedInlineUnits.long).click()
-          await expect(
-            page.getByText(
-              `Updated per-file units to ${editedInlineUnits.short}`
-            )
-          ).toBeVisible()
+          await expect(unitsIndicator).toContainText(editedInlineUnits.short)
         })
       }
     )

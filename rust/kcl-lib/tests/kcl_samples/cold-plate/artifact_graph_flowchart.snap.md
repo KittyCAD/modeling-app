@@ -228,7 +228,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   130["Cap Start"]
     %% face_code_ref=Missing NodePath
-  131["Cap Start"]
+  131["Cap End"]
     %% face_code_ref=Missing NodePath
   132["SweepEdge Opposite"]
   133["SweepEdge Adjacent"]

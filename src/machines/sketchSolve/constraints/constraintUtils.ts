@@ -3,7 +3,6 @@ import type {
   FixedPoint,
   ApiObject,
   Coincident,
-  CoincidentSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
@@ -15,6 +14,8 @@ import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
+import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -324,7 +325,7 @@ export type CoincidentConstraint = ApiObject & {
 }
 
 export function isCoincidentSegmentId(
-  segment: CoincidentSegment
+  segment: ConstraintSegment
 ): segment is number {
   return typeof segment === 'number'
 }
@@ -434,7 +435,10 @@ export function getSelectedTangentConstraintInput(
   const objects =
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return buildTangentConstraintInput(selectedIds, objects)
+  return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
 }
 
 export function getSelectedFixedConstraintInput(
@@ -445,7 +449,7 @@ export function getSelectedFixedConstraintInput(
   const objects =
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return buildFixedConstraintInput(selectedIds, objects)
+  return buildFixedConstraintInput(getObjectSelectionIds(selectedIds), objects)
 }
 
 export type SpriteLabel = Sprite & {
