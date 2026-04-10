@@ -204,8 +204,11 @@ export default class RustContext {
     }
   }
 
-  async waitForAllEngineCommands() {
-    await this.engineCommandManager.waitForAllCommands()
+  /**
+   * Wait for all modeling commands sent to the engine
+   */
+  async waitForAllEngineModelingCommands() {
+    await this.engineCommandManager.waitForAllModelingCommands()
   }
 
   get defaultPlanes() {
