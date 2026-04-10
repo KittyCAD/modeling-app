@@ -4208,6 +4208,15 @@ enum AstMutateCommand {
     DeleteNode,
 }
 
+impl AstMutateCommand {
+    fn needs_defined_names_stack(&self) -> bool {
+        matches!(
+            self,
+            AstMutateCommand::AddSketchBlockVarDecl { .. } | AstMutateCommand::AddVariableDeclaration { .. }
+        )
+    }
+}
+
 #[derive(Debug)]
 enum AstMutateCommandReturn {
     None,
@@ -4313,7 +4322,7 @@ fn filter_and_process(
     ctx: &mut AstMutateContext,
     node: NodeMut,
 ) -> TraversalReturn<Result<(AstNodeRef, AstMutateCommandReturn), KclError>> {
-    let Ok(node_ref) = AstNodeRef::try_from(&node) else {
+    let Ok(node_range) = SourceRange::try_from(&node) else {
         // Nodes that can't be converted to a range aren't interesting.
         return TraversalReturn::new_continue(());
     };
@@ -4328,7 +4337,7 @@ fn filter_and_process(
                 // We found the variable declaration expression. It doesn't need
                 // to be added.
                 return TraversalReturn::new_break(Ok((
-                    node_ref,
+                    AstNodeRef::from(&**var_decl),
                     AstMutateCommandReturn::Name(var_decl.name().to_owned()),
                 )));
             }
@@ -4343,17 +4352,22 @@ fn filter_and_process(
         }
     }
 
-    if let NodeMut::Program(program) = &node {
-        ctx.defined_names_stack.push(find_defined_names(*program));
-    } else if let NodeMut::SketchBlock(block) = &node {
-        ctx.defined_names_stack.push(find_defined_names(&block.body));
+    if ctx.command.needs_defined_names_stack() {
+        if let NodeMut::Program(program) = &node {
+            ctx.defined_names_stack.push(find_defined_names(*program));
+        } else if let NodeMut::SketchBlock(block) = &node {
+            ctx.defined_names_stack.push(find_defined_names(&block.body));
+        }
     }
 
     // Make sure the node matches the source range.
     // TODO: Should we also check the NodePath?
-    if node_ref.range != ctx.source_range {
+    if node_range != ctx.source_range {
         return TraversalReturn::new_continue(());
     }
+    let Ok(node_ref) = AstNodeRef::try_from(&node) else {
+        return TraversalReturn::new_continue(());
+    };
     process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)))
 }
 

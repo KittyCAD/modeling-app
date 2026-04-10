@@ -103,7 +103,7 @@ describe('circleToolImpl', () => {
           centerPoint: [10, 20],
           startPoint: [30, 40],
           centerSnapTarget: { type: 'origin' },
-          startSnapTarget: { type: 'point', pointId: 99 },
+          startSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
