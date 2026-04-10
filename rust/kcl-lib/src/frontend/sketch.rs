@@ -218,10 +218,10 @@ impl Segment {
     /// Suitable for use in user-facing messages.
     pub fn human_friendly_kind_with_article(&self) -> &'static str {
         match self {
-            Segment::Point(_) => "a Point",
-            Segment::Line(_) => "a Line",
-            Segment::Arc(_) => "an Arc",
-            Segment::Circle(_) => "a Circle",
+            Self::Point(_) => "a Point",
+            Self::Line(_) => "a Line",
+            Self::Arc(_) => "an Arc",
+            Self::Circle(_) => "a Circle",
         }
     }
 }
@@ -241,6 +241,19 @@ pub enum SegmentCtor {
     Line(LineCtor),
     Arc(ArcCtor),
     Circle(CircleCtor),
+}
+
+impl SegmentCtor {
+    /// What kind of geometry is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point(_) => "a Point constructor",
+            Self::Line(_) => "a Line constructor",
+            Self::Arc(_) => "an Arc constructor",
+            Self::Circle(_) => "a Circle constructor",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

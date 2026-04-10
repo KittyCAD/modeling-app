@@ -819,7 +819,8 @@ impl SketchApi for FrontendState {
             })?;
             let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
                 return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a constraint: {constraint_object:?}"
+                    "Object is not a constraint, it is {}",
+                    constraint_object.kind.human_friendly_kind_with_article()
                 ))));
             };
 
@@ -967,7 +968,8 @@ impl SketchApi for FrontendState {
         // First, add the segment (line) to get its start point ID
         let SegmentCtor::Line(line_ctor) = segment else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "chain_segment currently only supports Line segments, got: {segment:?}"
+                "chain_segment currently only supports Line segments, got {}",
+                segment.human_friendly_kind_with_article(),
             ))));
         };
 
@@ -1581,7 +1583,10 @@ impl FrontendState {
                 return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Point(_) = segment else {
-                return Err(make_err(format!("Segment is not a point: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a point, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![segment_id]
         };
@@ -1715,7 +1720,10 @@ impl FrontendState {
                 return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Line(line) = segment else {
-                return Err(make_err(format!("Segment is not a line: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a line, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![line.start, line.end, segment_id]
         };
@@ -1856,7 +1864,10 @@ impl FrontendState {
                 return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Arc(arc) = segment else {
-                return Err(make_err(format!("Segment is not an arc: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not an arc, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![arc.start, arc.end, arc.center, segment_id]
         };
@@ -1994,7 +2005,10 @@ impl FrontendState {
                 return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
             };
             let Segment::Circle(circle) = segment else {
-                return Err(make_err(format!("Segment is not a circle: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a circle, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![circle.start, circle.center, segment_id]
         };
@@ -2366,7 +2380,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Constraint { .. } = &constraint_object.kind else {
             return Err(KclError::refactor(format!(
-                "Object is not a constraint: {constraint_object:?}"
+                "Object is not a constraint, it is {}",
+                constraint_object.kind.human_friendly_kind_with_article()
             )));
         };
 
@@ -3501,7 +3516,8 @@ impl FrontendState {
                 .ok_or_else(|| KclError::refactor(format!("Constraint not found: {constraint_id:?}")))?;
             let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
                 return Err(KclError::refactor(format!(
-                    "Object is not a constraint: {constraint_object:?}"
+                    "Object is not a constraint, it is {}",
+                    constraint_object.kind.human_friendly_kind_with_article()
                 )));
             };
             let depends_on_segment = match constraint {
