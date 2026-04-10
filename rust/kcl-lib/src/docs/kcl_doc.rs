@@ -645,7 +645,11 @@ impl FnData {
                 detail: Some(self.fn_signature()),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::FUNCTION)),
             detail: Some(self.qual_name.clone()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -1070,7 +1074,11 @@ impl TyData {
                 detail: Some(format!("type {} = {t}", self.name)),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::STRUCT)),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
