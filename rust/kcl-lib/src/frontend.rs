@@ -630,7 +630,7 @@ impl SketchApi for FrontendState {
                                     let SegmentCtor::Line(line_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                             "Internal: Expected line ctor for owner, but found {}",
-                                            owner_object.kind.human_friendly_kind_with_article()
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     // Line owner is already in final_edits -> apply this point edit
@@ -652,7 +652,7 @@ impl SketchApi for FrontendState {
                                     // This should never run..
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                         "Internal: Line does not have line ctor, but found {}",
-                                        owner_object.kind.human_friendly_kind_with_article()
+                                        line.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -664,7 +664,7 @@ impl SketchApi for FrontendState {
                                     let SegmentCtor::Arc(arc_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                             "Internal: Expected arc ctor for owner, but found {}",
-                                            owner_object.kind.human_friendly_kind_with_article()
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     if arc.start == segment_id {
@@ -687,7 +687,7 @@ impl SketchApi for FrontendState {
                                 } else {
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                         "Internal: Arc does not have arc ctor, but found {}",
-                                        owner_object.kind.human_friendly_kind_with_article()
+                                        arc.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -697,7 +697,7 @@ impl SketchApi for FrontendState {
                                     let SegmentCtor::Circle(circle_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                             "Internal: Expected circle ctor for owner, but found {}",
-                                            owner_object.kind.human_friendly_kind_with_article()
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     if circle.start == segment_id {
@@ -716,7 +716,7 @@ impl SketchApi for FrontendState {
                                 } else {
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                                         "Internal: Circle does not have circle ctor, but found {}",
-                                        owner_object.kind.human_friendly_kind_with_article()
+                                        circle.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -2094,7 +2094,7 @@ impl FrontendState {
                 let SegmentCtor::Line(line_ctor) = &line.ctor else {
                     return Err(KclError::refactor(format!(
                         "Internal: Owner of point does not have line ctor, but found {}",
-                        owner_object.kind.human_friendly_kind_with_article()
+                        line.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut line_ctor = line_ctor.clone();
@@ -2116,7 +2116,7 @@ impl FrontendState {
                 let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
                     return Err(KclError::refactor(format!(
                         "Internal: Owner of point does not have arc ctor, but found {}",
-                        owner_object.kind.human_friendly_kind_with_article()
+                        arc.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut arc_ctor = arc_ctor.clone();
@@ -2140,7 +2140,7 @@ impl FrontendState {
                 let SegmentCtor::Circle(circle_ctor) = &circle.ctor else {
                     return Err(KclError::refactor(format!(
                         "Internal: Owner of point does not have circle ctor, but found {}",
-                        owner_object.kind.human_friendly_kind_with_article()
+                        circle.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut circle_ctor = circle_ctor.clone();
