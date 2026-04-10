@@ -5,7 +5,7 @@ import {
   getSweepArtifactFromSelection,
   type Artifact,
 } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph } from '@src/lang/wasm'
+import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 
 describe('getSweepArtifactFromSelection', () => {
@@ -154,21 +154,17 @@ describe('coerceSelectionsToBody', () => {
   it('should resolve a sketchBlock from a segment artifact', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
-    const pathToNode = [['body', '']]
+    const pathToNode: PathToNode = [['body', '']]
     const codeRef = {
       range: [0, 100, 0] as [number, number, number],
       pathToNode,
       nodePath: { steps: [] },
     }
 
-    const sketchBlock: Artifact = {
+    const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
       type: 'sketchBlock',
       id: 'sketch-block-1',
       codeRef,
-      pathIds: ['path-1'],
-      constraintIds: [],
-      segmentIds: ['segment-1'],
-      edgeIds: [],
       planeId: 'plane-1',
       sketchId: 7,
     }
