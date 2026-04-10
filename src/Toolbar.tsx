@@ -26,6 +26,7 @@ import {
   modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
+import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -239,6 +240,24 @@ const Toolbar_ = memo(
         number /* index in currentModeItems */,
         number /* index in maybeIconConfig */
       >()
+    )
+
+    const hotkeyActions = useMemo(
+      () => collectToolbarHotkeyActions(currentModeItems),
+      [currentModeItems]
+    )
+    const hotkeyActionMap = useMemo(
+      () => new Map(hotkeyActions.map((action) => [action.hotkey, action])),
+      [hotkeyActions]
+    )
+
+    useHotkeys(
+      hotkeyActions.map((action) => action.hotkey),
+      (_, hotkeysEvent) => {
+        hotkeyActionMap.get(hotkeysEvent.hotkey)?.onTrigger()
+      },
+      { enabled: hotkeyActions.length > 0 },
+      [hotkeyActionMap]
     )
 
     return (
@@ -481,8 +500,7 @@ interface ToolbarItemContentsProps extends React.PropsWithChildren {
 }
 /**
  * The single button and dropdown button share content, so we extract it here
- * It contains a tooltip with the title, description, and links
- * and a hotkey listener
+ * It contains a tooltip with the title, description, and links.
  */
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
@@ -491,24 +509,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   contentClassName = '',
   children,
 }: ToolbarItemContentsProps) {
-  /**
-   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
-   * TODO: make a global hotkey registration system. make them editable.
-   */
-  useHotkeys(
-    itemConfig.hotkey || '',
-    () => {
-      itemConfig.onClick(itemConfig.callbackProps)
-    },
-    {
-      enabled:
-        ['available', 'experimental'].includes(itemConfig.status) &&
-        !!itemConfig.hotkey &&
-        !itemConfig.disabled &&
-        !itemConfig.disableHotkey,
-    }
-  )
-
   const onDesktop = isDesktop()
   const wrapperStyle = useMemo(
     () =>
