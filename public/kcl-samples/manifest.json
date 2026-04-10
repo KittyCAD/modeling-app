@@ -928,6 +928,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "isogrid-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Isogrid Plate",
+    "description": "Isogrid is a type of partially hollowed-out structure formed usually from a single metal plate with integral triangular stiffening stringers.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "keyboard/main.kcl",
