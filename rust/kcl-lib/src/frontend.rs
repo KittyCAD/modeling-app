@@ -471,7 +471,8 @@ impl SketchApi for FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article()
             ))));
         };
         let sketch_block_ref = expect_single_node_ref(sketch_object).map_err(KclErrorWithOutputs::no_outputs)?;
@@ -548,7 +549,8 @@ impl SketchApi for FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
 
@@ -629,7 +631,8 @@ impl SketchApi for FrontendState {
                                 if let Some(existing) = final_edits.get_mut(&owner_id) {
                                     let SegmentCtor::Line(line_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected line ctor for owner: {owner_object:?}"
+                                            "Internal: Expected line ctor for owner, but found {}",
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     // Line owner is already in final_edits -> apply this point edit
@@ -650,7 +653,8 @@ impl SketchApi for FrontendState {
                                 } else {
                                     // This should never run..
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Line does not have line ctor: {owner_object:?}"
+                                        "Internal: Line does not have line ctor, but found {}",
+                                        line.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -661,7 +665,8 @@ impl SketchApi for FrontendState {
                                 if let Some(existing) = final_edits.get_mut(&owner_id) {
                                     let SegmentCtor::Arc(arc_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected arc ctor for owner: {owner_object:?}"
+                                            "Internal: Expected arc ctor for owner, but found {}",
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     if arc.start == segment_id {
@@ -683,7 +688,8 @@ impl SketchApi for FrontendState {
                                     final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
                                 } else {
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Arc does not have arc ctor: {owner_object:?}"
+                                        "Internal: Arc does not have arc ctor, but found {}",
+                                        arc.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -692,7 +698,8 @@ impl SketchApi for FrontendState {
                                 if let Some(existing) = final_edits.get_mut(&owner_id) {
                                     let SegmentCtor::Circle(circle_ctor) = existing else {
                                         return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected circle ctor for owner: {owner_object:?}"
+                                            "Internal: Expected circle ctor for owner, but found {}",
+                                            existing.human_friendly_kind_with_article()
                                         ))));
                                     };
                                     if circle.start == segment_id {
@@ -710,7 +717,8 @@ impl SketchApi for FrontendState {
                                     final_edits.insert(owner_id, SegmentCtor::Circle(circle_ctor));
                                 } else {
                                     return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Circle does not have circle ctor: {owner_object:?}"
+                                        "Internal: Circle does not have circle ctor, but found {}",
+                                        circle.ctor.human_friendly_kind_with_article()
                                     ))));
                                 }
                                 continue;
@@ -813,7 +821,8 @@ impl SketchApi for FrontendState {
             })?;
             let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
                 return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                    "Object is not a constraint: {constraint_object:?}"
+                    "Object is not a constraint, it is {}",
+                    constraint_object.kind.human_friendly_kind_with_article()
                 ))));
             };
 
@@ -980,7 +989,8 @@ impl SketchApi for FrontendState {
         // First, add the segment (line) to get its start point ID
         let SegmentCtor::Line(line_ctor) = segment else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "chain_segment currently only supports Line segments, got: {segment:?}"
+                "chain_segment currently only supports Line segments, got {}",
+                segment.human_friendly_kind_with_article(),
             ))));
         };
 
@@ -1527,7 +1537,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
         // Add the point to the AST of the sketch block.
@@ -1595,10 +1606,16 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Point(_) = segment else {
-                return Err(make_err(format!("Segment is not a point: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a point, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![segment_id]
         };
@@ -1661,7 +1678,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
         // Add the line to the AST of the sketch block.
@@ -1728,10 +1746,16 @@ impl FrontendState {
                 .scene_object_by_id(segment_id)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Line(line) = segment else {
-                return Err(make_err(format!("Segment is not a line: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a line, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![line.start, line.end, segment_id]
         };
@@ -1800,7 +1824,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
         // Add the arc to the AST of the sketch block.
@@ -1868,10 +1893,16 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Arc(arc) = segment else {
-                return Err(make_err(format!("Segment is not an arc: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not an arc, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![arc.start, arc.end, arc.center, segment_id]
         };
@@ -1934,7 +1965,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a sketch: {sketch_object:?}"
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
         // Add the circle to the AST of the sketch block.
@@ -2005,10 +2037,16 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Circle(circle) = segment else {
-                return Err(make_err(format!("Segment is not a circle: {segment:?}")));
+                return Err(make_err(format!(
+                    "Segment is not a circle, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
             };
             vec![circle.start, circle.center, segment_id]
         };
@@ -2072,7 +2110,8 @@ impl FrontendState {
             })?;
             let ObjectKind::Segment { segment } = &owner_object.kind else {
                 return Err(KclError::refactor(format!(
-                    "Internal: Owner of point is not a segment: {owner_object:?}"
+                    "Internal: Owner of point is not a segment, but found {}",
+                    owner_object.kind.human_friendly_kind_with_article()
                 )));
             };
 
@@ -2080,7 +2119,8 @@ impl FrontendState {
             if let Segment::Line(line) = segment {
                 let SegmentCtor::Line(line_ctor) = &line.ctor else {
                     return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have line ctor: {owner_object:?}"
+                        "Internal: Owner of point does not have line ctor, but found {}",
+                        line.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut line_ctor = line_ctor.clone();
@@ -2101,7 +2141,8 @@ impl FrontendState {
             if let Segment::Arc(arc) = segment {
                 let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
                     return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have arc ctor: {owner_object:?}"
+                        "Internal: Owner of point does not have arc ctor, but found {}",
+                        arc.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut arc_ctor = arc_ctor.clone();
@@ -2124,7 +2165,8 @@ impl FrontendState {
             if let Segment::Circle(circle) = segment {
                 let SegmentCtor::Circle(circle_ctor) = &circle.ctor else {
                     return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have circle ctor: {owner_object:?}"
+                        "Internal: Owner of point does not have circle ctor, but found {}",
+                        circle.ctor.human_friendly_kind_with_article()
                     )));
                 };
                 let mut circle_ctor = circle_ctor.clone();
@@ -2183,7 +2225,10 @@ impl FrontendState {
             .get(line_id.0)
             .ok_or_else(|| KclError::refactor(format!("Line not found in scene graph: line={line:?}")))?;
         let ObjectKind::Segment { .. } = &line_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+            let kind = line_object.kind.human_friendly_kind_with_article();
+            return Err(KclError::refactor(format!(
+                "This constraint only works on Segments, but you selected {kind}"
+            )));
         };
 
         // Modify the line AST.
@@ -2331,7 +2376,8 @@ impl FrontendState {
             })?;
         let ObjectKind::Segment { .. } = &segment_object.kind else {
             return Err(KclError::refactor(format!(
-                "Object is not a segment: {segment_object:?}"
+                "Object is not a segment, it is {}",
+                segment_object.kind.human_friendly_kind_with_article()
             )));
         };
 
@@ -2373,7 +2419,8 @@ impl FrontendState {
         })?;
         let ObjectKind::Constraint { .. } = &constraint_object.kind else {
             return Err(KclError::refactor(format!(
-                "Object is not a constraint: {constraint_object:?}"
+                "Object is not a constraint, it is {}",
+                constraint_object.kind.human_friendly_kind_with_article()
             )));
         };
 
@@ -2405,11 +2452,15 @@ impl FrontendState {
                     .get(line_id.0)
                     .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
                 let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-                    return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+                    let kind = line_object.kind.human_friendly_kind_with_article();
+                    return Err(KclError::refactor(format!(
+                        "This constraint only works on Segments, but you selected {kind}"
+                    )));
                 };
                 let Segment::Line(_) = line_segment else {
+                    let kind = line_segment.human_friendly_kind_with_article();
                     return Err(KclError::refactor(format!(
-                        "Only lines can be made equal length: {line_object:?}"
+                        "Only lines can be made equal length, but you selected {kind}"
                     )));
                 };
 
@@ -2625,7 +2676,8 @@ impl FrontendState {
             })?;
             let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind else {
                 return Err(KclError::refactor(format!(
-                    "Owner of point is not a segment: {owner_object:?}"
+                    "Owner of point is not a segment, but found {}",
+                    owner_object.kind.human_friendly_kind_with_article()
                 )));
             };
 
@@ -2693,7 +2745,8 @@ impl FrontendState {
                     .ok_or_else(|| KclError::refactor(format!("Object not found: {segment_id:?}")))?;
                 let ObjectKind::Segment { segment } = &segment_object.kind else {
                     return Err(KclError::refactor(format!(
-                        "Object is not a segment: {segment_object:?}"
+                        "Object is not a segment, it is {}",
+                        segment_object.kind.human_friendly_kind_with_article()
                     )));
                 };
 
@@ -3244,11 +3297,15 @@ impl FrontendState {
             .get(line_id.0)
             .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
         let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+            let kind = line_object.kind.human_friendly_kind_with_article();
+            return Err(KclError::refactor(format!(
+                "This constraint only works on Segments, but you selected {kind}"
+            )));
         };
         let Segment::Line(_) = line_segment else {
             return Err(KclError::refactor(format!(
-                "Only lines can be made horizontal: {line_object:?}"
+                "Only lines can be made horizontal, but you selected {}",
+                line_segment.human_friendly_kind_with_article(),
             )));
         };
         let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
@@ -3291,11 +3348,15 @@ impl FrontendState {
                     .get(line_id.0)
                     .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
                 let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-                    return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+                    let kind = line_object.kind.human_friendly_kind_with_article();
+                    return Err(KclError::refactor(format!(
+                        "This constraint only works on Segments, but you selected {kind}"
+                    )));
                 };
                 let Segment::Line(_) = line_segment else {
+                    let kind = line_segment.human_friendly_kind_with_article();
                     return Err(KclError::refactor(format!(
-                        "Only lines can be made equal length: {line_object:?}"
+                        "Only lines can be made equal length, but you selected {kind}"
                     )));
                 };
 
@@ -3388,12 +3449,16 @@ impl FrontendState {
             .get(line0_id.0)
             .ok_or_else(|| KclError::refactor(format!("Line not found: {line0_id:?}")))?;
         let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line0_object:?}")));
+            let kind = line0_object.kind.human_friendly_kind_with_article();
+            return Err(KclError::refactor(format!(
+                "This constraint only works on Segments, but you selected {kind}"
+            )));
         };
         let Segment::Line(_) = line0_segment else {
             return Err(KclError::refactor(format!(
-                "Only lines can be made {}: {line0_object:?}",
-                angle_kind.to_function_name()
+                "Only lines can be made {}, but you selected {}",
+                angle_kind.to_function_name(),
+                line0_segment.human_friendly_kind_with_article(),
             )));
         };
         let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
@@ -3404,12 +3469,16 @@ impl FrontendState {
             .get(line1_id.0)
             .ok_or_else(|| KclError::refactor(format!("Line not found: {line1_id:?}")))?;
         let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line1_object:?}")));
+            let kind = line1_object.kind.human_friendly_kind_with_article();
+            return Err(KclError::refactor(format!(
+                "This constraint only works on Segments, but you selected {kind}"
+            )));
         };
         let Segment::Line(_) = line1_segment else {
             return Err(KclError::refactor(format!(
-                "Only lines can be made {}: {line1_object:?}",
-                angle_kind.to_function_name()
+                "Only lines can be made {}, but you selected {}",
+                angle_kind.to_function_name(),
+                line1_segment.human_friendly_kind_with_article(),
             )));
         };
         let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
@@ -3454,11 +3523,15 @@ impl FrontendState {
             .get(line_id.0)
             .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
         let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+            let kind = line_object.kind.human_friendly_kind_with_article();
+            return Err(KclError::refactor(format!(
+                "This constraint only works on Segments, but you selected {kind}"
+            )));
         };
         let Segment::Line(_) = line_segment else {
             return Err(KclError::refactor(format!(
-                "Only lines can be made vertical: {line_object:?}"
+                "Only lines can be made vertical, but you selected {}",
+                line_segment.human_friendly_kind_with_article()
             )));
         };
         let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
@@ -3574,7 +3647,8 @@ impl FrontendState {
                 .ok_or_else(|| KclError::refactor(format!("Constraint not found: {constraint_id:?}")))?;
             let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
                 return Err(KclError::refactor(format!(
-                    "Object is not a constraint: {constraint_object:?}"
+                    "Object is not a constraint, it is {}",
+                    constraint_object.kind.human_friendly_kind_with_article()
                 )));
             };
             let depends_on_segment = match constraint {

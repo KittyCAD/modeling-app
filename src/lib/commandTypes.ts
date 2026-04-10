@@ -98,7 +98,7 @@ export type Command<
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
