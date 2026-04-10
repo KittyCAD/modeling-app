@@ -1368,7 +1368,7 @@ impl Node<SketchBlock> {
             .chain(
                 // Optional constraints have a lower priority.
                 sketch_block_state
-                    .solver_optional_constraints
+                    .solver_segment_edit_constraints
                     .iter()
                     .cloned()
                     .map(|c| ezpz::ConstraintRequest::new(c, 1)),
@@ -1425,7 +1425,7 @@ impl Node<SketchBlock> {
             .solver_constraints
             .iter()
             .cloned()
-            .chain(sketch_block_state.solver_optional_constraints.iter().cloned())
+            .chain(sketch_block_state.solver_segment_edit_constraints.iter().cloned())
             .collect();
 
         let (solve_outcome, solve_analysis) = match solve_result {

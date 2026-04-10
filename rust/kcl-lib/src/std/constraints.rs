@@ -148,10 +148,10 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
-    let optional_constraints = {
+    let segment_edit_constraints = {
         let object_id = exec_state.add_placeholder_scene_object(segment.object_id, args.source_range, args.node_path);
 
-        let mut optional_constraints = Vec::new();
+        let mut segment_edit_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&object_id) {
             if let Some(at_x_var) = at_x_value.as_sketch_var() {
                 let x_initial_value = at_x_var.initial_value_to_solver_units(
@@ -159,7 +159,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     at_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -170,13 +170,13 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     at_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
             }
         }
-        optional_constraints
+        segment_edit_constraints
     };
 
     // Save the segment to be sent to the engine after solving.
@@ -189,7 +189,9 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     sketch_state.needed_by_engine.push(segment.clone());
 
     #[cfg(feature = "artifact-graph")]
-    sketch_state.solver_optional_constraints.extend(optional_constraints);
+    sketch_state
+        .solver_segment_edit_constraints
+        .extend(segment_edit_constraints);
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
@@ -296,7 +298,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
-    let optional_constraints = {
+    let segment_edit_constraints = {
         let start_object_id =
             exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
         let end_object_id =
@@ -304,7 +306,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         let line_object_id =
             exec_state.add_placeholder_scene_object(line_object_id, args.source_range, args.node_path.clone());
 
-        let mut optional_constraints = Vec::new();
+        let mut segment_edit_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
             || exec_state.segment_ids_edited_contains(&line_object_id)
         {
@@ -314,7 +316,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     start_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -325,7 +327,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     start_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -340,7 +342,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     end_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -351,13 +353,13 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(SolverConstraint::Fixed(
+                segment_edit_constraints.push(SolverConstraint::Fixed(
                     end_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
             }
         }
-        optional_constraints
+        segment_edit_constraints
     };
 
     // Save the segment to be sent to the engine after solving.
@@ -370,7 +372,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     sketch_state.needed_by_engine.push(segment.clone());
 
     #[cfg(feature = "artifact-graph")]
-    sketch_state.solver_optional_constraints.extend(optional_constraints);
+    sketch_state
+        .solver_segment_edit_constraints
+        .extend(segment_edit_constraints);
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
@@ -518,7 +522,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
-    let optional_constraints = {
+    let segment_edit_constraints = {
         let start_object_id =
             exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
         let end_object_id =
@@ -528,7 +532,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         let arc_object_id =
             exec_state.add_placeholder_scene_object(arc_object_id, args.source_range, args.node_path.clone());
 
-        let mut optional_constraints = Vec::new();
+        let mut segment_edit_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
             || exec_state.segment_ids_edited_contains(&arc_object_id)
         {
@@ -538,7 +542,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     start_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -549,7 +553,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     start_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -564,7 +568,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     end_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -575,7 +579,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     end_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -590,7 +594,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     center_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -601,13 +605,13 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     center_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
             }
         }
-        optional_constraints
+        segment_edit_constraints
     };
 
     // Build the implicit arc constraint.
@@ -641,7 +645,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     // arc segment. You cannot have an arc without it.
 
     #[cfg(feature = "artifact-graph")]
-    sketch_state.solver_optional_constraints.extend(optional_constraints);
+    sketch_state
+        .solver_segment_edit_constraints
+        .extend(segment_edit_constraints);
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
@@ -752,7 +758,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
-    let optional_constraints = {
+    let segment_edit_constraints = {
         let start_object_id =
             exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
         let center_object_id =
@@ -760,7 +766,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         let circle_object_id =
             exec_state.add_placeholder_scene_object(circle_object_id, args.source_range, args.node_path.clone());
 
-        let mut optional_constraints = Vec::new();
+        let mut segment_edit_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
             || exec_state.segment_ids_edited_contains(&circle_object_id)
         {
@@ -770,7 +776,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     start_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -781,7 +787,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     start_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -796,7 +802,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     center_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -807,13 +813,13 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(ezpz::Constraint::Fixed(
+                segment_edit_constraints.push(ezpz::Constraint::Fixed(
                     center_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
             }
         }
-        optional_constraints
+        segment_edit_constraints
     };
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -826,7 +832,9 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     sketch_state.needed_by_engine.push(segment.clone());
 
     #[cfg(feature = "artifact-graph")]
-    sketch_state.solver_optional_constraints.extend(optional_constraints);
+    sketch_state
+        .solver_segment_edit_constraints
+        .extend(segment_edit_constraints);
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {

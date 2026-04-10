@@ -193,7 +193,8 @@ pub(crate) struct SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<ezpz::Constraint>,
-    pub solver_optional_constraints: Vec<ezpz::Constraint>,
+    /// Constraints from segments that are being edited (probably dragged).
+    pub solver_segment_edit_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
