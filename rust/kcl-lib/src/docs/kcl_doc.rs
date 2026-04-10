@@ -227,42 +227,30 @@ impl DocData {
 
     /// The effective documentation category, considering any `doc_category` override.
     pub fn doc_category(&self) -> DocCategory {
-        let override_ = match self {
-            DocData::Fn(f) => f.properties.doc_category,
-            DocData::Const(c) => c.properties.doc_category,
-            DocData::Ty(t) => t.properties.doc_category,
-            DocData::Mod(_) => None,
-        };
-        override_.unwrap_or(match self {
-            DocData::Fn(_) => DocCategory::Functions,
-            DocData::Const(_) => DocCategory::Constants,
-            DocData::Ty(_) => DocCategory::Types,
-            DocData::Mod(_) => unreachable!(),
-        })
+        match self {
+            DocData::Fn(f) => f.properties.doc_category.unwrap_or(DocCategory::Functions),
+            DocData::Const(c) => c.properties.doc_category.unwrap_or(DocCategory::Constants),
+            DocData::Ty(t) => t.properties.doc_category.unwrap_or(DocCategory::Types),
+            DocData::Mod(_) => DocCategory::Modules,
+        }
     }
 
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
-        match self {
-            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
-            _ => format!(
-                "{}/{}",
-                self.doc_category().file_prefix(),
-                self.qual_name().replace("::", "-")
-            ),
-        }
+        format!(
+            "{}/{}",
+            self.doc_category().file_prefix(),
+            self.qual_name().replace("::", "-")
+        )
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
-        match self {
-            DocData::Mod(_) => unimplemented!(),
-            _ => format!(
-                "{}_{}",
-                self.doc_category().example_prefix(),
-                self.qual_name().replace("::", "-")
-            ),
-        }
+        format!(
+            "{}_{}",
+            self.doc_category().example_prefix(),
+            self.qual_name().replace("::", "-")
+        )
     }
 
     /// The path to the module through which the item is accessed, e.g., `std::sketch`
@@ -449,11 +437,11 @@ impl ConstData {
                 detail: self.value.clone(),
                 description: None,
             }),
-            kind: Some(match self.properties.doc_category {
-                Some(DocCategory::Functions) => CompletionItemKind::FUNCTION,
-                Some(DocCategory::Types) => CompletionItemKind::STRUCT,
-                _ => CompletionItemKind::CONSTANT,
-            }),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::CONSTANT)),
             detail: Some(detail),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -740,6 +728,7 @@ impl FnData {
 pub enum DocCategory {
     Functions,
     Constants,
+    Modules,
     Types,
 }
 
@@ -748,6 +737,7 @@ impl DocCategory {
         match s {
             "functions" => Some(DocCategory::Functions),
             "consts" => Some(DocCategory::Constants),
+            "modules" => Some(DocCategory::Modules),
             "types" => Some(DocCategory::Types),
             _ => None,
         }
@@ -757,6 +747,7 @@ impl DocCategory {
         match self {
             DocCategory::Functions => "functions",
             DocCategory::Constants => "consts",
+            DocCategory::Modules => "modules",
             DocCategory::Types => "types",
         }
     }
@@ -765,7 +756,17 @@ impl DocCategory {
         match self {
             DocCategory::Functions => "fn",
             DocCategory::Constants => "const",
+            DocCategory::Modules => "module",
             DocCategory::Types => "ty",
+        }
+    }
+
+    fn to_completion_item_kind(self) -> CompletionItemKind {
+        match self {
+            DocCategory::Functions => CompletionItemKind::FUNCTION,
+            DocCategory::Constants => CompletionItemKind::CONSTANT,
+            DocCategory::Types => CompletionItemKind::STRUCT,
+            DocCategory::Modules => CompletionItemKind::MODULE,
         }
     }
 }
@@ -1346,7 +1347,9 @@ impl ApplyMeta for ModData {
 
     fn impl_kind(&mut self, _: annotations::Impl) {}
 
-    fn doc_category(&mut self, _: DocCategory) {}
+    fn doc_category(&mut self, _: DocCategory) {
+        panic!("doc_category is not supported for modules");
+    }
 }
 
 impl ApplyMeta for TyData {

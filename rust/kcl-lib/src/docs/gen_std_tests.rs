@@ -118,13 +118,11 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
             continue;
         }
 
-        let group = match d {
-            DocData::Mod(_) => continue,
-            _ => match d.doc_category() {
-                DocCategory::Functions => functions.entry(d.mod_name()).or_default(),
-                DocCategory::Types => types.entry(d.mod_name()).or_default(),
-                DocCategory::Constants => constants.entry(d.mod_name()).or_default(),
-            },
+        let group = match d.doc_category() {
+            DocCategory::Functions => functions.entry(d.mod_name()).or_default(),
+            DocCategory::Constants => constants.entry(d.mod_name()).or_default(),
+            DocCategory::Modules => continue,
+            DocCategory::Types => types.entry(d.mod_name()).or_default(),
         };
 
         group.push((
