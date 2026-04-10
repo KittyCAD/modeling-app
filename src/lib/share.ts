@@ -1,4 +1,8 @@
-import { type KclProjectShareLinkAccessMode, users } from '@kittycad/lib'
+import {
+  type KclProjectPublicationStatus,
+  type KclProjectShareLinkAccessMode,
+  projects,
+} from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
@@ -27,6 +31,13 @@ export type PublishCurrentProjectArgs = Omit<
   CopyCurrentFileShareLinkArgs,
   'isRestrictedToOrg'
 >
+
+export type CurrentProjectPublicationDetails = {
+  projectId: string
+  publicationStatus: KclProjectPublicationStatus
+  publishedAt?: string
+  updatedAt: string
+}
 
 type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
@@ -129,7 +140,7 @@ export async function publishCurrentProject(
   }
 
   const publishedProject = await kcCall(() =>
-    users.publish_user_project({
+    projects.publish_project({
       client: uploadedProject.client,
       id: uploadedProject.projectId,
     })
@@ -151,6 +162,54 @@ export async function publishCurrentProject(
   )
 
   return true
+}
+
+export async function getCurrentProjectPublicationDetails({
+  token,
+  project,
+  wasmInstance,
+}: {
+  token: string
+  project: Project | undefined
+  wasmInstance: ModuleType
+}): Promise<CurrentProjectPublicationDetails | null | Error> {
+  if (!token || !project) {
+    return null
+  }
+
+  const environmentName = getCurrentEnvironmentName()
+  if (err(environmentName)) {
+    return environmentName
+  }
+
+  const projectId = await getCloudProjectIdForEnvironment(
+    project.path,
+    wasmInstance,
+    environmentName
+  )
+  if (err(projectId)) {
+    return projectId
+  }
+
+  if (!projectId) {
+    return null
+  }
+
+  const client = createKCClient(token)
+  const remoteProject = await getRemoteProject({
+    client,
+    projectId,
+  })
+  if (err(remoteProject)) {
+    return remoteProject
+  }
+
+  return {
+    projectId,
+    publicationStatus: remoteProject.publication_status,
+    publishedAt: remoteProject.publication.last_published_at,
+    updatedAt: remoteProject.updated_at,
+  }
 }
 
 async function ensureCurrentProjectUploaded(
@@ -199,11 +258,10 @@ async function ensureCurrentProjectUploaded(
     }
 
     const projectResp = await kcCall(() =>
-      upsertUserProject({
+      projects.update_project({
         client,
         id: existingProjectId,
-        body: projectBody,
-        files: uploadFiles,
+        files: toKittyCadFiles(uploadFiles, projectBody),
       })
     )
     if (err(projectResp)) {
@@ -218,10 +276,9 @@ async function ensureCurrentProjectUploaded(
 
   const projectBody = getDefaultProjectUpsertBody(project)
   const projectResp = await kcCall(() =>
-    upsertUserProject({
+    projects.create_project({
       client,
-      body: projectBody,
-      files: uploadFiles,
+      files: toKittyCadFiles(uploadFiles, projectBody),
     })
   )
   if (err(projectResp)) {
@@ -254,12 +311,10 @@ async function getProjectUpsertBody({
   project: Project
   projectId: string
 }): Promise<ProjectUpsertBody | Error> {
-  const remoteProject = await kcCall(() =>
-    users.get_user_project({
-      client,
-      id: projectId,
-    })
-  )
+  const remoteProject = await getRemoteProject({
+    client,
+    projectId,
+  })
   if (err(remoteProject)) {
     return remoteProject
   }
@@ -281,47 +336,19 @@ function getDefaultProjectTitle(project: Project) {
   return project.name || getPathLeaf(project.path) || 'project'
 }
 
-async function upsertUserProject({
+function getRemoteProject({
   client,
-  id,
-  body,
-  files,
+  projectId,
 }: {
   client: ReturnType<typeof createKCClient>
-  id?: string
-  body: ProjectUpsertBody
-  files: UploadFile[]
-}): Promise<{ id: string } | Error> {
-  const formData = new FormData()
-  formData.append(
-    'body',
-    new Blob([JSON.stringify(body)], { type: 'application/json' }),
-    'body.json'
+  projectId: string
+}) {
+  return kcCall(() =>
+    projects.get_project({
+      client,
+      id: projectId,
+    })
   )
-
-  for (const file of files) {
-    formData.append(file.name, file.data, file.name)
-  }
-
-  const apiPath = id ? `/user/projects/${id}` : '/user/projects'
-  const baseUrl = client.baseUrl || 'https://api.zoo.dev'
-  const requestUrl = new URL(apiPath, baseUrl).toString()
-  const headers: Record<string, string> = {}
-  if (client.token) {
-    headers.Authorization = `Bearer ${client.token}`
-  }
-
-  const fetchImpl = client.fetch || globalThis.fetch
-  const response = await fetchImpl(requestUrl, {
-    method: id ? 'PUT' : 'POST',
-    headers,
-    body: formData,
-  })
-  if (!response.ok) {
-    return new Error(await getApiErrorMessage(response))
-  }
-
-  return response.json() as Promise<{ id: string }>
 }
 
 async function getOrCreateProjectShareLink({
@@ -334,7 +361,7 @@ async function getOrCreateProjectShareLink({
   accessMode: KclProjectShareLinkAccessMode
 }) {
   const existingResp = await kcCall(() =>
-    users.list_user_project_share_links({
+    projects.list_project_share_links({
       client,
       id: projectId,
     })
@@ -350,7 +377,7 @@ async function getOrCreateProjectShareLink({
   }
 
   return kcCall(() =>
-    users.create_user_project_share_link({
+    projects.create_project_share_link({
       client,
       id: projectId,
       body: { access_mode: accessMode },
@@ -513,35 +540,24 @@ function cloneFileBytes(fileBytes: Uint8Array) {
   return Uint8Array.from(fileBytes)
 }
 
-async function getApiErrorMessage(response: Response) {
-  try {
-    const body = await response.json()
-    if (
-      body &&
-      typeof body === 'object' &&
-      'message' in body &&
-      typeof body.message === 'string'
-    ) {
-      return body.message
-    }
-  } catch {}
-
-  try {
-    const text = await response.text()
-    if (text) {
-      return text
-    }
-  } catch {}
-
-  return `Project upload failed (${response.status})`
-}
-
 function toProjectRelativePath(projectPath: string, filePath: string) {
   return fsZds.relative(projectPath, filePath).replaceAll(fsZds.sep, '/')
 }
 
-function getPathLeaf(path: string) {
-  return path.split(fsZds.sep).filter(Boolean).at(-1)
+function toKittyCadFiles(
+  files: UploadFile[],
+  body: ProjectUpsertBody
+): Parameters<typeof projects.create_project>[0]['files'] {
+  return [
+    {
+      name: 'body',
+      data: new Blob([JSON.stringify(body)], { type: 'application/json' }),
+    },
+    ...files.map((file) => ({
+      name: file.name,
+      data: file.data,
+    })),
+  ]
 }
 
 function getCurrentEnvironmentName(): string | Error {
@@ -573,4 +589,8 @@ function getMimeType(fileName: string) {
     return 'image/webp'
   }
   return 'application/octet-stream'
+}
+
+function getPathLeaf(path: string) {
+  return path.split(fsZds.sep).filter(Boolean).at(-1)
 }
