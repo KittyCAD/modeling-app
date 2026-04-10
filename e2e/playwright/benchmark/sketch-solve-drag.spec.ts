@@ -136,7 +136,11 @@ async function readBenchmarkMarks(page: Page): Promise<BrowserMark[]> {
       .map((entry) => ({
         name: entry.name,
         startTime: entry.startTime,
-        detail: entry.detail ?? null,
+        detail:
+          'detail' in entry
+            ? ((entry as PerformanceEntry & { detail?: unknown }).detail ??
+              null)
+            : null,
       }))
   }, SKETCH_SOLVE_DRAG_BENCHMARK_PREFIX)
 }

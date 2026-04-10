@@ -35,5 +35,5 @@ export function markSketchSolveDragBenchmark(
     return
   }
 
-  mark(name, { detail })
+  mark(name, detail ? ({ detail } as any) : undefined)
 }
