@@ -202,6 +202,23 @@ pub enum ObjectKind {
     },
 }
 
+impl ObjectKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Nil => "a Nil",
+            Self::Plane(..) => "a Plane",
+            Self::Face(..) => "a Face",
+            Self::Wall(..) => "a Wall",
+            Self::Cap(..) => "a Cap",
+            Self::Sketch(..) => "a Sketch",
+            Self::Segment { .. } => "a Segment",
+            Self::Constraint { .. } => "a Constraint",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiPlane")]
 #[serde(rename_all = "camelCase")]

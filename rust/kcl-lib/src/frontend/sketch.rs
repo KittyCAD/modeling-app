@@ -213,6 +213,19 @@ pub enum Segment {
     Circle(Circle),
 }
 
+impl Segment {
+    /// What kind of geometry is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Segment::Point(_) => "a Point",
+            Segment::Line(_) => "a Line",
+            Segment::Arc(_) => "an Arc",
+            Segment::Circle(_) => "a Circle",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ExistingSegmentCtor {
