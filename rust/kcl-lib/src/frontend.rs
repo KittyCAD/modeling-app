@@ -33,6 +33,7 @@ use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Distance;
+use crate::front::EqualRadius;
 use crate::front::Error;
 use crate::front::ExecResult;
 use crate::front::FixedPoint;
@@ -134,6 +135,7 @@ const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
+const EQUAL_RADIUS_FN: &str = "equalRadius";
 const HORIZONTAL_FN: &str = "horizontal";
 const RADIUS_FN: &str = "radius";
 const TANGENT_FN: &str = "tangent";
@@ -816,6 +818,21 @@ impl SketchApi for FrontendState {
             };
 
             match constraint {
+                Constraint::EqualRadius(equal_radius) => {
+                    let remaining_input = equal_radius
+                        .input
+                        .iter()
+                        .copied()
+                        .filter(|segment_id| !resolved_segment_ids_to_delete.contains(segment_id))
+                        .collect::<Vec<_>>();
+
+                    if remaining_input.len() >= 2 {
+                        self.edit_equal_radius_constraint(&mut new_ast, constraint_id, remaining_input)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    } else {
+                        constraint_ids_set.insert(constraint_id);
+                    }
+                }
                 Constraint::LinesEqualLength(lines_equal_length) => {
                     let remaining_lines = lines_equal_length
                         .lines
@@ -880,6 +897,10 @@ impl SketchApi for FrontendState {
                 .map_err(KclErrorWithOutputs::no_outputs)?,
             Constraint::Distance(distance) => self
                 .add_distance(sketch, distance, &mut new_ast)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?,
+            Constraint::EqualRadius(equal_radius) => self
+                .add_equal_radius(sketch, equal_radius, &mut new_ast)
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?,
             Constraint::Fixed(fixed) => self
@@ -1160,6 +1181,11 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast)
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                }
+                Constraint::EqualRadius(equal_radius) => {
+                    self.add_equal_radius(sketch, equal_radius, &mut new_ast)
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
                 }
@@ -2405,6 +2431,39 @@ impl FrontendState {
         Ok(())
     }
 
+    /// Updates the equalRadius constraint with the given segments.
+    fn edit_equal_radius_constraint(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        constraint_id: ObjectId,
+        input: Vec<ObjectId>,
+    ) -> Result<(), KclError> {
+        if input.len() < 2 {
+            return Err(KclError::refactor(format!(
+                "equalRadius constraint must have at least 2 segments, got {}",
+                input.len()
+            )));
+        }
+
+        let input_asts = input
+            .iter()
+            .map(|segment_id| self.equal_radius_segment_id_to_ast_reference(*segment_id, new_ast))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: input_asts,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        self.mutate_ast(
+            new_ast,
+            constraint_id,
+            AstMutateCommand::EditCallUnlabeled { arg: array_expr },
+        )?;
+        Ok(())
+    }
+
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
@@ -2889,6 +2948,35 @@ impl FrontendState {
         Ok(sketch_block_ref)
     }
 
+    async fn add_equal_radius(
+        &mut self,
+        sketch: ObjectId,
+        equal_radius: EqualRadius,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        if equal_radius.input.len() < 2 {
+            return Err(KclError::refactor(format!(
+                "equalRadius constraint must have at least 2 segments, got {}",
+                equal_radius.input.len()
+            )));
+        }
+
+        let sketch_id = sketch;
+        let input_asts = equal_radius
+            .input
+            .iter()
+            .map(|segment_id| self.equal_radius_segment_id_to_ast_reference(*segment_id, new_ast))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let equal_radius_ast = create_equal_radius_ast(input_asts);
+        let (sketch_block_ref, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: equal_radius_ast },
+        )?;
+        Ok(sketch_block_ref)
+    }
+
     async fn add_radius(
         &mut self,
         sketch: ObjectId,
@@ -3227,6 +3315,35 @@ impl FrontendState {
         Ok(sketch_block_ref)
     }
 
+    fn equal_radius_segment_id_to_ast_reference(
+        &mut self,
+        segment_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<ast::Expr, KclError> {
+        let segment_object = self
+            .scene_graph
+            .objects
+            .get(segment_id.0)
+            .ok_or_else(|| KclError::refactor(format!("Segment not found: {segment_id:?}")))?;
+        let ObjectKind::Segment { segment } = &segment_object.kind else {
+            return Err(KclError::refactor(format!(
+                "Object is not a segment: {segment_object:?}"
+            )));
+        };
+
+        let ref_type = match segment {
+            Segment::Arc(_) => "arc",
+            Segment::Circle(_) => CIRCLE_VARIABLE,
+            _ => {
+                return Err(KclError::refactor(format!(
+                    "equalRadius supports only arc/circle segments, got: {segment:?}"
+                )));
+            }
+        };
+
+        get_or_insert_ast_reference(new_ast, &segment_object.source, ref_type, None)
+    }
+
     async fn add_parallel(
         &mut self,
         sketch: ObjectId,
@@ -3494,6 +3611,9 @@ impl FrontendState {
                 Constraint::Fixed(_) => false,
                 Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
                 Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
+                Constraint::EqualRadius(equal_radius) => {
+                    equal_radius.input.iter().any(|seg_id| segment_ids_set.contains(seg_id))
+                }
                 Constraint::HorizontalDistance(d) => d.point_ids().any(|pt_id| {
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
                     if let Some(obj) = pt_object
@@ -5094,6 +5214,23 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     // Create equalLength([...])
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
+        unlabeled: Some(array_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create an AST node for equalRadius([seg1, seg2, ...])
+pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Expr {
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: segment_exprs,
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(EQUAL_RADIUS_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
         digest: None,

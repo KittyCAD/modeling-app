@@ -42,6 +42,8 @@ use crate::front::Coincident;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Constraint;
 #[cfg(feature = "artifact-graph")]
+use crate::front::EqualRadius;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Horizontal;
 use crate::front::LineCtor;
 #[cfg(feature = "artifact-graph")]
@@ -2287,6 +2289,221 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
     Ok(KclValue::none())
 }
 
+fn datum_point(coords: [SketchVarId; 2], range: crate::SourceRange) -> Result<DatumPoint, KclError> {
+    Ok(DatumPoint::new_xy(
+        coords[0].to_constraint_id(range)?,
+        coords[1].to_constraint_id(range)?,
+    ))
+}
+
+fn sketch_var_initial_value(
+    sketch_vars: &[KclValue],
+    id: SketchVarId,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<f64, KclError> {
+    sketch_vars
+        .get(id.0)
+        .and_then(KclValue::as_sketch_var)
+        .map(|sketch_var| {
+            sketch_var
+                .initial_value_to_solver_units(exec_state, range, "equalRadius() hidden shared radius initial value")
+                .map(|value| value.n)
+        })
+        .transpose()?
+        .ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing sketch variable initial value for id {}", id.0),
+                vec![range],
+            ))
+        })
+}
+
+fn radius_guess(
+    sketch_vars: &[KclValue],
+    center: [SketchVarId; 2],
+    point: [SketchVarId; 2],
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<f64, KclError> {
+    let dx = sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?
+        - sketch_var_initial_value(sketch_vars, center[0], exec_state, range)?;
+    let dy = sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?
+        - sketch_var_initial_value(sketch_vars, center[1], exec_state, range)?;
+    Ok(dx.hypot(dy))
+}
+
+pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    #[derive(Debug, Clone, Copy)]
+    struct RadiusInputVars {
+        center: [SketchVarId; 2],
+        start: [SketchVarId; 2],
+        end: Option<[SketchVarId; 2]>,
+    }
+
+    #[derive(Debug, Clone, Copy)]
+    enum EqualRadiusInput {
+        Radius(RadiusInputVars),
+    }
+
+    fn extract_equal_radius_input(
+        segment_value: &KclValue,
+        range: crate::SourceRange,
+    ) -> Result<(EqualRadiusInput, ObjectId), KclError> {
+        let KclValue::Segment { value: segment } = segment_value else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "equalRadius() arguments must be segments".to_owned(),
+                vec![range],
+            )));
+        };
+        let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "equalRadius() arguments must be unsolved segments".to_owned(),
+                vec![range],
+            )));
+        };
+        match &unsolved.kind {
+            UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+                let (
+                    UnsolvedExpr::Unknown(center_x),
+                    UnsolvedExpr::Unknown(center_y),
+                    UnsolvedExpr::Unknown(start_x),
+                    UnsolvedExpr::Unknown(start_y),
+                    UnsolvedExpr::Unknown(end_x),
+                    UnsolvedExpr::Unknown(end_y),
+                ) = (&center[0], &center[1], &start[0], &start[1], &end[0], &end[1])
+                else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "arc center/start/end coordinates must be sketch vars for equalRadius()".to_owned(),
+                        vec![range],
+                    )));
+                };
+                Ok((
+                    EqualRadiusInput::Radius(RadiusInputVars {
+                        center: [*center_x, *center_y],
+                        start: [*start_x, *start_y],
+                        end: Some([*end_x, *end_y]),
+                    }),
+                    unsolved.object_id,
+                ))
+            }
+            UnsolvedSegmentKind::Circle { center, start, .. } => {
+                let (
+                    UnsolvedExpr::Unknown(center_x),
+                    UnsolvedExpr::Unknown(center_y),
+                    UnsolvedExpr::Unknown(start_x),
+                    UnsolvedExpr::Unknown(start_y),
+                ) = (&center[0], &center[1], &start[0], &start[1])
+                else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "circle center/start coordinates must be sketch vars for equalRadius()".to_owned(),
+                        vec![range],
+                    )));
+                };
+                Ok((
+                    EqualRadiusInput::Radius(RadiusInputVars {
+                        center: [*center_x, *center_y],
+                        start: [*start_x, *start_y],
+                        end: None,
+                    }),
+                    unsolved.object_id,
+                ))
+            }
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                "equalRadius() currently supports only arc and circle segments".to_owned(),
+                vec![range],
+            ))),
+        }
+    }
+
+    let input: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "input",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(2),
+        ),
+        exec_state,
+    )?;
+    let range = args.source_range;
+
+    let extracted_input = input
+        .iter()
+        .map(|segment_value| extract_equal_radius_input(segment_value, range))
+        .collect::<Result<Vec<_>, _>>()?;
+    let radius_inputs: Vec<RadiusInputVars> = extracted_input
+        .iter()
+        .map(|(equal_radius_input, _)| match equal_radius_input {
+            EqualRadiusInput::Radius(radius_input) => *radius_input,
+        })
+        .collect();
+    #[cfg(feature = "artifact-graph")]
+    let input_object_ids: Vec<ObjectId> = extracted_input.iter().map(|(_, object_id)| *object_id).collect();
+
+    let sketch_var_ty = solver_numeric_type(exec_state);
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+
+    let sketch_vars = {
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "equalRadius() can only be used inside a sketch block".to_owned(),
+                vec![range],
+            )));
+        };
+        sketch_state.sketch_vars.clone()
+    };
+
+    let radius_initial_value = radius_guess(
+        &sketch_vars,
+        radius_inputs[0].center,
+        radius_inputs[0].start,
+        exec_state,
+        range,
+    )?;
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "equalRadius() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+    let radius_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: radius_id,
+            initial_value: radius_initial_value,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+    let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
+
+    for radius_input in radius_inputs {
+        let center = datum_point(radius_input.center, range)?;
+        let start = datum_point(radius_input.start, range)?;
+        sketch_state
+            .solver_constraints
+            .push(SolverConstraint::DistanceVar(start, center, radius));
+        if let Some(end) = radius_input.end {
+            let end = datum_point(end, range)?;
+            sketch_state
+                .solver_constraints
+                .push(SolverConstraint::DistanceVar(end, center, radius));
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = crate::front::Constraint::EqualRadius(EqualRadius {
+            input: input_object_ids,
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
+}
+
 pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     #[derive(Debug, Clone, Copy)]
     struct ConstrainableLineVars {
@@ -2396,50 +2613,6 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 vec![range],
             ))),
         }
-    }
-
-    fn datum_point(coords: [SketchVarId; 2], range: crate::SourceRange) -> Result<DatumPoint, KclError> {
-        Ok(DatumPoint::new_xy(
-            coords[0].to_constraint_id(range)?,
-            coords[1].to_constraint_id(range)?,
-        ))
-    }
-
-    fn sketch_var_initial_value(
-        sketch_vars: &[KclValue],
-        id: SketchVarId,
-        exec_state: &mut ExecState,
-        range: crate::SourceRange,
-    ) -> Result<f64, KclError> {
-        sketch_vars
-            .get(id.0)
-            .and_then(KclValue::as_sketch_var)
-            .map(|sketch_var| {
-                sketch_var
-                    .initial_value_to_solver_units(exec_state, range, "tangent() hidden radius initial value")
-                    .map(|value| value.n)
-            })
-            .transpose()?
-            .ok_or_else(|| {
-                KclError::new_internal(KclErrorDetails::new(
-                    format!("Missing sketch variable initial value for id {}", id.0),
-                    vec![range],
-                ))
-            })
-    }
-
-    fn radius_guess(
-        sketch_vars: &[KclValue],
-        center: [SketchVarId; 2],
-        point: [SketchVarId; 2],
-        exec_state: &mut ExecState,
-        range: crate::SourceRange,
-    ) -> Result<f64, KclError> {
-        let dx = sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?
-            - sketch_var_initial_value(sketch_vars, center[0], exec_state, range)?;
-        let dy = sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?
-            - sketch_var_initial_value(sketch_vars, center[1], exec_state, range)?;
-        Ok(dx.hypot(dy))
     }
 
     fn point_initial_position(
