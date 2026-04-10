@@ -149,6 +149,7 @@ layout: manual
   * [`solver::diameter`](/docs/kcl-std/functions/std-solver-diameter)
   * [`solver::distance`](/docs/kcl-std/functions/std-solver-distance)
   * [`solver::equalLength`](/docs/kcl-std/functions/std-solver-equalLength)
+  * [`solver::equalRadius`](/docs/kcl-std/functions/std-solver-equalRadius)
   * [`solver::fixed`](/docs/kcl-std/functions/std-solver-fixed)
   * [`solver::horizontal`](/docs/kcl-std/functions/std-solver-horizontal)
   * [`solver::horizontalDistance`](/docs/kcl-std/functions/std-solver-horizontalDistance)

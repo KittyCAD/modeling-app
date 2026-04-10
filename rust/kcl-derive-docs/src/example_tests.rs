@@ -241,6 +241,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solver-horizontalDistance-0",
     "std-solver-verticalDistance-0",
     "std-solver-equalLength-0",
+    "std-solver-equalRadius-0",
     "std-solver-parallel-0",
     "std-solver-perpendicular-0",
     "std-solver-angle-0",
