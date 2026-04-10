@@ -180,6 +180,13 @@ pub struct Point {
     pub constraints: Vec<ObjectId>,
 }
 
+impl Point {
+    /// The freedom of this point.
+    pub fn freedom(&self) -> Freedom {
+        self.freedom
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
@@ -222,6 +229,18 @@ impl Segment {
             Self::Line(_) => "a Line",
             Self::Arc(_) => "an Arc",
             Self::Circle(_) => "a Circle",
+        }
+    }
+
+    /// Compute the overall freedom of this segment. For geometry types (Line,
+    /// Arc, Circle) this looks up and merges the freedom of their constituent
+    /// points. For points, returns the point's own freedom directly.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
+        match self {
+            Self::Point(p) => p.freedom(),
+            Self::Line(l) => l.freedom(&lookup),
+            Self::Arc(a) => a.freedom(&lookup),
+            Self::Circle(c) => c.freedom(&lookup),
         }
     }
 }
@@ -285,6 +304,18 @@ pub struct Line {
     pub construction: bool,
 }
 
+impl Line {
+    /// Compute the overall freedom of this line by merging the freedom of its
+    /// start and end points.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
+        let start = lookup(self.start);
+        let end = lookup(self.end);
+        debug_assert!(start.is_some(), "Line start point {:?} not found in scene graph", self.start);
+        debug_assert!(end.is_some(), "Line end point {:?} not found in scene graph", self.end);
+        start.unwrap_or(Freedom::Free).merge(end.unwrap_or(Freedom::Free))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct LineCtor {
@@ -315,6 +346,20 @@ pub struct Arc {
     pub construction: bool,
 }
 
+impl Arc {
+    /// Compute the overall freedom of this arc by merging the freedom of its
+    /// start, end, and center points.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
+        let start = lookup(self.start);
+        let end = lookup(self.end);
+        let center = lookup(self.center);
+        debug_assert!(start.is_some(), "Arc start point {:?} not found in scene graph", self.start);
+        debug_assert!(end.is_some(), "Arc end point {:?} not found in scene graph", self.end);
+        debug_assert!(center.is_some(), "Arc center point {:?} not found in scene graph", self.center);
+        start.unwrap_or(Freedom::Free).merge(end.unwrap_or(Freedom::Free)).merge(center.unwrap_or(Freedom::Free))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ArcCtor {
@@ -335,6 +380,18 @@ pub struct Circle {
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
     pub construction: bool,
+}
+
+impl Circle {
+    /// Compute the overall freedom of this circle by merging the freedom of its
+    /// start and center points.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Freedom {
+        let start = lookup(self.start);
+        let center = lookup(self.center);
+        debug_assert!(start.is_some(), "Circle start point {:?} not found in scene graph", self.start);
+        debug_assert!(center.is_some(), "Circle center point {:?} not found in scene graph", self.center);
+        start.unwrap_or(Freedom::Free).merge(center.unwrap_or(Freedom::Free))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

@@ -40,6 +40,7 @@ use uuid::Uuid;
 use crate::bridge::bounding_box::BoundingBoxResponse;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
+use crate::bridge::sketch_constraints::SketchConstraintReport;
 
 mod bridge;
 
@@ -203,6 +204,26 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<()> {
     let ExecutedKcl { ctx, .. } = run_kcl(input, mock).await?;
     ctx.close().await;
     Ok(())
+}
+
+async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+    let KclProgram {
+        code,
+        program,
+        path,
+        filename: _,
+    } = load_and_parse(input).await?;
+
+    let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
+    let (env_ref, _) = ctx
+        .run(&program, &mut state)
+        .await
+        .map_err(|err| into_miette(err, &code))?;
+
+    let outcome = state.into_exec_outcome(env_ref, &ctx).await;
+    let report = outcome.sketch_constraint_report();
+    ctx.close().await;
+    Ok(report.into())
 }
 
 async fn execute_and_snapshot_views_impl(
@@ -369,6 +390,18 @@ async fn mock_execute(path: String) -> PyResult<bool> {
         Ok(true)
     })
     .await
+}
+
+/// Execute a kcl file and return a report of sketch constraint status.
+#[pyfunction]
+async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+}
+
+/// Execute kcl code and return a report of sketch constraint status.
+#[pyfunction]
+async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -938,6 +971,9 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
     m.add_class::<FindingFamily>()?;
+    m.add_class::<bridge::sketch_constraints::ConstraintKind>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintStatus>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintReport>()?;
 
     m.add_class::<kcmc::units::UnitAngle>()?;
     m.add_class::<kcmc::units::UnitArea>()?;
@@ -967,6 +1003,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
