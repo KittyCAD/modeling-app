@@ -1580,7 +1580,10 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Point(_) = segment else {
                 return Err(make_err(format!(
@@ -1717,7 +1720,10 @@ impl FrontendState {
                 .scene_object_by_id(segment_id)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Line(line) = segment else {
                 return Err(make_err(format!(
@@ -1861,7 +1867,10 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Arc(arc) = segment else {
                 return Err(make_err(format!(
@@ -2002,7 +2011,10 @@ impl FrontendState {
                 .get(segment_id.0)
                 .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
             let ObjectKind::Segment { segment } = &segment_object.kind else {
-                return Err(make_err(format!("Object is not a segment: {segment_object:?}")));
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
             };
             let Segment::Circle(circle) = segment else {
                 return Err(make_err(format!(
@@ -2338,7 +2350,8 @@ impl FrontendState {
             })?;
         let ObjectKind::Segment { .. } = &segment_object.kind else {
             return Err(KclError::refactor(format!(
-                "Object is not a segment: {segment_object:?}"
+                "Object is not a segment, it is {}",
+                segment_object.kind.human_friendly_kind_with_article()
             )));
         };
 
@@ -2673,7 +2686,8 @@ impl FrontendState {
                     .ok_or_else(|| KclError::refactor(format!("Object not found: {segment_id:?}")))?;
                 let ObjectKind::Segment { segment } = &segment_object.kind else {
                     return Err(KclError::refactor(format!(
-                        "Object is not a segment: {segment_object:?}"
+                        "Object is not a segment, it is {}",
+                        segment_object.kind.human_friendly_kind_with_article()
                     )));
                 };
 
