@@ -11,7 +11,10 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sendSelectEventToEngine } from '@src/lib/selections'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -113,6 +116,18 @@ export const ConnectionStream = (props: {
             const { entity_id } = result
             if (!entity_id) {
               // No entity selected. This is benign
+              return
+            }
+            const artifact = kclManager.artifactGraph.get(entity_id)
+            const sketchBlockArtifact = getSketchBlockForArtifact(
+              artifact,
+              kclManager.artifactGraph
+            )
+            if (sketchBlockArtifact) {
+              sceneInfra.modelingSend({
+                type: 'Edit sketch solve',
+                data: { artifactId: sketchBlockArtifact.id },
+              })
               return
             }
             const path = getArtifactOfTypes(
