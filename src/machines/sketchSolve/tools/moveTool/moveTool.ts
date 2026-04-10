@@ -57,6 +57,10 @@ import {
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
+  SKETCH_SOLVE_DRAG_BENCHMARK_MARKS,
+  markSketchSolveDragBenchmark,
+} from '@src/machines/sketchSolve/sketchSolveBenchmark'
+import {
   type SelectionBoxVisualState,
   findContainedSegments,
   findIntersectingSegments,
@@ -834,6 +838,9 @@ export function createOnDragCallback({
       const settings = await getJsAppSettings()
       // Get sketchId from context data (needed for editSegments)
       const sketchId = getContextData().sketchId
+      markSketchSolveDragBenchmark(
+        SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.editSegmentsStart
+      )
       const result = await editSegments(
         0,
         sketchId,
@@ -844,6 +851,9 @@ export function createOnDragCallback({
         toastSketchSolveError(err)
         return null
       })
+      markSketchSolveDragBenchmark(
+        SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.editSegmentsEnd
+      )
 
       // After successful drag, update the lastSuccessfulDragFromPoint
       // This ensures the next drag calculates from the correct starting point
@@ -853,6 +863,9 @@ export function createOnDragCallback({
       if (result) {
         onNewSketchOutcome({ ...result, writeToDisk: false })
         await new Promise((resolve) => requestAnimationFrame(resolve))
+        markSketchSolveDragBenchmark(
+          SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.animationFrameEnd
+        )
       }
     } finally {
       setIsSolveInProgress(false)

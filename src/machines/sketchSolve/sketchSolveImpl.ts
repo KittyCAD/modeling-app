@@ -55,6 +55,10 @@ import {
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import {
+  SKETCH_SOLVE_DRAG_BENCHMARK_MARKS,
+  markSketchSolveDragBenchmark,
+} from '@src/machines/sketchSolve/sketchSolveBenchmark'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
   getSketchSolveExecOutcomeIssues,
@@ -432,6 +436,24 @@ export function updateSegmentGroup({
   }
 }
 
+function indexSketchSolveChildGroups(
+  sketchSolveGroup: Group | undefined
+): Map<string, Group> {
+  const groupsByName = new Map<string, Group>()
+  if (!sketchSolveGroup) {
+    return groupsByName
+  }
+
+  for (const child of sketchSolveGroup.children) {
+    if (!(child instanceof Group) || child.name === '') {
+      continue
+    }
+    groupsByName.set(child.name, child)
+  }
+
+  return groupsByName
+}
+
 /**
  * Helper function to initialize a segment group with the given input.
  * Determines the correct segment init method based on the input type.
@@ -499,147 +521,155 @@ export function updateSceneGraphFromDelta({
   selectedIds,
   duringAreaSelectIds,
 }: IUpdateSketchSceneGraph): void {
-  const objects = sceneGraphDelta.new_graph.objects
-  const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
-  const currentSketchObjects = getCurrentSketchObjectsById(
-    objects,
-    context.sketchId
+  markSketchSolveDragBenchmark(
+    SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.updateSceneGraphStart
   )
-  const factor = getSketchSolveScaleFactor(context)
+  try {
+    const objects = sceneGraphDelta.new_graph.objects
+    const hasSolveErrors =
+      getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
+    const currentSketchObjects = getCurrentSketchObjectsById(
+      objects,
+      context.sketchId
+    )
+    const factor = getSketchSolveScaleFactor(context)
 
-  const sketchSolveGroup =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+    const sketchSolveGroup =
+      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+    const sketchChildGroups = indexSketchSolveChildGroups(
+      sketchSolveGroup instanceof Group ? sketchSolveGroup : undefined
+    )
 
-  const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
-  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
-    ? context.hoveredId
-    : null
-  const draftEntityIds = context.draftEntities?.segmentIds
+    const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+    const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+      ? context.hoveredId
+      : null
+    const draftEntityIds = context.draftEntities?.segmentIds
 
-  // If invalidates_ids is true, we need to delete everything and start fresh
-  // because the old IDs can't be trusted
-  if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
-    resetSketchSolvePointHandleCount()
-    disposeGroupChildren(sketchSolveGroup)
-  } else {
-    // This invalidation logic is kinda based on some heuristics and is not exhaustive,
-    // so there are bugs, it's here to let some direct editing of the code from
-    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
-    // The proper way to do this is to get an invalidation signal from the rust side.
-    const invalidateScene = sketchSolveGroup?.children.some((child) => {
-      const childId = Number(child.name)
-      // check if number
-      if (Number.isNaN(childId)) {
-        return
-      }
-      // check id is not greater than new_graph.objects length
-      return childId >= sceneGraphDelta.new_graph.objects.length
-    })
-    if (invalidateScene && sketchSolveGroup instanceof Group) {
+    // If invalidates_ids is true, we need to delete everything and start fresh
+    // because the old IDs can't be trusted
+    if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
       resetSketchSolvePointHandleCount()
       disposeGroupChildren(sketchSolveGroup)
+    } else {
+      // This invalidation logic is kinda based on some heuristics and is not exhaustive,
+      // so there are bugs, it's here to let some direct editing of the code from
+      // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+      // The proper way to do this is to get an invalidation signal from the rust side.
+      const invalidateScene = sketchSolveGroup?.children.some((child) => {
+        const childId = Number(child.name)
+        // check if number
+        if (Number.isNaN(childId)) {
+          return
+        }
+        // check id is not greater than new_graph.objects length
+        return childId >= sceneGraphDelta.new_graph.objects.length
+      })
+      if (invalidateScene && sketchSolveGroup instanceof Group) {
+        resetSketchSolvePointHandleCount()
+        disposeGroupChildren(sketchSolveGroup)
+      }
     }
-  }
 
-  if (sketchSolveGroup instanceof Group) {
-    updateOriginSprite(
-      sketchSolveGroup,
-      factor,
-      context.sceneInfra.theme,
-      getOriginSpriteState(context)
-    )
-  }
-
-  currentSketchObjects.forEach((obj) => {
-    // sketch is not a drawable object
-    if (obj.kind.type === 'Sketch') {
-      return
-    }
-
-    // Combine selectedIds and duringAreaSelectIds for highlighting
-    const allSelectedIds = Array.from(
-      new Set([...getObjectSelectionIds(selectedIds), ...duringAreaSelectIds])
-    )
-
-    // Render constraints
-    if (isConstraint(obj)) {
-      const foundObject = context.sceneInfra.scene.getObjectByName(
-        String(obj.id)
+    if (sketchSolveGroup instanceof Group) {
+      updateOriginSprite(
+        sketchSolveGroup,
+        factor,
+        context.sceneInfra.theme,
+        getOriginSpriteState(context)
       )
-      let constraintGroup: Group | null =
-        foundObject instanceof Group ? foundObject : null
-      if (!constraintGroup) {
-        constraintGroup = segmentUtilsMap.Constraint.init(obj)
-        if (constraintGroup) {
-          if (sketchSolveGroup) {
-            constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
-            constraintGroup.layers.set(SKETCH_LAYER)
-            sketchSolveGroup.add(constraintGroup)
+    }
+
+    currentSketchObjects.forEach((obj) => {
+      // Combine selectedIds and duringAreaSelectIds for highlighting
+      const allSelectedIds = Array.from(
+        new Set([...getObjectSelectionIds(selectedIds), ...duringAreaSelectIds])
+      )
+
+      // Render constraints
+      if (isConstraint(obj)) {
+        const foundObject = sketchChildGroups.get(String(obj.id))
+        let constraintGroup: Group | null =
+          foundObject instanceof Group ? foundObject : null
+        if (!constraintGroup) {
+          constraintGroup = segmentUtilsMap.Constraint.init(obj)
+          if (constraintGroup) {
+            if (sketchSolveGroup) {
+              constraintGroup.traverse((child) =>
+                child.layers.set(SKETCH_LAYER)
+              )
+              constraintGroup.layers.set(SKETCH_LAYER)
+              sketchSolveGroup.add(constraintGroup)
+            }
           }
         }
-      }
-      if (constraintGroup) {
-        segmentUtilsMap.Constraint.update(
-          constraintGroup,
-          obj,
-          objects,
-          factor,
-          context.sceneInfra,
-          allSelectedIds,
-          hoveredObjectId,
-          getInvisibleConstraintDisplayState(context)
-        )
-      }
-      return
-    }
-    let group = context.sceneInfra.scene.getObjectByName(String(obj.id))
-    const ctor = buildSegmentCtorFromObject(obj, objects)
-    const state = getSegmentRenderState(
-      obj.id,
-      selectedIds,
-      duringAreaSelectIds,
-      context.hoveredId,
-      hoveredSegmentIds,
-      draftEntityIds,
-      objects
-    )
-    if (!(group instanceof Group)) {
-      if (!ctor) {
+        if (constraintGroup) {
+          segmentUtilsMap.Constraint.update(
+            constraintGroup,
+            obj,
+            objects,
+            factor,
+            context.sceneInfra,
+            allSelectedIds,
+            hoveredObjectId,
+            getInvisibleConstraintDisplayState(context)
+          )
+        }
         return
       }
-      const newGroup = initSegmentGroup({
+      let group = sketchChildGroups.get(String(obj.id))
+      const ctor = buildSegmentCtorFromObject(obj, objects)
+      const state = getSegmentRenderState(
+        obj.id,
+        selectedIds,
+        duringAreaSelectIds,
+        context.hoveredId,
+        hoveredSegmentIds,
+        draftEntityIds,
+        objects
+      )
+      if (!(group instanceof Group)) {
+        if (!ctor) {
+          return
+        }
+        const newGroup = initSegmentGroup({
+          input: ctor,
+          id: obj.id,
+          objects,
+        })
+        if (newGroup instanceof Error) {
+          console.error('Failed to init segment group for object', obj.id)
+          return
+        }
+        if (sketchSolveGroup) {
+          newGroup.traverse((child) => {
+            child.layers.set(SKETCH_LAYER)
+          })
+          newGroup.layers.set(SKETCH_LAYER)
+          sketchSolveGroup.add(newGroup)
+          sketchChildGroups.set(newGroup.name, newGroup)
+        }
+        group = newGroup
+      }
+      if (!(group instanceof Group) || !ctor) {
+        return
+      }
+
+      updateSegmentGroup({
+        group,
         input: ctor,
-        id: obj.id,
+        state,
+        scale: factor,
+        theme: context.sceneInfra.theme,
+        hasSolveErrors,
         objects,
       })
-      if (newGroup instanceof Error) {
-        console.error('Failed to init segment group for object', obj.id)
-        return
-      }
-      if (sketchSolveGroup) {
-        newGroup.traverse((child) => {
-          child.layers.set(SKETCH_LAYER)
-        })
-        newGroup.layers.set(SKETCH_LAYER)
-        sketchSolveGroup.add(newGroup)
-      }
-      group = newGroup
-    }
-    if (!(group instanceof Group) || !ctor) {
-      return
-    }
-
-    updateSegmentGroup({
-      group,
-      input: ctor,
-      state,
-      scale: factor,
-      theme: context.sceneInfra.theme,
-      hasSolveErrors,
-      objects,
     })
-  })
+  } finally {
+    markSketchSolveDragBenchmark(
+      SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.updateSceneGraphEnd
+    )
+  }
 }
 
 function getLinkedPoint({
@@ -788,6 +818,9 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
 
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchChildGroups = indexSketchSolveChildGroups(
+    sketchSolveGroup instanceof Group ? sketchSolveGroup : undefined
+  )
   if (sketchSolveGroup instanceof Group) {
     updateOriginSprite(
       sketchSolveGroup,
@@ -802,9 +835,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       return
     }
     if (obj.kind.type === 'Constraint') {
-      const foundObject = context.sceneInfra.scene.getObjectByName(
-        String(obj.id)
-      )
+      const foundObject = sketchChildGroups.get(String(obj.id))
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
@@ -820,7 +851,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         )
       }
     } else {
-      const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+      const group = sketchChildGroups.get(String(obj.id))
       if (!(group instanceof Group)) {
         return
       }
@@ -910,6 +941,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     ])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
+  const sketchChildGroups = indexSketchSolveChildGroups(sketchSolveGroup)
 
   updateOriginSprite(
     sketchSolveGroup,
@@ -923,7 +955,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       return
     }
 
-    const group = sketchSolveGroup.getObjectByName(String(obj.id))
+    const group = sketchChildGroups.get(String(obj.id))
     if (!(group instanceof Group)) {
       return
     }
@@ -1063,98 +1095,123 @@ const debouncedEditorUpdate = deferredCallback(
 
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
+  markSketchSolveDragBenchmark(
+    SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.updateSketchOutcomeStart
+  )
+  try {
+    if (!event.data.sourceDelta) {
+      console.error(
+        'updateSketchOutcome: ERROR - No sourceDelta provided',
+        event.data
+      )
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error(
+        'updateSketchOutcome: event.data must contain sourceDelta'
+      )
+    }
 
-  if (!event.data.sourceDelta) {
-    console.error(
-      'updateSketchOutcome: ERROR - No sourceDelta provided',
-      event.data
+    const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
+      getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
+      event.data.sourceDelta.text
     )
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
-  }
+    context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
+    toastSketchSolveExecOutcomeErrors(
+      event.data.sceneGraphDelta,
+      'Sketch solver failed to find a solution'
+    )
 
-  const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
-    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
-    event.data.sourceDelta.text
-  )
-  context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
-  toastSketchSolveExecOutcomeErrors(
-    event.data.sceneGraphDelta,
-    'Sketch solver failed to find a solution'
-  )
-
-  // If the incoming KCL differs from the current editor doc, apply the scene
-  // immediately for responsiveness, but keep that scene-only dispatch out of
-  // history. Checkpoint-backed undo is the only restore mechanism for
-  // committed sketch edits.
-  const additionalSpec = {
-    sketchCheckpointId: event.data.checkpointId,
-    effects: [
-      updateSketchSceneGraphEffect.of({
-        sceneGraphDelta: event.data.sceneGraphDelta,
-        context,
-        selectedIds: context.selectedIds,
-        duringAreaSelectIds: context.duringAreaSelectIds,
-      }),
-    ],
-  }
-
-  const shouldWriteToDisk = event.data.writeToDisk !== false
-  const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
-  const shouldDispatchSceneImmediately =
-    context.kclManager.code !== event.data.sourceDelta.text
-
-  if (shouldDispatchSceneImmediately) {
+    // Update scene immediately - no delay, no flicker
+    // This is wired through a CodeMirror StateEffect so that
+    // an extension (in @src/editor/plugins/sketch.ts) can apply its
+    // effects while undoing as well.
     context.kclManager.dispatch({
-      annotations: Transaction.addToHistory.of(false),
-      effects: additionalSpec.effects,
+      effects: [
+        updateSketchSceneGraphEffect.of({
+          sceneGraphDelta: event.data.sceneGraphDelta,
+          context,
+          selectedIds: context.selectedIds,
+          duringAreaSelectIds: context.duringAreaSelectIds,
+        }),
+      ],
     })
-  }
 
-  // Strip scene effects from the follow-up editor update when we already
-  // dispatched them above. This avoids double-applying the same scene delta
-  // and creating extra scene-only history entries.
-  const editorAdditionalSpec = shouldDispatchSceneImmediately
-    ? {
-        ...additionalSpec,
-        effects: [] as StateEffect<unknown>[],
-      }
-    : additionalSpec
+    // If the incoming KCL differs from the current editor doc, apply the scene
+    // immediately for responsiveness, but keep that scene-only dispatch out of
+    // history. Checkpoint-backed undo is the only restore mechanism for
+    // committed sketch edits.
+    const additionalSpec = {
+      sketchCheckpointId: event.data.checkpointId,
+      effects: [
+        updateSketchSceneGraphEffect.of({
+          sceneGraphDelta: event.data.sceneGraphDelta,
+          context,
+          selectedIds: context.selectedIds,
+          duringAreaSelectIds: context.duringAreaSelectIds,
+        }),
+      ],
+    }
 
-  // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
-  // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
-  // a good example of this is When a user double clicks with the line tool, we want to end the chaining and so
-  // - First click still adds the new segment and coincident constraint
-  // - Followed closely by the second click making it a double click, in which case we want to delete the recently added segments, but don't want flicker in the editor
-  if (event.data.debounceEditorUpdate) {
-    // Debounce editor update - this can be cancelled if a double-click is detected
-    // by calling the debounced function again with new text before the delay expires
-    // If a new update comes in within 200ms, the previous one is cancelled
-    debouncedEditorUpdate({
-      text: event.data.sourceDelta.text,
-      kclManager: context.kclManager,
-      shouldWriteToDisk,
-      shouldAddToHistory,
-      spec: editorAdditionalSpec,
-    })
-  } else {
-    // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(
-      event.data.sourceDelta.text,
-      {
-        shouldExecute: false,
+    const shouldWriteToDisk = event.data.writeToDisk !== false
+    const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+    const shouldDispatchSceneImmediately =
+      context.kclManager.code !== event.data.sourceDelta.text
+
+    if (shouldDispatchSceneImmediately) {
+      context.kclManager.dispatch({
+        annotations: Transaction.addToHistory.of(false),
+        effects: additionalSpec.effects,
+      })
+    }
+
+    // Strip scene effects from the follow-up editor update when we already
+    // dispatched them above. This avoids double-applying the same scene delta
+    // and creating extra scene-only history entries.
+    const editorAdditionalSpec = shouldDispatchSceneImmediately
+      ? {
+          ...additionalSpec,
+          effects: [] as StateEffect<unknown>[],
+        }
+      : additionalSpec
+
+    // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
+    // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
+    // a good example of this is When a user double clicks with the line tool, we want to end the chaining and so
+    // - First click still adds the new segment and coincident constraint
+    // - Followed closely by the second click making it a double click, in which case we want to delete the recently added segments, but don't want flicker in the editor
+    if (event.data.debounceEditorUpdate) {
+      // Debounce editor update - this can be cancelled if a double-click is detected
+      // by calling the debounced function again with new text before the delay expires
+      // If a new update comes in within 200ms, the previous one is cancelled
+      debouncedEditorUpdate({
+        text: event.data.sourceDelta.text,
+        kclManager: context.kclManager,
         shouldWriteToDisk,
         shouldAddToHistory,
-      },
-      editorAdditionalSpec
-    )
-  }
+        spec: editorAdditionalSpec,
+      })
+    } else {
+      // Update editor immediately - no debounce for frequent updates like onMove
+      context.kclManager.updateCodeEditor(
+        event.data.sourceDelta.text,
+        {
+          shouldExecute: false,
+          shouldWriteToDisk,
+          shouldAddToHistory,
+        },
+        editorAdditionalSpec
+      )
+    }
 
-  return {
-    sketchExecOutcome: {
-      sourceDelta: event.data.sourceDelta,
-      sceneGraphDelta: event.data.sceneGraphDelta,
-    },
+    return {
+      sketchExecOutcome: {
+        sourceDelta: event.data.sourceDelta,
+        sceneGraphDelta: event.data.sceneGraphDelta,
+      },
+    }
+  } finally {
+    markSketchSolveDragBenchmark(
+      SKETCH_SOLVE_DRAG_BENCHMARK_MARKS.updateSketchOutcomeEnd
+    )
   }
 }
 
