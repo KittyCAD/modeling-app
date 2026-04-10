@@ -1361,14 +1361,14 @@ impl Node<SketchBlock> {
 
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
-            .solver_constraints
+            // Segment edit constraints have a higher priority.
+            .solver_segment_edit_constraints
             .iter()
             .cloned()
             .map(ezpz::ConstraintRequest::highest_priority)
             .chain(
-                // Optional constraints have a lower priority.
                 sketch_block_state
-                    .solver_segment_edit_constraints
+                    .solver_constraints
                     .iter()
                     .cloned()
                     .map(|c| ezpz::ConstraintRequest::new(c, 1)),
@@ -1419,18 +1419,18 @@ impl Node<SketchBlock> {
         } else {
             ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
-        // Build a combined list of all constraints (regular + optional) for conflict detection
-        let num_required_constraints = sketch_block_state.solver_constraints.len();
+        // Build a combined list of all constraints (segment edit + regular) for conflict detection
+        let num_segment_edit_constraints = sketch_block_state.solver_segment_edit_constraints.len();
         let all_constraints: Vec<ezpz::Constraint> = sketch_block_state
-            .solver_constraints
+            .solver_segment_edit_constraints
             .iter()
             .cloned()
-            .chain(sketch_block_state.solver_segment_edit_constraints.iter().cloned())
+            .chain(sketch_block_state.solver_constraints.iter().cloned())
             .collect();
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
-                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_segment_edit_constraints);
                 (outcome, freedom)
             }
             Err(failure) => {

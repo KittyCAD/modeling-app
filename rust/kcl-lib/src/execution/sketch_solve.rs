@@ -458,14 +458,15 @@ impl Solved {
     pub(crate) fn from_ezpz_outcome(
         value: ezpz::SolveOutcome,
         constraints: &[ezpz::Constraint],
-        num_required_constraints: usize,
+        num_segment_edit_constraints: usize,
     ) -> Self {
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
         for &constraint_idx in value.unsatisfied() {
-            // Only mark as conflicted if it's a required constraint, not an optional one
-            if constraint_idx < num_required_constraints
+            // Only mark as conflicted if it's a regular constraint, not a
+            // segment edit one.
+            if constraint_idx >= num_segment_edit_constraints
                 && let Some(constraint) = constraints.get(constraint_idx)
             {
                 constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
