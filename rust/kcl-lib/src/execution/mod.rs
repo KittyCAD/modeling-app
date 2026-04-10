@@ -393,9 +393,10 @@ impl ExecOutcome {
                 // Skip owned points — their freedom is already captured by
                 // the parent geometry (Line/Arc/Circle) that looks them up.
                 if let Segment::Point(p) = segment
-                    && p.owner.is_some() {
-                        continue;
-                    }
+                    && p.owner.is_some()
+                {
+                    continue;
+                }
                 let freedom = segment.freedom(lookup);
                 total_count += 1;
                 match freedom {
