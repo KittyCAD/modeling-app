@@ -36,7 +36,9 @@ export function deriveSegmentFreedom(
   }
 
   const getObjById = (id?: number) =>
-    typeof id === 'number' ? (objects.find((o) => o?.id === id) ?? null) : null
+    typeof id === 'number'
+      ? (objects[id] ?? objects.find((o) => o?.id === id) ?? null)
+      : null
 
   const segmentData = segment.kind.segment
 
