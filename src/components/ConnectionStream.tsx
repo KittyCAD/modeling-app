@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -40,6 +40,9 @@ export const ConnectionStream = (props: {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  const showEngineDebugOverlay = settingsValues.app.showDebugPanel.current
+  const [isEngineDebugLoggingEnabled, setIsEngineDebugLoggingEnabled] =
+    useState(true)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -56,6 +59,9 @@ export const ConnectionStream = (props: {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
+  const [engineDebugSnapshot, setEngineDebugSnapshot] = useState(() =>
+    engineCommandManager.getDebugSnapshot()
+  )
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -238,14 +244,38 @@ export const ConnectionStream = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
+  const disconnectForIdle = useCallback(
+    async (reason: 'idle-timer' | 'manual-debug-button') => {
+      if (engineCommandManager.started) {
+        try {
+          await sceneInfra.camControls.saveRemoteCameraState()
+        } catch (e) {
+          console.warn('unable to save old camera state on idle', e)
+          sceneInfra.camControls.clearOldCameraState()
+        }
+      }
+
+      console.log(sceneInfra.camControls.oldCameraState)
+      console.warn(`${reason}: tearing down connection through idle path.`)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'disconnectForIdle',
+        metadata: { reason },
+      })
+
+      isIdle.current = true
+      engineCommandManager.tearDown()
+      setEngineDebugSnapshot(engineCommandManager.getDebugSnapshot())
+    },
+    [engineCommandManager, sceneInfra.camControls]
+  )
+
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      idleCallback: () => {
-        isIdle.current = true
-      },
+      idleCallback: () => disconnectForIdle('idle-timer'),
     }),
-    [onPageIdleStartCb]
+    [disconnectForIdle, onPageIdleStartCb]
   )
   useOnPageIdle(onPageIdleParams)
 
@@ -404,6 +434,34 @@ export const ConnectionStream = (props: {
     [sceneInfra.camControls.wasDragging]
   )
 
+  useEffect(() => {
+    if (!showEngineDebugOverlay || !isEngineDebugLoggingEnabled) {
+      return
+    }
+
+    const pollEngineDebugSnapshot = () => {
+      const snapshot = engineCommandManager.getDebugSnapshot()
+      setEngineDebugSnapshot(snapshot)
+      console.log('[engine-debug][500ms]', {
+        ...snapshot,
+        isIdle: isIdle.current,
+        kclIsExecuting: kclManager.isExecuting,
+      })
+    }
+
+    pollEngineDebugSnapshot()
+    const intervalId = window.setInterval(pollEngineDebugSnapshot, 500)
+
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [
+    engineCommandManager,
+    isEngineDebugLoggingEnabled,
+    kclManager,
+    showEngineDebugOverlay,
+  ])
+
   return (
     <div
       role="presentation"
@@ -447,6 +505,52 @@ export const ConnectionStream = (props: {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
+      {showEngineDebugOverlay && (
+        <div
+          className="absolute left-2 top-2 z-20 flex max-w-sm flex-col gap-2 rounded border border-dashed border-warn-60 bg-chalkboard-10/95 p-2 text-xs shadow-lg dark:bg-chalkboard-100/95"
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
+        >
+          <div className="font-mono leading-5">
+            <div>
+              started: {String(engineDebugSnapshot.started)} | idle:{' '}
+              {String(isIdle.current)}
+            </div>
+            <div>
+              pending: {engineDebugSnapshot.pendingCommandCount} | ws:{' '}
+              {engineDebugSnapshot.connection.websocketReadyStateLabel ??
+                'none'}
+            </div>
+            <div>
+              peer:{' '}
+              {engineDebugSnapshot.connection.peerConnectionState ?? 'none'} |
+              dc:{' '}
+              {engineDebugSnapshot.connection.unreliableDataChannelState ??
+                'none'}
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="rounded border border-warn-60 bg-warn-10 px-2 py-1 text-left text-xs text-warn-80 dark:bg-warn-80 dark:text-chalkboard-10"
+              data-testid="simulate-idle-disconnect"
+              onClick={() => {
+                disconnectForIdle('manual-debug-button').catch(reportRejection)
+              }}
+            >
+              Simulate idle disconnect
+            </button>
+            <button
+              className="rounded border border-primary/40 bg-primary/10 px-2 py-1 text-left text-xs text-primary dark:bg-primary/20 dark:text-chalkboard-10"
+              data-testid="toggle-engine-debug-logging"
+              onClick={() => {
+                setIsEngineDebugLoggingEnabled((prev) => !prev)
+              }}
+            >
+              {isEngineDebugLoggingEnabled ? 'Pause' : 'Resume'} 500ms logging
+            </button>
+          </div>
+        </div>
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}

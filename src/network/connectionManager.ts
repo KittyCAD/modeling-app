@@ -70,6 +70,51 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+const WEBSOCKET_READY_STATE_LABELS = ['connecting', 'open', 'closing', 'closed']
+
+export interface EngineConnectionDebugSnapshot {
+  started: boolean
+  pendingCommandCount: number
+  inSequence: number
+  outSequence: number
+  responseMapCount: number
+  pendingCommands: Array<{
+    id: string
+    requestType: string
+    commandTypes: string[]
+    requestCount: number
+    ageMs: number
+    isSceneCommand: boolean
+  }>
+  connection: {
+    hasConnection: boolean
+    connectionId: string | null
+    connected: boolean
+    hasMediaStream: boolean
+    websocketReadyState: number | null
+    websocketReadyStateLabel: string | null
+    peerConnectionState: string | null
+    iceConnectionState: string | null
+    iceGatheringState: string | null
+    signalingState: string | null
+    unreliableDataChannelState: string | null
+    ping: number | undefined
+    pong: number | undefined
+  }
+  recentPendingCommandEvents: Array<{
+    time: number
+    event: string
+    id: string
+    requestType: string
+    commandTypes: string[]
+    requestCount: number
+    ageMs: number | null
+    isSceneCommand: boolean
+    transport: 'reliable' | 'unreliable' | 'skipped' | null
+    metadata: Record<string, unknown> | null
+  }>
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -95,6 +140,8 @@ export class ConnectionManager extends EventTarget {
    */
   outSequence = 1
   commandLogs: CommandLog[] = []
+  pendingCommandDebugEvents: EngineConnectionDebugSnapshot['recentPendingCommandEvents'] =
+    []
 
   connection: Connection | undefined
   private readonly systemDeps: ConnectionSystemDeps
@@ -152,6 +199,152 @@ export class ConnectionManager extends EventTarget {
 
   set camControlsCameraChange(cb: () => void) {
     this._camControlsCameraChange = cb
+  }
+
+  private summarizePendingCommand(command: EngineCommand): {
+    requestType: string
+    commandTypes: string[]
+    requestCount: number
+  } {
+    if (command.type === 'modeling_cmd_req') {
+      return {
+        requestType: command.type,
+        commandTypes: [command.cmd.type],
+        requestCount: 1,
+      }
+    }
+
+    if (command.type === 'modeling_cmd_batch_req') {
+      const uniqueCommandTypes = Array.from(
+        new Set(command.requests.map(({ cmd }) => cmd.type))
+      )
+
+      return {
+        requestType: command.type,
+        commandTypes: uniqueCommandTypes,
+        requestCount: command.requests.length,
+      }
+    }
+
+    return {
+      requestType: command.type,
+      commandTypes: [],
+      requestCount: 1,
+    }
+  }
+
+  private getConnectionLifecycleMetadata() {
+    const websocketReadyState = this.connection?.websocket?.readyState ?? null
+
+    return {
+      started: this.started,
+      connectionId: this.connection?.id ?? null,
+      connected: this.connection?.connected ?? false,
+      websocketReadyState,
+      websocketReadyStateLabel:
+        websocketReadyState === null
+          ? null
+          : (WEBSOCKET_READY_STATE_LABELS[websocketReadyState] ?? 'unknown'),
+      unreliableDataChannelState:
+        this.connection?.unreliableDataChannel?.readyState ?? null,
+      peerConnectionState:
+        this.connection?.peerConnection?.connectionState ?? null,
+      hasMediaStream: Boolean(this.connection?.mediaStream),
+    }
+  }
+
+  private addPendingCommandDebugEvent({
+    event,
+    id,
+    command,
+    isSceneCommand,
+    createdAt,
+    transport = null,
+    metadata = null,
+  }: {
+    event: string
+    id: string
+    command: EngineCommand
+    isSceneCommand: boolean
+    createdAt?: number
+    transport?: 'reliable' | 'unreliable' | 'skipped' | null
+    metadata?: Record<string, unknown> | null
+  }) {
+    const summary = this.summarizePendingCommand(command)
+    const entry = {
+      time: Date.now(),
+      event,
+      id,
+      requestType: summary.requestType,
+      commandTypes: summary.commandTypes,
+      requestCount: summary.requestCount,
+      ageMs: createdAt === undefined ? null : Date.now() - createdAt,
+      isSceneCommand,
+      transport,
+      metadata,
+    }
+
+    if (this.pendingCommandDebugEvents.length > 400) {
+      this.pendingCommandDebugEvents.shift()
+    }
+    this.pendingCommandDebugEvents.push(entry)
+
+    EngineDebugger.addLog({
+      label: 'connectionManager.pendingCommand',
+      message: event,
+      metadata: entry,
+    })
+  }
+
+  getDebugSnapshot(): EngineConnectionDebugSnapshot {
+    const connection = this.connection
+    const now = Date.now()
+    const websocketReadyState = connection?.websocket?.readyState ?? null
+
+    return {
+      started: this.started,
+      pendingCommandCount: Object.keys(this.pendingCommands).length,
+      inSequence: this.inSequence,
+      outSequence: this.outSequence,
+      responseMapCount: Object.keys(this.responseMap).length,
+      pendingCommands: Object.entries(this.pendingCommands)
+        .map(([id, pending]) => {
+          const summary = this.summarizePendingCommand(pending.command)
+
+          return {
+            id,
+            requestType: summary.requestType,
+            commandTypes: summary.commandTypes,
+            requestCount: summary.requestCount,
+            ageMs: now - pending.createdAt,
+            isSceneCommand: pending.isSceneCommand,
+          }
+        })
+        .sort((a, b) => b.ageMs - a.ageMs),
+      connection: {
+        hasConnection: Boolean(connection),
+        connectionId: connection?.id ?? null,
+        connected: connection?.connected ?? false,
+        hasMediaStream: Boolean(connection?.mediaStream),
+        websocketReadyState,
+        websocketReadyStateLabel:
+          websocketReadyState === null
+            ? null
+            : (WEBSOCKET_READY_STATE_LABELS[websocketReadyState] ?? 'unknown'),
+        peerConnectionState:
+          connection?.peerConnection?.connectionState ?? null,
+        iceConnectionState:
+          connection?.peerConnection?.iceConnectionState ?? null,
+        iceGatheringState:
+          connection?.peerConnection?.iceGatheringState ?? null,
+        signalingState: connection?.peerConnection?.signalingState ?? null,
+        unreliableDataChannelState:
+          connection?.unreliableDataChannel?.readyState ?? null,
+        ping: connection?.ping,
+        pong: connection?.pong,
+      },
+      recentPendingCommandEvents: this.pendingCommandDebugEvents.slice(-100),
+    }
   }
 
   async start({
@@ -591,11 +784,24 @@ export class ConnectionManager extends EventTarget {
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
+    const commandId =
+      'cmd_id' in command && typeof command.cmd_id === 'string'
+        ? command.cmd_id
+        : 'no-request-id'
+
     if (
       this.connection === undefined ||
       !this.started ||
       this.connection.websocket?.readyState !== WebSocket.OPEN
     ) {
+      this.addPendingCommandDebugEvent({
+        event: 'scene-command-skipped-not-ready',
+        id: commandId,
+        command,
+        isSceneCommand: true,
+        transport: 'skipped',
+        metadata: this.getConnectionLifecycleMetadata(),
+      })
       EngineDebugger.addLog({
         label: 'sendSceneCommand',
         message: 'connection is undefined, you are too early',
@@ -642,6 +848,14 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
+      this.addPendingCommandDebugEvent({
+        event: 'scene-command-dispatched-unreliable',
+        id: command.cmd_id,
+        command,
+        isSceneCommand: true,
+        transport: 'unreliable',
+        metadata: this.getConnectionLifecycleMetadata(),
+      })
       ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
@@ -650,6 +864,14 @@ export class ConnectionManager extends EventTarget {
       cmd.type === 'highlight_set_entity' &&
       this.connection.unreliableDataChannel
     ) {
+      this.addPendingCommandDebugEvent({
+        event: 'scene-command-dispatched-unreliable',
+        id: command.cmd_id,
+        command,
+        isSceneCommand: true,
+        transport: 'unreliable',
+        metadata: this.getConnectionLifecycleMetadata(),
+      })
       cmd.sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
@@ -658,6 +880,14 @@ export class ConnectionManager extends EventTarget {
       cmd.type === 'mouse_move' &&
       this.connection.unreliableDataChannel
     ) {
+      this.addPendingCommandDebugEvent({
+        event: 'scene-command-dispatched-unreliable',
+        id: command.cmd_id,
+        command,
+        isSceneCommand: true,
+        transport: 'unreliable',
+        metadata: this.getConnectionLifecycleMetadata(),
+      })
       cmd.sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
@@ -670,6 +900,17 @@ export class ConnectionManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
+    this.addPendingCommandDebugEvent({
+      event: 'scene-command-dispatched-reliable',
+      id: command.cmd_id,
+      command,
+      isSceneCommand: true,
+      transport: 'reliable',
+      metadata: {
+        ...this.getConnectionLifecycleMetadata(),
+        forceWebsocket,
+      },
+    })
     return this.sendCommand(
       command.cmd_id,
       {
@@ -725,6 +966,20 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (this.pendingCommands[id]) {
+      this.addPendingCommandDebugEvent({
+        event: 'duplicate-pending-command',
+        id,
+        command: message.command,
+        isSceneCommand,
+        createdAt: this.pendingCommands[id]?.createdAt,
+        metadata: {
+          ...this.getConnectionLifecycleMetadata(),
+          existingPendingCommand: this.summarizePendingCommand(
+            this.pendingCommands[id].command
+          ),
+          existingPendingAgeMs: Date.now() - this.pendingCommands[id].createdAt,
+        },
+      })
       const duplicateCommandMessage =
         'You are attempting to send the same command twice. Rejecting this attempt.'
       console.error(duplicateCommandMessage)
@@ -741,8 +996,17 @@ export class ConnectionManager extends EventTarget {
       command: message.command,
       range: message.range,
       idToRangeMap: message.idToRangeMap,
+      createdAt: Date.now(),
       isSceneCommand,
     }
+    this.addPendingCommandDebugEvent({
+      event: 'pending-added',
+      id,
+      command: message.command,
+      isSceneCommand,
+      createdAt: this.pendingCommands[id].createdAt,
+      metadata: this.getConnectionLifecycleMetadata(),
+    })
 
     // For exports do not time out the command
     let timeoutPendingCommand = true
@@ -757,6 +1021,17 @@ export class ConnectionManager extends EventTarget {
     if (timeoutPendingCommand) {
       setTimeout(() => {
         if (!isSettled) {
+          this.addPendingCommandDebugEvent({
+            event: 'pending-timeout',
+            id,
+            command: message.command,
+            isSceneCommand,
+            createdAt: this.pendingCommands[id]?.createdAt,
+            metadata: {
+              ...this.getConnectionLifecycleMetadata(),
+              stillPending: Boolean(this.pendingCommands[id]),
+            },
+          })
           // TODO: Send this to a logging or error tracking service
           const errorMessage = `sendCommand rejected, you hit the timeout: ${JSON.stringify(message.command)}`
           console.error(errorMessage)
@@ -765,6 +1040,14 @@ export class ConnectionManager extends EventTarget {
       }, PENDING_COMMAND_TIMEOUT)
     }
 
+    this.addPendingCommandDebugEvent({
+      event: 'pending-send-dispatched',
+      id,
+      command: message.command,
+      isSceneCommand,
+      createdAt: this.pendingCommands[id].createdAt,
+      metadata: this.getConnectionLifecycleMetadata(),
+    })
     this.connection.send(message.command)
 
     return promise
@@ -829,7 +1112,33 @@ export class ConnectionManager extends EventTarget {
       })
 
       const pending = this.pendingCommands[message.request_id || '']
+      if (!pending) {
+        EngineDebugger.addLog({
+          label: 'handleMessage',
+          message: 'response-without-pending-command',
+          metadata: {
+            requestId: message.request_id,
+            success: message.success,
+            responseType:
+              'resp' in message ? (message.resp?.type ?? null) : null,
+          },
+        })
+      }
+
       if (pending && !message.success) {
+        this.addPendingCommandDebugEvent({
+          event: 'response-error-reject',
+          id: message.request_id || '',
+          command: pending.command,
+          isSceneCommand: pending.isSceneCommand,
+          createdAt: pending.createdAt,
+          metadata: {
+            success: message.success,
+            responseType:
+              'resp' in message ? (message.resp?.type ?? null) : null,
+            errors: 'errors' in message ? message.errors : null,
+          },
+        })
         pending.reject([message])
         delete this.pendingCommands[message.request_id || '']
       }
@@ -844,12 +1153,35 @@ export class ConnectionManager extends EventTarget {
         )
       ) {
         if (pending) {
+          this.addPendingCommandDebugEvent({
+            event: 'response-unexpected-type-reject',
+            id: message.request_id || '',
+            command: pending.command,
+            isSceneCommand: pending.isSceneCommand,
+            createdAt: pending.createdAt,
+            metadata: {
+              success: message.success,
+              responseType:
+                'resp' in message ? (message.resp?.type ?? null) : null,
+            },
+          })
           pending.reject([message])
           delete this.pendingCommands[message.request_id || '']
         }
         return
       }
 
+      this.addPendingCommandDebugEvent({
+        event: 'response-resolve',
+        id: message.request_id || '',
+        command: pending.command,
+        isSceneCommand: pending.isSceneCommand,
+        createdAt: pending.createdAt,
+        metadata: {
+          success: message.success,
+          responseType: message.resp.type,
+        },
+      })
       pending.resolve([message])
       delete this.pendingCommands[message.request_id || '']
 
@@ -1109,6 +1441,17 @@ export class ConnectionManager extends EventTarget {
   }) {
     if (this.pendingCommands[cmdId]) {
       const pendingCommand = this.pendingCommands[cmdId]
+      this.addPendingCommandDebugEvent({
+        event: 'reject-pending-command',
+        id: cmdId,
+        command: pendingCommand.command,
+        isSceneCommand: pendingCommand.isSceneCommand,
+        createdAt: pendingCommand.createdAt,
+        metadata: {
+          ...this.getConnectionLifecycleMetadata(),
+          reason: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+        },
+      })
       pendingCommand.reject([
         {
           success: false,
@@ -1130,6 +1473,14 @@ export class ConnectionManager extends EventTarget {
       message: 'rejectAllPendingCommands',
     })
     for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+      this.addPendingCommandDebugEvent({
+        event: 'reject-all-pending-command',
+        id: cmdId,
+        command: pending.command,
+        isSceneCommand: pending.isSceneCommand,
+        createdAt: pending.createdAt,
+        metadata: this.getConnectionLifecycleMetadata(),
+      })
       pending.reject([
         {
           success: false,
@@ -1370,9 +1721,59 @@ export class ConnectionManager extends EventTarget {
    * When this is done when we build the artifact map synchronously.
    */
   waitForAllCommands() {
-    return Promise.all(
-      Object.values(this.pendingCommands).map((a) => a.promise)
+    const startSnapshot = this.getDebugSnapshot()
+    const modelingPendingCommands = Object.values(this.pendingCommands).filter(
+      (pending) => !pending.isSceneCommand
     )
+
+    EngineDebugger.addLog({
+      label: 'connectionManager.waitForAllCommands',
+      message: 'start',
+      metadata: {
+        pendingCommandCount: startSnapshot.pendingCommandCount,
+        scenePendingCommandCount: startSnapshot.pendingCommands.filter(
+          (pending) => pending.isSceneCommand
+        ).length,
+        modelingPendingCommandCount: startSnapshot.pendingCommands.filter(
+          (pending) => !pending.isSceneCommand
+        ).length,
+        pendingCommands: startSnapshot.pendingCommands.slice(0, 25),
+        recentPendingCommandEvents:
+          startSnapshot.recentPendingCommandEvents.slice(-15),
+        waitedCommandCount: modelingPendingCommands.length,
+        waitedCommands: modelingPendingCommands
+          .map((pending) => ({
+            ...this.summarizePendingCommand(pending.command),
+            ageMs: Date.now() - pending.createdAt,
+            isSceneCommand: pending.isSceneCommand,
+          }))
+          .slice(0, 25),
+      },
+    })
+
+    return Promise.all(
+      modelingPendingCommands.map((pending) => pending.promise)
+    ).then((result) => {
+      const endSnapshot = this.getDebugSnapshot()
+      EngineDebugger.addLog({
+        label: 'connectionManager.waitForAllCommands',
+        message: 'resolved',
+        metadata: {
+          pendingCommandCount: endSnapshot.pendingCommandCount,
+          scenePendingCommandCount: endSnapshot.pendingCommands.filter(
+            (pending) => pending.isSceneCommand
+          ).length,
+          modelingPendingCommandCount: endSnapshot.pendingCommands.filter(
+            (pending) => !pending.isSceneCommand
+          ).length,
+          pendingCommands: endSnapshot.pendingCommands.slice(0, 25),
+          recentPendingCommandEvents:
+            endSnapshot.recentPendingCommandEvents.slice(-15),
+          waitedCommandCount: modelingPendingCommands.length,
+        },
+      })
+      return result
+    })
   }
 
   /**

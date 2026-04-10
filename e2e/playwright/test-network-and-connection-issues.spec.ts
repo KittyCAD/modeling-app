@@ -1,5 +1,86 @@
-import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
+import type { Page } from '@playwright/test'
+import {
+  TEST_COLORS,
+  circleMove,
+  getUtils,
+  openPane,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+const IDLE_DISCONNECT_REPRO_KCL = `@settings(experimentalFeatures = allow)
+
+plane001 = offsetPlane(XZ, offset = 5)
+
+sketch001 = sketch(on = plane001) {
+  circle1 = circle(start = [var -2.24mm, var 0mm], center = [var -2.98mm, var 1.13mm])
+}
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.24mm, var -1.85mm], center = [var 1.28mm, var -2.73mm])
+}
+sketch003 = sketch(on = XZ) {
+  circle1 = circle(start = [var 2.55mm, var 2.23mm], center = [var 1.63mm, var 3.67mm])
+}
+sketch004 = sketch(on = XZ) {
+}
+sketch005 = sketch(on = XZ) {
+  circle1 = circle(start = [var -4.99mm, var 4.55mm], center = [var -6.39mm, var 5.71mm])
+}
+`
+
+type BrowserConsoleEntry = {
+  args: unknown[]
+  text: string
+  type: string
+}
+
+async function collectIdleDisconnectDebugState(page: Page) {
+  return page.evaluate(() => {
+    const w = window as any
+
+    return {
+      isExecuting: w.kclManager?.isExecuting ?? null,
+      code: w.kclManager?.code ?? '',
+      debugSnapshot: w.engineCommandManager?.getDebugSnapshot?.() ?? null,
+      recentCommandLogs: (w.engineCommandManager?.commandLogs ?? []).slice(-50),
+      recentEngineLogs: (w.engineDebugger?.logs ?? []).slice(-300),
+    }
+  })
+}
+
+async function dragSceneWhileDisconnected(page: Page, scene: any) {
+  const dragSequences: Array<{
+    from: [number, number]
+    to: [number, number]
+    modifier?: 'Shift' | 'Control'
+  }> = [
+    { from: [780, 240], to: [930, 210] },
+    { from: [760, 300], to: [860, 360], modifier: 'Shift' },
+    { from: [900, 360], to: [900, 250], modifier: 'Control' },
+  ]
+
+  for (const drag of dragSequences) {
+    const start = await scene.convertPagePositionToStream(
+      drag.from[0],
+      drag.from[1]
+    )
+    const end = await scene.convertPagePositionToStream(drag.to[0], drag.to[1])
+
+    if (drag.modifier) {
+      await page.keyboard.down(drag.modifier)
+    }
+
+    await page.mouse.move(start.x, start.y)
+    await page.mouse.down({ button: 'right' })
+    await page.mouse.move(end.x, end.y, { steps: 12 })
+    await page.mouse.up({ button: 'right' })
+
+    if (drag.modifier) {
+      await page.keyboard.up(drag.modifier)
+    }
+
+    await page.waitForTimeout(150)
+  }
+}
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
@@ -282,6 +363,150 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
         await expect(
           networkToggleConnectedText.or(networkToggleWeakText)
         ).toBeVisible()
+      })
+    }
+  )
+
+  test(
+    'Feature tree settles within 10s after simulated idle reconnect',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage, scene, cmdBar, editor, tronApp }) => {
+      if (!tronApp) throw new Error('tronApp is missing.')
+
+      const u = await getUtils(page)
+      const browserConsoleEntries: BrowserConsoleEntry[] = []
+
+      page.on('console', (message) => {
+        if (
+          !message.text().includes('[engine-debug][500ms]') &&
+          !message.text().includes('tearing down connection through idle path.')
+        ) {
+          return
+        }
+
+        void Promise.all(
+          message.args().map((arg) => arg.jsonValue().catch(() => null))
+        ).then((args) => {
+          browserConsoleEntries.push({
+            type: message.type(),
+            text: message.text(),
+            args,
+          })
+        })
+      })
+
+      await tronApp.cleanProjectDir({
+        app: {
+          show_debug_panel: true,
+          stream_idle_mode: 120_000,
+        },
+      })
+
+      await page.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, IDLE_DISCONNECT_REPRO_KCL)
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await test.step('Go to modeling scene with repro code loaded', async () => {
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(IDLE_DISCONNECT_REPRO_KCL, {
+          shouldNormalise: true,
+          timeout: 20_000,
+        })
+        await openPane(page, 'feature-tree-pane-button')
+        await u.openDebugPanel()
+        await u.clearCommandLogs()
+        await page.evaluate(() => {
+          ;(window as any).engineDebugger.logs = []
+        })
+      })
+
+      const featureTreeSpinner = page.getByText('Building feature tree...')
+      await expect(featureTreeSpinner).not.toBeVisible()
+
+      await test.step('Simulate idle disconnect and trigger reconnect', async () => {
+        await expect(page.getByTestId('simulate-idle-disconnect')).toBeVisible()
+        await page.getByTestId('simulate-idle-disconnect').click()
+
+        await page.waitForFunction(() => {
+          const w = window as any
+          return (
+            !w.engineCommandManager?.started &&
+            !w.engineCommandManager?.connection
+          )
+        })
+
+        await dragSceneWhileDisconnected(page, scene)
+        await scene.moveNoWhere(20)
+
+        await page.waitForFunction(() => {
+          const w = window as any
+          const connection = w.engineCommandManager?.connection
+
+          return Boolean(
+            w.engineCommandManager?.started &&
+              connection &&
+              connection.websocket?.readyState === WebSocket.OPEN &&
+              connection.mediaStream
+          )
+        })
+
+        await page.waitForFunction(() => {
+          const w = window as any
+          return (w.engineDebugger?.logs ?? []).some(
+            (log: any) =>
+              log.label === 'onEngineConnectionReadyForRequests' &&
+              log.message === 'kclManager.executeCode()'
+          )
+        })
+      })
+
+      await test.step('Feature tree should stop building promptly after reconnect', async () => {
+        try {
+          await expect
+            .poll(
+              async () => ({
+                isExecuting: await page.evaluate(
+                  () => (window as any).kclManager?.isExecuting ?? null
+                ),
+                spinnerVisible: await featureTreeSpinner.isVisible(),
+              }),
+              {
+                timeout: 10_000,
+                message:
+                  'Feature tree stayed in the building state for more than 10 seconds after reconnect.',
+              }
+            )
+            .toEqual({
+              isExecuting: false,
+              spinnerVisible: false,
+            })
+        } catch (error) {
+          const debugState = await collectIdleDisconnectDebugState(page)
+
+          await test.info().attach('idle-disconnect-debug-state', {
+            body: JSON.stringify(debugState, null, 2),
+            contentType: 'application/json',
+          })
+
+          await test.info().attach('idle-disconnect-pending-command-events', {
+            body: JSON.stringify(
+              debugState.debugSnapshot?.recentPendingCommandEvents ?? [],
+              null,
+              2
+            ),
+            contentType: 'application/json',
+          })
+
+          await test.info().attach('idle-disconnect-console', {
+            body: JSON.stringify(browserConsoleEntries.slice(-100), null, 2),
+            contentType: 'application/json',
+          })
+
+          throw error
+        }
       })
     }
   )

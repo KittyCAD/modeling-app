@@ -280,6 +280,7 @@ export interface PendingMessage {
   command: EngineCommand
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }
+  createdAt: number
   resolve: (data: [WebSocketResponse]) => void
   // BOTH resolve and reject get passed back to the rust side which
   // assumes it is this type! Do not change it!
