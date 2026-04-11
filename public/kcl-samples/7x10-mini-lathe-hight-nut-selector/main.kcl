@@ -1,0 +1,220 @@
+// 7x10 mini lathe hight nut selector
+// Ensures the cutting tool tip is aligned with the centerline of the piece
+
+@settings(experimentalFeatures = allow)
+
+betweenCircles = 4.395
+height = 7
+offsetPlane1 = height + 5
+cutDepth = -(offsetPlane1 + height + 1)
+circlePlacementRadius = 7.111
+r3 = 7.33
+r2 = 1
+r1 = 2.5
+
+sketch002 = sketch(on = XZ) {
+  line3 = line(start = [var 4.38mm, var -0.24mm], end = [var 6.27mm, var -0.24mm])
+  line4 = line(start = [var 6.27mm, var -0.24mm], end = [var 6.27mm, var 2.31mm])
+  coincident([line4.start, line3.end])
+  line5 = line(start = [var 6.27mm, var 2.31mm], end = [var 6.27mm, var 2.31mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 6.27mm, var 2.31mm], end = [var 4.27mm, var 3.16mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 4.27mm, var 3.16mm], end = [var 4.27mm, var 3.99mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 4.27mm, var 3.99mm], end = [var 6.27mm, var 4.85mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 6.27mm, var 4.85mm], end = [var 6.27mm, var 6.76mm])
+  coincident([line8.end, line9.start])
+  line13 = line(start = [var -1.06mm, var 6.76mm], end = [var -1.06mm, var -0.24mm], construction = true)
+  vertical(line9)
+  vertical(line4)
+  vertical(line7)
+  line1 = line(start = [var -1.06mm, var -0.24mm], end = [var 1.44mm, var -0.24mm], construction = true)
+  coincident([line1.start, line13.end])
+  line2 = line(start = [var 1.44mm, var -0.24mm], end = [var 4.38mm, var -0.24mm])
+  coincident([line2.start, line1.end])
+  coincident([line2.end, line3.start])
+  horizontal(line1)
+  horizontal(line2)
+  horizontal(line3)
+  line14 = line(start = [var 1.44mm, var 6.76mm], end = [var 1.44mm, var -0.24mm])
+  coincident([line14.end, line2.start])
+  vertical(line14)
+  distance([line7.start, line7.end]) == 0.828
+  line15 = line(start = [var 6.27mm, var 4.85mm], end = [var 6.27mm, var 2.31mm], construction = true)
+  coincident([line15.start, line9.start])
+  coincident([line6.start, line5.start])
+  coincident([line15.end, line6.start])
+  vertical(line15)
+  distance([line15.start, line15.end]) == 2.545
+  distance([line4.start, line4.end]) == 2.545
+  distance([line9.start, line9.end]) == 1.909
+  distance([line1.start, line1.end]) == r1
+  vertical(line13)
+  line10 = line(start = [var -1.06mm, var 6.76mm], end = [var 6.27mm, var 6.76mm], construction = true)
+  coincident([line10.start, line13.start])
+  coincident([line10.end, line9.end])
+  coincident([line14.start, line10])
+  distance([line10.start, line10.end]) == r3
+  horizontal(line10)
+  distance([line14.start, line14.end]) == 7mm
+  distance([line6.start, line6.end]) == 2.177
+  equalLength([line6, line8])
+  line11 = line(start = [var 1.44mm, var 6.76mm], end = [var 6.27mm, var 6.76mm])
+  coincident([line11.start, line14.start])
+  coincident([line11.end, line9.end])
+  horizontal(line11)
+  coincident([line10, line10.start])
+  coincident([line1.start, ORIGIN])
+  distance([line3.start, line3.end]) == 2.95mm
+}
+plane001 = offsetPlane(XY, offset = offsetPlane1)
+region001 = region(point = [5.8549999mm, 0.0026743mm], sketch = sketch002)
+revolve001 = revolve(region001, angle = 360deg, axis = Y)
+sketch001 = sketch(on = plane001) {
+  circle1 = circle(start = [var 7.22mm, var 1.24mm], center = [var 0mm, var 0mm], construction = true)
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == r3
+  line1 = line(start = [var 0mm, var 0mm], end = [var -7.33mm, var 0mm], construction = true)
+  coincident([line1.start, circle1.center])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 7.33mm, var 0mm], construction = true)
+  coincident([line2.start, line1.start])
+  coincident([line2.end, circle1])
+  horizontal(line2)
+  horizontal(line2)
+  horizontal(line1)
+  coincident([line1.end, circle1])
+  line3 = line(start = [var 0mm, var 0mm], end = [var -2.27mm, var 6.97mm], construction = true)
+  coincident([line3.start, line2.start])
+  line4 = line(start = [var 0mm, var 0mm], end = [var -5.93mm, var 4.31mm], construction = true)
+  coincident([line4.start, line3.start])
+  line5 = line(start = [var 0mm, var 0mm], end = [var 2.27mm, var 6.97mm], construction = true)
+  coincident([line5.start, line4.start])
+  line6 = line(start = [var 0mm, var 0mm], end = [var 5.93mm, var 4.31mm], construction = true)
+  coincident([line6.start, line5.start])
+  line7 = line(start = [var 0mm, var 0mm], end = [var 5.93mm, var -4.31mm], construction = true)
+  coincident([line7.start, line6.start])
+  line8 = line(start = [var 0mm, var 0mm], end = [var 2.27mm, var -6.97mm], construction = true)
+  coincident([line8.start, circle1.center])
+  line9 = line(start = [var 0mm, var 0mm], end = [var -2.27mm, var -6.97mm], construction = true)
+  coincident([line9.start, line8.start])
+  line10 = line(start = [var 0mm, var 0mm], end = [var -5.93mm, var -4.31mm], construction = true)
+  coincident([line10.start, line9.start])
+  coincident([line10.end, circle1])
+  coincident([line9.end, circle1])
+  coincident([line8.end, circle1])
+  coincident([line7.end, circle1])
+  coincident([line6.end, circle1])
+  coincident([line5.end, circle1])
+  coincident([line3.end, circle1])
+  coincident([line4.end, circle1])
+  distance([line3.start, line3.end]) == 7.33mm
+  line11 = line(start = [var -2.27mm, var 6.97mm], end = [var 2.27mm, var 6.97mm], construction = true)
+  coincident([line11.start, line3.end])
+  coincident([line11.end, line5.end])
+  line12 = line(start = [var 2.27mm, var 6.97mm], end = [var 5.93mm, var 4.31mm], construction = true)
+  coincident([line12.start, line11.end])
+  coincident([line12.end, line6.end])
+  line13 = line(start = [var 5.93mm, var 4.31mm], end = [var 7.33mm, var 0mm], construction = true)
+  coincident([line13.start, line12.end])
+  coincident([line13.end, line2.end])
+  line14 = line(start = [var 7.33mm, var 0mm], end = [var 5.93mm, var -4.31mm], construction = true)
+  coincident([line14.start, line13.end])
+  coincident([line14.end, line7.end])
+  line15 = line(start = [var 5.93mm, var -4.31mm], end = [var 2.27mm, var -6.97mm], construction = true)
+  coincident([line15.start, line14.end])
+  coincident([line15.end, line8.end])
+  line16 = line(start = [var 2.27mm, var -6.97mm], end = [var -2.27mm, var -6.97mm], construction = true)
+  coincident([line16.start, line15.end])
+  coincident([line16.end, line9.end])
+  line17 = line(start = [var -2.27mm, var -6.97mm], end = [var -5.93mm, var -4.31mm], construction = true)
+  coincident([line17.start, line9.end])
+  coincident([line17.end, line10.end])
+  line18 = line(start = [var -5.93mm, var -4.31mm], end = [var -7.33mm, var 0mm], construction = true)
+  coincident([line18.start, line17.end])
+  coincident([line18.end, line1.end])
+  line19 = line(start = [var -7.33mm, var 0mm], end = [var -5.93mm, var 4.31mm], construction = true)
+  coincident([line19.start, line18.end])
+  coincident([line19.end, line4.end])
+  line20 = line(start = [var -5.93mm, var 4.31mm], end = [var -2.27mm, var 6.97mm], construction = true)
+  coincident([line20.start, line19.end])
+  coincident([line20.end, line11.start])
+  equalLength([
+    line11,
+    line12,
+    line13,
+    line14,
+    line15,
+    line16,
+    line17,
+    line18,
+    line19,
+    line20
+  ])
+  circle2 = circle(start = [var -5.02mm, var 4.73mm], center = [var -5.93mm, var 4.31mm])
+  coincident([circle2.center, line20.start])
+  radius(circle2) == r2
+  circle3 = circle(start = [var -1.36mm, var 7.4mm], center = [var -2.27mm, var 6.97mm])
+  coincident([circle3.center, line3.end])
+  circle4 = circle(start = [var 3.25mm, var 7.15mm], center = [var 2.27mm, var 6.97mm])
+  coincident([circle4.center, line5.end])
+  circle5 = circle(start = [var 6.91mm, var 4.51mm], center = [var 5.93mm, var 4.31mm])
+  coincident([circle5.center, line12.end])
+  circle6 = circle(start = [var 8.33mm, var 0mm], center = [var 7.33mm, var 0mm])
+  coincident([circle6.center, line14.start])
+  circle7 = circle(start = [var 6.93mm, var -4.33mm], center = [var 5.93mm, var -4.31mm])
+  coincident([circle7.center, line7.end])
+  circle8 = circle(start = [var 3.23mm, var -7.23mm], center = [var 2.27mm, var -6.97mm])
+  coincident([circle8.center, line8.end])
+  circle9 = circle(start = [var -1.79mm, var -7.85mm], center = [var -2.27mm, var -6.97mm])
+  coincident([circle9.center, line16.end])
+  circle10 = circle(start = [var -4.93mm, var -4.26mm], center = [var -5.93mm, var -4.31mm])
+  coincident([circle10.center, line10.end])
+  circle11 = circle(start = [var -6.46mm, var 0.49mm], center = [var -7.33mm, var 0mm])
+  coincident([circle11.center, line19.start])
+  radius(circle11) == r2
+  radius(circle10) == r2
+  radius(circle9) == r2
+  radius(circle8) == r2
+  radius(circle7) == r2
+  radius(circle6) == r2
+  radius(circle5) == r2
+  radius(circle4) == r2
+  radius(circle3) == r2
+}
+region002 = region(point = [-6.8352175mm, 3.8892301mm], sketch = sketch001)
+extrude001 = extrude(region002, length = cutDepth)
+region003 = region(point = [-8.1991297mm, -0.4895098mm], sketch = sketch001)
+extrude002 = extrude(region003, length = cutDepth)
+region004 = region(point = [-6.9264254mm, -4.3567475mm], sketch = sketch001)
+extrude003 = extrude(region004, length = cutDepth)
+region005 = region(point = [-2.7394969mm, -6.0937771mm], sketch = sketch001)
+extrude004 = extrude(region005, length = cutDepth)
+region006 = region(point = [1.3016367mm, -6.7128741mm], sketch = sketch001)
+extrude005 = extrude(region006, length = cutDepth)
+region007 = region(point = [4.9328258mm, -4.2869884mm], sketch = sketch001)
+extrude006 = extrude(region007, length = cutDepth)
+region008 = region(point = [6.3325mm, 0mm], sketch = sketch001)
+extrude007 = extrude(region008, length = cutDepth)
+region009 = region(point = [4.9530447mm, 4.1075185mm], sketch = sketch001)
+extrude008 = extrude(region009, length = cutDepth)
+region010 = region(point = [1.2836282mm, 6.7931148mm], sketch = sketch001)
+extrude009 = extrude(region010, length = cutDepth)
+region011 = region(point = [-3.1665621mm, 6.5442051mm], sketch = sketch001)
+extrude010 = extrude(region011, length = cutDepth)
+solid001 = subtract(
+  revolve001,
+  tools = [
+    extrude001,
+    extrude002,
+    extrude003,
+    extrude004,
+    extrude005,
+    extrude006,
+    extrude007,
+    extrude008,
+    extrude009,
+    extrude010
+  ],
+)

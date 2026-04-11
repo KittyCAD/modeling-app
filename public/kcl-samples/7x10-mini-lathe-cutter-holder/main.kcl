@@ -1,0 +1,163 @@
+// 7x10 mini lathe cutter holder
+// The holder to clasp a cutter for a lathe
+
+@settings(experimentalFeatures = allow)
+
+blockDepth = 25
+offsetforcut = blockDepth - 50
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 62mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 62mm, var 0mm], end = [var 62mm, var 19mm])
+  coincident([line1.end, line2.start])
+  horizontal(line1)
+  vertical(line2)
+  distance([line1.start, line1.end]) == 62
+  vertical(line2)
+  distance([line2.start, line2.end]) == 19
+  line3 = line(start = [var 62mm, var 19mm], end = [var 44.62mm, var 19mm])
+  coincident([line3.start, line2.end])
+  distance([line3.start, line3.end]) == 17.38
+  line4 = line(start = [var 44.62mm, var 19mm], end = [var 43.37mm, var 19mm], construction = true)
+  coincident([line4.start, line3.end])
+  horizontal(line4)
+  distance([line4.start, line4.end]) == 1.25
+  horizontal(line3)
+  line9 = line(start = [var 18.63mm, var 19mm], end = [var 17.38mm, var 19mm], construction = true)
+  line10 = line(start = [var 17.38mm, var 19mm], end = [var 0mm, var 19mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0mm, var 19mm], end = [var 0mm, var 0mm])
+  coincident([line10.end, line11.start])
+  coincident([line11.end, line1.start])
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line9)
+  distance([line10.start, line10.end]) == 17.38
+  distance([line11.start, line11.end]) == 19
+  distance([line9.start, line9.end]) == 1.25
+  arc1 = arc(start = [var 43.91mm, var 20.13mm], end = [var 44.62mm, var 19mm], center = [var 43.37mm, var 19mm])
+  coincident([arc1.start, arc1.start])
+  coincident([arc1.center, line4.end])
+  coincident([arc1.end, line4.start])
+  arc2 = arc(start = [var 17.38mm, var 19mm], end = [var 18.1mm, var 20.13mm], center = [var 18.63mm, var 19mm])
+  coincident([arc2.center, line9.start])
+  coincident([arc2.start, line10.start])
+  line5 = line(start = [var 43.37mm, var 19mm], end = [var 46.75mm, var 26.12mm], construction = true)
+  coincident([line5.start, arc1.center])
+  line6 = line(start = [var 46.75mm, var 26.12mm], end = [var 15.31mm, var 26.15mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 15.31mm, var 26.15mm], end = [var 18.63mm, var 19mm], construction = true)
+  coincident([line6.end, line7.start])
+  coincident([line7.end, arc2.center])
+  distance([line6.start, line6.end]) == 31.439
+  coincident([arc1.start, line5])
+  coincident([arc2.end, line7])
+  line8 = line(start = [var 43.91mm, var 20.13mm], end = [var 46.75mm, var 26.12mm])
+  coincident([line8.start, arc1.start])
+  coincident([line8.end, line6.start])
+  line12 = line(start = [var 18.1mm, var 20.13mm], end = [var 15.31mm, var 26.15mm])
+  coincident([line12.start, arc2.end])
+  coincident([line12.end, line7.start])
+  radius(arc2) == 1.25
+  radius(arc1) == 1.25mm
+  equalLength([line8, line12])
+  line13 = line(start = [var 45.41mm, var 26.12mm], end = [var 45.41mm, var 19mm], construction = true)
+  coincident([line13.end, line3])
+  coincident([line13.start, line6])
+  vertical(line13)
+  distance([line13.start, line13.end]) == 7.120
+}
+region001 = region(point = [31mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = blockDepth, tagEnd = $capEnd001)
+plane001 = offsetPlane(YZ, offset = offsetforcut)
+sketch002 = sketch(on = plane001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 7.5mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  vertical(line1)
+  distance([line1.start, line1.end]) == 7.5
+  line2 = line(start = [var 0mm, var 7.5mm], end = [var -12.9mm, var 7.5mm])
+  coincident([line2.start, line1.end])
+  horizontal(line2)
+  distance([line2.start, line2.end]) == 12.9
+  line3 = line(start = [var -12.9mm, var 7.5mm], end = [var -12.9mm, var 17.5mm])
+  coincident([line3.start, line2.end])
+  vertical(line3)
+  distance([line3.start, line3.end]) == 10
+  line4 = line(start = [var -12.9mm, var 17.5mm], end = [var 0mm, var 17.5mm])
+  coincident([line4.start, line3.end])
+  horizontal(line4)
+  distance([line4.start, line4.end]) == 12.9
+  line5 = line(start = [var 0mm, var 17.5mm], end = [var 12.52mm, var 17.5mm])
+  coincident([line5.start, line4.end])
+  line6 = line(start = [var 12.52mm, var 17.5mm], end = [var 12.52mm, var 7.5mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 12.52mm, var 7.5mm], end = [var 0mm, var 7.5mm])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.end])
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+}
+region002 = region(point = [-6.45mm, 7.5025mm], sketch = sketch002)
+extrude002 = extrude(region002, length = 100)
+solid001 = subtract(extrude001, tools = extrude002)
+plane002 = offsetPlane(XY, offset = 30)
+sketch003 = sketch(on = plane002) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  horizontal(line1)
+  distance([line1.start, line1.end]) == 6
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 6mm], construction = true)
+  coincident([line2.start, line1.start])
+  vertical(line2)
+  distance([line2.start, line2.end]) == 6
+  line3 = line(start = [var 0mm, var 6mm], end = [var 6mm, var 6mm], construction = true)
+  coincident([line3.start, line2.end])
+  line4 = line(start = [var 6mm, var 6mm], end = [var 6mm, var 0mm], construction = true)
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.end])
+  horizontal(line3)
+  vertical(line4)
+  circle1 = circle(start = [var 8.36mm, var 6.82mm], center = [var 6mm, var 6mm])
+  coincident([circle1.center, line4.start])
+  radius(circle1) == 2.5
+  line5 = line(start = [var 0mm, var 6mm], end = [var 31mm, var 6mm], construction = true)
+  coincident([line5.start, line3.start])
+  horizontal(line5)
+  distance([line5.start, line5.end]) == 31
+  circle2 = circle(start = [var 33.18mm, var 7.22mm], center = [var 31mm, var 6mm])
+  coincident([circle2.center, line5.end])
+  radius(circle2) == 2.5
+  line6 = line(start = [var 31mm, var 6mm], end = [var 56mm, var 6mm], construction = true)
+  coincident([line6.start, circle2.center])
+  horizontal(line6)
+  distance([line6.start, line6.end]) == 31 - 6
+  circle3 = circle(start = [var 58.12mm, var 7.32mm], center = [var 56mm, var 6mm])
+  coincident([circle3.center, line6.end])
+  radius(circle3) == 2.5
+  line7 = line(start = [var 31mm, var 6mm], end = [var 31mm, var 21.67mm], construction = true)
+  coincident([line7.start, line5.end])
+  vertical(line7)
+  distance([line7.start, line7.end]) == 15.67
+  circle4 = circle(start = [var 31.59mm, var 24.1mm], center = [var 31mm, var 21.67mm])
+  coincident([circle4.center, line7.end])
+  radius(circle4) == 2.5
+}
+region003 = region(point = [3.6408497mm, 5.1802952mm], sketch = sketch003)
+extrude003 = extrude(region003, length = -20)
+region004 = region(point = [28.8205754mm, 4.780322mm], sketch = sketch003)
+extrude004 = extrude(region004, length = -20)
+region005 = region(point = [53.87988mm, 4.6799253mm], sketch = sketch003)
+extrude005 = extrude(region005, length = -20)
+region006 = region(point = [30.4107314mm, 19.2430124mm], sketch = sketch003)
+extrude006 = extrude(region006, length = -20)
+
+solid002 = subtract(
+  solid001,
+  tools = [
+    extrude003,
+    extrude006,
+    extrude004,
+    extrude005
+  ],
+)
