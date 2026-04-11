@@ -129,7 +129,7 @@ tokio-tungstenite = { version = "0.29.0", features = [
 tower-lsp = { workspace = true, features = ["proposed", "default"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-gloo-utils = "0.2.0"
+gloo-utils = "0.3.0"
 console_error_panic_hook = { workspace = true }
 futures-lite = "2.6.1"
 js-sys = { version = "0.3.72" }
