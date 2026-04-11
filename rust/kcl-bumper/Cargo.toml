@@ -16,7 +16,7 @@ bench = false
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
-semver = "1.0.27"
+semver = "1.0.28"
 serde = { workspace = true }
 toml_edit = "0.25.8"
 
