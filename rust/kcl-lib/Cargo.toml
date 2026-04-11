@@ -151,7 +151,7 @@ insta = { version = "1.47.0", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.51.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.3"
 
 [lints]
