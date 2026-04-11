@@ -432,6 +432,24 @@ export function updateSegmentGroup({
   }
 }
 
+function indexSketchSolveChildGroups(
+  sketchSolveGroup: Group | undefined
+): Map<string, Group> {
+  const groupsByName = new Map<string, Group>()
+  if (!sketchSolveGroup) {
+    return groupsByName
+  }
+
+  for (const child of sketchSolveGroup.children) {
+    if (!(child instanceof Group) || child.name === '') {
+      continue
+    }
+    groupsByName.set(child.name, child)
+  }
+
+  return groupsByName
+}
+
 /**
  * Helper function to initialize a segment group with the given input.
  * Determines the correct segment init method based on the input type.
@@ -510,6 +528,9 @@ export function updateSceneGraphFromDelta({
 
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchChildGroups = indexSketchSolveChildGroups(
+    sketchSolveGroup instanceof Group ? sketchSolveGroup : undefined
+  )
 
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
   const hoveredObjectId = isObjectSelectionId(context.hoveredId)
@@ -564,9 +585,7 @@ export function updateSceneGraphFromDelta({
 
     // Render constraints
     if (isConstraint(obj)) {
-      const foundObject = context.sceneInfra.scene.getObjectByName(
-        String(obj.id)
-      )
+      const foundObject = sketchChildGroups.get(String(obj.id))
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (!constraintGroup) {
@@ -593,7 +612,7 @@ export function updateSceneGraphFromDelta({
       }
       return
     }
-    let group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+    let group = sketchChildGroups.get(String(obj.id))
     const ctor = buildSegmentCtorFromObject(obj, objects)
     const state = getSegmentRenderState(
       obj.id,
@@ -623,6 +642,7 @@ export function updateSceneGraphFromDelta({
         })
         newGroup.layers.set(SKETCH_LAYER)
         sketchSolveGroup.add(newGroup)
+        sketchChildGroups.set(newGroup.name, newGroup)
       }
       group = newGroup
     }
@@ -788,6 +808,9 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
 
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchChildGroups = indexSketchSolveChildGroups(
+    sketchSolveGroup instanceof Group ? sketchSolveGroup : undefined
+  )
   if (sketchSolveGroup instanceof Group) {
     updateOriginSprite(
       sketchSolveGroup,
@@ -802,9 +825,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       return
     }
     if (obj.kind.type === 'Constraint') {
-      const foundObject = context.sceneInfra.scene.getObjectByName(
-        String(obj.id)
-      )
+      const foundObject = sketchChildGroups.get(String(obj.id))
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
@@ -820,7 +841,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         )
       }
     } else {
-      const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+      const group = sketchChildGroups.get(String(obj.id))
       if (!(group instanceof Group)) {
         return
       }
@@ -910,6 +931,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     ])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
+  const sketchChildGroups = indexSketchSolveChildGroups(sketchSolveGroup)
 
   updateOriginSprite(
     sketchSolveGroup,
@@ -923,7 +945,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       return
     }
 
-    const group = sketchSolveGroup.getObjectByName(String(obj.id))
+    const group = sketchChildGroups.get(String(obj.id))
     if (!(group instanceof Group)) {
       return
     }
