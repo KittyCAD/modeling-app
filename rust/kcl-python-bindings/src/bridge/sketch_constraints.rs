@@ -10,6 +10,7 @@ pub enum ConstraintKind {
     FullyConstrained,
     UnderConstrained,
     OverConstrained,
+    Error,
 }
 
 impl From<kcl_lib::ConstraintKind> for ConstraintKind {
@@ -18,6 +19,7 @@ impl From<kcl_lib::ConstraintKind> for ConstraintKind {
             kcl_lib::ConstraintKind::FullyConstrained => Self::FullyConstrained,
             kcl_lib::ConstraintKind::UnderConstrained => Self::UnderConstrained,
             kcl_lib::ConstraintKind::OverConstrained => Self::OverConstrained,
+            kcl_lib::ConstraintKind::Error => Self::Error,
         }
     }
 }
@@ -62,13 +64,15 @@ pub struct SketchConstraintReport {
     pub under_constrained: Vec<SketchConstraintStatus>,
     #[pyo3(get)]
     pub over_constrained: Vec<SketchConstraintStatus>,
+    #[pyo3(get)]
+    pub errors: Vec<SketchConstraintStatus>,
 }
 
 #[pymethods]
 impl SketchConstraintReport {
     /// Total number of sketches across all categories.
     fn total_sketches(&self) -> usize {
-        self.fully_constrained.len() + self.under_constrained.len() + self.over_constrained.len()
+        self.fully_constrained.len() + self.under_constrained.len() + self.over_constrained.len() + self.errors.len()
     }
 }
 
@@ -78,6 +82,7 @@ impl From<kcl_lib::SketchConstraintReport> for SketchConstraintReport {
             fully_constrained: r.fully_constrained.into_iter().map(Into::into).collect(),
             under_constrained: r.under_constrained.into_iter().map(Into::into).collect(),
             over_constrained: r.over_constrained.into_iter().map(Into::into).collect(),
+            errors: r.errors.into_iter().map(Into::into).collect(),
         }
     }
 }

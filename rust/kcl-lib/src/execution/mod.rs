@@ -285,12 +285,38 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+/// Per-segment freedom used by the constraint report. Mirrors
+/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// a point lookup fails.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum SegmentFreedom {
+    Free,
+    Fixed,
+    Conflict,
+    /// A required point could not be found in the scene graph.
+    Error,
+}
+
+impl From<crate::front::Freedom> for SegmentFreedom {
+    fn from(f: crate::front::Freedom) -> Self {
+        match f {
+            crate::front::Freedom::Free => Self::Free,
+            crate::front::Freedom::Fixed => Self::Fixed,
+            crate::front::Freedom::Conflict => Self::Conflict,
+        }
+    }
+}
+
 /// Overall constraint status of a sketch.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum ConstraintKind {
     FullyConstrained,
     UnderConstrained,
     OverConstrained,
+    /// Analysis could not determine constraint status (e.g., a point lookup
+    /// failed due to an inconsistent scene graph). Callers decide how to treat
+    /// this — as under-constrained, over-constrained, or something else.
+    Error,
 }
 
 /// Per-sketch summary of constraint freedom analysis.
@@ -319,6 +345,9 @@ pub struct SketchConstraintReport {
     pub fully_constrained: Vec<SketchConstraintStatus>,
     pub under_constrained: Vec<SketchConstraintStatus>,
     pub over_constrained: Vec<SketchConstraintStatus>,
+    /// Sketches where analysis encountered an error (e.g., a point lookup
+    /// failed). Callers decide how to treat these.
+    pub errors: Vec<SketchConstraintStatus>,
 }
 
 impl ExecOutcome {
@@ -353,12 +382,11 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        use crate::front::Freedom;
         use crate::front::ObjectKind;
         use crate::front::Segment;
 
         // Closure to look up a point's freedom by ObjectId.
-        let lookup = |id: ObjectId| -> Option<Freedom> {
+        let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
             let obj = self.scene_objects.get(id.0)?;
             if let ObjectKind::Segment {
                 segment: Segment::Point(p),
@@ -373,6 +401,7 @@ impl ExecOutcome {
         let mut fully_constrained = Vec::new();
         let mut under_constrained = Vec::new();
         let mut over_constrained = Vec::new();
+        let mut errors = Vec::new();
 
         for obj in &self.scene_objects {
             let ObjectKind::Sketch(sketch) = &obj.kind else {
@@ -381,6 +410,7 @@ impl ExecOutcome {
 
             let mut free_count: usize = 0;
             let mut conflict_count: usize = 0;
+            let mut error_count: usize = 0;
             let mut total_count: usize = 0;
 
             for &seg_id in &sketch.segments {
@@ -397,12 +427,16 @@ impl ExecOutcome {
                 {
                     continue;
                 }
-                let freedom = segment.freedom(lookup);
+                let freedom = segment
+                    .freedom(lookup)
+                    .map(SegmentFreedom::from)
+                    .unwrap_or(SegmentFreedom::Error);
                 total_count += 1;
                 match freedom {
-                    Freedom::Free => free_count += 1,
-                    Freedom::Conflict => conflict_count += 1,
-                    Freedom::Fixed => {}
+                    SegmentFreedom::Free => free_count += 1,
+                    SegmentFreedom::Conflict => conflict_count += 1,
+                    SegmentFreedom::Error => error_count += 1,
+                    SegmentFreedom::Fixed => {}
                 }
             }
 
@@ -411,7 +445,9 @@ impl ExecOutcome {
             // are no free or conflicting segments, so it satisfies the
             // definition. Callers can check total_count == 0 to distinguish
             // this from a genuinely constrained sketch.
-            let status = if conflict_count > 0 {
+            let status = if error_count > 0 {
+                ConstraintKind::Error
+            } else if conflict_count > 0 {
                 ConstraintKind::OverConstrained
             } else if free_count > 0 {
                 ConstraintKind::UnderConstrained
@@ -431,6 +467,7 @@ impl ExecOutcome {
                 ConstraintKind::FullyConstrained => fully_constrained.push(entry),
                 ConstraintKind::UnderConstrained => under_constrained.push(entry),
                 ConstraintKind::OverConstrained => over_constrained.push(entry),
+                ConstraintKind::Error => errors.push(entry),
             }
         }
 
@@ -438,6 +475,7 @@ impl ExecOutcome {
             fully_constrained,
             under_constrained,
             over_constrained,
+            errors,
         }
     }
 }
@@ -3167,7 +3205,7 @@ w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
         let code = "@settings(experimentalFeatures = allow)
-    
+
 s = sketch(on = XY) {
     line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
     line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
@@ -3497,6 +3535,7 @@ sketch(on = YZ) {
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 0);
         assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
         assert_eq!(report.fully_constrained[0].status, ConstraintKind::FullyConstrained);
     }
 
@@ -3515,6 +3554,7 @@ sketch(on = YZ) {
         assert_eq!(report.fully_constrained.len(), 0);
         assert_eq!(report.under_constrained.len(), 1);
         assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
         assert_eq!(report.under_constrained[0].status, ConstraintKind::UnderConstrained);
         assert!(report.under_constrained[0].free_count > 0);
     }
@@ -3537,6 +3577,7 @@ sketch(on = YZ) {
 "#;
         let report = run_constraint_report(kcl).await;
         assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.errors.len(), 0);
         assert_eq!(report.over_constrained[0].status, ConstraintKind::OverConstrained);
         assert!(report.over_constrained[0].conflict_count > 0);
     }
@@ -3562,7 +3603,10 @@ s2 = sketch(on = XZ) {
 "#;
         let report = run_constraint_report(kcl).await;
         assert_eq!(
-            report.fully_constrained.len() + report.under_constrained.len() + report.over_constrained.len(),
+            report.fully_constrained.len()
+                + report.under_constrained.len()
+                + report.over_constrained.len()
+                + report.errors.len(),
             2,
             "Expected 2 sketches total"
         );

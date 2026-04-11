@@ -584,6 +584,7 @@ async def test_sketch_constraint_status_fully_constrained():
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 0
     assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
     assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
     assert report.total_sketches() == 1
 
@@ -595,6 +596,7 @@ async def test_sketch_constraint_status_under_constrained():
     assert len(report.fully_constrained) == 0
     assert len(report.under_constrained) == 1
     assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
     assert report.under_constrained[0].status == kcl.ConstraintKind.UnderConstrained
     assert report.under_constrained[0].free_count > 0
 
@@ -606,3 +608,4 @@ async def test_sketch_constraint_status_mixed():
     assert report.total_sketches() == 2
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 1
+    assert len(report.errors) == 0
