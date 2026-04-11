@@ -393,12 +393,14 @@ async fn mock_execute(path: String) -> PyResult<bool> {
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
     spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
 }
 
 /// Execute kcl code and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
     spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
