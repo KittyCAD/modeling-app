@@ -2,7 +2,7 @@
 // Simplified M4 countersunk screw with a conical flush-mount head and internal hex socket drive for fast layout and fit checks.
 // Categories: Fasteners
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 boltShankLength = 20
 boltShankDiameter = 3.87
