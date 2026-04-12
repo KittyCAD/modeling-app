@@ -30,6 +30,7 @@ import type {
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import { isNonNullable } from '@src/lib/utils'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -373,6 +374,17 @@ export function getSweepArtifactFromSelection(
   } else if (
     selection.artifact?.type === 'cap' ||
     selection.artifact?.type === 'wall'
+  ) {
+    const _artifact = getArtifactOfTypes(
+      { key: selection.artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
+  } else if (
+    selection.artifact?.type === 'path' &&
+    selection.artifact.subType === 'region' &&
+    isNonNullable(selection.artifact.sweepId)
   ) {
     const _artifact = getArtifactOfTypes(
       { key: selection.artifact.sweepId, types: ['sweep'] },
@@ -872,10 +884,13 @@ export function coerceSelectionsToBody(
     }
 
     // If it's already a body type, use it directly
+    const isSketchPath =
+      selection.artifact.type === 'path' &&
+      selection.artifact.subType === 'sketch'
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
-      selection.artifact.type === 'path'
+      isSketchPath
     ) {
       if (!seenBodyIds.has(selection.artifact.id)) {
         seenBodyIds.add(selection.artifact.id)
@@ -899,7 +914,7 @@ export function coerceSelectionsToBody(
         { key: maybeSweep.pathId, types: ['path'] },
         artifactGraph
       )
-      if (!err(maybePath)) {
+      if (!err(maybePath) && isSketchPath) {
         // Successfully got the path from the sweep
         if (!seenBodyIds.has(maybePath.id)) {
           seenBodyIds.add(maybePath.id)
