@@ -1,5 +1,6 @@
 // Double hook
 // Parametric double hook swept from a 5 mm circular section.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 
