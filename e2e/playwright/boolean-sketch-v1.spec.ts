@@ -5,26 +5,26 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
-  'Point and click for boolean workflows',
+  'Point and click for boolean workflows - sketch v1',
   { tag: '@desktop' },
   () => {
     // Boolean operations to test
     const booleanOperations = [
       {
         name: 'union',
-        code: 'union([extrude001, extrude002])',
+        code: 'union([extrude001, extrude006])',
       },
       {
         name: 'subtract',
-        code: 'subtract(extrude001, tools = extrude002)',
+        code: 'subtract(extrude001, tools = extrude006)',
       },
       {
         name: 'intersect',
-        code: 'intersect([extrude001, extrude002])',
+        code: 'intersect([extrude001, extrude006])',
       },
       {
         name: 'split',
-        code: 'split([extrude001, extrude002])',
+        code: 'split([extrude001, extrude006])',
       },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {
@@ -46,7 +46,7 @@ test.describe(
           path.resolve(
             __dirname,
             '../../',
-            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-solve-on-faces.kcl'
+            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
           ),
           'utf-8'
         )
@@ -110,7 +110,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '2 regions',
+                Solids: '2 paths',
               },
               commandName,
             })
@@ -118,8 +118,8 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '1 region',
-                Tools: '1 region',
+                Solids: '1 path',
+                Tools: '1 path',
               },
               commandName,
             })
@@ -127,7 +127,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Targets: '2 regions',
+                Targets: '2 paths',
               },
               commandName,
             })
@@ -136,6 +136,7 @@ test.describe(
           await cmdBar.submit()
           await scene.settled(cmdBar)
           await editor.openPane()
+          await editor.scrollToText(operation.code)
           await editor.expectEditor.toContain(operation.code)
         })
 
