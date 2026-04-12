@@ -233,6 +233,31 @@ export class ConnectionManager extends EventTarget {
     }
   }
 
+  private isTransientInteractiveSceneCommand(command: EngineCommand): boolean {
+    if (command.type !== 'modeling_cmd_req') {
+      return false
+    }
+
+    return (
+      command.cmd.type === 'highlight_set_entity' ||
+      command.cmd.type === 'mouse_move' ||
+      command.cmd.type === 'camera_drag_start' ||
+      command.cmd.type === 'camera_drag_move' ||
+      command.cmd.type === 'camera_drag_end' ||
+      command.cmd.type === 'handle_mouse_drag_move' ||
+      command.cmd.type === 'default_camera_zoom' ||
+      command.cmd.type === ('default_camera_perspective_settings' as any)
+    )
+  }
+
+  private isInteractiveSceneTransportReady(): boolean {
+    return Boolean(
+      this.connection?.websocket?.readyState === WebSocket.OPEN &&
+        this.connection?.unreliableDataChannel?.readyState === 'open' &&
+        this.connection?.mediaStream
+    )
+  }
+
   private getConnectionLifecycleMetadata() {
     const websocketReadyState = this.connection?.websocket?.readyState ?? null
 
@@ -807,6 +832,24 @@ export class ConnectionManager extends EventTarget {
         message: 'connection is undefined, you are too early',
         metadata: {
           command,
+        },
+      })
+      return Promise.resolve(null)
+    }
+
+    if (
+      this.isTransientInteractiveSceneCommand(command) &&
+      !this.isInteractiveSceneTransportReady()
+    ) {
+      this.addPendingCommandDebugEvent({
+        event: 'scene-command-skipped-interactive-not-ready',
+        id: commandId,
+        command,
+        isSceneCommand: true,
+        transport: 'skipped',
+        metadata: {
+          ...this.getConnectionLifecycleMetadata(),
+          forceWebsocket,
         },
       })
       return Promise.resolve(null)
