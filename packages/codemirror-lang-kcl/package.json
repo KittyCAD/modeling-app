@@ -27,7 +27,7 @@
   "devDependencies": {
     "@lezer/generator": "^1.7.3",
     "@rollup/plugin-typescript": "^12.1.4",
-    "rollup": "^4.60.0",
+    "rollup": "^4.60.1",
     "rollup-plugin-dts": "^6.4.1",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.1.2"
