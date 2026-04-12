@@ -715,6 +715,7 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         vec![]
     };
+    dbg!(&face_infos);
 
     // Only do this if we need the artifact graph.
     #[cfg(feature = "artifact-graph")]
@@ -740,7 +741,7 @@ pub(crate) async fn do_post_extrude<'a>(
         sides: mut face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, args, face_infos).await;
+    } = dbg!(analyze_faces(exec_state, args, face_infos).await);
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
     if sketch.clone.is_some()
@@ -895,7 +896,7 @@ pub(crate) async fn do_post_extrude<'a>(
     })
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct Faces {
     /// Maps curve ID to face ID for each side.
     sides: HashMap<Uuid, Option<Uuid>>,
