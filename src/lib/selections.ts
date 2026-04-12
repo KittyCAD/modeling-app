@@ -918,6 +918,11 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const segment = entries.find((entry) => entry.artifact.type === 'segment')
+  if (segment) {
+    return segment
+  }
+
   const sketchBlock = entries.find(
     (entry) => entry.artifact.type === 'sketchBlock'
   )
@@ -926,11 +931,6 @@ function getBestCandidate(
   }
 
   for (const entry of entries) {
-    // Segments take precedence
-    if (entry.artifact.type === 'segment') {
-      return entry
-    }
-
     // Handle paths and their solid2d references
     if (entry.artifact.type === 'path') {
       const solid2dId = entry.artifact.solid2dId
