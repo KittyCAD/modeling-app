@@ -48,7 +48,7 @@ export default function CommandBarSelectionMixedInput({
   }, [selection, kclManager.ast])
 
   // Coerce selections to bodies if this argument requires bodies
-  function coerceSelectionsAndSendIt() {
+  useEffect(() => {
     // Only run once per component mount
     if (hasCoercedSelections) return
 
@@ -81,10 +81,6 @@ export default function CommandBarSelectionMixedInput({
         selection: coercedSelections,
       },
     })
-  }
-
-  useEffect(() => {
-    coerceSelectionsAndSendIt()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
@@ -208,10 +204,6 @@ export default function CommandBarSelectionMixedInput({
     if (!canSubmitSelection) {
       setHasSubmitted(true)
       return
-    }
-
-    if (!hasCoercedSelections) {
-      coerceSelectionsAndSendIt()
     }
 
     /**
