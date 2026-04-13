@@ -731,12 +731,12 @@ export const sketchSolveMachine = setup({
         )
       },
     },
-    LinesEqualLength: {
+    EqualLength: {
       actions: async ({ self, context }) => {
         await runSketchSolveToolbarAction(
           'add an equal length constraint',
           async () => {
-            // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
+            // TODO this is not how EqualLength should operate long term, as it should be an equipable tool
             const selectedIds = getObjectSelectionIds(context.selectedIds)
             const objects =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []

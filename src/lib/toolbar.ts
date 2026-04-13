@@ -1743,7 +1743,7 @@ export const useToolbarConfig = () => {
             id: 'equalLength',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
-                type: 'LinesEqualLength',
+                type: 'EqualLength',
               }),
             icon: 'equal',
             status: 'available',
