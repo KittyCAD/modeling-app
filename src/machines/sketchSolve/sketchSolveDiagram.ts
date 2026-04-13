@@ -18,6 +18,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
+  buildEqualLengthConstraintInput,
   buildFixedConstraintInput,
   buildTangentConstraintInput,
   isArcSegment,
@@ -737,13 +738,20 @@ export const sketchSolveMachine = setup({
           async () => {
             // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
             const selectedIds = getObjectSelectionIds(context.selectedIds)
+            const objects =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+            const equalLengthConstraint = buildEqualLengthConstraintInput(
+              selectedIds,
+              objects
+            )
+            if (!equalLengthConstraint) {
+              return
+            }
+
             const result = await context.rustContext.addConstraint(
               0,
               context.sketchId,
-              {
-                type: 'LinesEqualLength',
-                lines: selectedIds,
-              },
+              equalLengthConstraint,
               jsAppSettings(context.kclManager.systemDeps.settings),
               true
             )
