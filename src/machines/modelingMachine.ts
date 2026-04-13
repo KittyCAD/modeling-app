@@ -158,6 +158,7 @@ import {
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
   isFaceFromLegacySketch,
+  getSketchBlockArtifactForPathToNode,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -287,16 +288,6 @@ function findSceneObjectForPlaneSelection(
       object.source.ranges.length === 2 &&
       sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
       sourceRangesEqual(object.source.ranges[1][0], segmentRange)
-  )
-}
-
-function getSketchBlockArtifactForPath(
-  pathToNode: PathToNode,
-  artifactGraph: Map<string, Artifact>
-): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
-  return getArtifactsMatchingPathToNode(pathToNode, artifactGraph).find(
-    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
-      artifact.type === 'sketchBlock'
   )
 }
 
@@ -3270,7 +3261,7 @@ export const modelingMachine = setup({
             }
           )
 
-          const sketchBlockArtifact = getSketchBlockArtifactForPath(
+          const sketchBlockArtifact = getSketchBlockArtifactForPathToNode(
             legacySketchBlock.pathToNode,
             kclManager.artifactGraph
           )

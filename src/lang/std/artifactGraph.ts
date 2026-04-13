@@ -845,6 +845,16 @@ export function getArtifactsMatchingPathToNode(
   )
 }
 
+export function getSketchBlockArtifactForPathToNode(
+  pathToNode: PathToNode,
+  artifactGraph: Map<string, Artifact>
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  return getArtifactsMatchingPathToNode(pathToNode, artifactGraph).find(
+    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+      artifact.type === 'sketchBlock'
+  )
+}
+
 export function getSketchBlockForPathArtifact(
   pathArtifact: Extract<Artifact, { type: 'path' }>,
   artifactGraph: ArtifactGraph
