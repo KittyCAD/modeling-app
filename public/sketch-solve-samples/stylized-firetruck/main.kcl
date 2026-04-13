@@ -3,7 +3,7 @@
 // Categories: Automotive, Maker
 
 // Set units and version
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Chassis dimensions
 chassisLength = 4.2 // total vehicle length

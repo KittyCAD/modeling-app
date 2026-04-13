@@ -2,7 +2,7 @@
 // Simple metal table with rectangular tabletop and four legs with a square section
 // Categories: Construction, Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Parameters
 tableHeight = 750
