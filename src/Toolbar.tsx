@@ -29,10 +29,10 @@ import {
   useToolbarConfig,
 } from '@src/lib/toolbar'
 import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
-import { EngineConnectionStateType } from '@src/network/utils'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
