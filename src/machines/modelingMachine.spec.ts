@@ -1,6 +1,7 @@
 /** Engine-using integration tests of modelingMachine.
  * For engineless unit tests, see modelingMachine.test.ts */
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -18,6 +19,7 @@ import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import {
   removeSingleConstraint,
@@ -1567,45 +1569,36 @@ extrude001 = extrude(profile001, length = 5)
             faceInfo: { type: 'wall' },
             faceId: 'legacy-face-id',
           })
+        const getPlaneDataFromSketchBlockSpy = vi
+          .spyOn(selectionsModule, 'getPlaneDataFromSketchBlock')
+          .mockResolvedValue({
+            type: 'extrudeFace',
+            zAxis: [0, 0, 1],
+            yAxis: [0, 1, 0],
+            position: [0, 0, 0],
+            sketchPathToNode: segmentPathToNode,
+            extrudePathToNode,
+            faceInfo: { type: 'wall' },
+            faceId: 'legacy-face-id',
+          })
         const animateSpy = vi
           .spyOn(cameraControlsModule, 'letEngineAnimateAndSyncCamAfter')
           .mockResolvedValue()
-
-        let preprocessedProgramText = ''
         const hackSetProgramSpy = vi
           .spyOn(rustContext, 'hackSetProgram')
-          .mockImplementation(async (program) => {
-            const recastProgram = recast(program, instance)
-            if (err(recastProgram)) {
-              throw recastProgram
-            }
-            preprocessedProgramText = recastProgram
-            return {
-              type: 'Success',
-              sceneGraph: {
-                objects: [
-                  {
-                    id: 42,
-                    artifact_id: 'legacy-face-id',
-                  },
-                ],
-              },
-            } as any
-          })
+          .mockResolvedValue({
+            type: 'Success',
+            sceneGraph: {
+              objects: [],
+            },
+          } as any)
         const clearSketchCheckpointsSpy = vi
           .spyOn(rustContext, 'clearSketchCheckpoints')
           .mockResolvedValue()
-        const newSketchSpy = vi
-          .spyOn(rustContext, 'newSketch')
+        const editSketchSpy = vi
+          .spyOn(rustContext, 'editSketch')
           .mockImplementation(async () => ({
-            kclSource: {
-              text: `${preprocessedProgramText}
-sketch004 = sketch(on = faceOf(extrude001, face = seg01)) {
-}
-`,
-            },
             sceneGraphDelta: {} as any,
-            sketchId: 7,
             checkpointId: null,
           }))
 
@@ -1642,17 +1635,18 @@ sketch004 = sketch(on = faceOf(extrude001, face = seg01)) {
           sketchSolveMode: 'active',
         })
         expect(selectionBodyFaceSpy).toHaveBeenCalled()
+        expect(getPlaneDataFromSketchBlockSpy).toHaveBeenCalled()
         expect(hackSetProgramSpy).toHaveBeenCalled()
         expect(clearSketchCheckpointsSpy).toHaveBeenCalled()
-        expect(newSketchSpy).toHaveBeenCalled()
+        expect(editSketchSpy).toHaveBeenCalled()
         expect(animateSpy).toHaveBeenCalledWith(
           engineCommandManager,
           'legacy-face-id'
         )
-        expect(preprocessedProgramText).toContain(
+        expect(kclManager.code).toContain(
           'line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)'
         )
-        expect(preprocessedProgramText).not.toContain(
+        expect(kclManager.code).not.toContain(
           'startSketchOn(extrude001, face = seg01)'
         )
         expect(kclManager.code).toContain(
@@ -1704,6 +1698,8 @@ sketch004 = sketch(on = faceOf(extrude001, face = seg01)) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
           })),
         },
       })
@@ -1778,6 +1774,8 @@ sketch004 = sketch(on = faceOf(extrude001, face = seg01)) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
           })),
         },
       })
