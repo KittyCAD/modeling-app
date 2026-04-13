@@ -325,7 +325,7 @@ region001 = region(segments = [sketch001.circle1])`
       }
   })
 
-  test(`Verify user can double-click to edit a sketcha`, async ({
+  test(`Verify user can double-click to edit a sketch`, async ({
     context,
     homePage,
     editor,
