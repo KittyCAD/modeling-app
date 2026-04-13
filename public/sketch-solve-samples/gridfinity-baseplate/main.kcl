@@ -18,15 +18,9 @@ height = firstStep + secondStep + thirdStep
 baseFacePlane = offsetPlane(YZ, offset = cornerRadius)
 baseFaceSketch = sketch(on = baseFacePlane) {
   line1 = line(start = [0, 0], end = [0, height])
-  line2 = line(
-    start = [0, height],
-    end = [thirdStep, firstStep + secondStep],
-  )
+  line2 = line(start = [0, height], end = [thirdStep, firstStep + secondStep])
   coincident([line1.end, line2.start])
-  line3 = line(
-    start = [thirdStep, firstStep + secondStep],
-    end = [thirdStep, firstStep],
-  )
+  line3 = line(start = [thirdStep, firstStep + secondStep], end = [thirdStep, firstStep])
   coincident([line2.end, line3.start])
   line4 = line(start = [thirdStep, firstStep], end = [thirdStep + firstStep, 0])
   coincident([line3.end, line4.start])
@@ -34,9 +28,8 @@ baseFaceSketch = sketch(on = baseFacePlane) {
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
 }
-baseFaceRegion = region(point = [1.5, 2.0], sketch = baseFaceSketch)
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
 singleSide = extrude(baseFaceRegion, length = binLength - (cornerRadius * 2))
-hide(baseFaceSketch.meta.sketch)
 
 sides = patternCircular3d(
   singleSide,
@@ -52,27 +45,9 @@ axis000 = {
   origin = [cornerRadius, cornerRadius]
 }
 
-cornerFaceSketch = sketch(on = baseFacePlane) {
-  line1 = line(start = [0, 0], end = [0, height])
-  line2 = line(
-    start = [0, height],
-    end = [thirdStep, firstStep + secondStep],
-  )
-  coincident([line1.end, line2.start])
-  line3 = line(
-    start = [thirdStep, firstStep + secondStep],
-    end = [thirdStep, firstStep],
-  )
-  coincident([line2.end, line3.start])
-  line4 = line(start = [thirdStep, firstStep], end = [thirdStep + firstStep, 0])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [thirdStep + firstStep, 0], end = [0, 0])
-  coincident([line4.end, line5.start])
-  coincident([line5.end, line1.start])
-}
-cornerFaceRegion = region(point = [1.5, 2.0], sketch = cornerFaceSketch)
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
 singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
-hide(cornerFaceSketch.meta.sketch)
+hide(baseFaceSketch)
 
 corners = patternCircular3d(
   singleCorner,
@@ -84,28 +59,17 @@ corners = patternCircular3d(
 )
 
 basePlateSides = patternLinear3d(
-  sides,
-  axis = [1.0, 0.0, 0.0],
-  instances = countBinWidth,
-  distance = binLength,
-)
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
+       sides,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
        distance = binLength,
      )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 basePlateCorners = patternLinear3d(
-  corners,
-  axis = [1.0, 0.0, 0.0],
-  instances = countBinWidth,
-  distance = binLength,
-)
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
+       corners,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
        distance = binLength,
      )
-
-parts = concat(basePlateSides, items = basePlateCorners)
-parts
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
