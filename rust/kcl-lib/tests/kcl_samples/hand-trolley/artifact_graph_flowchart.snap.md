@@ -636,7 +636,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }]
   166[Wall]
     %% face_code_ref=Missing NodePath
-  167["Cap End"]
+  167["Cap Start"]
     %% face_code_ref=Missing NodePath
   168["Cap End"]
     %% face_code_ref=Missing NodePath
@@ -834,7 +834,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 3 }]
   371[Wall]
     %% face_code_ref=Missing NodePath
-  372["Cap End"]
+  372["Cap Start"]
     %% face_code_ref=Missing NodePath
   373["Cap End"]
     %% face_code_ref=Missing NodePath

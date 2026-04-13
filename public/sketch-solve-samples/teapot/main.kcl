@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 teapotHeight = 130
@@ -21,14 +21,19 @@ spoutPath = sketch(on = XZ) {
   coincident([arc2.start, line3.start])
   arc4 = arc(start = [var -101.48mm, var 82.09mm], end = [var -124.46mm, var 121.89mm], center = [var -129.67mm, var 92.35mm])
   coincident([line3.end, arc4.start])
-  horizontal(arc2)
+  // horizontal(arc2)
 }
 
 // Sweep a hollow spout
 sketch001 = sketch(on = offsetPlane(YZ, offset = -beltlineDiameter / 2.5)) {
-  circle1 = circle(start = [var 6mm, var 26mm], center = [var 0mm, var 26mm])
+  circle1 = circle(start = [var 6.03mm, var 26mm], center = [var 0.03mm, var 26mm])
+
+  circle2 = circle(start = [var 4.53mm, var 26.01mm], center = [var 0.03mm, var 26mm])
+  radius(circle1) == 6mm
+  radius(circle2) == 4.5
+  coincident([circle2.center, circle1.center])
 }
-region001 = region(segments = [sketch001.circle1])
+region001 = region(point = [-5.9674972mm, 26mm], sketch = sketch001)
 spout = sweep(region001, path = spoutPath)
 
 // Model the perimeter of the teapot body, to be used to trim the handle so that it fits snug to the body
@@ -44,10 +49,6 @@ sketch002 = sketch(on = YZ) {
   coincident([arc4.end, line5.start])
   line6 = line(start = [var 0mm, var 130mm], end = [var 0mm, var 0mm])
   coincident([line5.end, line6.start])
-  horizontal(arc2)
-  tangent([arc2, arc3])
-  tangent([arc3, arc4])
-  horizontal(line6)
 }
 region002 = region(segments = [sketch002.line1, sketch002.arc2])
 tools = revolve(region002, axis = Y)
@@ -65,10 +66,6 @@ handlePath = sketch(on = XZ) {
   coincident([arc4.end, arc5.start])
   line6 = line(start = [var 59.09mm, var 112.36mm], end = [var 0mm, var 108.7mm])
   coincident([arc5.end, line6.start])
-  horizontal(arc2)
-  tangent([arc2, arc3])
-  tangent([arc3, arc4])
-  tangent([arc4, arc5])
 }
 
 // Sweep the handle
@@ -113,12 +110,7 @@ sketch005 = sketch(on = YZ) {
   coincident([arc8.start, line9.start])
   line10 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
   coincident([line9.end, line10.start])
-  horizontal(arc2)
-  tangent([arc2, arc3])
-  tangent([arc3, arc4])
-  tangent([arc4, arc5])
   diameter(arc6) == 29.21mm
-  horizontal(line10)
 }
 region005 = region(segments = [sketch005.line1, sketch005.arc2])
 body = revolve(region005, axis = Y)

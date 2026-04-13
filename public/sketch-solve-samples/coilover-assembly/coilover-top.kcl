@@ -2,7 +2,7 @@
 // Part consists of a 70 mm diameter plate with a tapered mount body , and a eye-end mount (with a hole) on top of it. Below this plate/body, there is a stopper that limits the travel of the coilover, and a piston shaft below it to guide the coilover.
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import eyeEndMountOuterDia, pointOffset, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, pistonRodStopDia, pistonRodStopLength, upperMountPlateDia, upperMountPlateThickness from "parameters.kcl"

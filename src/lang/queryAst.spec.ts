@@ -1353,9 +1353,7 @@ extrude001 = extrude(profile001, length = 1)
   })
 
   it('maps sketch block segment arguments to edge selections', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
 }
 extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
@@ -1384,13 +1382,8 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
     expect(selections.graphSelections[0].artifact?.type).toBe('segment')
   })
 
-  // TODO: fix once circles report the proper artifact_id to retrieve the graph selection
-  it.fails(
-    'maps sketch block a circle argument to an edge selection',
-    async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+  it('maps sketch block a circle argument to an edge selection', async () => {
+    const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 4.52mm, var 3.82mm], center = [var 2.96mm, var 3.38mm])
 }
 
@@ -1401,35 +1394,32 @@ axis = Y,
 bodyType = SURFACE,
 )
 `
-      const ast = assertParse(code, instanceInThisFile)
-      const { artifactGraph, operations } = await enginelessExecutor(
-        ast,
-        rustContextInThisFile
-      )
-      const op = operations.find(
-        (operation) =>
-          operation.type === 'StdLibCall' && operation.name === 'revolve'
-      )
-      if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
-        throw new Error('Revolve operation not found')
-      }
-
-      expect(op.unlabeledArg.value.type).toBe('Segment')
-      const selections = retrieveSelectionsFromOpArg(
-        op.unlabeledArg,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'revolve'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Revolve operation not found')
     }
-  )
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
 
   it('maps sketch block segment array arguments to edge selections', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
   line2 = line(start = [var 21.94mm, var -21.01mm], end = [var 8.14mm, var 14.22mm])
 }
@@ -1461,9 +1451,7 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
   })
 
   it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const code = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.31mm, var 5.27mm], end = [var 0mm, var 0mm])
   coincident([line1.end, ORIGIN])
   line2 = line(start = [var 4.03mm, var 6.68mm], end = [var -3.31mm, var 5.27mm])

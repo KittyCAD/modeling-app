@@ -2,7 +2,7 @@
 // A wedge is a triangular prism defined by it's length, width, and height.
 // Categories: Construction
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 length = 10

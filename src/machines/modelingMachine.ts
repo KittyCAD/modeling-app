@@ -235,6 +235,10 @@ export type ModelingMachineEvent =
       data: ArtifactId
     }
   | {
+      type: 'Edit sketch solve'
+      data: { artifactId: ArtifactId }
+    }
+  | {
       type: 'Set selection'
       data: SetSelections
     }
@@ -433,7 +437,7 @@ export type ModelingMachineEvent =
         | 'coincident'
         | 'Fixed'
         | 'Tangent'
-        | 'LinesEqualLength'
+        | 'EqualLength'
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
@@ -1291,6 +1295,13 @@ export const modelingMachine = setup({
     },
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+    },
+    'disable rotate for sketch solve mode': ({ context }) => {
+      // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
+      // so block orbit input until those controls are synchronized.
+      // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
+      context.kclManager.sceneInfra.camControls.enableRotate =
+        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -5391,6 +5402,14 @@ export const modelingMachine = setup({
   states: {
     idle: {
       on: {
+        'Edit sketch solve': {
+          target: 'animating to existing sketch solve',
+          actions: [
+            ({ context }) => {
+              context.kclManager.sceneInfra.animate()
+            },
+          ],
+        },
         'Enter sketch': [
           {
             target: 'animating to existing sketch solve',
@@ -6947,7 +6966,10 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: ['clientToEngine cam sync direction'],
+      entry: [
+        'clientToEngine cam sync direction',
+        'disable rotate for sketch solve mode',
+      ],
       initial: 'active',
       states: {
         active: {
@@ -6984,7 +7006,7 @@ export const modelingMachine = setup({
             Perpendicular: {
               actions: ['forward event to sketch solve if active'],
             },
-            LinesEqualLength: {
+            EqualLength: {
               actions: ['forward event to sketch solve if active'],
             },
             Vertical: {
@@ -7746,6 +7768,16 @@ export const modelingMachine = setup({
       invoke: {
         src: 'animate-to-existing-sketch-solve',
         input: ({ event, context }) => {
+          if (event.type === 'Edit sketch solve') {
+            return {
+              artifactId: event.data.artifactId,
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              engineCommandManager: context.engineCommandManager,
+              defaultUnit: context.store.defaultUnit,
+              projectRef: context.projectRef,
+            }
+          }
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
             const artifact =

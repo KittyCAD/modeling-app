@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -19,12 +20,20 @@ import { assertEvent, assign, createMachine, fromPromise, setup } from 'xstate'
 
 import type { Coords2d } from '@src/lang/util'
 import { pointsAreEqual } from '@src/lib/utils2d'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { SnapTarget } from '@src/machines/sketchSolve/snapping'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
   createDraftRectangle,
   updateDraftRectangleAligned,
   updateDraftRectangleAngled,
 } from '@src/machines/sketchSolve/tools/rectUtils'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
@@ -53,6 +62,7 @@ type RectToolContext = {
   firstPointId?: number
   draft?: RectDraftIds
   origin: Coords2d
+  originSnapTarget?: SnapTarget
   secondPoint?: Coords2d
   rectOriginMode: RectOriginMode
 }
@@ -63,6 +73,19 @@ type RectToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   RectToolEvent,
   TActor
 >
+
+function getRectSnappingExcludedPointIds(
+  currentSketchObjects: Array<ApiObject | undefined | null>,
+  draft?: RectDraftIds
+): number[] {
+  if (!draft) {
+    return []
+  }
+
+  return draft.segmentIds.filter((id) =>
+    isPointSegment(currentSketchObjects[id])
+  )
+}
 
 export const machine = setup({
   types: {
@@ -77,15 +100,47 @@ export const machine = setup({
   actions: {
     'add first point listener': ({ self, context }) => {
       context.sceneInfra.setCallbacks({
-        onMove: () => {},
+        onMove: (args) => {
+          const twoD = args?.intersectionPoint?.twoD
+          if (!twoD) {
+            clearToolSnappingState({
+              self,
+              sceneInfra: context.sceneInfra,
+            })
+            return
+          }
+
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            mouseEvent: args.mouseEvent,
+          })
+          sendHoveredSnappingCandidate(self, snappingCandidate)
+          updateToolSnappingPreview({
+            sceneInfra: context.sceneInfra,
+            target: snappingCandidate,
+          })
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (!twoD) return
+          const mousePosition: Coords2d = [twoD.x, twoD.y]
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition,
+            mouseEvent: args.mouseEvent,
+          })
+          const [x, y] = snappingCandidate?.position ?? mousePosition
           self.send({
             type: 'add point',
-            data: [twoD.x, twoD.y],
+            data: [x, y],
+            snapTarget: snappingCandidate?.target,
           })
         },
       })
@@ -96,7 +151,33 @@ export const machine = setup({
         onMove: async (args) => {
           if (!args || !context.draft) return
           const twoD = args.intersectionPoint?.twoD
-          if (twoD && !isEditInProgress) {
+          if (!twoD) {
+            clearToolSnappingState({
+              self,
+              sceneInfra: context.sceneInfra,
+            })
+            return
+          }
+
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            mouseEvent: args.mouseEvent,
+            getExcludedPointIds: (currentSketchObjects) =>
+              getRectSnappingExcludedPointIds(
+                currentSketchObjects,
+                context.draft
+              ),
+          })
+          sendHoveredSnappingCandidate(self, snappingCandidate)
+          updateToolSnappingPreview({
+            sceneInfra: context.sceneInfra,
+            target: snappingCandidate,
+          })
+
+          if (!isEditInProgress) {
             try {
               isEditInProgress = true
 
@@ -166,13 +247,27 @@ export const machine = setup({
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
+          const twoD = args.intersectionPoint?.twoD
+          if (!twoD) return
+          const mousePosition: Coords2d = [twoD.x, twoD.y]
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition,
+            mouseEvent: args.mouseEvent,
+            getExcludedPointIds: (currentSketchObjects) =>
+              getRectSnappingExcludedPointIds(
+                currentSketchObjects,
+                context.draft
+              ),
+          })
+          const [x, y] = snappingCandidate?.position ?? mousePosition
 
           if (context.rectOriginMode === 'angled') {
-            const twoD = args.intersectionPoint?.twoD
-            if (!twoD) return
             self.send({
               type: 'set second point',
-              data: [twoD.x, twoD.y],
+              data: [x, y],
             })
           } else {
             self.send({
@@ -188,7 +283,33 @@ export const machine = setup({
         onMove: async (args) => {
           if (!args || !context.draft || !context.secondPoint) return
           const twoD = args.intersectionPoint?.twoD
-          if (twoD && !isEditInProgress) {
+          if (!twoD) {
+            clearToolSnappingState({
+              self,
+              sceneInfra: context.sceneInfra,
+            })
+            return
+          }
+
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            mouseEvent: args.mouseEvent,
+            getExcludedPointIds: (currentSketchObjects) =>
+              getRectSnappingExcludedPointIds(
+                currentSketchObjects,
+                context.draft
+              ),
+          })
+          sendHoveredSnappingCandidate(self, snappingCandidate)
+          updateToolSnappingPreview({
+            sceneInfra: context.sceneInfra,
+            target: snappingCandidate,
+          })
+
+          if (!isEditInProgress) {
             try {
               isEditInProgress = true
               const result = await updateDraftRectangleAngled({
@@ -224,9 +345,23 @@ export const machine = setup({
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (!twoD) return
+          const mousePosition: Coords2d = [twoD.x, twoD.y]
+          const snappingCandidate = getBestSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition,
+            mouseEvent: args.mouseEvent,
+            getExcludedPointIds: (currentSketchObjects) =>
+              getRectSnappingExcludedPointIds(
+                currentSketchObjects,
+                context.draft
+              ),
+          })
+          const [x, y] = snappingCandidate?.position ?? mousePosition
           if (
             context.secondPoint &&
-            pointsAreEqual(context.secondPoint, [twoD.x, twoD.y])
+            pointsAreEqual(context.secondPoint, [x, y])
           ) {
             return
           }
@@ -262,7 +397,11 @@ export const machine = setup({
       }
       self._parent?.send(sendData)
     },
-    'remove point listener': ({ context }) => {
+    'remove point listener': ({ context, self }) => {
+      clearToolSnappingState({
+        self,
+        sceneInfra: context.sceneInfra,
+      })
       context.sceneInfra.setCallbacks({
         onClick: () => {},
         onMove: () => {},
@@ -298,10 +437,17 @@ export const machine = setup({
           kclManager: KclManager
           sketchId: number
           origin: [number, number]
+          snapTarget?: SnapTarget
           rectOriginMode: RectOriginMode
         }
       }) => {
-        const { rustContext, kclManager, sketchId, rectOriginMode } = input
+        const {
+          rustContext,
+          kclManager,
+          sketchId,
+          rectOriginMode,
+          snapTarget,
+        } = input
 
         try {
           const result = await createDraftRectangle({
@@ -309,6 +455,8 @@ export const machine = setup({
             kclManager,
             sketchId,
             mode: rectOriginMode,
+            origin: input.origin,
+            snapTarget,
           })
 
           return result
@@ -331,6 +479,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     origin: [0, 0],
+    originSnapTarget: undefined,
     rectOriginMode: (input.toolVariant ?? 'corner') as RectOriginMode,
   }),
   id: RECTANGLE_TOOL_ID,
@@ -356,6 +505,7 @@ export const machine = setup({
           actions: assign(({ event }) => {
             return {
               origin: event.data,
+              originSnapTarget: event.snapTarget,
             }
           }),
           target: 'adding first point',
@@ -370,6 +520,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             origin: context.origin,
+            snapTarget: context.originSnapTarget,
             rectOriginMode: context.rectOriginMode,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -409,6 +560,7 @@ export const machine = setup({
             },
             assign({
               origin: [0, 0],
+              originSnapTarget: undefined,
               secondPoint: undefined,
               draft: undefined,
             }),
@@ -449,6 +601,7 @@ export const machine = setup({
             },
             assign({
               origin: [0, 0],
+              originSnapTarget: undefined,
               secondPoint: undefined,
               draft: undefined,
             }),
@@ -473,6 +626,7 @@ export const machine = setup({
         target: 'awaiting first point',
         actions: assign({
           origin: [0, 0],
+          originSnapTarget: undefined,
           secondPoint: undefined,
           draft: undefined,
         }),

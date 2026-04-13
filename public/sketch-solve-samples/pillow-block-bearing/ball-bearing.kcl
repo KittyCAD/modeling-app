@@ -2,7 +2,7 @@
 // The ball bearing for the pillow block bearing assembly
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Import Parameters
 import * from "parameters.kcl"

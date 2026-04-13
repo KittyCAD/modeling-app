@@ -49,6 +49,14 @@ export const modelingMachineStateToToolbarModeName = (
   return toolbarConfigurationName
 }
 
+export const isSketchToolbarTransitioning = (
+  state: StateFrom<typeof modelingMachine>
+): boolean =>
+  state.matches('animating to plane') ||
+  state.matches('animating to existing sketch') ||
+  state.matches('animating to sketch solve mode') ||
+  state.matches('animating to existing sketch solve')
+
 export type ToolbarDropdown = {
   id: string
   array: ToolbarItem[]
@@ -1265,7 +1273,7 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain equal length' }),
                 status: 'available',
-                title: 'Equal Length',
+                title: 'Equal',
                 showTitle: false,
                 description:
                   'Constrain two or more segments to have equal length.',
@@ -1735,13 +1743,14 @@ export const useToolbarConfig = () => {
             id: 'equalLength',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
-                type: 'LinesEqualLength',
+                type: 'EqualLength',
               }),
             icon: 'equal',
             status: 'available',
-            title: 'Equal Length',
+            title: 'Equal',
             hotkey: 'E',
-            description: 'Constrain lines to have equal length.',
+            description:
+              'Constrain lines to have equal length, or arcs and circles to have equal radius.',
             links: [],
             isActive: (state) => false,
           },

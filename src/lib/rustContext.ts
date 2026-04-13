@@ -204,8 +204,11 @@ export default class RustContext {
     }
   }
 
-  async waitForAllEngineCommands() {
-    await this.engineCommandManager.waitForAllCommands()
+  /**
+   * Wait for all modeling commands sent to the engine
+   */
+  async waitForAllEngineModelingCommands() {
+    await this.engineCommandManager.waitForAllModelingCommands()
   }
 
   get defaultPlanes() {
@@ -329,22 +332,27 @@ export default class RustContext {
   async sketchExecuteMock(
     version: ApiVersion,
     sketch: ApiObjectId
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.sketch_execute_mock(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(jsAppSettings(this.settingsActor))
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.sketch_execute_mock(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(jsAppSettings(this.settingsActor))
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)

@@ -1,32 +1,45 @@
 // Global constants for the multi-axis robot
 
-// Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-// Axis Angles
 export axisJ4 = 25deg
 export axisJ3 = 60deg
 export axisJ2 = 110deg
 export axisJ1 = 80deg
 
-// Robot Arm Base
 export basePlateRadius = 5.5
 export basePlateThickness = 0.5
 export baseChamfer = 2
 export baseHeight = 5
 
-// J2 Axis for Robot Arm
 export axisJ2ArmLength = 31
 export axisJ2ArmWidth = 4
 export axisJ2ArmThickness = 2.5
+export axisJ2BasePivotX = axisJ2ArmWidth / 2 - 0.25
+export axisJ2BasePivotY = baseHeight + 3
+export axisJ2EndPivotX = axisJ2BasePivotX + axisJ2ArmLength * cos(axisJ2)
+export axisJ2EndPivotY = axisJ2BasePivotY + axisJ2ArmLength * sin(axisJ2)
+export axisJ2HubRadius = axisJ2ArmWidth / 2 - 0.1
 
-// J3 Axis for Robot Arm
-export axisJ3C = axisJ3 - 180 + axisJ2
+export axisJ3C = axisJ3 - 180deg + axisJ2
 export axisJ3CArmLength = 20
 export axisJ3CArmWidth = 3.75
 export axisJ3CArmThickness = 2.5
+export axisJ3BasePivotX = axisJ2EndPivotX
+export axisJ3BasePivotY = axisJ2EndPivotY
+export axisJ3EndPivotX = axisJ3BasePivotX + axisJ3CArmLength * cos(axisJ3C)
+export axisJ3EndPivotY = axisJ3BasePivotY + axisJ3CArmLength * sin(axisJ3C)
+export axisJ3HubRadius = axisJ3CArmWidth / 2
 
-// Planes
+export clawFingerLength = 6.8
+export clawFingerWidth = 1.0
+export clawFingerThickness = 1.5
+export clawOpening = 1.8
+export clawRootOffset = 0.35
+export clawTipBackset = 1.0
+export clawTipInset = 0.35
+export clawOuterTipDrop = 0.25
+
 export plane001 = {
   origin = [0.0, 0.0, baseHeight - 1.5 + 0.1],
   xAxis = [1.0, 0.0, 0.0],
@@ -39,7 +52,6 @@ export plane002 = {
   yAxis = [0.0, 0.0, 1.0]
 }
 
-// Define Plane to Move J2 Axis Robot Arm
 export plane003 = {
   origin = [-0.1, 0.0, 0.0],
   xAxis = [sin(axisJ1): in, cos(axisJ1): in, 0.0],

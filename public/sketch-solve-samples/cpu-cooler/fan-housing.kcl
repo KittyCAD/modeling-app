@@ -2,7 +2,7 @@
 // The plastic housing that contains the fan and the motor
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import parameters
 import * from "parameters.kcl"
