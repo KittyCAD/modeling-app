@@ -1,20 +1,25 @@
-name: build-kcl-wasm-lib
+name: publish-kcl-wasm-lib
 
 on:
-  push:
-    branches:
-      - '**'
+  workflow_run:
+    workflows:
+      - Build Wasm
+    types:
+      - completed
 
 permissions:
   id-token: write
   contents: write
 
 jobs:
-  build-kcl-wasm-lib:
-    name: build-kcl-wasm-lib
+  publish-kcl-wasm-lib:
+    name: publish-kcl-wasm-lib
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: actions/setup-node@v6
         with:
@@ -22,20 +27,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
           cache: 'npm'
 
-      - name: Find main workflow ID
-        id: main_workflow_id
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch main --json databaseId --limit 1 | jq '.[0].databaseId')
-          echo "id=$id" >> "$GITHUB_OUTPUT"
-
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-files
+          name: prepared-wasm
           path: .
-          run-id: ${{ steps.main_workflow_id.outputs.id }}
+          run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare package files
+        run: |
+          mkdir -p rust/kcl-wasm-lib/pkg
+          mv kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
 
       - name: Skip tag creation for CI testing
         working-directory: rust/kcl-wasm-lib/pkg
@@ -45,6 +47,4 @@ jobs:
 
       - name: Publish package
         working-directory: rust/kcl-wasm-lib/pkg
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance --dry-run
