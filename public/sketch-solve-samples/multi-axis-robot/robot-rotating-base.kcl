@@ -1,6 +1,6 @@
 // Robot Rotating Base
 
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 import axisJ2BasePivotX, axisJ2BasePivotY, plane001, plane002 from "globals.kcl"
 

@@ -2,7 +2,7 @@
 // The flexible metal wire used to clip the fans onto the heat sink
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import parameters
 import * from "parameters.kcl"

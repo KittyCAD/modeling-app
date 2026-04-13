@@ -3,7 +3,7 @@
 // Categories: Fasteners
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 innerDiameter = 0.203

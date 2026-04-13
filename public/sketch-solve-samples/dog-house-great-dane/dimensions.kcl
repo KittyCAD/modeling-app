@@ -3,7 +3,7 @@
 // Note: this module defines parameters only; it emits no geometry.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Core dimensions (inches)
 export studThickness = 1.5
