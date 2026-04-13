@@ -1,0 +1,50 @@
+name: build-kcl-wasm-lib
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-kcl-wasm-lib:
+    name: build-kcl-wasm-lib
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org/'
+          cache: 'npm'
+
+      - name: Find main workflow ID
+        id: main_workflow_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch main --json databaseId --limit 1 | jq '.[0].databaseId')
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-files
+          path: .
+          run-id: ${{ steps.main_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag em and bag em
+        working-directory: rust/kcl-wasm-lib/pkg
+        run: |
+          git tag v$(cat package.json | jq -r .version)
+          git push origin v$(cat package.json | jq -r .version)
+
+      - name: Publish package
+        working-directory: rust/kcl-wasm-lib/pkg
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
