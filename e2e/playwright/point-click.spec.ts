@@ -351,8 +351,9 @@ openSketch = sketch(on = XY) {
 
     await homePage.goToModelingScene()
 
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
+    const [_clickOpenPath] = scene.makeMouseHelpers(0.65, 0.5, {
+      format: 'ratio',
+    })
 
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
       0.63,
