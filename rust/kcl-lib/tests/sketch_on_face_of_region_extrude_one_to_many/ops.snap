@@ -629,7 +629,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 16
+        "sketchId": 17
       },
       "nodePath": {
         "steps": [
@@ -1340,23 +1340,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 17,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

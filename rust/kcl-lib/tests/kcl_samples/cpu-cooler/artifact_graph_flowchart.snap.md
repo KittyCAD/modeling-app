@@ -838,7 +838,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   239[Wall]
     %% face_code_ref=Missing NodePath
-  240["Cap End"]
+  240["Cap Start"]
     %% face_code_ref=Missing NodePath
   241["Cap End"]
     %% face_code_ref=Missing NodePath
@@ -856,7 +856,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   263["Cap Start"]
     %% face_code_ref=Missing NodePath
-  264["Cap Start"]
+  264["Cap End"]
     %% face_code_ref=Missing NodePath
   265["SweepEdge Opposite"]
   266["SweepEdge Adjacent"]
@@ -870,7 +870,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   287["Cap Start"]
     %% face_code_ref=Missing NodePath
-  288["Cap Start"]
+  288["Cap End"]
     %% face_code_ref=Missing NodePath
   289["SweepEdge Opposite"]
   290["SweepEdge Adjacent"]
@@ -1236,7 +1236,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 5 }]
   681[Wall]
     %% face_code_ref=Missing NodePath
-  682["Cap End"]
+  682["Cap Start"]
     %% face_code_ref=Missing NodePath
   683["Cap End"]
     %% face_code_ref=Missing NodePath
@@ -1248,7 +1248,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   691["Cap Start"]
     %% face_code_ref=Missing NodePath
-  692["Cap Start"]
+  692["Cap End"]
     %% face_code_ref=Missing NodePath
   693["SweepEdge Opposite"]
   694["SweepEdge Adjacent"]
@@ -1262,7 +1262,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 5 }]
   714[Wall]
     %% face_code_ref=Missing NodePath
-  715["Cap End"]
+  715["Cap Start"]
     %% face_code_ref=Missing NodePath
   716["Cap End"]
     %% face_code_ref=Missing NodePath
@@ -1272,7 +1272,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 5 }]
   723[Wall]
     %% face_code_ref=Missing NodePath
-  724["Cap End"]
+  724["Cap Start"]
     %% face_code_ref=Missing NodePath
   725["Cap End"]
     %% face_code_ref=Missing NodePath
