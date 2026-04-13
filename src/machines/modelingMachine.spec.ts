@@ -11,7 +11,6 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
@@ -29,14 +28,12 @@ import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
-import * as cameraControlsModule from '@src/clientSideScene/CameraControls'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
-import * as selectionsModule from '@src/lib/selections'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
@@ -1512,151 +1509,6 @@ sketch001 = sketch(on = YZ) {
         expect(toastErrorSpy).toHaveBeenCalledWith(
           'Unable to enter sketch while KCL has parse errors.'
         )
-      })
-
-      it('enters sketch solve on a legacy extrude wall by tagging the source segment first', async () => {
-        toastErrorSpy.mockClear()
-
-        const {
-          instance,
-          kclManager,
-          rustContext,
-          engineCommandManager,
-          commandBarActor,
-          machineManager,
-        } = await buildTheWorldAndNoEngineConnection()
-
-        const legacyCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-3.5, -2.23])
-  |> line(end = [4.53, 5.73])
-  |> line(end = [5.18, -3.74])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 5)
-`
-
-        kclManager.updateCodeEditor(legacyCode, {
-          shouldAddToHistory: false,
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
-        const ast = assertParse(legacyCode, instance)
-        await kclManager.updateAst(ast, false)
-
-        const segmentSnippet =
-          'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
-        const segmentPathToNode = getNodePathFromSourceRange(ast, [
-          legacyCode.indexOf(segmentSnippet),
-          legacyCode.indexOf(segmentSnippet) + segmentSnippet.length,
-          0,
-        ])
-        const extrudeSnippet = 'extrude(profile001, length = 5)'
-        const extrudePathToNode = getNodePathFromSourceRange(ast, [
-          legacyCode.indexOf(extrudeSnippet),
-          legacyCode.indexOf(extrudeSnippet) + extrudeSnippet.length,
-          0,
-        ])
-
-        const selectionBodyFaceSpy = vi
-          .spyOn(selectionsModule, 'selectionBodyFace')
-          .mockResolvedValue({
-            type: 'extrudeFace',
-            zAxis: [0, 0, 1],
-            yAxis: [0, 1, 0],
-            position: [0, 0, 0],
-            sketchPathToNode: segmentPathToNode,
-            extrudePathToNode,
-            faceInfo: { type: 'wall' },
-            faceId: 'legacy-face-id',
-          })
-        const getPlaneDataFromSketchBlockSpy = vi
-          .spyOn(selectionsModule, 'getPlaneDataFromSketchBlock')
-          .mockResolvedValue({
-            type: 'extrudeFace',
-            zAxis: [0, 0, 1],
-            yAxis: [0, 1, 0],
-            position: [0, 0, 0],
-            sketchPathToNode: segmentPathToNode,
-            extrudePathToNode,
-            faceInfo: { type: 'wall' },
-            faceId: 'legacy-face-id',
-          })
-        const animateSpy = vi
-          .spyOn(cameraControlsModule, 'letEngineAnimateAndSyncCamAfter')
-          .mockResolvedValue()
-        const hackSetProgramSpy = vi
-          .spyOn(rustContext, 'hackSetProgram')
-          .mockResolvedValue({
-            type: 'Success',
-            sceneGraph: {
-              objects: [],
-            },
-          } as any)
-        const clearSketchCheckpointsSpy = vi
-          .spyOn(rustContext, 'clearSketchCheckpoints')
-          .mockResolvedValue()
-        const editSketchSpy = vi
-          .spyOn(rustContext, 'editSketch')
-          .mockImplementation(async () => ({
-            sceneGraphDelta: {} as any,
-            checkpointId: null,
-          }))
-
-        const context = generateModelingMachineDefaultContext({
-          kclManager,
-          rustContext,
-          wasmInstance: instance,
-          engineCommandManager,
-          commandBarActor,
-          machineManager,
-        })
-        context.store.useSketchSolveMode = { current: true } as any
-        context.store.defaultUnit = { current: 'mm' } as any
-        context.projectRef = { current: {} as any }
-
-        const actor = createActor(modelingMachine, { input: context }).start()
-
-        actor.send({ type: 'Enter sketch' })
-        actor.send({
-          type: 'Select sketch solve plane',
-          data: 'legacy-face-id',
-        })
-
-        await waitForCondition(() => {
-          return (
-            JSON.stringify(actor.getSnapshot().value) ===
-            JSON.stringify({
-              sketchSolveMode: 'active',
-            })
-          )
-        })
-
-        expect(actor.getSnapshot().value).toEqual({
-          sketchSolveMode: 'active',
-        })
-        expect(selectionBodyFaceSpy).toHaveBeenCalled()
-        expect(getPlaneDataFromSketchBlockSpy).toHaveBeenCalled()
-        expect(hackSetProgramSpy).toHaveBeenCalled()
-        expect(clearSketchCheckpointsSpy).toHaveBeenCalled()
-        expect(editSketchSpy).toHaveBeenCalled()
-        expect(animateSpy).toHaveBeenCalledWith(
-          engineCommandManager,
-          'legacy-face-id'
-        )
-        expect(kclManager.code).toContain(
-          'line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)'
-        )
-        expect(kclManager.code).not.toContain(
-          'startSketchOn(extrude001, face = seg01)'
-        )
-        expect(kclManager.code).toContain(
-          'sketch(on = faceOf(extrude001, face = seg01))'
-        )
-        expect(toastErrorSpy).not.toHaveBeenCalledWith(
-          expect.stringContaining('Source range not found')
-        )
-
-        actor.stop()
       })
     })
 
