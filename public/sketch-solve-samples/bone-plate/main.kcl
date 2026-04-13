@@ -1,186 +1,367 @@
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 boltSize = 4.5
 holeRadius = boltSize / 2
 plateSweepAngle = 65deg
 
-fn fixedArcFromAngles(startPt, radius, angleStart, angleEnd) {
-  center = [
-    startPt[0] - radius * cos(angleStart),
-    startPt[1] - radius * sin(angleStart)
-  ]
-  endPt = [
-    center[0] + radius * cos(angleEnd),
-    center[1] + radius * sin(angleEnd)
-  ]
-  isCcw = angleEnd > angleStart
-  tangentEnd = if isCcw {
-    angleEnd + 90deg
-  } else {
-    angleEnd - 90deg
-  }
-  return {
-    center = center,
-    endPt = endPt,
-    isCcw = isCcw,
-    tangentEnd = tangentEnd
-  }
-}
-
-fn tangentialArcData(startPt, endPt, startTangent) {
-  chordDx = endPt[0] - startPt[0]
-  chordDy = endPt[1] - startPt[1]
-  leftNormal = [-sin(startTangent), cos(startTangent)]
-  radiusScalar = (chordDx ^ 2 + chordDy ^ 2) / (2 * (chordDx * leftNormal[0] + chordDy * leftNormal[1]))
-  center = [
-    startPt[0] + radiusScalar * leftNormal[0],
-    startPt[1] + radiusScalar * leftNormal[1]
-  ]
-  endRadiusAngle = atan2(y = endPt[1] - center[1], x = endPt[0] - center[0])
-  isCcw = radiusScalar > 0
-  tangentEnd = if isCcw {
-    endRadiusAngle + 90deg
-  } else {
-    endRadiusAngle - 90deg
-  }
-  return {
-    center = center,
-    isCcw = isCcw,
-    tangentEnd = tangentEnd
-  }
-}
-
 p0 = [22.9, 0]
 
-arc001Data = fixedArcFromAngles(startPt = p0, radius = 120, angleStart = 180deg, angleEnd = 176deg)
-p1 = arc001Data.endPt
-arc002Data = fixedArcFromAngles(startPt = p1, radius = 5, angleStart = -60deg, angleEnd = 54deg)
-p2 = arc002Data.endPt
-arc003Data = fixedArcFromAngles(startPt = p2, radius = 120, angleStart = 180deg, angleEnd = 176deg)
-p3 = arc003Data.endPt
-arc004Data = fixedArcFromAngles(startPt = p3, radius = 5, angleStart = -60deg, angleEnd = 54deg)
-p4 = arc004Data.endPt
-arc005Data = fixedArcFromAngles(startPt = p4, radius = 120, angleStart = 180deg, angleEnd = 176deg)
-p5 = arc005Data.endPt
-arc006Data = fixedArcFromAngles(startPt = p5, radius = 5, angleStart = -60deg, angleEnd = 54deg)
-p6 = arc006Data.endPt
-arc007Data = fixedArcFromAngles(startPt = p6, radius = 170, angleStart = 180deg, angleEnd = 174deg)
-p7 = arc007Data.endPt
+arc001Center = [
+  p0[0] - (120 * cos(180deg)),
+  p0[1] - (120 * sin(180deg))
+]
+p1 = [
+  arc001Center[0] + 120 * cos(176deg),
+  arc001Center[1] + 120 * sin(176deg)
+]
+
+arc002Center = [
+  p1[0] - (5 * cos(-60deg)),
+  p1[1] - (5 * sin(-60deg))
+]
+p2 = [
+  arc002Center[0] + 5 * cos(54deg),
+  arc002Center[1] + 5 * sin(54deg)
+]
+
+arc003Center = [
+  p2[0] - (120 * cos(180deg)),
+  p2[1] - (120 * sin(180deg))
+]
+p3 = [
+  arc003Center[0] + 120 * cos(176deg),
+  arc003Center[1] + 120 * sin(176deg)
+]
+
+arc004Center = [
+  p3[0] - (5 * cos(-60deg)),
+  p3[1] - (5 * sin(-60deg))
+]
+p4 = [
+  arc004Center[0] + 5 * cos(54deg),
+  arc004Center[1] + 5 * sin(54deg)
+]
+
+arc005Center = [
+  p4[0] - (120 * cos(180deg)),
+  p4[1] - (120 * sin(180deg))
+]
+p5 = [
+  arc005Center[0] + 120 * cos(176deg),
+  arc005Center[1] + 120 * sin(176deg)
+]
+
+arc006Center = [
+  p5[0] - (5 * cos(-60deg)),
+  p5[1] - (5 * sin(-60deg))
+]
+p6 = [
+  arc006Center[0] + 5 * cos(54deg),
+  arc006Center[1] + 5 * sin(54deg)
+]
+
+arc007Center = [
+  p6[0] - (170 * cos(180deg)),
+  p6[1] - (170 * sin(180deg))
+]
+p7 = [
+  arc007Center[0] + 170 * cos(174deg),
+  arc007Center[1] + 170 * sin(174deg)
+]
+arc007TangentEnd = 174deg - 90deg
 
 p8 = [41.8, 91.88]
-arc008Data = tangentialArcData(startPt = p7, endPt = p8, startTangent = arc007Data.tangentEnd)
-p9 = [56.92, 117.08]
-arc009Data = tangentialArcData(startPt = p8, endPt = p9, startTangent = arc008Data.tangentEnd)
-p10 = [
-  p9[0] + 23.16 * cos(arc009Data.tangentEnd),
-  p9[1] + 23.16 * sin(arc009Data.tangentEnd)
+arc008ChordDx = p8[0] - p7[0]
+arc008ChordDy = p8[1] - p7[1]
+arc008LeftNormal = [
+  -sin(arc007TangentEnd),
+  cos(arc007TangentEnd)
 ]
-p11 = [60.93, 140.44]
-arc010Data = tangentialArcData(startPt = p10, endPt = p11, startTangent = arc009Data.tangentEnd)
-p12 = [
-  p11[0] + 25.65 * cos(arc010Data.tangentEnd),
-  p11[1] + 25.65 * sin(arc010Data.tangentEnd)
+arc008RadiusScalar = (arc008ChordDx ^ 2 + arc008ChordDy ^ 2) / (2 * (arc008ChordDx * arc008LeftNormal[0] + arc008ChordDy * arc008LeftNormal[1]))
+arc008Center = [
+  p7[0] + arc008RadiusScalar * arc008LeftNormal[0],
+  p7[1] + arc008RadiusScalar * arc008LeftNormal[1]
 ]
-p13 = [48.35, 85.53]
-arc011Data = tangentialArcData(startPt = p12, endPt = p13, startTangent = arc010Data.tangentEnd)
-p14 = [35.2, 67.73]
-arc012Data = tangentialArcData(startPt = p13, endPt = p14, startTangent = arc011Data.tangentEnd)
-p15 = [
-  p14[0] + 49.06 * cos(arc012Data.tangentEnd),
-  p14[1] + 49.06 * sin(arc012Data.tangentEnd)
-]
-
-arc001Start = if arc001Data.isCcw { p0 } else { p1 }
-arc001End = if arc001Data.isCcw { p1 } else { p0 }
-arc002Start = if arc002Data.isCcw { p1 } else { p2 }
-arc002End = if arc002Data.isCcw { p2 } else { p1 }
-arc003Start = if arc003Data.isCcw { p2 } else { p3 }
-arc003End = if arc003Data.isCcw { p3 } else { p2 }
-arc004Start = if arc004Data.isCcw { p3 } else { p4 }
-arc004End = if arc004Data.isCcw { p4 } else { p3 }
-arc005Start = if arc005Data.isCcw { p4 } else { p5 }
-arc005End = if arc005Data.isCcw { p5 } else { p4 }
-arc006Start = if arc006Data.isCcw { p5 } else { p6 }
-arc006End = if arc006Data.isCcw { p6 } else { p5 }
-arc007Start = if arc007Data.isCcw { p6 } else { p7 }
-arc007End = if arc007Data.isCcw { p7 } else { p6 }
-arc008Start = if arc008Data.isCcw { p7 } else { p8 }
-arc008End = if arc008Data.isCcw { p8 } else { p7 }
-arc009Start = if arc009Data.isCcw { p8 } else { p9 }
-arc009End = if arc009Data.isCcw { p9 } else { p8 }
-arc010Start = if arc010Data.isCcw { p10 } else { p11 }
-arc010End = if arc010Data.isCcw { p11 } else { p10 }
-arc011Start = if arc011Data.isCcw { p12 } else { p13 }
-arc011End = if arc011Data.isCcw { p13 } else { p12 }
-arc012Start = if arc012Data.isCcw { p13 } else { p14 }
-arc012End = if arc012Data.isCcw { p14 } else { p13 }
-
-plateProfile = sketch(on = YZ) {
-  arc001 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc002 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc003 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc004 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc005 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc006 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc007 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc008 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc009 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  line001 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  arc010 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  line002 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  arc011 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  arc012 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
-  line003 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  line004 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-
-  fixed([arc001.start, arc001Start])
-  fixed([arc001.end, arc001End])
-  fixed([arc001.center, arc001Data.center])
-  fixed([arc002.start, arc002Start])
-  fixed([arc002.end, arc002End])
-  fixed([arc002.center, arc002Data.center])
-  fixed([arc003.start, arc003Start])
-  fixed([arc003.end, arc003End])
-  fixed([arc003.center, arc003Data.center])
-  fixed([arc004.start, arc004Start])
-  fixed([arc004.end, arc004End])
-  fixed([arc004.center, arc004Data.center])
-  fixed([arc005.start, arc005Start])
-  fixed([arc005.end, arc005End])
-  fixed([arc005.center, arc005Data.center])
-  fixed([arc006.start, arc006Start])
-  fixed([arc006.end, arc006End])
-  fixed([arc006.center, arc006Data.center])
-  fixed([arc007.start, arc007Start])
-  fixed([arc007.end, arc007End])
-  fixed([arc007.center, arc007Data.center])
-  fixed([arc008.start, arc008Start])
-  fixed([arc008.end, arc008End])
-  fixed([arc008.center, arc008Data.center])
-  fixed([arc009.start, arc009Start])
-  fixed([arc009.end, arc009End])
-  fixed([arc009.center, arc009Data.center])
-  fixed([line001.start, p9])
-  fixed([line001.end, p10])
-  fixed([arc010.start, arc010Start])
-  fixed([arc010.end, arc010End])
-  fixed([arc010.center, arc010Data.center])
-  fixed([line002.start, p11])
-  fixed([line002.end, p12])
-  fixed([arc011.start, arc011Start])
-  fixed([arc011.end, arc011End])
-  fixed([arc011.center, arc011Data.center])
-  fixed([arc012.start, arc012Start])
-  fixed([arc012.end, arc012End])
-  fixed([arc012.center, arc012Data.center])
-  fixed([line003.start, p14])
-  fixed([line003.end, p15])
-  fixed([line004.start, p15])
-  fixed([line004.end, p0])
+arc008EndRadiusAngle = atan2(y = p8[1] - arc008Center[1], x = p8[0] - arc008Center[0])
+arc008TangentEnd = if arc008RadiusScalar > 0 {
+  arc008EndRadiusAngle + 90deg
+} else {
+  arc008EndRadiusAngle - 90deg
 }
 
-plateRegion = region(point = [40, 90], sketch = plateProfile)
-plateRevolve = revolve(plateRegion, axis = Y, angle = plateSweepAngle, symmetric = true)
+p9 = [56.92, 117.08]
+arc009ChordDx = p9[0] - p8[0]
+arc009ChordDy = p9[1] - p8[1]
+arc009LeftNormal = [
+  -sin(arc008TangentEnd),
+  cos(arc008TangentEnd)
+]
+arc009RadiusScalar = (arc009ChordDx ^ 2 + arc009ChordDy ^ 2) / (2 * (arc009ChordDx * arc009LeftNormal[0] + arc009ChordDy * arc009LeftNormal[1]))
+arc009Center = [
+  p8[0] + arc009RadiusScalar * arc009LeftNormal[0],
+  p8[1] + arc009RadiusScalar * arc009LeftNormal[1]
+]
+arc009EndRadiusAngle = atan2(y = p9[1] - arc009Center[1], x = p9[0] - arc009Center[0])
+arc009TangentEnd = if arc009RadiusScalar > 0 {
+  arc009EndRadiusAngle + 90deg
+} else {
+  arc009EndRadiusAngle - 90deg
+}
+
+p10 = [
+  p9[0] + 23.16 * cos(arc009TangentEnd),
+  p9[1] + 23.16 * sin(arc009TangentEnd)
+]
+p11 = [60.93, 140.44]
+arc010ChordDx = p11[0] - p10[0]
+arc010ChordDy = p11[1] - p10[1]
+arc010LeftNormal = [
+  -sin(arc009TangentEnd),
+  cos(arc009TangentEnd)
+]
+arc010RadiusScalar = (arc010ChordDx ^ 2 + arc010ChordDy ^ 2) / (2 * (arc010ChordDx * arc010LeftNormal[0] + arc010ChordDy * arc010LeftNormal[1]))
+arc010Center = [
+  p10[0] + arc010RadiusScalar * arc010LeftNormal[0],
+  p10[1] + arc010RadiusScalar * arc010LeftNormal[1]
+]
+arc010EndRadiusAngle = atan2(y = p11[1] - arc010Center[1], x = p11[0] - arc010Center[0])
+arc010TangentEnd = if arc010RadiusScalar > 0 {
+  arc010EndRadiusAngle + 90deg
+} else {
+  arc010EndRadiusAngle - 90deg
+}
+
+p12 = [
+  p11[0] + 25.65 * cos(arc010TangentEnd),
+  p11[1] + 25.65 * sin(arc010TangentEnd)
+]
+p13 = [48.35, 85.53]
+arc011ChordDx = p13[0] - p12[0]
+arc011ChordDy = p13[1] - p12[1]
+arc011LeftNormal = [
+  -sin(arc010TangentEnd),
+  cos(arc010TangentEnd)
+]
+arc011RadiusScalar = (arc011ChordDx ^ 2 + arc011ChordDy ^ 2) / (2 * (arc011ChordDx * arc011LeftNormal[0] + arc011ChordDy * arc011LeftNormal[1]))
+arc011Center = [
+  p12[0] + arc011RadiusScalar * arc011LeftNormal[0],
+  p12[1] + arc011RadiusScalar * arc011LeftNormal[1]
+]
+arc011EndRadiusAngle = atan2(y = p13[1] - arc011Center[1], x = p13[0] - arc011Center[0])
+arc011TangentEnd = if arc011RadiusScalar > 0 {
+  arc011EndRadiusAngle + 90deg
+} else {
+  arc011EndRadiusAngle - 90deg
+}
+
+p14 = [35.2, 67.73]
+arc012ChordDx = p14[0] - p13[0]
+arc012ChordDy = p14[1] - p13[1]
+arc012LeftNormal = [
+  -sin(arc011TangentEnd),
+  cos(arc011TangentEnd)
+]
+arc012RadiusScalar = (arc012ChordDx ^ 2 + arc012ChordDy ^ 2) / (2 * (arc012ChordDx * arc012LeftNormal[0] + arc012ChordDy * arc012LeftNormal[1]))
+arc012Center = [
+  p13[0] + arc012RadiusScalar * arc012LeftNormal[0],
+  p13[1] + arc012RadiusScalar * arc012LeftNormal[1]
+]
+arc012EndRadiusAngle = atan2(y = p14[1] - arc012Center[1], x = p14[0] - arc012Center[0])
+arc012TangentEnd = if arc012RadiusScalar > 0 {
+  arc012EndRadiusAngle + 90deg
+} else {
+  arc012EndRadiusAngle - 90deg
+}
+
+p15 = [
+  p14[0] + 49.06 * cos(arc012TangentEnd),
+  p14[1] + 49.06 * sin(arc012TangentEnd)
+]
+
+plateProfile = sketch(on = YZ) {
+  plateBaseline = line(start = [var 0mm, var 0mm], end = [var 220mm, var 0mm], construction = true)
+  plateAxis = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  coincident([plateBaseline.start, ORIGIN])
+  coincident([plateAxis.start, ORIGIN])
+  horizontal(plateBaseline)
+  vertical(plateAxis)
+  horizontalDistance([ORIGIN, plateBaseline.end]) == 220mm
+  verticalDistance([ORIGIN, plateAxis.end]) == 150mm
+
+  p0Ref = point(at = [var 22.9mm, var 0mm])
+  p1Ref = point(at = [var 23.19mm, var 8.37mm])
+  p2Ref = point(at = [var 23.63mm, var 16.75mm])
+  p3Ref = point(at = [var 23.92mm, var 25.12mm])
+  p4Ref = point(at = [var 24.36mm, var 33.49mm])
+  p5Ref = point(at = [var 24.66mm, var 41.86mm])
+  p6Ref = point(at = [var 25.09mm, var 50.24mm])
+  p7Ref = point(at = [var 26.03mm, var 68.01mm])
+  p8Ref = point(at = [var 41.8mm, var 91.88mm])
+  p9Ref = point(at = [var 56.92mm, var 117.08mm])
+  p10Ref = point(at = [var 57.33mm, var 140.24mm])
+  p11Ref = point(at = [var 60.93mm, var 140.44mm])
+  p12Ref = point(at = [var 64.27mm, var 115.01mm])
+  p13Ref = point(at = [var 48.35mm, var 85.53mm])
+  p14Ref = point(at = [var 35.2mm, var 67.73mm])
+  p15Ref = point(at = [var 27.8mm, var 19.23mm])
+
+  c1Ref = point(at = [var 142.9mm, var 0mm])
+  c2Ref = point(at = [var 20.69mm, var 12.7mm])
+  c3Ref = point(at = [var 143.63mm, var 16.75mm])
+  c4Ref = point(at = [var 21.42mm, var 29.45mm])
+  c5Ref = point(at = [var 144.36mm, var 33.49mm])
+  c6Ref = point(at = [var 22.16mm, var 46.19mm])
+  c7Ref = point(at = [var 195.09mm, var 50.24mm])
+  c8Ref = point(at = [var 56.88mm, var 64.76mm])
+  c9Ref = point(at = [var 27.49mm, var 117.6mm])
+  c10Ref = point(at = [var 59.14mm, var 140.2mm])
+  c11Ref = point(at = [var 35.92mm, var 111.28mm])
+  c12Ref = point(at = [var 58.67mm, var 64.15mm])
+
+  horizontalDistance([ORIGIN, p0Ref]) == p0[0]
+  verticalDistance([ORIGIN, p0Ref]) == p0[1]
+  horizontalDistance([ORIGIN, p1Ref]) == p1[0]
+  verticalDistance([ORIGIN, p1Ref]) == p1[1]
+  horizontalDistance([ORIGIN, p2Ref]) == p2[0]
+  verticalDistance([ORIGIN, p2Ref]) == p2[1]
+  horizontalDistance([ORIGIN, p3Ref]) == p3[0]
+  verticalDistance([ORIGIN, p3Ref]) == p3[1]
+  horizontalDistance([ORIGIN, p4Ref]) == p4[0]
+  verticalDistance([ORIGIN, p4Ref]) == p4[1]
+  horizontalDistance([ORIGIN, p5Ref]) == p5[0]
+  verticalDistance([ORIGIN, p5Ref]) == p5[1]
+  horizontalDistance([ORIGIN, p6Ref]) == p6[0]
+  verticalDistance([ORIGIN, p6Ref]) == p6[1]
+  horizontalDistance([ORIGIN, p7Ref]) == p7[0]
+  verticalDistance([ORIGIN, p7Ref]) == p7[1]
+  horizontalDistance([ORIGIN, p8Ref]) == p8[0]
+  verticalDistance([ORIGIN, p8Ref]) == p8[1]
+  horizontalDistance([ORIGIN, p9Ref]) == p9[0]
+  verticalDistance([ORIGIN, p9Ref]) == p9[1]
+  horizontalDistance([ORIGIN, p10Ref]) == p10[0]
+  verticalDistance([ORIGIN, p10Ref]) == p10[1]
+  horizontalDistance([ORIGIN, p11Ref]) == p11[0]
+  verticalDistance([ORIGIN, p11Ref]) == p11[1]
+  horizontalDistance([ORIGIN, p12Ref]) == p12[0]
+  verticalDistance([ORIGIN, p12Ref]) == p12[1]
+  horizontalDistance([ORIGIN, p13Ref]) == p13[0]
+  verticalDistance([ORIGIN, p13Ref]) == p13[1]
+  horizontalDistance([ORIGIN, p14Ref]) == p14[0]
+  verticalDistance([ORIGIN, p14Ref]) == p14[1]
+  horizontalDistance([ORIGIN, p15Ref]) == p15[0]
+  verticalDistance([ORIGIN, p15Ref]) == p15[1]
+
+  horizontalDistance([ORIGIN, c1Ref]) == arc001Center[0]
+  verticalDistance([ORIGIN, c1Ref]) == arc001Center[1]
+  horizontalDistance([ORIGIN, c2Ref]) == arc002Center[0]
+  verticalDistance([ORIGIN, c2Ref]) == arc002Center[1]
+  horizontalDistance([ORIGIN, c3Ref]) == arc003Center[0]
+  verticalDistance([ORIGIN, c3Ref]) == arc003Center[1]
+  horizontalDistance([ORIGIN, c4Ref]) == arc004Center[0]
+  verticalDistance([ORIGIN, c4Ref]) == arc004Center[1]
+  horizontalDistance([ORIGIN, c5Ref]) == arc005Center[0]
+  verticalDistance([ORIGIN, c5Ref]) == arc005Center[1]
+  horizontalDistance([ORIGIN, c6Ref]) == arc006Center[0]
+  verticalDistance([ORIGIN, c6Ref]) == arc006Center[1]
+  horizontalDistance([ORIGIN, c7Ref]) == arc007Center[0]
+  verticalDistance([ORIGIN, c7Ref]) == arc007Center[1]
+  horizontalDistance([ORIGIN, c8Ref]) == arc008Center[0]
+  verticalDistance([ORIGIN, c8Ref]) == arc008Center[1]
+  horizontalDistance([ORIGIN, c9Ref]) == arc009Center[0]
+  verticalDistance([ORIGIN, c9Ref]) == arc009Center[1]
+  horizontalDistance([ORIGIN, c10Ref]) == arc010Center[0]
+  verticalDistance([ORIGIN, c10Ref]) == arc010Center[1]
+  horizontalDistance([ORIGIN, c11Ref]) == arc011Center[0]
+  verticalDistance([ORIGIN, c11Ref]) == arc011Center[1]
+  horizontalDistance([ORIGIN, c12Ref]) == arc012Center[0]
+  verticalDistance([ORIGIN, c12Ref]) == arc012Center[1]
+
+  arc001 = arc(start = [var 23.19mm, var 8.37mm], end = [var 22.9mm, var 0mm], center = [var 142.9mm, var 0mm])
+  arc002 = arc(start = [var 23.19mm, var 8.37mm], end = [var 23.63mm, var 16.75mm], center = [var 20.69mm, var 12.7mm])
+  arc003 = arc(start = [var 23.92mm, var 25.12mm], end = [var 23.63mm, var 16.75mm], center = [var 143.63mm, var 16.75mm])
+  arc004 = arc(start = [var 23.92mm, var 25.12mm], end = [var 24.36mm, var 33.49mm], center = [var 21.42mm, var 29.45mm])
+  arc005 = arc(start = [var 24.66mm, var 41.86mm], end = [var 24.36mm, var 33.49mm], center = [var 144.36mm, var 33.49mm])
+  arc006 = arc(start = [var 24.66mm, var 41.86mm], end = [var 25.09mm, var 50.24mm], center = [var 22.16mm, var 46.19mm])
+  arc007 = arc(start = [var 26.03mm, var 68.01mm], end = [var 25.09mm, var 50.24mm], center = [var 195.09mm, var 50.24mm])
+  arc008 = arc(start = [var 41.8mm, var 91.88mm], end = [var 26.03mm, var 68.01mm], center = [var 56.88mm, var 64.76mm])
+  arc009 = arc(start = [var 41.8mm, var 91.88mm], end = [var 56.92mm, var 117.08mm], center = [var 27.49mm, var 117.6mm])
+  line001 = line(start = [var 56.92mm, var 117.08mm], end = [var 57.33mm, var 140.24mm])
+  arc010 = arc(start = [var 60.93mm, var 140.44mm], end = [var 57.33mm, var 140.24mm], center = [var 59.14mm, var 140.2mm])
+  line002 = line(start = [var 60.93mm, var 140.44mm], end = [var 64.27mm, var 115.01mm])
+  arc011 = arc(start = [var 48.35mm, var 85.53mm], end = [var 64.27mm, var 115.01mm], center = [var 35.92mm, var 111.28mm])
+  arc012 = arc(start = [var 48.35mm, var 85.53mm], end = [var 35.2mm, var 67.73mm], center = [var 58.67mm, var 64.15mm])
+  line003 = line(start = [var 35.2mm, var 67.73mm], end = [var 27.8mm, var 19.23mm])
+  line004 = line(start = [var 27.8mm, var 19.23mm], end = [var 22.9mm, var 0mm])
+
+  coincident([arc001.start, p1Ref])
+  coincident([arc001.end, p0Ref])
+  coincident([arc001.center, c1Ref])
+
+  coincident([arc002.start, p1Ref])
+  coincident([arc002.end, p2Ref])
+  coincident([arc002.center, c2Ref])
+
+  coincident([arc003.start, p3Ref])
+  coincident([arc003.end, p2Ref])
+  coincident([arc003.center, c3Ref])
+
+  coincident([arc004.start, p3Ref])
+  coincident([arc004.end, p4Ref])
+  coincident([arc004.center, c4Ref])
+
+  coincident([arc005.start, p5Ref])
+  coincident([arc005.end, p4Ref])
+  coincident([arc005.center, c5Ref])
+
+  coincident([arc006.start, p5Ref])
+  coincident([arc006.end, p6Ref])
+  coincident([arc006.center, c6Ref])
+
+  coincident([arc007.start, p7Ref])
+  coincident([arc007.end, p6Ref])
+  coincident([arc007.center, c7Ref])
+
+  coincident([arc008.start, p8Ref])
+  coincident([arc008.end, p7Ref])
+  coincident([arc008.center, c8Ref])
+
+  coincident([arc009.start, p8Ref])
+  coincident([arc009.end, p9Ref])
+  coincident([arc009.center, c9Ref])
+
+  coincident([line001.start, p9Ref])
+  coincident([line001.end, p10Ref])
+
+  coincident([arc010.start, p11Ref])
+  coincident([arc010.end, p10Ref])
+  coincident([arc010.center, c10Ref])
+
+  coincident([line002.start, p11Ref])
+  coincident([line002.end, p12Ref])
+
+  coincident([arc011.start, p13Ref])
+  coincident([arc011.end, p12Ref])
+  coincident([arc011.center, c11Ref])
+
+  coincident([arc012.start, p13Ref])
+  coincident([arc012.end, p14Ref])
+  coincident([arc012.center, c12Ref])
+
+  coincident([line003.start, p14Ref])
+  coincident([line003.end, p15Ref])
+
+  coincident([line004.start, p15Ref])
+  coincident([line004.end, p0Ref])
+}
+
+plateRegion = region(point = [40mm, 90mm], sketch = plateProfile)
+hide(plateProfile)
+plateRevolve = revolve(
+  plateRegion,
+  axis = Y,
+  angle = plateSweepAngle,
+  symmetric = true,
+)
 
 holeCenter001 = [0, 12.25]
 holeCenter002 = [0, 29.5]
@@ -191,41 +372,115 @@ holeCenter006 = [0, 130]
 holeCenter007 = [-20, 130]
 holeCenter008 = [20, 130]
 
-holeStart001 = [holeCenter001[0] + holeRadius, holeCenter001[1]]
-holeStart002 = [holeCenter002[0] + holeRadius, holeCenter002[1]]
-holeStart003 = [holeCenter003[0] + holeRadius, holeCenter003[1]]
-holeStart004 = [holeCenter004[0] + holeRadius, holeCenter004[1]]
-holeStart005 = [holeCenter005[0] + holeRadius, holeCenter005[1]]
-holeStart006 = [holeCenter006[0] + holeRadius, holeCenter006[1]]
-holeStart007 = [holeCenter007[0] + holeRadius, holeCenter007[1]]
-holeStart008 = [holeCenter008[0] + holeRadius, holeCenter008[1]]
-
 holeSketch = sketch(on = XZ) {
-  hole001 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole002 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole003 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole004 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole005 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole006 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole007 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
-  hole008 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  holeCenterline = line(start = [var 0mm, var 0mm], end = [var 0mm, var 140mm], construction = true)
+  coincident([holeCenterline.start, ORIGIN])
+  vertical(holeCenterline)
+  verticalDistance([ORIGIN, holeCenterline.end]) == 140mm
 
-  fixed([hole001.start, holeStart001])
-  fixed([hole001.center, holeCenter001])
-  fixed([hole002.start, holeStart002])
-  fixed([hole002.center, holeCenter002])
-  fixed([hole003.start, holeStart003])
-  fixed([hole003.center, holeCenter003])
-  fixed([hole004.start, holeStart004])
-  fixed([hole004.center, holeCenter004])
-  fixed([hole005.start, holeStart005])
-  fixed([hole005.center, holeCenter005])
-  fixed([hole006.start, holeStart006])
-  fixed([hole006.center, holeCenter006])
-  fixed([hole007.start, holeStart007])
-  fixed([hole007.center, holeCenter007])
-  fixed([hole008.start, holeStart008])
-  fixed([hole008.center, holeCenter008])
+  holeCenter001Ref = point(at = [var 0mm, var 12.25mm])
+  holeCenter002Ref = point(at = [var 0mm, var 29.5mm])
+  holeCenter003Ref = point(at = [var 0mm, var 46.25mm])
+  holeCenter004Ref = point(at = [var 0mm, var 77mm])
+  holeCenter005Ref = point(at = [var 0mm, var 100mm])
+  holeCenter006Ref = point(at = [var 0mm, var 130mm])
+
+  coincident([holeCenter001Ref, holeCenterline])
+  coincident([holeCenter002Ref, holeCenterline])
+  coincident([holeCenter003Ref, holeCenterline])
+  coincident([holeCenter004Ref, holeCenterline])
+  coincident([holeCenter005Ref, holeCenterline])
+  coincident([holeCenter006Ref, holeCenterline])
+
+  verticalDistance([ORIGIN, holeCenter001Ref]) == holeCenter001[1]
+  verticalDistance([ORIGIN, holeCenter002Ref]) == holeCenter002[1]
+  verticalDistance([ORIGIN, holeCenter003Ref]) == holeCenter003[1]
+  verticalDistance([ORIGIN, holeCenter004Ref]) == holeCenter004[1]
+  verticalDistance([ORIGIN, holeCenter005Ref]) == holeCenter005[1]
+  verticalDistance([ORIGIN, holeCenter006Ref]) == holeCenter006[1]
+
+  holeTopRowGuide = line(start = [var -12.47mm, var 130mm], end = [var 27.53mm, var 130mm], construction = true)
+  coincident([holeCenter006Ref, holeTopRowGuide])
+  horizontal(holeTopRowGuide)
+
+  holeCenter007Ref = point(at = [var -20mm, var 130mm])
+  holeCenter008Ref = point(at = [var 20mm, var 130mm])
+  coincident([holeCenter007Ref, holeTopRowGuide])
+  coincident([holeCenter008Ref, holeTopRowGuide])
+  horizontalDistance([holeCenter007Ref, holeCenter006Ref]) == 20mm
+  horizontalDistance([holeCenter006Ref, holeCenter008Ref]) == 20mm
+
+  hole001 = circle(start = [var 2.25mm, var 12.25mm], center = [var 0mm, var 12.25mm])
+  hole001Guide = line(start = [var 0mm, var 12.25mm], end = [var 2.25mm, var 12.25mm], construction = true)
+  coincident([hole001.center, holeCenter001Ref])
+  coincident([hole001Guide.start, hole001.center])
+  coincident([hole001Guide.end, hole001.start])
+  horizontal(hole001Guide)
+  horizontalDistance([hole001Guide.start, hole001Guide.end]) == holeRadius
+
+  hole002 = circle(start = [var 2.25mm, var 29.5mm], center = [var 0mm, var 29.5mm])
+  hole002Guide = line(start = [var 0mm, var 29.5mm], end = [var 2.25mm, var 29.5mm], construction = true)
+  coincident([hole002.center, holeCenter002Ref])
+  coincident([hole002Guide.start, hole002.center])
+  coincident([hole002Guide.end, hole002.start])
+  horizontal(hole002Guide)
+  horizontalDistance([hole002Guide.start, hole002Guide.end]) == holeRadius
+
+  hole003 = circle(start = [var 2.25mm, var 46.25mm], center = [var 0mm, var 46.25mm])
+  hole003Guide = line(start = [var 0mm, var 46.25mm], end = [var 2.25mm, var 46.25mm], construction = true)
+  coincident([hole003.center, holeCenter003Ref])
+  coincident([hole003Guide.start, hole003.center])
+  coincident([hole003Guide.end, hole003.start])
+  horizontal(hole003Guide)
+  horizontalDistance([hole003Guide.start, hole003Guide.end]) == holeRadius
+
+  hole004 = circle(start = [var 2.25mm, var 77mm], center = [var 0mm, var 77mm])
+  hole004Guide = line(start = [var 0mm, var 77mm], end = [var 2.25mm, var 77mm], construction = true)
+  coincident([hole004.center, holeCenter004Ref])
+  coincident([hole004Guide.start, hole004.center])
+  coincident([hole004Guide.end, hole004.start])
+  horizontal(hole004Guide)
+  horizontalDistance([hole004Guide.start, hole004Guide.end]) == holeRadius
+
+  hole005 = circle(start = [var 2.25mm, var 100mm], center = [var 0mm, var 100mm])
+  hole005Guide = line(start = [var 0mm, var 100mm], end = [var 2.25mm, var 100mm], construction = true)
+  coincident([hole005.center, holeCenter005Ref])
+  coincident([hole005Guide.start, hole005.center])
+  coincident([hole005Guide.end, hole005.start])
+  horizontal(hole005Guide)
+  horizontalDistance([hole005Guide.start, hole005Guide.end]) == holeRadius
+
+  hole006 = circle(start = [var 2.25mm, var 130mm], center = [var 0mm, var 130mm])
+  hole006Guide = line(start = [var 0mm, var 130mm], end = [var 2.25mm, var 130mm], construction = true)
+  coincident([hole006.center, holeCenter006Ref])
+  coincident([hole006Guide.start, hole006.center])
+  coincident([hole006Guide.end, hole006.start])
+  horizontal(hole006Guide)
+  horizontalDistance([hole006Guide.start, hole006Guide.end]) == holeRadius
+
+  hole007 = circle(start = [var -17.75mm, var 130mm], center = [var -20mm, var 130mm])
+  hole007Guide = line(start = [var -20mm, var 130mm], end = [var -17.75mm, var 130mm], construction = true)
+  coincident([hole007.center, holeCenter007Ref])
+  coincident([hole007Guide.start, hole007.center])
+  coincident([hole007Guide.end, hole007.start])
+  horizontal(hole007Guide)
+  horizontalDistance([hole007Guide.start, hole007Guide.end]) == holeRadius
+
+  hole008 = circle(start = [var 22.25mm, var 130mm], center = [var 20mm, var 130mm])
+  hole008Guide = line(start = [var 20mm, var 130mm], end = [var 22.25mm, var 130mm], construction = true)
+  coincident([hole008.center, holeCenter008Ref])
+  coincident([hole008Guide.start, hole008.center])
+  coincident([hole008Guide.end, hole008.start])
+  horizontal(hole008Guide)
+  horizontalDistance([hole008Guide.start, hole008Guide.end]) == holeRadius
+  coincident([
+    holeTopRowGuide.start,
+    hole007Guide.start
+  ])
+  coincident([
+    holeTopRowGuide.end,
+    hole008Guide.start
+  ])
 }
 
 holeRegion001 = region(point = holeCenter001, sketch = holeSketch)
@@ -236,6 +491,7 @@ holeRegion005 = region(point = holeCenter005, sketch = holeSketch)
 holeRegion006 = region(point = holeCenter006, sketch = holeSketch)
 holeRegion007 = region(point = holeCenter007, sketch = holeSketch)
 holeRegion008 = region(point = holeCenter008, sketch = holeSketch)
+hide(holeSketch)
 
 holeCutters = extrude(
   [
@@ -248,7 +504,7 @@ holeCutters = extrude(
     holeRegion007,
     holeRegion008
   ],
-  length = -100,
+  length = -100mm,
 )
 
 hiddenHoleCutters = hide(holeCutters)
