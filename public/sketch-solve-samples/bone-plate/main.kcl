@@ -1,85 +1,256 @@
-// Bone Plate
-// A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications
-// Categories: Medical
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
-
-// Define parameters
 boltSize = 4.5
+holeRadius = boltSize / 2
+plateSweepAngle = 65deg
 
-// Revolve the profile of a compression plate designed to fit a bone
-sketch001 = sketch(on = YZ) {
-  arc1 = arc(start = [var 23.19mm, var 8.37mm], end = [var 22.9mm, var 0mm], center = [var 142.9mm, var 0mm])
-  arc2 = arc(start = [var 23.19mm, var 8.37mm], end = [var 23.63mm, var 16.75mm], center = [var 20.69mm, var 12.7mm])
-  coincident([arc1.start, arc2.start])
-  arc3 = arc(start = [var 23.92mm, var 25.12mm], end = [var 23.63mm, var 16.75mm], center = [var 143.63mm, var 16.75mm])
-  coincident([arc2.end, arc3.end])
-  arc4 = arc(start = [var 23.92mm, var 25.12mm], end = [var 24.36mm, var 33.49mm], center = [var 21.42mm, var 29.45mm])
-  coincident([arc3.start, arc4.start])
-  arc5 = arc(start = [var 24.65mm, var 41.86mm], end = [var 24.36mm, var 33.49mm], center = [var 144.36mm, var 33.49mm])
-  coincident([arc4.end, arc5.end])
-  arc6 = arc(start = [var 24.65mm, var 41.86mm], end = [var 25.09mm, var 50.24mm], center = [var 22.15mm, var 46.19mm])
-  coincident([arc5.start, arc6.start])
-  arc7 = arc(start = [var 26.02mm, var 68.01mm], end = [var 25.09mm, var 50.24mm], center = [var 195.09mm, var 50.24mm])
-  coincident([arc6.end, arc7.end])
-  arc8 = arc(start = [var 41.8mm, var 91.88mm], end = [var 26.02mm, var 68.01mm], center = [var 56.88mm, var 64.76mm])
-  coincident([arc7.start, arc8.end])
-  arc9 = arc(start = [var 41.8mm, var 91.88mm], end = [var 56.92mm, var 117.08mm], center = [var 27.49mm, var 117.6mm])
-  coincident([arc8.start, arc9.start])
-  line10 = line(start = [var 56.92mm, var 117.08mm], end = [var 57.33mm, var 140.24mm])
-  coincident([arc9.end, line10.start])
-  arc11 = arc(start = [var 60.93mm, var 140.44mm], end = [var 57.33mm, var 140.24mm], center = [var 59.14mm, var 140.2mm])
-  coincident([line10.end, arc11.end])
-  line12 = line(start = [var 60.93mm, var 140.44mm], end = [var 64.27mm, var 115.01mm])
-  coincident([arc11.start, line12.start])
-  arc13 = arc(start = [var 48.35mm, var 85.53mm], end = [var 64.27mm, var 115.01mm], center = [var 35.92mm, var 111.28mm])
-  coincident([line12.end, arc13.end])
-  arc14 = arc(start = [var 48.35mm, var 85.53mm], end = [var 35.2mm, var 67.73mm], center = [var 58.67mm, var 64.15mm])
-  coincident([arc13.start, arc14.start])
-  line15 = line(start = [var 35.2mm, var 67.73mm], end = [var 27.8mm, var 19.23mm])
-  coincident([arc14.end, line15.start])
-  line16 = line(start = [var 27.8mm, var 19.23mm], end = [var 22.9mm, var 0mm])
-  coincident([line15.end, line16.start])
-  radius(arc2) == 5mm
-  radius(arc3) == 120mm
-  radius(arc4) == 5mm
-  radius(arc5) == 120mm
-  radius(arc6) == 5mm
-  radius(arc7) == 170mm
-  radius(arc8) == 31.03mm
-  tangent([arc8, arc9])
-  tangent([arc13, arc14])
-}
-region001 = region(segments = [sketch001.arc1, sketch001.arc2])
-plateRevolve = revolve(
-       region001,
-       axis = Y,
-       angle = 65,
-       symmetric = true,
-     )
-
-// Define a function to create and extrude holes
-fn holeFn(@center) {
-  sketch002 = startSketchOn(XZ)
-    |> circle(center = center, diameter = boltSize)
-  return extrude(sketch002, length = -100)
+fn fixedArcFromAngles(startPt, radius, angleStart, angleEnd) {
+  center = [
+    startPt[0] - radius * cos(angleStart),
+    startPt[1] - radius * sin(angleStart)
+  ]
+  endPt = [
+    center[0] + radius * cos(angleEnd),
+    center[1] + radius * sin(angleEnd)
+  ]
+  isCcw = angleEnd > angleStart
+  tangentEnd = if isCcw {
+    angleEnd + 90deg
+  } else {
+    angleEnd - 90deg
+  }
+  return {
+    center = center,
+    endPt = endPt,
+    isCcw = isCcw,
+    tangentEnd = tangentEnd
+  }
 }
 
-// Create a hole sketch with the size and location of each bolt hole
-holeCenters = [
-  [0, 12.25],
-  [0, 29.5],
-  [0, 46.25],
-  [0, 77],
-  [0, 100],
-  [0, 130],
-  [-20, 130],
-  [20, 130]
+fn tangentialArcData(startPt, endPt, startTangent) {
+  chordDx = endPt[0] - startPt[0]
+  chordDy = endPt[1] - startPt[1]
+  leftNormal = [-sin(startTangent), cos(startTangent)]
+  radiusScalar = (chordDx ^ 2 + chordDy ^ 2) / (2 * (chordDx * leftNormal[0] + chordDy * leftNormal[1]))
+  center = [
+    startPt[0] + radiusScalar * leftNormal[0],
+    startPt[1] + radiusScalar * leftNormal[1]
+  ]
+  endRadiusAngle = atan2(y = endPt[1] - center[1], x = endPt[0] - center[0])
+  isCcw = radiusScalar > 0
+  tangentEnd = if isCcw {
+    endRadiusAngle + 90deg
+  } else {
+    endRadiusAngle - 90deg
+  }
+  return {
+    center = center,
+    isCcw = isCcw,
+    tangentEnd = tangentEnd
+  }
+}
+
+p0 = [22.9, 0]
+
+arc001Data = fixedArcFromAngles(startPt = p0, radius = 120, angleStart = 180deg, angleEnd = 176deg)
+p1 = arc001Data.endPt
+arc002Data = fixedArcFromAngles(startPt = p1, radius = 5, angleStart = -60deg, angleEnd = 54deg)
+p2 = arc002Data.endPt
+arc003Data = fixedArcFromAngles(startPt = p2, radius = 120, angleStart = 180deg, angleEnd = 176deg)
+p3 = arc003Data.endPt
+arc004Data = fixedArcFromAngles(startPt = p3, radius = 5, angleStart = -60deg, angleEnd = 54deg)
+p4 = arc004Data.endPt
+arc005Data = fixedArcFromAngles(startPt = p4, radius = 120, angleStart = 180deg, angleEnd = 176deg)
+p5 = arc005Data.endPt
+arc006Data = fixedArcFromAngles(startPt = p5, radius = 5, angleStart = -60deg, angleEnd = 54deg)
+p6 = arc006Data.endPt
+arc007Data = fixedArcFromAngles(startPt = p6, radius = 170, angleStart = 180deg, angleEnd = 174deg)
+p7 = arc007Data.endPt
+
+p8 = [41.8, 91.88]
+arc008Data = tangentialArcData(startPt = p7, endPt = p8, startTangent = arc007Data.tangentEnd)
+p9 = [56.92, 117.08]
+arc009Data = tangentialArcData(startPt = p8, endPt = p9, startTangent = arc008Data.tangentEnd)
+p10 = [
+  p9[0] + 23.16 * cos(arc009Data.tangentEnd),
+  p9[1] + 23.16 * sin(arc009Data.tangentEnd)
+]
+p11 = [60.93, 140.44]
+arc010Data = tangentialArcData(startPt = p10, endPt = p11, startTangent = arc009Data.tangentEnd)
+p12 = [
+  p11[0] + 25.65 * cos(arc010Data.tangentEnd),
+  p11[1] + 25.65 * sin(arc010Data.tangentEnd)
+]
+p13 = [48.35, 85.53]
+arc011Data = tangentialArcData(startPt = p12, endPt = p13, startTangent = arc010Data.tangentEnd)
+p14 = [35.2, 67.73]
+arc012Data = tangentialArcData(startPt = p13, endPt = p14, startTangent = arc011Data.tangentEnd)
+p15 = [
+  p14[0] + 49.06 * cos(arc012Data.tangentEnd),
+  p14[1] + 49.06 * sin(arc012Data.tangentEnd)
 ]
 
-// Use map to apply the hole creation function to the list of center coordinates
-holes = map(holeCenters, f = holeFn)
+arc001Start = if arc001Data.isCcw { p0 } else { p1 }
+arc001End = if arc001Data.isCcw { p1 } else { p0 }
+arc002Start = if arc002Data.isCcw { p1 } else { p2 }
+arc002End = if arc002Data.isCcw { p2 } else { p1 }
+arc003Start = if arc003Data.isCcw { p2 } else { p3 }
+arc003End = if arc003Data.isCcw { p3 } else { p2 }
+arc004Start = if arc004Data.isCcw { p3 } else { p4 }
+arc004End = if arc004Data.isCcw { p4 } else { p3 }
+arc005Start = if arc005Data.isCcw { p4 } else { p5 }
+arc005End = if arc005Data.isCcw { p5 } else { p4 }
+arc006Start = if arc006Data.isCcw { p5 } else { p6 }
+arc006End = if arc006Data.isCcw { p6 } else { p5 }
+arc007Start = if arc007Data.isCcw { p6 } else { p7 }
+arc007End = if arc007Data.isCcw { p7 } else { p6 }
+arc008Start = if arc008Data.isCcw { p7 } else { p8 }
+arc008End = if arc008Data.isCcw { p8 } else { p7 }
+arc009Start = if arc009Data.isCcw { p8 } else { p9 }
+arc009End = if arc009Data.isCcw { p9 } else { p8 }
+arc010Start = if arc010Data.isCcw { p10 } else { p11 }
+arc010End = if arc010Data.isCcw { p11 } else { p10 }
+arc011Start = if arc011Data.isCcw { p12 } else { p13 }
+arc011End = if arc011Data.isCcw { p13 } else { p12 }
+arc012Start = if arc012Data.isCcw { p13 } else { p14 }
+arc012End = if arc012Data.isCcw { p14 } else { p13 }
 
-// Cut each guiding clearance hole from the bone plate using a single subtract operation
-solid = subtract([plateRevolve], tools = holes)
+plateProfile = sketch(on = YZ) {
+  arc001 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc002 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc003 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc004 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc005 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc006 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc007 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc008 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc009 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  line001 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  arc010 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  line002 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  arc011 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  arc012 = arc(start = [var 1mm, var 0mm], end = [var 0mm, var 1mm], center = [var 0mm, var 0mm])
+  line003 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line004 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+
+  fixed([arc001.start, arc001Start])
+  fixed([arc001.end, arc001End])
+  fixed([arc001.center, arc001Data.center])
+  fixed([arc002.start, arc002Start])
+  fixed([arc002.end, arc002End])
+  fixed([arc002.center, arc002Data.center])
+  fixed([arc003.start, arc003Start])
+  fixed([arc003.end, arc003End])
+  fixed([arc003.center, arc003Data.center])
+  fixed([arc004.start, arc004Start])
+  fixed([arc004.end, arc004End])
+  fixed([arc004.center, arc004Data.center])
+  fixed([arc005.start, arc005Start])
+  fixed([arc005.end, arc005End])
+  fixed([arc005.center, arc005Data.center])
+  fixed([arc006.start, arc006Start])
+  fixed([arc006.end, arc006End])
+  fixed([arc006.center, arc006Data.center])
+  fixed([arc007.start, arc007Start])
+  fixed([arc007.end, arc007End])
+  fixed([arc007.center, arc007Data.center])
+  fixed([arc008.start, arc008Start])
+  fixed([arc008.end, arc008End])
+  fixed([arc008.center, arc008Data.center])
+  fixed([arc009.start, arc009Start])
+  fixed([arc009.end, arc009End])
+  fixed([arc009.center, arc009Data.center])
+  fixed([line001.start, p9])
+  fixed([line001.end, p10])
+  fixed([arc010.start, arc010Start])
+  fixed([arc010.end, arc010End])
+  fixed([arc010.center, arc010Data.center])
+  fixed([line002.start, p11])
+  fixed([line002.end, p12])
+  fixed([arc011.start, arc011Start])
+  fixed([arc011.end, arc011End])
+  fixed([arc011.center, arc011Data.center])
+  fixed([arc012.start, arc012Start])
+  fixed([arc012.end, arc012End])
+  fixed([arc012.center, arc012Data.center])
+  fixed([line003.start, p14])
+  fixed([line003.end, p15])
+  fixed([line004.start, p15])
+  fixed([line004.end, p0])
+}
+
+plateRegion = region(point = [40, 90], sketch = plateProfile)
+plateRevolve = revolve(plateRegion, axis = Y, angle = plateSweepAngle, symmetric = true)
+
+holeCenter001 = [0, 12.25]
+holeCenter002 = [0, 29.5]
+holeCenter003 = [0, 46.25]
+holeCenter004 = [0, 77]
+holeCenter005 = [0, 100]
+holeCenter006 = [0, 130]
+holeCenter007 = [-20, 130]
+holeCenter008 = [20, 130]
+
+holeStart001 = [holeCenter001[0] + holeRadius, holeCenter001[1]]
+holeStart002 = [holeCenter002[0] + holeRadius, holeCenter002[1]]
+holeStart003 = [holeCenter003[0] + holeRadius, holeCenter003[1]]
+holeStart004 = [holeCenter004[0] + holeRadius, holeCenter004[1]]
+holeStart005 = [holeCenter005[0] + holeRadius, holeCenter005[1]]
+holeStart006 = [holeCenter006[0] + holeRadius, holeCenter006[1]]
+holeStart007 = [holeCenter007[0] + holeRadius, holeCenter007[1]]
+holeStart008 = [holeCenter008[0] + holeRadius, holeCenter008[1]]
+
+holeSketch = sketch(on = XZ) {
+  hole001 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole002 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole003 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole004 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole005 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole006 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole007 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  hole008 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+
+  fixed([hole001.start, holeStart001])
+  fixed([hole001.center, holeCenter001])
+  fixed([hole002.start, holeStart002])
+  fixed([hole002.center, holeCenter002])
+  fixed([hole003.start, holeStart003])
+  fixed([hole003.center, holeCenter003])
+  fixed([hole004.start, holeStart004])
+  fixed([hole004.center, holeCenter004])
+  fixed([hole005.start, holeStart005])
+  fixed([hole005.center, holeCenter005])
+  fixed([hole006.start, holeStart006])
+  fixed([hole006.center, holeCenter006])
+  fixed([hole007.start, holeStart007])
+  fixed([hole007.center, holeCenter007])
+  fixed([hole008.start, holeStart008])
+  fixed([hole008.center, holeCenter008])
+}
+
+holeRegion001 = region(point = holeCenter001, sketch = holeSketch)
+holeRegion002 = region(point = holeCenter002, sketch = holeSketch)
+holeRegion003 = region(point = holeCenter003, sketch = holeSketch)
+holeRegion004 = region(point = holeCenter004, sketch = holeSketch)
+holeRegion005 = region(point = holeCenter005, sketch = holeSketch)
+holeRegion006 = region(point = holeCenter006, sketch = holeSketch)
+holeRegion007 = region(point = holeCenter007, sketch = holeSketch)
+holeRegion008 = region(point = holeCenter008, sketch = holeSketch)
+
+holeCutters = extrude(
+  [
+    holeRegion001,
+    holeRegion002,
+    holeRegion003,
+    holeRegion004,
+    holeRegion005,
+    holeRegion006,
+    holeRegion007,
+    holeRegion008
+  ],
+  length = -100,
+)
+
+hiddenHoleCutters = hide(holeCutters)
+bonePlate = subtract([plateRevolve], tools = hiddenHoleCutters)
+appearance(bonePlate, color = "#c7ccd3")

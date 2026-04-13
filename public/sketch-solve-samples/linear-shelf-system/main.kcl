@@ -1,35 +1,18 @@
-// Linear Shelf System
-// A parametric, horizontally stackable shelf system for furniture layout and prototyping.
-// Categories: Maker, Construction
-
-// This model generates a configurable number of narrow shelf units arranged side-by-side.
-// Each unit includes:
-// - Two vertical side panels
-// - A floor plinth with toe kick
-// - Multiple evenly spaced shelves (with optional top cover)
-// All geometric parameters (unit width, height, depth, shelf count, spacing, and material thickness)
-// are customizable, allowing for rapid iteration of layout concepts such as storage walls,
-// room dividers, or library-style shelving.
-// Designed for clean stacking, clarity in construction, and modular expansion.
-
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+// Linear Shelf System (sketch-solve)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 unitCount = 5 // number of shelf units arranged side-by-side (horizontal repeat)
-
 
 // --- Global Dimensions ---
 unitWidth = 0.4 // overall external width of the shelf
 unitHeight = 2 // total height including top and base
 unitDepth = 0.4 // depth from front to back
 
-
 shelfBoardCount = 5 // number of usable shelf boards (excludes top cover)
-
 
 // --- Panel & Shelf Geometry ---
 panelThickness = 0.02 // thickness of side panels and shelf boards
 sidePanelOffset = unitWidth - panelThickness // distance between origin points of left and right panel
-
 
 // --- Base Spacer (Plinth) ---
 baseHeight = 0.05 // elevation of bottom plinth from ground
@@ -37,76 +20,75 @@ baseInset = 0.03 // inward offset at the front (toe kick for foot clearance)
 baseWidth = unitWidth - (panelThickness * 2) // internal width of base element
 baseDepth = unitDepth - baseInset // shallower depth than full unit
 
-
 // --- Shelf Placement ---
 shelfStartZ = baseHeight // Z elevation of the first shelf board
 shelfThickness = panelThickness // shelf board thickness
 shelfWidth = baseWidth // width same as base
 shelfDepth = unitDepth // full shelf depth
 
-
 totalShelfBoards = shelfBoardCount + 1 // includes top cover board
 availableVerticalSpace = unitHeight - baseHeight - shelfThickness
 shelfSpacing = availableVerticalSpace / shelfBoardCount // vertical distance between shelf boards
 
-
-// --- Reference Plane ---
-basePlane = startSketchOn(XY)
-
-// --- Side Panels ---
-// Left and right vertical structural walls.
-sidePanelProfile = startProfile(basePlane, at = [-unitWidth / 2, 0])
-  |> yLine(length = -unitDepth)
-  |> xLine(length = panelThickness)
-  |> yLine(length = unitDepth)
-  |> close()
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = sidePanelOffset,
-       axis = [1, 0],
-     )
-sidePanels = extrude(sidePanelProfile, length = unitHeight)
-
-// --- Floor Base / Plinth ---
-// Supporting base element between side panels.
-baseProfile = sketch(on = basePlane) {
-  line1 = line(start = [var -0.18m, var 0m], end = [var -0.18m, var -0.37m])
-  line2 = line(start = [var -0.18m, var -0.37m], end = [var 0.18m, var -0.37m])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 0.18m, var -0.37m], end = [var 0.18m, var 0m])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 0.18m, var 0m], end = [var -0.18m, var 0m])
-  coincident([line3.end, line4.start])
-  vertical(line1)
-  horizontal(line2)
-  vertical(line3)
+// --- Side Panels (Step 1) ---
+sidePanelSketch = sketch(on = XY) {
+  bottomLeft = line(start = [-unitWidth / 2, 0], end = [-unitWidth / 2, -unitDepth])
+  bottomEdge = line(start = [-unitWidth / 2, -unitDepth], end = [-unitWidth / 2 + panelThickness, -unitDepth])
+  rightEdge = line(start = [-unitWidth / 2 + panelThickness, -unitDepth], end = [-unitWidth / 2 + panelThickness, 0])
+  topEdge = line(start = [-unitWidth / 2 + panelThickness, 0], end = [-unitWidth / 2, 0])
+  coincident([bottomLeft.end, bottomEdge.start])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, bottomLeft.start])
 }
-region001 = region(segments = [baseProfile.line1, baseProfile.line2])
-baseBlock = extrude(region001, length = baseHeight)
+sidePanelRegion = region(
+  point = [-unitWidth / 2 + (panelThickness / 2), -unitDepth / 2],
+  sketch = sidePanelSketch,
+)
+sidePanelBlock = extrude(sidePanelRegion, length = unitHeight)
+sidePanels = patternLinear3d(
+  sidePanelBlock,
+  instances = 2,
+  distance = sidePanelOffset,
+  axis = [1, 0, 0],
+)
 
-// --- First Shelf Board ---
+// --- Floor Base / Plinth (Step 2) ---
+baseSketch = sketch(on = XY) {
+  baseLeft = line(start = [-baseWidth / 2, 0], end = [-baseWidth / 2, -baseDepth])
+  baseBottom = line(start = [-baseWidth / 2, -baseDepth], end = [baseWidth / 2, -baseDepth])
+  baseRight = line(start = [baseWidth / 2, -baseDepth], end = [baseWidth / 2, 0])
+  baseTop = line(start = [baseWidth / 2, 0], end = [-baseWidth / 2, 0])
+  coincident([baseLeft.end, baseBottom.start])
+  coincident([baseBottom.end, baseRight.start])
+  coincident([baseRight.end, baseTop.start])
+  coincident([baseTop.end, baseLeft.start])
+}
+baseRegion = region(
+  point = [0, -baseDepth / 2],
+  sketch = baseSketch,
+)
+baseBlock = extrude(baseRegion, length = baseHeight)
+
+// --- First Shelf Board (Step 3) ---
 firstShelfPlane = offsetPlane(XY, offset = shelfStartZ)
-firstShelfSketch = startSketchOn(firstShelfPlane)
-firstShelfProfile = sketch(on = firstShelfSketch) {
-  line1 = line(start = [var -0.18m, var 0m], end = [var -0.18m, var -0.4m])
-  line2 = line(start = [var -0.18m, var -0.4m], end = [var 0.18m, var -0.4m])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 0.18m, var -0.4m], end = [var 0.18m, var 0m])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 0.18m, var 0m], end = [var -0.18m, var 0m])
-  coincident([line3.end, line4.start])
-  vertical(line1)
-  horizontal(line2)
-  vertical(line3)
+firstShelfSketch = sketch(on = firstShelfPlane) {
+  shelfLeft = line(start = [-shelfWidth / 2, 0], end = [-shelfWidth / 2, -shelfDepth])
+  shelfBottom = line(start = [-shelfWidth / 2, -shelfDepth], end = [shelfWidth / 2, -shelfDepth])
+  shelfRight = line(start = [shelfWidth / 2, -shelfDepth], end = [shelfWidth / 2, 0])
+  shelfTop = line(start = [shelfWidth / 2, 0], end = [-shelfWidth / 2, 0])
+  coincident([shelfLeft.end, shelfBottom.start])
+  coincident([shelfBottom.end, shelfRight.start])
+  coincident([shelfRight.end, shelfTop.start])
+  coincident([shelfTop.end, shelfLeft.start])
 }
-region002 = region(segments = [
-  firstShelfProfile.line1,
-  firstShelfProfile.line2
-])
-firstShelf = extrude(region002, length = shelfThickness)
+firstShelfRegion = region(
+  point = [0, -shelfDepth / 2],
+  sketch = firstShelfSketch,
+)
+firstShelf = extrude(firstShelfRegion, length = shelfThickness)
 
-// --- Shelf Stack ---
+// --- Shelf Stack (Step 4) ---
 shelves = patternLinear3d(
   firstShelf,
   instances = totalShelfBoards,
@@ -114,11 +96,7 @@ shelves = patternLinear3d(
   axis = [0, 0, 1],
 )
 
-// --- Modular Shelf Wall ---
-// Repeats the complete shelf unit horizontally to create a wall of shelving.
-// Includes side panels, base block, and shelf stack in each instance.
-
-
+// --- Modular Shelf Wall (Step 5) ---
 modularShelfArray = patternLinear3d(
   [sidePanels, baseBlock, shelves],
   instances = unitCount,

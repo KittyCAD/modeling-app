@@ -2,10 +2,8 @@
 // A simple bottle with a hollow, watertight interior
 // Categories: Maker
 
-// Set Units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Input dimensions to define the bottle
 bottleWidth = 80
 bottleLength = 125
 bottleHeight = 220
@@ -13,28 +11,65 @@ neckDepth = 18
 neckDiameter = 45
 wallThickness = 4
 
-// Create a rounded body for the bottle
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -62.5mm, var 0mm], end = [var -62.5mm, var 26.67mm])
-  arc2 = arc(start = [var 62.5mm, var 26.67mm], end = [var -62.5mm, var 26.67mm], center = [var 0mm, var -113.15mm])
-  coincident([line1.end, arc2.end])
-  line3 = line(start = [var 62.5mm, var 26.67mm], end = [var 62.5mm, var 0mm])
-  coincident([arc2.start, line3.start])
-  line4 = line(start = [var 62.5mm, var 0mm], end = [var -62.5mm, var 0mm])
-  coincident([line3.end, line4.start])
-  vertical(arc2)
-  vertical(line4)
-}
-region001 = region(segments = [sketch001.line1, sketch001.arc2])
-bottleBody = extrude(region001, length = bottleHeight - neckDepth)
+halfBottleLength = bottleLength / 2
+halfBottleWidth = bottleWidth / 2
+shoulderTransitionHeight = bottleWidth / 3
+shoulderArcRise = halfBottleWidth - shoulderTransitionHeight
+shoulderArcRadius = (halfBottleLength ^ 2 + shoulderArcRise ^ 2) / (2 * shoulderArcRise)
+shoulderArcCenterOffset = shoulderArcRadius - halfBottleWidth
+neckRadius = neckDiameter / 2
+leftSideX = 0 - halfBottleLength
+rightSideX = halfBottleLength
+lowerShoulderY = 0 - shoulderTransitionHeight
+upperShoulderY = shoulderTransitionHeight
+topArcCenterY = 0 - shoulderArcCenterOffset
+bottomArcCenterY = shoulderArcCenterOffset
 
-// Create a neck centered at the top of the bottle
-sketch002 = sketch(on = startSketchOn(bottleBody, face = END)) {
+bottleFootprint = sketch(on = XY) {
+  leftSide = line(
+    start = [var -62.5mm, var -26.67mm],
+    end = [var -62.5mm, var 26.67mm],
+  )
+  topArc = arc(
+    start = [var 62.5mm, var 26.67mm],
+    end = [var -62.5mm, var 26.67mm],
+    center = [var 0mm, var -113.15mm],
+  )
+  rightSide = line(
+    start = [var 62.5mm, var 26.67mm],
+    end = [var 62.5mm, var -26.67mm],
+  )
+  bottomArc = arc(
+    start = [var -62.5mm, var -26.67mm],
+    end = [var 62.5mm, var -26.67mm],
+    center = [var 0mm, var 113.15mm],
+  )
+
+  coincident([leftSide.end, topArc.end])
+  coincident([topArc.start, rightSide.start])
+  coincident([rightSide.end, bottomArc.end])
+  coincident([bottomArc.start, leftSide.start])
+
+  fixed([leftSide.start, [leftSideX, lowerShoulderY]])
+  fixed([leftSide.end, [leftSideX, upperShoulderY]])
+  fixed([topArc.start, [rightSideX, upperShoulderY]])
+  fixed([rightSide.end, [rightSideX, lowerShoulderY]])
+  fixed([topArc.center, [0, topArcCenterY]])
+  fixed([bottomArc.center, [0, bottomArcCenterY]])
+}
+
+bottleBodyRegion = region(point = [0, 0], sketch = bottleFootprint)
+bottleBody = extrude(bottleBodyRegion, length = bottleHeight - neckDepth)
+
+neckProfile = sketch(on = startSketchOn(bottleBody, face = END)) {
   circle1 = circle(start = [var 22.5mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region002 = region(segments = [sketch002.circle1])
-bottleNeck = extrude(region002, length = neckDepth)
 
-// Define a shell operation so that the entire body and neck are hollow, with only the top face opened
-bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
-  |> appearance(color = "#0078c2")
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == neckRadius
+}
+
+neckRegion = region(segments = [neckProfile.circle1])
+bottleNeck = extrude(neckRegion, length = neckDepth)
+
+bottleShellSolid = shell(bottleNeck, faces = [END], thickness = wallThickness)
+bottleShell = appearance(bottleShellSolid, color = "#0078c2")

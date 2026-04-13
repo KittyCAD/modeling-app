@@ -1,45 +1,359 @@
-// Cycloidal Gear
-// A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation
-// Categories: Manufacturing, Medical
+// Cycloidal Gear, step 4 sketch-solve reconstruction.
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+gearPitch = 0.3
+gearHeight = 1.5
+holeDiameter = 0.297
+helixAngle = -80deg
 
-// Create a function for the cycloidal gear
-fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle: number(deg)) {
-  // Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height
-  fn gearSketch(@gHeight) {
-    helixAngleP = helixAngle * gHeight / gearHeight
-    gearProfile = startSketchOn(offsetPlane(XY, offset = gHeight))
-      |> startProfile(at = [
-           gearPitch * 1.55 * cos(helixAngleP) + gearPitch * sin(-helixAngleP),
-           gearPitch * 1.55 * sin(helixAngleP) + gearPitch * cos(-helixAngleP)
-         ])
-      |> arc(angleStart = 90deg + helixAngleP, angleEnd = -90deg + helixAngleP, radius = gearPitch)
-      |> tangentialArc(radius = gearPitch * 1.67, angle = 60deg)
-      |> tangentialArc(radius = gearPitch, angle = -180deg)
-      |> tangentialArc(radius = gearPitch * 1.67, angle = 60deg)
-      |> tangentialArc(radius = gearPitch, angle = -180deg)
-      |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-      |> subtract2d(tool = circle(center = [0, 0], radius = holeDiameter / 2))
-    return gearProfile
-  }
+outerLobeRadius = gearPitch
+valleyRadius = gearPitch * 1.67
+lobeCenterOffsetX = gearPitch * 1.55
 
-  // Draw sketches of the gear profile along the gear height and loft them together
-  gearLoft = loft([
-    gearSketch(0),
-    gearSketch(gearHeight / 2),
-    gearSketch(gearHeight)
-  ])
+profileStartLocal = [lobeCenterOffsetX, outerLobeRadius]
+arc1EndLocal = [lobeCenterOffsetX, -outerLobeRadius]
+arc1CenterLocal = [lobeCenterOffsetX, 0]
 
-  return gearLoft
+arc2CenterLocal = [lobeCenterOffsetX, -(outerLobeRadius + valleyRadius)]
+arc2EndLocal = [
+  arc2CenterLocal[0] + valleyRadius * cos(150deg),
+  arc2CenterLocal[1] + valleyRadius * sin(150deg),
+]
+
+arc3CenterLocal = [
+  arc2EndLocal[0] - outerLobeRadius * cos(-30deg),
+  arc2EndLocal[1] - outerLobeRadius * sin(-30deg),
+]
+arc3EndLocal = [
+  arc3CenterLocal[0] + outerLobeRadius * cos(-210deg),
+  arc3CenterLocal[1] + outerLobeRadius * sin(-210deg),
+]
+
+arc4CenterLocal = [
+  arc3EndLocal[0] - valleyRadius * cos(-30deg),
+  arc3EndLocal[1] - valleyRadius * sin(-30deg),
+]
+arc4EndLocal = [
+  arc4CenterLocal[0] + valleyRadius * cos(30deg),
+  arc4CenterLocal[1] + valleyRadius * sin(30deg),
+]
+
+arc5CenterLocal = [
+  arc4EndLocal[0] - outerLobeRadius * cos(210deg),
+  arc4EndLocal[1] - outerLobeRadius * sin(210deg),
+]
+arc5EndLocal = [
+  arc5CenterLocal[0] + outerLobeRadius * cos(30deg),
+  arc5CenterLocal[1] + outerLobeRadius * sin(30deg),
+]
+
+arc6CenterLocal = [lobeCenterOffsetX, outerLobeRadius + valleyRadius]
+
+bottomSectionHeight = 0
+bottomSectionAngle = helixAngle * bottomSectionHeight / gearHeight
+bottomSectionCos = cos(bottomSectionAngle)
+bottomSectionSin = sin(bottomSectionAngle)
+bottomProfilePlane = offsetPlane(XY, offset = bottomSectionHeight)
+
+bottomProfileStart = [
+  profileStartLocal[0] * bottomSectionCos - profileStartLocal[1] * bottomSectionSin,
+  profileStartLocal[0] * bottomSectionSin + profileStartLocal[1] * bottomSectionCos,
+]
+bottomArc1End = [
+  arc1EndLocal[0] * bottomSectionCos - arc1EndLocal[1] * bottomSectionSin,
+  arc1EndLocal[0] * bottomSectionSin + arc1EndLocal[1] * bottomSectionCos,
+]
+bottomArc1Center = [
+  arc1CenterLocal[0] * bottomSectionCos - arc1CenterLocal[1] * bottomSectionSin,
+  arc1CenterLocal[0] * bottomSectionSin + arc1CenterLocal[1] * bottomSectionCos,
+]
+bottomArc2Center = [
+  arc2CenterLocal[0] * bottomSectionCos - arc2CenterLocal[1] * bottomSectionSin,
+  arc2CenterLocal[0] * bottomSectionSin + arc2CenterLocal[1] * bottomSectionCos,
+]
+bottomArc2End = [
+  arc2EndLocal[0] * bottomSectionCos - arc2EndLocal[1] * bottomSectionSin,
+  arc2EndLocal[0] * bottomSectionSin + arc2EndLocal[1] * bottomSectionCos,
+]
+bottomArc3Center = [
+  arc3CenterLocal[0] * bottomSectionCos - arc3CenterLocal[1] * bottomSectionSin,
+  arc3CenterLocal[0] * bottomSectionSin + arc3CenterLocal[1] * bottomSectionCos,
+]
+bottomArc3End = [
+  arc3EndLocal[0] * bottomSectionCos - arc3EndLocal[1] * bottomSectionSin,
+  arc3EndLocal[0] * bottomSectionSin + arc3EndLocal[1] * bottomSectionCos,
+]
+bottomArc4Center = [
+  arc4CenterLocal[0] * bottomSectionCos - arc4CenterLocal[1] * bottomSectionSin,
+  arc4CenterLocal[0] * bottomSectionSin + arc4CenterLocal[1] * bottomSectionCos,
+]
+bottomArc4End = [
+  arc4EndLocal[0] * bottomSectionCos - arc4EndLocal[1] * bottomSectionSin,
+  arc4EndLocal[0] * bottomSectionSin + arc4EndLocal[1] * bottomSectionCos,
+]
+bottomArc5Center = [
+  arc5CenterLocal[0] * bottomSectionCos - arc5CenterLocal[1] * bottomSectionSin,
+  arc5CenterLocal[0] * bottomSectionSin + arc5CenterLocal[1] * bottomSectionCos,
+]
+bottomArc5End = [
+  arc5EndLocal[0] * bottomSectionCos - arc5EndLocal[1] * bottomSectionSin,
+  arc5EndLocal[0] * bottomSectionSin + arc5EndLocal[1] * bottomSectionCos,
+]
+bottomArc6Center = [
+  arc6CenterLocal[0] * bottomSectionCos - arc6CenterLocal[1] * bottomSectionSin,
+  arc6CenterLocal[0] * bottomSectionSin + arc6CenterLocal[1] * bottomSectionCos,
+]
+
+bottomProfileSketch = sketch(on = bottomProfilePlane) {
+  arc1 = arc(start = [var 0.465, var -0.3], end = [var 0.465, var 0.3], center = [var 0.465, var 0])
+  arc2 = arc(start = [var 0.465, var -0.3], end = [var 0.031, var -0.5505], center = [var 0.465, var -0.801])
+  arc3 = arc(start = [var -0.4885, var -0.2505], end = [var 0.031, var -0.5505], center = [var -0.2287, var -0.4005])
+  arc4 = arc(start = [var -0.4885, var -0.2505], end = [var -0.4885, var 0.2505], center = [var -0.9224, var 0])
+  arc5 = arc(start = [var 0.031, var 0.5505], end = [var -0.4885, var 0.2505], center = [var -0.2287, var 0.4005])
+  arc6 = arc(start = [var 0.031, var 0.5505], end = [var 0.465, var 0.3], center = [var 0.465, var 0.801])
+  bore = circle(start = [var 0.1485, var 0], center = [var 0, var 0])
+
+  fixed([arc1.start, bottomArc1End])
+  fixed([arc1.end, bottomProfileStart])
+  fixed([arc1.center, bottomArc1Center])
+
+  fixed([arc2.start, bottomArc1End])
+  fixed([arc2.end, bottomArc2End])
+  fixed([arc2.center, bottomArc2Center])
+
+  fixed([arc3.start, bottomArc3End])
+  fixed([arc3.end, bottomArc2End])
+  fixed([arc3.center, bottomArc3Center])
+
+  fixed([arc4.start, bottomArc3End])
+  fixed([arc4.end, bottomArc4End])
+  fixed([arc4.center, bottomArc4Center])
+
+  fixed([arc5.start, bottomArc5End])
+  fixed([arc5.end, bottomArc4End])
+  fixed([arc5.center, bottomArc5Center])
+
+  fixed([arc6.start, bottomArc5End])
+  fixed([arc6.end, bottomProfileStart])
+  fixed([arc6.center, bottomArc6Center])
+
+  coincident([arc1.start, arc2.start])
+  coincident([arc2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, arc5.end])
+  coincident([arc5.start, arc6.start])
+  coincident([arc6.end, arc1.end])
+
+  fixed([bore.start, [holeDiameter / 2, 0]])
+  fixed([bore.center, [0, 0]])
 }
 
-// Call the cycloidal gear function
-cycloidalGear(
-  gearPitch = .3,
-  gearHeight = 1.5,
-  holeDiameter = 0.297,
-  helixAngle = -80deg,
-)
+bottomProfile = region(point = [gearPitch, 0], sketch = bottomProfileSketch)
+
+midSectionHeight = gearHeight / 2
+midSectionAngle = helixAngle * midSectionHeight / gearHeight
+midSectionCos = cos(midSectionAngle)
+midSectionSin = sin(midSectionAngle)
+midProfilePlane = offsetPlane(XY, offset = midSectionHeight)
+
+midProfileStart = [
+  profileStartLocal[0] * midSectionCos - profileStartLocal[1] * midSectionSin,
+  profileStartLocal[0] * midSectionSin + profileStartLocal[1] * midSectionCos,
+]
+midArc1End = [
+  arc1EndLocal[0] * midSectionCos - arc1EndLocal[1] * midSectionSin,
+  arc1EndLocal[0] * midSectionSin + arc1EndLocal[1] * midSectionCos,
+]
+midArc1Center = [
+  arc1CenterLocal[0] * midSectionCos - arc1CenterLocal[1] * midSectionSin,
+  arc1CenterLocal[0] * midSectionSin + arc1CenterLocal[1] * midSectionCos,
+]
+midArc2Center = [
+  arc2CenterLocal[0] * midSectionCos - arc2CenterLocal[1] * midSectionSin,
+  arc2CenterLocal[0] * midSectionSin + arc2CenterLocal[1] * midSectionCos,
+]
+midArc2End = [
+  arc2EndLocal[0] * midSectionCos - arc2EndLocal[1] * midSectionSin,
+  arc2EndLocal[0] * midSectionSin + arc2EndLocal[1] * midSectionCos,
+]
+midArc3Center = [
+  arc3CenterLocal[0] * midSectionCos - arc3CenterLocal[1] * midSectionSin,
+  arc3CenterLocal[0] * midSectionSin + arc3CenterLocal[1] * midSectionCos,
+]
+midArc3End = [
+  arc3EndLocal[0] * midSectionCos - arc3EndLocal[1] * midSectionSin,
+  arc3EndLocal[0] * midSectionSin + arc3EndLocal[1] * midSectionCos,
+]
+midArc4Center = [
+  arc4CenterLocal[0] * midSectionCos - arc4CenterLocal[1] * midSectionSin,
+  arc4CenterLocal[0] * midSectionSin + arc4CenterLocal[1] * midSectionCos,
+]
+midArc4End = [
+  arc4EndLocal[0] * midSectionCos - arc4EndLocal[1] * midSectionSin,
+  arc4EndLocal[0] * midSectionSin + arc4EndLocal[1] * midSectionCos,
+]
+midArc5Center = [
+  arc5CenterLocal[0] * midSectionCos - arc5CenterLocal[1] * midSectionSin,
+  arc5CenterLocal[0] * midSectionSin + arc5CenterLocal[1] * midSectionCos,
+]
+midArc5End = [
+  arc5EndLocal[0] * midSectionCos - arc5EndLocal[1] * midSectionSin,
+  arc5EndLocal[0] * midSectionSin + arc5EndLocal[1] * midSectionCos,
+]
+midArc6Center = [
+  arc6CenterLocal[0] * midSectionCos - arc6CenterLocal[1] * midSectionSin,
+  arc6CenterLocal[0] * midSectionSin + arc6CenterLocal[1] * midSectionCos,
+]
+
+midProfileSketch = sketch(on = midProfilePlane) {
+  arc1 = arc(start = [var 0.465, var -0.3], end = [var 0.465, var 0.3], center = [var 0.465, var 0])
+  arc2 = arc(start = [var 0.465, var -0.3], end = [var 0.031, var -0.5505], center = [var 0.465, var -0.801])
+  arc3 = arc(start = [var -0.4885, var -0.2505], end = [var 0.031, var -0.5505], center = [var -0.2287, var -0.4005])
+  arc4 = arc(start = [var -0.4885, var -0.2505], end = [var -0.4885, var 0.2505], center = [var -0.9224, var 0])
+  arc5 = arc(start = [var 0.031, var 0.5505], end = [var -0.4885, var 0.2505], center = [var -0.2287, var 0.4005])
+  arc6 = arc(start = [var 0.031, var 0.5505], end = [var 0.465, var 0.3], center = [var 0.465, var 0.801])
+  bore = circle(start = [var 0.1485, var 0], center = [var 0, var 0])
+
+  fixed([arc1.start, midArc1End])
+  fixed([arc1.end, midProfileStart])
+  fixed([arc1.center, midArc1Center])
+
+  fixed([arc2.start, midArc1End])
+  fixed([arc2.end, midArc2End])
+  fixed([arc2.center, midArc2Center])
+
+  fixed([arc3.start, midArc3End])
+  fixed([arc3.end, midArc2End])
+  fixed([arc3.center, midArc3Center])
+
+  fixed([arc4.start, midArc3End])
+  fixed([arc4.end, midArc4End])
+  fixed([arc4.center, midArc4Center])
+
+  fixed([arc5.start, midArc5End])
+  fixed([arc5.end, midArc4End])
+  fixed([arc5.center, midArc5Center])
+
+  fixed([arc6.start, midArc5End])
+  fixed([arc6.end, midProfileStart])
+  fixed([arc6.center, midArc6Center])
+
+  coincident([arc1.start, arc2.start])
+  coincident([arc2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, arc5.end])
+  coincident([arc5.start, arc6.start])
+  coincident([arc6.end, arc1.end])
+
+  fixed([bore.start, [holeDiameter / 2, 0]])
+  fixed([bore.center, [0, 0]])
+}
+
+midProfile = region(point = [gearPitch, 0], sketch = midProfileSketch)
+
+topSectionHeight = gearHeight
+topSectionAngle = helixAngle * topSectionHeight / gearHeight
+topSectionCos = cos(topSectionAngle)
+topSectionSin = sin(topSectionAngle)
+topProfilePlane = offsetPlane(XY, offset = topSectionHeight)
+
+topProfileStart = [
+  profileStartLocal[0] * topSectionCos - profileStartLocal[1] * topSectionSin,
+  profileStartLocal[0] * topSectionSin + profileStartLocal[1] * topSectionCos,
+]
+topArc1End = [
+  arc1EndLocal[0] * topSectionCos - arc1EndLocal[1] * topSectionSin,
+  arc1EndLocal[0] * topSectionSin + arc1EndLocal[1] * topSectionCos,
+]
+topArc1Center = [
+  arc1CenterLocal[0] * topSectionCos - arc1CenterLocal[1] * topSectionSin,
+  arc1CenterLocal[0] * topSectionSin + arc1CenterLocal[1] * topSectionCos,
+]
+topArc2Center = [
+  arc2CenterLocal[0] * topSectionCos - arc2CenterLocal[1] * topSectionSin,
+  arc2CenterLocal[0] * topSectionSin + arc2CenterLocal[1] * topSectionCos,
+]
+topArc2End = [
+  arc2EndLocal[0] * topSectionCos - arc2EndLocal[1] * topSectionSin,
+  arc2EndLocal[0] * topSectionSin + arc2EndLocal[1] * topSectionCos,
+]
+topArc3Center = [
+  arc3CenterLocal[0] * topSectionCos - arc3CenterLocal[1] * topSectionSin,
+  arc3CenterLocal[0] * topSectionSin + arc3CenterLocal[1] * topSectionCos,
+]
+topArc3End = [
+  arc3EndLocal[0] * topSectionCos - arc3EndLocal[1] * topSectionSin,
+  arc3EndLocal[0] * topSectionSin + arc3EndLocal[1] * topSectionCos,
+]
+topArc4Center = [
+  arc4CenterLocal[0] * topSectionCos - arc4CenterLocal[1] * topSectionSin,
+  arc4CenterLocal[0] * topSectionSin + arc4CenterLocal[1] * topSectionCos,
+]
+topArc4End = [
+  arc4EndLocal[0] * topSectionCos - arc4EndLocal[1] * topSectionSin,
+  arc4EndLocal[0] * topSectionSin + arc4EndLocal[1] * topSectionCos,
+]
+topArc5Center = [
+  arc5CenterLocal[0] * topSectionCos - arc5CenterLocal[1] * topSectionSin,
+  arc5CenterLocal[0] * topSectionSin + arc5CenterLocal[1] * topSectionCos,
+]
+topArc5End = [
+  arc5EndLocal[0] * topSectionCos - arc5EndLocal[1] * topSectionSin,
+  arc5EndLocal[0] * topSectionSin + arc5EndLocal[1] * topSectionCos,
+]
+topArc6Center = [
+  arc6CenterLocal[0] * topSectionCos - arc6CenterLocal[1] * topSectionSin,
+  arc6CenterLocal[0] * topSectionSin + arc6CenterLocal[1] * topSectionCos,
+]
+
+topProfileSketch = sketch(on = topProfilePlane) {
+  arc1 = arc(start = [var 0.465, var -0.3], end = [var 0.465, var 0.3], center = [var 0.465, var 0])
+  arc2 = arc(start = [var 0.465, var -0.3], end = [var 0.031, var -0.5505], center = [var 0.465, var -0.801])
+  arc3 = arc(start = [var -0.4885, var -0.2505], end = [var 0.031, var -0.5505], center = [var -0.2287, var -0.4005])
+  arc4 = arc(start = [var -0.4885, var -0.2505], end = [var -0.4885, var 0.2505], center = [var -0.9224, var 0])
+  arc5 = arc(start = [var 0.031, var 0.5505], end = [var -0.4885, var 0.2505], center = [var -0.2287, var 0.4005])
+  arc6 = arc(start = [var 0.031, var 0.5505], end = [var 0.465, var 0.3], center = [var 0.465, var 0.801])
+  bore = circle(start = [var 0.1485, var 0], center = [var 0, var 0])
+
+  fixed([arc1.start, topArc1End])
+  fixed([arc1.end, topProfileStart])
+  fixed([arc1.center, topArc1Center])
+
+  fixed([arc2.start, topArc1End])
+  fixed([arc2.end, topArc2End])
+  fixed([arc2.center, topArc2Center])
+
+  fixed([arc3.start, topArc3End])
+  fixed([arc3.end, topArc2End])
+  fixed([arc3.center, topArc3Center])
+
+  fixed([arc4.start, topArc3End])
+  fixed([arc4.end, topArc4End])
+  fixed([arc4.center, topArc4Center])
+
+  fixed([arc5.start, topArc5End])
+  fixed([arc5.end, topArc4End])
+  fixed([arc5.center, topArc5Center])
+
+  fixed([arc6.start, topArc5End])
+  fixed([arc6.end, topProfileStart])
+  fixed([arc6.center, topArc6Center])
+
+  coincident([arc1.start, arc2.start])
+  coincident([arc2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, arc5.end])
+  coincident([arc5.start, arc6.start])
+  coincident([arc6.end, arc1.end])
+
+  fixed([bore.start, [holeDiameter / 2, 0]])
+  fixed([bore.center, [0, 0]])
+}
+
+topProfile = region(point = [gearPitch, 0], sketch = topProfileSketch)
+
+gearLoft = loft([bottomProfile, midProfile, topProfile])
+
+hide(bottomProfileSketch)
+hide(midProfileSketch)
+hide(topProfileSketch)

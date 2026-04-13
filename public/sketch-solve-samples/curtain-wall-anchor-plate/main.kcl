@@ -1,130 +1,252 @@
 // Curtain Wall Anchor Plate
-// A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening
-// Categories: Construction
+// Step 6: sketch-solve plate with both placed bolt assemblies.
 
-// Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Define parameters
 slabPlateBaseLength = 300
 slabPlateHookLength = 80
 slabPlateWidth = 200
 slabPlateThickness = 8
 offsetSlabRail = 200
-
-// Generate L-shaped anchor profile with base and hook flange
-// Includes fillets at internal and external corners for strength and safety
-fn lProfileFn(lengthBase, lengthHook, width, thickness) {
-  profilePlane = startSketchOn(offsetPlane(XZ, offset = -width / 2))
-  profileShape = startProfile(profilePlane, at = [0, 0])
-    |> yLine(length = lengthHook, tag = $hookOutside)
-    |> xLine(length = thickness)
-    |> yLine(length = thickness - lengthHook, tag = $hookInside)
-    |> xLine(length = lengthBase - thickness, tag = $baseInside)
-    |> yLine(length = -thickness)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $baseOutside)
-    |> close()
-  profileBody = extrude(profileShape, length = width)
-    |> fillet(
-         radius = thickness,
-         tags = [
-           getCommonEdge(faces = [baseInside, hookInside])
-         ],
-       )
-    |> fillet(
-         radius = thickness * 2,
-         tags = [
-           getCommonEdge(faces = [baseOutside, hookOutside])
-         ],
-       )
-  return profileBody
-}
-
-// Create a hexagonal shape used for bolt and nut heads
-fn hexagonFn(plane, radius) {
-  shape = startProfile(plane, at = [-radius, 0])
-    |> angledLine(angle = 60, length = radius)
-    |> xLine(length = radius)
-    |> angledLine(angle = -60, length = radius)
-    |> angledLine(angle = -120, length = radius)
-    |> xLine(length = -radius)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  return shape
-}
-
-// Build a bolt with a hexagonal head and cylindrical shaft
-fn boltFn(diameter, length) {
-  boltHeadPlane = startSketchOn(XY)
-  boltHeadShape = hexagonFn(plane = boltHeadPlane, radius = diameter)
-  boltHeadBody = extrude(boltHeadShape, length = diameter * 0.7)
-  boltPlane = startSketchOn(boltHeadBody, face = START)
-  boltShape = circle(boltPlane, center = [0, 0], radius = diameter / 2)
-  boltBody = extrude(boltShape, length = length)
-  return boltBody
-}
-
-// Construct a bolt assembly with base plate and hex nut
-// Assembles all parts for realistic anchor simulation
-fn boltWithPlateAndNutFn(diameter, length, gap) {
-  plateSide = diameter * 3
-  plateplane = startSketchOn(offsetPlane(XY, offset = -gap))
-  plateShape = startProfile(plateplane, at = [-plateSide / 2, -plateSide / 2])
-    |> yLine(length = plateSide)
-    |> xLine(length = plateSide)
-    |> yLine(length = -plateSide)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  plateBody = extrude(plateShape, length = -diameter * 0.3)
-  nutPlane = startSketchOn(plateBody, face = START)
-  boltHeadShape = hexagonFn(plane = nutPlane, radius = 12)
-  boltHeadBody = extrude(boltHeadShape, length = diameter * 0.7)
-  boltBody = boltFn(diameter = diameter, length = gap + diameter + 3)
-  mergedBody = union([boltHeadBody, boltBody])
-  return mergedBody
-}
-
-// Generate the plate geometry with a vertical hook for slab attachment
-slabPlate = lProfileFn(
-  lengthBase = slabPlateBaseLength,
-  lengthHook = slabPlateHookLength,
-  width = slabPlateWidth,
-  thickness = slabPlateThickness,
-)
-
-// Define oblong holes for bolts, allowing positional adjustment
 wideHoleWidth = 12
 wideHoleLength = 60
 wideHoleOffset = 30
 
-// Two slots mirrored across the plate width
-wideHolePlane = startSketchOn(XY)
-wideHoleShape = sketch(on = wideHolePlane) {
-  line1 = line(start = [var -24mm, var 6mm], end = [var 24mm, var 6mm])
-  arc2 = arc(start = [var 24mm, var -6mm], end = [var 24mm, var 6mm], center = [var 24mm, var 0mm])
-  coincident([line1.end, arc2.end])
-  line3 = line(start = [var 24mm, var -6mm], end = [var -24mm, var -6mm])
-  coincident([arc2.start, line3.start])
-  arc4 = arc(start = [var -24mm, var 6mm], end = [var -24mm, var -6mm], center = [var -24mm, var 0mm])
-  coincident([line3.end, arc4.end])
-  horizontal(line1)
-  horizontal(line3)
+outsideBendRadius = slabPlateThickness * 2
+bendCenter = [outsideBendRadius, outsideBendRadius]
+
+outerTop = [0mm, slabPlateHookLength]
+outerArcTopTangent = [0mm, outsideBendRadius]
+outerArcBottomTangent = [outsideBendRadius, 0mm]
+innerArcVerticalTangent = [slabPlateThickness, outsideBendRadius]
+innerArcBaseTangent = [outsideBendRadius, slabPlateThickness]
+hookInnerTop = [
+  slabPlateThickness,
+  slabPlateHookLength
+]
+baseTopRight = [
+  slabPlateBaseLength,
+  slabPlateThickness
+]
+baseBottomRight = [slabPlateBaseLength, 0mm]
+verticalStraightLength = slabPlateHookLength - outsideBendRadius
+horizontalStraightLength = slabPlateBaseLength - outsideBendRadius
+profileInterior = [
+  slabPlateBaseLength / 2,
+  slabPlateThickness / 2
+]
+slotRadius = wideHoleWidth / 2
+slotCenterY = wideHoleOffset - slabPlateWidth / 2
+slotCenterSpacing = wideHoleLength - wideHoleWidth
+slotLeftCenterX = offsetSlabRail - slotCenterSpacing / 2
+slotRightCenterX = offsetSlabRail + slotCenterSpacing / 2
+slotOverlap = 1mm
+slotCutLength = slabPlateThickness + 2 * slotOverlap
+boltDiameter = 10
+boltGap = slabPlateThickness + 5
+boltHeadRadius = boltDiameter
+nutRadius = 12
+boltHeadHeight = boltDiameter * 0.7
+boltShaftRadius = boltDiameter / 2
+boltShaftLength = boltGap + boltDiameter + 3
+boltPlateSide = boltDiameter * 3
+boltPlateHalfSide = boltPlateSide / 2
+boltPlateThickness = boltDiameter * 0.3
+boltCenterY = wideHoleOffset - slabPlateWidth / 2
+
+boltHeadHalfHeight = boltHeadRadius * sin(60deg)
+boltHeadCenter = [0mm, 0mm]
+boltHeadLeftPoint = [-boltHeadRadius, 0mm]
+boltHeadUpperLeft = [-boltHeadRadius / 2, boltHeadHalfHeight]
+boltHeadUpperRight = [boltHeadRadius / 2, boltHeadHalfHeight]
+boltHeadRightPoint = [boltHeadRadius, 0mm]
+boltHeadLowerRight = [boltHeadRadius / 2, -boltHeadHalfHeight]
+boltHeadLowerLeft = [-boltHeadRadius / 2, -boltHeadHalfHeight]
+
+nutHalfHeight = nutRadius * sin(60deg)
+nutCenter = [0mm, 0mm]
+nutLeftPoint = [-nutRadius, 0mm]
+nutUpperLeft = [-nutRadius / 2, nutHalfHeight]
+nutUpperRight = [nutRadius / 2, nutHalfHeight]
+nutRightPoint = [nutRadius, 0mm]
+nutLowerRight = [nutRadius / 2, -nutHalfHeight]
+nutLowerLeft = [-nutRadius / 2, -nutHalfHeight]
+
+fn makeSlabPlate() {
+  profileSketch = sketch(on = offsetPlane(XZ, offset = -slabPlateWidth / 2)) {
+    line1 = line(start = [var 0mm, var 80mm], end = [var 0mm, var 16mm])
+    line3 = line(start = [var 16mm, var 0mm], end = [var 300mm, var 0mm])
+    line4 = line(start = [var 300mm, var 0mm], end = [var 300mm, var 8mm])
+    line5 = line(start = [var 300mm, var 8mm], end = [var 16mm, var 8mm])
+    line7 = line(start = [var 8mm, var 16mm], end = [var 8mm, var 80mm])
+    line8 = line(start = [var 8mm, var 80mm], end = [var 0mm, var 80mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line5.start])
+
+    coincident([line7.end, line8.start])
+    coincident([line8.end, line1.start])
+    fixed([line1.start, outerTop])
+    fixed([line3.end, baseBottomRight])
+    fixed([line4.end, baseTopRight])
+    fixed([line7.end, hookInnerTop])
+    vertical(line1)
+    horizontal(line3)
+
+    vertical(line4)
+    horizontal(line5)
+    vertical(line7)
+    horizontal(line8)
+    horizontalDistance([line3.start, line3.end]) == horizontalStraightLength
+    horizontalDistance([line5.end, line5.start]) == horizontalStraightLength
+
+    verticalDistance([line7.start, line7.end]) == verticalStraightLength
+    verticalDistance([line1.end, line1.start]) == 64mm
+    arc1 = arc(start = [var 0mm, var 16mm], end = [var 16mm, var 0mm], center = [var 16mm, var 16mm])
+    coincident([arc1.start, line1.end])
+    coincident([line3.start, arc1.end])
+    tangent([line3, arc1])
+    arc2 = arc(start = [var 8mm, var 16mm], end = [var 16mm, var 8mm], center = [var 16mm, var 16mm])
+    coincident([arc2.start, line7.start])
+    coincident([line5.end, arc2.end])
+    tangent([line5, arc2])
+  }
+
+  profileRegion = region(point = profileInterior, sketch = profileSketch)
+  slabPlateStep2 = extrude(profileRegion, length = slabPlateWidth)
+
+  slotProfile = sketch(on = offsetPlane(XY, offset = -slotOverlap)) {
+    line1 = line(start = [var 224mm, var -64mm], end = [var 176mm, var -64mm])
+    arc2 = arc(start = [var 176mm, var -64mm], end = [var 176mm, var -76mm], center = [var 176mm, var -70mm])
+    line3 = line(start = [var 176mm, var -76mm], end = [var 224mm, var -76mm])
+    arc4 = arc(start = [var 224mm, var -76mm], end = [var 224mm, var -64mm], center = [var 224mm, var -70mm])
+
+    coincident([line1.end, arc2.start])
+    coincident([arc2.end, line3.start])
+    coincident([line3.end, arc4.start])
+    coincident([arc4.end, line1.start])
+
+    fixed([arc2.center, [slotLeftCenterX, slotCenterY]])
+    fixed([arc4.center, [slotRightCenterX, slotCenterY]])
+    horizontal(line1)
+    horizontal(line3)
+
+    radius(arc2) == slotRadius
+    radius(arc4) == slotRadius
+    equalLength([line1, line3])
+  }
+
+  slotRegion = region(point = [offsetSlabRail, slotCenterY], sketch = slotProfile)
+  slotCut = extrude(slotRegion, length = slotCutLength)
+  slotCutMirror = clone(slotCut)
+    |> translate(x = 0, y = slabPlateWidth - wideHoleOffset * 2, z = 0)
+  slabPlatePunchOne = subtract(slabPlateStep2, tools = [slotCut])
+  slabPlate = subtract(slabPlatePunchOne, tools = [slotCutMirror])
+
+  return slabPlate
 }
-region001 = region(segments = [
-  wideHoleShape.line1,
-  wideHoleShape.arc2
-])
-wideHoleVoidLeft = extrude(region001, length = slabPlateThickness + 2)
-wideHoleVoidRight = clone(wideHoleVoidLeft)
-  |> translate(x = 0, y = slabPlateWidth - (wideHoleOffset * 2), z = 0)
 
-// Cut the holes into the anchor plate body
-slabPlatePunchOne = subtract([slabPlate], tools = [wideHoleVoidLeft])
-slabPlatePunchTwo = subtract([slabPlatePunchOne], tools = [wideHoleVoidRight])
+fn makeBoltAssembly() {
+  boltHeadSketch = sketch(on = XY) {
+    line1 = line(start = [var -10mm, var 0mm], end = [var -5mm, var 8mm])
+    line2 = line(start = [var -5mm, var 8mm], end = [var 5mm, var 8mm])
+    line3 = line(start = [var 5mm, var 8mm], end = [var 10mm, var 0mm])
+    line4 = line(start = [var 10mm, var 0mm], end = [var 5mm, var -8mm])
+    line5 = line(start = [var 5mm, var -8mm], end = [var -5mm, var -8mm])
+    line6 = line(start = [var -5mm, var -8mm], end = [var -10mm, var 0mm])
 
-// Add two bolt assemblies into the oblong slots
-// Properly rotated and spaced to match anchor hole layout
-slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPlateThickness + 5)
+    coincident([line1.end, line2.start])
+    coincident([line2.end, line3.start])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line5.start])
+    coincident([line5.end, line6.start])
+    coincident([line6.end, line1.start])
+
+    fixed([line1.start, boltHeadLeftPoint])
+    fixed([line1.end, boltHeadUpperLeft])
+    fixed([line2.end, boltHeadUpperRight])
+    fixed([line3.end, boltHeadRightPoint])
+    fixed([line4.end, boltHeadLowerRight])
+    fixed([line5.end, boltHeadLowerLeft])
+
+    horizontal(line2)
+    horizontal(line5)
+  }
+
+  boltHeadRegion = region(point = boltHeadCenter, sketch = boltHeadSketch)
+  boltHead = extrude(boltHeadRegion, length = boltHeadHeight)
+
+  boltShaftSketch = sketch(on = startSketchOn(boltHead, face = START)) {
+    circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  }
+
+  boltShaftRegion = region(segments = [boltShaftSketch.circle1])
+  boltBody = extrude(boltShaftRegion, length = boltShaftLength)
+
+  boltPlateSketch = sketch(on = offsetPlane(XY, offset = -boltGap)) {
+    line1 = line(start = [var -15mm, var -15mm], end = [var 15mm, var -15mm])
+    line2 = line(start = [var 15mm, var -15mm], end = [var 15mm, var 15mm])
+    line3 = line(start = [var 15mm, var 15mm], end = [var -15mm, var 15mm])
+    line4 = line(start = [var -15mm, var 15mm], end = [var -15mm, var -15mm])
+
+    coincident([line1.end, line2.start])
+    coincident([line2.end, line3.start])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+
+    fixed([line1.start, [-boltPlateHalfSide, -boltPlateHalfSide]])
+    fixed([line1.end, [boltPlateHalfSide, -boltPlateHalfSide]])
+    fixed([line2.end, [boltPlateHalfSide, boltPlateHalfSide]])
+    fixed([line3.end, [-boltPlateHalfSide, boltPlateHalfSide]])
+
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+  }
+
+  boltPlateRegion = region(point = boltHeadCenter, sketch = boltPlateSketch)
+  boltPlate = extrude(boltPlateRegion, length = -boltPlateThickness)
+
+  nutSketch = sketch(on = startSketchOn(boltPlate, face = START)) {
+    line1 = line(start = [var -12mm, var 0mm], end = [var -6mm, var 10mm])
+    line2 = line(start = [var -6mm, var 10mm], end = [var 6mm, var 10mm])
+    line3 = line(start = [var 6mm, var 10mm], end = [var 12mm, var 0mm])
+    line4 = line(start = [var 12mm, var 0mm], end = [var 6mm, var -10mm])
+    line5 = line(start = [var 6mm, var -10mm], end = [var -6mm, var -10mm])
+    line6 = line(start = [var -6mm, var -10mm], end = [var -12mm, var 0mm])
+
+    coincident([line1.end, line2.start])
+    coincident([line2.end, line3.start])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line5.start])
+    coincident([line5.end, line6.start])
+    coincident([line6.end, line1.start])
+
+    fixed([line1.start, nutLeftPoint])
+    fixed([line1.end, nutUpperLeft])
+    fixed([line2.end, nutUpperRight])
+    fixed([line3.end, nutRightPoint])
+    fixed([line4.end, nutLowerRight])
+    fixed([line5.end, nutLowerLeft])
+
+    horizontal(line2)
+    horizontal(line5)
+  }
+
+  nutRegion = region(point = nutCenter, sketch = nutSketch)
+  nutBody = extrude(nutRegion, length = boltHeadHeight)
+
+  boltAssembly = union([nutBody, boltBody])
+  return boltAssembly
+}
+
+slabPlate = makeSlabPlate()
+slabPlateBoltOne = makeBoltAssembly()
   |> rotate(roll = 180, pitch = 0, yaw = 0)
-  |> translate(x = offsetSlabRail, y = wideHoleOffset - (slabPlateWidth / 2), z = 5)
-  |> patternLinear3d(instances = 2, distance = slabPlateWidth - (wideHoleOffset * 2), axis = [0, -1, 0])
+  |> translate(x = offsetSlabRail, y = -boltCenterY, z = 5)
+slabPlateBolts = patternLinear3d(
+  slabPlateBoltOne,
+  instances = 2,
+  distance = slabPlateWidth - wideHoleOffset * 2,
+  axis = [0, 1, 0],
+)

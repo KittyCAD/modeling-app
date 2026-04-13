@@ -1,77 +1,150 @@
 // Ceiling Propeller
-// A twisted ceiling fan geometry made using boolean cutouts
+// Stepwise sketch-solve reconstruction, currently stopped at step 8: circular-pattern the finished blade.
 // Categories: Construction
 
-// Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Define parameters
-bladeCount = 3 // Number of fan blades
-bladeTwistAngle = 5deg // Twist angle applied to the void cut geometry
-bladeSpanLength = 100 // Blade span (radial length)
-bladeWidth = 17.5 // Half-width of the blade at its widest point
-bladeBaseThickness = 10 // Total thickness of the extruded root/base
-bladeThickness = 2 // Thickness of the profile at void section
+bladeCount = 3
+bladeTwistAngle = 5deg
+bladeSpanLength = 100
+bladeWidth = 17.5
+bladeBaseThickness = 10
+bladeThickness = 2
 
-
-// Root geometry
 bladeRootWidth = bladeWidth * 2
-bladeSeamLength = bladeRootWidth / 2 / cos(30deg) // Angled base segment (30°)
+bladeSeamLength = bladeRootWidth / 2 / cos(30deg)
 
+voidCutoutLength = bladeSpanLength + 30
+voidCutoutWidth = bladeWidth * 3
+voidCutoutHeight = bladeWidth * 2
 
-// Void cutout dimensions
-voidCutoutLength = bladeSpanLength + 30 // Longitudinal length of the void
-voidCutoutWidth = bladeWidth * 3 // Width of the void cut
-voidCutoutHeight = bladeWidth * 2 // Height (used in tangential arc)
+bladeRootHalfWidth = bladeWidth
+bladeNeckHalfWidth = bladeWidth / 2
+bladeTipRadius = bladeWidth / 3
+bladeTipFlatHalfWidth = bladeNeckHalfWidth - bladeTipRadius
 
+bladeSeamAngle = 90deg - (360deg / bladeCount / 2)
+bladeNeckAngle = bladeSeamAngle + 95deg
 
-// Construct blade profile
+bladeSeamRise = bladeRootHalfWidth * tan(bladeSeamAngle)
+bladeNeckRise = (bladeRootHalfWidth - bladeNeckHalfWidth) * tan(180deg - bladeNeckAngle)
+bladeNeckY = bladeSeamRise + bladeNeckRise
+bladeSpanTopY = bladeNeckY + bladeSpanLength - bladeTipRadius
+bladeTipY = bladeSpanTopY + bladeTipRadius
+
 bladePlane = offsetPlane(XY, offset = -bladeBaseThickness / 2)
-bladeSketch = startSketchOn(XY)
+
+// Step 1: sketch the same closed blade footprint, but with sketch-solve constraints.
 bladeProfile = sketch(on = bladePlane) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 17.5mm, var 10.1mm])
-  line2 = line(start = [var 17.5mm, var 10.1mm], end = [var 8.75mm, var 22.6mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 8.75mm, var 22.6mm], end = [var 8.75mm, var 116.77mm])
-  coincident([line2.end, line3.start])
-  arc4 = arc(start = [var 8.75mm, var 116.77mm], end = [var 2.92mm, var 122.6mm], center = [var 2.92mm, var 116.77mm])
-  coincident([line3.end, arc4.start])
-  line5 = line(start = [var 2.92mm, var 122.6mm], end = [var 0mm, var 122.6mm])
-  coincident([arc4.end, line5.start])
-  vertical(line3)
-  tangent([line3, arc4])
-  radius(arc4) == 5.83mm
-  horizontal(line5)
+  rootSeamRight = line(start = [var 0mm, var 0mm], end = [var 17.5mm, var 10.1mm])
+  rootNeckRight = line(start = [var 17.5mm, var 10.1mm], end = [var 8.75mm, var 22.6mm])
+  spanRight = line(start = [var 8.75mm, var 22.6mm], end = [var 8.75mm, var 116.8mm])
+  tipArcRight = arc(
+    start = [var 8.75mm, var 116.8mm],
+    end = [var 2.92mm, var 122.6mm],
+    center = [var 2.92mm, var 116.8mm],
+  )
+  tipFlatRight = line(start = [var 2.92mm, var 122.6mm], end = [var 0mm, var 122.6mm])
+  tipFlatLeft = line(start = [var 0mm, var 122.6mm], end = [var -2.92mm, var 122.6mm])
+  tipArcLeft = arc(
+    start = [var -2.92mm, var 122.6mm],
+    end = [var -8.75mm, var 116.8mm],
+    center = [var -2.92mm, var 116.8mm],
+  )
+  spanLeft = line(start = [var -8.75mm, var 116.8mm], end = [var -8.75mm, var 22.6mm])
+  rootNeckLeft = line(start = [var -8.75mm, var 22.6mm], end = [var -17.5mm, var 10.1mm])
+  rootSeamLeft = line(start = [var -17.5mm, var 10.1mm], end = [var 0mm, var 0mm])
+
+  coincident([rootSeamRight.start, ORIGIN])
+  coincident([rootSeamRight.end, rootNeckRight.start])
+  coincident([rootNeckRight.end, spanRight.start])
+  coincident([spanRight.end, tipArcRight.start])
+  coincident([tipArcRight.end, tipFlatRight.start])
+  coincident([tipFlatRight.end, tipFlatLeft.start])
+  coincident([tipFlatLeft.end, tipArcLeft.start])
+  coincident([tipArcLeft.end, spanLeft.start])
+  coincident([spanLeft.end, rootNeckLeft.start])
+  coincident([rootNeckLeft.end, rootSeamLeft.start])
+  coincident([rootSeamLeft.end, rootSeamRight.start])
+  coincident([tipFlatRight.end, [0mm, bladeTipY]])
+  coincident([tipFlatLeft.start, [0mm, bladeTipY]])
+
+  vertical(spanRight)
+  vertical(spanLeft)
+  horizontal(tipFlatRight)
+  horizontal(tipFlatLeft)
+  tangent([spanRight, tipArcRight])
+  tangent([tipArcLeft, spanLeft])
+  equalLength([rootSeamRight, rootSeamLeft])
+  equalLength([rootNeckRight, rootNeckLeft])
+  equalLength([spanRight, spanLeft])
+  equalLength([tipFlatRight, tipFlatLeft])
+  horizontalDistance([rootSeamRight.start, rootSeamRight.end]) == bladeRootHalfWidth
+  verticalDistance([rootSeamRight.start, rootSeamRight.end]) == bladeSeamRise
+  horizontalDistance([rootNeckRight.start, rootNeckRight.end]) == bladeNeckHalfWidth - bladeRootHalfWidth
+  verticalDistance([rootNeckRight.start, rootNeckRight.end]) == bladeNeckRise
+  verticalDistance([spanRight.start, spanRight.end]) == bladeSpanTopY - bladeNeckY
+  horizontalDistance([rootSeamRight.start, tipArcRight.center]) == bladeTipFlatHalfWidth
+  verticalDistance([rootSeamRight.start, tipArcRight.center]) == bladeSpanTopY
+  verticalDistance([rootSeamRight.start, tipFlatRight.end]) == bladeTipY
+  radius(tipArcRight) == bladeTipRadius
+  radius(tipArcLeft) == bladeTipRadius
 }
 
-region001 = region(segments = [bladeProfile.line1, bladeProfile.line2])
-// Extrude blade solid and apply fillets
-bladeSolid = extrude(region001, length = bladeBaseThickness)
+bladeRegion = region(segments = [bladeProfile.rootSeamRight, bladeProfile.rootNeckRight])
+bladeSolid = extrude(bladeRegion, length = bladeBaseThickness)
 
-// Construct twisted void cutout (one side only)
-voidSketch = startSketchOn(YZ)
-voidProfile = sketch(on = voidSketch) {
-  line1 = line(start = [var 150mm, var 1mm], end = [var 35mm, var 1mm])
-  arc2 = arc(start = [var 0mm, var 36mm], end = [var 35mm, var 1mm], center = [var 35mm, var 36mm])
-  coincident([line1.end, arc2.end])
-  line3 = line(start = [var 0mm, var 36mm], end = [var 150mm, var 36mm])
-  coincident([arc2.start, line3.start])
-  line4 = line(start = [var 150mm, var 36mm], end = [var 150mm, var 1mm])
-  coincident([line3.end, line4.start])
-  horizontal(line1)
-  horizontal(line3)
+// Step 3: sketch the first void-cut profile on the YZ plane in sketch-solve form.
+voidProfile = sketch(on = YZ) {
+  bottomEdge = line(start = [var 150mm, var 1mm], end = [var 35mm, var 1mm])
+  innerArc = arc(
+    start = [var 0mm, var 36mm],
+    end = [var 35mm, var 1mm],
+    center = [var 35mm, var 36mm],
+  )
+  topEdge = line(start = [var 0mm, var 36mm], end = [var 150mm, var 36mm])
+  outerEdge = line(start = [var 150mm, var 36mm], end = [var 150mm, var 1mm])
+
+  coincident([bottomEdge.end, innerArc.end])
+  coincident([innerArc.start, topEdge.start])
+  coincident([topEdge.end, outerEdge.start])
+  coincident([outerEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  horizontal(topEdge)
+  vertical(outerEdge)
+  tangent([bottomEdge, innerArc])
+  tangent([innerArc, topEdge])
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == bladeSpanLength * 1.15
+  verticalDistance([outerEdge.end, outerEdge.start]) == voidCutoutHeight
+  horizontalDistance([bottomEdge.start, outerEdge.start]) == 0mm
 }
 
-region002 = region(segments = [voidProfile.line1, voidProfile.arc2])
-voidCutoutOne = extrude(region002, length = voidCutoutWidth, symmetric = true)
+// Step 4: extrude the first cutter and twist it.
+voidRegion = region(segments = [voidProfile.bottomEdge, voidProfile.innerArc])
+voidCutoutOne = extrude(voidRegion, length = voidCutoutWidth, symmetric = true)
   |> rotate(roll = 0, pitch = bladeTwistAngle, yaw = 0)
 
-// Mirror second void cut to other side
+// Step 5: mirror the second cutter to the opposite side.
 voidCutoutTwo = clone(voidCutoutOne)
   |> rotate(roll = 0, pitch = 180, yaw = 0)
 
-// Subtract voids from blade
-bladeWithVoidOne = subtract([bladeSolid], tools = [voidCutoutOne])
-bladeWithVoids = subtract([bladeWithVoidOne], tools = [voidCutoutTwo])
-  // Circular pattern: 3 blade instance fan
-  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
+// Step 6: subtract the first cutter from the blade blank.
+hiddenBladeSolid = hide(bladeSolid)
+hiddenVoidCutoutOne = hide(voidCutoutOne)
+bladeWithVoidOne = subtract([hiddenBladeSolid], tools = [hiddenVoidCutoutOne])
+
+// Step 7: subtract the mirrored cutter to form the finished single blade.
+hiddenBladeWithVoidOne = hide(bladeWithVoidOne)
+hiddenVoidCutoutTwo = hide(voidCutoutTwo)
+bladeWithVoids = subtract([hiddenBladeWithVoidOne], tools = [hiddenVoidCutoutTwo])
+
+// Step 8: circular-pattern the finished blade into the final fan.
+ceilingFan = patternCircular3d(
+  bladeWithVoids,
+  instances = bladeCount,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+)
+
+ceilingFan

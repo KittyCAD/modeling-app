@@ -1,12 +1,8 @@
-// Dog House (Great Dane) - Roof
-// Roof rafters and slats for the dog house.
-
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
 
-// Side slat spacing (match wall cadence for rafters)
 sideSlatWidth = studDepth
 sideSlatGap = 2
 sideSlatPitch = sideSlatWidth + sideSlatGap
@@ -16,7 +12,6 @@ sideSlatSpanY = sideSlatEndY - sideSlatStartY
 sideSlatCount = floor(sideSlatSpanY / sideSlatPitch) + 1
 sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
 
-// Roof framing
 roofHalfWidth = frameWidth / 2
 roofAngle = atan(roofRise / roofHalfWidth)
 rafterLength = sqrt(roofHalfWidth * roofHalfWidth + roofRise * roofRise)
@@ -27,18 +22,15 @@ ridgeBoardZ = peakZ - studDepth
 
 rafterStartY = sideSlatStartY + (sideSlatWidth - rafterWidth) / 2
 rafterEndY = frameLength - studDepth - rafterWidth
-rafterSpanY = rafterEndY - rafterStartY
 rafterCount = sideSlatCount
 rafterSpacing = sideSlatActualPitch
 
-// Collar ties (brace rafters together to reduce ridge load)
 collarTieHeightFactor = 0.5
 collarTieCenterZ = eaveZ + roofRise * collarTieHeightFactor
 collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ) - (studThickness / 2)
 collarTieLength = 2 * collarTieHalfWidth
 collarTieMinZ = collarTieCenterZ - (studThickness / 2)
 
-// Import upper side wall beams as reference geometry
 topRightPlate = twoByFourY(
   minX = frameWidth / 2 - studDepth,
   minY = 0,
@@ -53,7 +45,6 @@ topLeftPlate = twoByFourY(
   lengthY = frameLength,
 )
 
-// Create half-width rafter beams to make slot cuts
 rightRafterhalf = twoByFourX(
        minX = -rafterLength / 2 - 3,
        minY = rafterStartY,
@@ -74,7 +65,6 @@ leftRafterHalf = twoByFourX(
   |> translate(x = -roofHalfWidth / 2, y = -3.5 / 2, z = rafterMidZ)
   |> scale(x = 1.025, z = 1.025, global = false)
 
-// Model the left and right rafters. Subtract interface to mesh with other beams
 rightRafter = twoByFourX(
        minX = -rafterLength / 2 - 3,
        minY = rafterStartY,
@@ -97,7 +87,6 @@ leftRafter = twoByFourX(
   |> subtract(tools = rightRafterhalf)
   |> subtract(tools = topRightPlate)
 
-// Create the center collar tie
 collarTie = twoByFourX(
        minX = -collarTieHalfWidth + 2.25,
        minY = rafterStartY,
@@ -106,7 +95,6 @@ collarTie = twoByFourX(
      )
   |> subtract(tools = [clone(leftRafter), clone(rightRafter)])
 
-// Pattern the roof beams the length of the roof
 rightRafters = patternLinear3d(
   [rightRafter],
   axis = [0, 1, 0],
@@ -128,21 +116,34 @@ collarTies = patternLinear3d(
   instances = rafterCount,
 )
 
-// Model a ridgeboard to hold it all together
-sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var 3.48in, var 45.75in], end = [var 3.48in, var 42.59in])
-  line2 = line(start = [var 3.48in, var 42.59in], end = [var 7.03in, var 42.59in])
+ridgeBoardSlotSketch = sketch(on = YZ) {
+  line1 = line(
+    start = [var 3.475in, var 45.75in],
+    end = [var 3.475in, var 42.59in],
+  )
+  line2 = line(
+    start = [var 3.475in, var 42.59in],
+    end = [var 7.025in, var 42.59in],
+  )
   coincident([line1.end, line2.start])
-  line3 = line(start = [var 7.03in, var 42.59in], end = [var 7.03in, var 45.77in])
+  line3 = line(
+    start = [var 7.025in, var 42.59in],
+    end = [var 7.025in, var 45.77in],
+  )
   coincident([line2.end, line3.start])
-  line4 = line(start = [var 7.03in, var 45.77in], end = [var 3.48in, var 45.75in])
+  line4 = line(
+    start = [var 7.025in, var 45.77in],
+    end = [var 3.475in, var 45.75in],
+  )
   coincident([line3.end, line4.start])
-  vertical(line2)
-  horizontal(line3)
-  vertical(line4)
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
 }
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-ridgeBoardSlots = extrude(region001, length = 5, symmetric = true)
+
+ridgeBoardSlotRegion = region(point = [5in, 44in], sketch = ridgeBoardSlotSketch)
+ridgeBoardSlots = extrude(ridgeBoardSlotRegion, length = 5, symmetric = true)
   |> patternLinear3d(instances = rafterCount, distance = rafterSpacing, axis = [0, 1, 0])
 
 ridgeBoard = twoByFourYRotated(
@@ -153,11 +154,10 @@ ridgeBoard = twoByFourYRotated(
      )
   |> subtract(tools = ridgeBoardSlots)
 
-// Apply wooden appearance
 [
-       rightRafters,
-       leftRafters,
-       collarTies,
-       ridgeBoard
-     ]
+  rightRafters,
+  leftRafters,
+  collarTies,
+  ridgeBoard
+]
   |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)

@@ -1,11 +1,7 @@
-// Dog House for a Great Dane
-// Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber
-// Categories: Maker
+// Step 7: base frame + front wall + roof + back frame + left wall + right wall + floor
 
-// Define units
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
-// Import submodules; each defines geometry at top level. Importing assembles the scene.
 import "frame.kcl" as frame
 import "front-wall.kcl" as frontWall
 import "roof.kcl" as roof

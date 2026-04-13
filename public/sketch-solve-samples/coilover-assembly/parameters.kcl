@@ -21,8 +21,7 @@ export damperBodyDia = lowerMountDia
 export pistonShaftHoleDia = 10
 export lengthBelowRetainerPlate = baseSeatingLength + lowerMountLength + eyeEndMountLength
 export lowerMountOverallLength = lengthBelowRetainerPlate + retainerPlateLength
-export pointOffset = 20 // Used to help build profile for subtraction
-
+export pointOffset = 20
 
 // Coilover Spring (spring.kcl)
 export springRadius = 22
@@ -35,4 +34,4 @@ export pistonRodStopDia = 25
 export pistonRodStopLength = 32.5
 export upperMountPlateDia = 70
 export upperMountPlateThickness = 22.5
-export pistonShaftDia = pistonShaftHoleDia - 0.1 // reduced shaft dia from the hole to provide some clearance
+export pistonShaftDia = pistonShaftHoleDia - 0.1

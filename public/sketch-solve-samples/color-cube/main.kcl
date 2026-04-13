@@ -2,17 +2,14 @@
 // This is a color cube centered about the origin. It is used to help determine orientation in the scene.
 // Categories: Maker
 
-// Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// Parameters referenced in drawRectangle
 size = 100
 halfSize = size / 2
 extrudeLength = 1.0
 metalConstant = 50
 roughnessConstant = 50
 
-// Create planes for 6 sides of a cube
 bluePlane = offsetPlane(XY, offset = halfSize)
 yellowPlane = offsetPlane(XY, offset = -halfSize)
 greenPlane = offsetPlane(XZ, offset = -halfSize)
@@ -20,23 +17,59 @@ purplePlane = offsetPlane(-XZ, offset = -halfSize)
 redPlane = offsetPlane(YZ, offset = halfSize - extrudeLength)
 tealPlane = offsetPlane(YZ, offset = -halfSize)
 
-// Sketch a rectangle centered at the origin of the profile
-fn sketchRectangle(profile, color) {
-  sketch001 = profile
-    |> startProfile(at = [-halfSize, halfSize])
-    |> angledLine(angle = 0, length = size, tag = $rectangleSegmentA001)
-    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = size, tag = $rectangleSegmentB001)
-    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  return extrude(sketch001, length = extrudeLength)
-    |> appearance(color = color, metalness = metalConstant, roughness = roughnessConstant)
+fn squareFace(plane, color) {
+  squareProfile = sketch(on = plane) {
+    bottomEdge = line(start = [var -50mm, var -50mm], end = [var 50mm, var -50mm])
+    rightEdge = line(start = [var 50mm, var -50mm], end = [var 50mm, var 50mm])
+    coincident([bottomEdge.end, rightEdge.start])
+    topEdge = line(start = [var 50mm, var 50mm], end = [var -50mm, var 50mm])
+    coincident([rightEdge.end, topEdge.start])
+    leftEdge = line(start = [var -50mm, var 50mm], end = [var -50mm, var -50mm])
+    coincident([topEdge.end, leftEdge.start])
+    coincident([leftEdge.end, bottomEdge.start])
+
+    centerToBottom = line(start = [var 0mm, var 0mm], end = [var 0mm, var -50mm], construction = true)
+    centerToRight = line(start = [var 0mm, var 0mm], end = [var 50mm, var 0mm], construction = true)
+    coincident([centerToBottom.start, ORIGIN])
+    coincident([centerToRight.start, ORIGIN])
+    coincident([centerToBottom.end, bottomEdge])
+    coincident([centerToRight.end, rightEdge])
+
+    horizontal(bottomEdge)
+    vertical(rightEdge)
+    horizontal(topEdge)
+    vertical(leftEdge)
+    vertical(centerToBottom)
+    horizontal(centerToRight)
+
+    horizontalDistance([centerToRight.start, centerToRight.end]) == halfSize
+    verticalDistance([centerToBottom.end, centerToBottom.start]) == halfSize
+    horizontalDistance([bottomEdge.start, bottomEdge.end]) == size
+    verticalDistance([rightEdge.start, rightEdge.end]) == size
+  }
+
+  squareRegion = region(segments = [squareProfile.bottomEdge, squareProfile.rightEdge])
+  squareBody = extrude(squareRegion, length = extrudeLength)
+  return appearance(
+    squareBody,
+    color = color,
+    metalness = metalConstant,
+    roughness = roughnessConstant,
+  )
 }
 
-// Sketch each side of the cube
-sketchRectangle(profile = bluePlane, color = '#0000FF')
-sketchRectangle(profile = yellowPlane, color = '#FFFF00')
-sketchRectangle(profile = greenPlane, color = '#00FF00')
-sketchRectangle(profile = redPlane, color = '#FF0000')
-sketchRectangle(profile = tealPlane, color = '#00FFFF')
-sketchRectangle(profile = purplePlane, color = '#FF00FF')
+blueFace = squareFace(plane = bluePlane, color = "#0000FF")
+yellowFace = squareFace(plane = yellowPlane, color = "#FFFF00")
+greenFace = squareFace(plane = greenPlane, color = "#00FF00")
+redFace = squareFace(plane = redPlane, color = "#FF0000")
+tealFace = squareFace(plane = tealPlane, color = "#00FFFF")
+purpleFace = squareFace(plane = purplePlane, color = "#FF00FF")
+
+colorCubeFaces = [
+  blueFace,
+  yellowFace,
+  greenFace,
+  redFace,
+  tealFace,
+  purpleFace,
+]

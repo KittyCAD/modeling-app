@@ -1,106 +1,181 @@
-// Adjustable L‑Bracket
-// a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.
+// Adjustable L-Bracket
+// A compact 90 degree mounting bracket used to join parts at right angles.
+// The slot provides alignment adjustment while the countersunk hole allows a flush screw head.
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
-// default units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-// model parameters
 halfBracketWidth = 20
 fastenerHoleDiameter = 12
 countersinkOuterDiameter = 22
 
-uprightTabHoleCenterOffsetFromBend = 50
-slotCenterOffsetFromBend = 150
+uprightHoleCenterZ = 50
+slotRightCenterX = 150
 
 sheetMetalThickness = 4
 insideBendRadius = 8
 outsideBendRadius = insideBendRadius + sheetMetalThickness
-overallBracketWidth = halfBracketWidth * 2
+bracketWidth = halfBracketWidth * 2
 
-// outline profile
-outlineSketch = startSketchOn(XZ)
-outlineProfile = sketch(on = outlineSketch) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 70mm])
-  line2 = line(start = [var 0mm, var 70mm], end = [var 4mm, var 70mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 4mm, var 70mm], end = [var 4mm, var 4mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 4mm, var 4mm], end = [var 170mm, var 4mm])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [var 170mm, var 4mm], end = [var 170mm, var 0mm])
-  coincident([line4.end, line5.start])
-  line6 = line(start = [var 170mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line5.end, line6.start])
-  vertical(line1)
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line4)
-  vertical(line5)
+uprightOuterHeight = uprightHoleCenterZ + halfBracketWidth
+roundedEndRadius = halfBracketWidth
+roundedEndCenterX = slotRightCenterX
+horizontalPlateStartX = outsideBendRadius
+horizontalStraightLength = roundedEndCenterX - horizontalPlateStartX
+verticalPlateBaseZ = outsideBendRadius
+verticalShoulderHeight = uprightHoleCenterZ - verticalPlateBaseZ
+bendCenterX = outsideBendRadius
+bendCenterZ = outsideBendRadius
+bendMidRadius = insideBendRadius + sheetMetalThickness / 2
+bendPathStartX = bendCenterX - bendMidRadius
+bendPathStartZ = bendCenterZ
+bendPathEndX = bendCenterX
+bendPathEndZ = bendCenterZ - bendMidRadius
+
+fastenerHoleRadius = fastenerHoleDiameter / 2
+
+slotRadius = fastenerHoleRadius
+slotCenterSpacing = fastenerHoleDiameter * 3
+slotLeftCenterX = slotRightCenterX - slotCenterSpacing
+slotMiddleX = (slotLeftCenterX + slotRightCenterX) / 2
+horizontalPlateInteriorX = (horizontalPlateStartX + slotLeftCenterX) / 2
+featureOverlap = 1
+
+horizontalProfile = sketch(on = XY) {
+  outerLine1 = line(start = [var 150mm, var -20mm], end = [var 12mm, var -20mm])
+  outerLine2 = line(start = [var 12mm, var -20mm], end = [var 12mm, var 20mm])
+  outerLine3 = line(start = [var 12mm, var 20mm], end = [var 150mm, var 20mm])
+  coincident([outerLine1.end, outerLine2.start])
+
+  coincident([outerLine2.end, outerLine3.start])
+  fixed([
+    outerLine1.start,
+    [roundedEndCenterX, -halfBracketWidth]
+  ])
+  horizontal(outerLine1)
+  vertical(outerLine2)
+
+  horizontal(outerLine3)
+  horizontalDistance([outerLine1.end, outerLine1.start]) == horizontalStraightLength
+  verticalDistance([outerLine2.start, outerLine2.end]) == bracketWidth
+  arc1 = arc(start = [var 150mm, var -20mm], end = [var 150mm, var 20mm], center = [var 150mm, var 0.1mm])
+  coincident([arc1.start, outerLine1.start])
+  tangent([outerLine1, arc1])
 }
 
-region001 = region(segments = [
-  outlineProfile.line1,
-  outlineProfile.line2
-])
-// extrude body
-bracketBodySolid = extrude(
-  region001,
-  length = overallBracketWidth,
-  symmetric = true,
-  tagEnd = $capEnd,
-  tagStart = $capStart,
-)
+horizontalRegion = region(point = [horizontalPlateInteriorX, 0mm], sketch = horizontalProfile)
+horizontalPlateBase = extrude(horizontalRegion, length = sheetMetalThickness)
 
-// bend fillets
-insideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg01, seg02]), radius = insideBendRadius)
-outsideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg03, seg04]), radius = outsideBendRadius)
+slotProfile = sketch(on = offsetPlane(XY, offset = -featureOverlap)) {
+  line1 = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
+  arc2 = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
+  line3 = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
+  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var 0mm])
 
-// end rounds
-freeEndCornerFillets = fillet(
-  bracketBodySolid,
-  tags = [
-    getCommonEdge(faces = [seg05, capEnd]),
-    getCommonEdge(faces = [seg05, capStart]),
-    getCommonEdge(faces = [seg06, capEnd]),
-    getCommonEdge(faces = [seg06, capStart])
-  ],
-  radius = halfBracketWidth,
-)
+  coincident([line1.end, arc2.end])
+  coincident([arc2.start, line3.start])
+  coincident([line3.end, arc4.end])
+  coincident([arc4.start, line1.start])
 
-// tab hole
-bracketWithCountersunkHole = hole::hole(
-  bracketBodySolid,
-  face = seg02,
-  cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
+  fixed([arc4.center, [slotRightCenterX, 0mm]])
+  horizontal(line1)
+  horizontal(line3)
+
+  radius(arc2) == slotRadius
+  radius(arc4) == slotRadius
+  distance([arc2.center, arc4.center]) == slotCenterSpacing
+  equalLength([line1, line3])
+}
+
+slotRegion = region(segments = [slotProfile.line1, slotProfile.arc2])
+slotCut = extrude(slotRegion, length = sheetMetalThickness + 2 * featureOverlap)
+
+horizontalPlate = subtract(horizontalPlateBase, tools = [slotCut])
+
+verticalProfile = sketch(on = YZ) {
+  line1 = line(start = [var 20mm, var 12mm], end = [var -20mm, var 12mm])
+  line2 = line(start = [var -20mm, var 12mm], end = [var -20mm, var 50mm])
+  arc3 = arc(start = [var 20mm, var 50mm], end = [var -20mm, var 50mm], center = [var 0mm, var 50mm])
+  line4 = line(start = [var 20mm, var 50mm], end = [var 20mm, var 12mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, arc3.end])
+  coincident([arc3.start, line4.start])
+  coincident([line4.end, line1.start])
+
+  fixed([
+    line1.start,
+    [halfBracketWidth, verticalPlateBaseZ]
+  ])
+  fixed([arc3.center, [0mm, uprightHoleCenterZ]])
+  horizontal(line1)
+  vertical(line2)
+  vertical(line4)
+
+  horizontalDistance([line1.start, line1.end]) == -bracketWidth
+  verticalDistance([line2.start, line2.end]) == verticalShoulderHeight
+  radius(arc3) == halfBracketWidth
+  tangent([line2, arc3])
+  tangent([arc3, line4])
+}
+
+verticalRegion = region(point = [0mm, uprightHoleCenterZ], sketch = verticalProfile)
+verticalPlateBase = extrude(verticalRegion, length = sheetMetalThickness, tagEnd = $uprightOuterFace)
+
+verticalPlate = hole::hole(
+  verticalPlateBase,
+  face = uprightOuterFace,
+  cutAt = [uprightHoleCenterZ, 0mm],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
   holeType = hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
 )
 
-// slot sketch
-slotWidth = fastenerHoleDiameter
-slotOverallLength = fastenerHoleDiameter * 3
-slotSketch = startSketchOn(XY)
-slotProfile = sketch(on = slotSketch) {
-  line1 = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
-  arc2 = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
-  coincident([line1.end, arc2.end])
-  line3 = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
-  coincident([arc2.start, line3.start])
-  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var 0mm])
-  coincident([line3.end, arc4.end])
-  horizontal(line1)
+bendPath = sketch(on = XZ) {
+  arc1 = arc(start = [var 2mm, var 12mm], end = [var 12mm, var 2mm], center = [var 12mm, var 12mm])
+
+  fixed([
+    arc1.center,
+    [bendCenterX, bendCenterZ]
+  ])
+  radius(arc1) == bendMidRadius
+  coincident([
+    arc1.start,
+    [bendPathStartX, bendPathStartZ]
+  ])
+  coincident([arc1.end, [bendPathEndX, bendPathEndZ]])
 }
 
-region002 = region(segments = [slotProfile.line1, slotProfile.arc2])
-// slot cut
-slotCutSolid = extrude(region002, length = sheetMetalThickness)
+bendProfile = sketch(on = offsetPlane(XY, offset = bendCenterZ)) {
+  line1 = line(start = [var 0mm, var -20mm], end = [var 4mm, var -20mm])
+  line2 = line(start = [var 4mm, var -20mm], end = [var 4mm, var 20mm])
+  line3 = line(start = [var 4mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var -20mm])
 
-// boolean cut
-bracketFinished = subtract(bracketWithCountersunkHole, tools = slotCutSolid)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
 
-// material appearance
+  fixed([line1.start, [0mm, -halfBracketWidth]])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, line1.end]) == sheetMetalThickness
+  verticalDistance([line2.start, line2.end]) == bracketWidth
+}
+
+bendRegion = region(point = [sheetMetalThickness / 2, 0mm], sketch = bendProfile)
+bendFiller = sweep(bendRegion, path = bendPath.meta.sketch)
+
+bracketFinished = union([
+  horizontalPlate,
+  verticalPlate,
+  bendFiller
+])
+
 appearance(
   [bracketFinished],
   color = "#c8ff00",

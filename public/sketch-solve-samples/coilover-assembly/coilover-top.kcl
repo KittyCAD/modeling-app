@@ -5,12 +5,21 @@
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import parameters
-import eyeEndMountOuterDia, pointOffset, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, pistonRodStopDia, pistonRodStopLength, upperMountPlateDia, upperMountPlateThickness from "parameters.kcl"
+import eyeEndMountOuterDia, pointOffset, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, pistonRodStopDia, pistonRodStopLength, pistonShaftDia, upperMountPlateDia, upperMountPlateThickness from "parameters.kcl"
+
+eyeEndHalfThickness = eyeEndMountThickness / 2
+eyeEndSlotDepth = 22
+eyeEndOuterHeight = 30
+eyeEndOuterAnchorX = eyeEndHalfThickness + eyeEndMountFillet + pointOffset
+upperEyeEndBottomZ = upperMountPlateThickness + eyeEndMountLength - eyeEndMountOuterDia
+upperEyeEndCenterZ = upperMountPlateThickness + eyeEndMountLength - eyeEndMountOuterDia / 2
 
 // Stopper for the Piston Rod located just below Upper Mount Plate
 pistonRodStopSketch = startSketchOn(XY)
 pistonRodStopperProfile = sketch(on = pistonRodStopSketch) {
   circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == pistonRodStopDia / 2
 }
 
 region001 = region(segments = [pistonRodStopperProfile.circle1])
@@ -18,43 +27,49 @@ pistonRodStopperExtrude = extrude(region001, length = -pistonRodStopLength, tagS
   |> chamfer(
        length = 6,
        tags = [
-         getCommonEdge(faces = [seg01, capStart001])
+         getCommonEdge(faces = [region001.tags.circle1, capStart001])
        ],
      )
 
 // Piston Rod located below the Stopper
-pistonRodSketch = startSketchOn(pistonRodStopperExtrude, face = START)
-pistonRodProfile = sketch(on = pistonRodSketch) {
+pistonRodProfile = sketch(on = startSketchOn(pistonRodStopperExtrude, face = START)) {
   circle1 = circle(start = [var 4.95mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == pistonShaftDia / 2
 }
+
 region002 = region(segments = [pistonRodProfile.circle1])
 pistonRodExtrude = extrude(region002, length = 200)
 
 // Upper Mount Plate
-upperMountPlateSketch = startSketchOn(pistonRodStopperExtrude, face = END)
-upperMountPlateProfile = sketch(on = upperMountPlateSketch) {
+upperMountPlateProfile = sketch(on = startSketchOn(pistonRodStopperExtrude, face = END)) {
   circle1 = circle(start = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == upperMountPlateDia / 2
 }
+
 region003 = region(segments = [upperMountPlateProfile.circle1])
 upperMountPlateExtrude = extrude(region003, length = upperMountPlateThickness, tagEnd = $capEnd001)
   |> chamfer(
        length = 19,
        tags = [
-         getCommonEdge(faces = [seg02, capEnd001])
+         getCommonEdge(faces = [region003.tags.circle1, capEnd001])
        ],
      )
 
 // Eye End for Upper Mount
-eyeEndSketch = startSketchOn(upperMountPlateExtrude, face = END)
-eyeEndProfile = sketch(on = eyeEndSketch) {
+eyeEndProfile = sketch(on = startSketchOn(upperMountPlateExtrude, face = END)) {
   circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == eyeEndMountOuterDia / 2
 }
+
 region004 = region(segments = [eyeEndProfile.circle1])
 eyeEndExtrude = extrude(region004, length = eyeEndMountLength, tagEnd = $capEnd002)
   |> fillet(
        radius = eyeEndMountOuterDia / 2 - 0.01,
        tags = [
-         getCommonEdge(faces = [seg03, capEnd002])
+         getCommonEdge(faces = [region004.tags.circle1, capEnd002])
        ],
      )
 
@@ -80,15 +95,34 @@ eyeEndOuterProfile = sketch(on = eyeEndOuterSketch) {
   coincident([line8.end, line9.start])
   line10 = line(start = [var 31.35mm, var 70mm], end = [var 31.35mm, var 40mm])
   coincident([line9.end, line10.start])
+  coincident([line10.end, line1.start])
+
+  anchor = line(start = [var 0mm, var 0mm], end = [var 31.35mm, var 40mm], construction = true)
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, line1.start])
+
   horizontal(line1)
-  radius(arc2) == 5mm
+  tangent([line1, arc2])
+  radius(arc2) == eyeEndMountFillet
   vertical(line3)
   horizontal(line4)
   vertical(line5)
-  radius(arc6) == 5mm
+  tangent([line5, arc6])
+  radius(arc6) == eyeEndMountFillet
   horizontal(line7)
   vertical(line8)
   horizontal(line9)
+  vertical(line10)
+
+  distance([line1.start, line1.end]) == pointOffset
+  distance([line3.start, line3.end]) == eyeEndSlotDepth
+  distance([line4.start, line4.end]) == eyeEndMountThickness
+  equalLength([line5, line3])
+  equalLength([line7, line1])
+  distance([line8.start, line8.end]) == eyeEndOuterHeight
+  equalLength([line10, line8])
+  horizontalDistance([anchor.start, anchor.end]) == eyeEndOuterAnchorX
+  verticalDistance([anchor.start, anchor.end]) == upperEyeEndBottomZ
 }
 
 region005 = region(segments = [
@@ -100,10 +134,16 @@ upperMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
 
 // Eye End Hole for Upper Mount
 eyeEndHolePlane = offsetPlane(XZ, offset = 15)
-eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
-eyeEndHoleProfile = sketch(on = eyeEndHoleSketch) {
+eyeEndHoleProfile = sketch(on = startSketchOn(eyeEndHolePlane)) {
   circle1 = circle(start = [var 6.25mm, var 52.5mm], center = [var 0mm, var 52.5mm])
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 52.5mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, circle1.center])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == upperEyeEndCenterZ
+  radius(circle1) == eyeEndMountHoleDia / 2
 }
+
 region006 = region(segments = [eyeEndHoleProfile.circle1])
 eyeEndHoleExtrude = extrude(region006, length = -40)
 upperMountSolid = subtract([upperMount], tools = [eyeEndHoleExtrude])

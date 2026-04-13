@@ -1,25 +1,27 @@
-// Dog House (Great Dane) - 2x4 Helpers
-// Utility helpers for extruding 2x4 lumber profiles.
+// Dog House (Great Dane) - Sketch-solve 2x4 Helpers
 
-// Define units
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
-// Import and define parameters
 import * from "dimensions.kcl"
+
 export woodColor = "#a0825c"
 export woodRoughness = 80
 export woodMetalness = 0
 
 fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
-  sketch001 = startSketchOn(XY)
-    // Start a 2D sketch on the global XY plane
-    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Draw the 2x4 cross‑section at the given corner
-  return extrude(sketch001, length = sizeZ) // Create a 3D prism by extruding the rectangle along +Z
-    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Apply a wood‑like material
-    |> translate(z = minZ) // Position the prism so its bottom sits at minZ
+  return extrude(
+         rectangle(
+           startSketchOn(XY),
+           width = sizeX,
+           height = sizeY,
+           corner = [minX, minY],
+         ),
+         length = sizeZ,
+       )
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
+    |> translate(z = minZ)
 }
 
-// 2x4 along X (length in X), depth in Y, thickness in Z.
 export fn twoByFourX(minX, minY, minZ, lengthX) {
   return prism(
     minX = minX,
@@ -28,10 +30,9 @@ export fn twoByFourX(minX, minY, minZ, lengthX) {
     sizeX = lengthX,
     sizeY = studDepth,
     sizeZ = studThickness,
-  ) // Orients the 2x4 with its long axis in X
+  )
 }
 
-// 2x4 along X, thickness in Y, depth in Z (rotated).
 export fn twoByFourXRotated(minX, minY, minZ, lengthX) {
   return prism(
     minX = minX,
@@ -43,7 +44,6 @@ export fn twoByFourXRotated(minX, minY, minZ, lengthX) {
   )
 }
 
-// 2x4 along Y (length in Y), depth in X, thickness in Z.
 export fn twoByFourY(minX, minY, minZ, lengthY) {
   return prism(
     minX = minX,
@@ -52,10 +52,9 @@ export fn twoByFourY(minX, minY, minZ, lengthY) {
     sizeX = studDepth,
     sizeY = lengthY,
     sizeZ = studThickness,
-  ) // Long axis in Y
+  )
 }
 
-// 2x4 along Y, thickness in X, depth in Z (rotated).
 export fn twoByFourYRotated(minX, minY, minZ, lengthY) {
   return prism(
     minX = minX,
@@ -67,7 +66,6 @@ export fn twoByFourYRotated(minX, minY, minZ, lengthY) {
   )
 }
 
-// 2x4 along Z (length in Z), depth in X, thickness in Y.
 export fn twoByFourZ(minX, minY, minZ, lengthZ) {
   return prism(
     minX = minX,
@@ -79,7 +77,6 @@ export fn twoByFourZ(minX, minY, minZ, lengthZ) {
   )
 }
 
-// 2x4 along Z, thickness in X, depth in Y (rotated).
 export fn twoByFourZRotated(minX, minY, minZ, lengthZ) {
   return prism(
     minX = minX,
