@@ -384,15 +384,13 @@ function getSketchSegmentNameFromSourceSurface(
       artifactGraph
     )
     if (!err(pathArtifact) && pathArtifact.type === 'path') {
-      const segmentIds = [
-        segmentArtifact.originalSegId,
-        segmentArtifact.id,
-      ].filter((segmentId): segmentId is string => Boolean(segmentId))
-      const matchingSegmentIndex = segmentIds
-        .map((segmentId) => pathArtifact.segIds.indexOf(segmentId))
-        .find((index) => index >= 0)
+      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
+        (segmentId) =>
+          segmentId === segmentArtifact.originalSegId ||
+          segmentId === segmentArtifact.id
+      )
 
-      if (typeof matchingSegmentIndex === 'number') {
+      if (matchingSegmentIndex !== -1) {
         const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
         if (
           matchingSegmentExpr?.type === 'MemberExpression' &&
