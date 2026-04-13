@@ -480,7 +480,10 @@ export function getSelectedEqualLengthConstraintInput(
   const objects =
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return buildEqualLengthConstraintInput(getObjectSelectionIds(selectedIds), objects)
+  return buildEqualLengthConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
 }
 
 export function getSelectedFixedConstraintInput(
