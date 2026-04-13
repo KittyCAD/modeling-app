@@ -96,14 +96,13 @@ import {
 } from '@src/components/Toolbar/setAngleLength'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addTagToExtrudedFaceSketchSegment,
   insertNamedConstant,
   replaceValueAtNodePath,
-  sketchBlockOnExtrudedFace,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   startSketchOnDefault,
   splitPipedProfile,
+  sketchBlockOnExtrudedFace,
 } from '@src/lang/modifyAst'
 import {
   addIntersect,
@@ -158,6 +157,7 @@ import {
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
+  isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -287,13 +287,6 @@ function findSceneObjectForPlaneSelection(
       object.source.ranges.length === 2 &&
       sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
       sourceRangesEqual(object.source.ranges[1][0], segmentRange)
-  )
-}
-
-function isLegacySketchPath(pathToNode: PathToNode): boolean {
-  return !pathToNode.some(
-    ([, containerType]) =>
-      containerType === 'SketchBlock' || containerType === 'Block'
   )
 }
 
@@ -3235,7 +3228,7 @@ export const modelingMachine = setup({
         const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
           result.faceInfo.type === 'wall' &&
-          isLegacySketchPath(result.sketchPathToNode)
+          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
             ? result
             : null
 
@@ -3304,43 +3297,10 @@ export const modelingMachine = setup({
           return reject(new Error('No active project to start a sketch in.'))
         }
 
-        // Legacy sketch-on-face flows may need a source refactor first so the
-        // selected wall can be referenced from the new sketch block.
-        let programForNewSketch = kclManager.ast
-        let shouldRestoreProgram = false
-        if (result.type === 'extrudeFace' && result.faceInfo.type !== 'cap') {
-          const preprocessedSketch = addTagToExtrudedFaceSketchSegment(
-            kclManager.ast,
-            result.sketchPathToNode,
-            addTagForSketchOnFace,
-            wasmInstance,
-            result.faceInfo
-          )
-          if (err(preprocessedSketch)) {
-            return reject(new Error('Incompatible face, please try another'))
-          }
-
-          const reparsedProgram = parse(
-            recast(preprocessedSketch.modifiedAst, wasmInstance),
-            wasmInstance
-          )
-          if (err(reparsedProgram)) {
-            return reject(reparsedProgram)
-          }
-          if (!resultIsOk(reparsedProgram)) {
-            return reject(
-              new Error('Failed to reparse sketch-on-face program.')
-            )
-          }
-
-          programForNewSketch = reparsedProgram.program
-          shouldRestoreProgram = true
-        }
-
         // Construct SketchCtor based on the result
         let sketchArgs: SketchCtor
         const setProgramOutcome = await rustContext.hackSetProgram(
-          programForNewSketch,
+          kclManager.ast,
           jsAppSettings(rustContext.settingsActor)
         )
         if (result.type === 'defaultPlane') {
@@ -3357,7 +3317,7 @@ export const modelingMachine = setup({
           const selectedSceneObject = findSceneObjectForPlaneSelection(
             setProgramOutcome.sceneGraph.objects,
             result,
-            programForNewSketch,
+            kclManager.ast,
             wasmInstance
           )
 
@@ -3391,12 +3351,10 @@ export const modelingMachine = setup({
             }
           )
         } catch (error) {
-          if (shouldRestoreProgram) {
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-          }
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            jsAppSettings(rustContext.settingsActor)
+          )
           return reject(
             error instanceof Error
               ? error

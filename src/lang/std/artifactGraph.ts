@@ -472,6 +472,50 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
   }
 }
 
+/** Given a face artifact's ID, determine if the solid's base path is a legacy or solve sketch. */
+export function isFaceFromLegacySketch(
+  faceId: string,
+  graph: ArtifactGraph
+): boolean {
+  const face = getArtifactOfTypes(
+    {
+      key: faceId,
+      types: ['wall'],
+    },
+    graph
+  )
+
+  if (err(face)) {
+    return false
+  }
+
+  const body = getArtifactOfTypes(
+    {
+      key: face.sweepId,
+      types: ['sweep'],
+    },
+    graph
+  )
+
+  if (err(body)) {
+    return false
+  }
+
+  const path = getArtifactOfTypes(
+    {
+      key: body.pathId,
+      types: ['path'],
+    },
+    graph
+  )
+
+  if (err(path)) {
+    return false
+  }
+
+  return path.subType === 'sketch'
+}
+
 function getPlaneFromPath(
   path: PathArtifact,
   graph: ArtifactGraph

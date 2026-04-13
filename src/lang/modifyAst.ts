@@ -340,22 +340,31 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  const taggedSource = addTagToExtrudedFaceSketchSegment(
-    _node,
-    sketchPathToNode,
-    addTagForSketchOnFace,
-    wasmInstance,
-    info
-  )
-  if (err(taggedSource)) return taggedSource
-  const { modifiedAst: taggedAst, tag } = taggedSource
-  _node = taggedAst
+  let _tag
+  if (info.type !== 'cap') {
+    const __tag = addTagForSketchOnFace(
+      {
+        pathToNode: sketchPathToNode,
+        node: _node,
+        wasmInstance,
+      },
+      expression.callee.name.name,
+      info.type === 'edgeCut' ? info : null,
+      wasmInstance
+    )
+    if (err(__tag)) return __tag
+    const { modifiedAst, tag } = __tag
+    _tag = createLocalName(tag)
+    _node = modifiedAst
+  } else {
+    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
+  }
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLibKw(
       'startSketchOn',
       createLocalName(extrudeName ? extrudeName : oldSketchName),
-      [createLabeledArg('face', tag)]
+      [createLabeledArg('face', _tag)]
     ),
     undefined,
     'const'
