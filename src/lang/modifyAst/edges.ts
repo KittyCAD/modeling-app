@@ -19,6 +19,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getNodeFromPath,
+  getSketchSegmentName,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -31,6 +32,7 @@ import type {
   ExpressionStatement,
   PathToNode,
   Program,
+  VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -407,6 +409,107 @@ export function addBlend({
         tagResult.message !== 'Selection is not a sketch segment'
       ) {
         return tagResult
+      }
+
+      let directTagExprFromSweepEdge: Expr | null = null
+      const segment = getArtifactOfTypes(
+        { key: edgeArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (!err(segment)) {
+        if (segment.originalSegId && segment.originalSegId !== segment.id) {
+          const regionDecl = getNodeFromPath<VariableDeclaration>(
+            modifiedAst,
+            segment.codeRef.pathToNode,
+            wasmInstance,
+            'VariableDeclaration'
+          )
+          if (
+            !err(regionDecl) &&
+            regionDecl.node.type === 'VariableDeclaration' &&
+            regionDecl.node.declaration.init.type === 'CallExpressionKw' &&
+            regionDecl.node.declaration.init.callee.name.name === 'region'
+          ) {
+            const originalSegName = getSketchSegmentName(
+              modifiedAst,
+              segment.originalSegId,
+              artifactGraph,
+              wasmInstance
+            )
+            if (originalSegName) {
+              directTagExprFromSweepEdge = createMemberExpression(
+                createMemberExpression(
+                  regionDecl.node.declaration.id.name,
+                  'tags'
+                ),
+                originalSegName
+              )
+            }
+          }
+        }
+
+        if (!directTagExprFromSweepEdge) {
+          const segmentNode = getNodeFromPath<Expr>(
+            modifiedAst,
+            segment.codeRef.pathToNode,
+            wasmInstance,
+            ['MemberExpression']
+          )
+          if (
+            !err(segmentNode) &&
+            segmentNode.node.type === 'MemberExpression' &&
+            segmentNode.node.object.type === 'Name' &&
+            segmentNode.node.property.type === 'Name'
+          ) {
+            directTagExprFromSweepEdge = createMemberExpression(
+              createMemberExpression(segmentNode.node.object, 'tags'),
+              segmentNode.node.property.name.name
+            )
+          }
+        }
+
+        if (!directTagExprFromSweepEdge) {
+          const segmentVars = getVariableExprsFromSelection(
+            {
+              graphSelections: [
+                { artifact: segment, codeRef: segment.codeRef },
+              ],
+              otherSelections: [],
+            },
+            artifactGraph,
+            modifiedAst,
+            wasmInstance
+          )
+          if (!err(segmentVars) && segmentVars.exprs.length === 1) {
+            const segmentExpr = segmentVars.exprs[0]
+            if (
+              segmentExpr.type === 'MemberExpression' &&
+              segmentExpr.object.type === 'Name' &&
+              segmentExpr.property.type === 'Name'
+            ) {
+              directTagExprFromSweepEdge = createMemberExpression(
+                createMemberExpression(segmentExpr.object, 'tags'),
+                segmentExpr.property.name.name
+              )
+            }
+          }
+        }
+      }
+
+      if (directTagExprFromSweepEdge) {
+        edgeExprs.push(
+          createCallExpressionStdLibKw(
+            'getBoundedEdge',
+            structuredClone(sourceSurfaceExpr),
+            [
+              createLabeledArg(
+                'edge',
+                getEdgeTagCall(directTagExprFromSweepEdge, edgeArtifact)
+              ),
+            ]
+          )
+        )
+        continue
       }
 
       // Sweep edges produced from multi-segment/region-driven surfaces may not
