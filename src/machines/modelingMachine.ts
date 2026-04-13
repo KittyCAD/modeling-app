@@ -102,8 +102,8 @@ import {
   sketchOnOffsetPlane,
   startSketchOnDefault,
   splitPipedProfile,
-  sketchBlockOnExtrudedFace,
 } from '@src/lang/modifyAst'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
