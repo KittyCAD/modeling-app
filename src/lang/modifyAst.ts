@@ -49,7 +49,6 @@ import {
   baseUnitToNumericSuffix,
   isPathToNodeNumber,
   parse,
-  resultIsOk,
 } from '@src/lang/wasm'
 import type {
   KclCommandValue,
