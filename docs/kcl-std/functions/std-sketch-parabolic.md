@@ -21,7 +21,9 @@ parabolic(
 ): Sketch
 ```
 
-
+This is part of sketch v1 and is soft deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+of parabolic is still under development.
 
 ### Arguments
 
