@@ -2,7 +2,7 @@
 // Back frame plates and slats for the dog house.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import parameters
 import * from "dimensions.kcl"

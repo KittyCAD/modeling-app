@@ -2,7 +2,7 @@
 // Conductive metal device made from brazed tubes and fins
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import parameters
 import * from "parameters.kcl"

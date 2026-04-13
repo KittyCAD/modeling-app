@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define shaft parameters
 valvesPerCylinder = 4
