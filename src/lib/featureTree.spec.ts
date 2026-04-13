@@ -82,6 +82,7 @@ function helixArtifact(id: string, sourceRange: SourceRange): Artifact {
 function pathArtifact(id: string, sourceRange: SourceRange): Artifact {
   return {
     type: 'path',
+    subType: 'sketch',
     id,
     planeId: 'plane-artifact',
     segIds: [],

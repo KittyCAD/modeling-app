@@ -392,9 +392,14 @@ impl ArtifactGraph {
                 node_path_display(output, prefix, None, &plane.code_ref)?;
             }
             Artifact::Path(path) => {
+                let path_sub_type = if path.sub_type == PathSubType::Region {
+                    " Region"
+                } else {
+                    ""
+                };
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}<br>Consumed: {:?}\"]",
+                    "{prefix}{id}[\"Path{path_sub_type}<br>{:?}<br>Consumed: {:?}\"]",
                     code_ref_display(&path.code_ref),
                     path.consumed
                 )?;
@@ -716,6 +721,70 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
     assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
     assert!(!blend_sweep.consumed);
+}
+
+#[test]
+fn create_region_creates_region_path_sub_type() {
+    let origin_path_id = ArtifactId::new(Uuid::new_v4());
+    let origin_plane_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        origin_path_id,
+        Artifact::Path(Path {
+            id: origin_path_id,
+            sub_type: PathSubType::Sketch,
+            plane_id: origin_plane_id,
+            seg_ids: Vec::new(),
+            consumed: false,
+            sweep_id: None,
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: source_code_ref,
+            composite_solid_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::CreateRegion::builder()
+            .object_id(Uuid::from(origin_path_id))
+            .segment(Uuid::new_v4())
+            .intersection_segment(Uuid::new_v4())
+            .intersection_index(-1)
+            .curve_clockwise(false)
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Path(region_path) = &updated[0] else {
+        panic!("Expected CreateRegion to create a path artifact, got: {updated:?}");
+    };
+    assert_eq!(region_path.id, ArtifactId::new(cmd_id));
+    assert_eq!(region_path.sub_type, PathSubType::Region);
+    assert_eq!(region_path.plane_id, origin_plane_id);
 }
 
 #[test]

@@ -5,8 +5,6 @@ excerpt: "Get the face of a solid."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Get the face of a solid.
 
 ```kcl
@@ -33,8 +31,6 @@ faceOf(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 triangle = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [2, 0])
@@ -66,8 +62,6 @@ sideFace = faceOf(triangle, face = side)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])

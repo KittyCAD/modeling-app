@@ -82,6 +82,50 @@ pub struct SourceDelta {
     pub text: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct SketchCheckpointId(u64);
+
+impl SketchCheckpointId {
+    pub(crate) fn new(n: u64) -> Self {
+        Self(n)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchMutationOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct NewSketchOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub sketch_id: ObjectId,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EditSketchOutcome {
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreSketchCheckpointOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
@@ -156,6 +200,23 @@ pub enum ObjectKind {
     Constraint {
         constraint: crate::frontend::sketch::Constraint,
     },
+}
+
+impl ObjectKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Nil => "a Nil",
+            Self::Plane(..) => "a Plane",
+            Self::Face(..) => "a Face",
+            Self::Wall(..) => "a Wall",
+            Self::Cap(..) => "a Cap",
+            Self::Sketch(..) => "a Sketch",
+            Self::Segment { .. } => "a Segment",
+            Self::Constraint { .. } => "a Constraint",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

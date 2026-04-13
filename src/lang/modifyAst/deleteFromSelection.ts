@@ -167,6 +167,8 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    (selection.artifact?.type === 'path' &&
+      selection.artifact.subType === 'region') ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'helix' ||
     selection.artifact?.type === 'planeOfFace' ||
@@ -180,6 +182,7 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'plane' &&
       selection.artifact.type !== 'compositeSolid' &&
       selection.artifact.type !== 'helix' &&
+      selection.artifact.type !== 'path' &&
       selection.artifact.type !== 'planeOfFace'
     ) {
       const varDecName = varDec.node.id.name

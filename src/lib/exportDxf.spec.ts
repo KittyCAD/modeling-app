@@ -73,7 +73,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
     engineConnection: undefined,
     pendingCommands: {},
     sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    waitForAllModelingCommands: vi.fn().mockResolvedValue([]),
     rejectAllModelingCommands: vi.fn(),
     tearDown: vi.fn(),
   } as any,
@@ -144,6 +144,7 @@ describe('DXF Export', () => {
       const pathArtifact1: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -157,6 +158,7 @@ describe('DXF Export', () => {
       const pathArtifact2: Artifact = {
         id: 'path-2',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         compositeSolidId: 'solid-1',
@@ -253,6 +255,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -404,6 +407,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -473,6 +477,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -544,6 +549,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {

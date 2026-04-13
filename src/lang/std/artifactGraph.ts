@@ -815,6 +815,36 @@ export function getSketchBlockForPathArtifact(
   )
 }
 
+export function getSketchBlockForArtifact(
+  artifact: Artifact | undefined,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  if (!artifact) {
+    return undefined
+  }
+
+  if (artifact.type === 'sketchBlock') {
+    return artifact
+  }
+
+  if (artifact.type === 'path') {
+    return getSketchBlockForPathArtifact(artifact, artifactGraph)
+  }
+
+  if (artifact.type === 'segment' || artifact.type === 'solid2d') {
+    const path = getArtifactOfTypes(
+      { key: artifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) {
+      return undefined
+    }
+    return getSketchBlockForPathArtifact(path, artifactGraph)
+  }
+
+  return undefined
+}
+
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
  * This is useful for commands that only work with bodies, but users may have faces or edges selected.

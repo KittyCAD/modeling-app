@@ -53,7 +53,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
-import { DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -124,7 +127,7 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
@@ -138,10 +141,13 @@ async function getEngineRegionSelectionFromEntity(
   if (!queryPointMm) return null
   const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
   const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings) || !settings.defaultLengthUnit) return null
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
   const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, settings.defaultLengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, settings.defaultLengthUnit),
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
   const parentEntityId = await getParentEntityIdForEntity(
@@ -157,7 +163,7 @@ async function getEngineRegionSelectionFromEntity(
   if (!sketch) return null
 
   return {
-    type: 'region',
+    type: 'engineRegion',
     id: regionEntityId,
     point,
     sketchId: sketch.id,
@@ -215,7 +221,7 @@ export function isEngineRegionSelection(
   return (
     typeof selection === 'object' &&
     'type' in selection &&
-    selection.type === 'region'
+    selection.type === 'engineRegion'
   )
 }
 
@@ -727,7 +733,7 @@ export function getSelectionCountByType(
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -766,6 +772,14 @@ export function getSelectionCountByType(
         incrementOrInitializeSelectionType('other')
         return
       }
+    }
+    // Intercept subtypes here. Would have to think of a better way to scale this
+    if (
+      graphSelection.artifact.type === 'path' &&
+      graphSelection.artifact.subType === 'region'
+    ) {
+      incrementOrInitializeSelectionType('pathRegion')
+      return
     }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
@@ -1094,7 +1108,8 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'region'],
+  profile: ['solid2d'],
+  region: ['pathRegion', 'engineRegion'],
   edge: [
     'segment',
     'sweepEdge',
