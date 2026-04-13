@@ -1,11 +1,7 @@
-name: publish-kcl-wasm-lib
+name: kcl-wasm-lib-build-and-publish
 
 on:
-  workflow_run:
-    workflows:
-      - build-apps
-    types:
-      - completed
+  pull_request:
 
 permissions:
   id-token: write
@@ -13,13 +9,10 @@ permissions:
 
 jobs:
   publish-kcl-wasm-lib:
-    name: publish-kcl-wasm-lib
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: kcl-wasm-lib-build-and-publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: actions/setup-node@v6
         with:
@@ -27,18 +20,30 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
           cache: 'npm'
 
-      - uses: actions/download-artifact@v8
-        with:
-          name: prepared-files
-          path: prepared-files
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm install
 
-      - name: Use prepared wasm package
+      - name: Use correct Rust toolchain
+        shell: bash
         run: |
-          rm -rf rust/kcl-wasm-lib/pkg
-          mkdir -p rust/kcl-wasm-lib
-          cp -R prepared-files/rust/kcl-wasm-lib/pkg rust/kcl-wasm-lib/pkg
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          rustflags: ''
+
+      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+        with:
+          tool: wasm-pack
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Build Wasm
+        run: npm run build:wasm
 
       - name: Skip tag creation for CI testing
         working-directory: rust/kcl-wasm-lib/pkg
