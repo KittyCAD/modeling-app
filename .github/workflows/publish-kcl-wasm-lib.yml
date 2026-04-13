@@ -3,7 +3,7 @@ name: publish-kcl-wasm-lib
 on:
   workflow_run:
     workflows:
-      - Build Wasm
+      - build-apps
     types:
       - completed
 
@@ -29,15 +29,16 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-wasm
-          path: .
+          name: prepared-files
+          path: prepared-files
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prepare package files
+      - name: Use prepared wasm package
         run: |
-          mkdir -p rust/kcl-wasm-lib/pkg
-          mv kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
+          rm -rf rust/kcl-wasm-lib/pkg
+          mkdir -p rust/kcl-wasm-lib
+          cp -R prepared-files/rust/kcl-wasm-lib/pkg rust/kcl-wasm-lib/pkg
 
       - name: Skip tag creation for CI testing
         working-directory: rust/kcl-wasm-lib/pkg
