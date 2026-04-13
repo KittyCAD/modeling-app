@@ -73,4 +73,3 @@ region002 = region(segments = [sketch002.circle1])
 stock = sweep(region002, path = hel01)
   |> translate(x = -spoolThickness / 2)
   |> appearance(color = "#f2471c", metalness = 70, roughness = 30)
-

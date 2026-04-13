@@ -64,8 +64,6 @@ import Face from "std::types"
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -105,6 +103,10 @@ export fn fillet(
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
   tag?: TagDecl,
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -194,8 +196,6 @@ export fn fillet(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// baseProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -247,6 +247,10 @@ export fn chamfer(
   angle?: number(Angle),
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): Solid {}
 
 /// Remove volume from a 3-dimensional shape such that a wall of the
@@ -397,8 +401,6 @@ export fn chamfer(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// boxProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -948,6 +950,10 @@ export fn union(
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -1006,6 +1012,10 @@ export fn intersect(
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -1161,6 +1171,10 @@ export fn subtract(
   tools: [Solid],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
@@ -1551,13 +1565,14 @@ export fn flipSurface(
 /// // Color each part of the split cylinder differently,
 /// // and move the parts a bit away from each other,
 /// // so you can see their interiors.
-/// left = appearance(result[2], color = "#B2FFD6")
-///   |> translate(x = -4)
+/// right = appearance(result[2], color = "#B2FFD6")
+///   |> translate(x = 4)
 ///   
 /// middle = appearance(result[1], color = "#F6AE2D")
 /// 
-/// right = appearance(result[0], color = "#AA78A6")
-///   |> translate(x = 4)
+/// left = appearance(result[0], color = "#AA78A6")
+///   |> translate(x = -4)
+/// 
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn split(
@@ -1572,6 +1587,10 @@ export fn split(
   keepTools?: bool,
   /// The tools to split the target bodies along.
   tools?: [Solid],
+  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
+  /// If true, revert to older engine SSI algorithm.
+  /// Defaults to false.
+  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 
@@ -1717,8 +1736,6 @@ export fn isSurface(
 /// deleteFace(cubeSolid, faceIndices = [0, 1])
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// boxProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
 ///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
@@ -1788,8 +1805,6 @@ export fn deleteFace(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// sketch001 = sketch(on = YZ) {
 ///   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
 ///   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])

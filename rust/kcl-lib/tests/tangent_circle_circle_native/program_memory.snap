@@ -294,6 +294,53 @@ description: Variables in memory after executing tangent_circle_circle_native.kc
                   },
                   "ccw": true,
                   "center": [
+                    0.000000004000000244143641,
+                    0.0
+                  ],
+                  "from": [
+                    5.000000012000001,
+                    0.0
+                  ],
+                  "radius": 5.000000008000001,
+                  "tag": {
+                    "commentStart": 65,
+                    "end": 66,
+                    "moduleId": 0,
+                    "start": 65,
+                    "type": "TagDeclarator",
+                    "value": "a"
+                  },
+                  "to": [
+                    5.000000012000001,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    5.000000012000001,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    11.000000048000004,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
                     8.000000036000003,
                     0.0
                   ],
@@ -351,11 +398,11 @@ description: Variables in memory after executing tangent_circle_circle_native.kc
               },
               "start": {
                 "from": [
-                  11.000000048000004,
+                  5.000000012000001,
                   0.0
                 ],
                 "to": [
-                  11.000000048000004,
+                  5.000000012000001,
                   0.0
                 ],
                 "units": "mm",
@@ -366,6 +413,10 @@ description: Variables in memory after executing tangent_circle_circle_native.kc
                 }
               },
               "tags": {
+                "a": {
+                  "type": "TagIdentifier",
+                  "value": "a"
+                },
                 "b": {
                   "type": "TagIdentifier",
                   "value": "b"

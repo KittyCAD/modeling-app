@@ -44,7 +44,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v19
+        uses: dawidd6/action-download-artifact@v20
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -80,7 +80,7 @@ jobs:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
 
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack

@@ -16,4 +16,3 @@ export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
 export chainWidth = sphereDia / 2
 export chainThickness = sphereDia / 8
 export linkDiameter = sphereDia / 4
-

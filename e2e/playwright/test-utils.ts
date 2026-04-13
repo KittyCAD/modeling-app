@@ -361,10 +361,32 @@ async function waitForAuthAndLsp(page: Page) {
     timeout: 45_000,
   })
 
-  if (process.env.VERCEL_BASE_URL && token) {
-    // Vercel is external to Playwright, so the token is provided in the URL
-    await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-    await waitForPageLoad(page)
+  if (process.env.VERCEL_BASE_URL) {
+    // set bypass secret for the page's requests based on the hostname
+    let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+    if (secret) {
+      await page.route('**/*', async (route, request) => {
+        const url = request.url()
+
+        // Only apply to Vercel preview domain
+        if (new URL(url).hostname.endsWith('vercel.dev.zoo.dev')) {
+          const headers = {
+            ...request.headers(),
+            'X-Vercel-Protection-Bypass': secret,
+          }
+
+          await route.continue({ headers })
+        } else {
+          await route.continue()
+        }
+      })
+    }
+
+    if (token) {
+      // Vercel is external to Playwright, so the token is provided in the URL
+      await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
+      await waitForPageLoad(page)
+    }
   }
 
   await page.goto('/')

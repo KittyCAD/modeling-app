@@ -7,6 +7,9 @@ import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import {
+  coincidentContainsSegment,
+  getCoincidentSegmentIds,
+  getCoincidentCluster,
   getArcPoints,
   getLinePoints,
   isArcLikeSegment,
@@ -24,6 +27,7 @@ export type InvisibleConstraint = Extract<
       | 'Horizontal'
       | 'Vertical'
       | 'LinesEqualLength'
+      | 'EqualRadius'
       | 'Parallel'
       | 'Perpendicular'
       | 'Tangent'
@@ -52,6 +56,7 @@ export function isInvisibleConstraintObject(
     case 'Horizontal':
     case 'Vertical':
     case 'LinesEqualLength':
+    case 'EqualRadius':
     case 'Parallel':
     case 'Perpendicular':
     case 'Tangent':
@@ -71,7 +76,8 @@ export function getInvisibleConstraintAnchor(
 
   switch (constraint.type) {
     case 'Coincident': {
-      const pointAnchors = constraint.segments
+      const coincidentSegmentIds = getCoincidentSegmentIds(constraint)
+      const pointAnchors = coincidentSegmentIds
         .map((segmentId) => objects[segmentId])
         .filter(isPointSegment)
         .map(pointToVec3)
@@ -81,7 +87,7 @@ export function getInvisibleConstraintAnchor(
       }
 
       return averageVectors(
-        constraint.segments
+        coincidentSegmentIds
           .map((segmentId) => getObjectAnchor(segmentId, objects))
           .filter(isVector3)
       )
@@ -94,6 +100,12 @@ export function getInvisibleConstraintAnchor(
       return averageVectors(
         constraint.lines
           .map((lineId) => getLineAnchor(lineId, objects))
+          .filter(isVector3)
+      )
+    case 'EqualRadius':
+      return averageVectors(
+        constraint.input
+          .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
     case 'Parallel':
@@ -124,13 +136,44 @@ export function findInvisibleConstraintsForSegment(
   segment: ApiObject | undefined | null,
   objects: ApiObject[]
 ): number[] {
+  if (isPointSegment(segment)) {
+    const coincidentPointIds = getCoincidentCluster(segment.id, objects)
+
+    return objects
+      .filter(
+        (constraint): constraint is InvisibleConstraintObject =>
+          isInvisibleConstraintObject(constraint) &&
+          isConstrainingCoincidentPointCluster(constraint, coincidentPointIds)
+      )
+      .map((constraint) => constraint.id)
+  }
+
   return objects
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
         isInvisibleConstraintObject(constraint) &&
-        isConstrainingSegment(constraint, segment)
+        isConstrainingSegment(constraint, segment, objects)
     )
     .map((constraint) => constraint.id)
+}
+
+export function findInvisibleConstraintClusterIds(
+  constraint: InvisibleConstraintObject,
+  objects: ApiObject[]
+): number[] {
+  const constraintIds = new Set<number>([constraint.id])
+
+  findSegmentsForInvisibleConstraint(constraint, objects).forEach(
+    (segmentId) => {
+      findInvisibleConstraintsForSegment(objects[segmentId], objects).forEach(
+        (constraintId) => {
+          constraintIds.add(constraintId)
+        }
+      )
+    }
+  )
+
+  return [...constraintIds].sort((a, b) => a - b)
 }
 
 export function findSegmentsForInvisibleConstraint(
@@ -140,7 +183,10 @@ export function findSegmentsForInvisibleConstraint(
   const constrainedIds = (() => {
     switch (constraint.kind.constraint.type) {
       case 'Coincident':
-        return constraint.kind.constraint.segments
+        return getCoincidentHighlightedSegmentIds(
+          constraint.kind.constraint,
+          objects
+        )
       case 'Horizontal':
       case 'Vertical':
         return [constraint.kind.constraint.line]
@@ -148,6 +194,7 @@ export function findSegmentsForInvisibleConstraint(
       case 'Parallel':
       case 'Perpendicular':
         return constraint.kind.constraint.lines
+      case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
     }
@@ -158,18 +205,48 @@ export function findSegmentsForInvisibleConstraint(
   )
 }
 
+function getCoincidentHighlightedSegmentIds(
+  constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
+  objects: ApiObject[]
+) {
+  const coincidentSegmentIds = getCoincidentSegmentIds(constraint)
+  const pointIds = coincidentSegmentIds.filter((id) =>
+    isPointSegment(objects[id])
+  )
+  const ownerSegmentIds = pointIds.flatMap((pointId) => {
+    const point = objects[pointId]
+    if (!isPointSegment(point)) {
+      return []
+    }
+
+    const ownerId = point.kind.segment.owner
+    return ownerId !== null ? [ownerId] : []
+  })
+
+  return [...coincidentSegmentIds, ...ownerSegmentIds]
+}
+
 // Returns if the given non-visual constraint is constraining the given segment.
 // If yes, the constraint is shown when hovering the segment.
 export function isConstrainingSegment(
   constraint: InvisibleConstraintObject,
-  segment: ApiObject | undefined | null
+  segment: ApiObject | undefined | null,
+  objects: ApiObject[]
 ): boolean {
   if (!segment) {
     return false
   }
+
+  if (isPointSegment(segment)) {
+    return isConstrainingCoincidentPointCluster(
+      constraint,
+      getCoincidentCluster(segment.id, objects)
+    )
+  }
+
   switch (constraint.kind.constraint.type) {
     case 'Coincident':
-      return constraint.kind.constraint.segments.includes(segment.id)
+      return coincidentContainsSegment(constraint.kind.constraint, segment.id)
     case 'Horizontal':
     case 'Vertical':
       return (
@@ -182,12 +259,30 @@ export function isConstrainingSegment(
         isLineSegment(segment) &&
         constraint.kind.constraint.lines.includes(segment.id)
       )
+    case 'EqualRadius':
+      return (
+        isArcLikeSegment(segment) &&
+        constraint.kind.constraint.input.includes(segment.id)
+      )
     case 'Tangent':
       return (
         (isLineSegment(segment) || isArcLikeSegment(segment)) &&
         constraint.kind.constraint.input.includes(segment.id)
       )
   }
+}
+
+function isConstrainingCoincidentPointCluster(
+  constraint: InvisibleConstraintObject,
+  pointIds: number[]
+) {
+  if (constraint.kind.constraint.type !== 'Coincident') {
+    return false
+  }
+
+  return getCoincidentSegmentIds(constraint.kind.constraint).some((id) =>
+    pointIds.includes(id)
+  )
 }
 
 function getObjectAnchor(

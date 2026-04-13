@@ -11,12 +11,12 @@ templateDiameter = (11 / 16): in
 slateWidthHalf = 41.5 / 2
 minClampingDistance = 50 + 30
 templateThickness = 10
-radius = 10
+cornerRadius = 10
 depth = 30
 
 // Calculated parameters
 templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
-length001 = slateWidthHalf - radius
+length001 = slateWidthHalf - cornerRadius
 length002 = depth + minClampingDistance
 
 // Create the first sketch
@@ -44,15 +44,13 @@ sketch001 = sketch(on = XZ) {
   coincident([line10.end, arc11.end])
   line12 = line(start = [var -10.75mm, var 28.12mm], end = [var 0mm, var 28.12mm])
   coincident([arc11.start, line12.start])
-  horizontal(arc2)
-  vertical(line4)
-  horizontal(line5)
-  vertical(line6)
-  horizontal(line7)
-  horizontal(line8)
-  vertical(line9)
-  horizontal(line10)
-  vertical(arc11)
+  coincident([line12.end, line1.start])
+  distance([line7.start, line7.end]) == slateWidthHalf + cornerRadius
+  distance([line8.start, line8.end]) == length002
+  distance([line9.start, line9.end]) == cornerRadius + templateGap
+  distance([line10.start, line10.end]) == 32.49mm
+  radius(arc11) == cornerRadius - templateGap
+  distance([line12.start, line12.end]) == length001
 }
 
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
@@ -60,7 +58,7 @@ region001 = region(segments = [sketch001.line1, sketch001.arc2])
 extrude001 = extrude(region001, length = 5)
 
 // Create the second sketch
-sketch002 = sketch(on = startSketchOn(extrude001, face = START)) {
+sketch002 = sketch(on = faceOf(extrude001, face = START)) {
   line1 = line(start = [var -20.75mm, var -12.49mm], end = [var -27.75mm, var -12.49mm])
   line2 = line(start = [var -27.75mm, var -12.49mm], end = [var -27.75mm, var -92.49mm])
   coincident([line1.end, line2.start])
@@ -68,7 +66,9 @@ sketch002 = sketch(on = startSketchOn(extrude001, face = START)) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var -20.75mm, var -92.49mm], end = [var -20.75mm, var -12.49mm])
   coincident([line3.end, line4.start])
-  horizontal(line2)
+  coincident([line4.end, line1.start])
+  distance([line1.start, line1.end]) == templateThickness - 3mm
+  distance([line2.start, line2.end]) == minClampingDistance
 }
 
 region002 = region(segments = [sketch002.line1, sketch002.line2])
@@ -76,7 +76,7 @@ region002 = region(segments = [sketch002.line1, sketch002.line2])
 extrude002 = extrude(region002, length = 7.5)
 
 // Create the third sketch
-sketch003 = sketch(on = startSketchOn(extrude001, face = START)) {
+sketch003 = sketch(on = faceOf(extrude001, face = START)) {
   line1 = line(start = [var 20.75mm, var -12.49mm], end = [var 27.75mm, var -12.49mm])
   line2 = line(start = [var 27.75mm, var -12.49mm], end = [var 27.75mm, var -92.49mm])
   coincident([line1.end, line2.start])
@@ -84,10 +84,11 @@ sketch003 = sketch(on = startSketchOn(extrude001, face = START)) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var 20.75mm, var -92.49mm], end = [var 20.75mm, var -12.49mm])
   coincident([line3.end, line4.start])
-  horizontal(line2)
+  coincident([line4.end, line1.start])
+  distance([line1.start, line1.end]) == templateThickness - 3mm
+  distance([line2.start, line2.end]) == minClampingDistance
 }
 
 region003 = region(segments = [sketch003.line1, sketch003.line2])
 // Extrude the third Sketch
 extrude003 = extrude(region003, length = 7.5)
-

@@ -6,6 +6,7 @@ import {
   createLiteral,
   createLocalName,
   createArrayExpression,
+  createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -324,6 +325,40 @@ function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
 }
 
+function getSketchSegmentNameFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): string | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (
+    !sweepInput ||
+    sweepInput.type !== 'MemberExpression' ||
+    sweepInput.property.type !== 'Name'
+  ) {
+    return null
+  }
+
+  return sweepInput.property.name.name
+}
+
 function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
@@ -389,26 +424,6 @@ function buildEdgeExpr(
     )
   }
 
-  const tagResult = modifyAstWithTagsForSelection(
-    ast,
-    graphEdgeSelection,
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  if (err(tagResult)) return tagResult
-  if (tagResult.exprs.length !== 1) {
-    return new Error('Expected exactly one tag for each blend edge.')
-  }
-
-  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
-  if (edgeExpr.type === 'Name') {
-    return {
-      modifiedAst: tagResult.modifiedAst,
-      edgeExpr,
-    }
-  }
-
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
     graphEdgeSelection,
     artifactGraph
@@ -435,20 +450,60 @@ function buildEdgeExpr(
   if (sourceSurfaceVars.exprs.length !== 1) {
     return new Error('Expected exactly one source surface for each blend edge.')
   }
+  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-  const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+  // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sourceSurfaceArtifact as Artifact,
+    ast,
+    wasmInstance
+  )
+  if (sketchSegmentName) {
+    const sketchTagExpr = createMemberExpression(
+      createMemberExpression(
+        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+        'tags'
+      ),
+      sketchSegmentName
+    )
+    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        structuredClone(sourceSurfaceExpr),
+        [createLabeledArg('edge', edgeExpr)]
+      ),
+    }
+  }
+
+  // Regular case
+  const tagResult = modifyAstWithTagsForSelection(
+    ast,
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  if (err(tagResult)) return tagResult
+  if (tagResult.exprs.length !== 1) {
+    return new Error('Expected exactly one tag for each blend edge.')
+  }
+
+  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
 
   return {
     modifiedAst: tagResult.modifiedAst,
     edgeExpr: createCallExpressionStdLibKw(
       'getBoundedEdge',
-      sourceSurfaceExpr,
+      structuredClone(sourceSurfaceExpr),
       [createLabeledArg('edge', edgeExpr)]
     ),
   }
 }
 
-function getPrimitiveEdgeSelections(
+export function getPrimitiveEdgeSelections(
   edges: Selections
 ): EnginePrimitiveSelection[] {
   return edges.otherSelections.filter(
@@ -470,7 +525,7 @@ function getPrimitiveEdgeSelections(
  * @param nodeToEdit - Optional path to the node being edited
  * @returns Object containing modified AST and Map of body data, or Error
  */
-function groupSelectionsByBodyAndAddTags(
+export function groupSelectionsByBodyAndAddTags(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
@@ -831,7 +886,7 @@ export function getEdgeTagCall(
 // Adds all the edgeId calls needed in the AST so we can refer to them,
 // keeps track of their names as "tags",
 // and gathers the corresponding solid expressions.
-function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   primitiveEdgeSelections,
   bodies,
   modifiedAst,

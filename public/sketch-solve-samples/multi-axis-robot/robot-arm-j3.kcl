@@ -14,8 +14,9 @@ sketch017 = sketch(on = plane002) {
   coincident([line2.end, arc3.end])
   line4 = line(start = [var 11.17in, var 35.5in], end = [var -8.53in, var 38.98in])
   coincident([arc3.start, line4.start])
+  coincident([arc1.start, line4.end])
 }
-region001 = region(segments = [sketch017.arc1, sketch017.line2])
+region001 = region(point = [-10.7000292in, 37.454302in], sketch = sketch017)
 extrude017 = extrude(region001, length = axisJ3CArmThickness)
 
 sketch018 = sketch(on = startSketchOn(extrude017, face = END)) {
@@ -24,7 +25,6 @@ sketch018 = sketch(on = startSketchOn(extrude017, face = END)) {
 
 region002 = region(segments = [sketch018.circle1])
 extrude018 = extrude(region002, length = 0.15)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge6)])
 
 // Draw Bolt Pattern on J3 Robot Arm
 sketch019 = startSketchOn(extrude018, face = END)
@@ -121,4 +121,3 @@ appearance(
   metalness = 90,
   roughness = 90,
 )
-

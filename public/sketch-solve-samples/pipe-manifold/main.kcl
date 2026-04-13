@@ -70,4 +70,3 @@ mountingHoles = hole::holes(
   holeBody = hole::blind(depth = bodyWidth * 1.1, diameter = mountingHoleDiameter),
   holeType = hole::simple(),
 )
-

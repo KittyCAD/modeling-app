@@ -11,11 +11,13 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
+#[cfg(feature = "artifact-graph")]
+use crate::NodePath;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
@@ -81,7 +83,7 @@ pub(super) struct GlobalState {
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -237,12 +239,12 @@ impl ExecState {
     }
 
     /// Log a non-fatal error.
-    pub fn err(&mut self, e: CompilationError) {
-        self.global.errors.push(e);
+    pub fn err(&mut self, e: CompilationIssue) {
+        self.global.issues.push(e);
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+    pub fn warn(&mut self, mut e: CompilationIssue, name: &'static str) {
         debug_assert!(annotations::WARN_VALUES.contains(&name));
 
         if self.mod_local.allowed_warnings.contains(&name) {
@@ -255,14 +257,14 @@ impl ExecState {
             e.severity = Severity::Warning;
         }
 
-        self.global.errors.push(e);
+        self.global.issues.push(e);
     }
 
     pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
         let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
             return;
         };
-        let error = CompilationError {
+        let error = CompilationIssue {
             source_range,
             message: format!("Use of {feature_name} is experimental and may change or be removed."),
             suggestion: None,
@@ -270,11 +272,11 @@ impl ExecState {
             tag: crate::errors::Tag::None,
         };
 
-        self.global.errors.push(error);
+        self.global.issues.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
-        self.global.errors = std::mem::take(&mut self.global.errors)
+        self.global.issues = std::mem::take(&mut self.global.issues)
             .into_iter()
             .filter(|e| {
                 e.severity != Severity::Warning
@@ -284,8 +286,8 @@ impl ExecState {
             .collect();
     }
 
-    pub fn errors(&self) -> &[CompilationError] {
-        &self.global.errors
+    pub fn issues(&self) -> &[CompilationIssue] {
+        &self.global.issues
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -307,7 +309,7 @@ impl ExecState {
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
-            errors: self.global.errors,
+            issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
@@ -390,12 +392,17 @@ impl ExecState {
     /// Add a placeholder scene object. This is useful when we need to reserve
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
-    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+    pub fn add_placeholder_scene_object(
+        &mut self,
+        id: ObjectId,
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+    ) -> ObjectId {
         debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
-            .push(Object::placeholder(id, source_range));
+            .push(Object::placeholder(id, source_range, node_path));
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
     }
@@ -575,7 +582,7 @@ impl ExecState {
 
         KclErrorWithOutputs::new(
             error,
-            self.errors().to_vec(),
+            self.issues().to_vec(),
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
@@ -636,7 +643,12 @@ impl ExecState {
 
         // Move the artifacts into ExecState global to simplify cache
         // management.
-        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+        for (id, exec_artifact) in new_exec_artifacts {
+            // Only insert if it wasn't already present. We don't want to
+            // overwrite what was previously there. We haven't filled in node
+            // paths yet.
+            self.global.artifacts.artifacts.entry(id).or_insert(exec_artifact);
+        }
 
         let initial_graph = self.global.artifacts.graph.clone();
 
@@ -678,7 +690,7 @@ impl GlobalState {
             artifacts: Default::default(),
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
-            errors: Default::default(),
+            issues: Default::default(),
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
@@ -757,13 +769,13 @@ impl ModuleArtifactState {
             );
 
             match &object.source {
-                crate::front::SourceRef::Simple { range } => {
+                crate::front::SourceRef::Simple { range, node_path: _ } => {
                     self.source_range_to_object.insert(*range, object.id);
                 }
                 crate::front::SourceRef::BackTrace { ranges } => {
                     // Don't map the entire backtrace, only the most specific
                     // range.
-                    if let Some(range) = ranges.first() {
+                    if let Some((range, _)) = ranges.first() {
                         self.source_range_to_object.insert(*range, object.id);
                     }
                 }
@@ -1018,6 +1030,7 @@ mod tests {
     use uuid::Uuid;
 
     use super::ModuleArtifactState;
+    use crate::NodePath;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
     use crate::front::Object;
@@ -1031,7 +1044,11 @@ mod tests {
         let plane_artifact_id = ArtifactId::new(Uuid::from_u128(1));
         let sketch_artifact_id = ArtifactId::new(Uuid::from_u128(2));
         let plane_range = SourceRange::from([1, 4, 0]);
-        let sketch_ranges = vec![SourceRange::from([5, 9, 0]), SourceRange::from([10, 12, 0])];
+        let plane_node_path = Some(NodePath::placeholder());
+        let sketch_ranges = vec![
+            (SourceRange::from([5, 9, 0]), None),
+            (SourceRange::from([10, 12, 0]), None),
+        ];
         let cached_objects = vec![
             Object {
                 id: ObjectId(0),
@@ -1039,7 +1056,7 @@ mod tests {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id: plane_artifact_id,
-                source: SourceRef::Simple { range: plane_range },
+                source: SourceRef::new(plane_range, plane_node_path),
             },
             Object {
                 id: ObjectId(1),
@@ -1051,7 +1068,7 @@ mod tests {
                     ranges: sketch_ranges.clone(),
                 },
             },
-            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0])),
+            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0]), None),
         ];
 
         let mut artifacts = ModuleArtifactState::default();
@@ -1072,10 +1089,10 @@ mod tests {
         );
         assert_eq!(artifacts.source_range_to_object.get(&plane_range), Some(&ObjectId(0)));
         assert_eq!(
-            artifacts.source_range_to_object.get(&sketch_ranges[0]),
+            artifacts.source_range_to_object.get(&sketch_ranges[0].0),
             Some(&ObjectId(1))
         );
         // We don't map all the ranges in a backtrace.
-        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1]), None);
+        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1].0), None);
     }
 }

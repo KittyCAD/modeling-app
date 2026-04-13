@@ -2,11 +2,15 @@ import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
+import {
+  addModuleImport,
+  insertVariableAndOffsetPathToNode,
+} from '@src/lang/modifyAst'
 import {
   changeDefaultUnits,
   isPathToNode,
   pathToNodeFromRustNodePath,
+  recast,
   type PathToNode,
   type VariableDeclarator,
 } from '@src/lang/wasm'
@@ -101,7 +105,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               shouldExecute: true,
               shouldResetCamera: true,
             })
-            toast.success(`Updated per-file units to ${data.unit}`)
+            toast.success(`Updated per-file units to ${data.unit}.`)
           }
         } else {
           toast.error(
@@ -171,7 +175,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 }
 
                 toast.success(
-                  `Updated file experimental features level to ${data.level}`
+                  `Updated file experimental features level to ${data.level}.`
                 )
               })
               .catch(reportRejection)
@@ -325,7 +329,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           defaultValue: '5',
         },
       },
-      onSubmit: (data) => {
+      onSubmit: async (data) => {
         if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
@@ -334,15 +338,43 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (!('variableName' in value)) {
           return new Error('variable name is required')
         }
-        const newAst = insertNamedConstant({
-          node: commandProps.kclManager.ast,
-          newExpression: value,
+        if (
+          !('insertIndex' in value) ||
+          typeof value.insertIndex !== 'number'
+        ) {
+          return new Error('insert index is required')
+        }
+        if (!('valueText' in value) || typeof value.valueText !== 'string') {
+          return new Error('value text is required')
+        }
+        if (!('variableDeclarationAst' in value)) {
+          return new Error('variable declaration is required')
+        }
+
+        const freshAst = await commandProps.kclManager.safeParse(
+          commandProps.kclManager.code,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!freshAst) {
+          return new Error('Current code could not be parsed')
+        }
+
+        const modifiedAst = structuredClone(freshAst)
+        insertVariableAndOffsetPathToNode(value, modifiedAst)
+
+        const newCode = recast(
+          modifiedAst,
+          await commandProps.kclManager.wasmInstancePromise
+        )
+        if (err(newCode)) {
+          return new Error(`Failed to create parameter: ${newCode.message}`)
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
         })
-        updateModelingState(
-          newAst,
-          EXECUTION_TYPE_REAL,
-          commandProps.kclManager
-        ).catch(reportRejection)
       },
     },
     {

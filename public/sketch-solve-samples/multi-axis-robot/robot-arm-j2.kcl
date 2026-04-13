@@ -24,14 +24,13 @@ sketch012 = sketch(on = startSketchOn(extrude011, face = START)) {
 
 region002 = region(segments = [sketch012.circle1])
 extrude012 = extrude(region002, length = 0.15)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge4)])
+
 sketch013 = sketch(on = startSketchOn(extrude011, face = START)) {
   circle1 = circle(start = [var 10.75in, var 37.13in], center = [var 8.85in, var 37.13in])
 }
 
 region003 = region(segments = [sketch013.circle1])
 extrude013 = extrude(region003, length = 1)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge5)])
 
 // Draw Bolt Patterns on J2 Robot Arm
 sketch014 = startSketchOn(extrude012, face = END)
@@ -72,4 +71,3 @@ sketch016 = sketch(on = startSketchOn(extrude011, face = END)) {
 region004 = region(segments = [sketch016.circle1])
 extrude(region004, length = 1)
   |> appearance(color = "#454545", metalness = 90, roughness = 90)
-

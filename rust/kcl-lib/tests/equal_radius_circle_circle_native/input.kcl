@@ -1,0 +1,16 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  a = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  b = circle(start = [var 14mm, var 0mm], center = [var 10mm, var 0mm])
+
+  fixed([a.center, [0mm, 0mm]])
+  fixed([a.start, [5mm, 0mm]])
+  fixed([b.center, [10mm, 0mm]])
+  b.start.at[1] == 0mm
+
+  equalRadius([a, b])
+}
+
+assert(s.b.start.at[0], isEqualTo = 15mm, tolerance = 0.001)
+assert(s.b.start.at[1], isEqualTo = 0mm, tolerance = 0.001)

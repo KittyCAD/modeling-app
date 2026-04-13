@@ -41,4 +41,3 @@ export knobFilletRadius = 0.050
 // talk-button
 export talkButtonSideLength = 0.5
 export talkButtonHeight = 0.050
-

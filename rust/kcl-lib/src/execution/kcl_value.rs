@@ -5,7 +5,7 @@ use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::KclError;
 use crate::ModuleId;
 use crate::SourceRange;
@@ -554,7 +554,7 @@ impl KclValue {
                     && *len != UnitLength::Millimeters
                 {
                     exec_state.warn(
-                        CompilationError::err(
+                        CompilationIssue::err(
                             literal.as_source_range(),
                             "Project-wide units are deprecated. Prefer to use per-file default units.",
                         )

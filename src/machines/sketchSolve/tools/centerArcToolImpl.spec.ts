@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
+  createArcActor,
+  finalizeArcActor,
   projectPointOntoArcRadius,
   sendResultToParent,
   storeCreatedArcResult,
@@ -10,6 +12,10 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { DoneActorEvent } from 'xstate'
+import {
+  createMockKclManager,
+  createMockRustContext,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 
 type FinalizingArcEvent = {
   type: 'xstate.done.actor.0.Center arc tool.Finalizing arc'
@@ -56,7 +62,7 @@ function createSceneGraphDelta(
     new_objects: newObjectIds,
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
       operations: [],
       artifactGraph: { map: {}, itemCount: 0 },
@@ -95,7 +101,7 @@ function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -146,7 +152,7 @@ function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -366,6 +372,7 @@ describe('centerArcToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
         },
       })
 
@@ -416,6 +423,7 @@ describe('centerArcToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
           writeToDisk: false,
         },
       })
@@ -455,6 +463,159 @@ describe('centerArcToolImpl', () => {
       } as any)
 
       expect(result).toEqual({})
+    })
+  })
+
+  describe('snap constraints', () => {
+    it('creates coincident constraints for snapped center and start points', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 10, y: 0 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+      ;(rustContext.addSegment as any).mockResolvedValue({
+        kclSource: { text: 'arc' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, endPoint, arcObj],
+          [1, 2, 3, 4]
+        ),
+      })
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce({
+          kclSource: { text: 'center-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [10]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'start-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [11]),
+        })
+
+      const result = await createArcActor({
+        input: {
+          centerPoint: [0, 0],
+          startPoint: [10, 0],
+          centerSnapTarget: { type: 'origin' },
+          startSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [1, 'ORIGIN'],
+        },
+        expect.anything()
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        2,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 99],
+        },
+        expect.anything()
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [11]),
+          new_objects: [1, 2, 3, 4, 10, 11],
+        },
+      })
+    })
+
+    it('adds a coincident constraint for the clicked endpoint when finalizing', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      const editedArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 0,
+        startY: 10,
+      })
+      ;(rustContext.editSegments as any).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 0, y: 10 }),
+            createPointApiObject({ id: 3, x: 10, y: 0 }),
+            editedArc,
+          ],
+          [4]
+        ),
+      })
+      ;(rustContext.addConstraint as any).mockResolvedValue({
+        kclSource: { text: 'snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [20]),
+      })
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          endSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+          arcIsSwapped: true,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 99],
+        },
+        expect.anything(),
+        true
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [20]),
+          new_objects: [4, 20],
+        },
+        checkpointId: null,
+      })
     })
   })
 })

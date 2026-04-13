@@ -15,7 +15,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import { CoreDumpManager } from '@src/lib/coredump'
+import { CoreDumpManager, submitCoreDumpSupportTicket } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
@@ -168,21 +168,30 @@ function CoreDump() {
   const { auth } = useApp()
   const { kclManager } = useSingletons()
   const token = auth.useToken()
+  const user = auth.useUser()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(kclManager, token),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    []
+    () => new CoreDumpManager(kclManager),
+    [kclManager]
   )
   useHotkeyWrapper(
     ['mod + shift + period'],
     () => {
       toast
         .promise(
-          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise).then(
+            async (dump) => {
+              await submitCoreDumpSupportTicket({
+                dump,
+                token,
+                user,
+              })
+              return dump
+            }
+          ),
           {
-            loading: 'Starting core dump...',
-            success: 'Core dump completed successfully',
-            error: 'Error while exporting core dump',
+            loading: 'Submitting support ticket...',
+            success: 'Support ticket created successfully.',
+            error: 'Error while creating support ticket.',
           },
           {
             success: {

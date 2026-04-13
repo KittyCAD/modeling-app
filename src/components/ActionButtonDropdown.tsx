@@ -4,7 +4,6 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
@@ -92,19 +91,6 @@ function ActionButtonDropdownListItem({
   item: ActionButtonSplitProps['splitMenuItems'][number]
   onClick: () => void
 }) {
-  /**
-   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
-   * and since the first item in the dropdown has a top-level button too,
-   * it already has a hotkey listener, so we should skip it.
-   * TODO: make a global hotkey registration system. make them editable.
-   */
-  useHotkeys(item.hotkey || '', item.onClick, {
-    enabled:
-      ['available', 'experimental'].includes(item.status || '') &&
-      !!item.hotkey &&
-      !item.disabled,
-  })
-
   return (
     <li className="contents">
       <button

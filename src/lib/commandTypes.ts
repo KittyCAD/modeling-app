@@ -50,11 +50,12 @@ export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
 export type CommandSelectionType =
   | Artifact['type']
+  | 'pathRegion'
   | 'primitiveFace'
   | 'primitiveEdge'
   | 'enginePrimitiveFace'
   | 'enginePrimitiveEdge'
-  | 'region'
+  | 'engineRegion'
 export type FileFilter = {
   name: string
   extensions: string[]
@@ -97,7 +98,7 @@ export type Command<
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>

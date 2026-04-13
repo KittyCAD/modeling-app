@@ -1,0 +1,79 @@
+profile001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 195.45mm, var 113.92mm], center = [var 154.36mm, var 113.92mm])
+}
+region001 = region(segments = [profile001.circle1])
+extrude001 = extrude(region001, length = 200)
+profile002 = sketch(on = XY) {
+  line1 = line(start = [var 72.24mm, var -52.05mm], end = [var 253.5mm, var -52.05mm])
+  line2 = line(start = [var 253.5mm, var -52.05mm], end = [var 253.5mm, var -73.59mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 253.5mm, var -73.59mm], end = [var 72.24mm, var -73.59mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 72.24mm, var -73.59mm], end = [var 72.24mm, var -52.05mm])
+  coincident([line3.end, line4.start])
+}
+region002 = region(segments = [profile002.line1, profile002.line2])
+extrude002 = extrude(region002, length = 150)
+chamfer002 = chamfer(
+  extrude002,
+  length = 15,
+  tags = [region002.tags.line4],
+  tag = $seg02,
+)
+
+face003 = faceOf(chamfer002, face = region002.tags.line4)
+profile003 = sketch(on = face003) {
+  line1 = line(start = [var 207.36mm, var 126.19mm], end = [var 240.93mm, var 126.19mm])
+  line2 = line(start = [var 240.93mm, var 126.19mm], end = [var 240.93mm, var 27.08mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 240.93mm, var 27.08mm], end = [var 207.36mm, var 27.08mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 207.36mm, var 27.08mm], end = [var 207.36mm, var 126.19mm])
+  coincident([line3.end, line4.start])
+}
+region003 = region(segments = [profile003.line1, profile003.line2])
+extrude003 = extrude(region003, length = -20)
+face004 = faceOf(extrude003, face = region003.tags.line4)
+profile004 = sketch(on = face004) {
+  line1 = line(start = [var -235.38mm, var 66.16mm], end = [var -211.17mm, var 66.16mm])
+  line2 = line(start = [var -211.17mm, var 66.16mm], end = [var -211.17mm, var 62.44mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -211.17mm, var 62.44mm], end = [var -235.38mm, var 62.44mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -235.38mm, var 62.44mm], end = [var -235.38mm, var 66.16mm])
+  coincident([line3.end, line4.start])
+}
+region004 = region(segments = [profile004.line1, profile004.line2])
+extrude004 = extrude(region004, length = 30)
+
+profile005 = sketch(on = faceOf(chamfer002, face = seg02)) {
+  line1 = line(start = [var -129.93mm, var -59.19mm], end = [var -81.14mm, var -59.19mm])
+  line2 = line(start = [var -81.14mm, var -59.19mm], end = [var -79.81mm, var -48.16mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -79.81mm, var -48.16mm], end = [var -140.37mm, var -48.16mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -140.37mm, var -48.16mm], end = [var -129.93mm, var -59.19mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+region005 = region(segments = [profile005.line1, profile005.line2])
+extrude005 = extrude(region005, length = -10)
+face006 = faceOf(extrude005, face = region005.tags.line4)
+profile006 = sketch(on = face006) {
+  line1 = line(start = [var -95.86mm, var 38.73mm], end = [var -92.38mm, var 38.73mm])
+  line2 = line(start = [var -92.38mm, var 38.73mm], end = [var -92.38mm, var 35.37mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -92.38mm, var 35.37mm], end = [var -95.86mm, var 35.37mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -95.86mm, var 35.37mm], end = [var -95.86mm, var 38.73mm])
+  coincident([line3.end, line4.start])
+}
+region006 = region(segments = [profile006.line1, profile006.line2])
+extrude006 = extrude(region006, length = 13)
+hidden001 = hide(profile001)
+hidden002 = hide(profile002)
+hidden003 = hide(profile003)
+hidden004 = hide(profile004)
+hidden005 = hide(profile005)
+hidden006 = hide(profile006)

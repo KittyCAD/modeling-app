@@ -213,4 +213,3 @@ mounting_hole4 = extrude(region007, length = -plate_thickness)
          getCommonEdge(faces = [capStart002, seg08])
        ],
      )
-

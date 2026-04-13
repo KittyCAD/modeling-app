@@ -13,12 +13,6 @@ shellWall = 0.3
 rearWall = 0.9
 frontCutOvertravel = 0.2
 
-// Inner cavity dimensions derived from shell parameters
-innerWidth = shellWidth - (shellWall * 2)
-innerHeight = shellHeight - (shellWall * 2)
-innerCornerRadius = 0.55
-cavityLength = shellLength - rearWall + frontCutOvertravel
-
 // Contact tongue dimensions and front offset
 tongueLength = 5.4
 tongueWidth = 6.6
@@ -47,56 +41,40 @@ shellProfile = sketch(on = YZ) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var -4.2mm, var 1.3mm], end = [var -4.2mm, var -1.3mm])
   coincident([line3.end, line4.start])
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line4)
 }
 
 region001 = region(segments = [shellProfile.line1, shellProfile.line2])
 // Extrude and fillet the shell body
-shellBody = extrude(region001, length = shellLength)
-  |> fillet(
-       radius = shellCornerRadius,
-       tags = [
-         getNextAdjacentEdge(shellEdge01),
-         getNextAdjacentEdge(shellEdge02),
-         getNextAdjacentEdge(shellEdge03),
-         getNextAdjacentEdge(shellEdge04)
-       ],
+shellBody = extrude(
+       region001,
+       length = shellLength,
+       tagEnd = $capEnd001,
+       tagStart = $capStart001,
      )
-
-// Sketch the inner cavity profile on an offset plane
-cavityProfile = sketch(on = offsetPlane(YZ, offset = rearWall)) {
-  line1 = line(start = [var -3.9mm, var -1mm], end = [var 3.9mm, var -1mm])
-  line2 = line(start = [var 3.9mm, var -1mm], end = [var 3.9mm, var 1mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 3.9mm, var 1mm], end = [var -3.9mm, var 1mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -3.9mm, var 1mm], end = [var -3.9mm, var -1mm])
-  coincident([line3.end, line4.start])
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line4)
-}
-
-region002 = region(segments = [
-  cavityProfile.line1,
-  cavityProfile.line2
-])
-// Extrude and fillet the cavity cutter
-cavityBody = extrude(region002, length = cavityLength)
   |> fillet(
-       radius = innerCornerRadius,
        tags = [
-         getNextAdjacentEdge(cavityEdge01),
-         getNextAdjacentEdge(cavityEdge02),
-         getNextAdjacentEdge(cavityEdge03),
-         getNextAdjacentEdge(cavityEdge04)
+         getCommonEdge(faces = [
+           region001.tags.line3,
+           region001.tags.line4
+         ]),
+         getCommonEdge(faces = [
+           region001.tags.line3,
+           region001.tags.line1
+         ]),
+         getCommonEdge(faces = [
+           region001.tags.line2,
+           region001.tags.line1
+         ]),
+         getCommonEdge(faces = [
+           region001.tags.line4,
+           region001.tags.line2
+         ])
        ],
+       radius = shellCornerRadius,
      )
 
 // Subtract cavity from shell and set shell appearance
-shell = subtract(shellBody, tools = cavityBody)
+shell = shell(shellBody, faces = [capEnd001, capStart001], thickness = shellWall)
   |> appearance(color = "#d0d5de", metalness = 88, roughness = 20)
 
 // Create the internal tongue block
@@ -115,16 +93,46 @@ tongue = extrude(region003, length = tongueLength)
 
 // Sketch the rear housing cross-section on YZ
 housingProfile = sketch(on = YZ) {
-  line1 = line(start = [var -6mm, var -2.3mm], end = [var 6mm, var -2.3mm])
-  line2 = line(start = [var 6mm, var -2.3mm], end = [var 6mm, var 2.3mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 6mm, var 2.3mm], end = [var -6mm, var 2.3mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -6mm, var 2.3mm], end = [var -6mm, var -2.3mm])
-  coincident([line3.end, line4.start])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -2.32mm])
+  coincident([line1.start, ORIGIN])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  line2 = line(start = [var 0mm, var -2.32mm], end = [var 5.43mm, var -2.32mm])
+  coincident([line2.start, line1.end])
+  arc1 = arc(start = [var 5.43mm, var -2.32mm], end = [var 5.93mm, var -1.82mm], center = [var 5.43mm, var -1.82mm])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  line3 = line(start = [var 5.93mm, var -1.82mm], end = [var 5.93mm, var 1.82mm])
+  coincident([line3.start, arc1.end])
+  arc2 = arc(start = [var 5.93mm, var 1.82mm], end = [var 5.43mm, var 2.32mm], center = [var 5.43mm, var 1.82mm])
+  coincident([line3.end, arc2.start])
+  tangent([line3, arc2])
+  line4 = line(start = [var 5.43mm, var 2.32mm], end = [var -5.44mm, var 2.35mm])
+  coincident([line4.start, arc2.end])
+  arc3 = arc(start = [var -5.44mm, var 2.35mm], end = [var -6.08mm, var 1.72mm], center = [var -5.45mm, var 1.72mm])
+  coincident([line4.end, arc3.start])
+  tangent([line4, arc3])
+  line5 = line(start = [var -6.08mm, var 1.72mm], end = [var -6.08mm, var -1.67mm])
+  coincident([line5.start, arc3.end])
+  arc4 = arc(start = [var -6.08mm, var -1.67mm], end = [var -5.43mm, var -2.32mm], center = [var -5.43mm, var -1.67mm])
+  coincident([line5.end, arc4.start])
+  tangent([line5, arc4])
+  line6 = line(start = [var -5.43mm, var -2.32mm], end = [var 0mm, var -2.32mm])
+  coincident([line6.start, arc4.end])
+  coincident([line6.end, line1.end])
+  radius(arc1) == housingCornerRadius
+  radius(arc2) == housingCornerRadius
+  radius(arc3) == housingCornerRadius
+  radius(arc4) == housingCornerRadius
+  horizontal(line6)
   horizontal(line2)
+  equalLength([line6, line2])
   vertical(line3)
-  horizontal(line4)
+  vertical(line5)
+  tangent([line3, arc1])
+  tangent([line4, arc2])
+  tangent([line5, arc3])
+  tangent([line6, arc4])
+  horizontalDistance([arc4.start, line3.start]) == housingWidth
 }
 
 region004 = region(segments = [
@@ -133,15 +141,6 @@ region004 = region(segments = [
 ])
 // Extrude and fillet rear housing, then set appearance
 housing = extrude(region004, length = -housingLength)
-  |> fillet(
-       radius = housingCornerRadius,
-       tags = [
-         getNextAdjacentEdge(housingEdge01),
-         getNextAdjacentEdge(housingEdge02),
-         getNextAdjacentEdge(housingEdge03),
-         getNextAdjacentEdge(housingEdge04)
-       ],
-     )
   |> appearance(color = "#1b1b1b", metalness = 4, roughness = 72)
 
 // Sketch the cable centerline path on XZ
@@ -160,4 +159,3 @@ sketch002 = sketch(on = offsetPlane(YZ, offset = -housingLength)) {
 region005 = region(segments = [sketch002.circle1])
 cable = sweep(region005, path = cablePath)
   |> appearance(color = "#101010", metalness = 0, roughness = 80)
-
