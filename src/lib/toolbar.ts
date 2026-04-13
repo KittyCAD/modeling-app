@@ -1273,7 +1273,7 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain equal length' }),
                 status: 'available',
-                title: 'Equal Length',
+                title: 'Equal',
                 showTitle: false,
                 description:
                   'Constrain two or more segments to have equal length.',
@@ -1747,7 +1747,7 @@ export const useToolbarConfig = () => {
               }),
             icon: 'equal',
             status: 'available',
-            title: 'Equal Length',
+            title: 'Equal',
             hotkey: 'E',
             description:
               'Constrain lines to have equal length, or arcs and circles to have equal radius.',
