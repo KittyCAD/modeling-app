@@ -63,12 +63,14 @@ import {
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type {
   ExtrudeFacePlane,
   EngineRegionSelection,
+  Selection,
 } from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
@@ -399,13 +401,13 @@ export function sketchOnExtrudedFace(
  */
 export function sketchBlockOnExtrudedFace(
   node: Node<Program>,
-  sketchPathToNode: PathToNode,
+  faceSelection: Selection,
   extrudePathToNode: PathToNode,
-  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
-  wasmInstance: ModuleType,
-  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
+  const sketchPathToNode = faceSelection.codeRef.pathToNode
   const newSketchName = findUniqueName(
     node,
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
@@ -430,19 +432,27 @@ export function sketchBlockOnExtrudedFace(
   if (err(extrudeDeclarator)) return extrudeDeclarator
   const extrudeName = extrudeDeclarator.node.id?.name
 
-  const taggedSource = addTagToExtrudedFaceSketchSegment(
+  const taggedSource = modifyAstWithTagsForSelection(
     _node,
-    sketchPathToNode,
-    addTagForSketchOnFace,
-    wasmInstance,
-    info
+    faceSelection,
+    artifactGraph,
+    wasmInstance
   )
   if (err(taggedSource)) return taggedSource
   _node = taggedSource.modifiedAst
+  const [tagExpr] = taggedSource.exprs
+  if (!tagExpr) {
+    return new Error('Failed to create a face tag for the selected face.')
+  }
+  if (tagExpr.type !== 'Name') {
+    return new Error(
+      'Expected selected legacy face to resolve to a direct tag reference.'
+    )
+  }
 
   const sketchBlockCode = `${newSketchName} = sketch(on = faceOf(${
     extrudeName ? extrudeName : oldSketchName
-  }, face = ${taggedSource.tagName})) {
+  }, face = ${tagExpr.name.name})) {
 }`
   const sketchBlockParse = parse(sketchBlockCode, wasmInstance)
   if (err(sketchBlockParse)) return sketchBlockParse
@@ -470,51 +480,6 @@ export function sketchBlockOnExtrudedFace(
       ['declaration', 'VariableDeclaration'],
       ['init', ''],
     ],
-  }
-}
-
-export function addTagToExtrudedFaceSketchSegment(
-  node: Node<Program>,
-  sketchPathToNode: PathToNode,
-  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
-  wasmInstance: ModuleType,
-  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
-): { modifiedAst: Node<Program>; tag: Expr; tagName: string } | Error {
-  const _node = { ...node }
-
-  if (info.type === 'cap') {
-    const tagName = info.subType.toUpperCase()
-    return {
-      modifiedAst: _node,
-      tag: createLiteral(tagName, wasmInstance),
-      tagName,
-    }
-  }
-
-  const expressionResult = getNodeFromPath<CallExpressionKw>(
-    _node,
-    sketchPathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (err(expressionResult)) return expressionResult
-
-  const taggedSketchSegment = addTagForSketchOnFace(
-    {
-      pathToNode: sketchPathToNode,
-      node: _node,
-      wasmInstance,
-    },
-    expressionResult.node.callee.name.name,
-    info.type === 'edgeCut' ? info : null,
-    wasmInstance
-  )
-  if (err(taggedSketchSegment)) return taggedSketchSegment
-
-  return {
-    modifiedAst: taggedSketchSegment.modifiedAst,
-    tag: createLocalName(taggedSketchSegment.tag),
-    tagName: taggedSketchSegment.tag,
   }
 }
 

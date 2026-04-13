@@ -3226,13 +3226,27 @@ export const modelingMachine = setup({
           // Temporary compatibility branch for legacy sketch V1.
           // Remove this once sketch-on-face always originates from sketch
           // blocks and no longer needs a JS-side code mod before sketch solve.
+          const legacyFaceArtifact = kclManager.artifactGraph.get(
+            legacyExtrudeFaceTemporaryCompat.faceId
+          )
+          const legacyFaceCodeRef = legacyFaceArtifact
+            ? getFaceCodeRef(legacyFaceArtifact)
+            : null
+          if (!legacyFaceArtifact || !legacyFaceCodeRef) {
+            return reject(
+              new Error('Could not resolve the selected legacy face.')
+            )
+          }
+
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
-            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
+            {
+              artifact: legacyFaceArtifact,
+              codeRef: legacyFaceCodeRef,
+            },
             legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
-            addTagForSketchOnFace,
-            wasmInstance,
-            legacyExtrudeFaceTemporaryCompat.faceInfo
+            kclManager.artifactGraph,
+            wasmInstance
           )
           if (err(legacySketchBlock)) {
             return reject(new Error('Incompatible face, please try another'))

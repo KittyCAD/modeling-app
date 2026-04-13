@@ -15,7 +15,6 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
-  addTagToExtrudedFaceSketchSegment,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentOrProfileFromPipeExpression,
@@ -34,7 +33,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { codeRefFromRange, getFaceCodeRef } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -1235,7 +1234,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
   })
 
   describe('temporary legacy sketch-on-face helpers', () => {
-    test('sketchBlockOnExtrudedFace tags the legacy wall segment and inserts a sketch block', () => {
+    test('sketchBlockOnExtrudedFace tags the legacy wall segment and inserts a sketch block', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [-3.5, -2.23])
   |> line(end = [4.53, 5.73])
@@ -1245,7 +1244,10 @@ profile001 = startProfile(sketch001, at = [-3.5, -2.23])
 extrude001 = extrude(profile001, length = 5)
 `
       const ast = assertParse(code, instanceInThisFile)
-
+      const { artifactGraph } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
       const segmentSnippet =
         'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
       const segmentPathToNode = getNodePathFromSourceRange(ast, [
@@ -1253,18 +1255,54 @@ extrude001 = extrude(profile001, length = 5)
         code.indexOf(segmentSnippet) + segmentSnippet.length,
         0,
       ])
+      const segmentArtifact = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+          artifact.type === 'segment' &&
+          artifact.codeRef.pathToNode.at(-1)?.[0] ===
+            segmentPathToNode.at(-1)?.[0]
+      )
+      expect(segmentArtifact).toBeDefined()
+
       const extrudeSnippet = 'extrude(profile001, length = 5)'
       const extrudePathToNode = getNodePathFromSourceRange(ast, [
         code.indexOf(extrudeSnippet),
         code.indexOf(extrudeSnippet) + extrudeSnippet.length,
         0,
       ])
+      const sweepArtifact = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.pathToNode.at(-1)?.[0] ===
+            extrudePathToNode.at(-1)?.[0]
+      )
+      expect(sweepArtifact).toBeDefined()
+
+      const legacyWall: Extract<Artifact, { type: 'wall' }> = {
+        type: 'wall',
+        id: 'legacy-wall-1',
+        cmdId: 'cmd-1',
+        segId: segmentArtifact!.id,
+        edgeCutEdgeIds: [],
+        pathIds: [],
+        sweepId: sweepArtifact!.id,
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: segmentPathToNode,
+          nodePath: { steps: [] },
+        },
+      }
+      artifactGraph.set(legacyWall.id, legacyWall)
+      const legacyWallCodeRef = getFaceCodeRef(legacyWall)
+      expect(legacyWallCodeRef).not.toBeNull()
 
       const result = sketchBlockOnExtrudedFace(
         ast,
-        segmentPathToNode,
+        {
+          artifact: legacyWall,
+          codeRef: legacyWallCodeRef!,
+        },
         extrudePathToNode,
-        addTagForSketchOnFace,
+        artifactGraph,
         instanceInThisFile
       )
       if (err(result)) throw result
@@ -1286,38 +1324,6 @@ sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
       )
       if (err(insertedSketchBlock)) throw insertedSketchBlock
       expect(insertedSketchBlock.node.type).toBe('SketchBlock')
-    })
-
-    test('addTagToExtrudedFaceSketchSegment returns cap tags without mutating the source', () => {
-      const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-3.5, -2.23])
-  |> line(end = [4.53, 5.73])
-  |> line(end = [5.18, -3.74])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 5)
-`
-      const ast = assertParse(code, instanceInThisFile)
-      const profileSnippet = 'startProfile(sketch001, at = [-3.5, -2.23])'
-      const profilePathToNode = getNodePathFromSourceRange(ast, [
-        code.indexOf(profileSnippet),
-        code.indexOf(profileSnippet) + profileSnippet.length,
-        0,
-      ])
-
-      const result = addTagToExtrudedFaceSketchSegment(
-        ast,
-        profilePathToNode,
-        addTagForSketchOnFace,
-        instanceInThisFile,
-        { type: 'cap', subType: 'end' }
-      )
-      if (err(result)) throw result
-
-      expect(result.tagName).toBe('END')
-      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
-        recast(ast, instanceInThisFile)
-      )
     })
   })
 })
