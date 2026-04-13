@@ -840,7 +840,12 @@ export const mlEphantManagerMachine = setup({
             event: {
               type: MlEphantManagerStates.Setup,
               conversationId: args.event.conversationId,
-              sketch_solve: args.event.sketch_solve,
+              sketch_solve:
+                args.event.type === MlEphantManagerStates.Setup ||
+                args.event.type ===
+                  MlEphantManagerTransitions.CacheSetupAndConnect
+                  ? args.event.sketch_solve
+                  : undefined,
               refParentSend: args.self.send,
             },
             context: args.context,
