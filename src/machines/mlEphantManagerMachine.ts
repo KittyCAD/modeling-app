@@ -84,12 +84,14 @@ export type MlEphantManagerEvents =
       refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
+      sketch_solve?: boolean
     }
   | {
       type: MlEphantManagerStates.Setup
       refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
+      sketch_solve?: boolean
     }
   | {
       type: MlEphantManagerTransitions.MessageSend
@@ -167,6 +169,7 @@ export interface MlEphantManagerContext {
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
+    sketch_solve?: boolean
   }
 }
 
@@ -414,6 +417,7 @@ export const mlEphantManagerMachine = setup({
         return {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
+          sketch_solve: event.sketch_solve,
         }
       },
     }),
@@ -432,10 +436,19 @@ export const mlEphantManagerMachine = setup({
       const maybeConversationId =
         args.input.context?.cachedSetup?.conversationId ??
         args.input.context?.conversationId
+      const sketchSolve = args.input.context?.cachedSetup?.sketch_solve === true
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
-      const querystring = maybeConversationId
-        ? `?conversation_id=${maybeConversationId}&replay=true`
+      const queryParams = new URLSearchParams()
+      if (maybeConversationId) {
+        queryParams.set('conversation_id', maybeConversationId)
+        queryParams.set('replay', 'true')
+      }
+      if (sketchSolve) {
+        queryParams.set('sketch_solve', 'true')
+      }
+      const querystring = queryParams.toString()
+        ? `?${queryParams.toString()}`
         : ''
       const url = withMlephantWebSocketURL(querystring)
 
@@ -827,6 +840,7 @@ export const mlEphantManagerMachine = setup({
             event: {
               type: MlEphantManagerStates.Setup,
               conversationId: args.event.conversationId,
+              sketch_solve: args.event.sketch_solve,
               refParentSend: args.self.send,
             },
             context: args.context,
@@ -859,6 +873,7 @@ export const mlEphantManagerMachine = setup({
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
+                    sketch_solve: context.cachedSetup?.sketch_solve,
                   },
                 }
               }
@@ -868,6 +883,7 @@ export const mlEphantManagerMachine = setup({
                 cachedSetup: {
                   refParentSend: context.cachedSetup?.refParentSend,
                   conversationId: context.cachedSetup?.conversationId,
+                  sketch_solve: context.cachedSetup?.sketch_solve,
                 },
               }
             }),
