@@ -127,7 +127,7 @@ sketch002 = sketch(on = XY) {
 extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
 hidden001 = hide(sketch002)
 hidden002 = hide(sketch001)`
-  const sketchSolveSweepEdgesAcrossExtrudesForBlend = `sketch002 = sketch(on = XY) {
+  const sketchSolveSweepEdgesAcrossExtrudesForBlend = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.62mm, var -13.65mm], end = [var 3.37mm, var -13.65mm])
   line2 = line(start = [var 3.37mm, var -13.65mm], end = [var 3.37mm, var -10.83mm])
   line3 = line(start = [var 3.37mm, var -10.83mm], end = [var -3.62mm, var -10.83mm])
@@ -141,26 +141,18 @@ hidden002 = hide(sketch001)`
   perpendicular([line1, line2])
   horizontal(line3)
 }
+hidden001 = hide(sketch001)
+region001 = region(point = [-0.125mm, -13.6475mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
 
-sketch003 = sketch(on = XZ) {
+sketch002 = sketch(on = XZ) {
   line1 = line(start = [var -3.45mm, var 10.36mm], end = [var 1.38mm, var 12.93mm])
   line2 = line(start = [var 1.38mm, var 12.93mm], end = [var 5.28mm, var 9.92mm])
   coincident([line1.end, line2.start])
-  arc1 = arc(start = [var 5.28mm, var 9.92mm], end = [var 8.23mm, var 12.03mm], center = [var 5.77mm, var 12.64mm])
-  coincident([arc1.start, line2.end])
-  tangent([line2, arc1])
 }
-extrude002 = extrude(
-  [
-    sketch003.line1,
-    sketch003.arc1,
-    sketch003.line2
-  ],
-  length = 5,
-  bodyType = SURFACE,
-)
-region001 = region(point = [-0.125mm, -13.6475mm], sketch = sketch002)
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
+hidden002 = hide(sketch002)
+extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = SURFACE)
+`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -1033,7 +1025,10 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes', async () => {
+    async function runAddBlendAndCheckCode(
+      secondEdgeIndex: number,
+      secondEdgeExpr: string
+    ) {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSweepEdgesAcrossExtrudesForBlend,
         instanceInThisFile,
@@ -1048,14 +1043,20 @@ chamfer001 = chamfer(
       const sweepEdgeBody1 = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
       )
-      const sweepEdgeBody2 = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
-      )
+      const sweepEdgeBody2 = [...artifactGraph.values()].filter(
+        (a) =>
+          (a.type === 'sweepEdge' && a.sweepId === sweeps[1].id) ||
+          (a.type === 'segment' && a.pathId === sweeps[1].pathId)
+      )[secondEdgeIndex]
+      console.log('sweepEdgeBody2', sweepEdgeBody2)
       if (
         !sweepEdgeBody1 ||
         sweepEdgeBody1.type !== 'sweepEdge' ||
         !sweepEdgeBody2 ||
-        sweepEdgeBody2.type !== 'sweepEdge'
+        !(
+          sweepEdgeBody2.type === 'sweepEdge' ||
+          sweepEdgeBody2.type === 'segment'
+        )
       ) {
         throw new Error(
           'Could not find one sweep edge per extrude for blend test'
@@ -1081,10 +1082,48 @@ chamfer001 = chamfer(
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain('blend001 = blend([')
-      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode).toContain(`blend001 = blend([
+  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line1)),
+  getBoundedEdge(extrude002, edge = ${secondEdgeExpr})
+])`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    }
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - first segment', async () => {
+      await runAddBlendAndCheckCode(0, 'extrude002.sketch.tags.line1')
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - second segment', async () => {
+      await runAddBlendAndCheckCode(1, 'extrude002.sketch.tags.line2')
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - first sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        2,
+        'getOppositeEdge(extrude002.sketch.tags.line1)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - second sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        3,
+        'getNextAdjacentEdge(extrude002.sketch.tags.line1)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - third sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        4,
+        'getOppositeEdge(extrude002.sketch.tags.line2)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - fourth sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        5,
+        'getNextAdjacentEdge(extrude002.sketch.tags.line2)'
+      )
     })
 
     it('should add a blend call with opposite wrappers from sweep edges', async () => {

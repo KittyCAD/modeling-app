@@ -667,15 +667,55 @@ function getSourceSurfaceInputTagExpr({
   }
 
   if (sweepInput.type === 'ArrayExpression') {
-    const firstSweepSegment = sweepInput.elements.find(
-      (element) =>
-        element.type === 'MemberExpression' && element.property.type === 'Name'
-    )
-    const arraySegmentName =
-      firstSweepSegment?.type === 'MemberExpression' &&
-      firstSweepSegment.property.type === 'Name'
-        ? firstSweepSegment.property.name.name
-        : sketchSegmentName
+    let arraySegmentName = sketchSegmentName
+    if (!arraySegmentName) {
+      const segmentArtifact = getBlendSegmentArtifact(
+        edgeArtifact,
+        artifactGraph
+      )
+      const pathArtifact = getArtifactOfTypes(
+        { key: sourceSurfaceArtifact.pathId, types: ['path'] },
+        artifactGraph
+      )
+
+      if (
+        segmentArtifact &&
+        !err(pathArtifact) &&
+        pathArtifact.type === 'path'
+      ) {
+        const segmentIds = [
+          segmentArtifact.originalSegId,
+          segmentArtifact.id,
+        ].filter((segmentId): segmentId is string => Boolean(segmentId))
+        const matchingSegmentIndex = segmentIds
+          .map((segmentId) => pathArtifact.segIds.indexOf(segmentId))
+          .find((index) => index >= 0)
+
+        if (typeof matchingSegmentIndex === 'number') {
+          const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
+          if (
+            matchingSegmentExpr?.type === 'MemberExpression' &&
+            matchingSegmentExpr.property.type === 'Name'
+          ) {
+            arraySegmentName = matchingSegmentExpr.property.name.name
+          }
+        }
+      }
+    }
+
+    if (!arraySegmentName) {
+      const firstSweepSegment = sweepInput.elements.find(
+        (element) =>
+          element.type === 'MemberExpression' &&
+          element.property.type === 'Name'
+      )
+      arraySegmentName =
+        firstSweepSegment?.type === 'MemberExpression' &&
+        firstSweepSegment.property.type === 'Name'
+          ? firstSweepSegment.property.name.name
+          : null
+    }
+
     if (!arraySegmentName) {
       return null
     }
