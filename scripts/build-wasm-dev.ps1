@@ -16,5 +16,6 @@ wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg --scope kittycad
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 
+copy rust\kcl-wasm-lib\README.md rust\kcl-wasm-lib\pkg\README.md
 copy rust\kcl-wasm-lib\pkg\kcl_wasm_lib_bg.wasm public
 npm run fmt
