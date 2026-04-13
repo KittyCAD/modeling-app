@@ -214,7 +214,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   126[Wall]
     %% face_code_ref=Missing NodePath
-  127["Cap End"]
+  127["Cap Start"]
     %% face_code_ref=Missing NodePath
   128["Cap End"]
     %% face_code_ref=Missing NodePath
