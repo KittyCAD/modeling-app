@@ -1,0 +1,227 @@
+// Enclosure
+// Stepwise reconstruction (sketch-solve)
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+length = 175
+width = 125
+height = 70
+wallThickness = 3
+holeDia = 4
+
+// Step 1: Base enclosure body
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 125mm, var 0mm])
+  line2 = line(start = [var 125mm, var 0mm], end = [var 125mm, var 175mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 125mm, var 175mm], end = [var 0mm, var 175mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 175mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  coincident([line1.start, ORIGIN])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontalDistance([line1.start, line1.end]) == width
+  verticalDistance([line1.start, line2.end]) == length
+}
+region001 = region(point = [10mm, 10mm], sketch = sketch001)
+extrude001 = extrude(region001, length = height)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getNextAdjacentEdge(region001.tags.line1),
+         getNextAdjacentEdge(region001.tags.line2),
+         getNextAdjacentEdge(region001.tags.line3),
+         getNextAdjacentEdge(region001.tags.line4)
+       ],
+     )
+  |> shell(faces = [END], thickness = wallThickness)
+
+// Step 2: Four internal annular standoffs
+fn function001(@originStart) {
+  plane001 = {
+    origin = [0.0, 0.0, wallThickness],
+    xAxis = [1.0, 0.0, 0.0],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.0, 0.0, 1.0]
+  }
+
+  sketch002 = sketch(on = plane001) {
+    centerGuide = line(start = [var 0mm, var 0mm], end = [var 13mm, var 13mm], construction = true)
+    coincident([centerGuide.start, ORIGIN])
+
+    circle1 = circle(start = [var 20mm, var 13mm], center = [var 13mm, var 13mm])
+    circle2 = circle(start = [var 17mm, var 13mm], center = [var 13mm, var 13mm])
+    coincident([circle1.center, circle2.center])
+    coincident([centerGuide.end, circle1.center])
+
+    horizontalDistance([centerGuide.start, centerGuide.end]) == originStart[0]
+    verticalDistance([centerGuide.start, centerGuide.end]) == originStart[1]
+    radius(circle1) == holeDia + wallThickness
+    radius(circle2) == holeDia
+  }
+  region002 = region(
+    point = [originStart[0] + holeDia + wallThickness / 2, originStart[1]],
+    sketch = sketch002,
+  )
+  extrude002 = extrude(region002, length = height - wallThickness)
+  return extrude002
+}
+
+function001([
+  wallThickness * 3 + holeDia,
+  wallThickness * 3 + holeDia
+])
+function001([
+  wallThickness * 3 + holeDia,
+  length - (wallThickness * 3 + holeDia)
+])
+function001([
+  width - (wallThickness * 3 + holeDia),
+  wallThickness * 3 + holeDia
+])
+function001([
+  width - (wallThickness * 3 + holeDia),
+  length - (wallThickness * 3 + holeDia)
+])
+
+// Step 3: Lid outer plate with corner holes
+sketch003 = sketch(on = XY) {
+  line1 = line(start = [var 150mm, var 0mm], end = [var 275mm, var 0mm])
+  line2 = line(start = [var 275mm, var 0mm], end = [var 275mm, var 175mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 275mm, var 175mm], end = [var 150mm, var 175mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 150mm, var 175mm], end = [var 150mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  lidOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 150mm, var 0mm], construction = true)
+  coincident([lidOffsetGuide.start, ORIGIN])
+  coincident([lidOffsetGuide.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(lidOffsetGuide)
+
+  horizontalDistance([line1.start, line1.end]) == width
+  verticalDistance([line1.start, line2.end]) == length
+  horizontalDistance([lidOffsetGuide.start, lidOffsetGuide.end]) == width * 1.2
+
+  circle1 = circle(start = [var 167mm, var 13mm], center = [var 163mm, var 13mm])
+  circle2 = circle(start = [var 167mm, var 162mm], center = [var 163mm, var 162mm])
+  circle3 = circle(start = [var 264mm, var 13mm], center = [var 260mm, var 13mm])
+  circle4 = circle(start = [var 264mm, var 162mm], center = [var 260mm, var 162mm])
+
+  hole1Guide = line(start = [var 0mm, var 0mm], end = [var 163mm, var 13mm], construction = true)
+  hole2Guide = line(start = [var 0mm, var 0mm], end = [var 163mm, var 162mm], construction = true)
+  hole3Guide = line(start = [var 0mm, var 0mm], end = [var 260mm, var 13mm], construction = true)
+  hole4Guide = line(start = [var 0mm, var 0mm], end = [var 260mm, var 162mm], construction = true)
+  coincident([hole1Guide.start, ORIGIN])
+  coincident([hole2Guide.start, ORIGIN])
+  coincident([hole3Guide.start, ORIGIN])
+  coincident([hole4Guide.start, ORIGIN])
+  coincident([hole1Guide.end, circle1.center])
+  coincident([hole2Guide.end, circle2.center])
+  coincident([hole3Guide.end, circle3.center])
+  coincident([hole4Guide.end, circle4.center])
+
+  horizontalDistance([hole1Guide.start, hole1Guide.end]) == width * 1.2 + wallThickness * 3 + holeDia
+  verticalDistance([hole1Guide.start, hole1Guide.end]) == wallThickness * 3 + holeDia
+  horizontalDistance([hole2Guide.start, hole2Guide.end]) == width * 1.2 + wallThickness * 3 + holeDia
+  verticalDistance([hole2Guide.start, hole2Guide.end]) == length - (wallThickness * 3 + holeDia)
+  horizontalDistance([hole3Guide.start, hole3Guide.end]) == width * 2.2 - (wallThickness * 3 + holeDia)
+  verticalDistance([hole3Guide.start, hole3Guide.end]) == wallThickness * 3 + holeDia
+  horizontalDistance([hole4Guide.start, hole4Guide.end]) == width * 2.2 - (wallThickness * 3 + holeDia)
+  verticalDistance([hole4Guide.start, hole4Guide.end]) == length - (wallThickness * 3 + holeDia)
+
+  radius(circle1) == holeDia
+  radius(circle2) == holeDia
+  radius(circle3) == holeDia
+  radius(circle4) == holeDia
+}
+region003 = region(point = [width * 1.2 + 5, 5], sketch = sketch003)
+extrude003 = extrude(region003, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getNextAdjacentEdge(region003.tags.line1),
+         getNextAdjacentEdge(region003.tags.line2),
+         getNextAdjacentEdge(region003.tags.line3),
+         getNextAdjacentEdge(region003.tags.line4)
+       ],
+     )
+
+// Step 4: Lid inner sealing feature
+sketch004 = sketch(on = startSketchOn(extrude003, face = END)) {
+  line1 = line(start = [var 153mm, var 3mm], end = [var 272mm, var 3mm])
+  line2 = line(start = [var 272mm, var 3mm], end = [var 272mm, var 172mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 272mm, var 172mm], end = [var 153mm, var 172mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 153mm, var 172mm], end = [var 153mm, var 3mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  insetGuide = line(start = [var 0mm, var 0mm], end = [var 153mm, var 3mm], construction = true)
+  coincident([insetGuide.start, ORIGIN])
+  coincident([insetGuide.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontalDistance([line1.start, line1.end]) == width - (2 * wallThickness)
+  verticalDistance([line1.start, line2.end]) == length - (2 * wallThickness)
+  horizontalDistance([insetGuide.start, insetGuide.end]) == width * 1.2 + wallThickness
+  verticalDistance([insetGuide.start, insetGuide.end]) == wallThickness
+
+  circle1 = circle(start = [var 170mm, var 13mm], center = [var 163mm, var 13mm])
+  circle2 = circle(start = [var 170mm, var 162mm], center = [var 163mm, var 162mm])
+  circle3 = circle(start = [var 267mm, var 13mm], center = [var 260mm, var 13mm])
+  circle4 = circle(start = [var 267mm, var 162mm], center = [var 260mm, var 162mm])
+
+  hole1Guide = line(start = [var 0mm, var 0mm], end = [var 163mm, var 13mm], construction = true)
+  hole2Guide = line(start = [var 0mm, var 0mm], end = [var 163mm, var 162mm], construction = true)
+  hole3Guide = line(start = [var 0mm, var 0mm], end = [var 260mm, var 13mm], construction = true)
+  hole4Guide = line(start = [var 0mm, var 0mm], end = [var 260mm, var 162mm], construction = true)
+  coincident([hole1Guide.start, ORIGIN])
+  coincident([hole2Guide.start, ORIGIN])
+  coincident([hole3Guide.start, ORIGIN])
+  coincident([hole4Guide.start, ORIGIN])
+  coincident([hole1Guide.end, circle1.center])
+  coincident([hole2Guide.end, circle2.center])
+  coincident([hole3Guide.end, circle3.center])
+  coincident([hole4Guide.end, circle4.center])
+
+  horizontalDistance([hole1Guide.start, hole1Guide.end]) == width * 1.2 + wallThickness * 3 + holeDia
+  verticalDistance([hole1Guide.start, hole1Guide.end]) == wallThickness * 3 + holeDia
+  horizontalDistance([hole2Guide.start, hole2Guide.end]) == width * 1.2 + wallThickness * 3 + holeDia
+  verticalDistance([hole2Guide.start, hole2Guide.end]) == length - (wallThickness * 3 + holeDia)
+  horizontalDistance([hole3Guide.start, hole3Guide.end]) == width * 2.2 - (wallThickness * 3 + holeDia)
+  verticalDistance([hole3Guide.start, hole3Guide.end]) == wallThickness * 3 + holeDia
+  horizontalDistance([hole4Guide.start, hole4Guide.end]) == width * 2.2 - (wallThickness * 3 + holeDia)
+  verticalDistance([hole4Guide.start, hole4Guide.end]) == length - (wallThickness * 3 + holeDia)
+
+  radius(circle1) == holeDia + wallThickness
+  radius(circle2) == holeDia + wallThickness
+  radius(circle3) == holeDia + wallThickness
+  radius(circle4) == holeDia + wallThickness
+}
+region004 = region(point = [width * 1.2 + wallThickness + 5, wallThickness + 5], sketch = sketch004)
+extrude004 = extrude(region004, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 3,
+       tags = [
+         getNextAdjacentEdge(region004.tags.line1),
+         getNextAdjacentEdge(region004.tags.line2),
+         getNextAdjacentEdge(region004.tags.line3),
+         getNextAdjacentEdge(region004.tags.line4)
+       ],
+     )

@@ -1,0 +1,11 @@
+// Step 7: base frame + front wall + roof + back frame + left wall + right wall + floor
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import "frame.kcl" as frame
+import "front-wall.kcl" as frontWall
+import "roof.kcl" as roof
+import "back-frame.kcl" as backFrame
+import "left-wall.kcl" as leftWall
+import "right-wall.kcl" as rightWall
+import "floor.kcl" as floor

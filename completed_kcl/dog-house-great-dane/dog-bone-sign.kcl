@@ -1,0 +1,111 @@
+// Dog House (Great Dane) - Sketch-solve Dog Bone Sign
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "2x4.kcl"
+
+boneHalfWidth = 6.06
+boneNeckTopX = -3.31
+boneNeckBottomX = -3.07
+boneNeckBottomZ = -0.6
+boneNeckTopZ = 3.6
+
+leftTopLobeCenter = [-5.29720766426953, 3.046607723377007]
+rightTopLobeCenter = [5.29720766426953, 3.046607723377007]
+topLobeRadius = 2.0628226566424805
+leftBottomLobeCenter = [-5.2073367948304945, -0.845165905516288]
+rightBottomLobeCenter = [5.2073367948304945, -0.845165905516288]
+bottomLobeRadius = 2.151351876324259
+
+export signThickness = 0.75
+export signWidth = boneHalfWidth * 2
+export signHeight = 5.08 - (-2.99)
+
+boneBottomOffsetZ = 2.99
+boneTopLobeEnd = [-boneHalfWidth, 1.13]
+boneBottomLobeEnd = [boneNeckBottomX, boneNeckBottomZ]
+rightNeckTopX = -boneNeckTopX
+rightNeckBottomX = -boneNeckBottomX
+rightTopLobeEnd = [-boneTopLobeEnd[0], boneTopLobeEnd[1]]
+
+fn buildDogBoneSign() {
+  boneSketch = sketch(on = XZ) {
+    topLeftLine = line(
+      start = [var 0in, var 3.6in],
+      end = [var -3.31in, var 3.6in],
+    )
+
+    upperLeftArc = arc(
+      start = [var -3.31in, var 3.6in],
+      end = [var -6.06in, var 1.13in],
+      center = [var -5.29720766426953in, var 3.046607723377007in],
+    )
+    coincident([topLeftLine.end, upperLeftArc.start])
+
+    lowerLeftArc = arc(
+      start = [var -6.06in, var 1.13in],
+      end = [var -3.07in, var -0.6in],
+      center = [var -5.2073367948304945in, var -0.845165905516288in],
+    )
+    coincident([upperLeftArc.end, lowerLeftArc.start])
+
+    bottomLeftLine = line(
+      start = [var -3.07in, var -0.6in],
+      end = [var 0in, var -0.6in],
+    )
+    coincident([lowerLeftArc.end, bottomLeftLine.start])
+
+    bottomRightLine = line(
+      start = [var 0in, var -0.6in],
+      end = [var 3.07in, var -0.6in],
+    )
+    coincident([bottomLeftLine.end, bottomRightLine.start])
+
+    lowerRightArc = arc(
+      start = [var 3.07in, var -0.6in],
+      end = [var 6.06in, var 1.13in],
+      center = [var 5.2073367948304945in, var -0.845165905516288in],
+    )
+    coincident([bottomRightLine.end, lowerRightArc.start])
+
+    upperRightArc = arc(
+      start = [var 6.06in, var 1.13in],
+      end = [var 3.31in, var 3.6in],
+      center = [var 5.29720766426953in, var 3.046607723377007in],
+    )
+    coincident([lowerRightArc.end, upperRightArc.start])
+
+    topRightLine = line(
+      start = [var 3.31in, var 3.6in],
+      end = [var 0in, var 3.6in],
+    )
+    coincident([upperRightArc.end, topRightLine.start])
+    coincident([topRightLine.end, topLeftLine.start])
+
+    horizontal(topLeftLine)
+    horizontal(bottomLeftLine)
+    horizontal(bottomRightLine)
+    horizontal(topRightLine)
+    equalLength([topLeftLine, topRightLine])
+    equalLength([bottomLeftLine, bottomRightLine])
+    radius(upperLeftArc) == topLobeRadius
+    radius(upperRightArc) == topLobeRadius
+    radius(lowerLeftArc) == bottomLobeRadius
+    radius(lowerRightArc) == bottomLobeRadius
+    horizontalDistance([topLeftLine.end, topRightLine.start]) == 2 * abs(boneNeckTopX)
+    horizontalDistance([bottomLeftLine.start, bottomRightLine.end]) == 2 * abs(boneNeckBottomX)
+    verticalDistance([bottomLeftLine.start, topLeftLine.end]) == boneNeckTopZ - boneNeckBottomZ
+    verticalDistance([upperLeftArc.center, upperRightArc.center]) == 0
+    verticalDistance([lowerLeftArc.center, lowerRightArc.center]) == 0
+  }
+
+  boneRegion = region(segments = [boneSketch.topLeftLine, boneSketch.upperLeftArc])
+
+  return extrude(boneRegion, length = signThickness)
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
+    |> translate(z = boneBottomOffsetZ)
+}
+
+dogBoneSign = buildDogBoneSign()
+
+[dogBoneSign]

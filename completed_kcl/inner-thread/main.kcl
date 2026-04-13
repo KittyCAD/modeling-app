@@ -1,0 +1,83 @@
+// Inner Thread sketch-solve reconstruction
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+outerCylinderRadius = 5
+outerCylinderLength = 10
+innerCylinderDiameter = 8
+innerCylinderRadius = innerCylinderDiameter / 2
+rectHeight = 0.5mm
+rectWidth = 0.5mm
+rectHalfHeight = rectHeight / 2
+threadCenterX = outerCylinderRadius - (rectWidth * 2)
+threadLeftX = threadCenterX - (rectWidth / 2)
+threadRightX = threadCenterX + (rectWidth / 2)
+
+// Step 1: Outer cylinder body
+outerSketch = sketch(on = XY) {
+  outerCircle = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  coincident([outerCircle.center, ORIGIN])
+  radius(outerCircle) == outerCylinderRadius
+}
+outerRegion = region(point = [0mm, 0mm], sketch = outerSketch)
+outerCylinder = extrude(outerRegion, length = outerCylinderLength)
+hide(outerSketch)
+
+// Step 2: Inner cylinder blank
+innerSketch = sketch(on = XY) {
+  innerCircle = circle(start = [var 0mm, var 4mm], center = [var 0mm, var 0mm])
+  coincident([innerCircle.center, ORIGIN])
+  radius(innerCircle) == innerCylinderRadius
+}
+innerRegion = region(point = [0mm, 0mm], sketch = innerSketch)
+inner = extrude(innerRegion, length = outerCylinderLength)
+hide(innerSketch)
+
+// Step 3: Thread profile sketch
+threadProfileSketch = sketch(on = XZ) {
+  bottom = line(start = [var 3.75mm, var -0.25mm], end = [var 4.25mm, var -0.25mm])
+  horizontal(bottom)
+  distance([bottom.start, bottom.end]) == rectWidth
+
+  right = line(start = [var 4.25mm, var -0.25mm], end = [var 4.25mm, var 0.25mm])
+  vertical(right)
+  distance([right.start, right.end]) == rectHeight
+
+  top = line(start = [var 4.25mm, var 0.25mm], end = [var 3.75mm, var 0.25mm])
+  horizontal(top)
+  distance([top.start, top.end]) == rectWidth
+
+  left = line(start = [var 3.75mm, var 0.25mm], end = [var 3.75mm, var -0.25mm])
+  vertical(left)
+  distance([left.start, left.end]) == rectHeight
+
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+
+  fixed([bottom.start, [threadLeftX, -rectHalfHeight]])
+  fixed([bottom.end, [threadRightX, -rectHalfHeight]])
+  fixed([right.end, [threadRightX, rectHalfHeight]])
+  fixed([top.end, [threadLeftX, rectHalfHeight]])
+}
+threadProfileRegion = region(
+  segments = [
+    threadProfileSketch.bottom,
+    threadProfileSketch.right,
+    threadProfileSketch.top,
+    threadProfileSketch.left
+  ]
+)
+threadHelix = helix(
+  revolutions = 10,
+  angleStart = 0deg,
+  cylinder = inner,
+  length = outerCylinderRadius * 2 + rectHeight * 2,
+)
+thread = sweep(threadProfileRegion, path = threadHelix)
+hide(threadProfileSketch)
+
+// Step 4: Final subtraction to expose the thread
+finalThreadedCylinder = subtract([outerCylinder], tools = [inner, thread])
+finalThreadedCylinder

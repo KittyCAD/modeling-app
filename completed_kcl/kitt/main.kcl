@@ -1,0 +1,297 @@
+// Kitt sketch-solve step 1: torso body
+
+kitBodyElevation = 6mm
+kitBodyWidth = 26mm
+kitBodyHeight = 25mm
+kitBodyDepth = 18mm
+
+kitBodyLeft = -kitBodyWidth / 2
+kitBodyRight = kitBodyLeft + kitBodyWidth
+kitBodyBottom = kitBodyElevation
+kitBodyTop = kitBodyBottom + kitBodyHeight
+
+kitBodySketch = sketch(on = XZ) {
+  lineLeft = line(start = [var -13mm, var 6mm], end = [var -13mm, var 31mm])
+  lineTop = line(start = [var -13mm, var 31mm], end = [var 13mm, var 31mm])
+  lineRight = line(start = [var 13mm, var 31mm], end = [var 13mm, var 6mm])
+  lineBottom = line(start = [var 13mm, var 6mm], end = [var -13mm, var 6mm])
+  coincident([lineLeft.end, lineTop.start])
+  coincident([lineTop.end, lineRight.start])
+  coincident([lineRight.end, lineBottom.start])
+  coincident([lineBottom.end, lineLeft.start])
+  vertical(lineLeft)
+  horizontal(lineTop)
+  vertical(lineRight)
+  horizontal(lineBottom)
+}
+kitBodyRegion = region(segments = [kitBodySketch.lineLeft, kitBodySketch.lineTop, kitBodySketch.lineRight, kitBodySketch.lineBottom])
+kitBody = extrude(kitBodyRegion, length = kitBodyDepth)
+
+// Kitt sketch-solve step 2: head frame
+
+kitHeadOffset = 1mm
+kitHeadHeight = 16mm
+
+kitHeadElevation = kitBodyElevation + kitBodyHeight - kitHeadOffset - kitHeadHeight
+
+kitHeadWidth = kitBodyWidth - (kitHeadOffset * 2)
+kitHeadDepth = 3mm
+
+kitHeadLeft = -kitHeadWidth / 2
+kitHeadRight = kitHeadLeft + kitHeadWidth
+kitHeadBottom = kitHeadElevation
+kitHeadTop = kitHeadBottom + kitHeadHeight
+
+kitHeadFace = startSketchOn(kitBody, face = END)
+kitHeadSketch = sketch(on = kitHeadFace) {
+  lineLeft = line(start = [var -12mm, var 14mm], end = [var -12mm, var 30mm])
+  lineTop = line(start = [var -12mm, var 30mm], end = [var 12mm, var 30mm])
+  lineRight = line(start = [var 12mm, var 30mm], end = [var 12mm, var 14mm])
+  lineBottom = line(start = [var 12mm, var 14mm], end = [var -12mm, var 14mm])
+  coincident([lineLeft.end, lineTop.start])
+  coincident([lineTop.end, lineRight.start])
+  coincident([lineRight.end, lineBottom.start])
+  coincident([lineBottom.end, lineLeft.start])
+  vertical(lineLeft)
+  horizontal(lineTop)
+  vertical(lineRight)
+  horizontal(lineBottom)
+}
+kitHeadRegion = region(segments = [kitHeadSketch.lineLeft, kitHeadSketch.lineTop, kitHeadSketch.lineRight, kitHeadSketch.lineBottom])
+kitHead = extrude(kitHeadRegion, length = kitHeadDepth)
+
+kitFaceElevation = kitHeadElevation + 2mm
+kitFaceWidth = kitHeadWidth - 4mm
+kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3mm
+kitFaceDepth = 2mm
+
+kitFaceSketch = sketch(on = startSketchOn(kitHead, face = END)) {
+  line1 = line(start = [var -10mm, var 16mm], end = [var -10mm, var 17mm])
+  line2 = line(start = [var -10mm, var 17mm], end = [var -11mm, var 17mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -11mm, var 17mm], end = [var -11mm, var 28mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -11mm, var 28mm], end = [var -10mm, var 28mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -10mm, var 28mm], end = [var -10mm, var 29mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -10mm, var 29mm], end = [var 10mm, var 29mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 10mm, var 29mm], end = [var 10mm, var 28mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 10mm, var 28mm], end = [var 11mm, var 28mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 11mm, var 28mm], end = [var 11mm, var 17mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 11mm, var 17mm], end = [var 10mm, var 17mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 10mm, var 17mm], end = [var 10mm, var 16mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 10mm, var 16mm], end = [var -10mm, var 16mm])
+  coincident([line11.end, line12.start])
+}
+kitFaceRegion = region(segments = [kitFaceSketch.line1, kitFaceSketch.line2])
+kitFace = extrude(kitFaceRegion, length = -kitFaceDepth)
+
+// Kitt sketch-solve step 4: facial details
+kitEyeDepth = 0.5mm
+kitEyeHeight = kitFaceElevation + 7mm
+kitEyeOffset = 7mm
+
+kitFaceFront = startSketchOn(kitFace, face = START)
+
+kitLeftEye1Profile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [-kitEyeOffset, kitEyeHeight],
+)
+kitLeftEye1 = extrude(kitLeftEye1Profile, length = kitEyeDepth)
+
+kitLeftEye2Profile = rectangle(
+  kitFaceFront,
+  width = 3mm,
+  height = 1mm,
+  corner = [-kitEyeOffset + 1mm, kitEyeHeight + 1mm],
+)
+kitLeftEye2 = extrude(kitLeftEye2Profile, length = kitEyeDepth)
+
+kitLeftEye3Profile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [-kitEyeOffset + 4mm, kitEyeHeight],
+)
+kitLeftEye3 = extrude(kitLeftEye3Profile, length = kitEyeDepth)
+
+kitRightEyeProfile = rectangle(
+  kitFaceFront,
+  width = 2mm,
+  height = 4mm,
+  corner = [kitEyeOffset - 3mm, kitEyeHeight - 1mm],
+)
+kitRightEye = extrude(kitRightEyeProfile, length = kitEyeDepth)
+
+kitNoseElevation = kitEyeHeight - 5mm
+kitNoseSketch = sketch(on = kitFaceFront) {
+  line1 = line(start = [var -2mm, var 18mm], end = [var -2mm, var 19mm])
+  line2 = line(start = [var -2mm, var 19mm], end = [var 0mm, var 19mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0mm, var 19mm], end = [var 0mm, var 21mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 21mm], end = [var -1mm, var 21mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -1mm, var 21mm], end = [var -1mm, var 22mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -1mm, var 22mm], end = [var 2mm, var 22mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 2mm, var 22mm], end = [var 2mm, var 21mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 2mm, var 21mm], end = [var 1mm, var 21mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 1mm, var 21mm], end = [var 1mm, var 19mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 1mm, var 19mm], end = [var 3mm, var 19mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 3mm, var 19mm], end = [var 3mm, var 18mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 3mm, var 18mm], end = [var -2mm, var 18mm])
+  coincident([line11.end, line12.start])
+}
+kitNoseRegion = region(segments = [kitNoseSketch.line1, kitNoseSketch.line2])
+kitNose = extrude(kitNoseRegion, length = kitEyeDepth)
+
+kitMouthOffset = 4mm
+kitMouthHeight = kitEyeHeight - 3mm
+
+kitMouthUpLeftProfile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [-kitMouthOffset, kitMouthHeight],
+)
+kitMouthUpLeft = extrude(kitMouthUpLeftProfile, length = kitEyeDepth)
+
+kitMouthDownLeftProfile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [-kitMouthOffset + 1mm, kitMouthHeight - 1mm],
+)
+kitMouthDownLeft = extrude(kitMouthDownLeftProfile, length = kitEyeDepth)
+
+kitMouthUpRightProfile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [kitMouthOffset, kitMouthHeight],
+)
+kitMouthUpRight = extrude(kitMouthUpRightProfile, length = kitEyeDepth)
+
+kitMouthDownRightProfile = rectangle(
+  kitFaceFront,
+  width = 1mm,
+  height = 1mm,
+  corner = [kitMouthOffset - 1mm, kitMouthHeight - 1mm],
+)
+kitMouthDownRight = extrude(kitMouthDownRightProfile, length = kitEyeDepth)
+
+// Kitt sketch-solve step 5: belly, VHS bay, and belly buttons
+kitBellyElevation = kitBodyElevation + 1mm
+kitBellyHeight = kitHeadElevation - kitBellyElevation - 1mm
+kitBellyWidth = kitHeadWidth
+kitBellyDepth = kitHeadDepth
+
+kitBodyFront = startSketchOn(kitBody, face = END)
+kitBellyProfile = rectangle(
+  kitBodyFront,
+  width = kitBellyWidth,
+  height = kitBellyHeight,
+  corner = [-kitBellyWidth / 2, kitBellyElevation],
+)
+kitBelly = extrude(kitBellyProfile, length = kitBellyDepth)
+
+kitBellyFront = startSketchOn(kitBelly, face = END)
+kitVHSelevation = kitBellyElevation + 1mm
+kitVHSheight = 2mm
+kitVHSwidth = 8mm
+kitVHSdepth = 1mm
+kitVHSProfile = rectangle(
+  kitBellyFront,
+  width = kitVHSwidth,
+  height = kitVHSheight,
+  corner = [-kitVHSwidth / 2, kitVHSelevation],
+)
+kitVHS = extrude(kitVHSProfile, length = kitVHSdepth)
+
+kitFloppyElevation = kitBellyElevation + 1mm
+kitFloppyHeight = 1mm
+kitFloppyWidth = 5mm
+kitFloppyOffset = kitBellyWidth / 2 - 1mm
+kitFloppyDepth = 2mm
+
+kitFloppy1Profile = rectangle(
+  kitBellyFront,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  corner = [-kitFloppyOffset, kitFloppyElevation],
+)
+kitFloppy1 = extrude(kitFloppy1Profile, length = -kitFloppyDepth)
+
+kitFloppy2Profile = rectangle(
+  kitBellyFront,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  corner = [-kitFloppyOffset, kitFloppyElevation + 2mm],
+)
+kitFloppy2 = extrude(kitFloppy2Profile, length = -kitFloppyDepth)
+
+kitFloppy3Profile = rectangle(
+  kitBellyFront,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  corner = [kitFloppyOffset - kitFloppyWidth, kitFloppyElevation],
+)
+kitFloppy3 = extrude(kitFloppy3Profile, length = -kitFloppyDepth)
+
+kitBellyButtonOffset = kitHeadWidth / 2 - 3mm
+kitBellyButtonElevation = kitHeadElevation - 1mm
+kitBellyButtonWidth = 2mm
+kitBellyButtonHeight = 1mm
+kitBellyButtonDepth = kitHeadDepth + 1mm
+kitBellyButtonProfile = rectangle(
+  kitBodyFront,
+  width = kitBellyButtonWidth,
+  height = kitBellyButtonHeight,
+  corner = [-kitBellyButtonOffset, kitBellyButtonElevation],
+)
+kitBellyButton = extrude(kitBellyButtonProfile, length = kitBellyButtonDepth)
+
+kitButtonWidth = 1mm
+kitButtonHeight = 2mm
+kitButtonDepth = kitFloppyDepth
+kitButtonElevation = kitFloppyElevation + 2mm
+
+kitButton1Profile = rectangle(
+  kitBellyFront,
+  width = kitButtonWidth,
+  height = kitButtonHeight,
+  corner = [kitFloppyOffset - kitButtonWidth, kitButtonElevation],
+)
+kitButton1 = extrude(kitButton1Profile, length = -kitButtonDepth)
+
+kitButton2Profile = rectangle(
+  kitBellyFront,
+  width = kitButtonWidth,
+  height = kitButtonHeight,
+  corner = [kitFloppyOffset - (2 * kitButtonWidth) - 1mm, kitButtonElevation],
+)
+kitButton2 = extrude(kitButton2Profile, length = -kitButtonDepth)
+
+kitButton3Profile = rectangle(
+  kitBellyFront,
+  width = kitButtonWidth,
+  height = kitButtonHeight,
+  corner = [kitFloppyOffset - (3 * kitButtonWidth) - 2mm, kitButtonElevation],
+)
+kitButton3 = extrude(kitButton3Profile, length = -kitButtonDepth)

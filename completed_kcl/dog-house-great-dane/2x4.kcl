@@ -1,0 +1,89 @@
+// Dog House (Great Dane) - Sketch-solve 2x4 Helpers
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+
+export woodColor = "#a0825c"
+export woodRoughness = 80
+export woodMetalness = 0
+
+fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
+  return extrude(
+         rectangle(
+           startSketchOn(XY),
+           width = sizeX,
+           height = sizeY,
+           corner = [minX, minY],
+         ),
+         length = sizeZ,
+       )
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
+    |> translate(z = minZ)
+}
+
+export fn twoByFourX(minX, minY, minZ, lengthX) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = lengthX,
+    sizeY = studDepth,
+    sizeZ = studThickness,
+  )
+}
+
+export fn twoByFourXRotated(minX, minY, minZ, lengthX) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = lengthX,
+    sizeY = studThickness,
+    sizeZ = studDepth,
+  )
+}
+
+export fn twoByFourY(minX, minY, minZ, lengthY) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studDepth,
+    sizeY = lengthY,
+    sizeZ = studThickness,
+  )
+}
+
+export fn twoByFourYRotated(minX, minY, minZ, lengthY) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studThickness,
+    sizeY = lengthY,
+    sizeZ = studDepth,
+  )
+}
+
+export fn twoByFourZ(minX, minY, minZ, lengthZ) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studDepth,
+    sizeY = studThickness,
+    sizeZ = lengthZ,
+  )
+}
+
+export fn twoByFourZRotated(minX, minY, minZ, lengthZ) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studThickness,
+    sizeY = studDepth,
+    sizeZ = lengthZ,
+  )
+}

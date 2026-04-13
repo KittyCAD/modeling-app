@@ -1,0 +1,97 @@
+// Dodecahedron stepwise conversion checkpoint
+// Current step: 13
+
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+dihedral = 116.565
+
+faceSpecs = [
+  [0, 0, 0, 0],
+  [dihedral, 0, 0, 0.1],
+  [dihedral, 0, 72, 0.2],
+  [dihedral, 0, 144, 0.3],
+  [dihedral, 0, 216, 0.4],
+  [dihedral, 0, 288, 0.5],
+  [180, 0, 0, 0.6],
+  [180 - dihedral, 0, 36, 0.7],
+  [180 - dihedral, 0, 108, 0.8],
+  [180 - dihedral, 0, 180, 0.9],
+  [180 - dihedral, 0, 252, 0.11],
+  [180 - dihedral, 0, 324, 0.12],
+]
+
+fn calculateArrayLength(@arr) {
+  return reduce(
+    arr,
+    initial = 0,
+    f = fn(@item, accum) {
+      return accum + 1
+    },
+  )
+}
+
+fn createIntersection(@solids) {
+  fn reduceIntersect(@previous, accum) {
+    return intersect([previous, accum])
+  }
+  lastIndex = calculateArrayLength(solids) - 1
+  lastSolid = solids[lastIndex]
+  remainingSolids = pop(solids)
+  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
+}
+
+fn createSketchSolveFace(@faceSpec) {
+  dither = faceSpec[3]
+  span = 2000 + 2 * dither
+  halfSpan = span / 2
+
+  baseProfile = sketch(on = XY) {
+    line1 = line(start = [var -1000, var -1000], end = [var 1000, var -1000])
+    line2 = line(start = [var 1000, var -1000], end = [var 1000, var 1000])
+    line3 = line(start = [var 1000, var 1000], end = [var -1000, var 1000])
+    line4 = line(start = [var -1000, var 1000], end = [var -1000, var -1000])
+
+    coincident([line1.end, line2.start])
+    coincident([line2.end, line3.start])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+
+    fixed([line1.start, [-halfSpan, -halfSpan]])
+    fixed([line1.end, [halfSpan, -halfSpan]])
+    fixed([line2.end, [halfSpan, halfSpan]])
+    fixed([line3.end, [-halfSpan, halfSpan]])
+  }
+  baseRegion = region(point = [0, 0], sketch = baseProfile)
+  hide(baseProfile)
+
+  slab = extrude(baseRegion, length = 2000 + dither)
+    |> translate(x = 0, y = 0, z = -260 - dither)
+
+  return slab
+    |> rotate(
+         pitch = faceSpec[0],
+         roll = faceSpec[1],
+         yaw = faceSpec[2],
+         global = true,
+       )
+}
+
+face01 = createSketchSolveFace(faceSpecs[0])
+face02 = createSketchSolveFace(faceSpecs[1])
+face03 = createSketchSolveFace(faceSpecs[2])
+face04 = createSketchSolveFace(faceSpecs[3])
+face05 = createSketchSolveFace(faceSpecs[4])
+face06 = createSketchSolveFace(faceSpecs[5])
+face07 = createSketchSolveFace(faceSpecs[6])
+face08 = createSketchSolveFace(faceSpecs[7])
+face09 = createSketchSolveFace(faceSpecs[8])
+face10 = createSketchSolveFace(faceSpecs[9])
+face11 = createSketchSolveFace(faceSpecs[10])
+face12 = createSketchSolveFace(faceSpecs[11])
+
+createIntersection([face01, face02, face03, face04, face05, face06, face07, face08, face09, face10, face11, face12])

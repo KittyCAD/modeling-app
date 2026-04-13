@@ -1,0 +1,163 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+sideSlatWidth = studDepth
+sideSlatGap = 2
+sideSlatPitch = sideSlatWidth + sideSlatGap
+sideSlatStartY = studDepth
+sideSlatEndY = frameLength - studDepth - sideSlatWidth
+sideSlatSpanY = sideSlatEndY - sideSlatStartY
+sideSlatCount = floor(sideSlatSpanY / sideSlatPitch) + 1
+sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
+
+roofHalfWidth = frameWidth / 2
+roofAngle = atan(roofRise / roofHalfWidth)
+rafterLength = sqrt(roofHalfWidth * roofHalfWidth + roofRise * roofRise)
+rafterThickness = studThickness
+rafterWidth = studDepth
+rafterMidZ = (peakZ + eaveZ) / 2
+ridgeBoardZ = peakZ - studDepth
+
+rafterStartY = sideSlatStartY + (sideSlatWidth - rafterWidth) / 2
+rafterEndY = frameLength - studDepth - rafterWidth
+rafterCount = sideSlatCount
+rafterSpacing = sideSlatActualPitch
+
+collarTieHeightFactor = 0.5
+collarTieCenterZ = eaveZ + roofRise * collarTieHeightFactor
+collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ) - (studThickness / 2)
+collarTieLength = 2 * collarTieHalfWidth
+collarTieMinZ = collarTieCenterZ - (studThickness / 2)
+
+topRightPlate = twoByFourY(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+topLeftPlate = twoByFourY(
+  minX = -frameWidth / 2,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+rightRafterhalf = twoByFourX(
+       minX = -rafterLength / 2 - 3,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength + 3,
+     )
+  |> rotate(axis = [0, 1, 0], angle = -roofAngle)
+  |> translate(x = roofHalfWidth / 2, y = 3.5 / 2, z = rafterMidZ)
+  |> scale(x = 1.025, z = 1.025, global = false)
+
+leftRafterHalf = twoByFourX(
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength + 3,
+     )
+  |> rotate(axis = [0, 1, 0], angle = roofAngle)
+  |> translate(x = -roofHalfWidth / 2, y = -3.5 / 2, z = rafterMidZ)
+  |> scale(x = 1.025, z = 1.025, global = false)
+
+rightRafter = twoByFourX(
+       minX = -rafterLength / 2 - 3,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength + 3,
+     )
+  |> rotate(axis = [0, 1, 0], angle = -roofAngle)
+  |> translate(x = roofHalfWidth / 2, y = 0, z = rafterMidZ)
+  |> subtract(tools = leftRafterHalf)
+  |> subtract(tools = topLeftPlate)
+
+leftRafter = twoByFourX(
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength + 3,
+     )
+  |> rotate(axis = [0, 1, 0], angle = roofAngle)
+  |> translate(x = -roofHalfWidth / 2, y = 0, z = rafterMidZ)
+  |> subtract(tools = rightRafterhalf)
+  |> subtract(tools = topRightPlate)
+
+collarTie = twoByFourX(
+       minX = -collarTieHalfWidth + 2.25,
+       minY = rafterStartY,
+       minZ = collarTieMinZ + 0.5,
+       lengthX = collarTieLength - 4.5,
+     )
+  |> subtract(tools = [clone(leftRafter), clone(rightRafter)])
+
+rightRafters = patternLinear3d(
+  [rightRafter],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)
+
+leftRafters = patternLinear3d(
+  [leftRafter],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)
+
+collarTies = patternLinear3d(
+  [collarTie],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)
+
+ridgeBoardSlotSketch = sketch(on = YZ) {
+  line1 = line(
+    start = [var 3.475in, var 45.75in],
+    end = [var 3.475in, var 42.59in],
+  )
+  line2 = line(
+    start = [var 3.475in, var 42.59in],
+    end = [var 7.025in, var 42.59in],
+  )
+  coincident([line1.end, line2.start])
+  line3 = line(
+    start = [var 7.025in, var 42.59in],
+    end = [var 7.025in, var 45.77in],
+  )
+  coincident([line2.end, line3.start])
+  line4 = line(
+    start = [var 7.025in, var 45.77in],
+    end = [var 3.475in, var 45.75in],
+  )
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+
+ridgeBoardSlotRegion = region(point = [5in, 44in], sketch = ridgeBoardSlotSketch)
+ridgeBoardSlots = extrude(ridgeBoardSlotRegion, length = 5, symmetric = true)
+  |> patternLinear3d(instances = rafterCount, distance = rafterSpacing, axis = [0, 1, 0])
+
+ridgeBoard = twoByFourYRotated(
+       minX = -studThickness / 2,
+       minY = 0,
+       minZ = ridgeBoardZ + 1,
+       lengthY = frameLength,
+     )
+  |> subtract(tools = ridgeBoardSlots)
+
+[
+  rightRafters,
+  leftRafters,
+  collarTies,
+  ridgeBoard
+]
+  |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)

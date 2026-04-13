@@ -1,0 +1,323 @@
+// Gallows Bracket step 2: top support angle iron and vertical bracket member.
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+depth = 450
+height = 1250
+width = 2400
+ironWidth = 75
+ironThickness = 6
+boltRadius = 4
+bottomBoltOffset = 75
+distanceBetweenBolts = 450
+
+fn angleIronBase(length, thickness, width) {
+  csgFriendlyOffset = 1
+  profile = sketch(on = -XZ) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
+    line2 = line(start = [var 75mm, var 0mm], end = [var 75mm, var -6mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 75mm, var -6mm], end = [var 6mm, var -6mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 6mm, var -6mm], end = [var 6mm, var -75mm])
+    coincident([line3.end, line4.start])
+    line5 = line(start = [var 6mm, var -75mm], end = [var 0mm, var -75mm])
+    coincident([line4.end, line5.start])
+    line6 = line(start = [var 0mm, var -75mm], end = [var 0mm, var 0mm])
+    coincident([line5.end, line6.start])
+    coincident([line6.end, line1.start])
+    coincident([line1.start, ORIGIN])
+
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    horizontal(line5)
+    vertical(line6)
+
+    distance([line1.start, line1.end]) == width
+    distance([line2.start, line2.end]) == thickness
+    distance([line3.start, line3.end]) == width - thickness
+    distance([line4.start, line4.end]) == width - thickness
+    distance([line5.start, line5.end]) == thickness
+    distance([line6.start, line6.end]) == width
+  }
+
+  hide(profile)
+
+  region001 = region(point = [3mm, -3mm], sketch = profile)
+  return extrude(region001, length = length + csgFriendlyOffset * 2)
+}
+
+fn positiveEndMiterTool(length, width, miterEnd) {
+  csgFriendlyOffset = 1
+  cutRun = width + csgFriendlyOffset
+
+  profile = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var -76mm, var -76mm])
+    line2 = line(start = [var -76mm, var -76mm], end = [var -76mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var -76mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    coincident([line1.start, ORIGIN])
+
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+
+    distance([line1.start, line1.end]) == cutRun / cos(miterEnd)
+    distance([line2.start, line2.end]) == cutRun + csgFriendlyOffset
+    distance([line3.start, line3.end]) == cutRun
+    distance([line4.start, line4.end]) == csgFriendlyOffset
+  }
+
+  hide(profile)
+
+  region001 = region(segments = [profile.line1, profile.line2])
+  return extrude(region001, length = -width - 2)
+    |> translate(
+         x = 1 - sin(miterEnd),
+         y = length + 1 + cos(miterEnd),
+         z = 1,
+         global = true,
+       )
+}
+
+fn positiveStartMiterTool(width, miterStart) {
+  csgFriendlyOffset = 1
+  cutRun = width + csgFriendlyOffset
+
+  profile = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var -76mm, var 76mm])
+    line2 = line(start = [var -76mm, var 76mm], end = [var -76mm, var -1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var -76mm, var -1mm], end = [var 0mm, var -1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var -1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    coincident([line1.start, ORIGIN])
+
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+
+    distance([line1.start, line1.end]) == cutRun / cos(miterStart)
+    distance([line2.start, line2.end]) == cutRun + csgFriendlyOffset
+    distance([line3.start, line3.end]) == cutRun
+    distance([line4.start, line4.end]) == csgFriendlyOffset
+  }
+
+  hide(profile)
+
+  region001 = region(segments = [profile.line1, profile.line2])
+  return extrude(region001, length = -width - 2)
+    |> translate(
+         x = 1 - sin(miterStart),
+         y = 1 - cos(miterStart),
+         z = 1,
+         global = true,
+       )
+}
+
+fn angleIronEndMiter(length, thickness, width, miterEnd) {
+  base = angleIronBase(length = length, thickness = thickness, width = width)
+  endTool = positiveEndMiterTool(length = length, width = width, miterEnd = miterEnd)
+  return subtract(base, tools = endTool)
+}
+
+fn angleIronStartMiter(length, thickness, width, miterStart) {
+  base = angleIronBase(length = length, thickness = thickness, width = width)
+  startTool = positiveStartMiterTool(width = width, miterStart = miterStart)
+  return subtract(base, tools = startTool)
+}
+
+fn negativeStartMiterTool(width, miterStart) {
+  csgFriendlyOffset = 1
+  cutRun = width + csgFriendlyOffset
+
+  profile = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 70mm, var 70mm])
+    line2 = line(start = [var 70mm, var 70mm], end = [var 70mm, var -1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 70mm, var -1mm], end = [var 0mm, var -1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var -1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    coincident([line1.start, ORIGIN])
+
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+
+    distance([line1.start, line1.end]) == cutRun / cos(miterStart)
+    distance([line2.start, line2.end]) == cutRun + csgFriendlyOffset
+    distance([line3.start, line3.end]) == cutRun
+    distance([line4.start, line4.end]) == csgFriendlyOffset
+  }
+
+  hide(profile)
+
+  region001 = region(segments = [profile.line1, profile.line2])
+  return extrude(region001, length = -width - 2)
+    |> translate(
+         x = -width - 1 - sin(miterStart),
+         y = 1 - cos(miterStart),
+         z = 1,
+         global = true,
+       )
+}
+
+fn negativeEndMiterTool(length, width, miterEnd) {
+  csgFriendlyOffset = 1
+  cutRun = width + csgFriendlyOffset
+
+  profile = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 70mm, var -70mm])
+    line2 = line(start = [var 70mm, var -70mm], end = [var 70mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 70mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    coincident([line1.start, ORIGIN])
+
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+
+    distance([line1.start, line1.end]) == cutRun / cos(miterEnd)
+    distance([line2.start, line2.end]) == cutRun + csgFriendlyOffset
+    distance([line3.start, line3.end]) == cutRun
+    distance([line4.start, line4.end]) == csgFriendlyOffset
+  }
+
+  hide(profile)
+
+  region001 = region(segments = [profile.line1, profile.line2])
+  return extrude(region001, length = -width - 2)
+    |> translate(
+         x = -width - 1 - sin(miterEnd),
+         y = length + 1 + cos(miterEnd),
+         z = 1,
+         global = true,
+       )
+}
+
+fn angleIronDoubleNegativeMiter(length, thickness, width, miterStart, miterEnd) {
+  base = angleIronBase(length = length, thickness = thickness, width = width)
+  startTool = negativeStartMiterTool(width = width, miterStart = miterStart)
+  withStartMiter = subtract(base, tools = startTool)
+  endTool = negativeEndMiterTool(length = length, width = width, miterEnd = miterEnd)
+  return subtract(withStartMiter, tools = endTool)
+}
+
+topRail = angleIronBase(
+       length = width,
+       thickness = ironThickness,
+       width = ironWidth,
+     )
+  |> rotate(pitch = 90)
+  |> translate(
+       y = -ironWidth,
+       x = depth,
+       z = height,
+       global = true,
+     )
+
+verticalBase = angleIronEndMiter(
+       length = height,
+       width = ironWidth,
+       thickness = ironThickness,
+       miterEnd = 45deg,
+     )
+  |> rotate(roll = 90, yaw = 180)
+
+verticalHolesNeeded = ceil((height - bottomBoltOffset) / distanceBetweenBolts)
+verticalHolesSketch = offsetPlane(YZ, offset = -1)
+verticalHoleProfiles = circle(verticalHolesSketch, center = [-ironWidth / 2, bottomBoltOffset], radius = boltRadius + 0.5)
+  |> patternLinear2d(
+       instances = verticalHolesNeeded,
+       distance = (height - bottomBoltOffset) / verticalHolesNeeded,
+       axis = [0, 1],
+     )
+verticalHoleTools = extrude(verticalHoleProfiles, length = ironThickness + 2)
+
+verticalWithHoles = reduce(
+  verticalHoleTools,
+  initial = verticalBase,
+  f = fn(@hole, accum) {
+    return subtract(accum, tools = hole)
+  },
+)
+
+horizontalBase = angleIronStartMiter(
+       length = depth,
+       width = ironWidth,
+       thickness = ironThickness,
+       miterStart = 45deg,
+     )
+  |> rotate(pitch = 270, yaw = -90)
+  |> translate(z = height + 1, global = true)
+
+horizontalHolesSketch = offsetPlane(XY, offset = height - ironThickness)
+horizontalHoleProfile = circle(
+       horizontalHolesSketch,
+       center = [
+         depth - (ironWidth / 2),
+         -ironWidth / 2
+       ],
+       radius = boltRadius + 0.5,
+     )
+horizontalHoleTool = extrude(horizontalHoleProfile, length = ironThickness + 2)
+horizontalWithHoles = subtract(horizontalBase, tools = horizontalHoleTool)
+
+strutLength = sqrt(2 * (min([height, depth]) - ironThickness) ^ 2)
+strut = angleIronDoubleNegativeMiter(
+       length = strutLength,
+       width = ironWidth - ironThickness,
+       thickness = ironThickness,
+       miterStart = -45deg,
+       miterEnd = -45deg,
+     )
+  |> rotate(pitch = 270deg, yaw = -90deg)
+  |> translate(x = -strutLength - 1, z = ironWidth - ironThickness, global = true)
+  |> rotate(pitch = -45deg, global = true)
+  |> translate(
+       y = -ironThickness,
+       x = depth,
+       z = height - ironThickness,
+       global = true,
+     )
+
+legProfile = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
+  line2 = line(start = [var 75mm, var 0mm], end = [var 75mm, var 75mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 75mm, var 75mm], end = [var 0mm, var 75mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 75mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, ORIGIN])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  distance([line1.start, line1.end]) == ironWidth
+  distance([line2.start, line2.end]) == ironWidth
+  distance([line3.start, line3.end]) == ironWidth
+  distance([line4.start, line4.end]) == ironWidth
+}
+
+hide(legProfile)
+
+legRegion = region(segments = [legProfile.line1, legProfile.line2])
+leg = extrude(legRegion, length = 100)
+  |> translate(z = height - ironWidth, global = true)

@@ -1,0 +1,66 @@
+// Step 1: single blade extrusion
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+bladeCount = 4
+outerDiameter = 120
+hubOutsideDiameter = 35
+boreDiameter = 25
+baseThickness = 5
+hubHeight = 35
+bladeLength = 80
+bladeHeight = 40
+bladeThickness = 3
+
+outerRadius = outerDiameter / 2
+bladeRootRadius = hubOutsideDiameter / 2 + (outerDiameter - hubOutsideDiameter) / 4
+bladeTipRadius = bladeRootRadius + bladeLength
+
+bladeProfile = sketch(on = offsetPlane(XY, offset = -bladeHeight / 2)) {
+  line1 = line(start = [var 38.75mm, var 0mm], end = [var 118.75mm, var 0mm])
+  line2 = line(start = [var 118.75mm, var 0mm], end = [var 118.75mm, var 3mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 118.75mm, var 3mm], end = [var 38.75mm, var 3mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 38.75mm, var 3mm], end = [var 38.75mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, line1.end]) == bladeLength
+  verticalDistance([line2.start, line2.end]) == bladeThickness
+  horizontalDistance([ORIGIN, line1.start]) == bladeRootRadius
+  verticalDistance([ORIGIN, line1.start]) == 0mm
+}
+bladeRegion = region(segments = [bladeProfile.line1, bladeProfile.line2])
+blade = extrude(bladeRegion, length = bladeHeight)
+
+blades = patternCircular3d(
+  blade,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  instances = bladeCount,
+  arcDegrees = 360,
+)
+
+disk = circle(offsetPlane(XY, offset = -baseThickness / 2), center = [0, 0], radius = outerRadius)
+backPlate = extrude(disk, length = baseThickness)
+
+hubProfile = sketch(on = startSketchOn(backPlate, face = END)) {
+  circle1 = circle(start = [var 17.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == hubOutsideDiameter / 2
+}
+hubRegion = region(segments = [hubProfile.circle1])
+hub = extrude(hubRegion, length = hubHeight)
+
+boreProfile = sketch(on = startSketchOn(backPlate, face = START)) {
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == boreDiameter / 2
+}
+boreRegion = region(segments = [boreProfile.circle1])
+boreCut = extrude(boreRegion, length = -(baseThickness + hubHeight))

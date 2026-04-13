@@ -1,0 +1,83 @@
+// Modular Shelf Grid (sketch-solve)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
+
+columnCount = 5 // number of modules in the horizontal (X) direction
+rowCount = 3 // number of vertical rows stacked along Z
+
+// --- Module Dimensions ---
+unitWidth = 0.4 // external width of each module
+unitHeight = 0.5 // external height
+unitDepth = 0.4 // external depth
+
+// --- Material Thickness ---
+panelThickness = 0.02 // thickness of side panels and shelves
+sidePanelOffset = unitWidth - panelThickness
+
+shelfThickness = panelThickness
+shelfWidth = unitWidth - (panelThickness * 2)
+shelfDepth = unitDepth
+shelfSpacing = unitHeight - shelfThickness
+
+// --- Side Panels (Step 1) ---
+sidePanelSketch = sketch(on = XY) {
+  leftEdge = line(start = [-unitWidth / 2, 0], end = [-unitWidth / 2, -unitDepth])
+  bottomEdge = line(start = [-unitWidth / 2, -unitDepth], end = [-unitWidth / 2 + panelThickness, -unitDepth])
+  rightEdge = line(start = [-unitWidth / 2 + panelThickness, -unitDepth], end = [-unitWidth / 2 + panelThickness, 0])
+  topEdge = line(start = [-unitWidth / 2 + panelThickness, 0], end = [-unitWidth / 2, 0])
+  coincident([leftEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+}
+sidePanelRegion = region(
+  point = [-unitWidth / 2 + (panelThickness / 2), -unitDepth / 2],
+  sketch = sidePanelSketch,
+)
+sidePanelBlock = extrude(sidePanelRegion, length = unitHeight)
+sidePanels = patternLinear3d(
+  sidePanelBlock,
+  instances = 2,
+  distance = sidePanelOffset,
+  axis = [1, 0, 0],
+)
+
+// --- Shelf Boards (Step 2) ---
+shelfSketch = sketch(on = XY) {
+  leftEdge = line(start = [-shelfWidth / 2, 0], end = [-shelfWidth / 2, -shelfDepth])
+  bottomEdge = line(start = [-shelfWidth / 2, -shelfDepth], end = [shelfWidth / 2, -shelfDepth])
+  rightEdge = line(start = [shelfWidth / 2, -shelfDepth], end = [shelfWidth / 2, 0])
+  topEdge = line(start = [shelfWidth / 2, 0], end = [-shelfWidth / 2, 0])
+  coincident([leftEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+}
+shelfRegion = region(
+  point = [0, -shelfDepth / 2],
+  sketch = shelfSketch,
+)
+firstShelf = extrude(shelfRegion, length = shelfThickness)
+
+// --- Shelf Stack (Step 3) ---
+shelves = patternLinear3d(
+  firstShelf,
+  instances = 2,
+  distance = shelfSpacing,
+  axis = [0, 0, 1],
+)
+
+// --- Module Columns (Step 4) ---
+moduleRow = patternLinear3d(
+  [sidePanels, shelves],
+  instances = columnCount,
+  distance = unitWidth,
+  axis = [1, 0, 0],
+)
+
+// --- Vertical Grid (Step 5) ---
+modularShelfArray = patternLinear3d(
+  moduleRow,
+  instances = rowCount,
+  distance = unitHeight,
+  axis = [0, 0, 1],
+)

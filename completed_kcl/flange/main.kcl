@@ -1,0 +1,94 @@
+// Flange
+// Step 4 of 4: fully rebuilt flange as sketch-solve KCL.
+
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+mountingHoleDia = .625
+baseDia = 4.625
+pipeDia = 1.25
+totalThickness = 0.813
+topTotalDiameter = 2.313
+bottomThickness = 0.06
+bottomTotalDiameter = 2.5
+mountingHolePlacementDiameter = 3.5
+baseThickness = .625
+topTotalThickness = totalThickness - (bottomThickness + baseThickness)
+nHoles = 4
+
+assert(nHoles, isGreaterThan = 1, error = "nHoles must be greater than 1")
+
+baseSketch = sketch(on = XY) {
+  outerCircle = circle(start = [var 2.31in, var 0in], center = [var 0in, var 0in])
+  coincident([outerCircle.center, ORIGIN])
+  radius(outerCircle) == baseDia / 2
+
+  rightHole = circle(start = [var 2.06in, var 0in], center = [var 1.75in, var 0in])
+  radius(rightHole) == mountingHoleDia / 2
+  rightGuide = line(start = [var 0in, var 0in], end = [var 1.75in, var 0in], construction = true)
+  coincident([rightGuide.start, ORIGIN])
+  coincident([rightGuide.end, rightHole.center])
+  horizontal(rightGuide)
+  horizontalDistance([rightGuide.start, rightGuide.end]) == mountingHolePlacementDiameter / 2
+
+  leftHole = circle(start = [var -1.44in, var 0in], center = [var -1.75in, var 0in])
+  radius(leftHole) == mountingHoleDia / 2
+  leftGuide = line(start = [var 0in, var 0in], end = [var -1.75in, var 0in], construction = true)
+  coincident([leftGuide.start, ORIGIN])
+  coincident([leftGuide.end, leftHole.center])
+  horizontal(leftGuide)
+  horizontalDistance([leftGuide.start, leftGuide.end]) == -mountingHolePlacementDiameter / 2
+
+  topHole = circle(start = [var 0.31in, var 1.75in], center = [var 0in, var 1.75in])
+  radius(topHole) == mountingHoleDia / 2
+  topGuide = line(start = [var 0in, var 0in], end = [var 0in, var 1.75in], construction = true)
+  coincident([topGuide.start, ORIGIN])
+  coincident([topGuide.end, topHole.center])
+  vertical(topGuide)
+  verticalDistance([topGuide.start, topGuide.end]) == mountingHolePlacementDiameter / 2
+
+  bottomHole = circle(start = [var 0.31in, var -1.75in], center = [var 0in, var -1.75in])
+  radius(bottomHole) == mountingHoleDia / 2
+  bottomGuide = line(start = [var 0in, var 0in], end = [var 0in, var -1.75in], construction = true)
+  coincident([bottomGuide.start, ORIGIN])
+  coincident([bottomGuide.end, bottomHole.center])
+  vertical(bottomGuide)
+  verticalDistance([bottomGuide.start, bottomGuide.end]) == -mountingHolePlacementDiameter / 2
+}
+
+baseRegion = region(point = [0.5in, 0in], sketch = baseSketch)
+flangeBase = extrude(baseRegion, length = baseThickness)
+
+hide(baseSketch)
+
+topSketch = sketch(on = startSketchOn(flangeBase, face = END)) {
+  circle1 = circle(start = [var 1.16in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == topTotalDiameter / 2
+}
+
+topRegion = region(segments = [topSketch.circle1])
+topExtrusion = extrude(topRegion, length = topTotalThickness)
+
+hide(topSketch)
+
+bottomSketch = sketch(on = startSketchOn(flangeBase, face = START)) {
+  circle1 = circle(start = [var 1.25in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == bottomTotalDiameter / 2
+}
+
+bottomRegion = region(segments = [bottomSketch.circle1])
+bottomExtrusion = extrude(bottomRegion, length = bottomThickness)
+
+hide(bottomSketch)
+
+pipeSketch = sketch(on = startSketchOn(topExtrusion, face = END)) {
+  circle1 = circle(start = [var 0.63in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == pipeDia / 2
+}
+
+pipeRegion = region(segments = [pipeSketch.circle1])
+pipeHole = extrude(pipeRegion, length = -(topTotalThickness + baseThickness + bottomThickness))
+
+hide(pipeSketch)

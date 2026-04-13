@@ -1,0 +1,35 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+import * from "dog-bone-sign.kcl"
+import "dog-bone-sign.kcl" as dogBoneSign
+
+topFrontPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthX = frameWidth - (2 * studDepth),
+)
+
+frontStudLeftX = -openingWidth / 2 - studThickness
+frontStudRightX = openingWidth / 2
+frontStudLeft = twoByFourZRotated(
+  minX = frontStudLeftX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+frontStudRight = twoByFourZRotated(
+  minX = frontStudRightX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+
+signTopClearance = 1
+signFrontOffset = 0.1
+signBottomZ = peakZ - signTopClearance - signHeight
+signY = -signThickness - signFrontOffset
+frontDogBoneSign = dogBoneSign
+  |> translate(x = 0, y = signY, z = signBottomZ)

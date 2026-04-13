@@ -1,0 +1,360 @@
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+primaryTubeDiameter = 1.625
+wallThickness = 0.080
+plateHeight = 0.125
+
+fn tubeSection(centerX) {
+  sectionSketch = sketch(on = XY) {
+    outerCircle = circle(
+      start = [var 1in, var 0in],
+      center = [var 0in, var 0in],
+    )
+    innerCircle = circle(
+      start = [var 0.75in, var 0in],
+      center = [var 0in, var 0in],
+    )
+    coincident([outerCircle.center, [centerX, 0in]])
+    coincident([innerCircle.center, [centerX, 0in]])
+    radius(outerCircle) == primaryTubeDiameter / 2
+    radius(innerCircle) == primaryTubeDiameter / 2 - wallThickness
+  }
+
+  return region(
+    point = [centerX + primaryTubeDiameter / 2 - wallThickness / 2, 0in],
+    sketch = sectionSketch,
+  )
+}
+
+pos001 = 0
+sweepPlane001 = {
+  origin = [pos001, 0in, 0in],
+  xAxis = [1, 0, 0],
+  yAxis = [0, 0, 1],
+}
+
+sweepPath001 = sketch(on = sweepPlane001) {
+  line1 = line(start = [var 0in, var 0.125in], end = [var 0in, var 3.125in])
+  arc2 = arc(
+    start = [var 2.4790554669992097in, var 6.079423426654172in],
+    end = [var 0in, var 3.125in],
+    center = [var 3in, var 3.125in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(
+    start = [var 2.4790554669992097in, var 6.079423426654172in],
+    end = [var 8.387901392972549in, var 7.121312524305355in],
+  )
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 8.387901392972549in, var 7.121312524305355in],
+    end = [var 10.856170670864345in, var 10.336905157105553in],
+    center = [var 7.866956859971759in, var 10.075735950959526in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(
+    start = [var 10.856170670864345in, var 10.336905157105553in],
+    end = [var 10.42039200283588in, var 15.317877475819274in],
+  )
+  coincident([arc4.end, line5.start])
+}
+
+tubePath001 = [
+  sweepPath001.line1,
+  sweepPath001.arc2,
+  sweepPath001.line3,
+  sweepPath001.arc4,
+  sweepPath001.line5,
+]
+tube001 = sweep(tubeSection(centerX = pos001), path = tubePath001)
+
+pos002 = 2
+sweepPlane002 = {
+  origin = [pos002, 0in, 0in],
+  xAxis = [sin(-1deg), cos(-1deg), 0],
+  yAxis = [0, 0, 1],
+}
+
+sweepPath002 = sketch(on = sweepPlane002) {
+  line1 = line(start = [var 0in, var 0.125in], end = [var 0in, var 3.125in])
+  arc2 = arc(
+    start = [var 2.4790554669992097in, var 6.079423426654172in],
+    end = [var 0in, var 3.125in],
+    center = [var 3in, var 3.125in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(
+    start = [var 2.4790554669992097in, var 6.079423426654172in],
+    end = [var 8.387901392972549in, var 7.121312524305355in],
+  )
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 8.387901392972549in, var 7.121312524305355in],
+    end = [var 10.856170670864345in, var 10.336905157105553in],
+    center = [var 7.866956859971759in, var 10.075735950959526in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(
+    start = [var 10.856170670864345in, var 10.336905157105553in],
+    end = [var 10.42039200283588in, var 15.317877475819274in],
+  )
+  coincident([arc4.end, line5.start])
+}
+
+tubePath002 = [
+  sweepPath002.line1,
+  sweepPath002.arc2,
+  sweepPath002.line3,
+  sweepPath002.arc4,
+  sweepPath002.line5,
+]
+tube002 = sweep(tubeSection(centerX = pos002), path = tubePath002)
+
+pos003 = 4
+sweepPlane003 = {
+  origin = [pos003, 0in, 0in],
+  xAxis = [sin(-24.3deg), cos(-24.3deg), 0],
+  yAxis = [0, 0, 1],
+}
+
+sweepPath003 = sketch(on = sweepPlane003) {
+  line1 = line(start = [var 0in, var 0.13in], end = [var 0in, var 5.13in])
+  arc2 = arc(
+    start = [var 2.48in, var 8.08in],
+    end = [var 0in, var 5.13in],
+    center = [var 3in, var 5.13in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(
+    start = [var 2.48in, var 8.08in],
+    end = [var 7.4in, var 8.95in],
+  )
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 7.4in, var 8.95in],
+    end = [var 9.87in, var 12.16in],
+    center = [var 6.88in, var 11.9in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(
+    start = [var 9.87in, var 12.16in],
+    end = [var 9.61in, var 15.15in],
+  )
+  coincident([arc4.end, line5.start])
+}
+
+tubePath003 = [
+  sweepPath003.line1,
+  sweepPath003.arc2,
+  sweepPath003.line3,
+  sweepPath003.arc4,
+  sweepPath003.line5,
+]
+tube003 = sweep(tubeSection(centerX = pos003), path = tubePath003)
+
+pos004 = 6
+sweepPlane004 = {
+  origin = [pos004, 0in, 0in],
+  xAxis = [sin(-25.2deg), cos(-25.2deg), 0],
+  yAxis = [0, 0, 1],
+}
+
+sweepPath004 = sketch(on = sweepPlane004) {
+  line1 = line(start = [var 0in, var 0.13in], end = [var 0in, var 5.13in])
+  arc2 = arc(
+    start = [var 2.48in, var 8.08in],
+    end = [var 0in, var 5.13in],
+    center = [var 3in, var 5.13in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(
+    start = [var 2.48in, var 8.08in],
+    end = [var 7.4in, var 8.95in],
+  )
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 7.4in, var 8.95in],
+    end = [var 9.87in, var 12.16in],
+    center = [var 6.88in, var 11.9in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(
+    start = [var 9.87in, var 12.16in],
+    end = [var 9.61in, var 15.15in],
+  )
+  coincident([arc4.end, line5.start])
+}
+
+tubePath004 = [
+  sweepPath004.line1,
+  sweepPath004.arc2,
+  sweepPath004.line3,
+  sweepPath004.arc4,
+  sweepPath004.line5,
+]
+tube004 = sweep(tubeSection(centerX = pos004), path = tubePath004)
+
+flangeOuterSketch = sketch(on = XY) {
+  bottomCenterRight = line(start = [var 4.3in, var -1.25in], end = [var 1.7in, var -1.25in])
+  port1LowerRight = arc(
+    start = [var 1.51in, var -1.18in],
+    end = [var 1.7in, var -1.25in],
+    center = [var 1.7in, var -0.95in],
+  )
+  coincident([bottomCenterRight.end, port1LowerRight.end])
+
+  port1Bottom = arc(
+    start = [var 1.51in, var -1.18in],
+    end = [var 0.35in, var -1.18in],
+    center = [var 0.93in, var -1.87in],
+  )
+  coincident([port1LowerRight.start, port1Bottom.start])
+
+  port1LowerLeft = arc(
+    start = [var 0.16in, var -1.25in],
+    end = [var 0.35in, var -1.18in],
+    center = [var 0.16in, var -0.95in],
+  )
+  coincident([port1Bottom.end, port1LowerLeft.end])
+
+  bottomLeftStraight = line(start = [var 0.16in, var -1.25in], end = [var -1.115in, var -1.25in])
+  coincident([port1LowerLeft.start, bottomLeftStraight.start])
+
+  bottomLeftCorner = arc(
+    start = [var -1.24in, var -1.125in],
+    end = [var -1.115in, var -1.25in],
+    center = [var -1.115in, var -1.125in],
+  )
+  coincident([bottomLeftStraight.end, bottomLeftCorner.end])
+
+  leftSide = line(start = [var -1.24in, var -1.125in], end = [var -1.24in, var 1.225in])
+  coincident([bottomLeftCorner.start, leftSide.start])
+
+  topLeftCorner = arc(
+    start = [var -1.115in, var 1.35in],
+    end = [var -1.24in, var 1.225in],
+    center = [var -1.115in, var 1.225in],
+  )
+  coincident([leftSide.end, topLeftCorner.end])
+
+  topLeftStraight = line(start = [var -1.115in, var 1.35in], end = [var 1.86in, var 1.35in])
+  coincident([topLeftCorner.start, topLeftStraight.start])
+
+  port2UpperLeft = arc(
+    start = [var 2.05in, var 1.28in],
+    end = [var 1.86in, var 1.35in],
+    center = [var 1.86in, var 1.05in],
+  )
+  coincident([topLeftStraight.end, port2UpperLeft.end])
+
+  port2Top = arc(
+    start = [var 2.05in, var 1.28in],
+    end = [var 3.98in, var 1.28in],
+    center = [var 3.01in, var 2.43in],
+  )
+  coincident([port2UpperLeft.start, port2Top.start])
+
+  port2UpperRight = arc(
+    start = [var 4.17in, var 1.35in],
+    end = [var 3.98in, var 1.28in],
+    center = [var 4.17in, var 1.05in],
+  )
+  coincident([port2Top.end, port2UpperRight.end])
+
+  topRightStraight = line(start = [var 4.17in, var 1.35in], end = [var 7.145in, var 1.35in])
+  coincident([port2UpperRight.start, topRightStraight.start])
+
+  topRightCorner = arc(
+    start = [var 7.27in, var 1.225in],
+    end = [var 7.145in, var 1.35in],
+    center = [var 7.145in, var 1.225in],
+  )
+  coincident([topRightStraight.end, topRightCorner.end])
+
+  rightSide = line(start = [var 7.27in, var 1.225in], end = [var 7.27in, var -1.125in])
+  coincident([topRightCorner.start, rightSide.start])
+
+  bottomRightCorner = arc(
+    start = [var 7.145in, var -1.25in],
+    end = [var 7.27in, var -1.125in],
+    center = [var 7.145in, var -1.125in],
+  )
+  coincident([rightSide.end, bottomRightCorner.end])
+
+  bottomRightStraight = line(start = [var 7.145in, var -1.25in], end = [var 5.87in, var -1.25in])
+  coincident([bottomRightCorner.start, bottomRightStraight.start])
+
+  port3LowerRight = arc(
+    start = [var 5.68in, var -1.18in],
+    end = [var 5.87in, var -1.25in],
+    center = [var 5.87in, var -0.95in],
+  )
+  coincident([bottomRightStraight.end, port3LowerRight.end])
+
+  port3Bottom = arc(
+    start = [var 5.68in, var -1.18in],
+    end = [var 4.52in, var -1.18in],
+    center = [var 5.1in, var -1.87in],
+  )
+  coincident([port3LowerRight.start, port3Bottom.start])
+
+  port3LowerLeft = arc(
+    start = [var 4.3in, var -1.25in],
+    end = [var 4.52in, var -1.18in],
+    center = [var 4.33in, var -0.95in],
+  )
+  coincident([port3Bottom.end, port3LowerLeft.end])
+  coincident([port3LowerLeft.start, bottomCenterRight.start])
+}
+
+flangeRegion = region(point = [3in, 0in], sketch = flangeOuterSketch)
+flangeBase = extrude(flangeRegion, length = plateHeight)
+
+fn throughHole(center, holeRadius) {
+  holeSketch = sketch(on = offsetPlane(XY, offset = -0.05in)) {
+    holeCircle = circle(
+      start = [var 0.25in, var 0in],
+      center = [var 0in, var 0in],
+    )
+    coincident([holeCircle.center, center])
+    radius(holeCircle) == holeRadius
+  }
+
+  return extrude(region(segments = [holeSketch.holeCircle]), length = plateHeight + 0.1in)
+}
+
+tubeCut001 = throughHole(center = [0in, 0in], holeRadius = primaryTubeDiameter / 2 - wallThickness)
+tubeCut002 = throughHole(center = [2in, 0in], holeRadius = primaryTubeDiameter / 2 - wallThickness)
+tubeCut003 = throughHole(center = [4in, 0in], holeRadius = primaryTubeDiameter / 2 - wallThickness)
+tubeCut004 = throughHole(center = [6in, 0in], holeRadius = primaryTubeDiameter / 2 - wallThickness)
+
+mountCut001 = throughHole(
+  center = [-primaryTubeDiameter * 0.6, -primaryTubeDiameter * 0.6],
+  holeRadius = 0.25 / 2,
+)
+mountCut002 = throughHole(
+  center = [primaryTubeDiameter * 0.6, primaryTubeDiameter * 0.6],
+  holeRadius = 0.25 / 2,
+)
+mountCut003 = throughHole(
+  center = [6in - primaryTubeDiameter * 0.6, primaryTubeDiameter * 0.6],
+  holeRadius = 0.25 / 2,
+)
+mountCut004 = throughHole(
+  center = [6in + primaryTubeDiameter * 0.6, -primaryTubeDiameter * 0.6],
+  holeRadius = 0.25 / 2,
+)
+
+flange = subtract(
+  [flangeBase],
+  tools = [
+    tubeCut001,
+    tubeCut002,
+    tubeCut003,
+    tubeCut004,
+    mountCut001,
+    mountCut002,
+    mountCut003,
+    mountCut004,
+  ],
+)
