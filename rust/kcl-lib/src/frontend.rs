@@ -9130,7 +9130,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 29, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //
@@ -9145,7 +9145,7 @@ sketch2 = sketch(on = XY) {
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            23,
+            24,
             "{:#?}",
             scene_delta.new_graph.objects
         );
