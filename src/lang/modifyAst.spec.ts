@@ -15,11 +15,13 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
+  addTagToExtrudedFaceSketchSegment,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentOrProfileFromPipeExpression,
   moveValueIntoNewVariable,
   setCallInAst,
+  sketchBlockOnExtrudedFace,
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
@@ -1230,5 +1232,92 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
+  })
+
+  describe('temporary legacy sketch-on-face helpers', () => {
+    test('sketchBlockOnExtrudedFace tags the legacy wall segment and inserts a sketch block', () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-3.5, -2.23])
+  |> line(end = [4.53, 5.73])
+  |> line(end = [5.18, -3.74])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+      const ast = assertParse(code, instanceInThisFile)
+
+      const segmentSnippet =
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
+      const segmentPathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(segmentSnippet),
+        code.indexOf(segmentSnippet) + segmentSnippet.length,
+        0,
+      ])
+      const extrudeSnippet = 'extrude(profile001, length = 5)'
+      const extrudePathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(extrudeSnippet),
+        code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+        0,
+      ])
+
+      const result = sketchBlockOnExtrudedFace(
+        ast,
+        segmentPathToNode,
+        extrudePathToNode,
+        addTagForSketchOnFace,
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)'
+      )
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 5)
+sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
+}`
+      )
+
+      const insertedSketchBlock = getNodeFromPath<any>(
+        result.modifiedAst,
+        result.pathToNode,
+        instanceInThisFile
+      )
+      if (err(insertedSketchBlock)) throw insertedSketchBlock
+      expect(insertedSketchBlock.node.type).toBe('SketchBlock')
+    })
+
+    test('addTagToExtrudedFaceSketchSegment returns cap tags without mutating the source', () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-3.5, -2.23])
+  |> line(end = [4.53, 5.73])
+  |> line(end = [5.18, -3.74])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+      const ast = assertParse(code, instanceInThisFile)
+      const profileSnippet = 'startProfile(sketch001, at = [-3.5, -2.23])'
+      const profilePathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(profileSnippet),
+        code.indexOf(profileSnippet) + profileSnippet.length,
+        0,
+      ])
+
+      const result = addTagToExtrudedFaceSketchSegment(
+        ast,
+        profilePathToNode,
+        addTagForSketchOnFace,
+        instanceInThisFile,
+        { type: 'cap', subType: 'end' }
+      )
+      if (err(result)) throw result
+
+      expect(result.tagName).toBe('END')
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
+        recast(ast, instanceInThisFile)
+      )
+    })
   })
 })
