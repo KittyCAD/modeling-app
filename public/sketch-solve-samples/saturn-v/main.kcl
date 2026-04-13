@@ -2,7 +2,7 @@
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
 // Categories: Aerospace, Maker
 
-@settings(defaultLengthUnit = m, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m)
 
 r1 = 4.5 // baseRadiusStage1
 r2 = 3.2 // baseRadiusUpperStage

@@ -2,7 +2,7 @@
 // Shaped like a friendly animal and sturdy enough for climbing.
 // Categories: Maker
 
-@settings(defaultLengthUnit = cm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = cm)
 
 // Define primary parameters for the bench geometry.
 benchLength = 80 // overall end-to-end size

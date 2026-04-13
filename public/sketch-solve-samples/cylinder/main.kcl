@@ -2,7 +2,7 @@
 // A cylinder is a primitive shape defined by its diameter and length
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 length = 10
