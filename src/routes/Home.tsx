@@ -9,9 +9,9 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
+import { BillingDialog } from '@kittycad/react-shared'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
-import { BillingDialog } from '@kittycad/react-shared'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -19,19 +19,23 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -45,6 +49,7 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -55,12 +60,8 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -354,6 +355,11 @@ const Home = () => {
                     allowance={billingContext.allowance}
                   />
                 </div>
+              </li>
+            )}
+            {settingsValues.modeling.useSketchSolveMode.current && (
+              <li className="contents">
+                <SketchSolveAnnouncement />
               </li>
             )}
             <li className="contents">

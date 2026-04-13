@@ -1,16 +1,19 @@
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -28,10 +31,8 @@ import {
   useToolbarConfig,
 } from '@src/lib/toolbar'
 import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
-import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { useSignals } from '@preact/signals-react/runtime'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -480,14 +481,7 @@ const Toolbar_ = memo(
             </div>
           )}
           {modelingMachineStateToToolbarModeName(props.state) ===
-            'sketching' && (
-            <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-              <p className="text-xs">
-                Classic sketch mode will soon be removed. New projects use a
-                constraints solver.
-              </p>
-            </div>
-          )}
+            'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
