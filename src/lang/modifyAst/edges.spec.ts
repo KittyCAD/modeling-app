@@ -127,6 +127,40 @@ sketch002 = sketch(on = XY) {
 extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
 hidden001 = hide(sketch002)
 hidden002 = hide(sketch001)`
+  const sketchSolveSweepEdgesAcrossExtrudesForBlend = `sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -3.62mm, var -13.65mm], end = [var 3.37mm, var -13.65mm])
+  line2 = line(start = [var 3.37mm, var -13.65mm], end = [var 3.37mm, var -10.83mm])
+  line3 = line(start = [var 3.37mm, var -10.83mm], end = [var -3.62mm, var -10.83mm])
+  line4 = line(start = [var -3.62mm, var -10.83mm], end = [var -3.62mm, var -13.65mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+sketch003 = sketch(on = XZ) {
+  line1 = line(start = [var -3.45mm, var 10.36mm], end = [var 1.38mm, var 12.93mm])
+  line2 = line(start = [var 1.38mm, var 12.93mm], end = [var 5.28mm, var 9.92mm])
+  coincident([line1.end, line2.start])
+  arc1 = arc(start = [var 5.28mm, var 9.92mm], end = [var 8.23mm, var 12.03mm], center = [var 5.77mm, var 12.64mm])
+  coincident([arc1.start, line2.end])
+  tangent([line2, arc1])
+}
+extrude002 = extrude(
+  [
+    sketch003.line1,
+    sketch003.arc1,
+    sketch003.line2
+  ],
+  length = 5,
+  bodyType = SURFACE,
+)
+region001 = region(point = [-0.125mm, -13.6475mm], sketch = sketch002)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -995,6 +1029,60 @@ chamfer001 = chamfer(
   getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1)
 ])`
       )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSweepEdgesAcrossExtrudesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgeBody1 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgeBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+      if (
+        !sweepEdgeBody1 ||
+        sweepEdgeBody1.type !== 'sweepEdge' ||
+        !sweepEdgeBody2 ||
+        sweepEdgeBody2.type !== 'sweepEdge'
+      ) {
+        throw new Error(
+          'Could not find one sweep edge per extrude for blend test'
+        )
+      }
+
+      const edges = createSelectionFromArtifacts(
+        [sweepEdgeBody1, sweepEdgeBody2],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

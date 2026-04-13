@@ -281,15 +281,174 @@ export function addBlend({
   // 3. Build two edges and use them in blend([edge1, edge2])
   const edgeExprs: Expr[] = []
   for (const edgeSelection of selectedEdges) {
-    const edgeResult = buildEdgeExpr(
-      edgeSelection,
-      modifiedAst,
+    if (
+      typeof edgeSelection === 'object' &&
+      'type' in edgeSelection &&
+      edgeSelection.type === 'enginePrimitive'
+    ) {
+      if (!edgeSelection.parentEntityId) {
+        return new Error(
+          'Blend primitive edge selections must include a parent entity.'
+        )
+      }
+
+      const primitiveEdgeResult =
+        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+          primitiveEdgeSelections: [edgeSelection],
+          bodies: new Map(),
+          modifiedAst,
+          artifactGraph,
+          wasmInstance,
+        })
+      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+
+      const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
+      if (!primitiveBody?.solidsExpr) {
+        return new Error('Could not resolve the source surface for blend edge.')
+      }
+
+      const sourceSurfaceExpr = structuredClone(primitiveBody.solidsExpr)
+      const primitiveEdgeIdExpr =
+        primitiveBody.tagsExpr.type === 'ArrayExpression'
+          ? primitiveBody.tagsExpr.elements[0]
+          : primitiveBody.tagsExpr
+      if (!primitiveEdgeIdExpr) {
+        return new Error(
+          'Blend primitive edge selections could not generate an edge identifier.'
+        )
+      }
+
+      edgeExprs.push(
+        createCallExpressionStdLibKw('getBoundedEdge', sourceSurfaceExpr, [
+          createLabeledArg('edge', primitiveEdgeIdExpr),
+        ])
+      )
+      continue
+    }
+
+    const graphEdgeSelection = edgeSelection as Selection
+    const edgeArtifact = graphEdgeSelection.artifact
+    if (
+      !edgeArtifact ||
+      (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+    ) {
+      return new Error(
+        'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
+      )
+    }
+
+    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+      graphEdgeSelection,
+      artifactGraph
+    )
+    if (err(sourceSurfaceArtifact)) {
+      return sourceSurfaceArtifact
+    }
+
+    const sourceSurfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: sourceSurfaceArtifact as Artifact,
+            codeRef: sourceSurfaceArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
       artifactGraph,
+      modifiedAst,
       wasmInstance
     )
-    if (err(edgeResult)) return edgeResult
-    modifiedAst = edgeResult.modifiedAst
-    edgeExprs.push(edgeResult.edgeExpr)
+    if (err(sourceSurfaceVars)) return sourceSurfaceVars
+    if (sourceSurfaceVars.exprs.length !== 1) {
+      return new Error(
+        'Expected exactly one source surface for each blend edge.'
+      )
+    }
+    const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+
+    // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression
+    const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      modifiedAst,
+      wasmInstance
+    )
+    if (sketchSegmentName) {
+      const sketchTagExpr = createMemberExpression(
+        createMemberExpression(
+          createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+          'tags'
+        ),
+        sketchSegmentName
+      )
+      const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
+      edgeExprs.push(
+        createCallExpressionStdLibKw(
+          'getBoundedEdge',
+          structuredClone(sourceSurfaceExpr),
+          [createLabeledArg('edge', edgeExpr)]
+        )
+      )
+      continue
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      graphEdgeSelection,
+      artifactGraph,
+      wasmInstance,
+      ['oppositeAndAdjacentEdges']
+    )
+    let edgeTagExpr: Expr
+
+    if (err(tagResult)) {
+      if (
+        edgeArtifact.type !== 'sweepEdge' ||
+        tagResult.message !== 'Selection is not a sketch segment'
+      ) {
+        return tagResult
+      }
+
+      // Sweep edges produced from multi-segment/region-driven surfaces may not
+      // resolve to a direct sketch segment path. Fallback to face-based edge
+      // tagging and reconstruct the edge expression from those face tags.
+      const fallbackTagResult = modifyAstWithTagsForSelection(
+        modifiedAst,
+        graphEdgeSelection,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(fallbackTagResult)) return fallbackTagResult
+      if (fallbackTagResult.exprs.length === 0) {
+        return new Error('Expected at least one tag for each blend edge.')
+      }
+
+      edgeTagExpr =
+        fallbackTagResult.exprs.length === 1
+          ? fallbackTagResult.exprs[0]
+          : createCallExpressionStdLibKw('getCommonEdge', null, [
+              createLabeledArg(
+                'faces',
+                createArrayExpression(fallbackTagResult.exprs)
+              ),
+            ])
+      modifiedAst = fallbackTagResult.modifiedAst
+    } else {
+      if (tagResult.exprs.length !== 1) {
+        return new Error('Expected exactly one tag for each blend edge.')
+      }
+      edgeTagExpr = tagResult.exprs[0]
+      modifiedAst = tagResult.modifiedAst
+    }
+
+    const edgeExpr = getEdgeTagCall(edgeTagExpr, edgeArtifact)
+    edgeExprs.push(
+      createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        structuredClone(sourceSurfaceExpr),
+        [createLabeledArg('edge', edgeExpr)]
+      )
+    )
   }
 
   const call = createCallExpressionStdLibKw(
@@ -314,14 +473,15 @@ export function addBlend({
   }
 }
 
-type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
 type BodySelectionData = {
   solidsExpr: Expr | null
   tagsExpr: Expr
   pathIfPipe?: PathToNode
 }
 
-function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
+function getEdgeSelections(
+  edges: Selections
+): Array<Selection | EnginePrimitiveSelection> {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
 }
 
@@ -357,150 +517,6 @@ function getSketchSegmentNameFromSourceSurface(
   }
 
   return sweepInput.property.name.name
-}
-
-function buildEdgeExpr(
-  edgeSelection: EdgeSelectionForExpr,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
-  if (
-    typeof edgeSelection === 'object' &&
-    'type' in edgeSelection &&
-    edgeSelection.type === 'enginePrimitive'
-  ) {
-    if (!edgeSelection.parentEntityId) {
-      return new Error(
-        'Blend primitive edge selections must include a parent entity.'
-      )
-    }
-
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
-        primitiveEdgeSelections: [edgeSelection],
-        bodies: new Map(),
-        modifiedAst: ast,
-        artifactGraph,
-        wasmInstance,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-
-    const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
-    if (!primitiveBody?.solidsExpr) {
-      return new Error('Could not resolve the source surface for blend edge.')
-    }
-
-    const sourceSurfaceExpr = structuredClone(primitiveBody.solidsExpr)
-    const primitiveEdgeIdExpr =
-      primitiveBody.tagsExpr.type === 'ArrayExpression'
-        ? primitiveBody.tagsExpr.elements[0]
-        : primitiveBody.tagsExpr
-    if (!primitiveEdgeIdExpr) {
-      return new Error(
-        'Blend primitive edge selections could not generate an edge identifier.'
-      )
-    }
-
-    return {
-      modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
-        sourceSurfaceExpr,
-        [createLabeledArg('edge', primitiveEdgeIdExpr)]
-      ),
-    }
-  }
-
-  const graphEdgeSelection = edgeSelection as Selection
-  const edgeArtifact = graphEdgeSelection.artifact
-  if (
-    !edgeArtifact ||
-    (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
-  ) {
-    return new Error(
-      'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
-    )
-  }
-
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    graphEdgeSelection,
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return sourceSurfaceArtifact
-  }
-
-  const sourceSurfaceVars = getVariableExprsFromSelection(
-    {
-      graphSelections: [
-        {
-          artifact: sourceSurfaceArtifact as Artifact,
-          codeRef: sourceSurfaceArtifact.codeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    artifactGraph,
-    ast,
-    wasmInstance
-  )
-  if (err(sourceSurfaceVars)) return sourceSurfaceVars
-  if (sourceSurfaceVars.exprs.length !== 1) {
-    return new Error('Expected exactly one source surface for each blend edge.')
-  }
-  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
-
-  // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression
-  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
-    ast,
-    wasmInstance
-  )
-  if (sketchSegmentName) {
-    const sketchTagExpr = createMemberExpression(
-      createMemberExpression(
-        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-        'tags'
-      ),
-      sketchSegmentName
-    )
-    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
-
-    return {
-      modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
-        structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
-      ),
-    }
-  }
-
-  // Regular case
-  const tagResult = modifyAstWithTagsForSelection(
-    ast,
-    graphEdgeSelection,
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  if (err(tagResult)) return tagResult
-  if (tagResult.exprs.length !== 1) {
-    return new Error('Expected exactly one tag for each blend edge.')
-  }
-
-  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
-
-  return {
-    modifiedAst: tagResult.modifiedAst,
-    edgeExpr: createCallExpressionStdLibKw(
-      'getBoundedEdge',
-      structuredClone(sourceSurfaceExpr),
-      [createLabeledArg('edge', edgeExpr)]
-    ),
-  }
 }
 
 export function getPrimitiveEdgeSelections(
