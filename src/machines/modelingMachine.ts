@@ -95,6 +95,7 @@ import {
 } from '@src/components/Toolbar/setAngleLength'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
+  addTagToExtrudedFaceSketchSegment,
   insertNamedConstant,
   replaceValueAtNodePath,
   sketchOnExtrudedFace,
@@ -3032,10 +3033,43 @@ export const modelingMachine = setup({
           return reject(new Error('No active project to start a sketch in.'))
         }
 
+        // Legacy sketch-on-face flows may need a source refactor first so the
+        // selected wall can be referenced from the new sketch block.
+        let programForNewSketch = kclManager.ast
+        let shouldRestoreProgram = false
+        if (result.type === 'extrudeFace' && result.faceInfo.type !== 'cap') {
+          const preprocessedSketch = addTagToExtrudedFaceSketchSegment(
+            kclManager.ast,
+            result.sketchPathToNode,
+            addTagForSketchOnFace,
+            wasmInstance,
+            result.faceInfo
+          )
+          if (err(preprocessedSketch)) {
+            return reject(new Error('Incompatible face, please try another'))
+          }
+
+          const reparsedProgram = parse(
+            recast(preprocessedSketch.modifiedAst, wasmInstance),
+            wasmInstance
+          )
+          if (err(reparsedProgram)) {
+            return reject(reparsedProgram)
+          }
+          if (!resultIsOk(reparsedProgram)) {
+            return reject(
+              new Error('Failed to reparse sketch-on-face program.')
+            )
+          }
+
+          programForNewSketch = reparsedProgram.program
+          shouldRestoreProgram = true
+        }
+
         // Construct SketchCtor based on the result
         let sketchArgs: SketchCtor
         const setProgramOutcome = await rustContext.hackSetProgram(
-          kclManager.ast,
+          programForNewSketch,
           jsAppSettings(rustContext.settingsActor)
         )
         if (result.type === 'defaultPlane') {
@@ -3068,18 +3102,33 @@ export const modelingMachine = setup({
           }
         }
 
-        await rustContext.clearSketchCheckpoints()
-        const newSketchResult = await rustContext.newSketch(
-          0, // projectId - using 0 as placeholder
-          0, // fileId - using 0 as placeholder
-          0, // version - using 0 as placeholder
-          sketchArgs,
-          {
-            settings: {
-              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-            },
+        let newSketchResult
+        try {
+          await rustContext.clearSketchCheckpoints()
+          newSketchResult = await rustContext.newSketch(
+            0, // projectId - using 0 as placeholder
+            0, // fileId - using 0 as placeholder
+            0, // version - using 0 as placeholder
+            sketchArgs,
+            {
+              settings: {
+                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+              },
+            }
+          )
+        } catch (error) {
+          if (shouldRestoreProgram) {
+            await rustContext.hackSetProgram(
+              kclManager.ast,
+              jsAppSettings(rustContext.settingsActor)
+            )
           }
-        )
+          return reject(
+            error instanceof Error
+              ? error
+              : new Error('Failed to create sketch')
+          )
+        }
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId

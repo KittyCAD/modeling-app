@@ -339,31 +339,22 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  let _tag
-  if (info.type !== 'cap') {
-    const __tag = addTagForSketchOnFace(
-      {
-        pathToNode: sketchPathToNode,
-        node: _node,
-        wasmInstance,
-      },
-      expression.callee.name.name,
-      info.type === 'edgeCut' ? info : null,
-      wasmInstance
-    )
-    if (err(__tag)) return __tag
-    const { modifiedAst, tag } = __tag
-    _tag = createLocalName(tag)
-    _node = modifiedAst
-  } else {
-    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
-  }
+  const taggedSource = addTagToExtrudedFaceSketchSegment(
+    _node,
+    sketchPathToNode,
+    addTagForSketchOnFace,
+    wasmInstance,
+    info
+  )
+  if (err(taggedSource)) return taggedSource
+  const { modifiedAst: taggedAst, tag } = taggedSource
+  _node = taggedAst
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLibKw(
       'startSketchOn',
       createLocalName(extrudeName ? extrudeName : oldSketchName),
-      [createLabeledArg('face', _tag)]
+      [createLabeledArg('face', tag)]
     ),
     undefined,
     'const'
@@ -385,6 +376,48 @@ export function sketchOnExtrudedFace(
   return {
     modifiedAst: _node,
     pathToNode: newpathToNode,
+  }
+}
+
+export function addTagToExtrudedFaceSketchSegment(
+  node: Node<Program>,
+  sketchPathToNode: PathToNode,
+  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
+  wasmInstance: ModuleType,
+  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
+): { modifiedAst: Node<Program>; tag: Expr } | Error {
+  const _node = { ...node }
+
+  if (info.type === 'cap') {
+    return {
+      modifiedAst: _node,
+      tag: createLiteral(info.subType.toUpperCase(), wasmInstance),
+    }
+  }
+
+  const expressionResult = getNodeFromPath<CallExpressionKw>(
+    _node,
+    sketchPathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (err(expressionResult)) return expressionResult
+
+  const taggedSketchSegment = addTagForSketchOnFace(
+    {
+      pathToNode: sketchPathToNode,
+      node: _node,
+      wasmInstance,
+    },
+    expressionResult.node.callee.name.name,
+    info.type === 'edgeCut' ? info : null,
+    wasmInstance
+  )
+  if (err(taggedSketchSegment)) return taggedSketchSegment
+
+  return {
+    modifiedAst: taggedSketchSegment.modifiedAst,
+    tag: createLocalName(taggedSketchSegment.tag),
   }
 }
 
