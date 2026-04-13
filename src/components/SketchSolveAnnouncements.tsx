@@ -8,9 +8,12 @@ export function SketchSolveAnnouncement() {
   return (
     <section
       data-testid="home-sketch-solve-banner"
-      className="my-2 rounded-sm border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary dark:border-primary/40 dark:bg-transparent"
+      className="my-2 rounded-lg border border-primary/30 bg-chalkboard-10 px-4 py-3 text-sm shadow-lg dark:border-primary/40 dark:bg-chalkboard-90"
     >
-      <p>{HOME_SKETCH_SOLVE_ANNOUNCEMENT}</p>
+      <p className="font-medium text-primary">Sketch Solve</p>
+      <p className="mt-1 leading-5 text-chalkboard-90 dark:text-chalkboard-20">
+        {HOME_SKETCH_SOLVE_ANNOUNCEMENT}
+      </p>
     </section>
   )
 }
