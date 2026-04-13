@@ -1749,7 +1749,8 @@ export const useToolbarConfig = () => {
             status: 'available',
             title: 'Equal Length',
             hotkey: 'E',
-            description: 'Constrain lines to have equal length.',
+            description:
+              'Constrain lines to have equal length, or arcs and circles to have equal radius.',
             links: [],
             isActive: (state) => false,
           },
