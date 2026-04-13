@@ -17,6 +17,7 @@ import {
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  getSketchBlockOperationKey,
   groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
@@ -27,7 +28,6 @@ import {
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
@@ -235,9 +235,11 @@ export const FeatureTreePaneContents = memo(() => {
               })()
 
               if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+                const sketchGroupKey =
+                  getSketchBlockOperationKey(opOrList[0]) ?? key
                 return (
                   <SketchBlockOperationGroup
-                    key={key}
+                    key={sketchGroupKey}
                     items={opOrList}
                     code={operationsCode}
                     sketchNoFace={sketchNoFace}
@@ -546,6 +548,8 @@ const OperationItem = ({
   useSignals()
   const { layout } = useApp()
   const { kclManager, commandBarActor } = systemDeps
+  const useSketchSolveMode =
+    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -587,7 +591,11 @@ const OperationItem = ({
             item,
             kclManager.artifactGraph
           )
-          const result = await selectOffsetSketchPlane(artifact, systemDeps)
+          const result = await selectSketchPlane(
+            artifact?.id,
+            useSketchSolveMode,
+            kclManager
+          )
           if (err(result)) {
             console.error(result)
           }
@@ -601,7 +609,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
+    [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -732,7 +740,7 @@ const OperationItem = ({
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
       }
     }
   }

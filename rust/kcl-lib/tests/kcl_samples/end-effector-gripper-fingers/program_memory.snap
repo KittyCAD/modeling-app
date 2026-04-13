@@ -8213,7 +8213,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -11410,7 +11410,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

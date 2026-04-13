@@ -235,6 +235,10 @@ export type ModelingMachineEvent =
       data: ArtifactId
     }
   | {
+      type: 'Edit sketch solve'
+      data: { artifactId: ArtifactId }
+    }
+  | {
       type: 'Set selection'
       data: SetSelections
     }
@@ -5399,6 +5403,14 @@ export const modelingMachine = setup({
   states: {
     idle: {
       on: {
+        'Edit sketch solve': {
+          target: 'animating to existing sketch solve',
+          actions: [
+            ({ context }) => {
+              context.kclManager.sceneInfra.animate()
+            },
+          ],
+        },
         'Enter sketch': [
           {
             target: 'animating to existing sketch solve',
@@ -7757,6 +7769,16 @@ export const modelingMachine = setup({
       invoke: {
         src: 'animate-to-existing-sketch-solve',
         input: ({ event, context }) => {
+          if (event.type === 'Edit sketch solve') {
+            return {
+              artifactId: event.data.artifactId,
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              engineCommandManager: context.engineCommandManager,
+              defaultUnit: context.store.defaultUnit,
+              projectRef: context.projectRef,
+            }
+          }
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
             const artifact =

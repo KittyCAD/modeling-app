@@ -369,6 +369,13 @@ fn rewrite_constraint_with_map(
             diameter: diameter.diameter,
             source: diameter.source.clone(),
         })),
+        Constraint::EqualRadius(equal_radius) => Some(Constraint::EqualRadius(crate::frontend::sketch::EqualRadius {
+            input: equal_radius
+                .input
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+        })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: tangent
                 .input
@@ -4582,6 +4589,13 @@ pub(crate) async fn execute_trim_operations_simple(
                         }
                         Constraint::Diameter(diameter) => {
                             if diameter.arc == *circle_id
+                                && let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map)
+                            {
+                                migrated_constraints.push(migrated);
+                            }
+                        }
+                        Constraint::EqualRadius(equal_radius) => {
+                            if equal_radius.input.contains(circle_id)
                                 && let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map)
                             {
                                 migrated_constraints.push(migrated);

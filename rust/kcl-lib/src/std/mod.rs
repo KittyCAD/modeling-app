@@ -555,6 +555,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::equalLength"),
         ),
+        ("solver", "equalRadius") => (
+            |e, a| Box::pin(crate::std::constraints::equal_radius(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::equalRadius"),
+        ),
         ("solver", "angle") => (
             |e, a| Box::pin(crate::std::constraints::angle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::angle"),

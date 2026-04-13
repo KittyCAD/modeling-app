@@ -73,7 +73,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
     engineConnection: undefined,
     pendingCommands: {},
     sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    waitForAllModelingCommands: vi.fn().mockResolvedValue([]),
     rejectAllModelingCommands: vi.fn(),
     tearDown: vi.fn(),
   } as any,

@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import {
   coerceSelectionsToBody,
+  getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   type Artifact,
 } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph } from '@src/lang/wasm'
+import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 
 describe('getSweepArtifactFromSelection', () => {
@@ -150,6 +151,53 @@ describe('getSweepArtifactFromSelection', () => {
 })
 
 describe('coerceSelectionsToBody', () => {
+  it('should resolve a sketchBlock from a segment artifact', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const pathToNode: PathToNode = [['body', '']]
+    const codeRef = {
+      range: [0, 100, 0] as [number, number, number],
+      pathToNode,
+      nodePath: { steps: [] },
+    }
+
+    const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
+      type: 'sketchBlock',
+      id: 'sketch-block-1',
+      codeRef,
+      planeId: 'plane-1',
+      sketchId: 7,
+    }
+
+    const path: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef,
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      trajectorySweepId: null,
+      consumed: false,
+    }
+
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef,
+    }
+
+    artifactGraph.set(sketchBlock.id, sketchBlock)
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(segment.id, segment)
+
+    expect(getSketchBlockForArtifact(segment, artifactGraph)?.id).toBe(
+      'sketch-block-1'
+    )
+  })
+
   it('should pass through path artifact unchanged', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

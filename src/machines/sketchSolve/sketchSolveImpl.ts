@@ -1039,16 +1039,18 @@ const debouncedEditorUpdate = deferredCallback(
   ({
     text,
     kclManager,
+    sceneGraphDelta,
     shouldWriteToDisk,
     shouldAddToHistory,
     spec,
   }: {
     text: string
     kclManager: KclManager
+    sceneGraphDelta: SceneGraphDelta
     shouldWriteToDisk: boolean
     shouldAddToHistory: boolean
     spec: { effects: StateEffect<unknown>[] }
-  }) =>
+  }) => {
     kclManager.updateCodeEditor(
       text,
       {
@@ -1057,7 +1059,9 @@ const debouncedEditorUpdate = deferredCallback(
         shouldExecute: false,
       },
       spec
-    ),
+    )
+    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta)
+  },
   200
 )
 
@@ -1133,6 +1137,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
+      sceneGraphDelta: event.data.sceneGraphDelta,
       shouldWriteToDisk,
       shouldAddToHistory,
       spec: editorAdditionalSpec,
@@ -1147,6 +1152,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         shouldAddToHistory,
       },
       editorAdditionalSpec
+    )
+    context.kclManager.syncSketchSolveOutcome(
+      event.data.sourceDelta.text,
+      event.data.sceneGraphDelta
     )
   }
 

@@ -394,7 +394,7 @@ description: Variables in memory after executing inner-thread.kcl
         "units": "mm"
       },
       "startCapId": "[uuid]",
-      "endCapId": null,
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
