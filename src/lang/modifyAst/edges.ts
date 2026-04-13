@@ -496,6 +496,40 @@ export function addBlend({
         }
       }
 
+      if (!directTagExprFromSweepEdge && !err(segment)) {
+        const sketchPath = getArtifactOfTypes(
+          { key: segment.pathId, types: ['path'] },
+          artifactGraph
+        )
+        if (!err(sketchPath)) {
+          const sketchVarDec = getNodeFromPath<VariableDeclaration>(
+            modifiedAst,
+            sketchPath.codeRef.pathToNode,
+            wasmInstance,
+            'VariableDeclaration'
+          )
+          if (
+            !err(sketchVarDec) &&
+            sketchVarDec.node.type === 'VariableDeclaration' &&
+            sketchVarDec.node.declaration.init.type === 'SketchBlock'
+          ) {
+            const sketchVarName = sketchVarDec.node.declaration.id.name
+            const segName = getSketchSegmentName(
+              modifiedAst,
+              segment.originalSegId ?? segment.id,
+              artifactGraph,
+              wasmInstance
+            )
+            if (segName) {
+              directTagExprFromSweepEdge = createMemberExpression(
+                createMemberExpression(sketchVarName, 'tags'),
+                segName
+              )
+            }
+          }
+        }
+      }
+
       if (directTagExprFromSweepEdge) {
         edgeExprs.push(
           createCallExpressionStdLibKw(
