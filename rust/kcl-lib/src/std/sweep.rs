@@ -73,7 +73,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
-    let version: Option<TyF64> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     let path = match path {
         SweepPath::Segments(segments) => InnerSweepPath::Sketch(
             build_segment_surface_sketch(segments, exec_state, &args.ctx, args.source_range).await?,
@@ -120,7 +120,7 @@ async fn inner_sweep(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     body_type: Option<BodyType>,
-    version: Option<TyF64>,
+    version: Option<u32>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -147,6 +147,8 @@ async fn inner_sweep(
         }
     };
 
+    let version = version.map(|v| u8::try_from(v).unwrap_or(u8::MAX));
+
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -163,7 +165,7 @@ async fn inner_sweep(
                         ))
                         .relative_to(relative_to)
                         .body_type(body_type)
-                        .maybe_version(version.as_ref().map(|t| t.n as u8))
+                        .maybe_version(version)
                         .build(),
                 ),
             )
