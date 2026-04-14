@@ -30,6 +30,7 @@ import {
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SketchCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -102,6 +103,7 @@ import {
   startSketchOnDefault,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
@@ -154,6 +156,8 @@ import {
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
+  isFaceFromLegacySketch,
+  getSketchBlockArtifactForPathToNode,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -216,6 +220,190 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
+
+function sourceRangesEqual(
+  a: [number, number, number],
+  b: [number, number, number]
+) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
+}
+
+function sourceRangeForPath(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
+): [number, number, number] | Error {
+  const nodeResult = getNodeFromPath<any>(ast, pathToNode, wasmInstance)
+  if (err(nodeResult)) return nodeResult
+  const { node } = nodeResult
+  return [node.start, node.end, node.moduleId]
+}
+
+function findSceneObjectForPlaneSelection(
+  sceneGraphObjects: ApiObject[],
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane,
+  program: Node<Program>,
+  wasmInstance: ModuleType
+): ApiObject | undefined {
+  const selectedArtifactId =
+    plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
+  const selectedByArtifactId = sceneGraphObjects.find(
+    (object) => object.artifact_id === selectedArtifactId
+  )
+  if (selectedByArtifactId) return selectedByArtifactId
+
+  if (plane.type !== 'extrudeFace') return undefined
+
+  const sweepRange = sourceRangeForPath(
+    program,
+    plane.extrudePathToNode,
+    wasmInstance
+  )
+  if (err(sweepRange)) return undefined
+
+  if (plane.faceInfo.type === 'cap') {
+    const capKind = plane.faceInfo.subType
+    return sceneGraphObjects.find(
+      (object) =>
+        object.kind.type === 'Cap' &&
+        object.kind.kind === capKind &&
+        object.source.type === 'BackTrace' &&
+        object.source.ranges.length === 1 &&
+        sourceRangesEqual(object.source.ranges[0][0], sweepRange)
+    )
+  }
+
+  const segmentRange = sourceRangeForPath(
+    program,
+    plane.sketchPathToNode,
+    wasmInstance
+  )
+  if (err(segmentRange)) return undefined
+
+  return sceneGraphObjects.find(
+    (object) =>
+      object.kind.type === 'Wall' &&
+      object.source.type === 'BackTrace' &&
+      object.source.ranges.length === 2 &&
+      sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
+      sourceRangesEqual(object.source.ranges[1][0], segmentRange)
+  )
+}
+
+async function enterSketchSolveFromSketchBlockArtifact({
+  sketchBlockArtifact,
+  kclManager,
+  rustContext,
+  engineCommandManager,
+  defaultUnit,
+  projectRef,
+  wasmInstance,
+}: {
+  sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
+  kclManager: KclManager
+  rustContext: RustContext
+  engineCommandManager: ConnectionManager
+  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+  projectRef?: { current: Project | undefined }
+  wasmInstance: ModuleType
+}): Promise<{
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  sketchSolveId: number
+  initialSceneGraphDelta: SceneGraphDelta
+}> {
+  if (typeof sketchBlockArtifact.sketchId !== 'number') {
+    const errorMessage = 'SketchBlock does not have a sketchId'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  const systemDeps = {
+    sceneInfra: kclManager.sceneInfra,
+    rustContext,
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    ast: kclManager.ast,
+    execState: kclManager.execState,
+    wasmInstance,
+  }
+
+  const planeData = await getPlaneDataFromSketchBlock(
+    sketchBlockArtifact,
+    kclManager.artifactGraph,
+    systemDeps
+  )
+  if (!planeData) {
+    const errorMessage = 'Could not determine plane/face information'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  const id =
+    planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
+  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+  const project = projectRef?.current
+  if (!project) {
+    console.warn('No project available for editSketch call')
+  }
+
+  let editSketchResult:
+    | {
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      }
+    | undefined
+  try {
+    await rustContext.clearSketchCheckpoints()
+    await rustContext.hackSetProgram(
+      kclManager.ast,
+      jsAppSettings(rustContext.settingsActor)
+    )
+    editSketchResult = await rustContext.editSketch(
+      0,
+      0,
+      0,
+      sketchBlockArtifact.sketchId,
+      {
+        settings: {
+          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+        },
+      }
+    )
+    if (!editSketchResult) {
+      const errorMessage = 'Failed to edit sketch'
+      toast.error(errorMessage)
+      return reject(new Error(errorMessage))
+    }
+    kclManager.updateCodeEditor(
+      kclManager.code,
+      {
+        shouldAddToHistory: false,
+        shouldWriteToDisk: false,
+      },
+      {
+        sketchCheckpointId: editSketchResult.checkpointId ?? null,
+      }
+    )
+  } catch (error) {
+    console.error('Error calling editSketch:', error)
+    return reject(
+      error instanceof Error ? error : new Error('Failed to edit sketch')
+    )
+  }
+
+  if (!editSketchResult) {
+    const errorMessage = 'Failed to edit sketch'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  return {
+    plane: planeData,
+    sketchSolveId: sketchBlockArtifact.sketchId,
+    initialSceneGraphDelta: editSketchResult.sceneGraphDelta,
+  }
+}
 
 export type ModelingMachineEvent =
   | {
@@ -2966,6 +3154,7 @@ export const modelingMachine = setup({
       }): Promise<{
         plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
         sketchSolveId: number
+        initialSceneGraphDelta: SceneGraphDelta
       }> => {
         if (!input || !input.artifactOrPlaneId) {
           return reject(new Error('No artifact or plane ID provided.'))
@@ -3026,6 +3215,74 @@ export const modelingMachine = setup({
           return reject(new Error('Please select a valid sketch plane.'))
         }
 
+        const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
+          result.type === 'extrudeFace' &&
+          result.faceInfo.type === 'wall' &&
+          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+            ? result
+            : null
+
+        if (legacyExtrudeFaceTemporaryCompat) {
+          // Temporary compatibility branch for legacy sketch V1.
+          // Remove this once sketch-on-face always originates from sketch
+          // blocks and no longer needs a JS-side code mod before sketch solve.
+          const legacyFaceArtifact = kclManager.artifactGraph.get(
+            legacyExtrudeFaceTemporaryCompat.faceId
+          )
+          const legacyFaceCodeRef = legacyFaceArtifact
+            ? getFaceCodeRef(legacyFaceArtifact)
+            : null
+          if (!legacyFaceArtifact || !legacyFaceCodeRef) {
+            return reject(
+              new Error('Could not resolve the selected legacy face.')
+            )
+          }
+
+          const legacySketchBlock = sketchBlockOnExtrudedFace(
+            kclManager.ast,
+            {
+              artifact: legacyFaceArtifact,
+              codeRef: legacyFaceCodeRef,
+            },
+            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
+            legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
+            kclManager.artifactGraph,
+            wasmInstance
+          )
+          if (err(legacySketchBlock)) {
+            return reject(new Error('Incompatible face, please try another'))
+          }
+
+          await updateModelingState(
+            legacySketchBlock.modifiedAst,
+            EXECUTION_TYPE_REAL,
+            kclManager,
+            {
+              focusPath: [legacySketchBlock.pathToNode],
+            }
+          )
+
+          const sketchBlockArtifact = getSketchBlockArtifactForPathToNode(
+            legacySketchBlock.pathToNode,
+            kclManager.artifactGraph
+          )
+          if (!sketchBlockArtifact) {
+            return reject(
+              new Error('Could not find the generated sketch block artifact.')
+            )
+          }
+
+          return enterSketchSolveFromSketchBlockArtifact({
+            sketchBlockArtifact,
+            kclManager,
+            rustContext,
+            engineCommandManager,
+            defaultUnit,
+            projectRef,
+            wasmInstance,
+          })
+        }
+
         // Call newSketch API
         const project = projectRef?.current
         if (!project) {
@@ -3049,13 +3306,16 @@ export const modelingMachine = setup({
             )
           }
 
-          const selectedArtifactId =
-            result.type === 'extrudeFace' ? result.faceId : result.planeId
-          const selectedSceneObject = setProgramOutcome.sceneGraph.objects.find(
-            (object) => object.artifact_id === selectedArtifactId
+          const selectedSceneObject = findSceneObjectForPlaneSelection(
+            setProgramOutcome.sceneGraph.objects,
+            result,
+            kclManager.ast,
+            wasmInstance
           )
 
           if (!selectedSceneObject) {
+            const selectedArtifactId =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
             return reject(
               new Error(
                 `Could not find SceneGraph object for artifact ${selectedArtifactId}.`
@@ -3068,18 +3328,31 @@ export const modelingMachine = setup({
           }
         }
 
-        await rustContext.clearSketchCheckpoints()
-        const newSketchResult = await rustContext.newSketch(
-          0, // projectId - using 0 as placeholder
-          0, // fileId - using 0 as placeholder
-          0, // version - using 0 as placeholder
-          sketchArgs,
-          {
-            settings: {
-              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-            },
-          }
-        )
+        let newSketchResult
+        try {
+          await rustContext.clearSketchCheckpoints()
+          newSketchResult = await rustContext.newSketch(
+            0, // projectId - using 0 as placeholder
+            0, // fileId - using 0 as placeholder
+            0, // version - using 0 as placeholder
+            sketchArgs,
+            {
+              settings: {
+                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+              },
+            }
+          )
+        } catch (error) {
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            jsAppSettings(rustContext.settingsActor)
+          )
+          return reject(
+            error instanceof Error
+              ? error
+              : new Error('Failed to create sketch')
+          )
+        }
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
@@ -3099,6 +3372,7 @@ export const modelingMachine = setup({
         return {
           plane: result,
           sketchSolveId: newSketchResult.sketchId,
+          initialSceneGraphDelta: newSketchResult.sceneGraphDelta,
         }
       }
     ),
@@ -3134,15 +3408,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
-
-        const systemDeps = {
-          sceneInfra: kclManager.sceneInfra,
-          rustContext,
-          sceneEntitiesManager: kclManager.sceneEntitiesManager,
-          ast: kclManager.ast,
-          execState: kclManager.execState,
-          wasmInstance: await kclManager.wasmInstancePromise,
-        }
+        const wasmInstance = await kclManager.wasmInstancePromise
 
         // Get the sketchBlock artifact from the artifact graph
         const artifact = kclManager.artifactGraph.get(artifactId)
@@ -3152,95 +3418,15 @@ export const modelingMachine = setup({
           return reject(new Error(errorMessage))
         }
 
-        if (typeof artifact.sketchId !== 'number') {
-          const errorMessage = 'SketchBlock does not have a sketchId'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
-
-        // Get plane/face data from the sketchBlock
-        const planeData = await getPlaneDataFromSketchBlock(
-          artifact,
-          kclManager.artifactGraph,
-          systemDeps
-        )
-        if (!planeData) {
-          const errorMessage = 'Could not determine plane/face information'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
-
-        const sketchId = artifact.sketchId
-
-        const id =
-          planeData.type === 'extrudeFace'
-            ? planeData.faceId
-            : planeData.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        // Call editSketch API
-        let editSketchResult:
-          | {
-              sceneGraphDelta: SceneGraphDelta
-              checkpointId?: number | null
-            }
-          | undefined
-        try {
-          const project = projectRef?.current
-          if (!project) {
-            console.warn('No project available for editSketch call')
-          } else {
-            await rustContext.clearSketchCheckpoints()
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-            editSketchResult = await rustContext.editSketch(
-              0, // projectId
-              0, // fileId
-              0, // version
-              sketchId,
-              {
-                settings: {
-                  modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-                },
-              }
-            )
-            if (!editSketchResult) {
-              const errorMessage = 'Failed to edit sketch'
-              toast.error(errorMessage)
-              return reject(new Error(errorMessage))
-            }
-            kclManager.updateCodeEditor(
-              kclManager.code,
-              {
-                shouldAddToHistory: false,
-                shouldWriteToDisk: false,
-              },
-              {
-                sketchCheckpointId: editSketchResult.checkpointId ?? null,
-              }
-            )
-          }
-        } catch (error) {
-          console.error('Error calling editSketch:', error)
-          return reject(
-            error instanceof Error ? error : new Error('Failed to edit sketch')
-          )
-        }
-
-        if (!editSketchResult) {
-          const errorMessage = 'Failed to edit sketch'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
-
-        return {
-          plane: planeData,
-          sketchSolveId: sketchId,
-          initialSceneGraphDelta: editSketchResult.sceneGraphDelta,
-        }
+        return enterSketchSolveFromSketchBlockArtifact({
+          sketchBlockArtifact: artifact,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          defaultUnit,
+          projectRef,
+          wasmInstance,
+        })
       }
     ),
     'Get horizontal info': fromPromise(
@@ -7742,6 +7928,8 @@ export const modelingMachine = setup({
               // Pipe the plane/face data from the actor into context
               sketchSolveInit: output?.plane ?? null,
               sketchSolveId: output?.sketchSolveId ?? undefined,
+              initialSceneGraphDelta:
+                output?.initialSceneGraphDelta ?? dummyInitSketchGraphDelta,
             }
           }),
         },
