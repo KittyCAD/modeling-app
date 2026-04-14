@@ -1,4 +1,5 @@
 import { expect, describe, test, vi } from 'vitest'
+import toast from 'react-hot-toast'
 import {
   sendToActorIfActive,
   updateSketchOutcome,
@@ -149,53 +150,58 @@ describe('updateSketchOutcome', () => {
     }
   })
 
-  test('strips draft preview issues when suppression is requested', () => {
-    const setSketchSolveDiagnostics = vi.fn()
-    const dispatch = vi.fn()
-    const updateCodeEditor = vi.fn()
-    const syncSketchSolveOutcome = vi.fn()
-    const sceneGraphDelta = createSceneGraphDelta([])
-    sceneGraphDelta.exec_outcome.issues = [
-      {
-        message: 'Overlapping geometry',
-        severity: 'Warning',
-        sourceRanges: [],
-      } as any,
-    ]
+  test('suppresses preview toasts while preserving exec outcome issues', () => {
+    const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
+    try {
+      const setSketchSolveDiagnostics = vi.fn()
+      const dispatch = vi.fn()
+      const updateCodeEditor = vi.fn()
+      const syncSketchSolveOutcome = vi.fn()
+      const sceneGraphDelta = createSceneGraphDelta([])
+      sceneGraphDelta.exec_outcome.issues = [
+        {
+          message: 'Overlapping geometry',
+          severity: 'Warning',
+          sourceRange: [0, 0, 0],
+        } as any,
+      ]
 
-    const result = updateSketchOutcome({
-      context: {
-        kclManager: {
-          code: 'old code',
-          dispatch,
-          setSketchSolveDiagnostics,
-          updateCodeEditor,
-          syncSketchSolveOutcome,
+      const result = updateSketchOutcome({
+        context: {
+          kclManager: {
+            code: 'old code',
+            dispatch,
+            setSketchSolveDiagnostics,
+            updateCodeEditor,
+            syncSketchSolveOutcome,
+          },
+          selectedIds: [],
+          duringAreaSelectIds: [],
         },
-        selectedIds: [],
-        duringAreaSelectIds: [],
-      },
-      event: {
-        type: 'update sketch outcome',
-        data: {
-          sourceDelta: { text: 'new code' },
-          sceneGraphDelta,
-          suppressExecOutcomeIssues: true,
+        event: {
+          type: 'update sketch outcome',
+          data: {
+            sourceDelta: { text: 'new code' },
+            sceneGraphDelta,
+            suppressExecOutcomeIssues: true,
+          },
         },
-      },
-    } as any)
+      } as any)
 
-    expect(setSketchSolveDiagnostics).toHaveBeenCalledWith([])
-    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
-      'new code',
-      expect.objectContaining({
-        exec_outcome: expect.objectContaining({
-          issues: [],
-        }),
-      })
-    )
-    expect(
-      result.sketchExecOutcome?.sceneGraphDelta.exec_outcome.issues
-    ).toEqual([])
+      expect(toastErrorSpy).not.toHaveBeenCalled()
+      expect(
+        result.sketchExecOutcome?.sceneGraphDelta.exec_outcome.issues
+      ).toEqual(sceneGraphDelta.exec_outcome.issues)
+      expect(setSketchSolveDiagnostics).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'Overlapping geometry',
+            severity: 'warning',
+          }),
+        ])
+      )
+    } finally {
+      toastErrorSpy.mockRestore()
+    }
   })
 })

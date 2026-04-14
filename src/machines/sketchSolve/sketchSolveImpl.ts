@@ -162,9 +162,9 @@ export type UpdateSketchOutcomeEvent = {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     /**
-     * If true, transient solver issues are stripped from the stored outcome so
-     * draft previews can pass through intentionally degenerate states without
-     * surfacing diagnostics, toast spam, or error styling.
+     * If true, transient preview states still update exec-outcome issues so the
+     * sketch can render warning/error styling, but repeated toast errors are
+     * suppressed until the interaction commits.
      */
     suppressExecOutcomeIssues?: boolean
     /**
@@ -1083,25 +1083,19 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
-  const sceneGraphDelta = event.data.suppressExecOutcomeIssues
-    ? {
-        ...event.data.sceneGraphDelta,
-        exec_outcome: {
-          ...event.data.sceneGraphDelta.exec_outcome,
-          issues: [],
-        },
-      }
-    : event.data.sceneGraphDelta
+  const sceneGraphDelta = event.data.sceneGraphDelta
 
   const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
     getSketchSolveExecOutcomeIssues(sceneGraphDelta),
     event.data.sourceDelta.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
-  toastSketchSolveExecOutcomeErrors(
-    sceneGraphDelta,
-    'Sketch solver failed to find a solution'
-  )
+  if (!event.data.suppressExecOutcomeIssues) {
+    toastSketchSolveExecOutcomeErrors(
+      sceneGraphDelta,
+      'Sketch solver failed to find a solution'
+    )
+  }
 
   // If the incoming KCL differs from the current editor doc, apply the scene
   // immediately for responsiveness, but keep that scene-only dispatch out of
