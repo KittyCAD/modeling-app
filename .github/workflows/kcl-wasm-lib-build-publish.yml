@@ -1,0 +1,74 @@
+name: kcl-wasm-lib-build-and-publish
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish-kcl-wasm-lib:
+    name: kcl-wasm-lib-build-and-publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org/'
+          cache: 'npm'
+
+      - run: npm install
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          rustflags: ''
+
+      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+        with:
+          tool: wasm-pack
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Build Wasm
+        run: npm run build:wasm
+
+      - name: Check if version changed
+        id: version_check
+        working-directory: rust/kcl-wasm-lib/pkg
+        run: |
+          package_name=$(jq -r .name package.json)
+          local_version=$(jq -r .version package.json)
+          published_version=$(npm view "$package_name" version 2>/dev/null || true)
+
+          echo "local_version=$local_version" >> "$GITHUB_OUTPUT"
+          echo "published_version=$published_version" >> "$GITHUB_OUTPUT"
+
+          if [ "$local_version" = "$published_version" ]; then
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            echo "Version unchanged; skipping publish."
+          else
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "Version changed from '$published_version' to '$local_version'."
+          fi
+
+      - name: Publish package
+        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        working-directory: rust/kcl-wasm-lib/pkg
+        run: |
+          npm pkg fix
+          npm publish --access public --provenance
