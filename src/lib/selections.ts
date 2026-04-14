@@ -1263,16 +1263,6 @@ export async function getPlaneDataFromSketchBlock(
     return null
   }
 
-  // @pierremtb At the time of writing, this isn't working yet,
-  // so we always go to the next step and treat default planes as offset planes.
-  const defaultResult = getDefaultSketchPlaneData(
-    sketchBlock.planeId,
-    systemDeps
-  )
-  if (!err(defaultResult) && defaultResult) {
-    return defaultResult
-  }
-
   const artifact = artifactGraph.get(sketchBlock.planeId)
   const offsetResult = await getOffsetSketchPlaneData(artifact, {
     sceneEntitiesManager: systemDeps.sceneEntitiesManager,
