@@ -2941,13 +2941,13 @@ impl AxisConstraintKind {
     #[cfg(feature = "artifact-graph")]
     fn line_artifact_constraint(self, line: ObjectId) -> Constraint {
         match self {
-            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal::Line { line_id: line }),
-            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Line { line_id: line }),
+            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal::Line { line }),
+            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Line { line }),
         }
     }
 
     #[cfg(feature = "artifact-graph")]
-    fn point_artifact_constraint(self, points: Vec<ObjectId>) -> Constraint {
+    fn point_artifact_constraint(self, points: Vec<ConstraintSegment>) -> Constraint {
         match self {
             AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal::Points { points }),
             AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Points { points }),
@@ -3231,8 +3231,9 @@ fn axis_constraint_points(
                 let UnsolvedSegmentKind::Point { .. } = &unsolved.kind else {
                     return None;
                 };
-                Some(unsolved.object_id)
+                Some(ConstraintSegment::from(unsolved.object_id))
             }
+            point if point2d_is_origin(point) => Some(ConstraintSegment::ORIGIN),
             _ => None,
         })
         .collect::<Option<Vec<_>>>();

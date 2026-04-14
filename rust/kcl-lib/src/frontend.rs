@@ -2762,6 +2762,17 @@ impl FrontendState {
         }
     }
 
+    fn axis_constraint_segment_to_ast(
+        &self,
+        segment: &ConstraintSegment,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<ast::Expr, KclError> {
+        match segment {
+            ConstraintSegment::Origin(_) => Ok(ast_name_expr("ORIGIN".to_owned())),
+            ConstraintSegment::Segment(point_id) => self.point_id_to_ast_reference(*point_id, new_ast),
+        }
+    }
+
     async fn add_coincident(
         &mut self,
         sketch: ObjectId,
@@ -3291,12 +3302,12 @@ impl FrontendState {
 
         // Map the runtime objects back to variable names.
         let first_arg_ast = match horizontal {
-            Horizontal::Line { line_id } => {
+            Horizontal::Line { line } => {
                 let line_object = self
                     .scene_graph
                     .objects
-                    .get(line_id.0)
-                    .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
+                    .get(line.0)
+                    .ok_or_else(|| KclError::refactor(format!("Line not found: {line:?}")))?;
                 let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
                     let kind = line_object.kind.human_friendly_kind_with_article();
                     return Err(KclError::refactor(format!(
@@ -3314,7 +3325,7 @@ impl FrontendState {
             Horizontal::Points { points } => {
                 let point_asts = points
                     .iter()
-                    .map(|point_id| self.point_id_to_ast_reference(*point_id, new_ast))
+                    .map(|point| self.axis_constraint_segment_to_ast(point, new_ast))
                     .collect::<Result<Vec<_>, _>>()?;
                 ast::ArrayExpression::new(point_asts).into()
             }
@@ -3528,13 +3539,13 @@ impl FrontendState {
         let sketch_id = sketch;
 
         let first_arg_ast = match vertical {
-            Vertical::Line { line_id } => {
+            Vertical::Line { line } => {
                 // Map the runtime objects back to variable names.
                 let line_object = self
                     .scene_graph
                     .objects
-                    .get(line_id.0)
-                    .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
+                    .get(line.0)
+                    .ok_or_else(|| KclError::refactor(format!("Line not found: {line:?}")))?;
                 let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
                     let kind = line_object.kind.human_friendly_kind_with_article();
                     return Err(KclError::refactor(format!(
@@ -3552,7 +3563,7 @@ impl FrontendState {
             Vertical::Points { points } => {
                 let point_asts = points
                     .iter()
-                    .map(|point_id| self.point_id_to_ast_reference(*point_id, new_ast))
+                    .map(|point| self.axis_constraint_segment_to_ast(point, new_ast))
                     .collect::<Result<Vec<_>, _>>()?;
                 ast::ArrayExpression::new(point_asts).into()
             }
@@ -3733,12 +3744,18 @@ impl FrontendState {
                     false
                 }),
                 Constraint::Horizontal(h) => match h {
-                    Horizontal::Line { line_id: line } => segment_ids_set.contains(line),
-                    Horizontal::Points { points } => points.iter().any(|point| segment_ids_set.contains(point)),
+                    Horizontal::Line { line } => segment_ids_set.contains(line),
+                    Horizontal::Points { points } => points.iter().any(|point| match point {
+                        ConstraintSegment::Segment(point) => segment_ids_set.contains(point),
+                        ConstraintSegment::Origin(_) => false,
+                    }),
                 },
                 Constraint::Vertical(v) => match v {
-                    Vertical::Line { line_id: line } => segment_ids_set.contains(line),
-                    Vertical::Points { points } => points.iter().any(|point| segment_ids_set.contains(point)),
+                    Vertical::Line { line } => segment_ids_set.contains(line),
+                    Vertical::Points { points } => points.iter().any(|point| match point {
+                        ConstraintSegment::Segment(point) => segment_ids_set.contains(point),
+                        ConstraintSegment::Origin(_) => false,
+                    }),
                 },
                 Constraint::LinesEqualLength(lines_equal_length) => lines_equal_length
                     .lines
@@ -8235,7 +8252,7 @@ sketch(on = XY) {
         let sketch = expect_sketch(sketch_object);
         let line1_id = *sketch.segments.get(2).unwrap();
 
-        let constraint = Constraint::Horizontal(Horizontal::Line { line_id: line1_id });
+        let constraint = Constraint::Horizontal(Horizontal::Line { line: line1_id });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -8282,7 +8299,7 @@ sketch(on = XY) {
         let sketch = expect_sketch(sketch_object);
         let line1_id = *sketch.segments.get(2).unwrap();
 
-        let constraint = Constraint::Vertical(Vertical::Line { line_id: line1_id });
+        let constraint = Constraint::Vertical(Vertical::Line { line: line1_id });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -8333,7 +8350,9 @@ sketch001 = sketch(on = XY) {
             sketch.segments.get(1).unwrap().to_owned(),
         ];
 
-        let constraint = Constraint::Vertical(Vertical::Points { points: point_ids });
+        let constraint = Constraint::Vertical(Vertical::Points {
+            points: point_ids.into_iter().map(ConstraintSegment::from).collect(),
+        });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -8385,7 +8404,9 @@ sketch001 = sketch(on = XY) {
             sketch.segments.get(1).unwrap().to_owned(),
         ];
 
-        let constraint = Constraint::Horizontal(Horizontal::Points { points: point_ids });
+        let constraint = Constraint::Horizontal(Horizontal::Points {
+            points: point_ids.into_iter().map(ConstraintSegment::from).collect(),
+        });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -8403,6 +8424,55 @@ sketch001 = sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_horizontal_with_origin() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  p0 = point(at = [var -2.23mm, var 3.1mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.get(0).unwrap();
+
+        let constraint = Constraint::Horizontal(Horizontal::Points {
+            points: vec![ConstraintSegment::from(point_id), ConstraintSegment::ORIGIN],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch001 = sketch(on = XY) {
+  p0 = point(at = [var -2.23mm, var 3.1mm])
+  horizontal([p0, ORIGIN])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
             "{:#?}",
             scene_delta.new_graph.objects
         );

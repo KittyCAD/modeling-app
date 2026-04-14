@@ -11,6 +11,7 @@ use crate::frontend::api::Object;
 use crate::frontend::api::ObjectId;
 use crate::frontend::api::ObjectKind;
 use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
@@ -402,30 +403,42 @@ fn rewrite_constraint_with_map(
             }))
         }
         Constraint::Horizontal(horizontal) => match horizontal {
-            crate::front::Horizontal::Line { line_id: line } => {
+            crate::front::Horizontal::Line { line } => {
                 Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal::Line {
-                    line_id: rewrite_object_id(*line, rewrite_map),
+                    line: rewrite_object_id(*line, rewrite_map),
                 }))
             }
             crate::front::Horizontal::Points { points } => Some(Constraint::Horizontal(Horizontal::Points {
                 points: points
                     .iter()
-                    .copied()
-                    .map(|point| rewrite_object_id(point, rewrite_map))
+                    .map(|point| match point {
+                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
+                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        }
+                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
+                        }
+                    })
                     .collect(),
             })),
         },
         Constraint::Vertical(vertical) => match vertical {
-            crate::front::Vertical::Line { line_id: line } => {
+            crate::front::Vertical::Line { line } => {
                 Some(Constraint::Vertical(crate::frontend::sketch::Vertical::Line {
-                    line_id: rewrite_object_id(*line, rewrite_map),
+                    line: rewrite_object_id(*line, rewrite_map),
                 }))
             }
             crate::front::Vertical::Points { points } => Some(Constraint::Vertical(Vertical::Points {
                 points: points
                     .iter()
-                    .copied()
-                    .map(|point| rewrite_object_id(point, rewrite_map))
+                    .map(|point| match point {
+                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
+                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        }
+                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
+                        }
+                    })
                     .collect(),
             })),
         },
@@ -435,8 +448,8 @@ fn rewrite_constraint_with_map(
 
 fn point_axis_constraint_references_point(constraint: &Constraint, point_id: ObjectId) -> bool {
     match constraint {
-        Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&point_id),
-        Constraint::Vertical(Vertical::Points { points }) => points.contains(&point_id),
+        Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
+        Constraint::Vertical(Vertical::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
         _ => false,
     }
 }
@@ -5166,13 +5179,15 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
-                        Constraint::Horizontal(Horizontal::Line { line_id: line }) => line == segment_id,
+                        Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
                         Constraint::Horizontal(Horizontal::Points { points }) => {
-                            original_segment_end_point_id.is_some_and(|end_id| points.contains(&end_id))
+                            original_segment_end_point_id
+                                .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id)))
                         }
-                        Constraint::Vertical(Vertical::Line { line_id: line }) => line == segment_id,
+                        Constraint::Vertical(Vertical::Line { line }) => line == segment_id,
                         Constraint::Vertical(Vertical::Points { points }) => {
-                            original_segment_end_point_id.is_some_and(|end_id| points.contains(&end_id))
+                            original_segment_end_point_id
+                                .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id)))
                         }
                         _ => false,
                     };

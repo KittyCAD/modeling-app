@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -188,40 +189,57 @@ async function addAxisDistanceConstraint(
   sendToolbarConstraintOutcome(self, result)
 }
 
-async function addLineOrientationConstraint(
+function getAxisConstraintInputs(
+  context: SketchSolveContext,
+  type: 'Horizontal' | 'Vertical'
+): ApiConstraint[] {
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  const selections = context.selectedIds
+    .map((id) => (id === ORIGIN_TARGET ? ORIGIN_TARGET : objects?.[id]))
+    .filter(Boolean)
+
+  if (
+    context.selectedIds.length > 1 &&
+    selections.every((selection) => isPointSelectionOrOrigin(selection))
+  ) {
+    return [
+      {
+        type,
+        points: context.selectedIds.map(
+          (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+        ),
+      } as unknown as ApiConstraint,
+    ]
+  }
+
+  return getObjectSelectionIds(context.selectedIds)
+    .filter((id) => isLineSegment(objects?.[id]))
+    .map(
+      (line): ApiConstraint =>
+        ({
+          type,
+          line,
+        }) as unknown as ApiConstraint
+    )
+}
+
+async function addAxisConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
   type: 'Horizontal' | 'Vertical'
 ) {
   let result
-  for (const id of getObjectSelectionIds(context.selectedIds)) {
+  for (const constraint of getAxisConstraintInputs(context, type)) {
     // TODO this is not how these constraints should operate long term, as they should be equipable tools
     result = await context.rustContext.addConstraint(
       0,
       context.sketchId,
-      {
-        type,
-        line: id,
-      },
+      constraint,
       jsAppSettings(context.kclManager.systemDeps.settings),
       true
     )
   }
   sendToolbarConstraintOutcome(self, result)
-}
-
-async function addHorizontalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Horizontal')
-}
-
-async function addVerticalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Vertical')
 }
 
 async function addFixedConstraint(
@@ -765,24 +783,7 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a vertical constraint',
           async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'horizontal', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addVerticalConstraint(context, self)
-            }
+            await addAxisConstraint(context, self, 'Vertical')
           }
         )
       },
@@ -792,24 +793,7 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a horizontal constraint',
           async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'vertical', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addHorizontalConstraint(context, self)
-            }
+            await addAxisConstraint(context, self, 'Horizontal')
           }
         )
       },
