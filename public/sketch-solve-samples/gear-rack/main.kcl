@@ -32,7 +32,7 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.line1])
 rackBody = extrude(region001, length = width)
-hide(sketch001.meta.sketch)
+hide(sketch001)
 
 // Offset repeated top features to avoid engine collisions when multiple solids share the same base plane.
 topFeaturePlane = offsetPlane(XY, offset = width)
@@ -83,7 +83,7 @@ toothProfile = sketch(on = topFeaturePlane) {
 }
 toothRegion = region(segments = [toothProfile.line1])
 singleTooth = extrude(toothRegion, length = -width)
-hide(toothProfile.meta.sketch)
+hide(toothProfile)
 
 // Pattern the single tooth over the length of the rack body
 teeth = singleTooth
