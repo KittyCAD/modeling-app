@@ -249,6 +249,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solver-horizontal-0",
     "std-solver-horizontal-1",
     "std-solver-horizontal-2",
+    "std-solver-horizontal-3",
     "std-solver-vertical-0",
     "std-solver-vertical-1",
     "std-solver-vertical-2",
