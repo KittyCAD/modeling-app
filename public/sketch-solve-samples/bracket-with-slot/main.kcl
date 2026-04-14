@@ -10,301 +10,99 @@ halfBracketWidth = 20
 fastenerHoleDiameter = 12
 countersinkOuterDiameter = 22
 
-uprightHoleCenterZ = 50
-slotRightCenterX = 150
+uprightTabHoleCenterOffsetFromBend = 50
+slotCenterOffsetFromBend = 150
 
 sheetMetalThickness = 4
 insideBendRadius = 8
 outsideBendRadius = insideBendRadius + sheetMetalThickness
-bracketWidth = halfBracketWidth * 2
-
-roundedEndRadius = halfBracketWidth
-roundedEndCenterX = slotRightCenterX
-roundedEndCenterYOffset = 0.1
-horizontalPlateStartX = outsideBendRadius
-horizontalStraightLength = roundedEndCenterX - horizontalPlateStartX
-
-verticalPlateBaseZ = outsideBendRadius
-verticalShoulderHeight = uprightHoleCenterZ - verticalPlateBaseZ
-
-bendCenterX = outsideBendRadius
-bendCenterZ = outsideBendRadius
-bendMidRadius = insideBendRadius + sheetMetalThickness / 2
-
-slotRadius = fastenerHoleDiameter / 2
-slotCenterSpacing = fastenerHoleDiameter * 3
-slotLeftCenterX = slotRightCenterX - slotCenterSpacing
-featureOverlap = 1
+overallBracketWidth = halfBracketWidth * 2
 
 // outline profile
-horizontalProfile = sketch(on = XY) {
-  bottomLeftAnchor = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm], construction = true)
-  bottomLeftDrop = line(start = [var 12mm, var 0mm], end = [var 12mm, var -20mm], construction = true)
-  roundedEndCenterGuide = line(start = [var 0mm, var 0mm], end = [var 150mm, var 0mm], construction = true)
-
-  outerBottom = line(start = [var 150mm, var -20mm], end = [var 12mm, var -20mm])
-  outerLeft = line(start = [var 12mm, var -20mm], end = [var 12mm, var 20mm])
-  outerTop = line(start = [var 12mm, var 20mm], end = [var 150mm, var 20mm])
-  roundedEnd = arc(start = [var 150mm, var -20mm], end = [var 150mm, var 20mm], center = [var 150mm, var 0.1mm])
-
-  coincident([bottomLeftAnchor.start, ORIGIN])
-  coincident([
-    bottomLeftAnchor.end,
-    bottomLeftDrop.start
-  ])
-  coincident([bottomLeftDrop.end, outerLeft.start])
-  coincident([roundedEndCenterGuide.start, ORIGIN])
-  coincident([
-    roundedEndCenterGuide.end,
-    roundedEnd.center
-  ])
-  coincident([outerBottom.end, outerLeft.start])
-  coincident([outerLeft.end, outerTop.start])
-  coincident([outerTop.end, roundedEnd.end])
-  coincident([roundedEnd.start, outerBottom.start])
-
-  horizontal(bottomLeftAnchor)
-  vertical(bottomLeftDrop)
-  horizontal(roundedEndCenterGuide)
-  horizontal(outerBottom)
-  vertical(outerLeft)
-  horizontal(outerTop)
-  tangent([outerBottom, roundedEnd])
-  tangent([roundedEnd, outerTop])
-
-  distance([
-  bottomLeftAnchor.start,
-  bottomLeftAnchor.end
-]) == horizontalPlateStartX
-  distance([
-  bottomLeftDrop.start,
-  bottomLeftDrop.end
-]) == halfBracketWidth
-  distance([
-  roundedEndCenterGuide.start,
-  roundedEndCenterGuide.end
-]) == roundedEndCenterX
-  distance([outerBottom.start, outerBottom.end]) == horizontalStraightLength
-  distance([outerLeft.start, outerLeft.end]) == bracketWidth
-  equalLength([outerBottom, outerTop])
-  radius(roundedEnd) == roundedEndRadius
+outlineSketch = startSketchOn(XZ)
+outlineProfile = sketch(on = outlineSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 70mm])
+  line2 = line(start = [var 0mm, var 70mm], end = [var 4mm, var 70mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4mm, var 70mm], end = [var 4mm, var 4mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4mm, var 4mm], end = [var 170mm, var 4mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 170mm, var 4mm], end = [var 170mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 170mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line5.end, line6.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
 }
 
+region001 = region(segments = [
+  outlineProfile.line1,
+  outlineProfile.line2
+])
 // extrude body
-horizontalRegion = region(segments = [horizontalProfile.outerBottom])
-horizontalPlateBase = extrude(horizontalRegion, length = sheetMetalThickness)
-hide(horizontalProfile)
+bracketBodySolid = extrude(
+  region001,
+  length = overallBracketWidth,
+  symmetric = true,
+  tagEnd = $capEnd,
+  tagStart = $capStart,
+)
 
-// slot sketch
-slotProfile = sketch(on = offsetPlane(XY, offset = -featureOverlap)) {
-  leftCenterAnchor = line(start = [var 0mm, var 0mm], end = [var 114mm, var 0mm], construction = true)
-  slotAxis = line(start = [var 114mm, var 0mm], end = [var 150mm, var 0mm], construction = true)
-  leftTopRadius = line(start = [var 114mm, var 0mm], end = [var 114mm, var 6mm], construction = true)
-  rightTopRadius = line(start = [var 150mm, var 0mm], end = [var 150mm, var 6mm], construction = true)
-  leftCapDiameter = line(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], construction = true)
-  rightCapDiameter = line(start = [var 150mm, var 6mm], end = [var 150mm, var -6mm], construction = true)
+// bend fillets
+insideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg01, seg02]), radius = insideBendRadius)
+outsideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg03, seg04]), radius = outsideBendRadius)
 
-  bottomEdge = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
-  leftCap = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
-  topEdge = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
-  rightCap = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var 0mm])
-
-  coincident([leftCenterAnchor.start, ORIGIN])
-  coincident([leftCenterAnchor.end, slotAxis.start])
-  coincident([slotAxis.start, leftCap.center])
-  coincident([slotAxis.end, rightCap.center])
-  coincident([leftTopRadius.start, leftCap.center])
-  coincident([leftTopRadius.end, leftCap.start])
-  coincident([rightTopRadius.start, rightCap.center])
-  coincident([rightTopRadius.end, rightCap.end])
-  coincident([leftCapDiameter.start, leftCap.start])
-  coincident([leftCapDiameter.end, leftCap.end])
-  coincident([rightCapDiameter.start, rightCap.end])
-  coincident([rightCapDiameter.end, rightCap.start])
-  coincident([bottomEdge.end, leftCap.end])
-  coincident([leftCap.start, topEdge.start])
-  coincident([topEdge.end, rightCap.end])
-  coincident([rightCap.start, bottomEdge.start])
-
-  horizontal(leftCenterAnchor)
-  horizontal(slotAxis)
-  vertical(leftTopRadius)
-  vertical(rightTopRadius)
-  vertical(leftCapDiameter)
-  vertical(rightCapDiameter)
-  horizontal(bottomEdge)
-  horizontal(topEdge)
-  tangent([bottomEdge, leftCap])
-  tangent([leftCap, topEdge])
-  tangent([topEdge, rightCap])
-  tangent([rightCap, bottomEdge])
-
-  distance([
-  leftCenterAnchor.start,
-  leftCenterAnchor.end
-]) == slotLeftCenterX
-  distance([slotAxis.start, slotAxis.end]) == slotCenterSpacing
-  distance([leftTopRadius.start, leftTopRadius.end]) == slotRadius
-  equalLength([leftTopRadius, rightTopRadius])
-  distance([
-  leftCapDiameter.start,
-  leftCapDiameter.end
-]) == fastenerHoleDiameter
-  equalLength([leftCapDiameter, rightCapDiameter])
-  equalLength([bottomEdge, topEdge])
-  radius(leftCap) == slotRadius
-  radius(rightCap) == slotRadius
-}
-
-// slot cut
-slotRegion = region(segments = [slotProfile.bottomEdge])
-slotCut = extrude(slotRegion, length = sheetMetalThickness + 2 * featureOverlap)
-hide(slotProfile)
-
-// boolean cut
-horizontalPlate = subtract(horizontalPlateBase, tools = [slotCut])
-
-verticalProfile = sketch(on = YZ) {
-  baseCenterRise = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm], construction = true)
-  leftBaseGuide = line(start = [var 0mm, var 12mm], end = [var -20mm, var 12mm], construction = true)
-  topCenterRise = line(start = [var 0mm, var 0mm], end = [var 0mm, var 50mm], construction = true)
-
-  baseEdge = line(start = [var 20mm, var 12mm], end = [var -20mm, var 12mm])
-  leftEdge = line(start = [var -20mm, var 12mm], end = [var -20mm, var 50mm])
-  topArc = arc(start = [var 20mm, var 50mm], end = [var -20mm, var 50mm], center = [var 0mm, var 50mm])
-  rightEdge = line(start = [var 20mm, var 50mm], end = [var 20mm, var 12mm])
-
-  coincident([baseCenterRise.start, ORIGIN])
-  coincident([
-    baseCenterRise.end,
-    leftBaseGuide.start
-  ])
-  coincident([topCenterRise.start, ORIGIN])
-  coincident([topCenterRise.end, topArc.center])
-  coincident([leftBaseGuide.end, baseEdge.end])
-  coincident([baseEdge.end, leftEdge.start])
-  coincident([leftEdge.end, topArc.end])
-  coincident([topArc.start, rightEdge.start])
-  coincident([rightEdge.end, baseEdge.start])
-
-  vertical(baseCenterRise)
-  horizontal(leftBaseGuide)
-  vertical(topCenterRise)
-  horizontal(baseEdge)
-  vertical(leftEdge)
-  vertical(rightEdge)
-  tangent([leftEdge, topArc])
-  tangent([topArc, rightEdge])
-
-  distance([
-  baseCenterRise.start,
-  baseCenterRise.end
-]) == verticalPlateBaseZ
-  distance([leftBaseGuide.start, leftBaseGuide.end]) == halfBracketWidth
-  distance([topCenterRise.start, topCenterRise.end]) == uprightHoleCenterZ
-  distance([baseEdge.start, baseEdge.end]) == bracketWidth
-  distance([leftEdge.start, leftEdge.end]) == verticalShoulderHeight
-  equalLength([leftEdge, rightEdge])
-  radius(topArc) == roundedEndRadius
-}
-
-verticalRegion = region(segments = [verticalProfile.baseEdge])
-verticalPlateBase = extrude(verticalRegion, length = sheetMetalThickness, tagEnd = $uprightOuterFace)
-hide(verticalProfile)
+// end rounds
+freeEndCornerFillets = fillet(
+  bracketBodySolid,
+  tags = [
+    getCommonEdge(faces = [seg05, capEnd]),
+    getCommonEdge(faces = [seg05, capStart]),
+    getCommonEdge(faces = [seg06, capEnd]),
+    getCommonEdge(faces = [seg06, capStart])
+  ],
+  radius = halfBracketWidth,
+)
 
 // tab hole
-verticalPlate = hole::hole(
-  verticalPlateBase,
-  face = uprightOuterFace,
-  cutAt = [uprightHoleCenterZ, 0mm],
+bracketWithCountersunkHole = hole::hole(
+  bracketBodySolid,
+  face = seg02,
+  cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
   holeType = hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
 )
 
-bendPath = sketch(on = XZ) {
-  centerGuideX = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm], construction = true)
-  centerGuideZ = line(start = [var 12mm, var 0mm], end = [var 12mm, var 12mm], construction = true)
-  startRadiusGuide = line(start = [var 12mm, var 12mm], end = [var 2mm, var 12mm], construction = true)
-  endRadiusGuide = line(start = [var 12mm, var 12mm], end = [var 12mm, var 2mm], construction = true)
-  arc1 = arc(start = [var 2mm, var 12mm], end = [var 12mm, var 2mm], center = [var 12mm, var 12mm])
-
-  coincident([centerGuideX.start, ORIGIN])
-  coincident([centerGuideX.end, centerGuideZ.start])
-  coincident([
-    centerGuideZ.end,
-    startRadiusGuide.start
-  ])
-  coincident([
-    startRadiusGuide.start,
-    endRadiusGuide.start
-  ])
-  coincident([startRadiusGuide.start, arc1.center])
-  coincident([startRadiusGuide.end, arc1.start])
-  coincident([endRadiusGuide.end, arc1.end])
-
-  horizontal(centerGuideX)
-  vertical(centerGuideZ)
-  horizontal(startRadiusGuide)
-  vertical(endRadiusGuide)
-
-  distance([centerGuideX.start, centerGuideX.end]) == bendCenterX
-  distance([centerGuideZ.start, centerGuideZ.end]) == bendCenterZ
-  distance([
-  startRadiusGuide.start,
-  startRadiusGuide.end
-]) == bendMidRadius
-  equalLength([startRadiusGuide, endRadiusGuide])
+// slot sketch
+slotWidth = fastenerHoleDiameter
+slotOverallLength = fastenerHoleDiameter * 3
+slotSketch = startSketchOn(XY)
+slotProfile = sketch(on = slotSketch) {
+  line1 = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
+  arc2 = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var 0mm])
+  coincident([line3.end, arc4.end])
+  horizontal(line1)
 }
 
-bendProfile = sketch(on = offsetPlane(XY, offset = bendCenterZ)) {
-  bottomOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var -20mm], construction = true)
+region002 = region(segments = [slotProfile.line1, slotProfile.arc2])
+// slot cut
+slotCutSolid = extrude(region002, length = sheetMetalThickness)
 
-  innerBottom = line(start = [var 0mm, var -20mm], end = [var 4mm, var -20mm])
-  outerEdge = line(start = [var 4mm, var -20mm], end = [var 4mm, var 20mm])
-  innerTop = line(start = [var 4mm, var 20mm], end = [var 0mm, var 20mm])
-  innerEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var -20mm])
-
-  coincident([bottomOffsetGuide.start, ORIGIN])
-  coincident([
-    bottomOffsetGuide.end,
-    innerBottom.start
-  ])
-  coincident([innerBottom.end, outerEdge.start])
-  coincident([outerEdge.end, innerTop.start])
-  coincident([innerTop.end, innerEdge.start])
-  coincident([innerEdge.end, innerBottom.start])
-
-  vertical(bottomOffsetGuide)
-  horizontal(innerBottom)
-  vertical(outerEdge)
-  horizontal(innerTop)
-  vertical(innerEdge)
-
-  distance([
-  bottomOffsetGuide.start,
-  bottomOffsetGuide.end
-]) == halfBracketWidth
-  distance([innerBottom.start, innerBottom.end]) == sheetMetalThickness
-  distance([innerEdge.start, innerEdge.end]) == bracketWidth
-  equalLength([innerBottom, innerTop])
-}
-
-bendRegion = region(segments = [bendProfile.innerEdge])
-hide(bendProfile)
-
-bendFiller = sweep(bendRegion, path = bendPath.arc1)
-hide(bendPath)
-
-bracketFinished = [
-  horizontalPlate,
-  verticalPlate,
-  bendFiller
-]
+// boolean cut
+bracketFinished = subtract(bracketWithCountersunkHole, tools = slotCutSolid)
 
 // material appearance
 appearance(
-  bracketFinished,
+  [bracketFinished],
   color = "#c8ff00",
   roughness = 50,
   metalness = 0,
