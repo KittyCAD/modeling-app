@@ -3195,7 +3195,7 @@ async fn lines_at_angle(
 }
 
 pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segment(), exec_state)?;
+    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segments(), exec_state)?;
     let KclValue::Segment { value: segment } = line else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),
@@ -3264,7 +3264,7 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 }
 
 pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segment(), exec_state)?;
+    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segments(), exec_state)?;
     let KclValue::Segment { value: segment } = line else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),

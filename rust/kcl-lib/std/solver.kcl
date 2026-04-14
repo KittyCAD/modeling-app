@@ -434,7 +434,7 @@ export fn tangent(
 @(doc_category = "functions")
 export fixed = coincident
 
-/// Constrain a line to be horizontal.
+/// Constrain a line, or a list of points, to be horizontal.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -451,13 +451,22 @@ export fixed = coincident
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
+/// ```kcl
+/// profile = sketch(on = XY) {
+///   p0 = [var 0mm, var 0mm]
+///   p1 = [var 4mm, var 0mm]
+///   horizontal([p0, p1])
+/// }
+/// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn horizontal(
-  /// The line segment that should remain horizontal.
-  @input: Segment,
+  /// Either
+  /// - A single line segment that should remain horizontal.
+  /// - A list of points which should all be horizontal.
+  @input: [Segment],
 ) {}
 
-/// Constrain a line to be vertical.
+/// Constrain a line, or a list of points, to be vertical.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -474,8 +483,17 @@ export fn horizontal(
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
+/// ```kcl
+/// profile = sketch(on = XY) {
+///   p0 = [var 0mm, var 0mm]
+///   p1 = [var 4mm, var 0mm]
+///   vertical([p0, p1])
+/// }
+/// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn vertical(
-  /// The line segment that should remain vertical.
-  @input: Segment,
+  /// Either
+  /// - A single line segment that should remain vertical.
+  /// - A list of points which should all be vertical.
+  @input: [Segment],
 ) {}
