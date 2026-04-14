@@ -1,6 +1,6 @@
 // Global constants for the multi-axis robot
 
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 export axisJ4 = 25deg
 export axisJ3 = 60deg

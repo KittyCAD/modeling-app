@@ -2,7 +2,7 @@
 // Parametric model of a USB-C style connector shell, rear housing, and swept cable.
 // Categories: Electronics, Connector, Consumer Hardware
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Outer shell dimensions and wall settings
 shellLength = 6.8

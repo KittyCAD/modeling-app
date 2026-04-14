@@ -1,7 +1,7 @@
 // 90 Degree Pipe Elbow
 // Quarter-turn elbow with two bolted flanges on a 94 x 71 mm pipe section.
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 elbowBendAngleDegrees = 90
 elbowCenterlineBendRadius = 80

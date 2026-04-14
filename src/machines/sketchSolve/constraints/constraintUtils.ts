@@ -241,6 +241,37 @@ export function buildTangentConstraintInput(
   return null
 }
 
+type EqualLengthConstraintInput =
+  | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
+  | Extract<ApiConstraint, { type: 'EqualRadius' }>
+
+export function buildEqualLengthConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+): EqualLengthConstraintInput | null {
+  if (selectedIds.length < 2) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+
+  if (selectedObjects.every(isLineSegment)) {
+    return {
+      type: 'LinesEqualLength',
+      lines: selectedIds,
+    }
+  }
+
+  if (selectedObjects.every(isArcLikeSegment)) {
+    return {
+      type: 'EqualRadius',
+      input: selectedIds,
+    }
+  }
+
+  return null
+}
+
 export function buildFixedConstraintInput(
   selectedIds: number[],
   objects: ApiObject[]
@@ -436,6 +467,20 @@ export function getSelectedTangentConstraintInput(
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
   return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedEqualLengthConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildEqualLengthConstraintInput(
     getObjectSelectionIds(selectedIds),
     objects
   )

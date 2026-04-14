@@ -373,7 +373,6 @@ impl NodePath {
                 }
             }
             Expr::SketchVar(node) => {
-                // TODO: sketch-api: implement initial.
                 if node.contains_range(&range) {
                     path.push(Step::SketchVar);
                     return Some(path);

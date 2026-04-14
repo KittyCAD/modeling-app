@@ -1165,6 +1165,17 @@ pub async fn ensure_sketch_plane_in_engine(
         }
     }
 
+    // Regenerate the plane's UUID using the current module's IdGenerator so
+    // that each module gets its own engine entity. The prelude defines standard
+    // planes (XY, XZ, YZ) once with a single UUID; without this, every module
+    // that imports one of those planes would send the same UUID to the engine,
+    // causing a duplicate-ID error when execution caching keeps the scene alive
+    // across incremental runs. Modules execute concurrently, so they cannot
+    // generally share information.
+    let id = exec_state.next_uuid();
+    plane.id = id;
+    plane.artifact_id = id.into();
+
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
