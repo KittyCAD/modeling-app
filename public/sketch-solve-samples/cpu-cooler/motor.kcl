@@ -2,7 +2,7 @@
 // A small electric motor to power the fan
 
 // Set Units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import Parameters
 import * from "parameters.kcl"

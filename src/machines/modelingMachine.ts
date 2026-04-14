@@ -437,7 +437,7 @@ export type ModelingMachineEvent =
         | 'coincident'
         | 'Fixed'
         | 'Tangent'
-        | 'LinesEqualLength'
+        | 'EqualLength'
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
@@ -7006,7 +7006,7 @@ export const modelingMachine = setup({
             Perpendicular: {
               actions: ['forward event to sketch solve if active'],
             },
-            LinesEqualLength: {
+            EqualLength: {
               actions: ['forward event to sketch solve if active'],
             },
             Vertical: {

@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
 // Set units and enable experimental sketch constraints.
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define structural design inputs.
 allowableStress = 35000 // psi

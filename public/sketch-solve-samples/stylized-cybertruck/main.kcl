@@ -15,7 +15,7 @@
 // making it suitable for games, educational tools, or prototyping environments.
 // Set units and version
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Chassis dimensions
 chassisLength = 3.5 // total vehicle length
