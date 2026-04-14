@@ -1,13 +1,17 @@
 ---
 title: "solver"
 subtitle: "Module in std"
-excerpt: "Functions for sketch mode 2.0 (constraints version) "
+excerpt: "Functions for sketch-solve using constraints. This module's items are for use within sketch blocks. "
 layout: manual
 ---
 
-Functions for sketch mode 2.0 (constraints version) 
+Functions for sketch-solve using constraints. This module's items are for use within sketch blocks. 
 
+```kcl,inline triangle = sketch(on = XY) { line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm]) line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm]) coincident([line1.end, line2.start]) line3 = line(start = [var 0.92mm, var 4.67mm], end = [var -0.03mm, var -0.04mm]) coincident([line2.end, line3.start]) coincident([line1.start, line3.end]) horizontal(line1) equalLength([line2, line3]) } 
 
+triangleRegion = region(point = [0.5mm, 0.5mm], sketch = triangle) extrude(triangleRegion, length = 5) ``` 
+
+In the above example, the `sketch(on = XY) { ... }` is called the sketch block. Inside the curly braces, all the functions and constants in this module are in scope and available. 
 
 
 ## Functions and constants
