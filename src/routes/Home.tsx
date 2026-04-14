@@ -19,6 +19,7 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -354,6 +355,11 @@ const Home = () => {
                     allowance={billingContext.allowance}
                   />
                 </div>
+              </li>
+            )}
+            {settingsValues.modeling.useSketchSolveMode.current && (
+              <li className="contents">
+                <SketchSolveAnnouncement />
               </li>
             )}
             <li className="contents">
