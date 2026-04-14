@@ -1,19 +1,17 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { findUniqueName } from '@src/lang/create'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  PathToNode,
-  Program,
-  VariableDeclarator,
-} from '@src/lang/wasm'
-import { parse, resultIsOk } from '@src/lang/wasm'
+import {
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/create'
+import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 /**
  * Temporary legacy-compat helper for sketch solve.
@@ -31,78 +29,70 @@ export function sketchBlockOnExtrudedFace(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
-  let _node = { ...node }
+  let modifiedAst = structuredClone(node)
   const newSketchName = findUniqueName(
     node,
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
   )
 
-  const oldSketchDeclarator = getNodeFromPath<VariableDeclarator>(
-    _node,
-    sketchPathToNode,
-    wasmInstance,
-    'VariableDeclarator',
-    true
-  )
-  if (err(oldSketchDeclarator)) return oldSketchDeclarator
-  const oldSketchName = oldSketchDeclarator.node.id.name
-
-  const extrudeDeclarator = getNodeFromPath<VariableDeclarator>(
-    _node,
-    extrudePathToNode,
-    wasmInstance,
-    'VariableDeclarator'
-  )
-  if (err(extrudeDeclarator)) return extrudeDeclarator
-  const extrudeName = extrudeDeclarator.node.id?.name
-
-  const taggedSource = modifyAstWithTagsForSelection(
-    _node,
-    faceSelection,
+  const faceSelections: Selections = {
+    graphSelections: [faceSelection],
+    otherSelections: [],
+  }
+  const result = buildSolidsAndFacesExprs(
+    faceSelections,
     artifactGraph,
+    modifiedAst,
     wasmInstance
   )
-  if (err(taggedSource)) return taggedSource
-  _node = taggedSource.modifiedAst
-  const [tagExpr] = taggedSource.exprs
-  if (!tagExpr) {
-    return new Error('Failed to create a face tag for the selected face.')
-  }
-  if (tagExpr.type !== 'Name') {
+  if (err(result)) return result
+
+  const { solidsExpr, facesExpr } = result
+  if (!solidsExpr || !facesExpr) {
     return new Error(
-      'Expected selected legacy face to resolve to a direct tag reference.'
+      'Failed to resolve solid and face expressions for selected face.'
     )
   }
 
-  const sketchBlockCode = `${newSketchName} = sketch(on = faceOf(${
-    extrudeName ? extrudeName : oldSketchName
-  }, face = ${tagExpr.name.name})) {
-}`
-  const sketchBlockParse = parse(sketchBlockCode, wasmInstance)
-  if (err(sketchBlockParse)) return sketchBlockParse
-  if (!resultIsOk(sketchBlockParse)) {
-    return new Error('Failed to parse generated sketch block.')
-  }
+  modifiedAst = result.modifiedAst
 
-  const [newSketchBlock] = sketchBlockParse.program.body
-  if (!newSketchBlock) {
-    return new Error('Failed to generate a sketch block.')
-  }
+  const onExpr = createCallExpressionStdLibKw('faceOf', solidsExpr, [
+    createLabeledArg('face', facesExpr),
+  ])
+  const declaration = createVariableDeclaration(newSketchName, {
+    type: 'SketchBlock',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    arguments: [createLabeledArg('on', onExpr)],
+    body: {
+      type: 'Block',
+      start: 0,
+      end: 0,
+      moduleId: 0,
+      outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
+      items: [],
+    },
+  })
 
   const expressionIndex = Math.max(
     sketchPathToNode[1][0] as number,
     extrudePathToNode[1][0] as number,
     node.body.length - 1
   )
-  _node.body.splice(expressionIndex + 1, 0, newSketchBlock)
+  modifiedAst.body.splice(expressionIndex + 1, 0, declaration)
 
-  return {
-    modifiedAst: _node,
-    pathToNode: [
-      ['body', ''],
-      [expressionIndex + 1, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
-    ],
-  }
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [expressionIndex + 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', ''],
+  ]
+
+  return { modifiedAst, pathToNode }
 }
