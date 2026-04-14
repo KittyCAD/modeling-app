@@ -42,7 +42,7 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           name: wasm-bundle
-          workflow: build-and-store-wasm.yml
+          workflow: build-wasm.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
