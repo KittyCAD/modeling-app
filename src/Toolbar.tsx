@@ -5,6 +5,7 @@ import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -479,15 +480,9 @@ const Toolbar_ = memo(
               </p>
             </div>
           )}
-          {modelingMachineStateToToolbarModeName(props.state) ===
-            'sketching' && (
-            <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-              <p className="text-xs">
-                Classic sketch mode will soon be removed. New projects use a
-                constraints solver.
-              </p>
-            </div>
-          )}
+          {props.state.context.store.useSketchSolveMode?.current === true &&
+            modelingMachineStateToToolbarModeName(props.state) ===
+              'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
