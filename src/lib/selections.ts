@@ -10,7 +10,6 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
-import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
