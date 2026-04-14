@@ -60,12 +60,11 @@ baseFaceSketch = sketch(on = baseFacePlane) {
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
 }
-baseFaceRegion = region(point = [2.8, 2.0], sketch = baseFaceSketch)
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
 singleSide = extrude(
   baseFaceRegion,
   length = binLength - (cornerRadius * 2),
 )
-hide(baseFaceSketch.meta.sketch)
 
 sides = patternCircular3d(
   singleSide,
@@ -88,36 +87,9 @@ axis000 = {
   ]
 }
 
-cornerFaceSketch = sketch(on = baseFacePlane) {
-  line1 = line(
-    start = [binBaseLength + binTol, 0],
-    end = [binBaseLength + binTol, height],
-  )
-  line2 = line(
-    start = [binBaseLength + binTol, height],
-    end = [binTol, height],
-  )
-  coincident([line1.end, line2.start])
-  line3 = line(
-    start = [binTol, height],
-    end = [binTol + thirdStep, firstStep + secondStep],
-  )
-  coincident([line2.end, line3.start])
-  line4 = line(
-    start = [binTol + thirdStep, firstStep + secondStep],
-    end = [binTol + thirdStep, firstStep],
-  )
-  coincident([line3.end, line4.start])
-  line5 = line(
-    start = [binTol + thirdStep, firstStep],
-    end = [binBaseLength + binTol, 0],
-  )
-  coincident([line4.end, line5.start])
-  coincident([line5.end, line1.start])
-}
-cornerFaceRegion = region(point = [2.8, 2.0], sketch = cornerFaceSketch)
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
 singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
-hide(cornerFaceSketch.meta.sketch)
+hide(baseFaceSketch)
 
 corners = patternCircular3d(
   singleCorner,
@@ -166,9 +138,9 @@ singleBinFillSketch = sketch(on = XY) {
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
 }
-singleBinFillRegion = region(point = [21.0, 21.0], sketch = singleBinFillSketch)
+singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
 singleBinFill = extrude(singleBinFillRegion, length = height)
-hide(singleBinFillSketch.meta.sketch)
+hide(singleBinFillSketch)
 magPocketPlane = planeOf(singleBinFill, face = START)
 magPocketSketch = circle(
   magPocketPlane,
@@ -188,7 +160,7 @@ magPocketSketch = circle(
        rotateDuplicates = true,
      )
 magPocketCutters = extrude(magPocketSketch, length = -magDepth)
-hide(magPocketSketch.meta.sketch)
+hide(magPocketSketch)
 singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
 
 binSides = patternLinear3d(
@@ -268,13 +240,10 @@ binTopSketch = sketch(on = binTopPlane) {
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
 }
-binTopRegion = region(
-  point = [totalWidth / 2, totalLength / 2],
-  sketch = binTopSketch,
-)
+binTopRegion = region(segments = [binTopSketch.line1])
 binTop = extrude(binTopRegion, length = binHeight * countBinHeight)
   |> shell(faces = [END], thickness = binThk)
-hide(binTopSketch.meta.sketch)
+hide(binTopSketch)
 
 plane000 = {
   origin = [
@@ -328,12 +297,11 @@ lipLengthSketch = sketch(on = plane000) {
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
 }
-lipLengthRegion = region(point = [1.5, 2.0], sketch = lipLengthSketch)
+lipLengthRegion = region(segments = [lipLengthSketch.line1])
 lipSingleLength = extrude(
   lipLengthRegion,
   length = binLength * countBinWidth - (2 * cornerRadius) + 2 * binTol * countBinWidth,
 )
-hide(lipLengthSketch.meta.sketch)
 
 lipWidthSketch = sketch(on = plane001) {
   line1 = line(start = [0, 0], end = [0, 5.792893])
@@ -357,12 +325,12 @@ lipWidthSketch = sketch(on = plane001) {
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
 }
-lipWidthRegion = region(point = [1.5, 2.0], sketch = lipWidthSketch)
+lipWidthRegion = region(segments = [lipWidthSketch.line1])
 lipSingleWidth = extrude(
   lipWidthRegion,
   length = binLength * countBinLength - (2 * cornerRadius) + 2 * binTol * countBinLength,
 )
-hide(lipWidthSketch.meta.sketch)
+hide(lipWidthSketch)
 
 lipLengths = patternCircular3d(
   lipSingleLength,
@@ -395,31 +363,9 @@ axis001 = {
   origin = [cornerRadius, cornerRadius]
 }
 
-lipLengthCornerSketch = sketch(on = plane000) {
-  line1 = line(start = [0, 0], end = [0, 5.792893])
-  arc2 = arc(
-    start = [var 0mm, var 5.792893mm],
-    end = [var 0.853553mm, var 6.146446mm],
-    center = [var 0.5mm, var 5.792893mm],
-  )
-  coincident([line1.end, arc2.start])
-  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
-  coincident([arc2.end, line3.start])
-  line4 = line(start = [1.9, 5.1], end = [1.9, 3.3])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
-  coincident([line4.end, line5.start])
-  line6 = line(start = [2.6, 2.6], end = [2.6, 1.4])
-  coincident([line5.end, line6.start])
-  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
-  coincident([line6.end, line7.start])
-  line8 = line(start = [1.2, 0], end = [0, 0])
-  coincident([line7.end, line8.start])
-  coincident([line8.end, line1.start])
-}
-lipLengthCornerRegion = region(point = [1.5, 2.0], sketch = lipLengthCornerSketch)
+lipLengthCornerRegion = region(segments = [lipLengthSketch.line1])
 lipSingleLengthCorner = revolve(lipLengthCornerRegion, angle = -90deg, axis = axis001)
-hide(lipLengthCornerSketch.meta.sketch)
+hide(lipLengthSketch)
 
 lipWidthCornerSketch = sketch(on = plane002) {
   line1 = line(start = [0, 0], end = [0, 5.792893])
@@ -443,9 +389,9 @@ lipWidthCornerSketch = sketch(on = plane002) {
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
 }
-lipWidthCornerRegion = region(point = [1.5, 2.0], sketch = lipWidthCornerSketch)
+lipWidthCornerRegion = region(segments = [lipWidthCornerSketch.line1])
 lipSingleWidthCorner = revolve(lipWidthCornerRegion, angle = 90deg, axis = axis001)
-hide(lipWidthCornerSketch.meta.sketch)
+hide(lipWidthCornerSketch)
 
 lipCorners000 = patternCircular3d(
   lipSingleLengthCorner,
@@ -472,12 +418,3 @@ lipCorners001 = patternCircular3d(
   instances = 2,
   rotateDuplicates = true,
 )
-
-parts0 = concat(binSides, items = binCorners)
-parts1 = concat(parts0, items = binFill)
-parts2 = concat(parts1, items = [binTop])
-parts3 = concat(parts2, items = lipLengths)
-parts4 = concat(parts3, items = lipWidths)
-parts5 = concat(parts4, items = lipCorners000)
-parts6 = concat(parts5, items = lipCorners001)
-parts6

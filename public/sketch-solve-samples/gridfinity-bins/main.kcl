@@ -53,12 +53,11 @@ baseFaceSketch = sketch(on = baseFacePlane) {
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
 }
-baseFaceRegion = region(point = [2.8, 2.0], sketch = baseFaceSketch)
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
 singleSide = extrude(
   baseFaceRegion,
   length = binLength - (cornerRadius * 2),
 )
-hide(baseFaceSketch.meta.sketch)
 
 sides = patternCircular3d(
   singleSide,
@@ -81,36 +80,9 @@ axis000 = {
   ]
 }
 
-cornerFaceSketch = sketch(on = baseFacePlane) {
-  line1 = line(
-    start = [binBaseLength + binTol, 0],
-    end = [binBaseLength + binTol, height],
-  )
-  line2 = line(
-    start = [binBaseLength + binTol, height],
-    end = [binTol, height],
-  )
-  coincident([line1.end, line2.start])
-  line3 = line(
-    start = [binTol, height],
-    end = [binTol + thirdStep, firstStep + secondStep],
-  )
-  coincident([line2.end, line3.start])
-  line4 = line(
-    start = [binTol + thirdStep, firstStep + secondStep],
-    end = [binTol + thirdStep, firstStep],
-  )
-  coincident([line3.end, line4.start])
-  line5 = line(
-    start = [binTol + thirdStep, firstStep],
-    end = [binBaseLength + binTol, 0],
-  )
-  coincident([line4.end, line5.start])
-  coincident([line5.end, line1.start])
-}
-cornerFaceRegion = region(point = [2.8, 2.0], sketch = cornerFaceSketch)
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
 singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
-hide(cornerFaceSketch.meta.sketch)
+hide(baseFaceSketch)
 
 corners = patternCircular3d(
   singleCorner,
@@ -159,9 +131,9 @@ singleBinFillSketch = sketch(on = XY) {
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
 }
-singleBinFillRegion = region(point = [21.0, 21.0], sketch = singleBinFillSketch)
+singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
 singleBinFill = extrude(singleBinFillRegion, length = height)
-hide(singleBinFillSketch.meta.sketch)
+hide(singleBinFillSketch)
 magPocketPlane = planeOf(singleBinFill, face = START)
 magPocketSketch = circle(
   magPocketPlane,
@@ -181,7 +153,7 @@ magPocketSketch = circle(
        rotateDuplicates = true,
      )
 magPocketCutters = extrude(magPocketSketch, length = -magDepth)
-hide(magPocketSketch.meta.sketch)
+hide(magPocketSketch)
 singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
 
 binSides = patternLinear3d(
@@ -261,15 +233,7 @@ binTopSketch = sketch(on = binTopPlane) {
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
 }
-binTopRegion = region(
-  point = [totalWidth / 2, totalLength / 2],
-  sketch = binTopSketch,
-)
+binTopRegion = region(segments = [binTopSketch.line1])
 binTop = extrude(binTopRegion, length = binHeight * countBinHeight)
   |> shell(faces = [END], thickness = binThk)
-hide(binTopSketch.meta.sketch)
-
-parts0 = concat(binSides, items = binCorners)
-parts1 = concat(parts0, items = binFill)
-parts2 = concat(parts1, items = [binTop])
-parts2
+hide(binTopSketch)
