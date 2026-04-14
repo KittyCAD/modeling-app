@@ -567,25 +567,15 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop()
-    ? [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-        switchEnvironmentsCommand,
-        overrideEngineCommand,
-        overrideZookeeperCommand,
-      ]
-    : [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-        switchEnvironmentsCommand,
-        overrideEngineCommand,
-        overrideZookeeperCommand,
-      ]
+  return [
+    addKCLFileToProject,
+    resetLayoutCommand,
+    setLayoutCommand,
+    createASampleDesktopOnly,
+    switchEnvironmentsCommand,
+    overrideEngineCommand,
+    overrideZookeeperCommand,
+  ]
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(
