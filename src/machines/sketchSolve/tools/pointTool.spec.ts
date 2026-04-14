@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor } from 'xstate'
 
 import type { SourceDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type RustContext from '@src/lib/rustContext'
 import { machine } from '@src/machines/sketchSolve/tools/pointTool'
 import {
   createMockKclManager,
@@ -16,6 +17,9 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+
+type AddSegmentResult = Awaited<ReturnType<RustContext['addSegment']>>
+type AddConstraintResult = Awaited<ReturnType<RustContext['addConstraint']>>
 
 vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
   clearToolSnappingState: vi.fn(),
@@ -129,16 +133,20 @@ describe('pointTool', () => {
         y: candidate.position[1],
       })
 
-      vi.mocked(rustContext.addSegment).mockResolvedValue({
-        kclSource: { text: 'point' } as SourceDelta,
-        sceneGraphDelta: createSceneGraphDelta([point], [1]),
-        checkpointId: null,
-      } as Awaited<ReturnType<typeof rustContext.addSegment>>)
-      vi.mocked(rustContext.addConstraint).mockResolvedValue({
-        kclSource: { text: 'snap' } as SourceDelta,
-        sceneGraphDelta: createSceneGraphDelta([], [10]),
-        checkpointId: null,
-      } as Awaited<ReturnType<typeof rustContext.addConstraint>>)
+      const addSegmentSpy = vi
+        .spyOn(rustContext, 'addSegment')
+        .mockResolvedValue({
+          kclSource: { text: 'point' } as SourceDelta,
+          sceneGraphDelta: createSceneGraphDelta([point], [1]),
+          checkpointId: null,
+        } as AddSegmentResult)
+      const addConstraintSpy = vi
+        .spyOn(rustContext, 'addConstraint')
+        .mockResolvedValue({
+          kclSource: { text: 'snap' } as SourceDelta,
+          sceneGraphDelta: createSceneGraphDelta([], [10]),
+          checkpointId: null,
+        } as AddConstraintResult)
 
       const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
       callbacks?.onClick?.({
@@ -147,11 +155,11 @@ describe('pointTool', () => {
       })
 
       await vi.waitFor(() => {
-        expect(rustContext.addSegment).toHaveBeenCalledTimes(1)
-        expect(rustContext.addConstraint).toHaveBeenCalledTimes(1)
+        expect(addSegmentSpy).toHaveBeenCalledTimes(1)
+        expect(addConstraintSpy).toHaveBeenCalledTimes(1)
       })
 
-      expect(rustContext.addSegment).toHaveBeenCalledWith(
+      expect(addSegmentSpy).toHaveBeenCalledWith(
         0,
         7,
         {
@@ -164,7 +172,7 @@ describe('pointTool', () => {
         'point-tool-point',
         expect.anything()
       )
-      expect(rustContext.addConstraint).toHaveBeenCalledWith(
+      expect(addConstraintSpy).toHaveBeenCalledWith(
         0,
         7,
         expectedConstraint,
