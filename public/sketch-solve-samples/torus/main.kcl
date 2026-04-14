@@ -2,7 +2,7 @@
 // A torus is defined by its diameter and height.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 torusInnerDiameter = 20

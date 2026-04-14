@@ -2,7 +2,7 @@
 // Short offset shaft with small gear
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import gear and propeller
 import * from "helical.kcl"

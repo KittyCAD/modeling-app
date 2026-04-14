@@ -3,7 +3,7 @@
 // Categories: Medical
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 boltSize = 4.5

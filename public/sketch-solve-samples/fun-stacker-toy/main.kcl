@@ -2,7 +2,7 @@
 // the fun stacking toy from Zoo
 // for babies 6 months and older
 // made using zds
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 ringradius=1in
 numrings=5

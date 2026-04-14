@@ -3,7 +3,7 @@
 // Categories: Medical, Aerospace
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 tankHeight = 2.5ft
