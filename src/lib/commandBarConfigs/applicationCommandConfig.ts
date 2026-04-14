@@ -409,10 +409,6 @@ export function createApplicationCommands({
     icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       if (data) {
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
@@ -453,10 +449,6 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationKittycadWebSocketUrl(
@@ -501,10 +493,6 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationMlephantWebSocketUrl(
@@ -579,22 +567,15 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop()
-    ? [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-        switchEnvironmentsCommand,
-        overrideEngineCommand,
-        overrideZookeeperCommand,
-      ]
-    : [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-      ]
+  return [
+    addKCLFileToProject,
+    resetLayoutCommand,
+    setLayoutCommand,
+    createASampleDesktopOnly,
+    switchEnvironmentsCommand,
+    overrideEngineCommand,
+    overrideZookeeperCommand,
+  ]
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(
