@@ -10,6 +10,7 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getPlaneDataFromSketchBlock,
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
@@ -1491,6 +1492,75 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
+  })
+})
+
+describe('getPlaneDataFromSketchBlock', () => {
+  const defaultPlanes = {
+    xy: 'xy-plane-id',
+    xz: 'xz-plane-id',
+    yz: 'yz-plane-id',
+    negXy: 'neg-xy-plane-id',
+    negXz: 'neg-xz-plane-id',
+    negYz: 'neg-yz-plane-id',
+  }
+
+  const systemDeps = {
+    rustContext: { defaultPlanes },
+    sceneInfra: {
+      camControls: {
+        camera: {
+          position: {
+            clone: () => ({
+              sub: () => ({ x: 1, y: 1, z: 1 }),
+            }),
+          },
+        },
+        target: {},
+      },
+    },
+  } as any
+
+  test('resolves direct default plane expressions from sketch block AST', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = -YZ) {}`
+    const ast = assertParse(code, instance)
+    const sketchStart = code.indexOf('sketch(on = -YZ)')
+    const sketchBlock = {
+      type: 'sketchBlock',
+      id: 'sketch001-artifact',
+      planeId: 'generated-plane-id',
+      codeRef: {
+        range: [sketchStart, sketchStart + 'sketch(on = -YZ)'.length, 0],
+        nodePath: { steps: [] },
+        pathToNode: getNodePathFromSourceRange(ast, [
+          sketchStart,
+          sketchStart + 'sketch(on = -YZ)'.length,
+          0,
+        ]),
+      },
+      sketchId: 1,
+    } as Extract<Artifact, { type: 'sketchBlock' }>
+    const getFaceDetails = vi.fn()
+
+    await expect(
+      getPlaneDataFromSketchBlock(sketchBlock, new Map(), {
+        rustContext: { defaultPlanes },
+        sceneInfra: systemDeps.sceneInfra,
+        sceneEntitiesManager: { getFaceDetails },
+        ast,
+        execState: {} as any,
+        wasmInstance: instance,
+      } as any)
+    ).resolves.toEqual({
+      type: 'defaultPlane',
+      planeId: defaultPlanes.negYz,
+      plane: '-YZ',
+      zAxis: [-1, 0, 0],
+      yAxis: [0, 0, 1],
+    })
+    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })
 

@@ -11,6 +11,8 @@ import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -1223,6 +1225,128 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+
+function getDefaultPlaneDataFromExpr(
+  expr: Expr,
+  defaultPlanes: DefaultPlanes
+): DefaultPlane | null {
+  const getPlaneFromName = (
+    name: string,
+    negated: boolean
+  ): DefaultPlaneStr | null => {
+    const normalized = name.toUpperCase()
+    if (normalized !== 'XY' && normalized !== 'XZ' && normalized !== 'YZ') {
+      return null
+    }
+    return negated ? `-${normalized}` : normalized
+  }
+
+  let plane: DefaultPlaneStr | null = null
+  if (expr.type === 'Name' && expr.path.length === 0) {
+    plane = getPlaneFromName(expr.name.name, false)
+  } else if (
+    expr.type === 'UnaryExpression' &&
+    expr.operator === '-' &&
+    expr.argument.type === 'Name' &&
+    expr.argument.path.length === 0
+  ) {
+    plane = getPlaneFromName(expr.argument.name.name, true)
+  }
+
+  if (!plane) {
+    return null
+  }
+
+  switch (plane) {
+    case 'XY':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.xy,
+        zAxis: [0, 0, 1],
+        yAxis: [0, 1, 0],
+      }
+    case '-XY':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.negXy,
+        zAxis: [0, 0, -1],
+        yAxis: [0, 1, 0],
+      }
+    case 'YZ':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.yz,
+        zAxis: [1, 0, 0],
+        yAxis: [0, 0, 1],
+      }
+    case '-YZ':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.negYz,
+        zAxis: [-1, 0, 0],
+        yAxis: [0, 0, 1],
+      }
+    case 'XZ':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.xz,
+        zAxis: [0, -1, 0],
+        yAxis: [0, 0, 1],
+      }
+    case '-XZ':
+      return {
+        type: 'defaultPlane',
+        plane,
+        planeId: defaultPlanes.negXz,
+        zAxis: [0, 1, 0],
+        yAxis: [0, 0, 1],
+      }
+    default: {
+      const _exhaustiveCheck: never = plane
+      return _exhaustiveCheck
+    }
+  }
+}
+
+function getDefaultSketchPlaneDataFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  systemDeps: {
+    rustContext: RustContext
+    ast: Node<Program>
+    wasmInstance: ModuleType
+  }
+): DefaultPlane | null {
+  const defaultPlanes = systemDeps.rustContext.defaultPlanes
+  if (!defaultPlanes) {
+    return null
+  }
+
+  const sketchBlockNode = getNodeFromPath<SketchBlock>(
+    systemDeps.ast,
+    sketchBlock.codeRef.pathToNode,
+    systemDeps.wasmInstance,
+    'SketchBlock',
+    false,
+    true
+  )
+  if (err(sketchBlockNode) || sketchBlockNode.node.type !== 'SketchBlock') {
+    return null
+  }
+
+  const onArg = sketchBlockNode.node.arguments.find(
+    (arg) => arg.label?.name === 'on'
+  )
+  if (!onArg) {
+    return null
+  }
+
+  return getDefaultPlaneDataFromExpr(onArg.arg, defaultPlanes)
+}
 export async function getPlaneDataFromSketchBlock(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
   artifactGraph: ArtifactGraph,
@@ -1236,6 +1360,15 @@ export async function getPlaneDataFromSketchBlock(
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // Similar logic to selectSketchPlane but for a sketchBlock artifact.
+  const defaultPlaneFromAst = getDefaultSketchPlaneDataFromSketchBlock(
+    sketchBlock,
+    systemDeps
+  )
+  if (defaultPlaneFromAst) {
+    // To support negative default planes like -YZ
+    return defaultPlaneFromAst
+  }
+
   if (!sketchBlock.planeId) {
     return null
   }
