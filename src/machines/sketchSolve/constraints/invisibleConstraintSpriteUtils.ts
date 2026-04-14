@@ -27,6 +27,7 @@ export type InvisibleConstraint = Extract<
       | 'Horizontal'
       | 'Vertical'
       | 'LinesEqualLength'
+      | 'EqualRadius'
       | 'Parallel'
       | 'Perpendicular'
       | 'Tangent'
@@ -55,6 +56,7 @@ export function isInvisibleConstraintObject(
     case 'Horizontal':
     case 'Vertical':
     case 'LinesEqualLength':
+    case 'EqualRadius':
     case 'Parallel':
     case 'Perpendicular':
     case 'Tangent':
@@ -98,6 +100,12 @@ export function getInvisibleConstraintAnchor(
       return averageVectors(
         constraint.lines
           .map((lineId) => getLineAnchor(lineId, objects))
+          .filter(isVector3)
+      )
+    case 'EqualRadius':
+      return averageVectors(
+        constraint.input
+          .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
     case 'Parallel':
@@ -186,6 +194,7 @@ export function findSegmentsForInvisibleConstraint(
       case 'Parallel':
       case 'Perpendicular':
         return constraint.kind.constraint.lines
+      case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
     }
@@ -249,6 +258,11 @@ export function isConstrainingSegment(
       return (
         isLineSegment(segment) &&
         constraint.kind.constraint.lines.includes(segment.id)
+      )
+    case 'EqualRadius':
+      return (
+        isArcLikeSegment(segment) &&
+        constraint.kind.constraint.input.includes(segment.id)
       )
     case 'Tangent':
       return (

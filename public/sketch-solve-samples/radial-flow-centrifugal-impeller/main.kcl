@@ -2,7 +2,7 @@
 // Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
 // Categories: Automotive, Aerospace
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters
 bladeCount = 12 // number of blades

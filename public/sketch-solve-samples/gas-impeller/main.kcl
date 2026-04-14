@@ -3,7 +3,7 @@
 // Categories: Aerospace, Manufacturing
 
 // Project settings
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Key parameters
 impellerHeight = 60
