@@ -3253,21 +3253,8 @@ export const modelingMachine = setup({
             return reject(new Error('Incompatible face, please try another'))
           }
 
-          const reparsedLegacySketchBlock = parse(
-            recast(legacySketchBlock.modifiedAst, wasmInstance),
-            wasmInstance
-          )
-          if (err(reparsedLegacySketchBlock)) {
-            return reject(reparsedLegacySketchBlock)
-          }
-          if (!resultIsOk(reparsedLegacySketchBlock)) {
-            return reject(
-              new Error('Failed to reparse legacy sketch-on-face program.')
-            )
-          }
-
           await updateModelingState(
-            reparsedLegacySketchBlock.program,
+            legacySketchBlock.modifiedAst,
             EXECUTION_TYPE_REAL,
             kclManager,
             {
