@@ -13,6 +13,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  getSelectedEqualLengthConstraintInput,
   getSelectedFixedConstraintInput,
   getSelectedTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -1747,6 +1748,12 @@ export const useToolbarConfig = () => {
               }),
             icon: 'equal',
             status: 'available',
+            disabled: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null
+                ? 'Select two or more lines, or two or more arcs and circles, to add an equal constraint.'
+                : undefined,
             title: 'Equal',
             hotkey: 'E',
             description:

@@ -2,8 +2,6 @@
 // An example of an inner thread on a cylinder.
 // Categories: Fasteners
 
-@settings(experimentalFeatures = allow)
-
 outerCylinderRadius = 5
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])

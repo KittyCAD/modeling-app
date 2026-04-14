@@ -1,7 +1,7 @@
 // Hand Trolley Wheel
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Import parameters
 import * from "parameters.kcl"
