@@ -17,6 +17,9 @@ startSketchOn(
 ): Plane | Face
 ```
 
+This is part of sketch v1 and is soft deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
+
 ### Sketch on Face Behavior
 
 There are some important behaviors to understand when sketching on a face:
