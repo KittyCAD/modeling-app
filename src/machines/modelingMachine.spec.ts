@@ -1,6 +1,7 @@
 /** Engine-using integration tests of modelingMachine.
  * For engineless unit tests, see modelingMachine.test.ts */
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -17,6 +18,7 @@ import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import {
   removeSingleConstraint,
@@ -1548,6 +1550,8 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
           })),
         },
       })
@@ -1622,6 +1626,8 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
           })),
         },
       })
