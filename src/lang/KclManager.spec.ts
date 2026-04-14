@@ -190,7 +190,9 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    expect(writeToFileSpy).toHaveBeenCalledWith(currentCode)
+    expect(writeToFileSpy).toHaveBeenCalledWith(currentCode, undefined, {
+      suppressConflictToast: true,
+    })
   })
 
   it('does not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
