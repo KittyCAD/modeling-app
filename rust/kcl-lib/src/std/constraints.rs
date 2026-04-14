@@ -2930,6 +2930,14 @@ impl AxisConstraintKind {
         }
     }
 
+    /// Use this constraint to align a point to some known X or Y.
+    fn constraint_aligning_point_to_constant(self, p0: DatumPoint, fixed_point: (f64, f64)) -> SolverConstraint {
+        match self {
+            AxisConstraintKind::Horizontal => SolverConstraint::Fixed(p0.y_id, fixed_point.1),
+            AxisConstraintKind::Vertical => SolverConstraint::Fixed(p0.x_id, fixed_point.0),
+        }
+    }
+
     #[cfg(feature = "artifact-graph")]
     fn line_artifact_constraint(self, line: ObjectId) -> Constraint {
         match self {
@@ -2988,17 +2996,34 @@ fn extract_axis_line_vars(
     })
 }
 
-#[derive(Debug, Clone, Copy)]
-struct AxisPointVars {
-    x: SketchVarId,
-    y: SketchVarId,
+#[derive(Debug, Clone)]
+enum PointToAlign {
+    /// Variable point that could be constrained.
+    Variable { x: SketchVarId, y: SketchVarId },
+    /// Fixed millimeter constant.
+    Fixed { x: TyF64, y: TyF64 },
+}
+
+impl From<[SketchVarId; 2]> for PointToAlign {
+    fn from(sketch_var: [SketchVarId; 2]) -> Self {
+        Self::Variable {
+            x: sketch_var[0],
+            y: sketch_var[1],
+        }
+    }
+}
+
+impl From<[TyF64; 2]> for PointToAlign {
+    fn from([x, y]: [TyF64; 2]) -> Self {
+        Self::Fixed { x, y }
+    }
 }
 
 fn extract_axis_point_vars(
     input: &KclValue,
     kind: AxisConstraintKind,
     source_range: crate::SourceRange,
-) -> Result<AxisPointVars, KclError> {
+) -> Result<PointToAlign, KclError> {
     match input {
         KclValue::Segment { value: segment } => {
             let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
@@ -3029,7 +3054,7 @@ fn extract_axis_point_vars(
                     vec![source_range],
                 )));
             };
-            Ok(AxisPointVars { x: *x, y: *y })
+            Ok(PointToAlign::Variable { x: *x, y: *y })
         }
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let [x_value, y_value] = value.as_slice() else {
@@ -3059,16 +3084,28 @@ fn extract_axis_point_vars(
                     vec![source_range],
                 )));
             };
-            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (x_expr, y_expr) else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "The `{}` function point coordinates must be sketch vars in both x and y",
-                        kind.function_name()
-                    ),
-                    vec![source_range],
-                )));
-            };
-            Ok(AxisPointVars { x, y })
+            match (x_expr, y_expr) {
+                (UnsolvedExpr::Known(x), UnsolvedExpr::Known(y)) => Ok(PointToAlign::Fixed { x, y }),
+                (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(PointToAlign::Variable { x, y }),
+                (UnsolvedExpr::Known(..), UnsolvedExpr::Unknown(..)) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "The `{}` function cannot take a fixed X component and a variable Y component",
+                            kind.function_name()
+                        ),
+                        vec![source_range],
+                    )));
+                }
+                (UnsolvedExpr::Unknown(..), UnsolvedExpr::Known(..)) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "The `{}` function cannot take a fixed X component and a variable Y component",
+                            kind.function_name()
+                        ),
+                        vec![source_range],
+                    )));
+                }
+            }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
@@ -3160,38 +3197,74 @@ fn axis_constraint_points(
         )));
     }
 
-    let points: Vec<AxisPointVars> = point_values
-        .iter()
-        .map(|point| extract_axis_point_vars(point, kind, args.source_range))
-        .collect::<Result<_, _>>()?;
-
-    let range = args.source_range;
-    // For points 0, 1, 2, ..., n, create constraints
-    // vertical(0, 1)
-    // vertical(0, 2)
-    // ...
-    // vertical(0, n)
-    let mut points = points.into_iter();
-    let first_point = points.next().ok_or_else(|| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!("{}() point list must contain at least two points", kind.function_name()),
-            vec![args.source_range],
-        ))
-    })?;
-    let anchor = datum_point([first_point.x, first_point.y], range)?;
-    let mut solver_constraints = Vec::with_capacity(points.len().saturating_sub(1));
-    for point in points {
-        let solver_point = datum_point([point.x, point.y], range)?;
-        solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
-    }
-
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("{}() can only be used inside a sketch block", kind.function_name()),
             vec![args.source_range],
         )));
     };
+
+    let points: Vec<PointToAlign> = point_values
+        .iter()
+        .map(|point| extract_axis_point_vars(point, kind, args.source_range))
+        .collect::<Result<_, _>>()?;
+
+    let mut solver_constraints = Vec::with_capacity(points.len().saturating_sub(1));
+
+    let mut var_points = Vec::new();
+    let mut fix_points = Vec::new();
+    for point in points {
+        match point {
+            PointToAlign::Variable { x, y } => var_points.push((x, y)),
+            PointToAlign::Fixed { x, y } => fix_points.push((x, y)),
+        }
+    }
+    if fix_points.len() > 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{}() point list can contain at most 1 fixed point, but you provided {}",
+                kind.function_name(),
+                fix_points.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+
+    if let Some(fix_point) = fix_points.pop() {
+        // We have to align all the variable points with this singular fixed point.
+        // For points 0, 1, 2, ..., n, create constraints
+        // fixed(0.x, fix.x)
+        // fixed(1.x, fix.x)
+        // ...
+        // fixed(n.x, fix.x)
+        // (or y, whatever is appropriate)
+        for point in var_points {
+            let solver_point = datum_point([point.0.into(), point.1.into()], args.source_range)?;
+            let fix_point_mm = (fix_point.0.to_mm(), fix_point.1.to_mm());
+            solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point_mm));
+        }
+    } else {
+        // For points 0, 1, 2, ..., n, create constraints
+        // vertical(0, 1)
+        // vertical(0, 2)
+        // ...
+        // vertical(0, n)
+        // (or horizontal, if appropriate)
+        let mut points = var_points.into_iter();
+        let first_point = points.next().ok_or_else(|| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!("{}() point list must contain at least two points", kind.function_name()),
+                vec![args.source_range],
+            ))
+        })?;
+        let anchor = datum_point([first_point.0.into(), first_point.1.into()], args.source_range)?;
+        for point in points {
+            let solver_point = datum_point([point.0.into(), point.1.into()], args.source_range)?;
+            solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
+        }
+    }
     sketch_state.solver_constraints.extend(solver_constraints);
+
     Ok(KclValue::none())
 }
 
