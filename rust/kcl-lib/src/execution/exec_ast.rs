@@ -1263,12 +1263,18 @@ impl Node<SketchBlock> {
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
+            use crate::front::Plane;
             use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+
+            let standard_plane = match &sketch_ctor_on {
+                Plane::Default(plane) => Some(*plane),
+                Plane::Object(_) => None,
+            };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             // Create the sketch scene object and replace its placeholder.
@@ -1290,6 +1296,7 @@ impl Node<SketchBlock> {
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
+                standard_plane,
                 plane_id: plane_artifact_id,
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
