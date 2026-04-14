@@ -1537,6 +1537,7 @@ describe('createOnDragCallback', () => {
     expect(onNewSketchOutcome).toHaveBeenCalledWith({
       ...result,
       writeToDisk: false,
+      suppressExecOutcomeIssues: true,
     })
   })
 

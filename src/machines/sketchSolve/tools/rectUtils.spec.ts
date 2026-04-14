@@ -11,6 +11,7 @@ import {
   getAngledRectangleCorners,
   updateDraftRectangleAligned,
 } from '@src/machines/sketchSolve/tools/rectUtils'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import {
   createLineApiObject,
   createMockKclManager,
@@ -308,6 +309,72 @@ describe('rectUtils.createDraftRectangle', () => {
     })
     expect(result.draft.originPointId).toBe(11)
     expect(result.draft.constraintIds.at(-1)).toBe(308)
+  })
+
+  it('seeds corner rectangles at the clicked origin with a non-degenerate draft size', async () => {
+    const rustContext = createMockRustContext()
+    const kclManager = createMockKclManager()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const addSegmentMock = vi.mocked(rustContext.addSegment)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const addConstraintMock = vi.mocked(rustContext.addConstraint)
+
+    addSegmentMock
+      .mockResolvedValueOnce({
+        kclSource: { text: 'line-1' } as SourceDelta,
+        sceneGraphDelta: createLineSceneGraphDelta(1, 11, 12),
+      })
+      .mockResolvedValueOnce({
+        kclSource: { text: 'line-2' } as SourceDelta,
+        sceneGraphDelta: createLineSceneGraphDelta(2, 13, 14),
+      })
+      .mockResolvedValueOnce({
+        kclSource: { text: 'line-3' } as SourceDelta,
+        sceneGraphDelta: createLineSceneGraphDelta(3, 15, 16),
+      })
+      .mockResolvedValueOnce({
+        kclSource: { text: 'line-4' } as SourceDelta,
+        sceneGraphDelta: createLineSceneGraphDelta(4, 17, 18),
+      })
+
+    let constraintIndex = 0
+    addConstraintMock.mockImplementation(
+      async (_version, _sketchId, constraint) => {
+        const index = constraintIndex
+        constraintIndex += 1
+        return {
+          kclSource: { text: `constraint-${index}` } as SourceDelta,
+          sceneGraphDelta: createConstraintSceneGraphDelta(
+            400 + index,
+            constraint
+          ),
+        }
+      }
+    )
+
+    await createDraftRectangle({
+      rustContext,
+      kclManager,
+      sketchId: 12,
+      mode: 'corner',
+      origin: [12, 8],
+    })
+
+    expect(addSegmentMock.mock.calls[0]?.[2]).toEqual({
+      type: 'Line',
+      start: {
+        x: { type: 'Var', value: 12, units: 'Mm' },
+        y: { type: 'Var', value: 8, units: 'Mm' },
+      },
+      end: {
+        x: {
+          type: 'Var',
+          value: 12 + MIN_DRAFT_GEOMETRY_DELTA_MM,
+          units: 'Mm',
+        },
+        y: { type: 'Var', value: 8, units: 'Mm' },
+      },
+    })
   })
 })
 
