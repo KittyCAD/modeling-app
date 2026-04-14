@@ -1251,11 +1251,11 @@ export async function getPlaneDataFromSketchBlock(
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // Similar logic to selectSketchPlane but for a sketchBlock artifact.
-  if (sketchBlock.defaultPlane && systemDeps.rustContext.defaultPlanes) {
+  if (sketchBlock.standardPlane && systemDeps.rustContext.defaultPlanes) {
     return {
       type: 'defaultPlane',
-      planeId: systemDeps.rustContext.defaultPlanes[sketchBlock.defaultPlane],
-      ...defaultPlaneDataByName[sketchBlock.defaultPlane],
+      planeId: systemDeps.rustContext.defaultPlanes[sketchBlock.standardPlane],
+      ...defaultPlaneDataByName[sketchBlock.standardPlane],
     }
   }
 

@@ -281,9 +281,9 @@ pub struct StartSketchOnPlane {
 #[serde(rename_all = "camelCase")]
 pub struct SketchBlock {
     pub id: ArtifactId,
-    /// The semantic default plane name when the sketch block is on a default plane.
+    /// The semantic standard plane name when the sketch block is on a standard plane.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub default_plane: Option<PlaneName>,
+    pub standard_plane: Option<PlaneName>,
     /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,

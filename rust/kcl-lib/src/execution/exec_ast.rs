@@ -1271,7 +1271,7 @@ impl Node<SketchBlock> {
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
 
-            let default_plane = match &sketch_ctor_on {
+            let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
                 Plane::Object(_) => None,
             };
@@ -1296,7 +1296,7 @@ impl Node<SketchBlock> {
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
-                default_plane,
+                standard_plane,
                 plane_id: plane_artifact_id,
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,

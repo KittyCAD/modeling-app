@@ -2217,7 +2217,7 @@ secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length
 
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_block_artifact_preserves_default_plane_name() {
+    async fn sketch_block_artifact_preserves_standard_plane_name() {
         let code = r#"@settings(experimentalFeatures = allow)
 sketch001 = sketch(on = -YZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 1mm])
@@ -2238,7 +2238,7 @@ sketch001 = sketch(on = -YZ) {
             .collect::<Vec<_>>();
 
         assert_eq!(sketch_blocks.len(), 1);
-        assert_eq!(sketch_blocks[0].default_plane, Some(crate::engine::PlaneName::NegYz));
+        assert_eq!(sketch_blocks[0].standard_plane, Some(crate::engine::PlaneName::NegYz));
     }
 
     #[tokio::test(flavor = "multi_thread")]
