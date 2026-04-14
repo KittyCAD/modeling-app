@@ -2,7 +2,7 @@
 // A twisted ceiling fan geometry made using boolean cutouts
 // Categories: Construction
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 bladeCount = 3
 bladeTwistAngle = 5deg

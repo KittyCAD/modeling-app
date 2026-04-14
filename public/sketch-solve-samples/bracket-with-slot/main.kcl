@@ -2,7 +2,7 @@
 // a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 halfBracketWidth = 20
 fastenerHoleDiameter = 12

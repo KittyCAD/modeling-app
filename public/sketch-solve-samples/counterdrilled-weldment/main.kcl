@@ -2,7 +2,7 @@
 // A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
 // Categories: Manufacturing, Construction
 
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
 boltSpacingX = 5
 boltSpacingY = 3

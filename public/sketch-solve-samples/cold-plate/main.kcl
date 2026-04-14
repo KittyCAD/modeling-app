@@ -2,7 +2,7 @@
 // A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant
 // Categories: Automotive, Aerospace, Computer Hardware
 
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
 tubeDiameter = 5 / 8
 wallThickness = 0.080

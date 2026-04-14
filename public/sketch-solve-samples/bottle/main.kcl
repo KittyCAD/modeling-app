@@ -2,7 +2,7 @@
 // A simple bottle with a hollow, watertight interior
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 bottleWidth = 80
 bottleLength = 125
