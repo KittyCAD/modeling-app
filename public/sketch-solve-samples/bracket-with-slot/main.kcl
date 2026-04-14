@@ -2,8 +2,10 @@
 // a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
+// default units
 @settings(defaultLengthUnit = mm)
 
+// model parameters
 halfBracketWidth = 20
 fastenerHoleDiameter = 12
 countersinkOuterDiameter = 22
@@ -34,6 +36,7 @@ slotCenterSpacing = fastenerHoleDiameter * 3
 slotLeftCenterX = slotRightCenterX - slotCenterSpacing
 featureOverlap = 1
 
+// outline profile
 horizontalProfile = sketch(on = XY) {
   bottomLeftAnchor = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm], construction = true)
   bottomLeftDrop = line(start = [var 12mm, var 0mm], end = [var 12mm, var -20mm], construction = true)
@@ -87,10 +90,12 @@ horizontalProfile = sketch(on = XY) {
   radius(roundedEnd) == roundedEndRadius
 }
 
+// extrude body
 horizontalRegion = region(segments = [horizontalProfile.outerBottom])
 horizontalPlateBase = extrude(horizontalRegion, length = sheetMetalThickness)
 hide(horizontalProfile)
 
+// slot sketch
 slotProfile = sketch(on = offsetPlane(XY, offset = -featureOverlap)) {
   leftCenterAnchor = line(start = [var 0mm, var 0mm], end = [var 114mm, var 0mm], construction = true)
   slotAxis = line(start = [var 114mm, var 0mm], end = [var 150mm, var 0mm], construction = true)
@@ -151,10 +156,12 @@ slotProfile = sketch(on = offsetPlane(XY, offset = -featureOverlap)) {
   radius(rightCap) == slotRadius
 }
 
+// slot cut
 slotRegion = region(segments = [slotProfile.bottomEdge])
 slotCut = extrude(slotRegion, length = sheetMetalThickness + 2 * featureOverlap)
 hide(slotProfile)
 
+// boolean cut
 horizontalPlate = subtract(horizontalPlateBase, tools = [slotCut])
 
 verticalProfile = sketch(on = YZ) {
@@ -205,6 +212,7 @@ verticalRegion = region(segments = [verticalProfile.baseEdge])
 verticalPlateBase = extrude(verticalRegion, length = sheetMetalThickness, tagEnd = $uprightOuterFace)
 hide(verticalProfile)
 
+// tab hole
 verticalPlate = hole::hole(
   verticalPlateBase,
   face = uprightOuterFace,
@@ -294,6 +302,7 @@ bracketFinished = [
   bendFiller
 ]
 
+// material appearance
 appearance(
   bracketFinished,
   color = "#c8ff00",

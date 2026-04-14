@@ -2,8 +2,10 @@
 // A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant
 // Categories: Automotive, Aerospace, Computer Hardware
 
+// Set units
 @settings(defaultLengthUnit = in)
 
+// Define parameters
 tubeDiameter = 5 / 8
 wallThickness = 0.080
 bendRadius = 1
@@ -101,6 +103,7 @@ capTopArcCenter = [
   plateTopZ + tubeDiameter * 0.75
 ]
 
+// Create the cold plate with indentations to secure each pass of the brazed copper tube
 coldPlateProfile = sketch(on = YZ) {
   line1 = line(start = [var 0in, var 1.25in], end = [var 0.69in, var 1.25in])
   line2 = line(start = [var 0.69in, var 1.25in], end = [var 0.69in, var 0.63in])
@@ -224,6 +227,7 @@ coldPlateRegion = region(segments = [coldPlateProfile.line1])
 coldPlate = extrude(coldPlateRegion, length = plateLength, symmetric = true)
 hide(coldPlateProfile)
 
+// Sketch the path for the copper tube to follow
 copperTubePathPlane = startSketchOn(offsetPlane(XY, offset = tubeDiameter))
 copperTubePath = sketch(on = copperTubePathPlane) {
   inletGuide = line(start = [var 0in, var 0in], end = [var -7.35in, var -3in], construction = true)
@@ -363,6 +367,7 @@ copperTubeSweepPath = [
   copperTubePath.line7
 ]
 
+// Model a brazed cap to cover each tube. Constrain the caps using the walls of the plate
 brazedCapPlane = startSketchOn(YZ)
 brazedCapProfile = sketch(on = brazedCapPlane) {
   bottomCenterGuide = line(start = [var 0in, var 0in], end = [var 3in, var 0.63in], construction = true)
@@ -417,6 +422,7 @@ brazedCapPattern = patternLinear3d(
 brazedCap = appearance(brazedCapPattern, color = "#6b261e")
 hide(brazedCapProfile)
 
+// Create the profile for the inner and outer diameter of the hollow copper tube
 tubeSectionSketch = sketch(on = offsetPlane(YZ, offset = tubeInletX)) {
   centerGuide = line(start = [var 0in, var 0in], end = [var -3in, var 0.63in], construction = true)
   outerRadiusGuide = line(start = [var -3in, var 0.63in], end = [var -2.69in, var 0.63in], construction = true)

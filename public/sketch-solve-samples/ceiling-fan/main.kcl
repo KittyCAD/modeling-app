@@ -2,8 +2,10 @@
 // A twisted ceiling fan geometry made using boolean cutouts
 // Categories: Construction
 
+// Set units
 @settings(defaultLengthUnit = mm)
 
+// Define parameters
 bladeCount = 3
 bladeTwistAngle = 5deg
 bladeSpanLength = 100
@@ -11,9 +13,11 @@ bladeWidth = 17.5
 bladeBaseThickness = 10
 bladeThickness = 2
 
+// Root geometry
 bladeRootWidth = bladeWidth * 2
 bladeSeamLength = bladeRootWidth / 2 / cos(30deg)
 
+// Void cutout dimensions
 voidCutoutLength = bladeSpanLength * 1.5
 voidCutoutWidth = bladeWidth * 3
 voidCutoutHeight = bladeWidth * 2
@@ -158,6 +162,7 @@ bladeProfile = sketch(on = bladePlane) {
 ]) == bladeTipFlatHalfWidth
 }
 
+// Step 2: extrude the solved blade blank.
 bladeRegion = region(segments = [bladeProfile.rootSeamRight])
 bladeSolid = extrude(bladeRegion, length = bladeBaseThickness)
 hide(bladeProfile)
@@ -233,4 +238,3 @@ ceilingFan = patternCircular3d(
 )
 
 ceilingFan
-

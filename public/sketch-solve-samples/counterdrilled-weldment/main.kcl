@@ -2,8 +2,10 @@
 // A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
 // Categories: Manufacturing, Construction
 
+// Set units
 @settings(defaultLengthUnit = in)
 
+// Define parameters
 boltSpacingX = 5
 boltSpacingY = 3
 boltDiameter = 1 / 4
@@ -14,6 +16,7 @@ tubeThickness = 0.115
 tubeHeight = 2
 stockThickness = 0.5
 
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterdrill diameter to the bolt spacing
 blockLength = boltSpacingX + boltDiameter * 6
 blockWidth = boltSpacingY + boltDiameter * 6
 blockHalfLength = blockLength / 2

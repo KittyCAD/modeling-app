@@ -2,8 +2,10 @@
 // This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.
 // Categories: Maker
 
+// Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm)
 
+// Define the bench length
 benchLength = 56mm
 dividerThickness = 4mm
 dividerShellThickness = 1.5mm
@@ -24,6 +26,7 @@ dividerArc16Radius = 3.442237644323821mm
 dividerArc19Radius = 3.1105787242890988mm
 dividerArc20Radius = 444.0897644620961mm
 
+// Create the dividers, these hold the seat and back slats
 dividerProfile = sketch(on = YZ) {
   line1 = line(start = [var -16.82mm, var 21.2mm], end = [var -16.95mm, var 19.93mm])
   arc2 = arc(start = [var -16.95mm, var 19.93mm], end = [var -15.94mm, var 13.47mm], center = [var -4.16mm, var 18.62mm])
@@ -174,6 +177,7 @@ dividerLeftRight = clone(dividerCenterRight)
 dividerLeftLeft = clone(dividerCenterLeft)
   |> translate(x = -dividerOffset, global = true)
 
+// Create the connectors to join the dividers
 connectorPlane = offsetPlane(YZ, offset = -benchLength / 2)
 connectorProfile = sketch(on = connectorPlane) {
   guide = circle(start = [var -10.61mm, var 8mm], center = [var -12mm, var 8mm], construction = true)
@@ -229,6 +233,7 @@ connectorArray = patternLinear3d(
   axis = [0, 1, 0],
 )
 
+// Create the seat slats
 seatSlatPlane = offsetPlane(YZ, offset = seatAndBackPlaneOffset)
 seatSlatProfile = sketch(on = seatSlatPlane) {
   line1 = line(start = [var -7mm, var 19mm], end = [var -17mm, var 19.5mm])
@@ -279,6 +284,7 @@ seatSlatArray = patternLinear3d(
   axis = [0, 1, -0.05],
 )
 
+// Create the back slats
 backSlatPlane = offsetPlane(YZ, offset = seatAndBackPlaneOffset)
 backSlatProfile = sketch(on = backSlatPlane) {
   line1 = line(start = [var 22mm, var 38.5mm], end = [var 20.01mm, var 38.74mm])
@@ -330,6 +336,7 @@ backSlatArray = patternLinear3d(
   axis = [0, -0.137, -1],
 )
 
+// Create the arm rests
 rightArmRestPathSketch = sketch(on = offsetPlane(YZ, offset = rightArmRestOffset)) {
   line1 = line(start = [var 20mm, var 33mm], end = [var 0mm, var 33mm])
   arc2 = arc(start = [var 0mm, var 33mm], end = [var -10mm, var 23mm], center = [var 0mm, var 23mm])
@@ -437,5 +444,4 @@ hide([
 ])
 leftArmRest = clone(rightArmRest)
   |> translate(x = -benchLength, global = true)
-
 

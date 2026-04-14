@@ -2,8 +2,10 @@
 // A simple bottle with a hollow, watertight interior
 // Categories: Maker
 
+// Set Units
 @settings(defaultLengthUnit = mm)
 
+// Input dimensions to define the bottle
 bottleWidth = 80
 bottleLength = 125
 bottleHeight = 220
@@ -19,6 +21,7 @@ shoulderArcRadius = (halfBottleLength ^ 2 + shoulderArcRise ^ 2) / (2 * shoulder
 shoulderArcCenterOffset = shoulderArcRadius - halfBottleWidth
 neckRadius = neckDiameter / 2
 
+// Create a rounded body for the bottle
 bottleFootprint = sketch(on = XY) {
   leftSide = line(start = [var -62.5mm, var -26.67mm], end = [var -62.5mm, var 26.67mm])
   topArc = arc(start = [var 62.5mm, var 26.52mm], end = [var -62.5mm, var 26.81mm], center = [var 0mm, var -112.78mm])
@@ -62,6 +65,7 @@ bottleBodyRegion = region(point = [30mm, 0mm], sketch = bottleFootprint)
 hide(bottleFootprint)
 bottleBody = extrude(bottleBodyRegion, length = bottleHeight - neckDepth)
 
+// Create a neck centered at the top of the bottle
 neckProfile = sketch(on = faceOf(bottleBody, face = END)) {
   neckCircle = circle(start = [var 22.5mm, var 0mm], center = [var 0mm, var 0mm])
   neckRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 22.5mm, var 0mm], construction = true)
@@ -87,6 +91,6 @@ bottleWithNeck = extrude(
   tagEnd = $neckTop,
 )
 
+// Define a shell operation so that the entire body and neck are hollow, with only the top face opened
 bottleShellSolid = shell(bottleWithNeck, faces = [neckTop], thickness = wallThickness)
 bottleShell = appearance(bottleShellSolid, color = "#0078c2")
-
