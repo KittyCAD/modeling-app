@@ -804,6 +804,11 @@ export class SceneEntities {
         const { modifiedAst } = inserted
 
         await this.kclManager.updateAst(modifiedAst, false)
+        await this.kclManager.updateEditorWithAstAndWriteToFile(modifiedAst, {
+          shouldAddToHistory: false,
+          shouldWriteToDisk: false,
+          allowProgrammaticDocumentChanges: true,
+        })
 
         // Now perform the caller-specified action
         afterClick(args, {
@@ -1462,6 +1467,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1683,6 +1693,11 @@ export class SceneEntities {
 
     // do a quick mock execution to get the program memory up-to-date
     await this.kclManager.executeAstMock(_ast)
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1908,6 +1923,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2122,6 +2142,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2347,6 +2372,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2618,6 +2648,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,

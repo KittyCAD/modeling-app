@@ -209,6 +209,23 @@ describe('KclManager diagnostics', () => {
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
+  it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    const writeToFileSpy = vi
+      .spyOn(kclManager, 'writeToFile')
+      .mockResolvedValue(undefined)
+
+    kclManager.engineCommandManager.started = true
+
+    kclManager.updateCodeEditor('changed programmatically', {
+      shouldWriteToDisk: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+    })
+
+    expect(writeToFileSpy).not.toHaveBeenCalled()
+  })
+
   it('debounces repeated direct editor edits down to one execution of the latest code', async () => {
     vi.useFakeTimers()
 
@@ -423,6 +440,35 @@ describe('KclManager diagnostics', () => {
     await pendingRewrite
 
     expect(kclManager.code).toBe('local newer')
+  })
+
+  it('allows ast-driven editor rewrites to survive intermediate programmatic updates when requested', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    const originalWasmPromise = kclManager.wasmInstancePromise
+    const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
+    const ast = await kclManager.safeParse('x = 2')
+
+    expect(ast).not.toBeNull()
+
+    kclManager.wasmInstancePromise = deferredWasm.promise
+
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
+
+    kclManager.updateCodeEditor('intermediate programmatic', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+      shouldAddToHistory: false,
+    })
+
+    deferredWasm.resolve(await originalWasmPromise)
+    await pendingRewrite
+
+    expect(kclManager.code.trim()).toBe('x = 2')
   })
 
   it('skips disk writes when the on-disk file changed since the last sync', async () => {

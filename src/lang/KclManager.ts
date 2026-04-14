@@ -689,6 +689,7 @@ export class KclManager extends File {
    */
   private _code = signal(bracket)
   private _documentVersion = 0
+  private _userDocumentVersion = 0
   private lastCommittedCode = ''
   private lastCommittedAdditionalSpec:
     | UpdateCodeEditorAdditionalSpec
@@ -1073,6 +1074,17 @@ export class KclManager extends File {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
       this._documentVersion += 1
+      const isProgrammaticUpdate = update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return ignoredEvents.some((value) => Boolean(value))
+      })
+      if (!isProgrammaticUpdate) {
+        this._userDocumentVersion += 1
+      }
       this._code.value = newCode
       this.persistRecoverySnapshot()
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
@@ -1240,6 +1252,9 @@ export class KclManager extends File {
     const hasWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
     )
+    const isProgrammaticWrite = update.transactions.some((tr) =>
+      Boolean(tr.annotation(updateOutsideEditorEvent.type))
+    )
     const notIgnoredUpdate =
       this.engineCommandManager.started &&
       update.docChanged &&
@@ -1256,7 +1271,9 @@ export class KclManager extends File {
 
     if (shouldWriteToFile) {
       // We don't want to block on writing to file
-      void this.writeToFile(update.state.doc.toString())
+      void this.writeToFile(update.state.doc.toString(), undefined, {
+        suppressConflictToast: isProgrammaticWrite,
+      })
     }
   })
 
@@ -2874,6 +2891,7 @@ export class KclManager extends File {
       } else {
         this.editorView.dispatch({
           annotations: [
+            updateOutsideEditorEvent,
             Transaction.addToHistory.of(false),
             ...(additionalSpec?.annotations || []),
           ],
@@ -2912,6 +2930,7 @@ export class KclManager extends File {
       changes,
       selection: mappedSelection,
       annotations: [
+        updateOutsideEditorEvent,
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
@@ -2936,7 +2955,8 @@ export class KclManager extends File {
   }
   async writeToFile(
     newCode = this.codeSignal.value,
-    requestedDocumentVersion = this._documentVersion
+    requestedDocumentVersion = this._documentVersion,
+    options: { suppressConflictToast?: boolean } = {}
   ) {
     if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
@@ -2984,9 +3004,11 @@ export class KclManager extends File {
               console.warn(
                 'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
               )
-              toast.error(
-                'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
-              )
+              if (!options.suppressConflictToast) {
+                toast.error(
+                  'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
+                )
+              }
               return resolve(undefined)
             }
             // Wait one event loop to give a chance for params to be set
@@ -3028,16 +3050,29 @@ export class KclManager extends File {
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
+    options?: Partial<
+      {
+        isDeleting: boolean
+        allowProgrammaticDocumentChanges: boolean
+      } & UpdateCodeEditorOptions
+    >
   ) {
     const requestedDocumentVersion = this._documentVersion
+    const requestedUserDocumentVersion = this._userDocumentVersion
     const resolvedOptions: NonNullable<typeof options> = Object.assign(
-      { shouldExecute: false },
+      {
+        shouldExecute: false,
+        allowProgrammaticDocumentChanges: false,
+      },
       options ?? {},
       { shouldWriteToDisk: true }
     )
+    const hasStaleVersion = () =>
+      resolvedOptions.allowProgrammaticDocumentChanges
+        ? requestedUserDocumentVersion !== this._userDocumentVersion
+        : requestedDocumentVersion !== this._documentVersion
     const wasmInstance = await this.wasmInstancePromise
-    if (requestedDocumentVersion !== this._documentVersion) return
+    if (hasStaleVersion()) return
 
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
@@ -3047,7 +3082,7 @@ export class KclManager extends File {
     if (ast.body.length === 0 && !resolvedOptions.isDeleting) return
     const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
-    if (requestedDocumentVersion !== this._documentVersion) return
+    if (hasStaleVersion()) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
     const result = parse(newCode, wasmInstance)
@@ -3055,7 +3090,7 @@ export class KclManager extends File {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
-    if (requestedDocumentVersion !== this._documentVersion) return
+    if (hasStaleVersion()) return
     this.updateCodeEditor(newCode, resolvedOptions)
   }
 }
