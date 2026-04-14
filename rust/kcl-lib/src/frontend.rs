@@ -3309,32 +3309,14 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article(),
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "input", None)?
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
             }
             Horizontal::Points { points } => {
-                let mut point_objects = Vec::with_capacity(points.len());
-                for point_id in points {
-                    let point_object = self
-                        .scene_graph
-                        .objects
-                        .get(point_id.0)
-                        .ok_or_else(|| KclError::refactor(format!("Point not found: {point_id:?}")))?;
-                    let ObjectKind::Segment { segment: point_segment } = &point_object.kind else {
-                        let kind = point_object.kind.human_friendly_kind_with_article();
-                        return Err(KclError::refactor(format!(
-                            "This constraint needs an array of points, or a line, but you selected {kind}"
-                        )));
-                    };
-                    let Segment::Point(p) = point_segment else {
-                        return Err(KclError::refactor(format!(
-                            "Only points or a line can be made horizontal, but you selected {}",
-                            point_segment.human_friendly_kind_with_article(),
-                        )));
-                    };
-                    point_objects.push(p);
-                }
-                let array_ref = todo!("Create an array of points here");
-                get_or_insert_ast_reference(new_ast, array_ref, "input", None)?
+                let point_asts = points
+                    .iter()
+                    .map(|point_id| self.point_id_to_ast_reference(*point_id, new_ast))
+                    .collect::<Result<Vec<_>, _>>()?;
+                ast::ArrayExpression::new(point_asts).into()
             }
         };
 
@@ -3568,29 +3550,11 @@ impl FrontendState {
                 get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
             }
             Vertical::Points { points } => {
-                let mut point_objects = Vec::with_capacity(points.len());
-                for point_id in points {
-                    let point_object = self
-                        .scene_graph
-                        .objects
-                        .get(point_id.0)
-                        .ok_or_else(|| KclError::refactor(format!("Point not found: {point_id:?}")))?;
-                    let ObjectKind::Segment { segment: point_segment } = &point_object.kind else {
-                        let kind = point_object.kind.human_friendly_kind_with_article();
-                        return Err(KclError::refactor(format!(
-                            "This constraint needs an array of points, or a line, but you selected {kind}"
-                        )));
-                    };
-                    let Segment::Point(p) = point_segment else {
-                        return Err(KclError::refactor(format!(
-                            "Only points or a line can be made vertical, but you selected {}",
-                            point_segment.human_friendly_kind_with_article(),
-                        )));
-                    };
-                    point_objects.push(p);
-                }
-                let array_ref = todo!("Create an array of points here");
-                get_or_insert_ast_reference(new_ast, array_ref, "input", None)?
+                let point_asts = points
+                    .iter()
+                    .map(|point_id| self.point_id_to_ast_reference(*point_id, new_ast))
+                    .collect::<Result<Vec<_>, _>>()?;
+                ast::ArrayExpression::new(point_asts).into()
             }
         };
 
@@ -8364,7 +8328,6 @@ sketch001 = sketch(on = XY) {
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
-        dbg!(&sketch);
         let point_ids = vec![
             sketch.segments.get(0).unwrap().to_owned(),
             sketch.segments.get(1).unwrap().to_owned(),
@@ -8381,12 +8344,65 @@ sketch001 = sketch(on = XY) {
 sketch001 = sketch(on = XY) {
   p0 = point(at = [var -2.23mm, var 3.1mm])
   pf = point(at = [4, 4])
-  vertical([p0, p1, pf])
-}"
+  vertical([p0, pf])
+}
+"
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            7,
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_points_horizontal() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  p0 = point(at = [var -2.23mm, var 3.1mm])
+  pf = point(at = [4, 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_ids = vec![
+            sketch.segments.get(0).unwrap().to_owned(),
+            sketch.segments.get(1).unwrap().to_owned(),
+        ];
+
+        let constraint = Constraint::Horizontal(Horizontal::Points { points: point_ids });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch001 = sketch(on = XY) {
+  p0 = point(at = [var -2.23mm, var 3.1mm])
+  pf = point(at = [4, 4])
+  horizontal([p0, pf])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
             "{:#?}",
             scene_delta.new_graph.objects
         );

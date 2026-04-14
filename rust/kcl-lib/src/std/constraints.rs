@@ -2945,6 +2945,14 @@ impl AxisConstraintKind {
             AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Line { line_id: line }),
         }
     }
+
+    #[cfg(feature = "artifact-graph")]
+    fn point_artifact_constraint(self, points: Vec<ObjectId>) -> Constraint {
+        match self {
+            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal::Points { points }),
+            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Points { points }),
+        }
+    }
 }
 
 /// The line the user wants to align vertically/horizontally.
@@ -3212,6 +3220,23 @@ fn axis_constraint_points(
         )));
     }
 
+    #[cfg(feature = "artifact-graph")]
+    let trackable_point_ids = point_values
+        .iter()
+        .map(|point| match point {
+            KclValue::Segment { value: segment } => {
+                let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+                    return None;
+                };
+                let UnsolvedSegmentKind::Point { .. } = &unsolved.kind else {
+                    return None;
+                };
+                Some(unsolved.object_id)
+            }
+            _ => None,
+        })
+        .collect::<Option<Vec<_>>>();
+
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("{}() can only be used inside a sketch block", kind.function_name()),
@@ -3279,6 +3304,18 @@ fn axis_constraint_points(
         }
     }
     sketch_state.solver_constraints.extend(solver_constraints);
+
+    #[cfg(feature = "artifact-graph")]
+    if let Some(point_ids) = trackable_point_ids {
+        let constraint_id = exec_state.next_object_id();
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            debug_assert!(false, "Constraint created outside a sketch block");
+            return Ok(KclValue::none());
+        };
+        sketch_state.sketch_constraints.push(constraint_id);
+        let constraint = kind.point_artifact_constraint(point_ids);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
 
     Ok(KclValue::none())
 }
