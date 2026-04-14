@@ -111,7 +111,6 @@ archSketch = sketch(on = archPlane) {
     start = [var -89mm, var 0mm],
     end = [var 90mm, var 0mm],
     center = [var 0.5mm, var 0mm],
-    ccw = false,
   )
   coincident([line1.end, arc2.start])
   line3 = line(
@@ -124,7 +123,6 @@ archSketch = sketch(on = archPlane) {
     start = [var 91mm, var 0mm],
     end = [var -90mm, var 0mm],
     center = [var 0.5mm, var 0mm],
-    ccw = false,
   )
   coincident([line3.end, arc4.start])
   coincident([arc4.end, line1.start])
