@@ -2184,7 +2184,7 @@ yo2 = hmm([identifierGuy + 5])"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn multiple_sketch_blocks_do_not_reuse_on_cache_name() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"
 firstProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
