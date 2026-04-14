@@ -162,6 +162,12 @@ export type UpdateSketchOutcomeEvent = {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     /**
+     * If true, transient solver issues are stripped from the stored outcome so
+     * draft previews can pass through intentionally degenerate states without
+     * surfacing diagnostics, toast spam, or error styling.
+     */
+    suppressExecOutcomeIssues?: boolean
+    /**
      * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
      */
     debounceEditorUpdate?: boolean
@@ -1077,13 +1083,23 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
+  const sceneGraphDelta = event.data.suppressExecOutcomeIssues
+    ? {
+        ...event.data.sceneGraphDelta,
+        exec_outcome: {
+          ...event.data.sceneGraphDelta.exec_outcome,
+          issues: [],
+        },
+      }
+    : event.data.sceneGraphDelta
+
   const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
-    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta),
     event.data.sourceDelta.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
   toastSketchSolveExecOutcomeErrors(
-    event.data.sceneGraphDelta,
+    sceneGraphDelta,
     'Sketch solver failed to find a solution'
   )
 
@@ -1095,7 +1111,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     sketchCheckpointId: event.data.checkpointId,
     effects: [
       updateSketchSceneGraphEffect.of({
-        sceneGraphDelta: event.data.sceneGraphDelta,
+        sceneGraphDelta,
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
@@ -1137,7 +1153,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
-      sceneGraphDelta: event.data.sceneGraphDelta,
+      sceneGraphDelta,
       shouldWriteToDisk,
       shouldAddToHistory,
       spec: editorAdditionalSpec,
@@ -1155,14 +1171,14 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     )
     context.kclManager.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
-      event.data.sceneGraphDelta
+      sceneGraphDelta
     )
   }
 
   return {
     sketchExecOutcome: {
       sourceDelta: event.data.sourceDelta,
-      sceneGraphDelta: event.data.sceneGraphDelta,
+      sceneGraphDelta,
     },
   }
 }

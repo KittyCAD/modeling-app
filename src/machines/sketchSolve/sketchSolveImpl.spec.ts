@@ -148,4 +148,54 @@ describe('updateSketchOutcome', () => {
       vi.useRealTimers()
     }
   })
+
+  test('strips draft preview issues when suppression is requested', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+    sceneGraphDelta.exec_outcome.issues = [
+      {
+        message: 'Overlapping geometry',
+        severity: 'Warning',
+        sourceRanges: [],
+      } as any,
+    ]
+
+    const result = updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'old code',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'new code' },
+          sceneGraphDelta,
+          suppressExecOutcomeIssues: true,
+        },
+      },
+    } as any)
+
+    expect(setSketchSolveDiagnostics).toHaveBeenCalledWith([])
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'new code',
+      expect.objectContaining({
+        exec_outcome: expect.objectContaining({
+          issues: [],
+        }),
+      })
+    )
+    expect(
+      result.sketchExecOutcome?.sceneGraphDelta.exec_outcome.issues
+    ).toEqual([])
+  })
 })
