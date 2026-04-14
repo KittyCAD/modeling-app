@@ -228,8 +228,7 @@ coldPlate = extrude(coldPlateRegion, length = plateLength, symmetric = true)
 hide(coldPlateProfile)
 
 // Sketch the path for the copper tube to follow
-copperTubePathPlane = startSketchOn(offsetPlane(XY, offset = tubeDiameter))
-copperTubePath = sketch(on = copperTubePathPlane) {
+copperTubePath = sketch(on = offsetPlane(XY, offset = tubeDiameter)) {
   inletGuide = line(start = [var 0in, var 0in], end = [var -7.35in, var -3in], construction = true)
   rightLowerLoopGuide = line(start = [var 0in, var 0in], end = [var 6.78in, var -2in], construction = true)
   leftLoopGuide = line(start = [var 0in, var 0in], end = [var -6.24in, var 0in], construction = true)
@@ -368,8 +367,7 @@ copperTubeSweepPath = [
 ]
 
 // Model a brazed cap to cover each tube. Constrain the caps using the walls of the plate
-brazedCapPlane = startSketchOn(YZ)
-brazedCapProfile = sketch(on = brazedCapPlane) {
+brazedCapProfile = sketch(on = YZ) {
   bottomCenterGuide = line(start = [var 0in, var 0in], end = [var 3in, var 0.63in], construction = true)
   topCenterGuide = line(start = [var 0in, var 0in], end = [var 3in, var 1.72in], construction = true)
 
