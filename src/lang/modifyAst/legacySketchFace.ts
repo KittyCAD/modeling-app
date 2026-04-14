@@ -11,7 +11,7 @@ import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 
 /**
  * Temporary legacy-compat helper for sketch solve.
@@ -35,12 +35,11 @@ export function sketchBlockOnExtrudedFace(
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
   )
 
-  const faceSelections: Selections = {
-    graphSelections: [faceSelection],
-    otherSelections: [],
-  }
   const result = buildSolidsAndFacesExprs(
-    faceSelections,
+    {
+      graphSelections: [faceSelection],
+      otherSelections: [],
+    },
     artifactGraph,
     modifiedAst,
     wasmInstance
@@ -59,7 +58,7 @@ export function sketchBlockOnExtrudedFace(
   const onExpr = createCallExpressionStdLibKw('faceOf', solidsExpr, [
     createLabeledArg('face', facesExpr),
   ])
-  const declaration = createVariableDeclaration(newSketchName, {
+  const newSketchBlock = createVariableDeclaration(newSketchName, {
     type: 'SketchBlock',
     start: 0,
     end: 0,
@@ -85,14 +84,15 @@ export function sketchBlockOnExtrudedFace(
     extrudePathToNode[1][0] as number,
     node.body.length - 1
   )
-  modifiedAst.body.splice(expressionIndex + 1, 0, declaration)
+  modifiedAst.body.splice(expressionIndex + 1, 0, newSketchBlock)
 
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [expressionIndex + 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', ''],
-  ]
-
-  return { modifiedAst, pathToNode }
+  return {
+    modifiedAst,
+    pathToNode: [
+      ['body', ''],
+      [expressionIndex + 1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', ''],
+    ],
+  }
 }
