@@ -26,12 +26,12 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 export function sketchBlockOnExtrudedFace(
   node: Node<Program>,
   faceSelection: Selection,
+  sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
-  const sketchPathToNode = faceSelection.codeRef.pathToNode
   const newSketchName = findUniqueName(
     node,
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH

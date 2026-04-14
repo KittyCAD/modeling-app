@@ -1287,7 +1287,7 @@ extrude001 = extrude(profile001, length = 5)
         sweepId: sweepArtifact!.id,
         faceCodeRef: {
           range: [0, 0, 0],
-          pathToNode: segmentPathToNode,
+          pathToNode: extrudePathToNode,
           nodePath: { steps: [] },
         },
       }
@@ -1301,6 +1301,7 @@ extrude001 = extrude(profile001, length = 5)
           artifact: legacyWall,
           codeRef: legacyWallCodeRef!,
         },
+        segmentPathToNode,
         extrudePathToNode,
         artifactGraph,
         instanceInThisFile

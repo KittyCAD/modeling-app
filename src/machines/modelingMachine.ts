@@ -3244,6 +3244,7 @@ export const modelingMachine = setup({
               artifact: legacyFaceArtifact,
               codeRef: legacyFaceCodeRef,
             },
+            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
             legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
             kclManager.artifactGraph,
             wasmInstance
