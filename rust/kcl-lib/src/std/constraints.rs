@@ -2896,6 +2896,271 @@ pub async fn perpendicular(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     lines_at_angle(LinesAtAngleKind::Perpendicular, exec_state, args).await
 }
 
+#[derive(Debug, Clone, Copy)]
+enum AxisConstraintKind {
+    Horizontal,
+    Vertical,
+}
+
+impl AxisConstraintKind {
+    fn function_name(self) -> &'static str {
+        match self {
+            AxisConstraintKind::Horizontal => "horizontal",
+            AxisConstraintKind::Vertical => "vertical",
+        }
+    }
+
+    fn line_constraint(self, line: DatumLineSegment) -> SolverConstraint {
+        match self {
+            AxisConstraintKind::Horizontal => SolverConstraint::Horizontal(line),
+            AxisConstraintKind::Vertical => SolverConstraint::Vertical(line),
+        }
+    }
+
+    fn point_pair_constraint(self, anchor: DatumPoint, point: DatumPoint) -> SolverConstraint {
+        match self {
+            // A horizontal point set means all Y values are equal.
+            AxisConstraintKind::Horizontal => SolverConstraint::VerticalDistance(point, anchor, 0.0),
+            // A vertical point set means all X values are equal.
+            AxisConstraintKind::Vertical => SolverConstraint::HorizontalDistance(point, anchor, 0.0),
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn line_artifact_constraint(self, line: ObjectId) -> Constraint {
+        match self {
+            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal { line }),
+            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical { line }),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct AxisLineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+fn extract_axis_line_vars(
+    input: &KclValue,
+    kind: AxisConstraintKind,
+    source_range: crate::SourceRange,
+) -> Result<AxisLineVars, KclError> {
+    let KclValue::Segment { value: segment } = input else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() line argument must be a Segment", kind.function_name()),
+            vec![source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "line must be an unsolved Segment".to_owned(),
+            vec![source_range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{}() line argument must be a line, no other type of Segment",
+                kind.function_name()
+            ),
+            vec![source_range],
+        )));
+    };
+    let (
+        UnsolvedExpr::Unknown(start_x),
+        UnsolvedExpr::Unknown(start_y),
+        UnsolvedExpr::Unknown(end_x),
+        UnsolvedExpr::Unknown(end_y),
+    ) = (&start[0], &start[1], &end[0], &end[1])
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's x and y coordinates of both start and end must be vars".to_owned(),
+            vec![source_range],
+        )));
+    };
+
+    Ok(AxisLineVars {
+        start: [*start_x, *start_y],
+        end: [*end_x, *end_y],
+        object_id: unsolved.object_id,
+    })
+}
+
+#[derive(Debug, Clone, Copy)]
+struct AxisPointVars {
+    vars: [SketchVarId; 2],
+}
+
+fn extract_axis_point_vars(
+    input: &KclValue,
+    kind: AxisConstraintKind,
+    source_range: crate::SourceRange,
+) -> Result<AxisPointVars, KclError> {
+    match input {
+        KclValue::Segment { value: segment } => {
+            let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point arguments must be unsolved points",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            let UnsolvedSegmentKind::Point { position, .. } = &unsolved.kind else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function list arguments must be points, but one item is {}",
+                        kind.function_name(),
+                        unsolved.kind.human_friendly_kind_with_article()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (&position[0], &position[1]) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point coordinates must be sketch vars in both x and y",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            Ok(AxisPointVars { vars: [*x, *y] })
+        }
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+            let [x_value, y_value] = value.as_slice() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point arguments must each be a Point2d like [var 0mm, var 0mm]",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            let Some(x_expr) = x_value.as_unsolved_expr() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point x coordinate must be a number or sketch var",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            let Some(y_expr) = y_value.as_unsolved_expr() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point y coordinate must be a number or sketch var",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (x_expr, y_expr) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The `{}` function point coordinates must be sketch vars in both x and y",
+                        kind.function_name()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            Ok(AxisPointVars { vars: [x, y] })
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "The `{}` function accepts either a line Segment or a list of points",
+                kind.function_name()
+            ),
+            vec![source_range],
+        ))),
+    }
+}
+
+async fn axis_constraint(
+    kind: AxisConstraintKind,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
+    let input: KclValue =
+        args.get_unlabeled_kw_arg("input", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+
+    // Backwards compatible shape: horizontal(line) / vertical(line)
+    if let Ok(line) = extract_axis_line_vars(&input, kind, args.source_range) {
+        let range = args.source_range;
+        let solver_p0 = DatumPoint::new_xy(
+            line.start[0].to_constraint_id(range)?,
+            line.start[1].to_constraint_id(range)?,
+        );
+        let solver_p1 = DatumPoint::new_xy(
+            line.end[0].to_constraint_id(range)?,
+            line.end[1].to_constraint_id(range)?,
+        );
+        let solver_line = DatumLineSegment::new(solver_p0, solver_p1);
+        let constraint = kind.line_constraint(solver_line);
+        #[cfg(feature = "artifact-graph")]
+        let constraint_id = exec_state.next_object_id();
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("{}() can only be used inside a sketch block", kind.function_name()),
+                vec![args.source_range],
+            )));
+        };
+        sketch_state.solver_constraints.push(constraint);
+        #[cfg(feature = "artifact-graph")]
+        {
+            let constraint = kind.line_artifact_constraint(line.object_id);
+            sketch_state.sketch_constraints.push(constraint_id);
+            track_constraint(constraint_id, constraint, exec_state, &args);
+        }
+        return Ok(KclValue::none());
+    }
+
+    let point_values = match input {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{}() accepts either a line Segment or a list of at least two points",
+                    kind.function_name()
+                ),
+                vec![args.source_range],
+            )));
+        }
+    };
+
+    if point_values.len() < 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() point list must contain at least two points", kind.function_name()),
+            vec![args.source_range],
+        )));
+    }
+
+    let points: Vec<AxisPointVars> = point_values
+        .iter()
+        .map(|point| extract_axis_point_vars(point, kind, args.source_range))
+        .collect::<Result<_, _>>()?;
+
+    let range = args.source_range;
+    let anchor = datum_point(points[0].vars, range)?;
+    let mut solver_constraints = Vec::with_capacity(points.len().saturating_sub(1));
+    for point in points.iter().skip(1) {
+        let solver_point = datum_point(point.vars, range)?;
+        solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
+    }
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() can only be used inside a sketch block", kind.function_name()),
+            vec![args.source_range],
+        )));
+    };
+    sketch_state.solver_constraints.extend(solver_constraints);
+    Ok(KclValue::none())
+}
+
 pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "lines",
@@ -3195,139 +3460,9 @@ async fn lines_at_angle(
 }
 
 pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segments(), exec_state)?;
-    let KclValue::Segment { value: segment } = line else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            "line must be an unsolved Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a line, no other type of Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let p0_x = &start[0];
-    let p0_y = &start[1];
-    let p1_x = &end[0];
-    let p1_y = &end[1];
-    match (p0_x, p0_y, p1_x, p1_y) {
-        (
-            UnsolvedExpr::Unknown(p0_x),
-            UnsolvedExpr::Unknown(p0_y),
-            UnsolvedExpr::Unknown(p1_x),
-            UnsolvedExpr::Unknown(p1_y),
-        ) => {
-            let range = args.source_range;
-            let solver_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                p0_x.to_constraint_id(range)?,
-                p0_y.to_constraint_id(range)?,
-            );
-            let solver_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                p1_x.to_constraint_id(range)?,
-                p1_y.to_constraint_id(range)?,
-            );
-            let solver_line = ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
-            let constraint = ezpz::Constraint::Horizontal(solver_line);
-            #[cfg(feature = "artifact-graph")]
-            let constraint_id = exec_state.next_object_id();
-            // Save the constraint to be used for solving.
-            let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "horizontal() can only be used inside a sketch block".to_owned(),
-                    vec![args.source_range],
-                )));
-            };
-            sketch_state.solver_constraints.push(constraint);
-            #[cfg(feature = "artifact-graph")]
-            {
-                let constraint = crate::front::Constraint::Horizontal(Horizontal {
-                    line: unsolved.object_id,
-                });
-                sketch_state.sketch_constraints.push(constraint_id);
-                track_constraint(constraint_id, constraint, exec_state, &args);
-            }
-            Ok(KclValue::none())
-        }
-        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's x and y coordinates of both start and end must be vars".to_owned(),
-            vec![args.source_range],
-        ))),
-    }
+    axis_constraint(AxisConstraintKind::Horizontal, exec_state, args).await
 }
 
 pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segments(), exec_state)?;
-    let KclValue::Segment { value: segment } = line else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            "line must be an unsolved Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a line, no other type of Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let p0_x = &start[0];
-    let p0_y = &start[1];
-    let p1_x = &end[0];
-    let p1_y = &end[1];
-    match (p0_x, p0_y, p1_x, p1_y) {
-        (
-            UnsolvedExpr::Unknown(p0_x),
-            UnsolvedExpr::Unknown(p0_y),
-            UnsolvedExpr::Unknown(p1_x),
-            UnsolvedExpr::Unknown(p1_y),
-        ) => {
-            let range = args.source_range;
-            let solver_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                p0_x.to_constraint_id(range)?,
-                p0_y.to_constraint_id(range)?,
-            );
-            let solver_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                p1_x.to_constraint_id(range)?,
-                p1_y.to_constraint_id(range)?,
-            );
-            let solver_line = ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
-            let constraint = ezpz::Constraint::Vertical(solver_line);
-            #[cfg(feature = "artifact-graph")]
-            let constraint_id = exec_state.next_object_id();
-            // Save the constraint to be used for solving.
-            let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "vertical() can only be used inside a sketch block".to_owned(),
-                    vec![args.source_range],
-                )));
-            };
-            sketch_state.solver_constraints.push(constraint);
-            #[cfg(feature = "artifact-graph")]
-            {
-                let constraint = crate::front::Constraint::Vertical(Vertical {
-                    line: unsolved.object_id,
-                });
-                sketch_state.sketch_constraints.push(constraint_id);
-                track_constraint(constraint_id, constraint, exec_state, &args);
-            }
-            Ok(KclValue::none())
-        }
-        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's x and y coordinates of both start and end must be vars".to_owned(),
-            vec![args.source_range],
-        ))),
-    }
+    axis_constraint(AxisConstraintKind::Vertical, exec_state, args).await
 }

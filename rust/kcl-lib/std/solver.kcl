@@ -463,7 +463,7 @@ export fn horizontal(
   /// Either
   /// - A single line segment that should remain horizontal.
   /// - A list of points which should all be horizontal.
-  @input: [Segment],
+  @input: Segment | [Segment | Point2d; 2+],
 ) {}
 
 /// Constrain a line, or a list of points, to be vertical.
@@ -495,5 +495,5 @@ export fn vertical(
   /// Either
   /// - A single line segment that should remain vertical.
   /// - A list of points which should all be vertical.
-  @input: [Segment],
+  @input: Segment | [Segment | Point2d; 2+],
 ) {}
