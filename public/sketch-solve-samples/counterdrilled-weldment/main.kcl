@@ -2,10 +2,8 @@
 // A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
 // Categories: Manufacturing, Construction
 
-// Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-// Define parameters
 boltSpacingX = 5
 boltSpacingY = 3
 boltDiameter = 1 / 4
@@ -14,24 +12,20 @@ counterdrillDepth = 3 / 16
 tubeInnerDiameter = 1 + 1 / 4
 tubeThickness = 0.115
 tubeHeight = 2
-stockThickness = .5
+stockThickness = 0.5
 
-// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterdrill diameter to the bolt spacing
 blockLength = boltSpacingX + boltDiameter * 6
 blockWidth = boltSpacingY + boltDiameter * 6
+blockHalfLength = blockLength / 2
+blockHalfWidth = blockWidth / 2
+plateBottomLeftX = -blockHalfLength
+plateBottomLeftY = -blockHalfWidth
 
-// Draw the base plate
-plateSketch = sketch(on = XY) {
-  line1 = line(start = [var -3.25in, var -2.25in], end = [var 3.25in, var -2.25in])
-  line2 = line(start = [var 3.25in, var -2.25in], end = [var 3.25in, var 2.25in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 3.25in, var 2.25in], end = [var -3.25in, var 2.25in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -3.25in, var 2.25in], end = [var -3.25in, var -2.25in])
-  coincident([line3.end, line4.start])
-}
+tubeInnerRadius = tubeInnerDiameter / 2
+tubeOuterRadius = tubeInnerRadius + tubeThickness
+tubeOuterDiameter = tubeOuterRadius * 2
 
-// Define hole positions (face-local: note X/Y swapped vs world XY)
+// Top-face sketch coordinates are face-local, not world XY.
 holePositionsSwapped = [
   [-boltSpacingY / 2, -boltSpacingX / 2],
   [-boltSpacingY / 2, boltSpacingX / 2],
@@ -39,23 +33,102 @@ holePositionsSwapped = [
   [boltSpacingY / 2, boltSpacingX / 2]
 ]
 
-region001 = region(segments = [plateSketch.line1, plateSketch.line2])
-// 1) Extrude plate
-plateTopExtrude = extrude(region001, length = stockThickness, tagEnd = $plateTop)
+plateRegionPoint = [
+  (tubeInnerRadius + blockHalfLength) / 2,
+  0
+]
+tubeRegionPoint = [
+  (tubeInnerRadius + tubeOuterRadius) / 2,
+  0
+]
 
-// 2) Chamfer perimeter (separate from extrude)
+pinholeDiameter = boltDiameter
+pinholeCenterZ = stockThickness + tubeHeight - 0.3
+pinholeDepth = 1
+pinholeOverlap = 0.02
+pinholeToolLength = pinholeDepth + pinholeOverlap * 2
+
+finDiagonalLength = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2)
+finOuterX = finDiagonalLength - counterdrillDiameter
+finShoulderHeight = 0.15
+finLeadInset = 0.15
+finTopZ = stockThickness + tubeHeight * 0.8
+finSpan = finOuterX - tubeOuterRadius
+finHeight = finTopZ - stockThickness
+
+// Step 1: Plate profile
+plateSketch = sketch(on = XY) {
+  plateBottomLeftOffsetX = line(start = [var 0in, var 0in], end = [var -3.25in, var 0in], construction = true)
+  plateBottomLeftOffsetY = line(start = [var -3.25in, var 0in], end = [var -3.25in, var -2.25in], construction = true)
+  plateHoleRadiusGuide = line(start = [var 0in, var 0in], end = [var 0.625in, var 0in], construction = true)
+
+  plateBottom = line(start = [var -3.25in, var -2.25in], end = [var 3.25in, var -2.25in])
+  plateRight = line(start = [var 3.25in, var -2.25in], end = [var 3.25in, var 2.25in])
+  plateTopEdge = line(start = [var 3.25in, var 2.25in], end = [var -3.25in, var 2.25in])
+  plateLeft = line(start = [var -3.25in, var 2.25in], end = [var -3.25in, var -2.25in])
+  plateHole = circle(start = [var 0.625in, var 0in], center = [var 0in, var 0in])
+
+  coincident([plateBottomLeftOffsetX.start, ORIGIN])
+  coincident([
+    plateBottomLeftOffsetX.end,
+    plateBottomLeftOffsetY.start
+  ])
+  coincident([
+    plateHoleRadiusGuide.start,
+    plateHole.center
+  ])
+  coincident([
+    plateHoleRadiusGuide.end,
+    plateHole.start
+  ])
+  coincident([
+    plateBottomLeftOffsetY.end,
+    plateBottom.start
+  ])
+  coincident([plateBottom.end, plateRight.start])
+  coincident([plateRight.end, plateTopEdge.start])
+  coincident([plateTopEdge.end, plateLeft.start])
+  coincident([plateLeft.end, plateBottom.start])
+  coincident([plateHole.center, ORIGIN])
+
+  horizontal(plateBottomLeftOffsetX)
+  vertical(plateBottomLeftOffsetY)
+  horizontal(plateHoleRadiusGuide)
+  horizontal(plateBottom)
+  vertical(plateRight)
+  horizontal(plateTopEdge)
+  vertical(plateLeft)
+
+  horizontalDistance([
+    plateBottomLeftOffsetX.start,
+    plateBottomLeftOffsetX.end
+  ]) == plateBottomLeftX
+  verticalDistance([
+    plateBottomLeftOffsetY.start,
+    plateBottomLeftOffsetY.end
+  ]) == plateBottomLeftY
+  distance([plateBottom.start, plateBottom.end]) == blockLength
+  distance([plateLeft.start, plateLeft.end]) == blockWidth
+  diameter(plateHole) == tubeInnerDiameter
+}
+
+// Step 2: Plate extrude
+plateRegion = region(point = plateRegionPoint, sketch = plateSketch)
+plateBlank = extrude(plateRegion, length = stockThickness, tagEnd = $plateTop)
+
+// Step 3: Plate chamfer
 plateChamfered = chamfer(
-  plateTopExtrude,
+  plateBlank,
   length = boltDiameter * 2,
   tags = [
-    getNextAdjacentEdge(rectangleSegmentB001),
-    getNextAdjacentEdge(rectangleSegmentA001),
-    getNextAdjacentEdge(rectangleSegmentC001),
-    getNextAdjacentEdge(rectangleSegmentD001)
+    getNextAdjacentEdge(plateRegion.tags.plateRight),
+    getNextAdjacentEdge(plateRegion.tags.plateBottom),
+    getNextAdjacentEdge(plateRegion.tags.plateTopEdge),
+    getNextAdjacentEdge(plateRegion.tags.plateLeft)
   ],
 )
 
-// 3) Hole pattern (separate statement for readability)
+// Step 4: Counterdrilled hole pattern on top face
 plate = hole::holes(
   plateChamfered,
   face = plateTop,
@@ -64,25 +137,84 @@ plate = hole::holes(
   holeBody = hole::blind(depth = stockThickness, diameter = boltDiameter),
   holeType = hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
 )
+hide(plateSketch)
 
-// Drill a small pin hole in the side of the tube (separate extrude)
-pinholeSketch = sketch(on = YZ) {
-  circle1 = circle(start = [var 0.13in, var 2.2in], center = [var 0in, var 2.2in])
+// Step 5: Side pinhole tool
+pinholeSketch = sketch(on = offsetPlane(YZ, offset = -tubeOuterRadius - pinholeOverlap)) {
+  pinholeCenterGuide = line(start = [var 0in, var 0in], end = [var 0in, var 2.2in], construction = true)
+  pinholeRadiusGuide = line(start = [var 0in, var 2.2in], end = [var 0.125in, var 2.2in], construction = true)
+  pinholeCircle = circle(start = [var 0.125in, var 2.2in], center = [var 0in, var 2.2in])
+
+  coincident([pinholeCenterGuide.start, ORIGIN])
+  coincident([
+    pinholeCenterGuide.end,
+    pinholeCircle.center
+  ])
+  coincident([
+    pinholeRadiusGuide.start,
+    pinholeCircle.center
+  ])
+  coincident([
+    pinholeRadiusGuide.end,
+    pinholeCircle.start
+  ])
+
+  vertical(pinholeCenterGuide)
+  horizontal(pinholeRadiusGuide)
+
+  verticalDistance([
+    pinholeCenterGuide.start,
+    pinholeCenterGuide.end
+  ]) == pinholeCenterZ
+  diameter(pinholeCircle) == pinholeDiameter
 }
-region002 = region(segments = [pinholeSketch.circle1])
-pinhole = extrude(region002, length = -10)
+pinholeRegion = region(segments = [pinholeSketch.pinholeCircle])
+pinholeTool = extrude(pinholeRegion, length = pinholeToolLength)
+hide(pinholeSketch)
 
-// Model the central tube and subtract the pin hole (separate extrude)
-centralTubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
-  circle1 = circle(start = [var 0.74in, var 0in], center = [var 0in, var 0in])
+// Step 6: Tube ring extrude
+tubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
+  tubeOuterRadiusGuide = line(start = [var 0in, var 0in], end = [var 0.74in, var 0in], construction = true)
+  tubeInnerRadiusGuide = line(start = [var 0in, var 0in], end = [var 0.625in, var 0in], construction = true)
+  tubeOuterCircle = circle(start = [var 0.74in, var 0in], center = [var 0in, var 0in])
+  tubeInnerCircle = circle(start = [var 0.625in, var 0in], center = [var 0in, var 0in])
+
+  coincident([
+    tubeOuterRadiusGuide.start,
+    tubeOuterCircle.center
+  ])
+  coincident([
+    tubeOuterRadiusGuide.end,
+    tubeOuterCircle.start
+  ])
+  coincident([
+    tubeInnerRadiusGuide.start,
+    tubeInnerCircle.center
+  ])
+  coincident([
+    tubeInnerRadiusGuide.end,
+    tubeInnerCircle.start
+  ])
+  coincident([tubeOuterCircle.center, ORIGIN])
+  coincident([
+    tubeInnerCircle.center,
+    tubeOuterCircle.center
+  ])
+
+  horizontal(tubeOuterRadiusGuide)
+  horizontal(tubeInnerRadiusGuide)
+  diameter(tubeOuterCircle) == tubeOuterDiameter
+  diameter(tubeInnerCircle) == tubeInnerDiameter
 }
-region003 = region(segments = [centralTubeSketch.circle1])
-centralTubeSolid = extrude(region003, length = tubeHeight)
-centralTube = subtract([centralTubeSolid], tools = [pinhole])
+tubeRegion = region(point = tubeRegionPoint, sketch = tubeSketch)
+tubeBlank = extrude(tubeRegion, length = tubeHeight)
+hide(tubeSketch)
 
-// Inline fins (no extrude piping)
-// Diagonal plane helper for i = 1
-finDiagPlane1 = {
+// Step 7: Apply pinhole cut to tube
+centralTube = subtract([tubeBlank], tools = [pinholeTool])
+
+// Step 8: First fin + opposite pattern pair
+finPlane1 = {
   origin = [0.0, 0.0, 0.0],
   xAxis = [
     boltSpacingX / 2 * 1,
@@ -92,24 +224,50 @@ finDiagPlane1 = {
   yAxis = [0.0, 0.0, 1.0]
 }
 
-finProfile1 = sketch(on = finDiagPlane1) {
-  line1 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
-  line2 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
-  coincident([line4.end, line5.start])
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line5)
-}
-region004 = region(segments = [finProfile1.line1, finProfile1.line2])
-finSolid1 = extrude(region004, length = tubeThickness, symmetric = true)
+finSketch1 = sketch(on = finPlane1) {
+  finRootOffset1 = line(start = [var 0in, var 0in], end = [var 0.74in, var 0in], construction = true)
+  finRootRise1 = line(start = [var 0.74in, var 0in], end = [var 0.74in, var 0.5in], construction = true)
+  finTopGuide1 = line(start = [var 0.74in, var 0.5in], end = [var 0.74in, var 2.1in], construction = true)
+  finLeadGuide1 = line(start = [var 0.74in, var 2.1in], end = [var 0.89in, var 2.1in], construction = true)
 
-// Pattern to opposite side around Z axis
+  bottomEdge1 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
+  shoulderEdge1 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
+  diagonalEdge1 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
+  topEdge1 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
+  innerEdge1 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
+
+  coincident([finRootOffset1.start, ORIGIN])
+  coincident([finRootOffset1.end, finRootRise1.start])
+  coincident([finRootRise1.end, bottomEdge1.start])
+  coincident([finRootRise1.end, finTopGuide1.start])
+  coincident([bottomEdge1.end, shoulderEdge1.start])
+  coincident([shoulderEdge1.end, diagonalEdge1.start])
+  coincident([finTopGuide1.end, topEdge1.end])
+  coincident([finTopGuide1.end, innerEdge1.start])
+  coincident([finTopGuide1.end, finLeadGuide1.start])
+  coincident([finLeadGuide1.end, diagonalEdge1.end])
+  coincident([finLeadGuide1.end, topEdge1.start])
+  coincident([innerEdge1.end, bottomEdge1.start])
+
+  horizontal(finRootOffset1)
+  vertical(finRootRise1)
+  vertical(finTopGuide1)
+  horizontal(finLeadGuide1)
+  horizontal(bottomEdge1)
+  vertical(shoulderEdge1)
+  horizontal(topEdge1)
+  vertical(innerEdge1)
+
+  horizontalDistance([finRootOffset1.start, finRootOffset1.end]) == tubeOuterRadius
+  verticalDistance([finRootRise1.start, finRootRise1.end]) == stockThickness
+  verticalDistance([finTopGuide1.start, finTopGuide1.end]) == finHeight
+  horizontalDistance([finLeadGuide1.start, finLeadGuide1.end]) == finLeadInset
+  distance([bottomEdge1.start, bottomEdge1.end]) == finSpan
+  distance([shoulderEdge1.start, shoulderEdge1.end]) == finShoulderHeight
+}
+finRegion1 = region(segments = [finSketch1.bottomEdge1])
+finSolid1 = extrude(finRegion1, length = tubeThickness, symmetric = true)
+hide(finSketch1)
 finPair1 = patternCircular3d(
   finSolid1,
   instances = 2,
@@ -119,8 +277,8 @@ finPair1 = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// Diagonal plane helper for i = -1
-finDiagPlane2 = {
+// Step 9: Second fin + opposite pattern pair
+finPlane2 = {
   origin = [0.0, 0.0, 0.0],
   xAxis = [
     boltSpacingX / 2 * -1,
@@ -130,24 +288,50 @@ finDiagPlane2 = {
   yAxis = [0.0, 0.0, 1.0]
 }
 
-finProfile2 = sketch(on = finDiagPlane2) {
-  line1 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
-  line2 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
-  coincident([line4.end, line5.start])
-  horizontal(line2)
-  vertical(line3)
-  horizontal(line5)
-}
-region005 = region(segments = [finProfile2.line1, finProfile2.line2])
-finSolid2 = extrude(region005, length = tubeThickness, symmetric = true)
+finSketch2 = sketch(on = finPlane2) {
+  finRootOffset2 = line(start = [var 0in, var 0in], end = [var 0.74in, var 0in], construction = true)
+  finRootRise2 = line(start = [var 0.74in, var 0in], end = [var 0.74in, var 0.5in], construction = true)
+  finTopGuide2 = line(start = [var 0.74in, var 0.5in], end = [var 0.74in, var 2.1in], construction = true)
+  finLeadGuide2 = line(start = [var 0.74in, var 2.1in], end = [var 0.89in, var 2.1in], construction = true)
 
-// Pattern to opposite side around Z axis
+  bottomEdge2 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
+  shoulderEdge2 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
+  diagonalEdge2 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
+  topEdge2 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
+  innerEdge2 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
+
+  coincident([finRootOffset2.start, ORIGIN])
+  coincident([finRootOffset2.end, finRootRise2.start])
+  coincident([finRootRise2.end, bottomEdge2.start])
+  coincident([finRootRise2.end, finTopGuide2.start])
+  coincident([bottomEdge2.end, shoulderEdge2.start])
+  coincident([shoulderEdge2.end, diagonalEdge2.start])
+  coincident([finTopGuide2.end, topEdge2.end])
+  coincident([finTopGuide2.end, innerEdge2.start])
+  coincident([finTopGuide2.end, finLeadGuide2.start])
+  coincident([finLeadGuide2.end, diagonalEdge2.end])
+  coincident([finLeadGuide2.end, topEdge2.start])
+  coincident([innerEdge2.end, bottomEdge2.start])
+
+  horizontal(finRootOffset2)
+  vertical(finRootRise2)
+  vertical(finTopGuide2)
+  horizontal(finLeadGuide2)
+  horizontal(bottomEdge2)
+  vertical(shoulderEdge2)
+  horizontal(topEdge2)
+  vertical(innerEdge2)
+
+  horizontalDistance([finRootOffset2.start, finRootOffset2.end]) == tubeOuterRadius
+  verticalDistance([finRootRise2.start, finRootRise2.end]) == stockThickness
+  verticalDistance([finTopGuide2.start, finTopGuide2.end]) == finHeight
+  horizontalDistance([finLeadGuide2.start, finLeadGuide2.end]) == finLeadInset
+  distance([bottomEdge2.start, bottomEdge2.end]) == finSpan
+  distance([shoulderEdge2.start, shoulderEdge2.end]) == finShoulderHeight
+}
+finRegion2 = region(segments = [finSketch2.bottomEdge2])
+finSolid2 = extrude(finRegion2, length = tubeThickness, symmetric = true)
+hide(finSketch2)
 finPair2 = patternCircular3d(
   finSolid2,
   instances = 2,
