@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
+  RequestedProjectFile,
   SystemIOContext,
   SystemIOInput,
 } from '@src/machines/systemIO/utils'
@@ -115,6 +116,15 @@ export const systemIOMachine = setup({
             files: RequestedKCLFile[]
             requestedProjectName: string
             override?: boolean
+            requestedSubRoute?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject
+          data: {
+            files: RequestedProjectFile[]
+            requestedProjectName: string
+            requestedFileNameWithExtension?: string
             requestedSubRoute?: string
           }
         }
@@ -544,10 +554,31 @@ export const systemIOMachine = setup({
         fileName: string
         projectName: string
         subRoute: string
-      }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
-      }
-    ),
+        }> => {
+          return { message: '', fileName: '', projectName: '', subRoute: '' }
+        }
+      ),
+    [SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject]:
+      fromPromise(
+        async ({
+          input,
+        }: {
+          input: {
+            context: SystemIOContext
+            files: RequestedProjectFile[]
+            requestedProjectName: string
+            requestedFileNameWithExtension?: string
+            requestedSubRoute?: string
+          }
+        }): Promise<{
+          message: string
+          fileName: string
+          projectName: string
+          subRoute: string
+        }> => {
+          return { message: '', fileName: '', projectName: '', subRoute: '' }
+        }
+      ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
       async ({
         input,
@@ -821,6 +852,10 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
           target:
             SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        },
+        [SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject]: {
+          target:
+            SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
         },
         [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
           target:
@@ -1234,6 +1269,72 @@ export const systemIOMachine = setup({
                 return { project: output.projectName, file }
               },
             }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject]: {
+      invoke: {
+        id: SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject,
+        src: SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject,
+        input: ({ context, event }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject
+          )
+          return {
+            context,
+            files: event.data.files,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+            requestedSubRoute: event.data.requestedSubRoute,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
+              requestedFileName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
+
+                if (!output.fileName) {
+                  return { project: '', file: '' }
+                }
+
+                return {
+                  project: output.projectName,
+                  file: output.fileName,
+                  subRoute: output.subRoute,
+                }
+              },
+              requestedProjectName: ({ event }) => {
+                return {
+                  name: (
+                    event as { output: { projectName: string; subRoute?: string } }
+                  ).output.projectName,
+                  subRoute: (
+                    event as { output: { projectName: string; subRoute?: string } }
+                  ).output.subRoute,
+                }
+              },
+            }),
+            assign({ clearURLParams: { value: true } }),
             SystemIOMachineActions.toastSuccess,
           ],
         },
