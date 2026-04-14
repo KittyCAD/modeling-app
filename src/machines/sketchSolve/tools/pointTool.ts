@@ -7,10 +7,12 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   isSketchSolveErrorOutput,
   toastSketchSolveError,
@@ -19,11 +21,45 @@ import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  getConstraintForSnapTarget,
+  type SnapTarget,
+} from '@src/machines/sketchSolve/snapping'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
+
+function getPointToolSnappingCandidate({
+  self,
+  sceneInfra,
+  sketchId,
+  mousePosition,
+  mouseEvent,
+}: {
+  self: Parameters<typeof sendHoveredSnappingCandidate>[0]
+  sceneInfra: SceneInfra
+  sketchId: number
+  mousePosition: Coords2d
+  mouseEvent: MouseEvent
+}) {
+  const candidate = getBestSnappingCandidate({
+    self,
+    sceneInfra,
+    sketchId,
+    mousePosition,
+    mouseEvent,
+  })
+
+  return candidate
+}
 
 type ToolEvents =
   | BaseToolEvent
@@ -31,6 +67,8 @@ type ToolEvents =
       type: `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {
         kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -58,20 +96,56 @@ export const machine = setup({
 
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            // Send the add point event with the clicked coordinates
+            const mousePosition = [twoD.x, twoD.y] as Coords2d
+            const snappingCandidate = getPointToolSnappingCandidate({
+              self,
+              sceneInfra: context.sceneInfra,
+              sketchId: context.sketchId,
+              mousePosition,
+              mouseEvent: args.mouseEvent,
+            })
+            const [x, y] = snappingCandidate?.position ?? mousePosition
             self.send({
               type: 'add point',
-              data: [twoD.x, twoD.y],
+              data: [x, y],
+              snapTarget: snappingCandidate?.target,
             })
           }
         },
+        onMove: (args) => {
+          const twoD = args?.intersectionPoint?.twoD
+          if (!twoD) {
+            clearToolSnappingState({
+              self,
+              sceneInfra: context.sceneInfra,
+            })
+            return
+          }
+
+          const snappingCandidate = getPointToolSnappingCandidate({
+            self,
+            sceneInfra: context.sceneInfra,
+            sketchId: context.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            mouseEvent: args.mouseEvent,
+          })
+          sendHoveredSnappingCandidate(self, snappingCandidate)
+          updateToolSnappingPreview({
+            sceneInfra: context.sceneInfra,
+            target: snappingCandidate,
+          })
+        },
       })
     },
-    'remove point listener': ({ context }) => {
-      console.log('should be exiting point tool now')
-      // Reset callbacks to remove the onClick listener
+    'remove point listener': ({ context, self }) => {
+      clearToolSnappingState({
+        self,
+        sceneInfra: context.sceneInfra,
+      })
+      // Reset callbacks to remove the onClick and onMove listeners
       context.sceneInfra.setCallbacks({
         onClick: () => {},
+        onMove: () => {},
       })
     },
     'send result to parent': ({ event, self }) => {
@@ -102,12 +176,14 @@ export const machine = setup({
       }: {
         input: {
           pointData: [number, number]
+          snapTarget?: SnapTarget
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
         }
       }) => {
-        const { pointData, rustContext, kclManager, sketchId } = input
+        const { pointData, snapTarget, rustContext, kclManager, sketchId } =
+          input
         const [x, y] = pointData
 
         try {
@@ -115,6 +191,7 @@ export const machine = setup({
           const units = baseUnitToNumericSuffix(
             kclManager.fileSettings.defaultLengthUnit
           )
+          const settings = jsAppSettings(rustContext.settingsActor)
 
           // Note: x and y come from intersectionPoint.twoD which is in world coordinates and scaled to match current units
           const segmentCtor: SegmentCtor = {
@@ -131,12 +208,52 @@ export const machine = setup({
             sketchId, // sketchId from context
             segmentCtor,
             'point-tool-point', // label
-            jsAppSettings(rustContext.settingsActor)
+            settings
           )
 
-          console.log('Point segment added successfully:', result)
+          if (snapTarget === undefined) {
+            return result
+          }
 
-          return result
+          const pointId = result.sceneGraphDelta.new_objects.find((objId) => {
+            const obj = result.sceneGraphDelta.new_graph.objects[objId]
+            return isPointSegment(obj)
+          })
+
+          if (pointId === undefined) {
+            return {
+              error: 'Point tool expected a newly created point to exist.',
+            }
+          }
+
+          const snapConstraint = getConstraintForSnapTarget(
+            pointId,
+            snapTarget,
+            units
+          )
+          if (snapConstraint === null) {
+            return result
+          }
+
+          const snapResult = await rustContext.addConstraint(
+            0,
+            sketchId,
+            snapConstraint,
+            settings
+          )
+
+          return {
+            kclSource: snapResult.kclSource,
+            sceneGraphDelta: {
+              ...snapResult.sceneGraphDelta,
+              new_objects: [
+                ...result.sceneGraphDelta.new_objects,
+                ...snapResult.sceneGraphDelta.new_objects,
+              ],
+            },
+            checkpointId:
+              snapResult.checkpointId ?? result.checkpointId ?? null,
+          }
         } catch (error) {
           console.error('Failed to add point segment:', error)
           return {
@@ -184,6 +301,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             pointData: event.data,
+            snapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
