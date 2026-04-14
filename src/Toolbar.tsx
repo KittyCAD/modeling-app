@@ -480,8 +480,9 @@ const Toolbar_ = memo(
               </p>
             </div>
           )}
-          {modelingMachineStateToToolbarModeName(props.state) ===
-            'sketching' && <LegacySketchModeBanner />}
+          {props.state.context.store.useSketchSolveMode?.current === true &&
+            modelingMachineStateToToolbarModeName(props.state) ===
+              'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
