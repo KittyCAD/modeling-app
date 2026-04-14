@@ -5,7 +5,7 @@ excerpt: "Functions for sketch-solve using constraints. This module's items are 
 layout: manual
 ---
 
-Functions for sketch-solve using constraints. This module's items are for use within sketch blocks.
+Functions for sketch-solve using constraints. This module's items are for use within sketch blocks. 
 
 ```kcl,inline
 triangle = sketch(on = XY) {
@@ -23,13 +23,24 @@ triangleRegion = region(point = [0.5mm, 0.5mm], sketch = triangle)
 extrude(triangleRegion, length = 5)
 ```
 
-In the above example, the `sketch(on = XY) { ... }` is called the sketch block. Inside the curly braces, all the functions and constants in this module are in scope and available. 
+In the above example, the `sketch(on = XY) { ... }` is called the sketch
+block. Inside the curly braces, all the functions and constants in this
+module are in scope and available.
 
-Values introduced with `var` are only initial guesses for the solver. They are starting positions or starting sizes, not locked values, and the solver is free to change them in the final solved sketch. 
+Values introduced with `var` are only initial guesses for the solver.
+They are starting positions or starting sizes, not locked values, and the
+solver is free to change them in the final solved sketch.
 
-For that reason, initial guesses should always be literals. Do not use identifiers, constant references, or computed expressions as initial guesses. For example, use `var 0mm` or `var 10mm`, not `var width`, `var baseRadius`, or `var (plateWidth / 2)`. 
+For that reason, initial guesses should always be literals. Do not use
+identifiers, constant references, or computed expressions as initial
+guesses. For example, use `var 0mm` or `var 10mm`, not `var width`,
+`var baseRadius`, or `var (plateWidth / 2)`.
 
-If a value must stay fixed, put that value in the constraint itself. Constants and expressions belong in `distance`, `radius`, `diameter`, `horizontalDistance`, `verticalDistance`, and similar constraint functions, because those are what actually constrain the solved result. 
+If a value must stay fixed, put that value in the constraint itself.
+Constants and expressions belong in `distance`, `radius`, `diameter`,
+`horizontalDistance`, `verticalDistance`, and similar constraint
+functions, because those are what actually constrain the solved result.
+
 
 
 ## Functions and constants
