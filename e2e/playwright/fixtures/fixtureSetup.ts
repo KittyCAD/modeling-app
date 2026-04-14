@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
+  Disposable,
   ElectronApplication,
   Page,
   TestInfo,
@@ -200,20 +201,30 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await (
+          oldContextAddInitScript as (
+            this: BrowserContext,
+            script: unknown,
+            arg?: unknown
+          ) => Promise<Disposable>
+        ).call(this, a, b)
         await that.page.reload()
+        return disposable
       }
 
       // Intentionally changing `this`, so no need to bind.
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await (
+          oldPageAddInitScript as (
+            this: Page,
+            script: unknown,
+            arg?: unknown
+          ) => Promise<Disposable>
+        ).call(this, a, b)
         await that.page.reload()
+        return disposable
       }
     }
 
@@ -370,18 +381,30 @@ const fixturesForWeb = {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldPageAddInitScript = page.addInitScript
     page.addInitScript = async function (...args) {
-      // @ts-expect-error
-      await oldPageAddInitScript.apply(this, args)
+      const disposable = await (
+        oldPageAddInitScript as (
+          this: Page,
+          script: unknown,
+          arg?: unknown
+        ) => Promise<Disposable>
+      ).call(this, args[0], args[1])
       await page.reload()
+      return disposable
     }
 
     // Intentionally changing `this`, so no need to bind.
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldContextAddInitScript = context.addInitScript
     context.addInitScript = async function (...args) {
-      // @ts-expect-error
-      await oldContextAddInitScript.apply(this, args)
+      const disposable = await (
+        oldContextAddInitScript as (
+          this: BrowserContext,
+          script: unknown,
+          arg?: unknown
+        ) => Promise<Disposable>
+      ).call(this, args[0], args[1])
       await page.reload()
+      return disposable
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
