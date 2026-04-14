@@ -407,7 +407,13 @@ fn rewrite_constraint_with_map(
                     line_id: rewrite_object_id(*line, rewrite_map),
                 }))
             }
-            crate::front::Horizontal::Points { points } => todo!(),
+            crate::front::Horizontal::Points { points } => Some(Constraint::Horizontal(Horizontal::Points {
+                points: points
+                    .iter()
+                    .copied()
+                    .map(|point| rewrite_object_id(point, rewrite_map))
+                    .collect(),
+            })),
         },
         Constraint::Vertical(vertical) => match vertical {
             crate::front::Vertical::Line { line_id: line } => {
@@ -415,7 +421,13 @@ fn rewrite_constraint_with_map(
                     line_id: rewrite_object_id(*line, rewrite_map),
                 }))
             }
-            crate::front::Vertical::Points { points } => todo!(),
+            crate::front::Vertical::Points { points } => Some(Constraint::Vertical(Vertical::Points {
+                points: points
+                    .iter()
+                    .copied()
+                    .map(|point| rewrite_object_id(point, rewrite_map))
+                    .collect(),
+            })),
         },
         _ => None,
     }
