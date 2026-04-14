@@ -1,6 +1,7 @@
 /** Engine-using integration tests of modelingMachine.
  * For engineless unit tests, see modelingMachine.test.ts */
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -12,11 +13,12 @@ import {
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { type ActorRefFrom, createActor } from 'xstate'
+import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import {
   removeSingleConstraint,
@@ -1508,6 +1510,149 @@ sketch001 = sketch(on = YZ) {
           'Unable to enter sketch while KCL has parse errors.'
         )
       })
+    })
+
+    it('restores camera orbit controls when sketch exit errors', async () => {
+      const {
+        instance,
+        kclManager,
+        rustContext,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      } = await buildTheWorldAndNoEngineConnection()
+
+      const sendSceneCommandSpy = vi
+        .spyOn(engineCommandManager, 'sendSceneCommand')
+        .mockRejectedValue(new Error('sketch exit failed'))
+
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: instance,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      })
+      context.store.useSketchSolveMode = { current: true } as any
+      context.store.defaultUnit = { current: 'mm' } as any
+      context.projectRef = { current: {} as any }
+
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(async () => ({
+            plane: {
+              type: 'defaultPlane',
+              plane: 'XY',
+              planeId: 'test-plane-id',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+              origin: [0, 0, 0],
+            } as any,
+            sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
+          })),
+        },
+      })
+
+      const actor = createActor(machine, { input: context }).start()
+
+      actor.send({ type: 'Enter sketch' })
+      actor.send({
+        type: 'Select sketch solve plane',
+        data: 'test-plane-id',
+      })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      actor.send({ type: 'Exit sketch' })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            idle: 'hidePlanes',
+          })
+        )
+      })
+
+      expect(sendSceneCommandSpy).toHaveBeenCalled()
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
+      expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
+      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+        'engineToClient'
+      )
+    })
+
+    it('disables camera orbit controls in sketch solve mode', async () => {
+      const {
+        instance,
+        kclManager,
+        rustContext,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      } = await buildTheWorldAndNoEngineConnection()
+
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: instance,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      })
+      context.store.useSketchSolveMode = { current: true } as any
+      context.store.defaultUnit = { current: 'mm' } as any
+      context.projectRef = { current: {} as any }
+
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(async () => ({
+            plane: {
+              type: 'defaultPlane',
+              plane: 'XY',
+              planeId: 'test-plane-id',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+              origin: [0, 0, 0],
+            } as any,
+            sketchSolveId: 1,
+            initialSceneGraphDelta:
+              dummyInitSketchGraphDelta as SceneGraphDelta,
+          })),
+        },
+      })
+
+      const actor = createActor(machine, { input: context }).start()
+
+      actor.send({ type: 'Enter sketch' })
+      actor.send({
+        type: 'Select sketch solve plane',
+        data: 'test-plane-id',
+      })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+        'clientToEngine'
+      )
     })
   })
 })

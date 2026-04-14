@@ -1,11 +1,5 @@
-// Router template for a cross bar
-// A guide for routing a notch into a cross bar.
-// Categories: Construction
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
-// Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
-
-// Define parameters
 routerDiameter = 12.7
 templateDiameter = (11 / 16): in
 slateWidthHalf = 41.5 / 2
@@ -14,76 +8,106 @@ templateThickness = 10
 radius = 10
 depth = 30
 
-// Calculated parameters
 templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
 distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
+slotRadius = radius + templateGap
+tabReach = minClampingDistance - templateThickness
 
-// Create the first sketch
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 31.88mm], end = [var 10.75mm, var 31.88mm])
   arc2 = arc(start = [var 22.63mm, var 20mm], end = [var 10.75mm, var 31.88mm], center = [var 10.75mm, var 20mm])
   coincident([line1.end, arc2.end])
+
   line3 = line(start = [var 22.63mm, var 20mm], end = [var 22.63mm, var -10mm])
   coincident([arc2.start, line3.start])
+
   line4 = line(start = [var 22.63mm, var -10mm], end = [var 32.63mm, var -10mm])
   coincident([line3.end, line4.start])
+
   line5 = line(start = [var 32.63mm, var -10mm], end = [var 32.63mm, var 10.94mm])
   coincident([line4.end, line5.start])
+
   line6 = line(start = [var 32.63mm, var 10.94mm], end = [var 102.63mm, var 10.94mm])
   coincident([line5.end, line6.start])
+
   line7 = line(start = [var 102.63mm, var 10.94mm], end = [var 102.63mm, var 30.94mm])
   coincident([line6.end, line7.start])
+
   line8 = line(start = [var 102.63mm, var 30.94mm], end = [var 32.63mm, var 30.94mm])
   coincident([line7.end, line8.start])
+
   line9 = line(start = [var 32.63mm, var 30.94mm], end = [var 32.63mm, var 41.88mm])
   coincident([line8.end, line9.start])
+
   line10 = line(start = [var 32.63mm, var 41.88mm], end = [var 0mm, var 41.88mm])
   coincident([line9.end, line10.start])
+
   line11 = line(start = [var 0mm, var 41.88mm], end = [var -32.63mm, var 41.88mm])
   coincident([line10.end, line11.start])
+
   line12 = line(start = [var -32.63mm, var 41.88mm], end = [var -32.63mm, var 30.94mm])
   coincident([line11.end, line12.start])
+
   line13 = line(start = [var -32.63mm, var 30.94mm], end = [var -102.63mm, var 30.94mm])
   coincident([line12.end, line13.start])
+
   line14 = line(start = [var -102.63mm, var 30.94mm], end = [var -102.63mm, var 10.94mm])
   coincident([line13.end, line14.start])
+
   line15 = line(start = [var -102.63mm, var 10.94mm], end = [var -32.63mm, var 10.94mm])
   coincident([line14.end, line15.start])
+
   line16 = line(start = [var -32.63mm, var 10.94mm], end = [var -32.63mm, var -10mm])
   coincident([line15.end, line16.start])
+
   line17 = line(start = [var -32.63mm, var -10mm], end = [var -22.63mm, var -10mm])
   coincident([line16.end, line17.start])
+
   line18 = line(start = [var -22.63mm, var -10mm], end = [var -22.63mm, var 20mm])
   coincident([line17.end, line18.start])
+
   arc19 = arc(start = [var -10.75mm, var 31.88mm], end = [var -22.63mm, var 20mm], center = [var -10.75mm, var 20mm])
   coincident([line18.end, arc19.end])
+
   line20 = line(start = [var -10.75mm, var 31.88mm], end = [var 0mm, var 31.88mm])
   coincident([arc19.start, line20.start])
-  horizontal(arc2)
-  vertical(line4)
-  horizontal(line5)
-  vertical(line6)
-  horizontal(line7)
-  vertical(line8)
-  horizontal(line9)
-  vertical(line10)
+  coincident([line20.end, line1.start])
+
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  vertical(line7)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
   horizontal(line11)
-  horizontal(line12)
-  vertical(line13)
-  horizontal(line14)
-  vertical(line15)
-  horizontal(line16)
-  vertical(line17)
-  horizontal(line18)
-  vertical(arc19)
+  vertical(line12)
+  horizontal(line13)
+  vertical(line14)
+  horizontal(line15)
+  vertical(line16)
+  horizontal(line17)
+  vertical(line18)
+  horizontal(line20)
+
+  radius(arc2) == slotRadius
+  radius(arc19) == slotRadius
+  verticalDistance([line3.end, line3.start]) == depth
+  verticalDistance([line18.start, line18.end]) == depth
+  horizontalDistance([line4.start, line4.end]) == templateThickness
+  horizontalDistance([line17.start, line17.end]) == templateThickness
+  horizontalDistance([line6.start, line6.end]) == tabReach
+  horizontalDistance([line13.end, line13.start]) == tabReach
+  horizontalDistance([line10.end, line10.start]) == distanceToInsideEdge
+  horizontalDistance([line11.end, line11.start]) == distanceToInsideEdge
 }
 
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
-// Extrude the first sketch
 extrude001 = extrude(region001, length = 5)
 
-// Create the second sketch
-sketch002 = sketch(on = startSketchOn(extrude001, face = START)) {
+sketch002 = sketch(on = faceOf(extrude001, face = START)) {
   line1 = line(start = [var 32.63mm, var 0mm], end = [var 22.63mm, var 0mm])
   line2 = line(start = [var 22.63mm, var 0mm], end = [var 22.63mm, var -10mm])
   coincident([line1.end, line2.start])
@@ -91,14 +115,21 @@ sketch002 = sketch(on = startSketchOn(extrude001, face = START)) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var 32.63mm, var -10mm], end = [var 32.63mm, var 0mm])
   coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.end, line1.start]) == templateThickness
+  verticalDistance([line2.end, line2.start]) == templateThickness
 }
 
 region002 = region(segments = [sketch002.line1, sketch002.line2])
-// Extrude the second sketch
 extrude002 = extrude(region002, length = 13)
 
-// Create the third sketch
-sketch003 = sketch(on = startSketchOn(extrude001, face = START)) {
+sketch003 = sketch(on = faceOf(extrude001, face = START)) {
   line1 = line(start = [var -32.63mm, var 0mm], end = [var -22.63mm, var 0mm])
   line2 = line(start = [var -22.63mm, var 0mm], end = [var -22.63mm, var -10mm])
   coincident([line1.end, line2.start])
@@ -106,14 +137,21 @@ sketch003 = sketch(on = startSketchOn(extrude001, face = START)) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var -32.63mm, var -10mm], end = [var -32.63mm, var 0mm])
   coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, line1.end]) == templateThickness
+  verticalDistance([line2.end, line2.start]) == templateThickness
 }
 
 region003 = region(segments = [sketch003.line1, sketch003.line2])
-// Extrude the third sketch
 extrude003 = extrude(region003, length = 13)
 
-// Create the fourth sketch
-sketch004 = sketch(on = startSketchOn(extrude002, face = END)) {
+sketch004 = sketch(on = faceOf(extrude002, face = END)) {
   line1 = line(start = [var -32.63mm, var 0mm], end = [var 32.63mm, var 0mm])
   line2 = line(start = [var 32.63mm, var 0mm], end = [var 32.63mm, var -10mm])
   coincident([line1.end, line2.start])
@@ -121,8 +159,16 @@ sketch004 = sketch(on = startSketchOn(extrude002, face = END)) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var -32.63mm, var -10mm], end = [var -32.63mm, var 0mm])
   coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, line1.end]) == 2 * distanceToInsideEdge
+  verticalDistance([line2.end, line2.start]) == templateThickness
 }
 
 region004 = region(segments = [sketch004.line1, sketch004.line2])
-// Extrude the fourth sketch
 extrude004 = extrude(region004, length = 4)

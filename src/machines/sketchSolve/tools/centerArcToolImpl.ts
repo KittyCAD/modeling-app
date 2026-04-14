@@ -58,6 +58,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -454,6 +455,7 @@ export function sendResultToParent({
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     error?: string
   }
 
@@ -504,6 +506,7 @@ export function sendResultToParent({
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        checkpointId: output.checkpointId ?? null,
         ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
       },
     }
@@ -642,6 +645,7 @@ export async function createArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -792,6 +796,7 @@ export async function finalizeArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -940,7 +945,8 @@ export async function finalizeArcActor({
           ctor: segmentCtor,
         },
       ],
-      settings
+      settings,
+      endSnapTarget === undefined || endSnapTarget === null
     )
 
     const editedArc = result.sceneGraphDelta.new_graph.objects[arcId]
@@ -966,7 +972,8 @@ export async function finalizeArcActor({
         type: 'Coincident',
         segments: coincidentSegments,
       },
-      settings
+      settings,
+      true
     )
 
     return {
@@ -978,6 +985,7 @@ export async function finalizeArcActor({
           ...snapResult.sceneGraphDelta.new_objects,
         ],
       },
+      checkpointId: snapResult.checkpointId ?? result.checkpointId ?? null,
     }
   } catch (error) {
     console.error('Failed to finalize arc:', error)

@@ -1,7 +1,7 @@
 // Dog House (Great Dane) - Roof
 // Roof rafters and slats for the dog house.
 
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 import * from "dimensions.kcl"
 import * from "2x4.kcl"

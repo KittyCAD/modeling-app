@@ -108,7 +108,7 @@ function CommandBarBasicInput({
       {arg.description && (
         <MarkdownText
           text={arg.description}
-          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
         />
       )}
     </form>

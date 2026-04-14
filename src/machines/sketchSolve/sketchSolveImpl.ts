@@ -18,12 +18,19 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
+  resetSketchSolvePointHandleCount,
   type SegmentRenderState,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
+import {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect } from '@codemirror/state'
+import { StateEffect, Transaction } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
@@ -74,6 +81,14 @@ import {
   fromPromise,
 } from 'xstate'
 
+export {
+  getObjectSelectionIds,
+  isObjectSelectionId,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  type SketchSpecialTarget,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
+
 export type EquipTool = keyof typeof equipTools
 
 // Type for the spawn function used in XState setup actions
@@ -97,7 +112,7 @@ export type SketchSolveMachineEvent =
         | 'coincident'
         | 'Fixed'
         | 'Tangent'
-        | 'LinesEqualLength'
+        | 'EqualLength'
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
@@ -111,7 +126,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids'
       data: {
-        selectedIds?: Array<number>
+        selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
       }
@@ -119,7 +134,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update hovered id'
       data: {
-        hoveredId: number | null
+        hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
       }
     }
@@ -147,6 +162,12 @@ export type UpdateSketchOutcomeEvent = {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     /**
+     * If true, transient preview states still update exec-outcome issues so the
+     * sketch can render warning/error styling, but repeated toast errors are
+     * suppressed until the interaction commits.
+     */
+    suppressExecOutcomeIssues?: boolean
+    /**
      * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
      */
     debounceEditorUpdate?: boolean
@@ -155,6 +176,11 @@ export type UpdateSketchOutcomeEvent = {
      * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
+    /**
+     * Defaults to the same value as `writeToDisk`.
+     */
+    addToHistory?: boolean
+    checkpointId?: number | null
   }
 }
 
@@ -188,9 +214,9 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
-  hoveredId: number | null
+  hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
@@ -463,7 +489,7 @@ function initSegmentGroup({
 export interface IUpdateSketchSceneGraph {
   sceneGraphDelta: SceneGraphDelta
   context: SketchSolveContext
-  selectedIds: Array<number>
+  selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
 }
 export const updateSketchSceneGraphEffect =
@@ -492,11 +518,15 @@ export function updateSceneGraphFromDelta({
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
 
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
   const draftEntityIds = context.draftEntities?.segmentIds
 
   // If invalidates_ids is true, we need to delete everything and start fresh
   // because the old IDs can't be trusted
   if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
+    resetSketchSolvePointHandleCount()
     disposeGroupChildren(sketchSolveGroup)
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
@@ -513,12 +543,18 @@ export function updateSceneGraphFromDelta({
       return childId >= sceneGraphDelta.new_graph.objects.length
     })
     if (invalidateScene && sketchSolveGroup instanceof Group) {
+      resetSketchSolvePointHandleCount()
       disposeGroupChildren(sketchSolveGroup)
     }
   }
 
   if (sketchSolveGroup instanceof Group) {
-    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
   }
 
   currentSketchObjects.forEach((obj) => {
@@ -529,7 +565,7 @@ export function updateSceneGraphFromDelta({
 
     // Combine selectedIds and duringAreaSelectIds for highlighting
     const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
+      new Set([...getObjectSelectionIds(selectedIds), ...duringAreaSelectIds])
     )
 
     // Render constraints
@@ -557,7 +593,7 @@ export function updateSceneGraphFromDelta({
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -683,6 +719,7 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
     // no segments to clean
     return
   }
+  resetSketchSolvePointHandleCount()
   disposeGroupChildren(sketchSegments)
 }
 
@@ -707,7 +744,7 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
       const first = event.data.selectedIds[0]
       if (
         event.data.selectedIds.length === 1 &&
-        first &&
+        first !== undefined &&
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
@@ -740,14 +777,31 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   )
   const factor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
 
   // Get draft entity IDs from context
   const draftEntityIds = context.draftEntities?.segmentIds
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(
+      sketchSolveGroup,
+      factor,
+      context.sceneInfra.theme,
+      getOriginSpriteState(context)
+    )
+  }
 
   currentSketchObjects.forEach((obj) => {
     if (obj.kind.type === 'Sketch') {
@@ -767,7 +821,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId,
+          hoveredObjectId,
           getInvisibleConstraintDisplayState(context)
         )
       }
@@ -851,13 +905,24 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
   const scaleFactor = getSketchSolveScaleFactor(context)
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
+  const hoveredObjectId = isObjectSelectionId(context.hoveredId)
+    ? context.hoveredId
+    : null
 
   const allSelectedIds = Array.from(
-    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
 
-  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
+  updateOriginSprite(
+    sketchSolveGroup,
+    scaleFactor,
+    context.sceneInfra.theme,
+    getOriginSpriteState(context)
+  )
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {
@@ -907,7 +972,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         scaleFactor,
         context.sceneInfra,
         allSelectedIds,
-        context.hoveredId,
+        hoveredObjectId,
         getInvisibleConstraintDisplayState(context)
       )
     }
@@ -924,10 +989,12 @@ function getInvisibleConstraintDisplayState(
 }
 
 function getHoveredSegmentIds(
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   objects: ApiObject[]
 ): number[] {
-  const hoveredObject = hoveredId !== null ? objects[hoveredId] : null
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
   return isInvisibleConstraintObject(hoveredObject)
     ? findSegmentsForInvisibleConstraint(hoveredObject, objects)
     : []
@@ -935,9 +1002,9 @@ function getHoveredSegmentIds(
 
 function getSegmentRenderState(
   segmentId: number,
-  selectedIds: Array<number>,
+  selectedIds: Array<SketchSolveSelectionId>,
   duringAreaSelectIds: Array<number>,
-  hoveredId: number | null,
+  hoveredId: SketchSolveSelectionId | null,
   hoveredSegmentIds: Array<number>,
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
@@ -950,6 +1017,18 @@ function getSegmentRenderState(
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }
+}
+
+function getOriginSpriteState(
+  context: Pick<SketchSolveContext, 'hoveredId' | 'selectedIds'>
+) {
+  if (context.hoveredId === ORIGIN_TARGET) {
+    return 'hovered' as const
+  }
+  if (context.selectedIds.includes(ORIGIN_TARGET)) {
+    return 'selected' as const
+  }
+  return 'default' as const
 }
 
 function getSketchSolveScaleFactor(context: SketchSolveContext): number {
@@ -966,15 +1045,29 @@ const debouncedEditorUpdate = deferredCallback(
   ({
     text,
     kclManager,
+    sceneGraphDelta,
     shouldWriteToDisk,
+    shouldAddToHistory,
+    spec,
   }: {
     text: string
     kclManager: KclManager
+    sceneGraphDelta: SceneGraphDelta
     shouldWriteToDisk: boolean
-  }) =>
-    kclManager.updateCodeEditor(text, {
-      shouldWriteToDisk,
-    }),
+    shouldAddToHistory: boolean
+    spec: { effects: StateEffect<unknown>[] }
+  }) => {
+    kclManager.updateCodeEditor(
+      text,
+      {
+        shouldWriteToDisk,
+        shouldAddToHistory,
+        shouldExecute: false,
+      },
+      spec
+    )
+    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta)
+  },
   200
 )
 
@@ -990,30 +1083,57 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
+  const sceneGraphDelta = event.data.sceneGraphDelta
+
   const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
-    getSketchSolveExecOutcomeIssues(event.data.sceneGraphDelta),
+    getSketchSolveExecOutcomeIssues(sceneGraphDelta),
     event.data.sourceDelta.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
-  toastSketchSolveExecOutcomeErrors(
-    event.data.sceneGraphDelta,
-    'Sketch solver failed to find a solution'
-  )
+  if (!event.data.suppressExecOutcomeIssues) {
+    toastSketchSolveExecOutcomeErrors(
+      sceneGraphDelta,
+      'Sketch solver failed to find a solution'
+    )
+  }
 
-  // Update scene immediately - no delay, no flicker
-  // This is wired through a CodeMirror StateEffect so that
-  // an extension (in @src/editor/plugins/sketch.ts) can apply its
-  // effects while undoing as well.
-  context.kclManager.dispatch({
+  // If the incoming KCL differs from the current editor doc, apply the scene
+  // immediately for responsiveness, but keep that scene-only dispatch out of
+  // history. Checkpoint-backed undo is the only restore mechanism for
+  // committed sketch edits.
+  const additionalSpec = {
+    sketchCheckpointId: event.data.checkpointId,
     effects: [
       updateSketchSceneGraphEffect.of({
-        sceneGraphDelta: event.data.sceneGraphDelta,
+        sceneGraphDelta,
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
       }),
     ],
-  })
+  }
+
+  const shouldWriteToDisk = event.data.writeToDisk !== false
+  const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+  const shouldDispatchSceneImmediately =
+    context.kclManager.code !== event.data.sourceDelta.text
+
+  if (shouldDispatchSceneImmediately) {
+    context.kclManager.dispatch({
+      annotations: Transaction.addToHistory.of(false),
+      effects: additionalSpec.effects,
+    })
+  }
+
+  // Strip scene effects from the follow-up editor update when we already
+  // dispatched them above. This avoids double-applying the same scene delta
+  // and creating extra scene-only history entries.
+  const editorAdditionalSpec = shouldDispatchSceneImmediately
+    ? {
+        ...additionalSpec,
+        effects: [] as StateEffect<unknown>[],
+      }
+    : additionalSpec
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
   // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
@@ -1027,22 +1147,32 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
-      shouldWriteToDisk: event.data.writeToDisk !== false,
+      sceneGraphDelta,
+      shouldWriteToDisk,
+      shouldAddToHistory,
+      spec: editorAdditionalSpec,
     })
   } else {
-    const shouldWriteToDisk = event.data.writeToDisk !== false
-
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
-      shouldExecute: false,
-      shouldWriteToDisk,
-    })
+    context.kclManager.updateCodeEditor(
+      event.data.sourceDelta.text,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk,
+        shouldAddToHistory,
+      },
+      editorAdditionalSpec
+    )
+    context.kclManager.syncSketchSolveOutcome(
+      event.data.sourceDelta.text,
+      sceneGraphDelta
+    )
   }
 
   return {
     sketchExecOutcome: {
       sourceDelta: event.data.sourceDelta,
-      sceneGraphDelta: event.data.sceneGraphDelta,
+      sceneGraphDelta,
     },
   }
 }
@@ -1090,6 +1220,7 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
+          writeToDisk: false,
         },
       })
     }

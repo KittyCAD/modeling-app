@@ -17,6 +17,7 @@ use crate::KclError;
 use crate::ModuleId;
 use crate::NodePath;
 use crate::SourceRange;
+use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::state::ModuleInfoMap;
@@ -28,7 +29,7 @@ use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
-use crate::std::sketch2::build_reverse_region_mapping;
+use crate::std::sketch::build_reverse_region_mapping;
 
 #[cfg(test)]
 mod mermaid_tests;
@@ -135,6 +136,7 @@ pub struct Plane {
 #[serde(rename_all = "camelCase")]
 pub struct Path {
     pub id: ArtifactId,
+    pub sub_type: PathSubType,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
     /// Whether this artifact has been used in a subsequent operation
@@ -159,6 +161,14 @@ pub struct Path {
     /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_path_id: Option<ArtifactId>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum PathSubType {
+    Sketch,
+    Region,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -271,7 +281,10 @@ pub struct StartSketchOnPlane {
 #[serde(rename_all = "camelCase")]
 pub struct SketchBlock {
     pub id: ArtifactId,
-    /// The plane ID if the sketch block is on a specific plane, None if it's on a default plane.
+    /// The semantic standard plane name when the sketch block is on a standard plane.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub standard_plane: Option<PlaneName>,
+    /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -287,6 +300,7 @@ pub enum SketchBlockConstraintType {
     Coincident,
     Distance,
     Diameter,
+    EqualRadius,
     Fixed,
     HorizontalDistance,
     VerticalDistance,
@@ -305,6 +319,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::EqualRadius { .. } => SketchBlockConstraintType::EqualRadius,
             Constraint::Fixed { .. } => SketchBlockConstraintType::Fixed,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
             Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
@@ -1119,6 +1134,7 @@ fn artifacts_to_update(
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Sketch,
                 plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
@@ -1221,6 +1237,7 @@ fn artifacts_to_update(
             // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Region,
                 plane_id: path.plane_id,
                 seg_ids: Vec::new(),
                 consumed: false,
@@ -1327,6 +1344,7 @@ fn artifacts_to_update(
                     };
                     Path {
                         id: path_id,
+                        sub_type: original_path.sub_type,
                         plane_id: original_path.plane_id,
                         seg_ids: Vec::new(),
                         sweep_id: None,

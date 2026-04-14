@@ -7,11 +7,14 @@ layout: manual
 
 The KCL standard library 
 
-Contains frequently used constants, functions for interacting with the KittyCAD servers to create sketches and geometry, and utility functions. 
+Contains frequently used constants, functions for interacting with the KittyCAD servers to
+create sketches and geometry, and utility functions.
 
-The standard library is organised into modules (listed below), but most things are always available in KCL programs. 
+The standard library is organised into modules (listed below), but most things are always available
+in KCL programs.
 
-You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html). 
+You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html).
+
 
 ## Modules
 
@@ -22,8 +25,8 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`math`](/docs/kcl-std/modules/std-math)
 * [`runtime`](/docs/kcl-std/modules/std-runtime)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
-* [`sketch2::sketch2`](/docs/kcl-std/modules/std-sketch2)
 * [`solid`](/docs/kcl-std/modules/std-solid)
+* [`solver::solver`](/docs/kcl-std/modules/std-solver)
 * [`sweep::sweep`](/docs/kcl-std/modules/std-sweep)
 * [`transform`](/docs/kcl-std/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)

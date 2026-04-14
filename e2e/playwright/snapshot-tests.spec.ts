@@ -52,8 +52,6 @@ test.afterEach(async ({ page }) => {
   })
 })
 
-test.setTimeout(60_000)
-
 const extrudeDefaultPlane = async (
   page: any,
   cmdBar: CmdBarFixture,

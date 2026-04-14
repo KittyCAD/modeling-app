@@ -26,6 +26,7 @@ import type {
 import {
   type SnapTarget,
   getCoincidentSegmentsForSnapTarget,
+  getConstraintForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   type CONFIRMING_DIMENSIONS,
@@ -84,6 +85,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             newlyAddedEntities?: {
               segmentIds: Array<number>
               constraintIds: Array<number>
@@ -140,21 +142,19 @@ export const machine = setup({
             }
           }
 
-          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+          const snapConstraint = getConstraintForSnapTarget(
             startPointId,
-            snapTarget
+            snapTarget,
+            units
           )
-          if (coincidentSegments === null) {
+          if (snapConstraint === null) {
             return result
           }
 
           const snapResult = await rustContext.addConstraint(
             0,
             sketchId,
-            {
-              type: 'Coincident',
-              segments: coincidentSegments,
-            },
+            snapConstraint,
             settings
           )
 
@@ -210,6 +210,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             lastPointId?: number
           }
         | {
@@ -240,6 +241,10 @@ export const machine = setup({
               y: { type: 'Var', value: roundOff(y), units },
             },
           }
+          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+            id,
+            snapTarget
+          )
 
           // Call the editSegments method to update the point position
           const result = await rustContext.editSegments(
@@ -251,29 +256,31 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            settings
+            settings,
+            coincidentSegments === null
           )
 
           let latestKclSource = result.kclSource
           let latestSceneGraphDelta = result.sceneGraphDelta
+          let latestCheckpointId = result.checkpointId
           let snapConstraintNewObjects: Array<number> = []
 
-          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+          const snapConstraint = getConstraintForSnapTarget(
             id,
-            snapTarget
+            snapTarget,
+            units
           )
-          if (coincidentSegments !== null) {
+          if (snapConstraint !== null) {
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
-              {
-                type: 'Coincident',
-                segments: coincidentSegments,
-              },
-              settings
+              snapConstraint,
+              settings,
+              true
             )
             latestKclSource = snapResult.kclSource
             latestSceneGraphDelta = snapResult.sceneGraphDelta
+            latestCheckpointId = snapResult.checkpointId
             snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
           }
 
@@ -286,8 +293,9 @@ export const machine = setup({
                 ...snapConstraintNewObjects,
               ],
             },
+            checkpointId: latestCheckpointId,
             lastPointId:
-              coincidentSegments === null && isDoubleClick !== true
+              snapConstraint === null && isDoubleClick !== true
                 ? id
                 : undefined,
           }

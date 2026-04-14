@@ -538,3 +538,74 @@ def test_relevant_file_extensions():
     assert all(isinstance(x, str) and len(x) > 0 for x in exts)
     # kcl should always be included in the set
     assert "kcl" in exts
+
+
+fully_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+"""
+
+under_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"""
+
+mixed_sketches_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"""
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_fully_constrained():
+    report = await kcl.get_sketch_constraint_status_code(fully_constrained_sketch_code)
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
+    assert report.total_sketches() == 1
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_under_constrained():
+    report = await kcl.get_sketch_constraint_status_code(under_constrained_sketch_code)
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.under_constrained[0].status == kcl.ConstraintKind.UnderConstrained
+    assert report.under_constrained[0].free_count > 0
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mixed():
+    report = await kcl.get_sketch_constraint_status_code(mixed_sketches_code)
+    assert report.total_sketches() == 2
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 1
+    assert len(report.errors) == 0

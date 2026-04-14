@@ -120,7 +120,6 @@ use crate::lsp::kcl::hover::HoverOpts;
 use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
-use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
@@ -173,7 +172,7 @@ pub struct Backend {
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
-    /// The stdlib completions inside a sketch block, where `sketch2::*`
+    /// The stdlib completions inside a sketch block, where `solver::*`
     /// shadows the regular sketch stdlib.
     pub sketch_block_stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -327,11 +326,11 @@ impl Backend {
 
     fn try_arg_completions(
         &self,
-        ast: &Node<crate::parsing::ast::types::Program>,
+        program: &crate::Program,
         position: usize,
         current_code: &str,
     ) -> Option<impl Iterator<Item = CompletionItem>> {
-        let curr_expr = ast.get_expr_for_position(position)?;
+        let curr_expr = program.ast.get_expr_for_position(position)?;
         let hover =
             curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
 
@@ -353,7 +352,8 @@ impl Backend {
             } => Some(callee_name),
             Hover::Type { .. } => None,
         };
-        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+        let stdlib_args = self.stdlib_args_for_position(program, position);
+        let callee_args = maybe_callee.and_then(|fn_name| stdlib_args.get(&fn_name))?;
 
         let arg_label_completions = callee_args
             .iter()
@@ -1362,7 +1362,7 @@ impl LanguageServer for Backend {
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast, position, current_code) {
             completions.extend(arg_label_completions);
         }
 
@@ -1765,11 +1765,11 @@ enum StdlibCompletionContext {
 }
 
 fn is_sketch2_doc(doc: &crate::docs::kcl_doc::DocData) -> bool {
-    doc.qual_name().starts_with("std::sketch2::")
+    doc.qual_name().starts_with("std::solver::")
 }
 
 fn strip_sketch2_prefix(value: &str) -> String {
-    value.strip_prefix("sketch2::").unwrap_or(value).to_owned()
+    value.strip_prefix("solver::").unwrap_or(value).to_owned()
 }
 
 fn rewrite_completion_for_sketch_block(mut completion: CompletionItem) -> CompletionItem {
@@ -1795,7 +1795,7 @@ fn should_skip_stdlib_doc(
     }
 
     match context {
-        StdlibCompletionContext::Default => doc.is_experimental(),
+        StdlibCompletionContext::Default => doc.is_experimental() || is_sketch2_doc(doc),
         StdlibCompletionContext::SketchBlock => doc.is_experimental() && !is_sketch2_doc(doc),
     }
 }

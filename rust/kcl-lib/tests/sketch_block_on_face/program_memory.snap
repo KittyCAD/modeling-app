@@ -32,10 +32,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 139,
-              "end": 144,
+              "commentStart": 98,
+              "end": 103,
               "moduleId": 0,
-              "start": 139,
+              "start": 98,
               "type": "TagDeclarator",
               "value": "side"
             },
@@ -78,10 +78,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 139,
-                "end": 144,
+                "commentStart": 98,
+                "end": 103,
                 "moduleId": 0,
-                "start": 139,
+                "start": 98,
                 "type": "TagDeclarator",
                 "value": "side"
               },
@@ -221,10 +221,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 139,
-            "end": 144,
+            "commentStart": 98,
+            "end": 103,
             "moduleId": 0,
-            "start": 139,
+            "start": 98,
             "type": "TagDeclarator",
             "value": "side"
           },
@@ -267,10 +267,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 139,
-              "end": 144,
+              "commentStart": 98,
+              "end": 103,
               "moduleId": 0,
-              "start": 139,
+              "start": 98,
               "type": "TagDeclarator",
               "value": "side"
             },
@@ -425,10 +425,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 139,
-              "end": 144,
+              "commentStart": 98,
+              "end": 103,
               "moduleId": 0,
-              "start": 139,
+              "start": 98,
               "type": "TagDeclarator",
               "value": "side"
             },
@@ -471,10 +471,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 139,
-                "end": 144,
+                "commentStart": 98,
+                "end": 103,
                 "moduleId": 0,
-                "start": 139,
+                "start": 98,
                 "type": "TagDeclarator",
                 "value": "side"
               },
@@ -721,10 +721,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 139,
-                          "end": 144,
+                          "commentStart": 98,
+                          "end": 103,
                           "moduleId": 0,
-                          "start": 139,
+                          "start": 98,
                           "type": "TagDeclarator",
                           "value": "side"
                         },
@@ -767,10 +767,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                             0.0
                           ],
                           "tag": {
-                            "commentStart": 139,
-                            "end": 144,
+                            "commentStart": 98,
+                            "end": 103,
                             "moduleId": 0,
-                            "start": 139,
+                            "start": 98,
                             "type": "TagDeclarator",
                             "value": "side"
                           },
@@ -1014,10 +1014,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 139,
-                          "end": 144,
+                          "commentStart": 98,
+                          "end": 103,
                           "moduleId": 0,
-                          "start": 139,
+                          "start": 98,
                           "type": "TagDeclarator",
                           "value": "side"
                         },
@@ -1060,10 +1060,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                             0.0
                           ],
                           "tag": {
-                            "commentStart": 139,
-                            "end": 144,
+                            "commentStart": 98,
+                            "end": 103,
                             "moduleId": 0,
-                            "start": 139,
+                            "start": 98,
                             "type": "TagDeclarator",
                             "value": "side"
                           },
@@ -1307,10 +1307,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 139,
-                          "end": 144,
+                          "commentStart": 98,
+                          "end": 103,
                           "moduleId": 0,
-                          "start": 139,
+                          "start": 98,
                           "type": "TagDeclarator",
                           "value": "side"
                         },
@@ -1353,10 +1353,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                             0.0
                           ],
                           "tag": {
-                            "commentStart": 139,
-                            "end": 144,
+                            "commentStart": 98,
+                            "end": 103,
                             "moduleId": 0,
-                            "start": 139,
+                            "start": 98,
                             "type": "TagDeclarator",
                             "value": "side"
                           },
@@ -1600,10 +1600,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                         "id": "[uuid]",
                         "sourceRange": [],
                         "tag": {
-                          "commentStart": 139,
-                          "end": 144,
+                          "commentStart": 98,
+                          "end": 103,
                           "moduleId": 0,
-                          "start": 139,
+                          "start": 98,
                           "type": "TagDeclarator",
                           "value": "side"
                         },
@@ -1646,10 +1646,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                             0.0
                           ],
                           "tag": {
-                            "commentStart": 139,
-                            "end": 144,
+                            "commentStart": 98,
+                            "end": 103,
                             "moduleId": 0,
-                            "start": 139,
+                            "start": 98,
                             "type": "TagDeclarator",
                             "value": "side"
                           },
@@ -1805,10 +1805,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 339,
-                    "end": 344,
+                    "commentStart": 298,
+                    "end": 303,
                     "moduleId": 0,
-                    "start": 339,
+                    "start": 298,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1829,10 +1829,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 402,
-                    "end": 407,
+                    "commentStart": 361,
+                    "end": 366,
                     "moduleId": 0,
-                    "start": 402,
+                    "start": 361,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1853,10 +1853,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 469,
-                    "end": 474,
+                    "commentStart": 428,
+                    "end": 433,
                     "moduleId": 0,
-                    "start": 469,
+                    "start": 428,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1877,10 +1877,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 536,
-                    "end": 541,
+                    "commentStart": 495,
+                    "end": 500,
                     "moduleId": 0,
-                    "start": 536,
+                    "start": 495,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1920,10 +1920,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 139,
-                        "end": 144,
+                        "commentStart": 98,
+                        "end": 103,
                         "moduleId": 0,
-                        "start": 139,
+                        "start": 98,
                         "type": "TagDeclarator",
                         "value": "side"
                       },
@@ -1966,10 +1966,10 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 139,
-                          "end": 144,
+                          "commentStart": 98,
+                          "end": 103,
                           "moduleId": 0,
-                          "start": 139,
+                          "start": 98,
                           "type": "TagDeclarator",
                           "value": "side"
                         },

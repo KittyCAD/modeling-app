@@ -713,7 +713,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'cap', 'wall', 'region', 'path'],
+        selectionTypes: [
+          'solid2d',
+          'segment',
+          'cap',
+          'wall',
+          'pathRegion',
+          'engineRegion',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -817,7 +824,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'region', 'path'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -891,7 +898,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'region', 'path'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -957,7 +964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'region', 'path'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1246,7 +1253,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tools: {
         ...objectsTypesAndFilters,
-        inputType: 'selection',
+        inputType: 'selectionMixed',
         clearSelectionFirst: true,
         multiple: true,
         required: true,

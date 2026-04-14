@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 cutoutEdgeLength = 2

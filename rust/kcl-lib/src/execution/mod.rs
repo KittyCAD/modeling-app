@@ -285,6 +285,71 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+/// Per-segment freedom used by the constraint report. Mirrors
+/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// a point lookup fails.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum SegmentFreedom {
+    Free,
+    Fixed,
+    Conflict,
+    /// A required point could not be found in the scene graph.
+    Error,
+}
+
+impl From<crate::front::Freedom> for SegmentFreedom {
+    fn from(f: crate::front::Freedom) -> Self {
+        match f {
+            crate::front::Freedom::Free => Self::Free,
+            crate::front::Freedom::Fixed => Self::Fixed,
+            crate::front::Freedom::Conflict => Self::Conflict,
+        }
+    }
+}
+
+/// Overall constraint status of a sketch.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub enum ConstraintKind {
+    FullyConstrained,
+    UnderConstrained,
+    OverConstrained,
+    /// Analysis could not determine constraint status (e.g., a point lookup
+    /// failed due to an inconsistent scene graph). Callers decide how to treat
+    /// this — as under-constrained, over-constrained, or something else.
+    Error,
+}
+
+/// Per-sketch summary of constraint freedom analysis.
+///
+/// A sketch with no countable segments (`total_count == 0`) is reported as
+/// [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
+/// no free or conflicting segments. Callers can check `total_count == 0` to
+/// distinguish this from a genuinely constrained sketch.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SketchConstraintStatus {
+    /// The variable name of the sketch (e.g., "sketch001").
+    pub name: String,
+    /// Overall constraint status derived from per-segment freedom.
+    pub status: ConstraintKind,
+    /// Number of segments that are under-constrained (free to move).
+    pub free_count: usize,
+    /// Number of segments that are over-constrained (conflicting constraints).
+    pub conflict_count: usize,
+    /// Total number of segments analyzed.
+    pub total_count: usize,
+}
+
+/// Grouped report of all sketches by constraint status.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SketchConstraintReport {
+    pub fully_constrained: Vec<SketchConstraintStatus>,
+    pub under_constrained: Vec<SketchConstraintStatus>,
+    pub over_constrained: Vec<SketchConstraintStatus>,
+    /// Sketches where analysis encountered an error (e.g., a point lookup
+    /// failed). Callers decide how to treat these.
+    pub errors: Vec<SketchConstraintStatus>,
+}
+
 impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
         #[cfg(feature = "artifact-graph")]
@@ -307,6 +372,111 @@ impl ExecOutcome {
     /// Returns non-fatal errors. Warnings are not included.
     pub fn errors(&self) -> impl Iterator<Item = &CompilationIssue> {
         self.issues.iter().filter(|error| error.is_err())
+    }
+
+    /// Analyze all sketches in the execution result and group them by
+    /// constraint status (fully, under, or over constrained).
+    ///
+    /// Each segment in a sketch computes its own freedom by looking up the
+    /// freedom of its constituent points. Owned points (belonging to a
+    /// Line/Arc/Circle) are skipped to avoid double-counting.
+    #[cfg(feature = "artifact-graph")]
+    pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
+        use crate::front::ObjectKind;
+        use crate::front::Segment;
+
+        // Closure to look up a point's freedom by ObjectId.
+        let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+            let obj = self.scene_objects.get(id.0)?;
+            if let ObjectKind::Segment {
+                segment: Segment::Point(p),
+            } = &obj.kind
+            {
+                Some(p.freedom())
+            } else {
+                None
+            }
+        };
+
+        let mut fully_constrained = Vec::new();
+        let mut under_constrained = Vec::new();
+        let mut over_constrained = Vec::new();
+        let mut errors = Vec::new();
+
+        for obj in &self.scene_objects {
+            let ObjectKind::Sketch(sketch) = &obj.kind else {
+                continue;
+            };
+
+            let mut free_count: usize = 0;
+            let mut conflict_count: usize = 0;
+            let mut error_count: usize = 0;
+            let mut total_count: usize = 0;
+
+            for &seg_id in &sketch.segments {
+                let Some(seg_obj) = self.scene_objects.get(seg_id.0) else {
+                    continue;
+                };
+                let ObjectKind::Segment { segment } = &seg_obj.kind else {
+                    continue;
+                };
+                // Skip owned points — their freedom is already captured by
+                // the parent geometry (Line/Arc/Circle) that looks them up.
+                if let Segment::Point(p) = segment
+                    && p.owner.is_some()
+                {
+                    continue;
+                }
+                let freedom = segment
+                    .freedom(lookup)
+                    .map(SegmentFreedom::from)
+                    .unwrap_or(SegmentFreedom::Error);
+                total_count += 1;
+                match freedom {
+                    SegmentFreedom::Free => free_count += 1,
+                    SegmentFreedom::Conflict => conflict_count += 1,
+                    SegmentFreedom::Error => error_count += 1,
+                    SegmentFreedom::Fixed => {}
+                }
+            }
+
+            // Note: a sketch with no countable segments (total_count == 0)
+            // is reported as FullyConstrained. This is vacuously true — there
+            // are no free or conflicting segments, so it satisfies the
+            // definition. Callers can check total_count == 0 to distinguish
+            // this from a genuinely constrained sketch.
+            let status = if error_count > 0 {
+                ConstraintKind::Error
+            } else if conflict_count > 0 {
+                ConstraintKind::OverConstrained
+            } else if free_count > 0 {
+                ConstraintKind::UnderConstrained
+            } else {
+                ConstraintKind::FullyConstrained
+            };
+
+            let entry = SketchConstraintStatus {
+                name: obj.label.clone(),
+                status,
+                free_count,
+                conflict_count,
+                total_count,
+            };
+
+            match status {
+                ConstraintKind::FullyConstrained => fully_constrained.push(entry),
+                ConstraintKind::UnderConstrained => under_constrained.push(entry),
+                ConstraintKind::OverConstrained => over_constrained.push(entry),
+                ConstraintKind::Error => errors.push(entry),
+            }
+        }
+
+        SketchConstraintReport {
+            fully_constrained,
+            under_constrained,
+            over_constrained,
+            errors,
+        }
     }
 }
 
@@ -904,6 +1074,42 @@ impl ExecutorContext {
         Ok(())
     }
 
+    fn restore_mock_memory(
+        exec_state: &mut ExecState,
+        mem: cache::SketchModeState,
+        _mock_config: &MockConfig,
+    ) -> Result<(), KclErrorWithOutputs> {
+        *exec_state.mut_stack() = mem.stack;
+        exec_state.global.module_infos = mem.module_infos;
+        exec_state.global.path_to_source_id = mem.path_to_source_id;
+        exec_state.global.id_to_source = mem.id_to_source;
+        #[cfg(feature = "artifact-graph")]
+        {
+            let len = _mock_config
+                .sketch_block_id
+                .map(|sketch_block_id| sketch_block_id.0)
+                .unwrap_or(0);
+            if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+                exec_state
+                    .global
+                    .root_module_artifacts
+                    .restore_scene_objects(scene_objects);
+            } else {
+                let message = format!(
+                    "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                    mem.scene_objects.len(),
+                    len
+                );
+                debug_assert!(false, "{message}");
+                return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                    KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+                )));
+            }
+        }
+
+        Ok(())
+    }
+
     pub async fn run_mock(
         &self,
         program: &crate::Program,
@@ -918,33 +1124,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => {
-                    *exec_state.mut_stack() = mem.stack;
-                    exec_state.global.module_infos = mem.module_infos;
-                    #[cfg(feature = "artifact-graph")]
-                    {
-                        let len = mock_config
-                            .sketch_block_id
-                            .map(|sketch_block_id| sketch_block_id.0)
-                            .unwrap_or(0);
-                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state
-                                .global
-                                .root_module_artifacts
-                                .restore_scene_objects(scene_objects);
-                        } else {
-                            let message = format!(
-                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
-                                mem.scene_objects.len(),
-                                len
-                            );
-                            debug_assert!(false, "{message}");
-                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
-                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
-                            )));
-                        }
-                    }
-                }
+                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -963,6 +1143,8 @@ impl ExecutorContext {
 
         let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
+        let path_to_source_id = exec_state.global.path_to_source_id.clone();
+        let id_to_source = exec_state.global.id_to_source.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -973,6 +1155,8 @@ impl ExecutorContext {
         let state = cache::SketchModeState {
             stack,
             module_infos,
+            path_to_source_id,
+            id_to_source,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1551,6 +1735,8 @@ impl ExecutorContext {
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
+                path_to_source_id: exec_state.global.path_to_source_id.clone(),
+                id_to_source: exec_state.global.id_to_source.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
@@ -1998,7 +2184,7 @@ yo2 = hmm([identifierGuy + 5])"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn multiple_sketch_blocks_do_not_reuse_on_cache_name() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"
 firstProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -2027,6 +2213,32 @@ secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length
 
         let result = parse_execute(code).await.unwrap();
         assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_artifact_preserves_standard_plane_name() {
+        let code = r#"
+sketch001 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 1mm])
+}
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let sketch_blocks = result
+            .exec_state
+            .global
+            .artifacts
+            .graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::SketchBlock(block) => Some(block),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(sketch_blocks.len(), 1);
+        assert_eq!(sketch_blocks[0].standard_plane, Some(crate::engine::PlaneName::NegYz));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3019,7 +3231,7 @@ w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
         let code = "@settings(experimentalFeatures = allow)
-    
+
 s = sketch(on = XY) {
     line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
     line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
@@ -3073,6 +3285,35 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(ids, ids2, "Generated IDs should match");
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_restore_preserves_module_maps() {
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let cold_start = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
+
+        let mem = cache::read_old_memory().await.unwrap();
+        assert!(
+            mem.path_to_source_id.len() > 3,
+            "expected prelude imports to populate multiple modules, got {:?}",
+            mem.path_to_source_id
+        );
+
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
+
+        assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
+        assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.module_infos, mem.module_infos);
+
+        clear_mem_cache().await;
+        ctx.close().await;
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -3286,4 +3527,116 @@ sketch(on = XY) {
     }
 
     // END Mock Execution tests
+
+    // Sketch constraint report tests
+
+    #[cfg(feature = "artifact-graph")]
+    async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
+        let program = crate::Program::parse_no_errs(kcl).unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mut exec_state = ExecState::new(&ctx);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let report = outcome.sketch_constraint_report();
+        ctx.close().await;
+        report
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_fully_constrained() {
+        // All points are fully constrained via equality constraints.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 0);
+        assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained[0].status, ConstraintKind::FullyConstrained);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_under_constrained() {
+        // No constraints at all — all points are free.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.fully_constrained.len(), 0);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.under_constrained[0].status, ConstraintKind::UnderConstrained);
+        assert!(report.under_constrained[0].free_count > 0);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_over_constrained() {
+        // Conflicting distance constraints on the same pair of points.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.over_constrained[0].status, ConstraintKind::OverConstrained);
+        assert!(report.over_constrained[0].conflict_count > 0);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_multiple_sketches() {
+        // Two sketches: one fully constrained, one under-constrained.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(
+            report.fully_constrained.len()
+                + report.under_constrained.len()
+                + report.over_constrained.len()
+                + report.errors.len(),
+            2,
+            "Expected 2 sketches total"
+        );
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
+    }
 }

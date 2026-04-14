@@ -46,7 +46,8 @@ function moreNodePathFromSourceRange(
       _node.type === 'Literal' ||
       _node.type === 'Identifier' ||
       _node.type === 'TagDeclarator' ||
-      _node.type === 'NumericLiteral') &&
+      _node.type === 'NumericLiteral' ||
+      _node.type === 'SketchVar') &&
     isInRange
   ) {
     return path

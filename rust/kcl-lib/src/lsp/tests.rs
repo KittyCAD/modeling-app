@@ -792,7 +792,7 @@ profile = sketch(on = XY) {
         "actual insert_text: {insert_text:?}"
     );
     assert!(
-        !insert_text.starts_with("sketch2::"),
+        !insert_text.starts_with("solver::"),
         "actual insert_text: {insert_text:?}"
     );
 }

@@ -1015,57 +1015,16 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   // 2. Prepare labeled arguments
-  // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (
-    operation.labeledArgs.path?.value.type !== 'Sketch' &&
-    operation.labeledArgs.path?.value.type !== 'Helix'
-  ) {
+  if (!operation.labeledArgs.path) {
     return { reason: "Couldn't retrieve path argument" }
   }
 
-  const trajectoryPathArtifact = getArtifactOfTypes(
-    {
-      key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path', 'helix'],
-    },
+  const path = retrieveSelectionsFromOpArg(
+    operation.labeledArgs.path,
     artifactGraph
   )
-
-  if (
-    err(trajectoryPathArtifact) ||
-    (trajectoryPathArtifact.type !== 'path' &&
-      trajectoryPathArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory path artifact" }
-  }
-
-  const trajectoryArtifact =
-    trajectoryPathArtifact.type === 'path'
-      ? getArtifactOfTypes(
-          {
-            key: trajectoryPathArtifact.segIds[0],
-            types: ['segment'],
-          },
-          artifactGraph
-        )
-      : trajectoryPathArtifact
-
-  if (
-    err(trajectoryArtifact) ||
-    (trajectoryArtifact.type !== 'segment' &&
-      trajectoryArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory artifact" }
-  }
-
-  const path = {
-    graphSelections: [
-      {
-        artifact: trajectoryArtifact,
-        codeRef: trajectoryArtifact.codeRef,
-      },
-    ],
-    otherSelections: [],
+  if (err(path)) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   // optional arguments
@@ -1983,6 +1942,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Mirror 2D',
     icon: 'mirror',
   },
+  region: {
+    label: 'Region',
+    // TODO: add a region icon
+    icon: 'oneDot',
+    // TODO: add a prepareToEdit function
+    // prepareToEdit: prepareToEditRegion,
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
@@ -2209,7 +2175,7 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-function getSketchBlockOperationKey(op: Operation): string | null {
+export function getSketchBlockOperationKey(op: Operation): string | null {
   if (!('nodePath' in op)) {
     return null
   }
@@ -2419,14 +2385,6 @@ export function getOperationVariableName(
 
   // Handle GDT operations - they don't have variable names as they're standalone statements
   if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
-    return undefined
-  }
-
-  // Handle inner sketch block variables
-  if (
-    op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
-  ) {
     return undefined
   }
 

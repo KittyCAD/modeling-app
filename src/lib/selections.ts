@@ -11,6 +11,7 @@ import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -53,7 +54,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
-import { DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -124,7 +128,7 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
@@ -138,10 +142,13 @@ async function getEngineRegionSelectionFromEntity(
   if (!queryPointMm) return null
   const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
   const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings) || !settings.defaultLengthUnit) return null
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
   const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, settings.defaultLengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, settings.defaultLengthUnit),
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
   const parentEntityId = await getParentEntityIdForEntity(
@@ -157,7 +164,7 @@ async function getEngineRegionSelectionFromEntity(
   if (!sketch) return null
 
   return {
-    type: 'region',
+    type: 'engineRegion',
     id: regionEntityId,
     point,
     sketchId: sketch.id,
@@ -215,7 +222,7 @@ export function isEngineRegionSelection(
   return (
     typeof selection === 'object' &&
     'type' in selection &&
-    selection.type === 'region'
+    selection.type === 'engineRegion'
   )
 }
 
@@ -727,7 +734,7 @@ export function getSelectionCountByType(
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -766,6 +773,14 @@ export function getSelectionCountByType(
         incrementOrInitializeSelectionType('other')
         return
       }
+    }
+    // Intercept subtypes here. Would have to think of a better way to scale this
+    if (
+      graphSelection.artifact.type === 'path' &&
+      graphSelection.artifact.subType === 'region'
+    ) {
+      incrementOrInitializeSelectionType('pathRegion')
+      return
     }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
@@ -1094,7 +1109,8 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'region'],
+  profile: ['solid2d'],
+  region: ['pathRegion', 'engineRegion'],
   edge: [
     'segment',
     'sweepEdge',
@@ -1208,6 +1224,19 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+
+const defaultPlaneDataByName: Record<
+  PlaneName,
+  Omit<DefaultPlane, 'type' | 'planeId'>
+> = {
+  xy: { plane: 'XY', zAxis: [0, 0, 1], yAxis: [0, 1, 0] },
+  negXy: { plane: '-XY', zAxis: [0, 0, -1], yAxis: [0, 1, 0] },
+  xz: { plane: 'XZ', zAxis: [0, -1, 0], yAxis: [0, 0, 1] },
+  negXz: { plane: '-XZ', zAxis: [0, 1, 0], yAxis: [0, 0, 1] },
+  yz: { plane: 'YZ', zAxis: [1, 0, 0], yAxis: [0, 0, 1] },
+  negYz: { plane: '-YZ', zAxis: [-1, 0, 0], yAxis: [0, 0, 1] },
+}
+
 export async function getPlaneDataFromSketchBlock(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
   artifactGraph: ArtifactGraph,
@@ -1221,18 +1250,16 @@ export async function getPlaneDataFromSketchBlock(
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // Similar logic to selectSketchPlane but for a sketchBlock artifact.
-  if (!sketchBlock.planeId) {
-    return null
+  if (sketchBlock.standardPlane && systemDeps.rustContext.defaultPlanes) {
+    return {
+      type: 'defaultPlane',
+      planeId: systemDeps.rustContext.defaultPlanes[sketchBlock.standardPlane],
+      ...defaultPlaneDataByName[sketchBlock.standardPlane],
+    }
   }
 
-  // @pierremtb At the time of writing, this isn't working yet,
-  // so we always go to the next step and treat default planes as offset planes.
-  const defaultResult = getDefaultSketchPlaneData(
-    sketchBlock.planeId,
-    systemDeps
-  )
-  if (!err(defaultResult) && defaultResult) {
-    return defaultResult
+  if (!sketchBlock.planeId) {
+    return null
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
