@@ -3052,22 +3052,22 @@ fn extract_axis_point_vars(
                 }),
                 (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(PointToAlign::Variable { x: *x, y: *y }),
                 (UnsolvedExpr::Known(..), UnsolvedExpr::Unknown(..)) => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                    Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "The `{}` function cannot take a fixed X component and a variable Y component",
                             kind.function_name()
                         ),
                         vec![source_range],
-                    )));
+                    )))
                 }
                 (UnsolvedExpr::Unknown(..), UnsolvedExpr::Known(..)) => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                    Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "The `{}` function cannot take a fixed X component and a variable Y component",
                             kind.function_name()
                         ),
                         vec![source_range],
-                    )));
+                    )))
                 }
             }
         }
@@ -3103,22 +3103,22 @@ fn extract_axis_point_vars(
                 (UnsolvedExpr::Known(x), UnsolvedExpr::Known(y)) => Ok(PointToAlign::Fixed { x, y }),
                 (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(PointToAlign::Variable { x, y }),
                 (UnsolvedExpr::Known(..), UnsolvedExpr::Unknown(..)) => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                    Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "The `{}` function cannot take a fixed X component and a variable Y component",
                             kind.function_name()
                         ),
                         vec![source_range],
-                    )));
+                    )))
                 }
                 (UnsolvedExpr::Unknown(..), UnsolvedExpr::Known(..)) => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                    Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "The `{}` function cannot take a fixed X component and a variable Y component",
                             kind.function_name()
                         ),
                         vec![source_range],
-                    )));
+                    )))
                 }
             }
         }
@@ -3254,7 +3254,7 @@ fn axis_constraint_points(
         // fixed(n.x, fix.x)
         // (or y, whatever is appropriate)
         for point in var_points {
-            let solver_point = datum_point([point.0.into(), point.1.into()], args.source_range)?;
+            let solver_point = datum_point([point.0, point.1], args.source_range)?;
             let fix_point_mm = (fix_point.0.to_mm(), fix_point.1.to_mm());
             solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point_mm));
         }
@@ -3272,9 +3272,9 @@ fn axis_constraint_points(
                 vec![args.source_range],
             ))
         })?;
-        let anchor = datum_point([first_point.0.into(), first_point.1.into()], args.source_range)?;
+        let anchor = datum_point([first_point.0, first_point.1], args.source_range)?;
         for point in points {
-            let solver_point = datum_point([point.0.into(), point.1.into()], args.source_range)?;
+            let solver_point = datum_point([point.0, point.1], args.source_range)?;
             solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
         }
     }
