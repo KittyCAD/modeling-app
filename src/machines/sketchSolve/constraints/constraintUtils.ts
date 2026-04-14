@@ -472,6 +472,20 @@ export function getSelectedTangentConstraintInput(
   )
 }
 
+export function getSelectedEqualLengthConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildEqualLengthConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
 export function getSelectedFixedConstraintInput(
   modelingState: StateFrom<typeof modelingMachine>
 ) {
