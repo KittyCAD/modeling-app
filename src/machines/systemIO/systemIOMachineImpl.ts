@@ -2,6 +2,7 @@ import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   createNewProjectDirectory,
+  ensureProjectDirectoryExists,
   getAppSettingsFilePath,
   getProjectInfo,
   mkdirOrNOOP,
@@ -27,6 +28,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
+  RequestedProjectFile,
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
@@ -40,6 +42,29 @@ import { fromPromise } from 'xstate'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
+const resolveRequestedProjectName = ({
+  requestedProjectName,
+  defaultProjectFolderName,
+  folders,
+}: {
+  requestedProjectName: string
+  defaultProjectFolderName: string
+  folders: Project[]
+}) => {
+  let newProjectName = requestedProjectName
+
+  if (!newProjectName) {
+    newProjectName = getUniqueProjectName(defaultProjectFolderName, folders)
+  }
+
+  if (doesProjectNameNeedInterpolated(newProjectName)) {
+    const nextIndex = getNextProjectIndex(newProjectName, folders)
+    newProjectName = interpolateProjectNameWithIndex(newProjectName, nextIndex)
+  }
+
+  return newProjectName
+}
+
 const sharedBulkCreateWorkflow = async ({
   input,
 }: {
@@ -51,30 +76,17 @@ const sharedBulkCreateWorkflow = async ({
   }
 }) => {
   const configuration = await readAppSettingsFile(input.wasmInstance)
+  const folders = input.context.folders ?? []
+  const newProjectName = resolveRequestedProjectName({
+    requestedProjectName: input.files[0]?.requestedProjectName || '',
+    defaultProjectFolderName: input.context.defaultProjectFolderName,
+    folders,
+  })
+
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
-    const requestedProjectName = file.requestedProjectName
     const requestedFileName = file.requestedFileName
     const requestedCode = file.requestedCode
-    const folders = input.context.folders
-
-    let newProjectName = requestedProjectName
-
-    if (!newProjectName) {
-      newProjectName = getUniqueProjectName(
-        input.context.defaultProjectFolderName,
-        input.context.folders ?? []
-      )
-    }
-
-    const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
-    if (needsInterpolated) {
-      const nextIndex = getNextProjectIndex(newProjectName, folders ?? [])
-      newProjectName = interpolateProjectNameWithIndex(
-        newProjectName,
-        nextIndex
-      )
-    }
 
     const baseDir = fsZds.join(
       input.context.projectDirectoryPath,
@@ -109,8 +121,118 @@ const sharedBulkCreateWorkflow = async ({
   return {
     message,
     fileName: '',
-    projectName: '',
+    projectName: newProjectName,
     subRoute: 'subRoute' in input ? input.subRoute : '',
+  }
+}
+
+const sharedBulkWriteProjectFilesWorkflow = async ({
+  input,
+}: {
+  input: {
+    context: SystemIOContext
+    files: RequestedProjectFile[]
+    requestedProjectName: string
+    requestedFileNameWithExtension?: string
+  }
+}) => {
+  try {
+    if (input.files.length === 0) {
+      return Promise.reject(
+        new Error('The shared project import did not include any files to write.')
+      )
+    }
+
+    const configuration = await readAppSettingsFile(
+      await input.context.wasmInstancePromise
+    )
+    const projectDirectoryPath =
+      input.context.projectDirectoryPath ||
+      (await ensureProjectDirectoryExists(configuration))
+
+    if (!projectDirectoryPath) {
+      return Promise.reject(
+        new Error('Unable to determine the project directory.')
+      )
+    }
+
+    const projectName = resolveRequestedProjectName({
+      requestedProjectName: input.requestedProjectName,
+      defaultProjectFolderName: input.context.defaultProjectFolderName,
+      folders: input.context.folders ?? [],
+    })
+
+    const projectRoot = fsZds.join(projectDirectoryPath, projectName)
+    const requestedFileNameWithExtension =
+      input.requestedFileNameWithExtension || ''
+
+    if (
+      requestedFileNameWithExtension &&
+      input.files.some(
+        (file) => file.requestedFileName === requestedFileNameWithExtension
+      ) === false
+    ) {
+      return Promise.reject(
+        new Error(
+          `The shared project entry file "${requestedFileNameWithExtension}" was not present in the imported files.`
+        )
+      )
+    }
+
+    console.info('[public-project] writing imported project files', {
+      projectName,
+      projectRoot,
+      fileCount: input.files.length,
+      entrypointFilePath: requestedFileNameWithExtension || null,
+    })
+
+    await fsZds.mkdir(projectRoot, { recursive: true })
+
+    for (const file of input.files) {
+      const targetPath = fsZds.join(projectRoot, file.requestedFileName)
+      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+      await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+    }
+
+    if (requestedFileNameWithExtension) {
+      const entrypointPath = fsZds.join(projectRoot, requestedFileNameWithExtension)
+      try {
+        await fsZds.stat(entrypointPath)
+      } catch (error) {
+        return Promise.reject(
+          new Error(
+            `The shared project entry file "${requestedFileNameWithExtension}" was not written successfully.`,
+            { cause: error }
+          )
+        )
+      }
+    }
+
+    console.info('[public-project] finished writing imported project files', {
+      projectName,
+      projectRoot,
+      entrypointFilePath: requestedFileNameWithExtension || null,
+    })
+
+    return {
+      message: `Successfully imported "${projectName}"`,
+      fileName: requestedFileNameWithExtension,
+      projectName,
+      subRoute: '',
+    }
+  } catch (error) {
+    console.error('[public-project] failed while writing imported project files', {
+      requestedProjectName: input.requestedProjectName,
+      requestedFileNameWithExtension: input.requestedFileNameWithExtension || null,
+      fileCount: input.files.length,
+      error,
+    })
+
+    return Promise.reject(
+      error instanceof Error
+        ? error
+        : new Error('Failed while writing the imported shared project.')
+    )
   }
 }
 
@@ -445,6 +567,28 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject]:
+      fromPromise(
+        async ({
+          input,
+        }: {
+          input: {
+            context: SystemIOContext
+            files: RequestedProjectFile[]
+            requestedProjectName: string
+            requestedFileNameWithExtension?: string
+            requestedSubRoute?: string
+          }
+        }) => {
+          const message = await sharedBulkWriteProjectFilesWorkflow({
+            input,
+          })
+          return {
+            ...message,
+            subRoute: input.requestedSubRoute || '',
+          }
+        }
+      ),
     [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
       fromPromise(
         async ({

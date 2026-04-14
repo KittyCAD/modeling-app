@@ -77,7 +77,7 @@ export const baseLoader =
 
       const fileURLPath =
         PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
-      return redirect(fileURLPath)
+      return redirect(fileURLPath + (url.search || ''))
     }
   }
 

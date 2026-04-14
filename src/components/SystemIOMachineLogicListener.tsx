@@ -125,6 +125,7 @@ export function SystemIOMachineLogicListener() {
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
         SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation)
       const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
@@ -170,7 +171,7 @@ export function SystemIOMachineLogicListener() {
       )
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
-        requestedProjectName.name
+        requestedFileName.project
       )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
