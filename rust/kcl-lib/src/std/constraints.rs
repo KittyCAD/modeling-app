@@ -3045,16 +3045,31 @@ fn extract_axis_point_vars(
                     vec![source_range],
                 )));
             };
-            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (&position[0], &position[1]) else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "The `{}` function point coordinates must be sketch vars in both x and y",
-                        kind.function_name()
-                    ),
-                    vec![source_range],
-                )));
-            };
-            Ok(PointToAlign::Variable { x: *x, y: *y })
+            match (&position[0], &position[1]) {
+                (UnsolvedExpr::Known(x), UnsolvedExpr::Known(y)) => Ok(PointToAlign::Fixed {
+                    x: x.to_owned(),
+                    y: y.to_owned(),
+                }),
+                (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(PointToAlign::Variable { x: *x, y: *y }),
+                (UnsolvedExpr::Known(..), UnsolvedExpr::Unknown(..)) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "The `{}` function cannot take a fixed X component and a variable Y component",
+                            kind.function_name()
+                        ),
+                        vec![source_range],
+                    )));
+                }
+                (UnsolvedExpr::Unknown(..), UnsolvedExpr::Known(..)) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "The `{}` function cannot take a fixed X component and a variable Y component",
+                            kind.function_name()
+                        ),
+                        vec![source_range],
+                    )));
+                }
+            }
         }
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let [x_value, y_value] = value.as_slice() else {
