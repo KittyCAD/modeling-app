@@ -9,6 +9,9 @@
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ### Sketch on Face Behavior
 ///
 /// There are some important behaviors to understand when sketching on a face:
@@ -285,6 +288,9 @@ export fn startSketchOn(
 
 /// Start a new profile at a given point.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -349,6 +355,9 @@ export fn startProfile(
 
 /// Sketch a rectangle.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
 /// ```
@@ -383,6 +392,9 @@ export fn rectangle(
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```
 /// exampleSketch = startSketchOn(-XZ)
@@ -420,6 +432,10 @@ export fn circle(
 ): Sketch {}
 
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of ellipse is still under development.
 ///
 /// ```
 /// @settings(experimentalFeatures = allow)
@@ -1296,6 +1312,9 @@ export fn getBoundedEdge(
 
 /// Construct a circle derived from 3 points.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XY)
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
@@ -1316,6 +1335,9 @@ export fn circleThreePoint(
 ): Sketch {}
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl
 /// // Create a regular hexagon inscribed in a circle of radius 10
@@ -1637,7 +1659,7 @@ export fn sweep(
   /// Defaults to "solid".
   bodyType?: string = "solid",
   /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
-  version?: number(Count),
+  version?: number(Count) = 0,
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -2286,6 +2308,10 @@ export fn profileStartY(
 
 /// Extend the current sketch with a new involute circular curve.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of involute circular is still under development.
+///
 /// ```kcl
 /// a = 10
 /// b = 14
@@ -2364,6 +2390,9 @@ export fn involuteCircular(
 
 /// Extend the current sketch with a new straight line.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// triangle = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -2402,6 +2431,9 @@ export fn line(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'x' axis.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -2437,6 +2469,9 @@ export fn xLine(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'y' axis.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -2466,6 +2501,9 @@ export fn yLine(
 
 /// Draw a line segment relative to the current origin using the polar
 /// measure of some angle and distance.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl
 /// exampleSketch = startSketchOn(XZ)
@@ -2505,6 +2543,9 @@ export fn angledLine(
 /// such that the newly created line intersects the desired target line
 /// segment.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -2536,6 +2577,9 @@ export fn angledLineThatIntersects(
 
 /// Construct a line segment from the current origin back to the profile's
 /// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// If you want to perform some 3-dimensional operation on a sketch, like
 /// extrude or sweep, you must `close` it first. `close` must be called even
@@ -2569,6 +2613,9 @@ export fn close(
 ): Sketch {}
 
 /// Draw a curved line segment along an imaginary circle.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
@@ -2628,6 +2675,9 @@ export fn arc(
 /// Starting at the current sketch's origin, draw a curved line segment along
 /// some part of an imaginary circle until it reaches the desired (x, y)
 /// coordinates.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// When using radius and angle, draw a curved line segment along part of an
 /// imaginary circle. The arc is constructed such that the last line segment is
@@ -2702,6 +2752,10 @@ export fn tangentialArc(
 /// the desired (x, y), using a number of control points to shape the curve's
 /// shape.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of bezier curve is still under development.
+///
 /// ```kcl
 /// // Example using relative control points.
 /// exampleSketch = startSketchOn(XZ)
@@ -2748,6 +2802,9 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -2787,6 +2844,10 @@ export fn subtract2d(
 
 /// Add a conic section to an existing sketch.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of conic is still under development.
+///
 /// ```kcl
 /// @settings(experimentalFeatures = allow)
 ///
@@ -2824,6 +2885,10 @@ export fn conic(
   ): Sketch {}
 
 /// Add a parabolic segment to an existing sketch.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of parabolic is still under development.
 ///
 /// ```kcl
 /// @settings(experimentalFeatures = allow)
@@ -2873,6 +2938,10 @@ export fn parabolicPoint(
 ): Point2d {}
 
 /// Add a hyperbolic section to an existing sketch.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of hyperbolic is still under development.
 ///
 /// ```kcl
 /// @settings(experimentalFeatures = allow)
@@ -2925,6 +2994,10 @@ export fn hyperbolicPoint(
 ): Point2d {}
 
 /// Add an elliptic section to an existing sketch.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of elliptic is still under development.
 ///
 /// ```kcl
 /// @settings(experimentalFeatures = allow)

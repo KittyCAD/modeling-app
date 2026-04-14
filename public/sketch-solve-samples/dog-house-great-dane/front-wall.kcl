@@ -2,7 +2,7 @@
 // Front wall studs and plates around the door opening.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import and define parameters
 import * from "dimensions.kcl"

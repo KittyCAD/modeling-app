@@ -62,27 +62,28 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
         .parse_errs_as_err()
         .unwrap();
 
-    // TODO handle examples; use with_comments
     let mut summary = String::new();
     let mut description = None;
     for n in &parsed.non_code_meta.start_nodes {
         match &n.value {
             NonCodeValue::BlockComment { value, .. } if value.starts_with('/') => {
-                let line = value[1..].trim();
-                if line.is_empty() {
+                let rest = &value[1..];
+                if rest.trim().is_empty() {
                     match &mut description {
                         None => description = Some(String::new()),
-                        Some(d) => d.push_str("\n\n"),
+                        Some(d) => d.push('\n'),
                     }
                 } else {
+                    let line = rest.trim_end();
+                    let line = line.strip_prefix(' ').unwrap_or(line);
                     match &mut description {
                         None => {
-                            summary.push_str(line);
+                            summary.push_str(line.trim());
                             summary.push(' ');
                         }
                         Some(d) => {
                             d.push_str(line);
-                            d.push(' ');
+                            d.push('\n');
                         }
                     }
                 }

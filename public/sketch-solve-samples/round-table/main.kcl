@@ -2,7 +2,7 @@
 // Simple round table with a base, single leg, and tabletop
 // Categories: Construction, Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Parameters
 tableTopHeight = 750

@@ -9,7 +9,7 @@
 // - Optional top board acting as a cover
 // All elements are parametric and adaptable through clearly named variables.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // --- Global Dimensions ---
 unitWidth = 1 // overall external width of the shelf
