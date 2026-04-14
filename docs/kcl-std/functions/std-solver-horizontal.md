@@ -1,14 +1,14 @@
 ---
 title: "solver::horizontal"
 subtitle: "Function in std::solver"
-excerpt: "Constrain a line to be horizontal."
+excerpt: "Constrain a line, or a list of points, to be horizontal."
 layout: manual
 ---
 
-Constrain a line to be horizontal.
+Constrain a line, or a list of points, to be horizontal.
 
 ```kcl
-solver::horizontal(@input: Segment)
+solver::horizontal(@input: Segment | [Segment | Point2d; 2+])
 ```
 
 
@@ -17,7 +17,7 @@ solver::horizontal(@input: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The line segment that should remain horizontal. | Yes |
+| `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) or [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2+] | Either - A single line segment that should remain horizontal. - A list of points which should all be horizontal. | Yes |
 
 
 ### Examples
@@ -47,6 +47,29 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-horizontal0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+profile = sketch(on = XY) {
+  p0 = [var 0mm, var 0mm]
+  p1 = [var 4mm, var 0mm]
+  horizontal([p0, p1])
+}
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the solver::horizontal function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-horizontal1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-horizontal1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
