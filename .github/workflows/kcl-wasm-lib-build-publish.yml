@@ -69,4 +69,6 @@ jobs:
       - name: Publish package
         if: ${{ steps.version_check.outputs.should_publish == 'true' }}
         working-directory: rust/kcl-wasm-lib/pkg
-        run: npm publish --access public --provenance
+        run: |
+          npm pkg fix
+          npm publish --access public --provenance
