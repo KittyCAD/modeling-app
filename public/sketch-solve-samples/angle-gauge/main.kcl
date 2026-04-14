@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 gaugeWidth = 1.25

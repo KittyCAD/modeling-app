@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 wallThickness = 0.125
