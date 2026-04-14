@@ -2941,8 +2941,8 @@ impl AxisConstraintKind {
     #[cfg(feature = "artifact-graph")]
     fn line_artifact_constraint(self, line: ObjectId) -> Constraint {
         match self {
-            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal { line }),
-            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical { line }),
+            AxisConstraintKind::Horizontal => Constraint::Horizontal(Horizontal::Line { line_id: line }),
+            AxisConstraintKind::Vertical => Constraint::Vertical(Vertical::Line { line_id: line }),
         }
     }
 }

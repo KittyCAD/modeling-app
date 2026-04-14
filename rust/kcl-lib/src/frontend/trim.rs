@@ -4,6 +4,8 @@ use indexmap::IndexSet;
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::execution::types::adjust_length;
+use crate::front::Horizontal;
+use crate::front::Vertical;
 use crate::frontend::api::Number;
 use crate::frontend::api::Object;
 use crate::frontend::api::ObjectId;
@@ -399,12 +401,22 @@ fn rewrite_constraint_with_map(
                     .collect(),
             }))
         }
-        Constraint::Horizontal(horizontal) => Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal {
-            line: rewrite_object_id(horizontal.line, rewrite_map),
-        })),
-        Constraint::Vertical(vertical) => Some(Constraint::Vertical(crate::frontend::sketch::Vertical {
-            line: rewrite_object_id(vertical.line, rewrite_map),
-        })),
+        Constraint::Horizontal(horizontal) => match horizontal {
+            crate::front::Horizontal::Line { line_id: line } => {
+                Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal::Line {
+                    line_id: rewrite_object_id(*line, rewrite_map),
+                }))
+            }
+            crate::front::Horizontal::Points { points } => todo!(),
+        },
+        Constraint::Vertical(vertical) => match vertical {
+            crate::front::Vertical::Line { line_id: line } => {
+                Some(Constraint::Vertical(crate::frontend::sketch::Vertical::Line {
+                    line_id: rewrite_object_id(*line, rewrite_map),
+                }))
+            }
+            crate::front::Vertical::Points { points } => todo!(),
+        },
         _ => None,
     }
 }
@@ -5103,8 +5115,10 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
-                        Constraint::Horizontal(horizontal) => horizontal.line == *segment_id,
-                        Constraint::Vertical(vertical) => vertical.line == *segment_id,
+                        Constraint::Horizontal(Horizontal::Line { line_id: line }) => line == segment_id,
+                        Constraint::Horizontal(Horizontal::Points { points }) => todo!(),
+                        Constraint::Vertical(Vertical::Line { line_id: line }) => line == segment_id,
+                        Constraint::Vertical(Vertical::Points { points }) => todo!(),
                         _ => false,
                     };
 

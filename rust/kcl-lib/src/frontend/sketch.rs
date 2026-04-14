@@ -551,8 +551,9 @@ pub struct FixedPoint {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Horizontal {
-    pub line: ObjectId,
+pub enum Horizontal {
+    Line { line_id: ObjectId },
+    Points { points: Vec<ObjectId> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -563,8 +564,9 @@ pub struct LinesEqualLength {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Vertical {
-    pub line: ObjectId,
+pub enum Vertical {
+    Line { line_id: ObjectId },
+    Points { points: Vec<ObjectId> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
