@@ -32,34 +32,74 @@ height = firstStep + secondStep + thirdStep
 lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
 totalWidth = (binLength + 2 * binTol) * countBinWidth
 totalLength = (binLength + 2 * binTol) * countBinLength
+baseFaceStartX = binBaseLength + binTol
+baseFaceMidX = binTol + thirdStep
+baseFaceTopY = firstStep + secondStep
+baseFaceHeight = height
+binTopRightX = totalWidth - cornerRadius
+binTopOuterX = totalWidth
+binTopTopY = totalLength
+binTopInnerY = totalLength - cornerRadius
 
 baseFacePlane = offsetPlane(YZ, offset = cornerRadius + binTol)
 baseFaceSketch = sketch(on = baseFacePlane) {
-  line1 = line(
-    start = [binBaseLength + binTol, 0],
-    end = [binBaseLength + binTol, height],
+  baseOffset = line(
+    start = [var 0mm, var 0mm],
+    end = [var 3.2mm, var 0mm],
+    construction = true,
   )
+  coincident([baseOffset.start, ORIGIN])
+  line1 = line(
+    start = [var 3.2mm, var 0mm],
+    end = [var 3.2mm, var 4.75mm],
+  )
+  coincident([baseOffset.end, line1.start])
   line2 = line(
-    start = [binBaseLength + binTol, height],
-    end = [binTol, height],
+    start = [var 3.2mm, var 4.75mm],
+    end = [var 0.25mm, var 4.75mm],
   )
   coincident([line1.end, line2.start])
   line3 = line(
-    start = [binTol, height],
-    end = [binTol + thirdStep, firstStep + secondStep],
+    start = [var 0.25mm, var 4.75mm],
+    end = [var 2.4mm, var 2.6mm],
   )
   coincident([line2.end, line3.start])
   line4 = line(
-    start = [binTol + thirdStep, firstStep + secondStep],
-    end = [binTol + thirdStep, firstStep],
+    start = [var 2.4mm, var 2.6mm],
+    end = [var 2.4mm, var 0.8mm],
   )
   coincident([line3.end, line4.start])
   line5 = line(
-    start = [binTol + thirdStep, firstStep],
-    end = [binBaseLength + binTol, 0],
+    start = [var 2.4mm, var 0.8mm],
+    end = [var 3.2mm, var 0mm],
   )
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
+  midBaseGuide = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.4mm, var 0mm],
+    construction = true,
+  )
+  coincident([midBaseGuide.start, baseOffset.start])
+  midTopGuide = line(
+    start = [var 2.4mm, var 0mm],
+    end = [var 2.4mm, var 2.6mm],
+    construction = true,
+  )
+  coincident([midTopGuide.start, midBaseGuide.end])
+  coincident([midTopGuide.end, line4.start])
+  horizontal(baseOffset)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line4)
+  horizontal(midBaseGuide)
+  vertical(midTopGuide)
+  distance([baseOffset.start, baseOffset.end]) == binBaseLength + binTol
+  distance([line1.start, line1.end]) == height
+  distance([line2.end, line2.start]) == binBaseLength
+  distance([midBaseGuide.start, midBaseGuide.end]) == binTol + thirdStep
+  distance([midTopGuide.start, midTopGuide.end]) == firstStep + secondStep
+  distance([line4.start, line4.end]) == secondStep
 }
 baseFaceRegion = region(segments = [baseFaceSketch.line1])
 singleSide = extrude(
@@ -106,14 +146,14 @@ corners = patternCircular3d(
 )
 
 singleBinFillSketch = sketch(on = XY) {
-  line1 = line(start = [4.0, 3.2], end = [38.0, 3.2])
+  line1 = line(start = [var 4.0mm, var 3.2mm], end = [var 38.0mm, var 3.2mm])
   arc2 = arc(
     start = [var 38.0mm, var 3.2mm],
     end = [var 38.8mm, var 4.0mm],
     center = [var 38.0mm, var 4.0mm],
   )
   coincident([line1.end, arc2.start])
-  line3 = line(start = [38.8, 4.0], end = [38.8, 38.0])
+  line3 = line(start = [var 38.8mm, var 4.0mm], end = [var 38.8mm, var 38.0mm])
   coincident([arc2.end, line3.start])
   arc4 = arc(
     start = [var 38.8mm, var 38.0mm],
@@ -121,7 +161,7 @@ singleBinFillSketch = sketch(on = XY) {
     center = [var 38.0mm, var 38.0mm],
   )
   coincident([line3.end, arc4.start])
-  line5 = line(start = [38.0, 38.8], end = [4.0, 38.8])
+  line5 = line(start = [var 38.0mm, var 38.8mm], end = [var 4.0mm, var 38.8mm])
   coincident([arc4.end, line5.start])
   arc6 = arc(
     start = [var 4.0mm, var 38.8mm],
@@ -129,7 +169,7 @@ singleBinFillSketch = sketch(on = XY) {
     center = [var 4.0mm, var 38.0mm],
   )
   coincident([line5.end, arc6.start])
-  line7 = line(start = [3.2, 38.0], end = [3.2, 4.0])
+  line7 = line(start = [var 3.2mm, var 38.0mm], end = [var 3.2mm, var 4.0mm])
   coincident([arc6.end, line7.start])
   arc8 = arc(
     start = [var 3.2mm, var 4.0mm],
@@ -138,6 +178,33 @@ singleBinFillSketch = sketch(on = XY) {
   )
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 4.0mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, ORIGIN])
+  guide2 = line(
+    start = [var 4.0mm, var 0mm],
+    end = [var 4.0mm, var 3.2mm],
+    construction = true,
+  )
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line1.start])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == firstStep
+  radius(arc4) == firstStep
+  radius(arc6) == firstStep
+  radius(arc8) == firstStep
+  distance([guide1.start, guide1.end]) == 4.0mm
+  distance([guide2.start, guide2.end]) == 3.2mm
+  distance([line1.start, line1.end]) == 34.0mm
+  distance([line3.start, line3.end]) == 34.0mm
 }
 singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
 singleBinFill = extrude(singleBinFillRegion, length = height)
@@ -202,7 +269,10 @@ binFill = patternLinear3d(
 
 binTopPlane = offsetPlane(XY, offset = height)
 binTopSketch = sketch(on = binTopPlane) {
-  line1 = line(start = [cornerRadius, 0], end = [totalWidth - cornerRadius, 0])
+  line1 = line(
+    start = [var 3.75mm, var 0mm],
+    end = [var 80.25mm, var 0mm],
+  )
   arc2 = arc(
     start = [var 80.25mm, var 0mm],
     end = [var 84.0mm, var 3.75mm],
@@ -210,8 +280,8 @@ binTopSketch = sketch(on = binTopPlane) {
   )
   coincident([line1.end, arc2.start])
   line3 = line(
-    start = [totalWidth, cornerRadius],
-    end = [totalWidth, totalLength - cornerRadius],
+    start = [var 84.0mm, var 3.75mm],
+    end = [var 84.0mm, var 122.25mm],
   )
   coincident([arc2.end, line3.start])
   arc4 = arc(
@@ -221,8 +291,8 @@ binTopSketch = sketch(on = binTopPlane) {
   )
   coincident([line3.end, arc4.start])
   line5 = line(
-    start = [totalWidth - cornerRadius, totalLength],
-    end = [cornerRadius, totalLength],
+    start = [var 80.25mm, var 126.0mm],
+    end = [var 3.75mm, var 126.0mm],
   )
   coincident([arc4.end, line5.start])
   arc6 = arc(
@@ -231,7 +301,10 @@ binTopSketch = sketch(on = binTopPlane) {
     center = [var 3.75mm, var 122.25mm],
   )
   coincident([line5.end, arc6.start])
-  line7 = line(start = [0, totalLength - cornerRadius], end = [0, cornerRadius])
+  line7 = line(
+    start = [var 0mm, var 122.25mm],
+    end = [var 0mm, var 3.75mm],
+  )
   coincident([arc6.end, line7.start])
   arc8 = arc(
     start = [var 0mm, var 3.75mm],
@@ -240,6 +313,34 @@ binTopSketch = sketch(on = binTopPlane) {
   )
   coincident([line7.end, arc8.start])
   coincident([arc8.end, line1.start])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 3.75mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, ORIGIN])
+  coincident([guide1.end, line1.start])
+  guide2 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 0mm, var 3.75mm],
+    construction = true,
+  )
+  coincident([guide2.start, ORIGIN])
+  coincident([guide2.end, line7.end])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == cornerRadius
+  radius(arc4) == cornerRadius
+  radius(arc6) == cornerRadius
+  radius(arc8) == cornerRadius
+  distance([guide1.start, guide1.end]) == cornerRadius
+  distance([line1.start, line1.end]) == totalWidth - 2 * cornerRadius
+  distance([line3.start, line3.end]) == totalLength - 2 * cornerRadius
+  distance([guide2.start, guide2.end]) == cornerRadius
 }
 binTopRegion = region(segments = [binTopSketch.line1])
 binTop = extrude(binTopRegion, length = binHeight * countBinHeight)
@@ -277,7 +378,7 @@ plane002 = {
 }
 
 lipLengthSketch = sketch(on = plane000) {
-  line1 = line(start = [0, 0], end = [0, 5.792893])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
   arc2 = arc(
     start = [var 0mm, var 5.792893mm],
     end = [var 0.853553mm, var 6.146446mm],
@@ -286,17 +387,61 @@ lipLengthSketch = sketch(on = plane000) {
   coincident([line1.end, arc2.start])
   line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
   coincident([arc2.end, line3.start])
-  line4 = line(start = [1.9, 5.1], end = [1.9, 3.3])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
   coincident([line3.end, line4.start])
   line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
   coincident([line4.end, line5.start])
-  line6 = line(start = [2.6, 2.6], end = [2.6, 1.4])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
   coincident([line5.end, line6.start])
   line7 = line(start = [2.6, 1.4], end = [1.2, 0])
   coincident([line6.end, line7.start])
-  line8 = line(start = [1.2, 0], end = [0, 0])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 1.9mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, line1.start])
+  guide2 = line(
+    start = [var 1.9mm, var 0mm],
+    end = [var 1.9mm, var 5.1mm],
+    construction = true,
+  )
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.6mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide3.start, line1.start])
+  guide4 = line(
+    start = [var 2.6mm, var 0mm],
+    end = [var 2.6mm, var 2.6mm],
+    construction = true,
+  )
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  radius(arc2) == lipRadius
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
 }
 lipLengthRegion = region(segments = [lipLengthSketch.line1])
 lipSingleLength = extrude(
@@ -305,7 +450,7 @@ lipSingleLength = extrude(
 )
 
 lipWidthSketch = sketch(on = plane001) {
-  line1 = line(start = [0, 0], end = [0, 5.792893])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
   arc2 = arc(
     start = [var 0mm, var 5.792893mm],
     end = [var 0.853553mm, var 6.146446mm],
@@ -314,17 +459,61 @@ lipWidthSketch = sketch(on = plane001) {
   coincident([line1.end, arc2.start])
   line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
   coincident([arc2.end, line3.start])
-  line4 = line(start = [1.9, 5.1], end = [1.9, 3.3])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
   coincident([line3.end, line4.start])
   line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
   coincident([line4.end, line5.start])
-  line6 = line(start = [2.6, 2.6], end = [2.6, 1.4])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
   coincident([line5.end, line6.start])
   line7 = line(start = [2.6, 1.4], end = [1.2, 0])
   coincident([line6.end, line7.start])
-  line8 = line(start = [1.2, 0], end = [0, 0])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 1.9mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, line1.start])
+  guide2 = line(
+    start = [var 1.9mm, var 0mm],
+    end = [var 1.9mm, var 5.1mm],
+    construction = true,
+  )
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.6mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide3.start, line1.start])
+  guide4 = line(
+    start = [var 2.6mm, var 0mm],
+    end = [var 2.6mm, var 2.6mm],
+    construction = true,
+  )
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  radius(arc2) == lipRadius
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
 }
 lipWidthRegion = region(segments = [lipWidthSketch.line1])
 lipSingleWidth = extrude(
@@ -369,7 +558,7 @@ lipSingleLengthCorner = revolve(lipLengthCornerRegion, angle = -90deg, axis = ax
 hide(lipLengthSketch)
 
 lipWidthCornerSketch = sketch(on = plane002) {
-  line1 = line(start = [0, 0], end = [0, 5.792893])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
   arc2 = arc(
     start = [var 0mm, var 5.792893mm],
     end = [var 0.853553mm, var 6.146446mm],
@@ -378,17 +567,61 @@ lipWidthCornerSketch = sketch(on = plane002) {
   coincident([line1.end, arc2.start])
   line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
   coincident([arc2.end, line3.start])
-  line4 = line(start = [1.9, 5.1], end = [1.9, 3.3])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
   coincident([line3.end, line4.start])
   line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
   coincident([line4.end, line5.start])
-  line6 = line(start = [2.6, 2.6], end = [2.6, 1.4])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
   coincident([line5.end, line6.start])
   line7 = line(start = [2.6, 1.4], end = [1.2, 0])
   coincident([line6.end, line7.start])
-  line8 = line(start = [1.2, 0], end = [0, 0])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 1.9mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, line1.start])
+  guide2 = line(
+    start = [var 1.9mm, var 0mm],
+    end = [var 1.9mm, var 5.1mm],
+    construction = true,
+  )
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.6mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide3.start, line1.start])
+  guide4 = line(
+    start = [var 2.6mm, var 0mm],
+    end = [var 2.6mm, var 2.6mm],
+    construction = true,
+  )
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  radius(arc2) == lipRadius
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
 }
 lipWidthCornerRegion = region(segments = [lipWidthCornerSketch.line1])
 lipSingleWidthCorner = revolve(lipWidthCornerRegion, angle = 90deg, axis = axis001)

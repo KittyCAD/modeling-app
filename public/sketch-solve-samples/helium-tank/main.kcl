@@ -80,6 +80,21 @@ tankSketch = sketch(on = YZ) {
   coincident([line16.end, line17.start])
   line18 = line(start = [var 0.53in, var 30in], end = [var 0.63in, var 30in])
   coincident([line17.end, line18.start])
+  vertical(line8)
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line12)
+  vertical(line14)
+  horizontal(line16)
+  vertical(line17)
+  horizontal(line18)
+  distance([line8.start, line8.end]) == 23.25in
+  distance([line10.start, line10.end]) == 2.5in
+  distance([line11.start, line11.end]) == 0.13in
+  distance([line12.start, line12.end]) == 2.5in
+  distance([line16.start, line16.end]) == 0.77in
+  distance([line17.start, line17.end]) == 2.18in
+  distance([line18.start, line18.end]) == 0.1in
 }
 tankRegion = region(segments = [tankSketch.line1])
 tankRevolve = revolve(tankRegion, angle = 220deg, axis = Y)
@@ -162,6 +177,12 @@ bracketOuterSketch = sketch(on = bracketPlane) {
   line11 = line(start = [var 0.1in, var 4.5in], end = [var 0in, var 4.5in])
   coincident([arc10.end, line11.start])
   coincident([line11.end, line1.start])
+  horizontal(line1)
+  horizontal(line6)
+  horizontal(line11)
+  distance([line1.start, line1.end]) == 0.1in
+  distance([line6.start, line6.end]) == 5.2in
+  distance([line11.start, line11.end]) == 0.1in
 }
 bracketOuterRegion = region(segments = [bracketOuterSketch.line1])
 bracketOuterBody = extrude(bracketOuterRegion, length = 1, symmetric = true)
@@ -214,6 +235,12 @@ bracketInnerSketch = sketch(on = bracketPlane) {
   line11 = line(start = [var 0.1in, var 4.63in], end = [var 0in, var 4.63in])
   coincident([arc10.end, line11.start])
   coincident([line11.end, line1.start])
+  horizontal(line1)
+  horizontal(line6)
+  horizontal(line11)
+  distance([line1.start, line1.end]) == 0.1in
+  distance([line6.start, line6.end]) == 5.2in
+  distance([line11.start, line11.end]) == 0.1in
 }
 bracketInnerRegion = region(segments = [bracketInnerSketch.line1])
 bracketInnerBody = extrude(bracketInnerRegion, length = 1.1, symmetric = true)
