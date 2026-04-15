@@ -37,7 +37,6 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [hasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
@@ -139,16 +138,12 @@ function CommandBarSelectionInput({
             otherSelections: [],
           }
 
-      if (
-        !(arg.clearSelectionFirst && !hasClearedSelection) &&
-        canSubmitSelection &&
-        resolvedSelection
-      ) {
+      if (!arg.clearSelectionFirst && canSubmitSelection && resolvedSelection) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasClearedSelection])
+  }, [])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
