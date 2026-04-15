@@ -720,3 +720,60 @@ pub(crate) fn get_radius_labelled(
         ))),
     }
 }
+
+pub async fn text(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let text = args.get_kw_arg("text", &RuntimeType::string(), exec_state)?;
+
+    let result = inner_text(sketch_or_surface, text, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(result)
+    })
+}
+
+async fn inner_text(sketch_or_surface: SketchOrSurface, text: String, exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
+
+    if text.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Received an empty string".to_owned(),
+                    vec![args.source_range],
+        )));
+    }
+
+    let sketch_surface = sketch_or_surface.into_sketch_surface();
+    //
+    //TODO: allow specifying where text is
+    let sketch = crate::std::sketch::inner_start_profile(sketch_surface, POINT_ZERO_ZERO, None, exec_state, &args.ctx, args.source_range).await?;
+
+    let id = exec_state.next_uuid();
+
+    exec_state.batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, id),
+        ModelingCmd::from(mcmd::ExtendPath::builder()
+            .path(sketch.id.into())
+            .segment(PathSegment::Text{text})
+            .build()),
+    ).await?;
+
+    //TODO: do this properly
+    let current_path = Path::Base { base: BasePath {
+        from: [0.0, 0.0],
+        to: [0.0, 0.0],
+        tag: None,
+        units: UnitLength::Millimeters,
+        geo_meta: GeoMeta { id, metadata: args.source_range.into() },
+    } };
+
+    let mut new_sketch = sketch;
+    new_sketch.is_closed = ProfileClosed::Implicitly;
+    new_sketch.paths.push(current_path);
+
+    // exec_state
+    //     .batch_modeling_cmd(
+    //         ModelingCmdMeta::from_args_id(exec_state, &args, id),
+    //         ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
+    //     )
+    //     .await?;
+
+    //TODO: return all new sketches
+    Ok(new_sketch)
+}

@@ -3051,3 +3051,10 @@ export fn faceOf(
   /// Which face of the solid.
   face: TaggedFace | Segment,
 ): Face {}
+
+/// Create a sketch by extracting the contours of the provided text
+@(impl = std_rust, experimental = false, feature_tree = false)
+export fn text(
+  @sketchOrSurface: Sketch | Plane | Face,
+  text: string,
+): Sketch {}
