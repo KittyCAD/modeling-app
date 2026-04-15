@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, waitFor, fromPromise } from 'xstate'
 import { machine } from '@src/machines/sketchSolve/tools/rectTool'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import type {
   SceneGraphDelta,
@@ -310,6 +311,106 @@ describe('rectTool - XState', () => {
       actor.stop()
     })
 
+    it('should ignore an aligned finalize click until the rectangle crosses the preview threshold', async () => {
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
+      callbacks?.onClick?.({
+        mouseEvent: { which: 1 },
+        intersectionPoint: {
+          twoD: {
+            x: 1 + MIN_DRAFT_GEOMETRY_DELTA_MM / 2,
+            y: 2,
+          },
+        },
+      })
+
+      expect(actor.getSnapshot().matches('awaiting second point')).toBe(true)
+      actor.stop()
+    })
+
+    it('should ignore a center-rectangle finalize click when snapping keeps one dimension at zero', async () => {
+      vi.mocked(getBestSnappingCandidate).mockReturnValue({
+        position: [1 + MIN_DRAFT_GEOMETRY_DELTA_MM * 3, 2],
+        target: { type: 'origin' },
+        distance: 0,
+      })
+
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'center',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
+      callbacks?.onClick?.({
+        mouseEvent: { which: 1 },
+        intersectionPoint: {
+          twoD: {
+            x: 99,
+            y: 99,
+          },
+        },
+      })
+
+      expect(actor.getSnapshot().matches('awaiting second point')).toBe(true)
+      actor.stop()
+    })
+
+    it('should ignore an angled second click until the first side crosses the preview threshold', async () => {
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
+      callbacks?.onClick?.({
+        mouseEvent: { which: 1 },
+        intersectionPoint: {
+          twoD: {
+            x: 1 + MIN_DRAFT_GEOMETRY_DELTA_MM / 2,
+            y: 2,
+          },
+        },
+      })
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches('awaiting second point')).toBe(true)
+      expect(snapshot.context.secondPoint).toBeUndefined()
+      actor.stop()
+    })
+
     it('should remain in awaiting third point in angled mode when third click equals second point', async () => {
       const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
         createTestMachine()
@@ -341,6 +442,43 @@ describe('rectTool - XState', () => {
       expect(snapshot.matches('awaiting third point')).toBe(true)
       expect(snapshot.context.secondPoint).toEqual([3, 4])
 
+      actor.stop()
+    })
+
+    it('should ignore an angled third click until the rectangle has non-zero width', async () => {
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({
+        type: 'set second point',
+        data: [1 + MIN_DRAFT_GEOMETRY_DELTA_MM * 2, 2],
+      })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+
+      const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
+      callbacks?.onClick?.({
+        mouseEvent: { which: 1 },
+        intersectionPoint: {
+          twoD: {
+            x: 1 + MIN_DRAFT_GEOMETRY_DELTA_MM * 2,
+            y: 2 + MIN_DRAFT_GEOMETRY_DELTA_MM / 2,
+          },
+        },
+      })
+
+      expect(actor.getSnapshot().matches('awaiting third point')).toBe(true)
       actor.stop()
     })
   })
@@ -484,6 +622,37 @@ describe('rectTool - XState', () => {
         sceneInfra,
       })
 
+      actor.stop()
+    })
+
+    it('skips aligned draft edits until the preview threshold is crossed', async () => {
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+        },
+      }).start()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
+      callbacks?.onMove?.({
+        mouseEvent: { shiftKey: false },
+        intersectionPoint: {
+          twoD: {
+            x: 1 + MIN_DRAFT_GEOMETRY_DELTA_MM / 2,
+            y: 2,
+          },
+        },
+      })
+
+      expect(editSegmentsSpy).not.toHaveBeenCalled()
       actor.stop()
     })
   })
