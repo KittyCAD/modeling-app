@@ -25,18 +25,6 @@ redo-kcl-stdlib-docs-no-imgs:
     rm -f ../docs/kcl-std-sketch-solve/functions/*
     rm -f ../docs/kcl-std-sketch-solve/modules/*
     rm -f ../docs/kcl-std-sketch-solve/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/consts/*
     EXPECTORATE=overwrite {{ cnr }} {{ kcl_lib_flags }} docs::gen_std_tests::test_generate_stdlib
 
 # Generate the stdlib image artifacts
@@ -55,18 +43,6 @@ redo-kcl-stdlib-docs:
     rm -f ../docs/kcl-std-sketch-solve/functions/*
     rm -f ../docs/kcl-std-sketch-solve/modules/*
     rm -f ../docs/kcl-std-sketch-solve/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-legacy/consts/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/types/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/functions/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/modules/*
-    rm -f ../../text-to-cad/data/kcl-docs/kcl-std-sketch-solve/consts/*
     TWENTY_TWENTY=update {{ cnr }} {{ kcl_lib_flags }} -- kcl_test_example
     TWENTY_TWENTY=update {{ cnr }} {{ kcl_lib_flags }} docs::kcl_doc::test::kcl_test_examples
     EXPECTORATE=overwrite {{ cnr }} {{ kcl_lib_flags }} -- docs::gen_std_tests::test_generate_stdlib
