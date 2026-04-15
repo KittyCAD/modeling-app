@@ -1,0 +1,33 @@
+---
+title: "solid"
+subtitle: "Module in std"
+excerpt: "This module contains functions for modifying solids, e.g., by adding a fillet or chamfer, or removing part of a solid. "
+layout: manual
+---
+
+This module contains functions for modifying solids, e.g., by adding a fillet or chamfer, or removing part of a solid. 
+
+
+
+
+## Functions and constants
+
+* [`appearance`](/docs/kcl-std-sketch-solve/functions/std-solid-appearance)
+* [`blend`](/docs/kcl-std-sketch-solve/functions/std-solid-blend)
+* [`chamfer`](/docs/kcl-std-sketch-solve/functions/std-solid-chamfer)
+* [`deleteFace`](/docs/kcl-std-sketch-solve/functions/std-solid-deleteFace)
+* [`fillet`](/docs/kcl-std-sketch-solve/functions/std-solid-fillet)
+* [`flipSurface`](/docs/kcl-std-sketch-solve/functions/std-solid-flipSurface)
+* [`hollow`](/docs/kcl-std-sketch-solve/functions/std-solid-hollow)
+* [`intersect`](/docs/kcl-std-sketch-solve/functions/std-solid-intersect)
+* [`isSolid`](/docs/kcl-std-sketch-solve/functions/std-solid-isSolid)
+* [`isSurface`](/docs/kcl-std-sketch-solve/functions/std-solid-isSurface)
+* [`joinSurfaces`](/docs/kcl-std-sketch-solve/functions/std-solid-joinSurfaces)
+* [`patternCircular3d`](/docs/kcl-std-sketch-solve/functions/std-solid-patternCircular3d)
+* [`patternLinear3d`](/docs/kcl-std-sketch-solve/functions/std-solid-patternLinear3d)
+* [`patternTransform`](/docs/kcl-std-sketch-solve/functions/std-solid-patternTransform)
+* [`shell`](/docs/kcl-std-sketch-solve/functions/std-solid-shell)
+* [`split`](/docs/kcl-std-sketch-solve/functions/std-solid-split)
+* [`subtract`](/docs/kcl-std-sketch-solve/functions/std-solid-subtract)
+* [`union`](/docs/kcl-std-sketch-solve/functions/std-solid-union)
+
