@@ -6,10 +6,9 @@
 
 // Import gear and propeller
 import * from "helical.kcl"
-import * from "propeller.kcl"
 
 // Model the side shaft
-sketch001 = sketch(on = YZ) {
+shaftSketch = sketch(on = YZ) {
   line1 = line(start = [var -331.26mm, var -4.72mm], end = [var -62.82mm, var -121.2mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var -0.69mm, var -52.19mm])
   line3 = line(start = [var -100mm, var -261mm], end = [var -400mm, var -261mm])
@@ -29,10 +28,10 @@ sketch001 = sketch(on = YZ) {
   horizontalDistance([line3.end, line3.start]) == 300
   verticalDistance([line4.start, line4.end]) == 50
 }
-region001 = region(segments = [sketch001.line1])
-revolve001 = revolve(region001, angle = 360deg, axis = X)
+shaftRegion = region(segments = [shaftSketch.line1])
+shaftBody = revolve(shaftRegion, angle = 360deg, axis = X)
   |> translate(x = 279, y = -100, z = -211)
-hidden001 = hide(sketch001)
+hidden001 = hide(shaftSketch)
 
 // Insert a gear on the shaft
 helicalGear(nTeeth = 14, helixAngle = 25deg, bore = 100)

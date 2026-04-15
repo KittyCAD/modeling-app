@@ -11,7 +11,7 @@ hubDiameter = 200
 hubThickness = 150
 
 // Spline shaft inputs
-toothWidth = 20 // todo: set to 10 after engine bugfix
+toothWidth = 30 // todo: set to 10 after engine bugfix
 toothHeight = 6
 shaftDiameter = 105
 

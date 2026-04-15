@@ -6,7 +6,6 @@
 
 // Import gear and propeller
 import * from "helical.kcl"
-import * from "propeller.kcl"
 import "secondary-shaft.kcl" as secondaryShaft
 
 position = 392
