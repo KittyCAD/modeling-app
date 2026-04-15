@@ -120,9 +120,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 
     it('gets path right for SketchVar initial values', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const code = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 42mm, var 0mm], end = [var 1mm, var 1mm])
 }`
 
