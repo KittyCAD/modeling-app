@@ -30,6 +30,9 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
+  // Callers can provide a local component today, then swap to a remotely
+  // authored source later without changing the conversation layout below.
+  welcomeMessage?: ReactNode
   onProcess: (request: string, mode: MlCopilotMode, attachments: File[]) => void
   onCancel: () => void
   onClickClearChat: () => void
@@ -541,6 +544,7 @@ const StarterCard = ({ text }: { text: string }) => {
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
+  const hasMessages = exchangesLength > 0
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
@@ -580,6 +584,10 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       )
     }
   )
+  const shouldShowWelcomeMessage =
+    props.welcomeMessage !== undefined &&
+    props.welcomeMessage !== null &&
+    props.welcomeMessage !== false
 
   return (
     <div className="relative">
@@ -591,16 +599,28 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false &&
                 props.needsReconnect === false ? (
-                exchangeCards !== undefined && exchangeCards.length > 0 ? (
-                  <>
-                    {exchangeCards}
-                    {lastExchange && !isEndOfStream && (
-                      <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
-                    )}
-                  </>
-                ) : (
-                  <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
-                )
+                <>
+                  {shouldShowWelcomeMessage && (
+                    <div
+                      data-testid="ml-ephant-conversation-welcome-section"
+                      className={
+                        hasMessages
+                          ? 'border-b border-chalkboard-20 dark:border-chalkboard-80'
+                          : undefined
+                      }
+                    >
+                      {props.welcomeMessage}
+                    </div>
+                  )}
+                  {hasMessages ? (
+                    <>
+                      {exchangeCards}
+                      {lastExchange && !isEndOfStream && (
+                        <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
+                      )}
+                    </>
+                  ) : null}
+                </>
               ) : (
                 <div className="text-center p-4">
                   <Loading isDummy={true} className="!text-ml-green"></Loading>
@@ -667,9 +687,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
-              hasAlreadySentPrompts={
-                exchangeCards !== undefined && exchangeCards.length > 0
-              }
+              hasAlreadySentPrompts={hasMessages}
               isProcessing={props.isProcessing}
               queue={props.queue}
               onRemoveFromQueue={props.onRemoveFromQueue}
