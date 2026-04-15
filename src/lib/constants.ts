@@ -294,6 +294,10 @@ export const CMD_GROUP_QUERY_PARAM = 'groupId'
 export const POOL_QUERY_PARAM = 'pool'
 /** A query parameter to open a publicly shared project inside the app. */
 export const PUBLIC_PROJECT_QUERY_PARAM = 'public-project'
+/** A query parameter to open a project from a share-link key inside the app. */
+export const SHARED_PROJECT_QUERY_PARAM = 'shared-project'
+/** A query parameter to open an authenticated private project inside the app. */
+export const PRIVATE_PROJECT_QUERY_PARAM = 'private-project'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
