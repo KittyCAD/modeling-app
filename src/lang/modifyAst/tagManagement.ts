@@ -131,6 +131,23 @@ export function modifyAstWithTagsForSelection(
     }
   }
 
+  if (selection.artifact.type === 'primitiveFace') {
+    const directLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(directLookup)) return directLookup
+    if (directLookup.node.type !== 'VariableDeclaration') {
+      return new Error('Failed to retrieve variable')
+    }
+    return {
+      modifiedAst: ast,
+      exprs: [createLocalName(directLookup.node.declaration.id.name)],
+    }
+  }
+
   // TODO: Add handling for BODY selections (volumes)
 
   // Unsupported selection type
