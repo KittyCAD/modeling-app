@@ -5603,12 +5603,10 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             .unwrap();
         let initial_checkpoint_count = frontend.sketch_checkpoints.len();
 
-        let new_program = Program::parse(
-            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  point(at = [1mm, 2mm])\n}\n",
-        )
-        .unwrap()
-        .0
-        .unwrap();
+        let new_program = Program::parse("sketch(on = XY) {\n  point(at = [1mm, 2mm])\n}\n")
+            .unwrap()
+            .0
+            .unwrap();
 
         let result = frontend.hack_set_program(&ctx, new_program).await.unwrap();
         let SetProgramOutcome::Success {
@@ -5647,7 +5645,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         let checkpoint_count_before = frontend.sketch_checkpoints.len();
 
         let failing_program = Program::parse(
-            "@settings(experimentalFeatures = allow)\n\nsketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])\n}\n\nbad = missing_name\n",
+            "sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])\n}\n\nbad = missing_name\n",
         )
         .unwrap()
         .0
@@ -5668,7 +5666,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
 
         let program = Program::parse(
-            "@settings(experimentalFeatures = allow)\n\nwidth = 2mm\nsketch001 = sketch(on = offsetPlane(XY, offset = width)) {\n  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])\n  distance([line1.start, line1.end]) == width\n}\n",
+            "width = 2mm\nsketch001 = sketch(on = offsetPlane(XY, offset = width)) {\n  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])\n  distance([line1.start, line1.end]) == width\n}\n",
         )
         .unwrap()
         .0
@@ -5715,8 +5713,6 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_exec_error_still_allows_edit_sketch() {
         let source = "\
-@settings(experimentalFeatures = allow)
-
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
 }

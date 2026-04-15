@@ -70,7 +70,7 @@ export function useEngineConnectionSubscriptions() {
           ) {
             return
           }
-          event && send(event)
+          if (event) send(event)
         })().catch(reportRejection)
       },
     })

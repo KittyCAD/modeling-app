@@ -1258,7 +1258,7 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
-        {
+        let sketch_block_artifact_id = {
             use crate::execution::Artifact;
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
@@ -1293,15 +1293,20 @@ impl Node<SketchBlock> {
             };
             exec_state.set_scene_object(sketch_scene_object);
 
-            // Create and add the sketch block artifact
+            // Create and add the sketch block artifact.
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
                 standard_plane,
                 plane_id: plane_artifact_id,
+                // Fill this in later once we create the path. We can't just add
+                // the artifact later because order relative to constraint
+                // artifacts is significant.
+                path_id: None,
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
-        }
+            artifact_id
+        };
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
@@ -1541,6 +1546,23 @@ impl Node<SketchBlock> {
             range,
         )
         .await?;
+
+        #[cfg(feature = "artifact-graph")]
+        {
+            use crate::execution::Artifact;
+            // We now have enough information to fill in the path.
+            if let Some(sketch_artifact_id) = sketch.as_ref().map(|s| s.artifact_id) {
+                if let Some(Artifact::SketchBlock(sketch_block_artifact)) =
+                    exec_state.artifact_mut(sketch_block_artifact_id)
+                {
+                    sketch_block_artifact.path_id = Some(sketch_artifact_id);
+                } else {
+                    let message = "Sketch block artifact not found, so path couldn't be linked to it".to_owned();
+                    debug_assert!(false, "{message}");
+                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                }
+            }
+        }
 
         // Substitute solutions back into sketch variables. This time, collect
         // all the variables in the sketch block. The set of variables may have
@@ -4962,7 +4984,6 @@ a = PI * 2
     #[tokio::test(flavor = "multi_thread")]
     async fn sketch_block_unqualified_functions_use_sketch2() {
         let ast = r#"
-@settings(experimentalFeatures = allow)
 s = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
