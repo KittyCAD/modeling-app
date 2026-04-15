@@ -1,0 +1,116 @@
+// Desk-Edge Stopper
+// Sketch-solve reconstruction with matching feature order
+@settings(defaultLengthUnit = mm)
+
+guardLengthAlongDesk = 200
+
+uProfileDepthInside = 30
+uProfileWidthInside = 20.5
+stopWallHeight = 20
+materialThickness = 5
+
+totalGuardHeight = stopWallHeight + uProfileWidthInside + materialThickness * 2
+totalGuardDepth = uProfileDepthInside + materialThickness
+
+holeCount = 3
+holeOffsetFromTheTableEdge = 13
+holeOffsetFromTheUprofileEdge = uProfileDepthInside - holeOffsetFromTheTableEdge
+holeDiameter = 4
+holeRadius = holeDiameter / 2
+holeOffsetFromGuardEdge = guardLengthAlongDesk / 6
+holeSpan = guardLengthAlongDesk - (holeOffsetFromGuardEdge * 2)
+holeSpacing = holeSpan / (holeCount - 1)
+
+// STEP 01 START: Solver guard cross-section
+guardProfile = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 31mm, var 1mm])
+  line2 = line(start = [var 31mm, var -1mm], end = [var 30mm, var 21mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 29mm, var 20mm], end = [var -1mm, var 21mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var 1mm, var 21mm], end = [var -1mm, var 27mm])
+  coincident([line3.end, line4.start])
+
+  line5 = line(start = [var -1mm, var 26mm], end = [var 29mm, var 25mm])
+  coincident([line4.end, line5.start])
+
+  line6 = line(start = [var 31mm, var 26mm], end = [var 29mm, var 46mm])
+  coincident([line5.end, line6.start])
+
+  line7 = line(start = [var 31mm, var 46mm], end = [var 36mm, var 45mm])
+  coincident([line6.end, line7.start])
+
+  line8 = line(start = [var 34mm, var 45mm], end = [var 36mm, var -6mm])
+  coincident([line7.end, line8.start])
+
+  line9 = line(start = [var 34mm, var -6mm], end = [var 1mm, var -5mm])
+  coincident([line8.end, line9.start])
+
+  line10 = line(start = [var -1mm, var -5mm], end = [var 0mm, var 0mm])
+  coincident([line9.end, line10.start])
+  coincident([line10.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(line8)
+  horizontal(line9)
+  vertical(line10)
+
+  coincident([line1.start, ORIGIN])
+  coincident([line2.end, [uProfileDepthInside, uProfileWidthInside]])
+
+  verticalDistance([line4.start, line4.end]) == materialThickness
+  verticalDistance([line6.start, line6.end]) == stopWallHeight
+  equalLength([line1, line3, line5])
+  equalLength([line4, line7, line10])
+}
+// STEP 01 END
+
+// STEP 02 START: Extrude guard body
+guardRegion = region(segments = [guardProfile.line1, guardProfile.line2])
+hiddenGuardProfile = hide(guardProfile)
+guardBody = extrude(guardRegion, length = guardLengthAlongDesk)
+// STEP 02 END
+
+// STEP 03 START: Solver hole pattern and cut
+holeProfile01 = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  radiusGuide = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2mm, var 0mm],
+    construction = true,
+  )
+
+  coincident([circle1.center, ORIGIN])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(radiusGuide)
+  horizontalDistance([radiusGuide.start, radiusGuide.end]) == holeRadius
+}
+holeRegion01 = region(segments = [holeProfile01.circle1])
+hiddenHoleProfile01 = hide(holeProfile01)
+baseHoleBody = extrude(holeRegion01, length = -materialThickness)
+  |> translate(
+    x = holeOffsetFromGuardEdge,
+    y = holeOffsetFromTheUprofileEdge,
+    z = uProfileWidthInside + materialThickness,
+    global = true,
+  )
+holeBody02 = clone(baseHoleBody)
+  |> translate(x = holeSpacing, global = true)
+holeBody03 = clone(baseHoleBody)
+  |> translate(x = holeSpacing * 2, global = true)
+guardBodyForHoleSubtract = clone(guardBody)
+guardBodyWithHoles = subtract(
+  [guardBodyForHoleSubtract],
+  tools = [baseHoleBody, holeBody02, holeBody03],
+)
+// STEP 03 END
