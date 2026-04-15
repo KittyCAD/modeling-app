@@ -1,0 +1,135 @@
+// Crash-box stepwise reconstruction
+// Validated through step 5: final crash-box body
+
+@settings(defaultLengthUnit = mm)
+
+mountHoleRadius = 16
+mountHoleOffsetFromTop = 150
+mountHoleSpacing = 200
+
+beamCutoutDepth = 300
+
+crashBoxExtrudeLength = -1200
+crashBoxOuterWidth = 400
+
+crashBoxProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var -205mm, var -198mm], end = [var 193mm, var -205mm])
+  rightEdge = line(start = [var 207mm, var -191mm], end = [var 212mm, var 188mm])
+  topEdge = line(start = [var 204mm, var 209mm], end = [var -196mm, var 212mm])
+  leftEdge = line(start = [var -214mm, var 197mm], end = [var -206mm, var -201mm])
+  verticalCenterGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var -190mm], construction = true)
+  horizontalCenterGuide = line(start = [var 0mm, var 0mm], end = [var 193mm, var 0mm], construction = true)
+
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  coincident([verticalCenterGuide.start, ORIGIN])
+  coincident([
+    horizontalCenterGuide.start,
+    verticalCenterGuide.start
+  ])
+  coincident([verticalCenterGuide.end, bottomEdge])
+  coincident([horizontalCenterGuide.end, rightEdge])
+
+  horizontal(bottomEdge)
+  horizontal(topEdge)
+  horizontal(horizontalCenterGuide)
+  vertical(rightEdge)
+  vertical(leftEdge)
+  vertical(verticalCenterGuide)
+
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == crashBoxOuterWidth
+  verticalDistance([leftEdge.end, leftEdge.start]) == crashBoxOuterWidth
+  verticalDistance([
+  verticalCenterGuide.end,
+  verticalCenterGuide.start
+]) == crashBoxOuterWidth / 2
+  horizontalDistance([
+  horizontalCenterGuide.start,
+  horizontalCenterGuide.end
+]) == crashBoxOuterWidth / 2
+}
+
+crashBoxRegion = region(segments = [
+  crashBoxProfile.bottomEdge,
+  crashBoxProfile.rightEdge
+])
+crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
+
+crashBoxOuterCornerFillets = fillet(
+  crashBoxSolid,
+  tags = [
+    edgeId(crashBoxSolid, closestTo = [-200mm, -200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [200mm, -200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [200mm, 200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [-200mm, 200mm, -600mm])
+  ],
+  radius = 60,
+)
+crashBoxShelled = shell(crashBoxOuterCornerFillets, faces = [END, START], thickness = 20)
+hide(crashBoxProfile)
+
+beamProfile = sketch(on = -YZ) {
+  topEdge = line(start = [var -861mm, var 6mm], end = [var 882mm, var -4mm])
+  rightEdge = line(start = [var 874mm, var -1mm], end = [var 879mm, var -307mm])
+  bottomEdge = line(start = [var 872mm, var -298mm], end = [var -864mm, var -304mm])
+  leftEdge = line(start = [var -871mm, var -292mm], end = [var -868mm, var 4mm])
+
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+
+  horizontal(topEdge)
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  vertical(leftEdge)
+
+  horizontalDistance([topEdge.start, ORIGIN]) == 870.13mm
+  verticalDistance([ORIGIN, topEdge.start]) == 0mm
+  horizontalDistance([topEdge.start, topEdge.end]) == 1744.11mm
+  verticalDistance([rightEdge.end, rightEdge.start]) == beamCutoutDepth
+}
+
+beamRegion = region(segments = [
+  beamProfile.topEdge,
+  beamProfile.rightEdge
+])
+beamSolid = extrude(
+  beamRegion,
+  length = 250,
+  symmetric = true,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+beamEndFillets = fillet(
+  beamSolid,
+  tags = [
+    edgeId(beamSolid, closestTo = [-125mm, 0mm, -300mm]),
+    edgeId(beamSolid, closestTo = [125mm, 0mm, -300mm])
+  ],
+  radius = 80,
+)
+hide(beamProfile)
+
+crashBoxWithPocket = subtract(crashBoxShelled, tools = beamEndFillets)
+
+leftHoleProfile = circle(
+  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
+  center = [-mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  radius = mountHoleRadius,
+)
+rightHoleProfile = circle(
+  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
+  center = [mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  radius = mountHoleRadius,
+)
+holeCutters = extrude(
+  [leftHoleProfile, rightHoleProfile],
+  to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm),
+  method = NEW,
+)
+
+crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
+appearance(crashBoxFinal, color = "#00aaff")
