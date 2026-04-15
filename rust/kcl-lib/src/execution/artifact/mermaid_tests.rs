@@ -98,7 +98,16 @@ impl Artifact {
             Artifact::PrimitiveEdge(a) => vec![a.solid_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
-            Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::SketchBlock(a) => {
+                let mut ids = Vec::new();
+                if let Some(plane_id) = a.plane_id {
+                    ids.push(plane_id);
+                }
+                if let Some(path_id) = a.path_id {
+                    ids.push(path_id);
+                }
+                ids
+            }
             Artifact::SketchBlockConstraint(_) => Vec::new(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
             Artifact::Sweep(a) => {
@@ -184,7 +193,8 @@ impl Artifact {
                 Vec::new()
             }
             Artifact::SketchBlock { .. } => {
-                // Note: Don't include these since they're parents: plane_id (if present).
+                // Note: Don't include these since they're parents: plane_id,
+                // path_id.
                 Vec::new()
             }
             Artifact::SketchBlockConstraint { .. } => {

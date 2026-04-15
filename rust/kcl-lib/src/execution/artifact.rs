@@ -291,6 +291,11 @@ pub struct SketchBlock {
     /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
+    /// The path artifact ID created from the sketch block, if there is one.
+    /// There are edge cases when a path isn't created, like when there are no
+    /// segments.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
     /// The sketch ID (ObjectId) for the sketch scene object.
     pub sketch_id: ObjectId,
