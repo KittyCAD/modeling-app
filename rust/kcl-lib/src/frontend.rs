@@ -8329,7 +8329,7 @@ sketch001 = sketch(on = XY) {
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point_ids = vec![
-            sketch.segments.get(0).unwrap().to_owned(),
+            sketch.segments.first().unwrap().to_owned(),
             sketch.segments.get(1).unwrap().to_owned(),
         ];
 
@@ -8381,7 +8381,7 @@ sketch001 = sketch(on = XY) {
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point_ids = vec![
-            sketch.segments.get(0).unwrap().to_owned(),
+            sketch.segments.first().unwrap().to_owned(),
             sketch.segments.get(1).unwrap().to_owned(),
         ];
 
