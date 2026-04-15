@@ -1,11 +1,15 @@
-import { expect, describe, test, vi } from 'vitest'
-import toast from 'react-hot-toast'
 import {
   sendToActorIfActive,
-  updateSketchOutcome,
+  updateHoveredId,
   updateSelectedIds,
+  updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import {
+  createLineApiObject,
+  createSceneGraphDelta,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import toast from 'react-hot-toast'
+import { describe, expect, test, vi } from 'vitest'
 
 // This has to be an integration test because sketchSolveImpl has a dependency tracing back to WASM,
 // even though this function doesn't directly use it.
@@ -54,6 +58,86 @@ describe('sendToActorIfActive', () => {
 
     expect(didSend).toBe(false)
     expect(send).not.toHaveBeenCalled()
+  })
+})
+
+describe('updateHoveredId', () => {
+  test('highlights the hovered sketch object source range', () => {
+    const setHighlightRange = vi.fn()
+    const line = createLineApiObject({ id: 2, start: 0, end: 1 })
+    line.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    const result = updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([line]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(result.hoveredId).toBe(2)
+    expect(setHighlightRange).toHaveBeenCalledWith([[10, 20, 0]])
+  })
+
+  test('highlights all ranges for a backtrace source ref', () => {
+    const setHighlightRange = vi.fn()
+    const line = createLineApiObject({ id: 2, start: 0, end: 1 })
+    line.source = {
+      type: 'BackTrace',
+      ranges: [
+        [[10, 20, 0], null],
+        [[30, 40, 0], null],
+      ],
+    }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([line]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([
+      [10, 20, 0],
+      [30, 40, 0],
+    ])
+  })
+
+  test('clears the code highlight when no object is hovered', () => {
+    const setHighlightRange = vi.fn()
+
+    const result = updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(result.hoveredId).toBeNull()
+    expect(setHighlightRange).toHaveBeenCalledWith([])
   })
 })
 

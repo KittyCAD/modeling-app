@@ -37,6 +37,7 @@ import {
   cleanupSketchSolveGroup,
   clearDraftEntities,
   clearHoverCallbacks,
+  clearHoveredCodeHighlight,
   deleteDraftEntities,
   equipTools,
   getObjectSelectionIds,
@@ -49,6 +50,7 @@ import {
   setDraftEntities,
   spawnTool,
   tearDownSketchSolve,
+  updateHoveredId,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -320,14 +322,9 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
-    'update hovered id': assign(({ event }) => {
-      assertEvent(event, 'update hovered id')
-      return {
-        hoveredId: event.data.hoveredId,
-        constraintHoverPopups: event.data.constraintHoverPopups ?? [],
-      }
-    }),
+    'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
+    'clear hovered code highlight': clearHoveredCodeHighlight,
     'update sketch outcome': assign(updateSketchOutcome),
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
@@ -1123,7 +1120,7 @@ export const sketchSolveMachine = setup({
     },
     exiting: {
       type: 'final',
-      entry: ['cleanup sketch solve group'],
+      entry: ['clear hovered code highlight', 'cleanup sketch solve group'],
       description: 'Place any teardown code here.',
     },
 

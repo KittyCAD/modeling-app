@@ -6,6 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
@@ -853,6 +854,36 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       })
     }
   })
+}
+
+export function updateHoveredId({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update hovered id')
+  const hoveredId = event.data.hoveredId
+  let highlightRanges: SourceRange[] = []
+
+  if (isObjectSelectionId(hoveredId)) {
+    const object =
+      context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[hoveredId]
+    if (object?.source.type === 'Simple') {
+      highlightRanges = [object.source.range]
+    } else if (object?.source.type === 'BackTrace') {
+      highlightRanges = object.source.ranges.map(([range]) => range)
+    }
+  }
+
+  context.kclManager.setHighlightRange(highlightRanges)
+
+  return {
+    hoveredId,
+    constraintHoverPopups: event.data.constraintHoverPopups ?? [],
+  }
+}
+
+export function clearHoveredCodeHighlight({ context }: SolveActionArgs) {
+  context.kclManager.setHighlightRange([])
 }
 
 export function initializeInitialSceneGraph({
