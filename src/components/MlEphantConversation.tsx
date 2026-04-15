@@ -16,6 +16,7 @@ import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
+import { isNonNullable } from '@src/lib/utils'
 
 const noop = () => {}
 
@@ -584,10 +585,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       )
     }
   )
-  const shouldShowWelcomeMessage =
-    props.welcomeMessage !== undefined &&
-    props.welcomeMessage !== null &&
-    props.welcomeMessage !== false
+  const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
 
   return (
     <div className="relative">
