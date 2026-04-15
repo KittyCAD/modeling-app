@@ -8,7 +8,7 @@
 // Define parameters
 boltSize = 4.5
 
-// Step 1: Base plate profile and revolve
+// Step 1: Revolve the profile of a compression plate designed to fit a bone
 sketch001 = sketch(on = YZ) {
   arc1 = arc(start = [var 23.19mm, var 8.37mm], end = [var 22.9mm, var 0mm], center = [var 142.9mm, var 0mm])
   arc2 = arc(start = [var 23.19mm, var 8.37mm], end = [var 23.63mm, var 16.75mm], center = [var 20.69mm, var 12.7mm])
