@@ -467,7 +467,7 @@ describe('centerArcToolImpl', () => {
   })
 
   describe('snap constraints', () => {
-    it('creates coincident constraints for snapped center and start points', async () => {
+    it('creates a coincident constraint for the snapped center point only during draft creation', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
@@ -487,22 +487,16 @@ describe('centerArcToolImpl', () => {
           [1, 2, 3, 4]
         ),
       })
-      ;(rustContext.addConstraint as any)
-        .mockResolvedValueOnce({
-          kclSource: { text: 'center-snap' },
-          sceneGraphDelta: createSceneGraphDelta([], [10]),
-        })
-        .mockResolvedValueOnce({
-          kclSource: { text: 'start-snap' },
-          sceneGraphDelta: createSceneGraphDelta([], [11]),
-        })
+      ;(rustContext.addConstraint as any).mockResolvedValueOnce({
+        kclSource: { text: 'center-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [10]),
+      })
 
       const result = await createArcActor({
         input: {
           centerPoint: [0, 0],
           startPoint: [10, 0],
           centerSnapTarget: { type: 'origin' },
-          startSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
@@ -519,26 +513,16 @@ describe('centerArcToolImpl', () => {
         },
         expect.anything()
       )
-      expect(addConstraintSpy).toHaveBeenNthCalledWith(
-        2,
-        0,
-        7,
-        {
-          type: 'Coincident',
-          segments: [2, 99],
-        },
-        expect.anything()
-      )
       expect(result).toEqual({
-        kclSource: { text: 'start-snap' },
+        kclSource: { text: 'center-snap' },
         sceneGraphDelta: {
-          ...createSceneGraphDelta([], [11]),
-          new_objects: [1, 2, 3, 4, 10, 11],
+          ...createSceneGraphDelta([], [10]),
+          new_objects: [1, 2, 3, 4, 10],
         },
       })
     })
 
-    it('adds a coincident constraint for the clicked endpoint when finalizing', async () => {
+    it('adds coincident constraints to the fixed and clicked endpoints when finalizing a swapped arc', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
@@ -579,10 +563,15 @@ describe('centerArcToolImpl', () => {
           [4]
         ),
       })
-      ;(rustContext.addConstraint as any).mockResolvedValue({
-        kclSource: { text: 'snap' },
-        sceneGraphDelta: createSceneGraphDelta([], [20]),
-      })
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce({
+          kclSource: { text: 'start-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [20]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'end-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [21]),
+        })
 
       const result = await finalizeArcActor({
         input: {
@@ -590,6 +579,7 @@ describe('centerArcToolImpl', () => {
           centerPoint: [0, 0],
           endPoint: [0, 10],
           sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'point', id: 77 },
           endSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
@@ -598,7 +588,19 @@ describe('centerArcToolImpl', () => {
         },
       })
 
-      expect(addConstraintSpy).toHaveBeenCalledWith(
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [3, 77],
+        },
+        expect.anything(),
+        false
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        2,
         0,
         7,
         {
@@ -609,10 +611,82 @@ describe('centerArcToolImpl', () => {
         true
       )
       expect(result).toEqual({
-        kclSource: { text: 'snap' },
+        kclSource: { text: 'end-snap' },
         sceneGraphDelta: {
-          ...createSceneGraphDelta([], [20]),
-          new_objects: [4, 20],
+          ...createSceneGraphDelta([], [21]),
+          new_objects: [4, 20, 21],
+        },
+        checkpointId: null,
+      })
+    })
+
+    it('adds the deferred second-click snap to the start endpoint when the arc stays unswapped', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      ;(rustContext.editSegments as any).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
+            currentArc,
+          ],
+          [4]
+        ),
+      })
+      ;(rustContext.addConstraint as any).mockResolvedValue({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [30]),
+      })
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'point', id: 77 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+          arcIsSwapped: false,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 77],
+        },
+        expect.anything(),
+        true
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [30]),
+          new_objects: [4, 30],
         },
         checkpointId: null,
       })
