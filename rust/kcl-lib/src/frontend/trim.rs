@@ -433,6 +433,14 @@ fn rewrite_constraint_with_map(
     }
 }
 
+fn point_axis_constraint_references_point(constraint: &Constraint, point_id: ObjectId) -> bool {
+    match constraint {
+        Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&point_id),
+        Constraint::Vertical(Vertical::Points { points }) => points.contains(&point_id),
+        _ => false,
+    }
+}
+
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
@@ -3274,6 +3282,21 @@ pub(crate) fn build_trim_plan(
             Vec::new()
         };
 
+        let point_axis_constraint_ids_to_delete = if let Some(point_id) = endpoint_point_id {
+            objects
+                .iter()
+                .filter_map(|obj| {
+                    let ObjectKind::Constraint { constraint } = &obj.kind else {
+                        return None;
+                    };
+
+                    point_axis_constraint_references_point(constraint, point_id).then_some(obj.id)
+                })
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
+
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
@@ -3329,6 +3352,7 @@ pub(crate) fn build_trim_plan(
             all_constraint_ids_to_delete.push(constraint_id);
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
+        all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
 
         // Delete distance constraints that reference this segment
         // When trimming an endpoint, the distance constraint no longer makes sense
@@ -3578,6 +3602,18 @@ pub(crate) fn build_trim_plan(
         }
         if let Some(constraint_id) = right_coincident_data.existing_point_segment_constraint_id {
             constraints_to_delete_set.insert(constraint_id);
+        }
+
+        if let Some(end_id) = original_end_point_id {
+            for obj in objects {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    continue;
+                };
+
+                if point_axis_constraint_references_point(constraint, end_id) {
+                    constraints_to_delete_set.insert(obj.id);
+                }
+            }
         }
 
         // Find point-point constraints on end endpoint to migrate
@@ -5118,7 +5154,10 @@ pub(crate) async fn execute_trim_operations_simple(
                 }
 
                 // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
-                let angle_rewrite_map = std::collections::HashMap::from([(*segment_id, new_segment_id)]);
+                let mut angle_rewrite_map = std::collections::HashMap::from([(*segment_id, new_segment_id)]);
+                if let Some(original_end_id) = original_segment_end_point_id {
+                    angle_rewrite_map.insert(original_end_id, new_segment_end_point_id);
+                }
                 for obj in &edit_scene_graph_delta.new_graph.objects {
                     let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
@@ -5128,9 +5167,13 @@ pub(crate) async fn execute_trim_operations_simple(
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
                         Constraint::Horizontal(Horizontal::Line { line_id: line }) => line == segment_id,
-                        Constraint::Horizontal(Horizontal::Points { points }) => todo!(),
+                        Constraint::Horizontal(Horizontal::Points { points }) => {
+                            original_segment_end_point_id.is_some_and(|end_id| points.contains(&end_id))
+                        }
                         Constraint::Vertical(Vertical::Line { line_id: line }) => line == segment_id,
-                        Constraint::Vertical(Vertical::Points { points }) => todo!(),
+                        Constraint::Vertical(Vertical::Points { points }) => {
+                            original_segment_end_point_id.is_some_and(|end_id| points.contains(&end_id))
+                        }
                         _ => false,
                     };
 
