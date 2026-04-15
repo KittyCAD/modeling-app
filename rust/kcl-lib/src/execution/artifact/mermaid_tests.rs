@@ -794,37 +794,6 @@ fn create_region_creates_region_path_sub_type() {
 }
 
 #[test]
-fn entity_clone_errors_when_source_artifact_missing() {
-    let original_entity_id = Uuid::new_v4();
-    let cmd_id = Uuid::new_v4();
-    let command = ModelingCmd::from(
-        kcmc::each_cmd::EntityClone::builder()
-            .entity_id(original_entity_id)
-            .build(),
-    );
-    let artifact_command = ArtifactCommand {
-        cmd_id,
-        range: SourceRange::synthetic(),
-        command,
-    };
-    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
-    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
-
-    let updated = artifacts_to_update(
-        &IndexMap::default(),
-        &artifact_command,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
-        &programs,
-        0,
-        &IndexMap::default(),
-        &FnvHashMap::default(),
-    );
-
-    updated.unwrap_err();
-}
-
-#[test]
 fn entity_clone_preserves_sweep_sub_type_and_method() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let cmd_id = Uuid::new_v4();

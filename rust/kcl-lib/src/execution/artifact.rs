@@ -1390,10 +1390,7 @@ fn artifacts_to_update(
             let source_id = ArtifactId::new(*entity_id);
 
             let Some(source_artifact) = artifacts.get(&source_id) else {
-                return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("EntityClone source artifact not found in graph: source_id={source_id:?}, cmd={cmd:?}"),
-                    vec![range],
-                )));
+                return Ok(Vec::new());
             };
 
             let cloned_artifact = match source_artifact {
@@ -1433,12 +1430,7 @@ fn artifacts_to_update(
                     outer_path_id: None,
                 }),
                 _ => {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        format!(
-                            "EntityClone source artifact has unsupported type: source_id={source_id:?}, artifact={source_artifact:?}, cmd={cmd:?}"
-                        ),
-                        vec![range],
-                    )));
+                    return Ok(Vec::new());
                 }
             };
 

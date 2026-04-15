@@ -18,6 +18,14 @@ flowchart LR
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     12[Solid2d]
   end
+  subgraph path19 [Path]
+    19["Path<br>[2128, 2163, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path20 [Path]
+    20["Path<br>[2265, 2300, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
   1["Plane<br>[709, 726, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   7["Sweep Revolve<br>[994, 1040, 0]<br>Consumed: false"]
@@ -46,6 +54,8 @@ flowchart LR
   4 --- 8
   7 --- 8
   9 --- 10
+  9 <--x 19
+  9 <--x 20
   10 --- 11
   10 --- 12
   10 ---- 13
