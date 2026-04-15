@@ -2,18 +2,17 @@
 // The logo for the Zoo Corporation
 // Categories: Maker
 
-// Set units in inches (in)
 @settings(defaultLengthUnit = in)
-  
+
 logoHeight = 1
 logoDepth = 0.1
 
 logoSketch = sketch(on = XY) {
   // frame
-  frameBottom = line(start = [var 0in, var 0in], end = [var 3.18in, var 0in], construction = true)
-  frameRight = line(start = [var 3.18in, var 0in], end = [var 3.18in, var 1.06in], construction = true)
-  frameTop = line(start = [var 3.18in, var 1.06in], end = [var 0in, var 1.06in], construction = true)
-  frameLeft = line(start = [var 0in, var 1.06in], end = [var 0in, var 0in], construction = true)
+  frameBottom = line(start = [var 0in, var 0in], end = [var 3in, var 0in], construction = true)
+  frameRight = line(start = [var 3in, var 0in], end = [var 3in, var 1in], construction = true)
+  frameTop = line(start = [var 3in, var 1in], end = [var 0in, var 1in], construction = true)
+  frameLeft = line(start = [var 0in, var 1in], end = [var 0in, var 0in], construction = true)
 
   coincident([frameBottom.end, frameRight.start])
   coincident([frameRight.end, frameTop.start])
@@ -28,28 +27,28 @@ logoSketch = sketch(on = XY) {
   horizontalDistance([frameTop.end, frameTop.start]) == logoHeight * 3
 
   // z
-  zLine01 = line(start = [var 0.03in, var 0.03in], end = [var 0.03in, var 0.18in])
-  zLine02 = line(start = [var 0.03in, var 0.18in], end = [var 0.61in, var 0.81in])
-  zLine03 = line(start = [var 0.61in, var 0.81in], end = [var 0.03in, var 0.81in])
-  zLine04 = line(start = [var 0.03in, var 0.81in], end = [var 0.03in, var 1.03in])
-  zLine05 = line(start = [var 0.03in, var 1.03in], end = [var 0.66in, var 1.03in])
-  zLine06 = line(start = [var 0.66in, var 1.03in], end = [var 0.66in, var 0.87in])
-  zLine07 = line(start = [var 0.66in, var 0.87in], end = [var 0.82in, var 1.03in])
-  zLine08 = line(start = [var 0.82in, var 1.03in], end = [var 0.97in, var 1.03in])
-  zLine09 = line(start = [var 0.97in, var 1.03in], end = [var 0.97in, var 0.89in])
-  zLine10 = line(start = [var 0.97in, var 0.89in], end = [var 0.39in, var 0.25in])
-  zLine11 = line(start = [var 0.39in, var 0.25in], end = [var 0.97in, var 0.25in])
-  zLine12 = line(start = [var 0.97in, var 0.25in], end = [var 0.97in, var 0.03in])
-  zLine13 = line(start = [var 0.97in, var 0.03in], end = [var 0.33in, var 0.03in])
-  zLine14 = line(start = [var 0.33in, var 0.03in], end = [var 0.33in, var 0.19in])
-  zLine15 = line(start = [var 0.33in, var 0.19in], end = [var 0.18in, var 0.03in])
-  zLine16 = line(start = [var 0.18in, var 0.03in], end = [var 0.03in, var 0.03in])
-  zGuide01 = line(start = [var 0.61in, var 0.81in], end = [var 0.66in, var 0.87in], construction = true)
-  zGuide02 = line(start = [var 0.33in, var 0.19in], end = [var 0.39in, var 0.25in], construction = true)
-  zGuide03 = line(start = [var 0.18in, var 0.03in], end = [var 0.33in, var 0.03in], construction = true)
-  zGuide04 = line(start = [var 0.03in, var 0.18in], end = [var 0.03in, var 0.81in], construction = true)
-  zGuide05 = line(start = [var 0.66in, var 1.03in], end = [var 0.82in, var 1.03in], construction = true)
-  zGuide06 = line(start = [var 0.97in, var 0.89in], end = [var 0.97in, var 0.25in], construction = true)
+  zLine01 = line(start = [var 0.03in, var 0.03in], end = [var 0.03in, var 0.17in])
+  zLine02 = line(start = [var 0.03in, var 0.17in], end = [var 0.57in, var 0.76in])
+  zLine03 = line(start = [var 0.57in, var 0.76in], end = [var 0.03in, var 0.76in])
+  zLine04 = line(start = [var 0.03in, var 0.76in], end = [var 0.03in, var 0.98in])
+  zLine05 = line(start = [var 0.03in, var 0.98in], end = [var 0.63in, var 0.98in])
+  zLine06 = line(start = [var 0.63in, var 0.98in], end = [var 0.63in, var 0.82in])
+  zLine07 = line(start = [var 0.63in, var 0.82in], end = [var 0.77in, var 0.98in])
+  zLine08 = line(start = [var 0.77in, var 0.98in], end = [var 0.91in, var 0.98in])
+  zLine09 = line(start = [var 0.91in, var 0.98in], end = [var 0.91in, var 0.84in])
+  zLine10 = line(start = [var 0.91in, var 0.84in], end = [var 0.36in, var 0.24in])
+  zLine11 = line(start = [var 0.36in, var 0.24in], end = [var 0.91in, var 0.24in])
+  zLine12 = line(start = [var 0.91in, var 0.24in], end = [var 0.91in, var 0.03in])
+  zLine13 = line(start = [var 0.91in, var 0.03in], end = [var 0.31in, var 0.03in])
+  zLine14 = line(start = [var 0.31in, var 0.03in], end = [var 0.31in, var 0.18in])
+  zLine15 = line(start = [var 0.31in, var 0.18in], end = [var 0.17in, var 0.03in])
+  zLine16 = line(start = [var 0.17in, var 0.03in], end = [var 0.03in, var 0.03in])
+  zGuide01 = line(start = [var 0.57in, var 0.76in], end = [var 0.63in, var 0.82in], construction = true)
+  zGuide02 = line(start = [var 0.31in, var 0.18in], end = [var 0.36in, var 0.24in], construction = true)
+  zGuide03 = line(start = [var 0.17in, var 0.03in], end = [var 0.31in, var 0.03in], construction = true)
+  zGuide04 = line(start = [var 0.03in, var 0.17in], end = [var 0.03in, var 0.76in], construction = true)
+  zGuide05 = line(start = [var 0.63in, var 0.98in], end = [var 0.77in, var 0.98in], construction = true)
+  zGuide06 = line(start = [var 0.91in, var 0.84in], end = [var 0.91in, var 0.24in], construction = true)
 
   coincident([zLine01.end, zLine02.start])
   coincident([zLine02.end, zLine03.start])
@@ -117,38 +116,38 @@ logoSketch = sketch(on = XY) {
   verticalDistance([zLine09.end, zLine09.start]) == logoHeight * 0.14
 
   // o1
-  o1Arc01 = arc(start = [var 1.86in, var 0.95in], end = [var 1.14in, var 0.18in], center = [var 1.54in, var 0.53in])
-  o1Arc02 = arc(start = [var 1.69in, var 0.77in], end = [var 1.3in, var 0.36in], center = [var 1.54in, var 0.53in])
-  o1Arc03 = arc(start = [var 1.21in, var 0.11in], end = [var 1.93in, var 0.88in], center = [var 1.54in, var 0.53in])
-  o1Arc04 = arc(start = [var 1.38in, var 0.29in], end = [var 1.77in, var 0.7in], center = [var 1.54in, var 0.53in])
-  o1Line01 = line(start = [var 1.14in, var 0.18in], end = [var 1.3in, var 0.36in])
-  o1Line02 = line(start = [var 1.69in, var 0.77in], end = [var 1.86in, var 0.95in])
-  o1Line03 = line(start = [var 1.21in, var 0.11in], end = [var 1.38in, var 0.29in])
-  o1Line04 = line(start = [var 1.77in, var 0.7in], end = [var 1.93in, var 0.88in])
-  o1Guide01 = line(start = [var 1.3in, var 0.36in], end = [var 1.69in, var 0.77in], construction = true)
-  o1Guide02 = line(start = [var 1.38in, var 0.29in], end = [var 1.77in, var 0.7in], construction = true)
+  o1Arc01 = arc(start = [var 1.75in, var 0.9in], end = [var 1.07in, var 0.17in], center = [var 1.45in, var 0.5in])
+  o1Arc02 = arc(start = [var 1.59in, var 0.73in], end = [var 1.23in, var 0.34in], center = [var 1.45in, var 0.5in])
+  o1Arc03 = arc(start = [var 1.15in, var 0.1in], end = [var 1.82in, var 0.83in], center = [var 1.45in, var 0.5in])
+  o1Arc04 = arc(start = [var 1.3in, var 0.27in], end = [var 1.67in, var 0.66in], center = [var 1.45in, var 0.5in])
+  o1Line01 = line(start = [var 1.07in, var 0.17in], end = [var 1.23in, var 0.34in])
+  o1Line02 = line(start = [var 1.59in, var 0.73in], end = [var 1.75in, var 0.9in])
+  o1Line03 = line(start = [var 1.15in, var 0.1in], end = [var 1.3in, var 0.27in])
+  o1Line04 = line(start = [var 1.67in, var 0.66in], end = [var 1.82in, var 0.83in])
+  o1Guide01 = line(start = [var 1.23in, var 0.34in], end = [var 1.59in, var 0.73in], construction = true)
+  o1Guide02 = line(start = [var 1.3in, var 0.27in], end = [var 1.67in, var 0.66in], construction = true)
   o1GuideArc01 = arc(
-    start = [var 1.3in, var 0.36in],
-    end = [var 1.38in, var 0.29in],
-    center = [var 1.54in, var 0.53in],
+    start = [var 1.23in, var 0.34in],
+    end = [var 1.3in, var 0.27in],
+    center = [var 1.45in, var 0.5in],
     construction = true,
   )
   o1GuideArc02 = arc(
-    start = [var 1.14in, var 0.18in],
-    end = [var 1.21in, var 0.11in],
-    center = [var 1.54in, var 0.53in],
+    start = [var 1.07in, var 0.17in],
+    end = [var 1.15in, var 0.1in],
+    center = [var 1.45in, var 0.5in],
     construction = true,
   )
   o1GuideArc03 = arc(
-    start = [var 1.77in, var 0.7in],
-    end = [var 1.69in, var 0.77in],
-    center = [var 1.54in, var 0.53in],
+    start = [var 1.67in, var 0.66in],
+    end = [var 1.59in, var 0.73in],
+    center = [var 1.45in, var 0.5in],
     construction = true,
   )
   o1GuideArc04 = arc(
-    start = [var 1.93in, var 0.88in],
-    end = [var 1.86in, var 0.95in],
-    center = [var 1.54in, var 0.53in],
+    start = [var 1.82in, var 0.83in],
+    end = [var 1.75in, var 0.9in],
+    center = [var 1.45in, var 0.5in],
     construction = true,
   )
 
@@ -196,38 +195,38 @@ logoSketch = sketch(on = XY) {
   distance([o1GuideArc04.end, o1GuideArc04.start]) == logoHeight * 0.1
 
   // o2
-  o2Arc01 = arc(start = [var 2.97in, var 0.95in], end = [var 2.25in, var 0.18in], center = [var 2.65in, var 0.53in])
-  o2Arc02 = arc(start = [var 2.33in, var 0.11in], end = [var 3.05in, var 0.88in], center = [var 2.65in, var 0.53in])
-  o2Arc03 = arc(start = [var 2.8in, var 0.77in], end = [var 2.42in, var 0.36in], center = [var 2.65in, var 0.53in])
-  o2Arc04 = arc(start = [var 2.5in, var 0.29in], end = [var 2.88in, var 0.7in], center = [var 2.65in, var 0.53in])
-  o2Line01 = line(start = [var 2.25in, var 0.18in], end = [var 2.42in, var 0.36in])
-  o2Line02 = line(start = [var 2.8in, var 0.77in], end = [var 2.97in, var 0.95in])
-  o2Line03 = line(start = [var 2.33in, var 0.11in], end = [var 2.5in, var 0.29in])
-  o2Line04 = line(start = [var 2.88in, var 0.7in], end = [var 3.05in, var 0.88in])
-  o2Guide01 = line(start = [var 2.42in, var 0.36in], end = [var 2.8in, var 0.77in], construction = true)
-  o2Guide02 = line(start = [var 2.5in, var 0.29in], end = [var 2.88in, var 0.7in], construction = true)
+  o2Arc01 = arc(start = [var 2.8in, var 0.9in], end = [var 2.12in, var 0.17in], center = [var 2.5in, var 0.5in])
+  o2Arc02 = arc(start = [var 2.2in, var 0.1in], end = [var 2.88in, var 0.83in], center = [var 2.5in, var 0.5in])
+  o2Arc03 = arc(start = [var 2.64in, var 0.73in], end = [var 2.28in, var 0.34in], center = [var 2.5in, var 0.5in])
+  o2Arc04 = arc(start = [var 2.36in, var 0.27in], end = [var 2.72in, var 0.66in], center = [var 2.5in, var 0.5in])
+  o2Line01 = line(start = [var 2.12in, var 0.17in], end = [var 2.28in, var 0.34in])
+  o2Line02 = line(start = [var 2.64in, var 0.73in], end = [var 2.8in, var 0.9in])
+  o2Line03 = line(start = [var 2.2in, var 0.1in], end = [var 2.36in, var 0.27in])
+  o2Line04 = line(start = [var 2.72in, var 0.66in], end = [var 2.88in, var 0.83in])
+  o2Guide01 = line(start = [var 2.28in, var 0.34in], end = [var 2.64in, var 0.73in], construction = true)
+  o2Guide02 = line(start = [var 2.36in, var 0.27in], end = [var 2.72in, var 0.66in], construction = true)
   o2GuideArc01 = arc(
-    start = [var 2.25in, var 0.18in],
-    end = [var 2.33in, var 0.11in],
-    center = [var 2.65in, var 0.53in],
+    start = [var 2.12in, var 0.17in],
+    end = [var 2.2in, var 0.1in],
+    center = [var 2.5in, var 0.5in],
     construction = true,
   )
   o2GuideArc02 = arc(
-    start = [var 2.42in, var 0.36in],
-    end = [var 2.5in, var 0.29in],
-    center = [var 2.65in, var 0.53in],
+    start = [var 2.28in, var 0.34in],
+    end = [var 2.36in, var 0.27in],
+    center = [var 2.5in, var 0.5in],
     construction = true,
   )
   o2GuideArc03 = arc(
-    start = [var 2.88in, var 0.7in],
-    end = [var 2.8in, var 0.77in],
-    center = [var 2.65in, var 0.53in],
+    start = [var 2.72in, var 0.66in],
+    end = [var 2.64in, var 0.73in],
+    center = [var 2.5in, var 0.5in],
     construction = true,
   )
   o2GuideArc04 = arc(
-    start = [var 3.05in, var 0.88in],
-    end = [var 2.97in, var 0.95in],
-    center = [var 2.65in, var 0.53in],
+    start = [var 2.88in, var 0.83in],
+    end = [var 2.8in, var 0.9in],
+    center = [var 2.5in, var 0.5in],
     construction = true,
   )
 
@@ -273,12 +272,124 @@ logoSketch = sketch(on = XY) {
   angle([frameBottom, o2Line03]) == 47deg
   radius(o2Arc02) == logoHeight * 0.5
   radius(o2Arc03) == logoHeight * 0.27
+
+  // region guides
+  // z
+  zRegionGuideVertical = line(start = [var 0.77in, var 0.98in], end = [var 0.77in, var 0.84in], construction = true)
+  zRegionGuideHorizontal = line(start = [var 0.91in, var 0.84in], end = [var 0.77in, var 0.84in], construction = true)
+
+  coincident([
+    zRegionGuideVertical.start,
+    zGuide05.end
+  ])
+  coincident([
+    zRegionGuideHorizontal.start,
+    zLine09.end
+  ])
+  coincident([
+    zRegionGuideHorizontal.end,
+    zRegionGuideVertical.end
+  ])
+
+  vertical(zRegionGuideVertical)
+  horizontal(zRegionGuideHorizontal)
+
+  // o1 region a
+  o1RegionAGuideVertical = line(start = [var 1.59in, var 0.73in], end = [var 1.59in, var 0.9in], construction = true)
+  o1RegionAGuideHorizontal = line(start = [var 1.75in, var 0.9in], end = [var 1.59in, var 0.9in], construction = true)
+
+  coincident([
+    o1RegionAGuideVertical.start,
+    o1Arc02.start
+  ])
+  coincident([
+    o1RegionAGuideHorizontal.start,
+    o1GuideArc04.end
+  ])
+  coincident([
+    o1RegionAGuideHorizontal.end,
+    o1RegionAGuideVertical.end
+  ])
+
+  vertical(o1RegionAGuideVertical)
+  horizontal(o1RegionAGuideHorizontal)
+
+  // o1 region b
+  o1RegionBGuideVertical = line(start = [var 1.82in, var 0.83in], end = [var 1.82in, var 0.66in], construction = true)
+  o1RegionBGuideHorizontal = line(start = [var 1.67in, var 0.66in], end = [var 1.82in, var 0.66in], construction = true)
+
+  coincident([
+    o1RegionBGuideVertical.start,
+    o1GuideArc04.start
+  ])
+  coincident([
+    o1RegionBGuideHorizontal.start,
+    o1Arc04.end
+  ])
+  coincident([
+    o1RegionBGuideHorizontal.end,
+    o1RegionBGuideVertical.end
+  ])
+
+  vertical(o1RegionBGuideVertical)
+  horizontal(o1RegionBGuideHorizontal)
+
+  // o2 region a
+  o2RegionAGuideVertical = line(start = [var 2.64in, var 0.73in], end = [var 2.64in, var 0.9in], construction = true)
+  o2RegionAGuideHorizontal = line(start = [var 2.8in, var 0.9in], end = [var 2.64in, var 0.9in], construction = true)
+
+  coincident([
+    o2RegionAGuideVertical.start,
+    o2GuideArc03.end
+  ])
+  coincident([
+    o2RegionAGuideHorizontal.start,
+    o2GuideArc04.end
+  ])
+  coincident([
+    o2RegionAGuideHorizontal.end,
+    o2RegionAGuideVertical.end
+  ])
+
+  vertical(o2RegionAGuideVertical)
+  horizontal(o2RegionAGuideHorizontal)
+
+  // o2 region b
+  o2RegionBGuideVertical = line(start = [var 2.88in, var 0.83in], end = [var 2.88in, var 0.66in], construction = true)
+  o2RegionBGuideHorizontal = line(start = [var 2.72in, var 0.66in], end = [var 2.88in, var 0.66in], construction = true)
+
+  coincident([
+    o2RegionBGuideVertical.start,
+    o2Arc02.end
+  ])
+  coincident([
+    o2RegionBGuideHorizontal.start,
+    o2Arc04.end
+  ])
+  coincident([
+    o2RegionBGuideHorizontal.end,
+    o2RegionBGuideVertical.end
+  ])
+
+  vertical(o2RegionBGuideVertical)
+  horizontal(o2RegionBGuideHorizontal)
 }
 
-zRegion = region(segments = [logoSketch.zLine01])
-o1EegionA = region(segments = [logoSketch.o1Arc01])
-o1EegionB = region(segments = [logoSketch.o1Arc03])
-o2EegionA = region(segments = [logoSketch.o2Arc01])
-o2EegionB = region(segments = [logoSketch.o2Arc02])
+zRegion = region(point = logoSketch.zRegionGuideVertical.end)
+o1RegionA = region(point = logoSketch.o1RegionAGuideVertical.end)
+o1RegionB = region(point = logoSketch.o1RegionBGuideVertical.end)
+o2RegionA = region(point = logoSketch.o2RegionAGuideVertical.end)
+o2RegionB = region(point = logoSketch.o2RegionBGuideVertical.end)
 
-logoBody = extrude([zRegion, o1EegionA, o1EegionB, o2EegionA, o2EegionB], length = logoDepth)
+hide(logoSketch)
+
+logoBody = extrude(
+  [
+    zRegion,
+    o1RegionA,
+    o1RegionB,
+    o2RegionA,
+    o2RegionB
+  ],
+  length = logoDepth,
+)
