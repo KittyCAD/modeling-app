@@ -2966,74 +2966,11 @@ export class KclManager extends File {
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
-          void (async () => {
-            if (!this.path) {
-              return reject(new Error('currentFilePath not set'))
-            }
-            if (requestedDocumentVersion !== this._documentVersion) {
-              return resolve(undefined)
-            }
-            let currentDiskCode: string | null = null
-            try {
-              currentDiskCode = normalizeLineEndings(
-                await File.ioImplementations.read(this.path)
-              )
-            } catch (err: unknown) {
-              if (isEnoentError(err)) {
-                currentDiskCode = null
-              } else {
-                reject(err)
-                return
-              }
-            }
-            if (requestedDocumentVersion !== this._documentVersion) {
-              return resolve(undefined)
-            }
-            if (
-              currentDiskCode !== null &&
-              isCodeTheSame(currentDiskCode, newCode)
-            ) {
-              this.markFileCodeAsSynced(currentDiskCode)
-              return resolve(undefined)
-            }
-            const diskChangedSinceLastSync =
-              currentDiskCode !== null
-                ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
-                : this._lastKnownFileCode.length > 0
-            if (diskChangedSinceLastSync) {
-              console.warn(
-                'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
-              )
-              if (!options.suppressConflictToast) {
-                toast.error(
-                  'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
-                )
-              }
-              return resolve(undefined)
-            }
-            // Wait one event loop to give a chance for params to be set
-            // Save the file to disk
-            this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-            this.unwatch()
-            this.write(newCode)
-              .then(() => {
-                this.markFileCodeAsSynced(newCode)
-                resolve(undefined)
-              })
-              .then(() => {
-                // After a cooldown, start watching this file again on disk.
-                this.timeoutRewatch = setTimeout(() => {
-                  this.watch()
-                  this.timeoutRewatch = undefined
-                }, 1_000)
-              })
-              .catch((err: unknown) => {
-                // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-                console.warn('error saving file', err)
-                toast.error('Error saving file, please check file permissions.')
-                reject(err)
-              })
-          })()
+          this.performDelayedWriteToFile({
+            newCode,
+            requestedDocumentVersion,
+            options,
+          }).then(resolve, reject)
         }, 1000)
       }).catch((err: unknown) => {
         if (
@@ -3048,6 +2985,85 @@ export class KclManager extends File {
       })
     }
   }
+
+  /**
+   * Performs the debounced disk-sync work after `writeToFile()` schedules it.
+   * This keeps the timeout callback synchronous while preserving the existing
+   * version checks, conflict detection, and watcher re-arm behavior.
+   */
+  private async performDelayedWriteToFile({
+    newCode,
+    requestedDocumentVersion,
+    options,
+  }: {
+    newCode: string
+    requestedDocumentVersion: number
+    options: { suppressConflictToast?: boolean }
+  }) {
+    if (!this.path) {
+      return Promise.reject(new Error('currentFilePath not set'))
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+
+    let currentDiskCode: string | null = null
+    try {
+      currentDiskCode = normalizeLineEndings(
+        await File.ioImplementations.read(this.path)
+      )
+    } catch (err: unknown) {
+      if (isEnoentError(err)) {
+        currentDiskCode = null
+      } else {
+        return Promise.reject(err)
+      }
+    }
+
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+    if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
+      this.markFileCodeAsSynced(currentDiskCode)
+      return
+    }
+
+    const diskChangedSinceLastSync =
+      currentDiskCode !== null
+        ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
+        : this._lastKnownFileCode.length > 0
+    if (diskChangedSinceLastSync) {
+      console.warn(
+        'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
+      )
+      if (!options.suppressConflictToast) {
+        toast.error(
+          'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
+        )
+      }
+      return
+    }
+
+    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+    this.unwatch()
+
+    try {
+      await this.write(newCode)
+      this.markFileCodeAsSynced(newCode)
+
+      // After a cooldown, start watching this file again on disk.
+      this.timeoutRewatch = setTimeout(() => {
+        this.watch()
+        this.timeoutRewatch = undefined
+      }, 1_000)
+    } catch (err: unknown) {
+      // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+      console.warn('error saving file', err)
+      toast.error('Error saving file, please check file permissions.')
+      return Promise.reject(err)
+    }
+  }
+
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
     options?: Partial<
