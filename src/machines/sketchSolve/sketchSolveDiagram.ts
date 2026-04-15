@@ -51,6 +51,7 @@ import {
   spawnTool,
   tearDownSketchSolve,
   updateHoveredId,
+  updateSelectedCodeHighlight,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -322,6 +323,7 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update selected code highlight': updateSelectedCodeHighlight,
     'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
     'clear hovered code highlight': clearHoveredCodeHighlight,
@@ -916,7 +918,11 @@ export const sketchSolveMachine = setup({
       },
     },
     'update selected ids': {
-      actions: ['update selected ids', 'refresh selection styling'],
+      actions: [
+        'update selected ids',
+        'update selected code highlight',
+        'refresh selection styling',
+      ],
     },
     'update hovered id': {
       actions: ['update hovered id', 'refresh selection styling'],

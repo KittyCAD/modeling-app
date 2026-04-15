@@ -1,11 +1,13 @@
 import {
   sendToActorIfActive,
   updateHoveredId,
+  updateSelectedCodeHighlight,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   createLineApiObject,
+  createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import toast from 'react-hot-toast'
@@ -30,6 +32,83 @@ describe('updateSelectedIds', () => {
     } as any)
 
     expect(result.selectedIds).toEqual([10])
+  })
+})
+
+describe('updateSelectedCodeHighlight', () => {
+  test('dispatches cursor selections at selected sketch object source ranges', () => {
+    const dispatch = vi.fn()
+    const firstLine = createLineApiObject({ id: 2, start: 0, end: 1 })
+    firstLine.source = { type: 'Simple', range: [40, 102, 0], node_path: null }
+    const secondLine = createLineApiObject({ id: 5, start: 1, end: 3 })
+    secondLine.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+
+    updateSelectedCodeHighlight({
+      context: {
+        selectedIds: [5, 2],
+        duringAreaSelectIds: [],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([firstLine, secondLine]),
+        },
+        kclManager: {
+          code: 'x'.repeat(200),
+          editorView: { dispatch },
+        },
+      },
+    } as unknown as Parameters<typeof updateSelectedCodeHighlight>[0])
+
+    expect(
+      dispatch.mock.calls[0][0].selection.ranges.map(
+        ({
+          from,
+          to,
+          empty,
+        }: { from: number; to: number; empty: boolean }) => ({
+          from,
+          to,
+          empty,
+        })
+      )
+    ).toEqual([
+      { from: 102, to: 102, empty: true },
+      { from: 177, to: 177, empty: true },
+    ])
+  })
+
+  test('uses the child point source range for selected child points', () => {
+    const dispatch = vi.fn()
+    const point = createPointApiObject({ id: 2, owner: 5 })
+    point.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+    const ownerLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    ownerLine.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    updateSelectedCodeHighlight({
+      context: {
+        selectedIds: [2],
+        duringAreaSelectIds: [],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
+        },
+        kclManager: {
+          code: 'x'.repeat(200),
+          editorView: { dispatch },
+        },
+      },
+    } as unknown as Parameters<typeof updateSelectedCodeHighlight>[0])
+
+    expect(dispatch.mock.calls[0][0].selection.ranges[0]).toMatchObject({
+      from: 177,
+      to: 177,
+      empty: true,
+    })
   })
 })
 
@@ -116,6 +195,35 @@ describe('updateHoveredId', () => {
       [10, 20, 0],
       [30, 40, 0],
     ])
+  })
+
+  test('uses the child point source range for hovered child points', () => {
+    const setHighlightRange = vi.fn()
+    const point = createPointApiObject({ id: 2, owner: 5 })
+    point.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+    const ownerLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    ownerLine.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([[113, 177, 0]])
   })
 
   test('clears the code highlight when no object is hovered', () => {
