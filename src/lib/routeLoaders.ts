@@ -4,7 +4,7 @@ import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
+import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
 import {
   PATHS,
@@ -12,7 +12,11 @@ import {
   getProjectMetaByRouteId,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  loadAndValidateSettings,
+  userHasFeature,
+  WEB_APP_FILE_BROWSER_FEATURE_FLAG,
+} from '@src/lib/settings/settingsUtils'
 import type { App } from '@src/lib/app'
 import type {
   FileLoaderData,
@@ -25,10 +29,7 @@ import { projectSkeletonCreate } from '@src/lang/project'
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 /**
- * The base loader is used to reroute `/` root path requests,
- * to the home route on desktop, and to a constrained single project view on web.
- *
- * Once we get cloud storage or another solution we'll introduce the home, multi-project view on web.
+ * The base loader is used to reroute `/` root path requests.
  */
 export const baseLoader =
   ({
@@ -39,33 +40,24 @@ export const baseLoader =
   async ({ request }) => {
     const url = new URL(request.url)
 
-    // Desktop, redirect and return early
-    if (window.electron) {
-      return redirect(PATHS.HOME + (url.search || ''))
-    }
-
     // Let another part of the system handle the "open with web/desktop"...
     if (url.searchParams.has('ask-open-desktop')) {
       return
     }
 
-    // Web, make a default project and redirect to it.
+    if (window.electron) {
+      return redirect(PATHS.HOME + (url.search || ''))
+    }
+
     const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
-
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
-
     const requestedProjectName = fsZds.resolve(
       settings.settings.app.projectDirectory.current,
       DEFAULT_WEB_PROJECT_NAME
     )
 
-    // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectName)
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToProject,
-        data: { requestedProjectName },
-      })
     } catch {
       await projectSkeletonCreate(
         fsZds.resolve(
@@ -74,11 +66,11 @@ export const baseLoader =
           'main.kcl'
         )
       )
-
-      const fileURLPath =
-        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
-      return redirect(fileURLPath)
     }
+
+    return redirect(
+      `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}${url.search || ''}`
+    )
   }
 
 export const fileLoader =
@@ -239,9 +231,13 @@ export const homeLoader =
     app: App
   }): LoaderFunction =>
   async ({ request }): Promise<HomeLoaderData | Response> => {
-    // If on web, bump out to root, which will redirect to a project.
-    if (!window.electron) {
-      return redirect(PATHS.INDEX)
+    const webAppFileBrowserEnabled =
+      window.electron ||
+      (await userHasFeature(WEB_APP_FILE_BROWSER_FEATURE_FLAG, false))
+
+    if (!webAppFileBrowserEnabled) {
+      const url = new URL(request.url)
+      return redirect(PATHS.INDEX + (url.search || ''))
     }
 
     app.systemIOActor.send({

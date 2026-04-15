@@ -39,6 +39,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
+export const WEB_APP_FILE_BROWSER_FEATURE_FLAG = 'web_app_file_browser'
 
 type CachedFeaturesData = Extract<
   Awaited<ReturnType<typeof users.user_features_get>>,

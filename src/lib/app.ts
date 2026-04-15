@@ -47,6 +47,8 @@ import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
   jsAppSettings,
+  userHasFeature,
+  WEB_APP_FILE_BROWSER_FEATURE_FLAG,
 } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
@@ -173,16 +175,60 @@ export class App implements AppSubsystems {
       },
     }).start()
 
+    const webDisabledProjectCommands = createProjectCommands({
+      systemIOActor: this.systemIOActor,
+      webAppFileBrowserEnabled: false,
+    })
+    const webEnabledProjectCommands = createProjectCommands({
+      systemIOActor: this.systemIOActor,
+      webAppFileBrowserEnabled: true,
+    })
+    const initialProjectCommands = window.electron
+      ? webEnabledProjectCommands
+      : webDisabledProjectCommands
+
     // Initialize global commands
     this.commands.actor.send({
       type: 'Add commands',
       data: {
         commands: [
           ...createAuthCommands({ authActor: this.auth.actor }),
-          ...createProjectCommands({ systemIOActor: this.systemIOActor }),
+          ...initialProjectCommands,
         ],
       },
     })
+
+    if (!window.electron) {
+      const syncWebProjectCommands = async () => {
+        const webAppFileBrowserEnabled = await userHasFeature(
+          WEB_APP_FILE_BROWSER_FEATURE_FLAG,
+          false
+        )
+
+        this.commands.actor.send({
+          type: 'Remove commands',
+          data: {
+            commands: [
+              ...webDisabledProjectCommands,
+              ...webEnabledProjectCommands,
+            ],
+          },
+        })
+        this.commands.actor.send({
+          type: 'Add commands',
+          data: {
+            commands: webAppFileBrowserEnabled
+              ? webEnabledProjectCommands
+              : webDisabledProjectCommands,
+          },
+        })
+      }
+
+      this.auth.actor.subscribe(() => {
+        void syncWebProjectCommands().catch(reportRejection)
+      })
+      void syncWebProjectCommands().catch(reportRejection)
+    }
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
