@@ -18,11 +18,11 @@ array. This only flattens one level deep.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array to flatten by one level. | Yes |
+| `array` | `[any]` | The array to flatten by one level. | Yes |
 
 ### Returns
 
-[[`any`](/docs/kcl-std/types/std-types-any)]
+`[any]`
 
 
 ### Examples

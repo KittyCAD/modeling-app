@@ -20,12 +20,12 @@ joinSurfaces(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `selection` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The bodies to join together | Yes |
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
+| `selection` | `[Solid; 1+]` | The bodies to join together | Yes |
+| `tolerance` | `number(Length)` | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
+`Solid` - A solid is a collection of extruded surfaces.
 
 
 ### Examples

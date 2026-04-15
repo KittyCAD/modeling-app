@@ -17,11 +17,11 @@ tangentToEnd(@tag: TaggedEdge): number(Angle)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
+| `tag` | `TaggedEdge` | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(Angle)` - A number.
 
 
 ### Examples

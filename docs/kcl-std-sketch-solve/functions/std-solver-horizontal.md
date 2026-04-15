@@ -17,7 +17,7 @@ solver::horizontal(@input: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The line segment that should remain horizontal. | Yes |
+| `input` | `Segment` | The line segment that should remain horizontal. | Yes |
 
 
 ### Examples

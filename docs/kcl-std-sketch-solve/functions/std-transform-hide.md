@@ -19,11 +19,11 @@ while you work.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to hide. | Yes |
+| `objects` | `[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry` | The solid, sketch, or set of solids or sketches to hide. | Yes |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+`[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry`
 
 
 

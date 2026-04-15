@@ -37,11 +37,11 @@ do not need clone and using a pattern with `instance = 2` is more appropriate.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `geometries` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+] | The sketch, solid, or imported geometry to be cloned. | Yes |
+| `geometries` | `[Sketch | Solid | ImportedGeometry; 1+]` | The sketch, solid, or imported geometry to be cloned. | Yes |
 
 ### Returns
 
-[[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+]
+`[Sketch | Solid | ImportedGeometry; 1+]`
 
 
 ### Examples

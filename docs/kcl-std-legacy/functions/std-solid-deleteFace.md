@@ -21,13 +21,13 @@ deleteFace(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Target to delete a surface from. | Yes |
-| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | Face to delete. This is the usual face representation, e.g. a tagged face. | No |
-| `faceIndices` | [[`number(_)`](/docs/kcl-std/types/std-types-number); 1+] | Face to delete. The index is a stable ordering of faces, used when you can't get the usual ID (UUID) of a face. | No |
+| `body` | `Solid` | Target to delete a surface from. | Yes |
+| `faces` | `[TaggedFace; 1+]` | Face to delete. This is the usual face representation, e.g. a tagged face. | No |
+| `faceIndices` | `[number(_); 1+]` | Face to delete. The index is a stable ordering of faces, used when you can't get the usual ID (UUID) of a face. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
+`Solid` - A solid is a collection of extruded surfaces.
 
 
 ### Examples

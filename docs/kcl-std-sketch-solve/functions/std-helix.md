@@ -25,17 +25,17 @@ helix(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `revolutions` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Number of revolutions. | Yes |
-| `angleStart` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Start angle. | Yes |
-| `ccw` | [`bool`](/docs/kcl-std/types/std-types-bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
-| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Radius of the helix. | No |
-| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Axis to use for the helix. The center of the helix's base will be at this axis's origin point. | No |
-| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
-| `cylinder` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Cylinder to create the helix on. | No |
+| `revolutions` | `number(_)` | Number of revolutions. | Yes |
+| `angleStart` | `number(Angle)` | Start angle. | Yes |
+| `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | No |
+| `radius` | `number(Length)` | Radius of the helix. | No |
+| `axis` | `Axis3d | Edge | Segment` | Axis to use for the helix. The center of the helix's base will be at this axis's origin point. | No |
+| `length` | `number(Length)` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
+| `cylinder` | `Solid` | Cylinder to create the helix on. | No |
 
 ### Returns
 
-[`Helix`](/docs/kcl-std/types/std-types-Helix) - A helix.
+`Helix` - A helix.
 
 
 ### Examples

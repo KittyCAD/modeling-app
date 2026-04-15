@@ -15,6 +15,6 @@ turns::HALF_TURN: number(deg) = 180deg
 
 ### Type
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(deg)` - A number.
 
 

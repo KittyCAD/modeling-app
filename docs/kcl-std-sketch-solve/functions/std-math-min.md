@@ -17,11 +17,11 @@ min(@input: [number; 1+]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`number`](/docs/kcl-std/types/std-types-number); 1+] | An array of numbers to compute the minimum of. | Yes |
+| `input` | `[number; 1+]` | An array of numbers to compute the minimum of. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 

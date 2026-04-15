@@ -17,11 +17,11 @@ segStartY(@tag: TaggedEdge): number(Length)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
+| `tag` | `TaggedEdge` | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(Length)` - A number.
 
 
 

@@ -20,12 +20,12 @@ rem(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl-std/types/std-types-number) | The number which will be divided by `divisor`. | Yes |
-| `divisor` | [`number`](/docs/kcl-std/types/std-types-number) | The number which will divide `num`. | Yes |
+| `num` | `number` | The number which will be divided by `divisor`. | Yes |
+| `divisor` | `number` | The number which will divide `num`. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 ### Examples

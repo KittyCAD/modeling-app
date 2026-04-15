@@ -17,7 +17,7 @@ solver::equalRadius(@input: [Segment; 2+])
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | Two or more arc or circle segments that should share the same radius. | Yes |
+| `input` | `[Segment; 2+]` | Two or more arc or circle segments that should share the same radius. | Yes |
 
 
 ### Examples

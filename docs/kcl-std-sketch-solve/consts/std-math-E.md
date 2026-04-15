@@ -15,6 +15,6 @@ E: number = 2.71828182845904523536028747135266250_
 
 ### Type
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 

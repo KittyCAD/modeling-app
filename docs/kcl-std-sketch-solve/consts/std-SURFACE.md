@@ -15,6 +15,6 @@ SURFACE: string
 
 ### Type
 
-[`string`](/docs/kcl-std/types/std-types-string) - A sequence of characters
+`string` - A sequence of characters
 
 

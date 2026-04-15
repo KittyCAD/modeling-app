@@ -20,8 +20,8 @@ hole::blind(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `depth` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
-| `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `depth` | `number(Length)` | A number. | Yes |
+| `diameter` | `number(Length)` | A number. | Yes |
 
 
 

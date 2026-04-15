@@ -21,25 +21,25 @@ bezierCurve(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+sketch-solve. The sketch-solve version
 of bezier curve is still under development.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `control1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic. | No |
-| `control2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic. | No |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? | No |
-| `control1Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic. Absolute point. | No |
-| `control2Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic. Absolute point. | No |
-| `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Coordinate on the plane at which this line should end. | No |
-| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
+| `sketch` | `Sketch` | Which sketch should this path be added to? | Yes |
+| `control1` | `Point2d` | First control point for the cubic. | No |
+| `control2` | `Point2d` | Second control point for the cubic. | No |
+| `end` | `Point2d` | How far away (along the X and Y axes) should this line go? | No |
+| `control1Absolute` | `Point2d` | First control point for the cubic. Absolute point. | No |
+| `control2Absolute` | `Point2d` | Second control point for the cubic. Absolute point. | No |
+| `endAbsolute` | `Point2d` | Coordinate on the plane at which this line should end. | No |
+| `tag` | `TagDecl` | Create a new tag which refers to this line. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 

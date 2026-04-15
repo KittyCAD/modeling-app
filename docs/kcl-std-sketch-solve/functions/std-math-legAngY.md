@@ -20,12 +20,12 @@ legAngY(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The length of the triangle's hypotenuse. | Yes |
-| `leg` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The length of one of the triangle's legs (i.e. non-hypotenuse side). | Yes |
+| `hypotenuse` | `number(Length)` | The length of the triangle's hypotenuse. | Yes |
+| `leg` | `number(Length)` | The length of one of the triangle's legs (i.e. non-hypotenuse side). | Yes |
 
 ### Returns
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(deg)` - A number.
 
 
 ### Examples

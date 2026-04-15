@@ -15,18 +15,18 @@ subtract2d(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+sketch-solve.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `tool` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The shape(s) which should be cut out of the sketch. | Yes |
+| `sketch` | `Sketch` | Which sketch should this path be added to? | Yes |
+| `tool` | `[Sketch; 1+]` | The shape(s) which should be cut out of the sketch. | Yes |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 

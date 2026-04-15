@@ -17,7 +17,7 @@ hole::drill(pointAngle: number(Angle))
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `pointAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `pointAngle` | `number(Angle)` | A number. | Yes |
 
 
 

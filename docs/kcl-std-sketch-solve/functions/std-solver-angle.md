@@ -17,7 +17,7 @@ solver::angle(@input: [Segment; 2])
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2] | The two line segments whose relative angle should match the value set with `==`. | Yes |
+| `input` | `[Segment; 2]` | The two line segments whose relative angle should match the value set with `==`. | Yes |
 
 
 ### Examples

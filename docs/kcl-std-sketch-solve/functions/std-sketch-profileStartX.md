@@ -17,11 +17,11 @@ profileStartX(@profile: Sketch): number(Length)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `profile` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Profile whose start is being used. | Yes |
+| `profile` | `Sketch` | Profile whose start is being used. | Yes |
 
 ### Returns
 
-[`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(Length)` - A number.
 
 
 

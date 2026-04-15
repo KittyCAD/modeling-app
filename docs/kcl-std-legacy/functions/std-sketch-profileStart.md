@@ -17,11 +17,11 @@ profileStart(@profile: Sketch): Point2d
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `profile` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Profile whose start is being used. | Yes |
+| `profile` | `Sketch` | Profile whose start is being used. | Yes |
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 
 ### Examples

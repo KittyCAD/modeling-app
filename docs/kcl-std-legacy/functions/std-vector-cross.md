@@ -20,8 +20,8 @@ vector::cross(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `u` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | A point in three dimensional space. | Yes |
-| `v` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | A point in three dimensional space. | Yes |
+| `u` | `Point3d` | A point in three dimensional space. | Yes |
+| `v` | `Point3d` | A point in three dimensional space. | Yes |
 
 
 ### Examples

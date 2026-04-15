@@ -15,7 +15,7 @@ close(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+sketch-solve.
 
 If you want to perform some 3-dimensional operation on a sketch, like
 extrude or sweep, you must `close` it first. `close` must be called even
@@ -26,12 +26,12 @@ starting point.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | The sketch you want to close. | Yes |
-| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
+| `sketch` | `Sketch` | The sketch you want to close. | Yes |
+| `tag` | `TagDecl` | Create a new tag which refers to this line. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 ### Examples

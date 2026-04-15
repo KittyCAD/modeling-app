@@ -22,7 +22,7 @@ Supported input type pairs (unordered):
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2] | Two supported line/arc/circle segments that should touch without crossing. | Yes |
+| `input` | `[Segment; 2]` | Two supported line/arc/circle segments that should touch without crossing. | Yes |
 
 
 ### Examples

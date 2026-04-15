@@ -53,17 +53,17 @@ rotation.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
-| `roll` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The roll angle. Must be between -360deg and 360deg. | No |
-| `pitch` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The pitch angle. Must be between -360deg and 360deg. | No |
-| `yaw` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The yaw angle. Must be between -360deg and 360deg. | No |
-| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis to rotate around. Must be used with `angle`. | No |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg. | No |
-| `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `objects` | `[Solid; 1+] | [Sketch; 1+] | ImportedGeometry` | The solid, sketch, or set of solids or sketches to rotate. | Yes |
+| `roll` | `number(Angle)` | The roll angle. Must be between -360deg and 360deg. | No |
+| `pitch` | `number(Angle)` | The pitch angle. Must be between -360deg and 360deg. | No |
+| `yaw` | `number(Angle)` | The yaw angle. Must be between -360deg and 360deg. | No |
+| `axis` | `Axis3d | Point3d` | The axis to rotate around. Must be used with `angle`. | No |
+| `angle` | `number(Angle)` | The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg. | No |
+| `global` | `bool` | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+`[Solid; 1+] | [Sketch; 1+] | ImportedGeometry`
 
 
 ### Examples

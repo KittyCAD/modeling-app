@@ -20,12 +20,12 @@ pow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`number`](/docs/kcl-std/types/std-types-number) | The number to raise. | Yes |
-| `exp` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The power to raise to. | Yes |
+| `input` | `number` | The number to raise. | Yes |
+| `exp` | `number(_)` | The power to raise to. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 

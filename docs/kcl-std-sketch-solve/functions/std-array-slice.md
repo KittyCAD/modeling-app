@@ -29,13 +29,13 @@ there's no need to copy the whole array.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array to slice. | Yes |
-| `start` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The starting index (inclusive). Defaults to `0`. | No |
-| `end` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The ending index (exclusive). Defaults to the array length. | No |
+| `array` | `[any]` | The array to slice. | Yes |
+| `start` | `number(_)` | The starting index (inclusive). Defaults to `0`. | No |
+| `end` | `number(_)` | The ending index (exclusive). Defaults to the array length. | No |
 
 ### Returns
 
-[[`any`](/docs/kcl-std/types/std-types-any)]
+`[any]`
 
 
 ### Examples

@@ -17,11 +17,11 @@ segStart(@tag: TaggedEdge): Point2d
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
+| `tag` | `TaggedEdge` | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 
 ### Examples

@@ -17,7 +17,7 @@ solver::diameter(@points: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `points` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The arc or circle segment whose diameter should match the value set with `==`. | Yes |
+| `points` | `Segment` | The arc or circle segment whose diameter should match the value set with `==`. | Yes |
 
 
 

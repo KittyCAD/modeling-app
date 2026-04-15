@@ -17,11 +17,11 @@ getOppositeEdge(@edge: TaggedEdge): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the edge you want to find the opposite edge of. | Yes |
+| `edge` | `TaggedEdge` | The tag of the edge you want to find the opposite edge of. | Yes |
 
 ### Returns
 
-[`Edge`](/docs/kcl-std/types/std-types-Edge) - An edge of a solid.
+`Edge` - An edge of a solid.
 
 
 

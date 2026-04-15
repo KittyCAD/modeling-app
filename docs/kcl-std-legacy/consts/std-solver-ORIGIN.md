@@ -15,6 +15,6 @@ solver::ORIGIN: Point2d
 
 ### Type
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 

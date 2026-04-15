@@ -1137,7 +1137,7 @@ impl TyData {
     }
 }
 
-fn remove_md_links(s: &str) -> String {
+pub(super) fn remove_md_links(s: &str) -> String {
     let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
     re.replace_all(s, "$1").to_string()
 }

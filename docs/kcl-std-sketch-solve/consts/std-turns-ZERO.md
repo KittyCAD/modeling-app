@@ -15,6 +15,6 @@ turns::ZERO: number(Angle)
 
 ### Type
 
-[`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(Angle)` - A number.
 
 

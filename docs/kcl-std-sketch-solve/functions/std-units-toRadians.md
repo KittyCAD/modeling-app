@@ -17,11 +17,11 @@ units::toRadians(@num: number(Angle)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `num` | `number(Angle)` | A number. | Yes |
 
 ### Returns
 
-[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(rad)` - A number.
 
 
 

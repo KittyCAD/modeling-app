@@ -24,26 +24,26 @@ conic(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+sketch-solve. The sketch-solve version
 of conic is still under development.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `interiorAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`. | No |
-| `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`. | No |
-| `interior` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
-| `coefficients` | [[`number`](/docs/kcl-std/types/std-types-number); 6] | The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`. | No |
-| `startTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`. | No |
-| `endTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the end. Incompatible with `coefficients`. | No |
-| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this segment. | No |
+| `sketch` | `Sketch` | Which sketch should this path be added to? | Yes |
+| `interiorAbsolute` | `Point2d` | Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`. | No |
+| `endAbsolute` | `Point2d` | Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`. | No |
+| `interior` | `Point2d` | Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
+| `end` | `Point2d` | Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
+| `coefficients` | `[number; 6]` | The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`. | No |
+| `startTangent` | `Point2d` | The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`. | No |
+| `endTangent` | `Point2d` | The tangent of the conic section at the end. Incompatible with `coefficients`. | No |
+| `tag` | `TagDecl` | Create a new tag which refers to this segment. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 ### Examples

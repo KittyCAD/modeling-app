@@ -15,6 +15,7 @@ use super::kcl_doc::ExampleSketchSyntax;
 use super::kcl_doc::FnData;
 use super::kcl_doc::ModData;
 use super::kcl_doc::TyData;
+use super::kcl_doc::remove_md_links;
 use crate::ConnectionError;
 use crate::ExecutorContext;
 use crate::errors::ExecErrorWithState;
@@ -147,27 +148,40 @@ impl StdlibDocFlavor {
         }
     }
 
-    fn output_roots(self) -> Vec<PathBuf> {
+    // Only the combined docs are published as the full linked reference.
+    // Legacy and sketch-solve outputs are later synced into ZooKeeper-facing
+    // docs from modeling-app, so we strip markdown links there instead of
+    // emitting stale hardcoded paths.
+    fn preserve_markdown_links(self) -> bool {
+        matches!(self, Self::Combined)
+    }
+
+    fn output_root(self) -> PathBuf {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let mut roots = vec![manifest_dir.join("../../docs").join(self.stdlib_dir())];
+        manifest_dir.join("../../docs").join(self.stdlib_dir())
+    }
+}
 
-        let text_to_cad_root = manifest_dir.join("../../../text-to-cad");
-        if text_to_cad_root.exists() {
-            roots.push(text_to_cad_root.join("data/kcl-docs").join(self.stdlib_dir()));
-        }
+fn sanitize_markdown_links(flavor: StdlibDocFlavor, input: Option<String>) -> Option<String> {
+    input.map(|text| sanitize_markdown_links_str(flavor, &text))
+}
 
-        roots
+fn sanitize_markdown_links_str(flavor: StdlibDocFlavor, input: &str) -> String {
+    if flavor.preserve_markdown_links() {
+        input.to_owned()
+    } else {
+        // Legacy and sketch-solve should keep the visible text but drop markdown
+        // link targets before the docs are written out for ZooKeeper consumption.
+        remove_md_links(input)
     }
 }
 
 fn write_doc_output(flavor: StdlibDocFlavor, relative_file_name: &str, output: &str) -> Result<()> {
-    for root in flavor.output_roots() {
-        let path = root.join(format!("{relative_file_name}.md"));
-        if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent)?;
-        }
-        expectorate::assert_contents(path, output);
+    let path = flavor.output_root().join(format!("{relative_file_name}.md"));
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
     }
+    expectorate::assert_contents(path, output);
     Ok(())
 }
 
@@ -334,15 +348,15 @@ fn generate_type_from_kcl(
         "name": ty.preferred_name,
         "module": mod_name_std(&ty.module_name),
         "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
-        "summary": ty.summary,
-        "description": ty.description,
+        "summary": sanitize_markdown_links(flavor, ty.summary.clone()),
+        "description": sanitize_markdown_links(flavor, ty.description.clone()),
         "deprecated": ty.properties.deprecated,
         "experimental": ty.properties.experimental,
         "examples": examples,
     });
 
     let output = hbs.render("kclType", &data)?;
-    let output = cleanup_types(&output, kcl_std);
+    let output = cleanup_types(&output, kcl_std, flavor);
     write_doc_output(flavor, &file_name, &output)?;
 
     Ok(())
@@ -382,8 +396,8 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String, flavor: StdlibDocFlavor
     let data = json!({
         "name": m.name,
         "module": mod_name_std(&m.module_name),
-        "summary": m.summary,
-        "description": m.description,
+        "summary": sanitize_markdown_links(flavor, m.summary.clone()),
+        "description": sanitize_markdown_links(flavor, m.description.clone()),
         "experimental": m.properties.experimental,
         "modules": modules,
         "functions": functions,
@@ -425,27 +439,36 @@ fn generate_function_from_kcl(
         .filter(|(_, example)| flavor.include_example(&example.1))
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
-    let args = function.args.iter().map(|arg| {
-        let docs = arg.docs.clone();
-        if let Some(docs) = &docs {
-            // We deliberately truncate to one line in the template so that if we are using the docs
-            // from the type, then we only take the summary. However, if there's a newline in the 
-            // arg docs, then they would get truncated unintentionally.
-            assert!(!docs.contains('\n'), "Arg docs will get truncated");
-        };
-        json!({
-            "name": arg.name,
-            "type_": arg.ty,
-            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std))).unwrap_or_default(),
-            "required": arg.kind.required(),
+    let args = function
+        .args
+        .iter()
+        .map(|arg| {
+            let docs = arg.docs.clone();
+            if let Some(docs) = &docs {
+                // We deliberately truncate to one line in the template so that if we are using the docs
+                // from the type, then we only take the summary. However, if there's a newline in the
+                // arg docs, then they would get truncated unintentionally.
+                assert!(!docs.contains('\n'), "Arg docs will get truncated");
+            };
+            json!({
+                "name": arg.name,
+                "type_": arg.ty,
+                "description": sanitize_markdown_links_str(
+                    flavor,
+                    &docs
+                        .or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std)))
+                        .unwrap_or_default(),
+                ),
+                "required": arg.kind.required(),
+            })
         })
-    }).collect::<Vec<_>>();
+        .collect::<Vec<_>>();
 
     let data = json!({
         "name": function.preferred_name,
         "module": mod_name_std(&function.module_name),
-        "summary": function.summary,
-        "description": function.description,
+        "summary": sanitize_markdown_links(flavor, function.summary.clone()),
+        "description": sanitize_markdown_links(flavor, function.description.clone()),
         "deprecated": function.properties.deprecated,
         "experimental": function.properties.experimental,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
@@ -454,13 +477,16 @@ fn generate_function_from_kcl(
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,
-                "description": docs_for_type(t, kcl_std).unwrap_or_default(),
+                "description": sanitize_markdown_links_str(
+                    flavor,
+                    &docs_for_type(t, kcl_std).unwrap_or_default(),
+                ),
             })
         }),
     });
 
     let output = hbs.render("function", &data)?;
-    let output = &cleanup_types(&output, kcl_std);
+    let output = &cleanup_types(&output, kcl_std, flavor);
     write_doc_output(flavor, &file_name, output)?;
 
     Ok(())
@@ -502,24 +528,26 @@ fn generate_const_from_kcl(
     let data = json!({
         "name": cnst.preferred_name,
         "module": mod_name_std(&cnst.module_name),
-        "summary": cnst.summary,
-        "description": cnst.description,
+        "summary": sanitize_markdown_links(flavor, cnst.summary.clone()),
+        "description": sanitize_markdown_links(flavor, cnst.description.clone()),
         "deprecated": cnst.properties.deprecated,
         "experimental": cnst.properties.experimental,
         "type_": cnst.ty,
-        "type_desc": cnst.ty.as_ref().map(|t| docs_for_type(t, kcl_std).unwrap_or_default()),
+        "type_desc": cnst.ty.as_ref().map(|t| {
+            sanitize_markdown_links_str(flavor, &docs_for_type(t, kcl_std).unwrap_or_default())
+        }),
         "examples": examples,
         "value": cnst.value.as_deref().unwrap_or(""),
     });
 
     let output = hbs.render("const", &data)?;
-    let output = cleanup_types(&output, kcl_std);
+    let output = cleanup_types(&output, kcl_std, flavor);
     write_doc_output(flavor, &file_name, &output)?;
 
     Ok(())
 }
 
-fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
+fn cleanup_types(input: &str, kcl_std: &ModData, flavor: StdlibDocFlavor) -> String {
     #[derive(Copy, Clone, Eq, PartialEq, Debug)]
     enum State {
         Text,
@@ -543,7 +571,7 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
                 if code_type.starts_with(' ') {
                     code.push(' ');
                 }
-                code.push_str(&cleanup_type_string(code_type.trim(), false, kcl_std));
+                code.push_str(&cleanup_type_string(code_type.trim(), false, kcl_std, flavor));
                 if code_type.ends_with(' ') {
                     code.push(' ');
                 }
@@ -579,7 +607,7 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
                     }
                     ticks = 0;
                 } else if state == State::Text && ticks == 2 && !code.is_empty() {
-                    output.push_str(&cleanup_type_string(&code, true, kcl_std));
+                    output.push_str(&cleanup_type_string(&code, true, kcl_std, flavor));
                     code = String::new();
                     ticks = 0;
                 } else if state == State::CodeBlock {
@@ -624,7 +652,7 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
     output
 }
 
-fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
+fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData, flavor: StdlibDocFlavor) -> String {
     let type_tree = match type_formatter::parse(input) {
         Ok(type_tree) => type_tree,
         Err(e) => {
@@ -632,7 +660,10 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
             return input.to_owned();
         }
     };
-    let fmtd = type_tree.format(fmt_for_text, kcl_std);
+    // Linked type rendering is only valid in the combined docs. For legacy and
+    // sketch-solve, render the type text without markdown links so downstream
+    // ZooKeeper docs do not inherit `/docs/kcl-std/...` paths.
+    let fmtd = type_tree.format(fmt_for_text && flavor.preserve_markdown_links(), kcl_std);
     if !fmtd.contains('`') && fmt_for_text {
         format!("`{fmtd}`")
     } else {
@@ -753,51 +784,67 @@ mod tests {
 
         struct Test {
             input: &'static str,
-            expected_text: &'static str,
+            expected_text_combined: &'static str,
+            expected_text_linkless: &'static str,
             expected_no_text: &'static str,
         }
 
         let tests = [
             Test {
                 input: "v",
-                expected_text: "`v`",
+                expected_text_combined: "`v`",
+                expected_text_linkless: "`v`",
                 expected_no_text: "v",
             },
             Test {
                 input: "number(mm)",
-                expected_text: "[`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text_combined: "[`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text_linkless: "`number(mm)`",
                 expected_no_text: "number(mm)",
             },
             Test {
                 input: "number(mm) | string",
-                expected_text: "[`number(mm)`](/docs/kcl-std/types/std-types-number) or [`string`](/docs/kcl-std/types/std-types-string)",
+                expected_text_combined: "[`number(mm)`](/docs/kcl-std/types/std-types-number) or [`string`](/docs/kcl-std/types/std-types-string)",
+                expected_text_linkless: "`number(mm) | string`",
                 expected_no_text: "number(mm) | string",
             },
             Test {
                 input: "[string; 1+]",
-                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+]",
+                expected_text_combined: "[[`string`](/docs/kcl-std/types/std-types-string); 1+]",
+                expected_text_linkless: "`[string; 1+]`",
                 expected_no_text: "[string; 1+]",
             },
             Test {
                 input: "[string; 1+] | number(mm)",
-                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+] or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text_combined: "[[`string`](/docs/kcl-std/types/std-types-string); 1+] or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text_linkless: "`[string; 1+] | number(mm)`",
                 expected_no_text: "[string; 1+] | number(mm)",
             },
             Test {
                 input: "[string | number(mm)]",
-                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)]",
+                expected_text_combined: "[[`string`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)]",
+                expected_text_linkless: "`[string | number(mm)]`",
                 expected_no_text: "[string | number(mm)]",
             },
             Test {
                 input: "[a, b, c]",
-                expected_text: "`[a, b, c]`",
+                expected_text_combined: "`[a, b, c]`",
+                expected_text_linkless: "`[a, b, c]`",
                 expected_no_text: "[a, b, c]",
             },
         ];
         for test in tests {
-            let actual_text = cleanup_type_string(test.input, true, &kcl_std);
-            assert_eq!(actual_text, test.expected_text, "Failed text");
-            let actual_no_text = cleanup_type_string(test.input, false, &kcl_std);
+            let actual_text_combined = cleanup_type_string(test.input, true, &kcl_std, StdlibDocFlavor::Combined);
+            assert_eq!(
+                actual_text_combined, test.expected_text_combined,
+                "Failed combined text"
+            );
+            let actual_text_linkless = cleanup_type_string(test.input, true, &kcl_std, StdlibDocFlavor::SketchSolve);
+            assert_eq!(
+                actual_text_linkless, test.expected_text_linkless,
+                "Failed linkless text"
+            );
+            let actual_no_text = cleanup_type_string(test.input, false, &kcl_std, StdlibDocFlavor::Combined);
             assert_eq!(actual_no_text, test.expected_no_text, "Failed no text");
         }
     }

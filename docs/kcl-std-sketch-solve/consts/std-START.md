@@ -15,6 +15,6 @@ START: TaggedFace
 
 ### Type
 
-[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) - A tag which references a face of a solid, including the distinguished tags `START` and `END`.
+`TaggedFace` - A tag which references a face of a solid, including the distinguished tags `START` and `END`.
 
 

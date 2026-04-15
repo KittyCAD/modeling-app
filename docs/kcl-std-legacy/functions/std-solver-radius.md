@@ -17,7 +17,7 @@ solver::radius(@points: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `points` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The arc segment whose radius should match the value set with `==`. | Yes |
+| `points` | `Segment` | The arc segment whose radius should match the value set with `==`. | Yes |
 
 
 

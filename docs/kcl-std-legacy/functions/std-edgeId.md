@@ -21,13 +21,13 @@ edgeId(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges we're trying to find | Yes |
-| `index` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Edge to identify. The index is a stable ordering of edges, used when you can't get the usual ID of an edge. | No |
-| `closestTo` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | Query the edge closest to this point. Uses absolute global coordinates. | No |
+| `body` | `Solid` | The solid whose edges we're trying to find | Yes |
+| `index` | `number(_)` | Edge to identify. The index is a stable ordering of edges, used when you can't get the usual ID of an edge. | No |
+| `closestTo` | `Point3d` | Query the edge closest to this point. Uses absolute global coordinates. | No |
 
 ### Returns
 
-[`Edge`](/docs/kcl-std/types/std-types-Edge) - An edge of a solid.
+`Edge` - An edge of a solid.
 
 
 ### Examples

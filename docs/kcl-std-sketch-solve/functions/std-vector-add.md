@@ -20,12 +20,12 @@ vector::add(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `u` | [[`number`](/docs/kcl-std/types/std-types-number)] |  | Yes |
-| `v` | [[`number`](/docs/kcl-std/types/std-types-number)] |  | Yes |
+| `u` | `[number]` |  | Yes |
+| `v` | `[number]` |  | Yes |
 
 ### Returns
 
-[[`number`](/docs/kcl-std/types/std-types-number)]
+`[number]`
 
 
 ### Examples

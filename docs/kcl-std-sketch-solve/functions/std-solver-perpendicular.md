@@ -17,7 +17,7 @@ Currently limited to two lines.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain perpendicular. Currently limited to two lines. | Yes |
+| `input` | `[Segment; 2+]` | The line segments that should remain perpendicular. Currently limited to two lines. | Yes |
 
 
 ### Examples

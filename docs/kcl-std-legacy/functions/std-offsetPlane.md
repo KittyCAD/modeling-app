@@ -21,12 +21,12 @@ plane and 10 units away from it.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `plane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane (e.g. `XY`) which this new plane is created from. | Yes |
-| `offset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Distance from the standard plane this new plane will be created at. | Yes |
+| `plane` | `Plane` | The plane (e.g. `XY`) which this new plane is created from. | Yes |
+| `offset` | `number(Length)` | Distance from the standard plane this new plane will be created at. | Yes |
 
 ### Returns
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
+`Plane` - An abstract plane.
 
 
 ### Examples

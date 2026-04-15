@@ -20,12 +20,12 @@ polar(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
-| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `angle` | `number(rad)` | A number. | Yes |
+| `length` | `number(Length)` | A number. | Yes |
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 
 

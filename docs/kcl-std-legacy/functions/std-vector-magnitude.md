@@ -17,11 +17,11 @@ vector::magnitude(@v: [number]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `v` | [[`number`](/docs/kcl-std/types/std-types-number)] |  | Yes |
+| `v` | `[number]` |  | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 ### Examples

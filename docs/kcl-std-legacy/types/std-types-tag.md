@@ -13,7 +13,7 @@ Reference a previously created tag. Used much like a variable.
 type tag = TaggedEdge
 ```
 
-Prefer to use [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace). For more details on tags, see the docs for [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl).
+Prefer to use `TaggedEdge` or `TaggedFace`. For more details on tags, see the docs for `TagDecl`.
 
 
 

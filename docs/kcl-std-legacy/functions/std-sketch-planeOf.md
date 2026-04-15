@@ -20,12 +20,12 @@ planeOf(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose face is being queried. | Yes |
-| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Find the plane which this face lies on. | Yes |
+| `solid` | `Solid` | The solid whose face is being queried. | Yes |
+| `face` | `TaggedFace | Segment` | Find the plane which this face lies on. | Yes |
 
 ### Returns
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
+`Plane` - An abstract plane.
 
 
 ### Examples

@@ -15,6 +15,6 @@ turns::THREE_QUARTER_TURN: number(deg) = 270deg
 
 ### Type
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(deg)` - A number.
 
 

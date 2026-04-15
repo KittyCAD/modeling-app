@@ -22,12 +22,12 @@ and `log10` can produce more accurate results for base 10.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`number`](/docs/kcl-std/types/std-types-number) | The number to compute the logarithm of. | Yes |
-| `base` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The base of the logarithm. | Yes |
+| `input` | `number` | The number to compute the logarithm of. | Yes |
+| `base` | `number(_)` | The base of the logarithm. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 

@@ -17,11 +17,11 @@ units::toInches(@num: number(Length)): number(in)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `num` | `number(Length)` | A number. | Yes |
 
 ### Returns
 
-[`number(in)`](/docs/kcl-std/types/std-types-number) - A number.
+`number(in)` - A number.
 
 
 

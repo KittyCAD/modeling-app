@@ -22,14 +22,14 @@ hyperbolicPoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `semiMajor` | [`number`](/docs/kcl-std/types/std-types-number) | The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1. | Yes |
-| `semiMinor` | [`number`](/docs/kcl-std/types/std-types-number) | The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1. | Yes |
-| `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The x value. Calculates y and returns (x, y). Incompatible with `y`. | No |
-| `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The y value. Calculates x and returns (x, y). Incompatible with `x`. | No |
+| `semiMajor` | `number` | The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1. | Yes |
+| `semiMinor` | `number` | The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1. | Yes |
+| `x` | `number(Length)` | The x value. Calculates y and returns (x, y). Incompatible with `y`. | No |
+| `y` | `number(Length)` | The y value. Calculates x and returns (x, y). Incompatible with `x`. | No |
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 
 ### Examples

@@ -18,7 +18,7 @@ startSketchOn(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+sketch-solve.
 
 ### Sketch on Face Behavior
 
@@ -37,7 +37,7 @@ The point is if you want to export the result of a sketch on a face, you
 only need to export the final Solid that was created from the sketch on the
 face, since it will include all the parent faces and Solids.
 
-See [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
+See sketch on face for more details.
 
 ### Multiple Profiles
 
@@ -83,15 +83,15 @@ twoCubes = extrude([squareProfile1, squareProfile2], length = 10)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `planeOrSolid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | Profile whose start is being used. | Yes |
-| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`. | No |
-| `normalToFace` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`. | No |
-| `alignAxis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) | If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`. | No |
-| `normalOffset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`. | No |
+| `planeOrSolid` | `Solid | Plane` | Profile whose start is being used. | Yes |
+| `face` | `TaggedFace | Segment` | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`. | No |
+| `normalToFace` | `TaggedFace | Segment` | Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`. | No |
+| `alignAxis` | `Axis2d` | If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`. | No |
+| `normalOffset` | `number(Length)` | Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`. | No |
 
 ### Returns
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face)
+`Plane | Face`
 
 
 ### Examples

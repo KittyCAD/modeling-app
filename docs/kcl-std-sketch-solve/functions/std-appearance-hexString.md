@@ -17,11 +17,11 @@ appearance::hexString(@rgb: [number(_); 3]): string
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `rgb` | [[`number(_)`](/docs/kcl-std/types/std-types-number); 3] | The red, blue and green components of the color. Must be between 0 and 255. | Yes |
+| `rgb` | `[number(_); 3]` | The red, blue and green components of the color. Must be between 0 and 255. | Yes |
 
 ### Returns
 
-[`string`](/docs/kcl-std/types/std-types-string) - A sequence of characters
+`string` - A sequence of characters
 
 
 

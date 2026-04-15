@@ -23,15 +23,15 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The The solid(s) whose appearance is being set. | Yes |
-| `color` | [`string`](/docs/kcl-std/types/std-types-string) | Color of the new material, a hex string like '#ff0000'. | Yes |
-| `metalness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Metalness of the new material, a percentage like 95.7. | No |
-| `roughness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Roughness of the new material, a percentage like 95.7. | No |
-| `opacity` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent. | No |
+| `solids` | `[Solid; 1+] | ImportedGeometry` | The The solid(s) whose appearance is being set. | Yes |
+| `color` | `string` | Color of the new material, a hex string like '#ff0000'. | Yes |
+| `metalness` | `number(_)` | Metalness of the new material, a percentage like 95.7. | No |
+| `roughness` | `number(_)` | Roughness of the new material, a percentage like 95.7. | No |
+| `opacity` | `number(_)` | Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent. | No |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+`[Solid; 1+] | ImportedGeometry`
 
 
 ### Examples

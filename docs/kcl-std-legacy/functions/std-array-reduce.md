@@ -21,13 +21,13 @@ reduce(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
-| `initial` | [`any`](/docs/kcl-std/types/std-types-any) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
-| `f` | [`fn(any, accum: any): any`](/docs/kcl-std/types/std-types-fn) | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
+| `array` | `[any]` | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
+| `initial` | `any` | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
+| `f` | `fn(any, accum: any): any` | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
 
 ### Returns
 
-[`any`](/docs/kcl-std/types/std-types-any) - The [`any`](/docs/kcl-std/types/std-types-any) type is the type of all possible values in KCL. I.e., if a function accepts an argument with type [`any`](/docs/kcl-std/types/std-types-any), then it can accept any value.
+`any` - The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument with type `any`, then it can accept any value.
 
 
 ### Examples

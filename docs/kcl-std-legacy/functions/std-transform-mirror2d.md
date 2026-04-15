@@ -20,12 +20,12 @@ Mirror occurs around a local sketch axis rather than a global axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or sketches to be reflected. | Yes |
-| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | The axis to reflect around. | Yes |
+| `sketches` | `[Sketch; 1+]` | The sketch or sketches to be reflected. | Yes |
+| `axis` | `Axis2d | Edge | Segment` | The axis to reflect around. | Yes |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 ### Examples

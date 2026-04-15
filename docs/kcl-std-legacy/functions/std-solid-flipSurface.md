@@ -17,11 +17,11 @@ flipSurface(@surface: [Solid; 1+]): [Solid; 1+]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `surface` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The surfaces to flip (swap the surface's back and front sides) | Yes |
+| `surface` | `[Solid; 1+]` | The surfaces to flip (swap the surface's back and front sides) | Yes |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
+`[Solid; 1+]`
 
 
 ### Examples

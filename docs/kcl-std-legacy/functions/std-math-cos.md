@@ -17,11 +17,11 @@ cos(@num: number(Angle)): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `num` | `number(Angle)` | A number. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+`number` - A number.
 
 
 ### Examples

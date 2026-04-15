@@ -17,7 +17,7 @@ solver::equalLength(@lines: [Segment; 2+])
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `lines` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | Two or more line segments that should all share the same length. | Yes |
+| `lines` | `[Segment; 2+]` | Two or more line segments that should all share the same length. | Yes |
 
 
 

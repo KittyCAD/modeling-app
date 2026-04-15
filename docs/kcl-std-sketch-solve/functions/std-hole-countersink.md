@@ -20,8 +20,8 @@ hole::countersink(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `diameter` | `number(Length)` | A number. | Yes |
+| `angle` | `number(Angle)` | A number. | Yes |
 
 
 

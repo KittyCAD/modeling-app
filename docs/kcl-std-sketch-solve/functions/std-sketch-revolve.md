@@ -36,19 +36,19 @@ revolved around the same axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve. | Yes |
-| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Axis of revolution. | Yes |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
-| `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
-| `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
-| `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
-| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
+| `sketches` | `[Sketch | Segment; 1+]` | The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve. | Yes |
+| `axis` | `Axis2d | Edge | Segment` | Axis of revolution. | Yes |
+| `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
+| `tolerance` | `number(Length)` | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
+| `symmetric` | `bool` | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
+| `bidirectionalAngle` | `number(Angle)` | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
+| `tagStart` | `TagDecl` | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
+| `tagEnd` | `TagDecl` | A named tag for the face at the end of the revolve. | No |
+| `bodyType` | `string` | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
+`[Solid; 1+]`
 
 
 ### Examples

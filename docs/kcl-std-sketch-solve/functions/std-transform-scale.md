@@ -35,16 +35,16 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
-| `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. | No |
-| `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
-| `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
-| `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
-| `factor` | [`number(_)`](/docs/kcl-std/types/std-types-number) | If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
+| `objects` | `[Solid; 1+] | [Sketch; 1+] | ImportedGeometry` | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `x` | `number(_)` | The scale factor for the x axis. | No |
+| `y` | `number(_)` | The scale factor for the y axis. | No |
+| `z` | `number(_)` | The scale factor for the z axis. | No |
+| `global` | `bool` | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `factor` | `number(_)` | If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+`[Solid; 1+] | [Sketch; 1+] | ImportedGeometry`
 
 
 ### Examples

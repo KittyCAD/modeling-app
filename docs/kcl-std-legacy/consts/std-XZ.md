@@ -15,6 +15,6 @@ XZ: Plane
 
 ### Type
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
+`Plane` - An abstract plane.
 
 

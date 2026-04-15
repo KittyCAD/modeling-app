@@ -18,21 +18,21 @@ angledLineThatIntersects(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+sketch-solve.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Which angle should the line be drawn at? | Yes |
-| `intersectTag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the line to intersect with. | Yes |
-| `offset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The offset from the intersecting line. | No |
-| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
+| `sketch` | `Sketch` | Which sketch should this path be added to? | Yes |
+| `angle` | `number(Angle)` | Which angle should the line be drawn at? | Yes |
+| `intersectTag` | `TaggedEdge` | The tag of the line to intersect with. | Yes |
+| `offset` | `number(Length)` | The offset from the intersecting line. | No |
+| `tag` | `TagDecl` | Create a new tag which refers to this line. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 

@@ -22,14 +22,14 @@ ellipticPoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `majorRadius` | [`number`](/docs/kcl-std/types/std-types-number) | The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. | Yes |
-| `minorRadius` | [`number`](/docs/kcl-std/types/std-types-number) | The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1. | Yes |
-| `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The x value. Calculates y and returns (x, y). Incompatible with `y`. | No |
-| `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The y value. Calculates x and returns (x, y). Incompatible with `x`. | No |
+| `majorRadius` | `number` | The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. | Yes |
+| `minorRadius` | `number` | The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1. | Yes |
+| `x` | `number(Length)` | The x value. Calculates y and returns (x, y). Incompatible with `y`. | No |
+| `y` | `number(Length)` | The y value. Calculates x and returns (x, y). Incompatible with `x`. | No |
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
+`Point2d` - A point in two dimensional space.
 
 
 ### Examples

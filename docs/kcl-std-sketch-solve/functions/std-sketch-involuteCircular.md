@@ -21,25 +21,25 @@ involuteCircular(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+sketch-solve. The sketch-solve version
 of involute circular is still under development.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve. | Yes |
-| `startRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The involute is described between two circles, startRadius is the radius of the inner circle. Either `startRadius` or `startDiameter` must be given (but not both). | No |
-| `endRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The involute is described between two circles, endRadius is the radius of the outer circle. Either `endRadius` or `endDiameter` must be given (but not both). | No |
-| `startDiameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The involute is described between two circles, startDiameter describes the inner circle. Either `startRadius` or `startDiameter` must be given (but not both). | No |
-| `endDiameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The involute is described between two circles, endDiameter describes the outer circle. Either `endRadius` or `endDiameter` must be given (but not both). | No |
-| `reverse` | [`bool`](/docs/kcl-std/types/std-types-bool) | If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. | No |
-| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
+| `sketch` | `Sketch` | Which sketch should this path be added to? | Yes |
+| `angle` | `number(Angle)` | The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve. | Yes |
+| `startRadius` | `number(Length)` | The involute is described between two circles, startRadius is the radius of the inner circle. Either `startRadius` or `startDiameter` must be given (but not both). | No |
+| `endRadius` | `number(Length)` | The involute is described between two circles, endRadius is the radius of the outer circle. Either `endRadius` or `endDiameter` must be given (but not both). | No |
+| `startDiameter` | `number(Length)` | The involute is described between two circles, startDiameter describes the inner circle. Either `startRadius` or `startDiameter` must be given (but not both). | No |
+| `endDiameter` | `number(Length)` | The involute is described between two circles, endDiameter describes the outer circle. Either `endRadius` or `endDiameter` must be given (but not both). | No |
+| `reverse` | `bool` | If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. | No |
+| `tag` | `TagDecl` | Create a new tag which refers to this line. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+`Sketch` - A sketch is a collection of paths.
 
 
 
