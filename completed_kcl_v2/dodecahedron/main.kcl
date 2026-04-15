@@ -1,94 +1,86 @@
 // Dodecahedron
-// Sketch-solve reconstruction with matching feature order
+// Sketch-solve reconstruction using one seed slab plus clone/scale variants
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
-
 dihedral = 116.565
-
-fn createFaceTemplate(@dither) {
-  halfSpan = 1000 + dither
-  faceSpan = halfSpan * 2
-
-  // STEP 01 START: Solver clipping slab
-  baseProfile = sketch(on = XY) {
-    line1 = line(start = [var -1000in, var -1000in], end = [var -1000in, var 1000in])
-    line2 = line(start = [var -1000in, var 1000in], end = [var 1000in, var 1000in])
-    coincident([line1.end, line2.start])
-
-    line3 = line(start = [var 1000in, var 1000in], end = [var 1000in, var -1000in])
-    coincident([line2.end, line3.start])
-
-    line4 = line(start = [var 1000in, var -1000in], end = [var -1000in, var -1000in])
-    coincident([line3.end, line4.start])
-    coincident([line4.end, line1.start])
-
-    vertical(line1)
-    horizontal(line2)
-    vertical(line3)
-    horizontal(line4)
-
-    horizontalDistance([line1.start, ORIGIN]) == halfSpan
-    verticalDistance([line1.start, ORIGIN]) == halfSpan
-    distance([line1.start, line1.end]) == faceSpan
-    distance([line2.start, line2.end]) == faceSpan
-  }
-  baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
-  hiddenBaseProfile = hide(baseProfile)
-  extruded = extrude(baseRegion, length = 2000 + dither)
-  // STEP 01 END
-
-  return extruded
-    |> translate(x = 0, y = 0, z = -260 - dither)
+seedHalfSpan = 1000
+seedSpan = seedHalfSpan * 2
+seedLength = 2000
+seedOffset = -260
+topPlaneZ = seedOffset + seedLength
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var -1000in, var -1000in], end = [var -1000in, var 1000in])
+  line2 = line(start = [var -1000in, var 1000in], end = [var 1000in, var 1000in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1000in, var 1000in], end = [var 1000in, var -1000in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1000in, var -1000in], end = [var -1000in, var -1000in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, ORIGIN]) == seedHalfSpan
+  verticalDistance([line1.start, ORIGIN]) == seedHalfSpan
+  distance([line1.start, line1.end]) == seedSpan
+  distance([line2.start, line2.end]) == seedSpan
 }
-
-// STEP 02 START: Rotate the clipping slabs and intersect them into the final solid
-faceRotations = [
-  [0, 0, 0, 0],
-  [dihedral, 0, 0, 0.1],
-  [dihedral, 0, 72, 0.2],
-  [dihedral, 0, 144, 0.3],
-  [dihedral, 0, 216, 0.4],
-  [dihedral, 0, 288, 0.5],
-  [180, 0, 0, 0.6],
-  [180 - dihedral, 0, 36, 0.7],
-  [180 - dihedral, 0, 108, 0.8],
-  [180 - dihedral, 0, 180, 0.9],
-  [180 - dihedral, 0, 252, 0.11],
-  [180 - dihedral, 0, 324, 0.12],
-]
-
-dodecahedronFaces = map(
-  faceRotations,
-  f = fn(@rotation) {
-    return createFaceTemplate(rotation[3])
-      |> rotate(
-           pitch = rotation[0],
-           roll = rotation[1],
-           yaw = rotation[2],
-           global = true,
-         )
-  },
-)
-
-fn calculateArrayLength(@arr) {
-  return reduce(
-    arr,
-    initial = 0,
-    f = fn(@item, accum) {
-      return accum + 1
-    },
-  )
-}
-
-fn createIntersection(@solids) {
-  fn reduceIntersect(@previous, accum) {
-    return intersect([previous, accum])
-  }
-
-  lastIndex = calculateArrayLength(solids) - 1
-  lastSolid = solids[lastIndex]
-  remainingSolids = pop(solids)
-  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
-}
-
-dodecahedron = createIntersection(dodecahedronFaces)
-// STEP 02 END
+baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
+hiddenBaseProfile = hide(baseProfile)
+face01 = extrude(baseRegion, length = seedLength)
+  |> translate(x = 0, y = 0, z = seedOffset)
+face02 = clone(face01)
+  |> scale(x = 1.0001, y = 1.0001, z = 1.00005)
+  |> translate(z = topPlaneZ * (1 - 1.00005))
+  |> rotate(pitch = dihedral, roll = 0, yaw = 0, global = true)
+face03 = clone(face01)
+  |> scale(x = 1.0002, y = 1.0002, z = 1.0001)
+  |> translate(z = topPlaneZ * (1 - 1.0001))
+  |> rotate(pitch = dihedral, roll = 0, yaw = 72, global = true)
+face04 = clone(face01)
+  |> scale(x = 1.0003, y = 1.0003, z = 1.00015)
+  |> translate(z = topPlaneZ * (1 - 1.00015))
+  |> rotate(pitch = dihedral, roll = 0, yaw = 144, global = true)
+face05 = clone(face01)
+  |> scale(x = 1.0004, y = 1.0004, z = 1.0002)
+  |> translate(z = topPlaneZ * (1 - 1.0002))
+  |> rotate(pitch = dihedral, roll = 0, yaw = 216, global = true)
+face06 = clone(face01)
+  |> scale(x = 1.0005, y = 1.0005, z = 1.00025)
+  |> translate(z = topPlaneZ * (1 - 1.00025))
+  |> rotate(pitch = dihedral, roll = 0, yaw = 288, global = true)
+face07 = clone(face01)
+  |> scale(x = 1.0006, y = 1.0006, z = 1.0003)
+  |> translate(z = topPlaneZ * (1 - 1.0003))
+  |> rotate(pitch = 180, roll = 0, yaw = 0, global = true)
+face08 = clone(face01)
+  |> scale(x = 1.0007, y = 1.0007, z = 1.00035)
+  |> translate(z = topPlaneZ * (1 - 1.00035))
+  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 36, global = true)
+face09 = clone(face01)
+  |> scale(x = 1.0008, y = 1.0008, z = 1.0004)
+  |> translate(z = topPlaneZ * (1 - 1.0004))
+  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 108, global = true)
+face10 = clone(face01)
+  |> scale(x = 1.0009, y = 1.0009, z = 1.00045)
+  |> translate(z = topPlaneZ * (1 - 1.00045))
+  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 180, global = true)
+face11 = clone(face01)
+  |> scale(x = 1.00011, y = 1.00011, z = 1.000055)
+  |> translate(z = topPlaneZ * (1 - 1.000055))
+  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 252, global = true)
+face12 = clone(face01)
+  |> scale(x = 1.00012, y = 1.00012, z = 1.00006)
+  |> translate(z = topPlaneZ * (1 - 1.00006))
+  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 324, global = true)
+intersection01 = intersect([face01, face12])
+intersection02 = intersect([face02, intersection01])
+intersection03 = intersect([face03, intersection02])
+intersection04 = intersect([face04, intersection03])
+intersection05 = intersect([face05, intersection04])
+intersection06 = intersect([face06, intersection05])
+intersection07 = intersect([face07, intersection06])
+intersection08 = intersect([face08, intersection07])
+intersection09 = intersect([face09, intersection08])
+intersection10 = intersect([face10, intersection09])
+dodecahedron = intersect([face11, intersection10])

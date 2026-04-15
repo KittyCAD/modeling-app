@@ -1,0 +1,267 @@
+// Enclosure step 1: rounded shelled base
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+length = 175
+width = 125
+height = 70
+wallThickness = 3
+holeDia = 4
+
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 125mm, var 0mm])
+  line2 = line(start = [var 125mm, var 0mm], end = [var 125mm, var 175mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 125mm, var 175mm], end = [var 0mm, var 175mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 175mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  coincident([line1.start, ORIGIN])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([line1.start, line1.end]) == width
+  distance([line2.start, line2.end]) == length
+}
+
+baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
+baseBody = extrude(baseRegion, length = height)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getCommonEdge(faces = [baseRegion.tags.line1, baseRegion.tags.line2]),
+         getCommonEdge(faces = [baseRegion.tags.line1, baseRegion.tags.line3]),
+         getCommonEdge(faces = [baseRegion.tags.line3, baseRegion.tags.line4]),
+         getCommonEdge(faces = [baseRegion.tags.line4, baseRegion.tags.line2])
+       ],
+     )
+  |> shell(faces = [END], thickness = wallThickness)
+
+hide(baseProfile)
+
+innerOffset = wallThickness * 3 + holeDia
+pillarOuterRadius = holeDia + wallThickness
+pillarHeight = height - wallThickness
+xSpread = width - 2 * innerOffset
+ySpread = length - 2 * innerOffset
+
+pillarPlane = {
+  origin = [innerOffset, innerOffset, wallThickness],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.0, 0.0, 1.0]
+}
+
+pillarSketch = sketch(on = pillarPlane) {
+  outerGuide = line(start = [var 0mm, var 0mm], end = [var 7mm, var 0mm], construction = true)
+  coincident([outerGuide.start, ORIGIN])
+  horizontal(outerGuide)
+  outerCircle = circle(start = [var 7mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([outerCircle.center, outerGuide.start])
+  coincident([outerCircle.start, outerGuide.end])
+  distance([outerGuide.start, outerGuide.end]) == pillarOuterRadius
+
+  innerGuide = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm], construction = true)
+  coincident([innerGuide.start, ORIGIN])
+  horizontal(innerGuide)
+  innerCircle = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([innerCircle.center, innerGuide.start])
+  coincident([innerCircle.start, innerGuide.end])
+  distance([innerGuide.start, innerGuide.end]) == holeDia
+}
+
+pillarRegion = region(point = [0mm, holeDia + wallThickness / 2], sketch = pillarSketch)
+pillarFrontLeft = extrude(pillarRegion, length = pillarHeight)
+hide(pillarSketch)
+
+pillarFrontRight = clone(pillarFrontLeft)
+  |> translate(x = xSpread, global = true)
+pillarBackLeft = clone(pillarFrontLeft)
+  |> translate(y = ySpread, global = true)
+pillarBackRight = clone(pillarFrontRight)
+  |> translate(y = ySpread, global = true)
+
+lidOffsetX = width * 1.2
+holeSpanX = width - 2 * innerOffset
+holeSpanY = length - 2 * innerOffset
+
+lidPlane = {
+  origin = [lidOffsetX, 0.0, 0.0],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.0, 0.0, 1.0]
+}
+
+lidSketch = sketch(on = lidPlane) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 125mm, var 0mm])
+  line2 = line(start = [var 125mm, var 0mm], end = [var 125mm, var 175mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 125mm, var 175mm], end = [var 0mm, var 175mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 175mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  coincident([line1.start, ORIGIN])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([line1.start, line1.end]) == width
+  distance([line2.start, line2.end]) == length
+
+  holeRectBottom = line(start = [var 13mm, var 13mm], end = [var 112mm, var 13mm], construction = true)
+  holeRectRight = line(start = [var 112mm, var 13mm], end = [var 112mm, var 162mm], construction = true)
+  coincident([holeRectBottom.end, holeRectRight.start])
+  holeRectTop = line(start = [var 112mm, var 162mm], end = [var 13mm, var 162mm], construction = true)
+  coincident([holeRectRight.end, holeRectTop.start])
+  holeRectLeft = line(start = [var 13mm, var 162mm], end = [var 13mm, var 13mm], construction = true)
+  coincident([holeRectTop.end, holeRectLeft.start])
+  coincident([holeRectLeft.end, holeRectBottom.start])
+
+  horizontal(holeRectBottom)
+  vertical(holeRectRight)
+  horizontal(holeRectTop)
+  vertical(holeRectLeft)
+  horizontalDistance([line1.start, holeRectBottom.start]) == innerOffset
+  verticalDistance([line1.start, holeRectBottom.start]) == innerOffset
+  distance([holeRectBottom.start, holeRectBottom.end]) == holeSpanX
+  distance([holeRectRight.start, holeRectRight.end]) == holeSpanY
+
+  holeGuideFrontLeft = line(start = [var 13mm, var 13mm], end = [var 17mm, var 13mm], construction = true)
+  coincident([holeGuideFrontLeft.start, holeRectBottom.start])
+  horizontal(holeGuideFrontLeft)
+  distance([holeGuideFrontLeft.start, holeGuideFrontLeft.end]) == holeDia
+  holeFrontLeft = circle(start = [var 17mm, var 13mm], center = [var 13mm, var 13mm])
+  coincident([holeFrontLeft.center, holeGuideFrontLeft.start])
+  coincident([holeFrontLeft.start, holeGuideFrontLeft.end])
+
+  holeGuideFrontRight = line(start = [var 112mm, var 13mm], end = [var 116mm, var 13mm], construction = true)
+  coincident([holeGuideFrontRight.start, holeRectBottom.end])
+  horizontal(holeGuideFrontRight)
+  distance([holeGuideFrontRight.start, holeGuideFrontRight.end]) == holeDia
+  holeFrontRight = circle(start = [var 116mm, var 13mm], center = [var 112mm, var 13mm])
+  coincident([holeFrontRight.center, holeGuideFrontRight.start])
+  coincident([holeFrontRight.start, holeGuideFrontRight.end])
+
+  holeGuideBackRight = line(start = [var 112mm, var 162mm], end = [var 116mm, var 162mm], construction = true)
+  coincident([holeGuideBackRight.start, holeRectRight.end])
+  horizontal(holeGuideBackRight)
+  distance([holeGuideBackRight.start, holeGuideBackRight.end]) == holeDia
+  holeBackRight = circle(start = [var 116mm, var 162mm], center = [var 112mm, var 162mm])
+  coincident([holeBackRight.center, holeGuideBackRight.start])
+  coincident([holeBackRight.start, holeGuideBackRight.end])
+
+  holeGuideBackLeft = line(start = [var 13mm, var 162mm], end = [var 17mm, var 162mm], construction = true)
+  coincident([holeGuideBackLeft.start, holeRectTop.end])
+  horizontal(holeGuideBackLeft)
+  distance([holeGuideBackLeft.start, holeGuideBackLeft.end]) == holeDia
+  holeBackLeft = circle(start = [var 17mm, var 162mm], center = [var 13mm, var 162mm])
+  coincident([holeBackLeft.center, holeGuideBackLeft.start])
+  coincident([holeBackLeft.start, holeGuideBackLeft.end])
+}
+
+lidRegion = region(point = [width / 2, length / 2], sketch = lidSketch)
+lidPlate = extrude(lidRegion, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getCommonEdge(faces = [lidRegion.tags.line1, lidRegion.tags.line2]),
+         getCommonEdge(faces = [lidRegion.tags.line1, lidRegion.tags.line3]),
+         getCommonEdge(faces = [lidRegion.tags.line3, lidRegion.tags.line4]),
+         getCommonEdge(faces = [lidRegion.tags.line4, lidRegion.tags.line2])
+       ],
+     )
+
+hide(lidSketch)
+
+lidLipWidth = width - 2 * wallThickness
+lidLipLength = length - 2 * wallThickness
+lidLipHoleOffset = innerOffset - wallThickness
+lidLipClearanceRadius = holeDia + wallThickness
+
+lidLipSketch = sketch(on = startSketchOn(lidPlate, face = END)) {
+  line1 = line(start = [var 153mm, var 3mm], end = [var 272mm, var 3mm])
+  line2 = line(start = [var 272mm, var 3mm], end = [var 272mm, var 172mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 272mm, var 172mm], end = [var 153mm, var 172mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 153mm, var 172mm], end = [var 153mm, var 3mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  coincident([line1.start, [lidOffsetX + wallThickness, wallThickness]])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([line1.start, line1.end]) == lidLipWidth
+  distance([line2.start, line2.end]) == lidLipLength
+
+  holeRectBottom = line(start = [var 163mm, var 13mm], end = [var 262mm, var 13mm], construction = true)
+  holeRectRight = line(start = [var 262mm, var 13mm], end = [var 262mm, var 162mm], construction = true)
+  coincident([holeRectBottom.end, holeRectRight.start])
+  holeRectTop = line(start = [var 262mm, var 162mm], end = [var 163mm, var 162mm], construction = true)
+  coincident([holeRectRight.end, holeRectTop.start])
+  holeRectLeft = line(start = [var 163mm, var 162mm], end = [var 163mm, var 13mm], construction = true)
+  coincident([holeRectTop.end, holeRectLeft.start])
+  coincident([holeRectLeft.end, holeRectBottom.start])
+
+  horizontal(holeRectBottom)
+  vertical(holeRectRight)
+  horizontal(holeRectTop)
+  vertical(holeRectLeft)
+  horizontalDistance([line1.start, holeRectBottom.start]) == lidLipHoleOffset
+  verticalDistance([line1.start, holeRectBottom.start]) == lidLipHoleOffset
+  distance([holeRectBottom.start, holeRectBottom.end]) == holeSpanX
+  distance([holeRectRight.start, holeRectRight.end]) == holeSpanY
+
+  holeGuideFrontLeft = line(start = [var 163mm, var 13mm], end = [var 170mm, var 13mm], construction = true)
+  coincident([holeGuideFrontLeft.start, holeRectBottom.start])
+  horizontal(holeGuideFrontLeft)
+  distance([holeGuideFrontLeft.start, holeGuideFrontLeft.end]) == lidLipClearanceRadius
+  holeFrontLeft = circle(start = [var 170mm, var 13mm], center = [var 163mm, var 13mm])
+  coincident([holeFrontLeft.center, holeGuideFrontLeft.start])
+  coincident([holeFrontLeft.start, holeGuideFrontLeft.end])
+
+  holeGuideFrontRight = line(start = [var 262mm, var 13mm], end = [var 269mm, var 13mm], construction = true)
+  coincident([holeGuideFrontRight.start, holeRectBottom.end])
+  horizontal(holeGuideFrontRight)
+  distance([holeGuideFrontRight.start, holeGuideFrontRight.end]) == lidLipClearanceRadius
+  holeFrontRight = circle(start = [var 269mm, var 13mm], center = [var 262mm, var 13mm])
+  coincident([holeFrontRight.center, holeGuideFrontRight.start])
+  coincident([holeFrontRight.start, holeGuideFrontRight.end])
+
+  holeGuideBackRight = line(start = [var 262mm, var 162mm], end = [var 269mm, var 162mm], construction = true)
+  coincident([holeGuideBackRight.start, holeRectRight.end])
+  horizontal(holeGuideBackRight)
+  distance([holeGuideBackRight.start, holeGuideBackRight.end]) == lidLipClearanceRadius
+  holeBackRight = circle(start = [var 269mm, var 162mm], center = [var 262mm, var 162mm])
+  coincident([holeBackRight.center, holeGuideBackRight.start])
+  coincident([holeBackRight.start, holeGuideBackRight.end])
+
+  holeGuideBackLeft = line(start = [var 163mm, var 162mm], end = [var 170mm, var 162mm], construction = true)
+  coincident([holeGuideBackLeft.start, holeRectTop.end])
+  horizontal(holeGuideBackLeft)
+  distance([holeGuideBackLeft.start, holeGuideBackLeft.end]) == lidLipClearanceRadius
+  holeBackLeft = circle(start = [var 170mm, var 162mm], center = [var 163mm, var 162mm])
+  coincident([holeBackLeft.center, holeGuideBackLeft.start])
+  coincident([holeBackLeft.start, holeGuideBackLeft.end])
+}
+
+lidLipRegion = region(point = [lidOffsetX + width / 2, length / 2], sketch = lidLipSketch)
+lidLip = extrude(lidLipRegion, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 3,
+       tags = [
+         getCommonEdge(faces = [lidLipRegion.tags.line1, lidLipRegion.tags.line2]),
+         getCommonEdge(faces = [lidLipRegion.tags.line1, lidLipRegion.tags.line3]),
+         getCommonEdge(faces = [lidLipRegion.tags.line3, lidLipRegion.tags.line4]),
+         getCommonEdge(faces = [lidLipRegion.tags.line4, lidLipRegion.tags.line2])
+       ],
+     )
+
+hide(lidLipSketch)

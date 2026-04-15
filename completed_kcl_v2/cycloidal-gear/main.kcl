@@ -1,0 +1,138 @@
+// Cycloidal Gear
+// Sketch-solve reconstruction of the legacy three-section loft.
+
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+gearPitch = 0.3
+gearHeight = 1.5
+holeDiameter = 0.297
+helixAngle = -80deg
+helixAngleMid = helixAngle / 2
+
+smallRadius = gearPitch
+largeRadius = gearPitch * 1.67
+centerSpacing = smallRadius + largeRadius
+centerOffsetX = gearPitch * 1.55
+
+fn gearSection(@sectionPlane, rotationAngle: number(deg)) {
+  rawProfile = sketch(on = sectionPlane) {
+    baseline = line(start = [var 0in, var 0in], end = [var 0.3in, var 0in], construction = true)
+
+    c2ToC1 = line(start = [var 0.465in, var -0.801in], end = [var 0.465in, var 0in], construction = true)
+    c1ToC6 = line(start = [var 0.465in, var 0in], end = [var 0.465in, var 0.801in], construction = true)
+    c2ToC3 = line(start = [var 0.465in, var -0.801in], end = [var -0.229in, var -0.401in], construction = true)
+    c3ToC4 = line(start = [var -0.229in, var -0.401in], end = [var -0.922in, var 0in], construction = true)
+    c4ToC5 = line(start = [var -0.922in, var 0in], end = [var -0.229in, var 0.401in], construction = true)
+    c5ToC6 = line(start = [var -0.229in, var 0.401in], end = [var 0.465in, var 0.801in], construction = true)
+
+    coincident([baseline.start, ORIGIN])
+    horizontal(baseline)
+    distance([baseline.start, baseline.end]) == gearPitch
+
+    coincident([c2ToC1.end, c1ToC6.start])
+    coincident([c2ToC1.start, c2ToC3.start])
+    coincident([c2ToC3.end, c3ToC4.start])
+    coincident([c3ToC4.end, c4ToC5.start])
+    coincident([c4ToC5.end, c5ToC6.start])
+    coincident([c5ToC6.end, c1ToC6.end])
+
+    vertical(c2ToC1)
+    vertical(c1ToC6)
+    angle([baseline, c2ToC3]) == 150deg
+    angle([baseline, c4ToC5]) == 30deg
+    parallel([c2ToC3, c3ToC4])
+    parallel([c4ToC5, c5ToC6])
+
+    equalLength([
+      c2ToC1,
+      c1ToC6,
+      c2ToC3,
+      c3ToC4,
+      c4ToC5,
+      c5ToC6
+    ])
+    distance([c2ToC1.start, c2ToC1.end]) == centerSpacing
+    horizontalDistance([ORIGIN, c2ToC1.end]) == centerOffsetX
+    verticalDistance([ORIGIN, c2ToC1.end]) == 0in
+
+    arc1 = arc(start = [var 0.465in, var 0.3in], end = [var 0.465in, var -0.3in], center = [var 0.465in, var 0in])
+    arc2 = arc(start = [var 0.465in, var -0.3in], end = [var 0.031in, var -0.551in], center = [var 0.465in, var -0.801in])
+    arc3 = arc(start = [var 0.031in, var -0.551in], end = [var -0.488in, var -0.251in], center = [var -0.229in, var -0.401in])
+    arc4 = arc(start = [var -0.488in, var -0.251in], end = [var -0.488in, var 0.251in], center = [var -0.922in, var 0in])
+    arc5 = arc(start = [var -0.488in, var 0.251in], end = [var 0.031in, var 0.551in], center = [var -0.229in, var 0.401in])
+    arc6 = arc(start = [var 0.031in, var 0.551in], end = [var 0.465in, var 0.3in], center = [var 0.465in, var 0.801in])
+
+    coincident([arc1.center, c2ToC1.end])
+    coincident([arc2.center, c2ToC1.start])
+    coincident([arc3.center, c2ToC3.end])
+    coincident([arc4.center, c3ToC4.end])
+    coincident([arc5.center, c4ToC5.end])
+    coincident([arc6.center, c1ToC6.end])
+
+    radius(arc1) == smallRadius
+    radius(arc2) == largeRadius
+    radius(arc3) == smallRadius
+    radius(arc4) == largeRadius
+    radius(arc5) == smallRadius
+    radius(arc6) == largeRadius
+
+    coincident([arc1.end, arc2.start])
+    coincident([arc2.end, arc3.start])
+    coincident([arc3.end, arc4.start])
+    coincident([arc4.end, arc5.start])
+    coincident([arc5.end, arc6.start])
+    coincident([arc6.end, arc1.start])
+
+    coincident([arc1.end, c2ToC1])
+    coincident([arc2.end, c2ToC3])
+    coincident([arc3.end, c3ToC4])
+    coincident([arc4.end, c4ToC5])
+    coincident([arc5.end, c5ToC6])
+    coincident([arc6.end, c1ToC6])
+
+    hole = circle(start = [var 0.149in, var 0in], center = [var 0in, var 0in])
+    coincident([hole.center, ORIGIN])
+    radius(hole) == holeDiameter / 2
+    horizontalDistance([hole.center, hole.start]) == holeDiameter / 2
+    verticalDistance([hole.center, hole.start]) == 0in
+  }
+
+  return rotate(
+    rawProfile,
+    axis = [0, 0, 1],
+    angle = rotationAngle,
+    global = true,
+  )
+}
+
+// Step 1: base profile
+baseProfile = gearSection(XY, rotationAngle = 0deg)
+
+// Step 2: mid-height rotated profile
+midProfile = gearSection(offsetPlane(XY, offset = gearHeight / 2), rotationAngle = helixAngleMid)
+
+// Step 3: top rotated profile
+topProfile = gearSection(offsetPlane(XY, offset = gearHeight), rotationAngle = helixAngle)
+
+// Step 4: loft the three sections
+baseRegion = region(point = [0in, 0.2in], sketch = baseProfile)
+midRegion = region(
+  point = [
+    -0.2in * sin(helixAngleMid),
+    0.2in * cos(helixAngleMid)
+  ],
+  sketch = midProfile,
+)
+topRegion = region(
+  point = [
+    -0.2in * sin(helixAngle),
+    0.2in * cos(helixAngle)
+  ],
+  sketch = topProfile,
+)
+
+gearLoft = loft([baseRegion, midRegion, topRegion], vDegree = 1, bezApproximateRational = true)
+
+hide(baseProfile)
+hide(midProfile)
+hide(topProfile)
