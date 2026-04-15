@@ -794,6 +794,219 @@ fn create_region_creates_region_path_sub_type() {
 }
 
 #[test]
+fn entity_clone_errors_when_source_artifact_missing() {
+    let original_entity_id = Uuid::new_v4();
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityClone::builder()
+            .entity_id(original_entity_id)
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    );
+
+    assert!(updated.is_err());
+}
+
+#[test]
+fn entity_clone_preserves_sweep_sub_type_and_method() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let cmd_id = Uuid::new_v4();
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::Sweep(Sweep {
+            id: source_id,
+            sub_type: SweepSubType::Revolve,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            surface_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            edge_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            trajectory_id: Some(ArtifactId::new(Uuid::new_v4())),
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: true,
+        }),
+    );
+
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityClone::builder()
+            .entity_id(Uuid::from(source_id))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Sweep(clone_sweep) = &updated[0] else {
+        panic!("Expected EntityClone to preserve sweep type, got: {updated:?}");
+    };
+    assert_eq!(clone_sweep.id, ArtifactId::new(cmd_id));
+    assert_eq!(clone_sweep.sub_type, SweepSubType::Revolve);
+    assert_eq!(clone_sweep.path_id, ArtifactId::new(cmd_id));
+    assert_eq!(clone_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert!(clone_sweep.surface_ids.is_empty());
+    assert!(clone_sweep.edge_ids.is_empty());
+    assert_eq!(clone_sweep.trajectory_id, None);
+    assert!(!clone_sweep.consumed);
+}
+
+#[test]
+fn entity_clone_preserves_path_type() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let cmd_id = Uuid::new_v4();
+    let plane_id = ArtifactId::new(Uuid::new_v4());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::Path(Path {
+            id: source_id,
+            sub_type: PathSubType::Region,
+            plane_id,
+            seg_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            consumed: true,
+            sweep_id: Some(ArtifactId::new(Uuid::new_v4())),
+            trajectory_sweep_id: Some(ArtifactId::new(Uuid::new_v4())),
+            solid2d_id: Some(ArtifactId::new(Uuid::new_v4())),
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: Some(ArtifactId::new(Uuid::new_v4())),
+            origin_path_id: Some(ArtifactId::new(Uuid::new_v4())),
+            inner_path_id: Some(ArtifactId::new(Uuid::new_v4())),
+            outer_path_id: Some(ArtifactId::new(Uuid::new_v4())),
+        }),
+    );
+
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityClone::builder()
+            .entity_id(Uuid::from(source_id))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Path(clone_path) = &updated[0] else {
+        panic!("Expected EntityClone to preserve path type, got: {updated:?}");
+    };
+    assert_eq!(clone_path.id, ArtifactId::new(cmd_id));
+    assert_eq!(clone_path.sub_type, PathSubType::Region);
+    assert_eq!(clone_path.plane_id, plane_id);
+    assert!(clone_path.seg_ids.is_empty());
+    assert_eq!(clone_path.sweep_id, None);
+    assert_eq!(clone_path.trajectory_sweep_id, None);
+    assert_eq!(clone_path.solid2d_id, None);
+    assert_eq!(clone_path.composite_solid_id, None);
+    assert_eq!(clone_path.origin_path_id, None);
+    assert_eq!(clone_path.inner_path_id, None);
+    assert_eq!(clone_path.outer_path_id, None);
+    assert!(!clone_path.consumed);
+}
+
+#[test]
+fn entity_clone_preserves_composite_solid_type() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let cmd_id = Uuid::new_v4();
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::CompositeSolid(CompositeSolid {
+            id: source_id,
+            consumed: true,
+            sub_type: CompositeSolidSubType::Subtract,
+            solid_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            tool_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: Some(ArtifactId::new(Uuid::new_v4())),
+        }),
+    );
+
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityClone::builder()
+            .entity_id(Uuid::from(source_id))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::CompositeSolid(clone_solid) = &updated[0] else {
+        panic!("Expected EntityClone to preserve composite solid type, got: {updated:?}");
+    };
+    assert_eq!(clone_solid.id, ArtifactId::new(cmd_id));
+    assert_eq!(clone_solid.sub_type, CompositeSolidSubType::Subtract);
+    assert!(clone_solid.solid_ids.is_empty());
+    assert!(clone_solid.tool_ids.is_empty());
+    assert_eq!(clone_solid.composite_solid_id, None);
+    assert!(!clone_solid.consumed);
+}
+
+#[test]
 fn primitive_edge_does_not_replace_existing_segment_artifact() {
     let shared_id = ArtifactId::new(Uuid::new_v4());
     let path_id = ArtifactId::new(Uuid::new_v4());

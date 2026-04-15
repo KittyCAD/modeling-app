@@ -1386,6 +1386,64 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
+            let source_id = ArtifactId::new(*entity_id);
+
+            let Some(source_artifact) = artifacts.get(&source_id) else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    format!("EntityClone source artifact not found in graph: source_id={source_id:?}, cmd={cmd:?}"),
+                    vec![range],
+                )));
+            };
+
+            let cloned_artifact = match source_artifact {
+                Artifact::CompositeSolid(source) => Artifact::CompositeSolid(CompositeSolid {
+                    id,
+                    consumed: false,
+                    sub_type: source.sub_type,
+                    solid_ids: Vec::new(),
+                    tool_ids: Vec::new(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                }),
+                Artifact::Sweep(source) => Artifact::Sweep(Sweep {
+                    id,
+                    sub_type: source.sub_type,
+                    path_id: id,
+                    surface_ids: Vec::new(),
+                    edge_ids: Vec::new(),
+                    code_ref: code_ref.clone(),
+                    trajectory_id: None,
+                    method: source.method,
+                    consumed: false,
+                }),
+                Artifact::Path(source) => Artifact::Path(Path {
+                    id,
+                    sub_type: source.sub_type,
+                    plane_id: source.plane_id,
+                    seg_ids: Vec::new(),
+                    consumed: false,
+                    sweep_id: None,
+                    trajectory_sweep_id: None,
+                    solid2d_id: None,
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                    origin_path_id: None,
+                    inner_path_id: None,
+                    outer_path_id: None,
+                }),
+                _ => {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!(
+                            "EntityClone source artifact has unsupported type: source_id={source_id:?}, artifact={source_artifact:?}, cmd={cmd:?}"
+                        ),
+                        vec![range],
+                    )));
+                }
+            };
+
+            return Ok(vec![cloned_artifact]);
+        }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
