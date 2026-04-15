@@ -1,0 +1,105 @@
+// Bone Plate
+// A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures.
+// Categories: Medical
+
+@settings(defaultLengthUnit = mm)
+
+boltSize = 4.5
+
+// Step 1: Base plate profile revolve (sketch-solve)
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 23.19mm, var 8.37mm], end = [var 22.9mm, var 0mm], center = [var 142.9mm, var 0mm])
+  arc2 = arc(start = [var 23.19mm, var 8.37mm], end = [var 23.63mm, var 16.75mm], center = [var 20.69mm, var 12.7mm])
+  coincident([arc1.start, arc2.start])
+  arc3 = arc(start = [var 23.92mm, var 25.12mm], end = [var 23.63mm, var 16.75mm], center = [var 143.63mm, var 16.75mm])
+  coincident([arc2.end, arc3.end])
+  arc4 = arc(start = [var 23.92mm, var 25.12mm], end = [var 24.36mm, var 33.49mm], center = [var 21.42mm, var 29.45mm])
+  coincident([arc3.start, arc4.start])
+  arc5 = arc(start = [var 24.65mm, var 41.86mm], end = [var 24.36mm, var 33.49mm], center = [var 144.36mm, var 33.49mm])
+  coincident([arc4.end, arc5.end])
+  arc6 = arc(start = [var 24.65mm, var 41.86mm], end = [var 25.09mm, var 50.24mm], center = [var 22.15mm, var 46.19mm])
+  coincident([arc5.start, arc6.start])
+  arc7 = arc(start = [var 26.02mm, var 68.01mm], end = [var 25.09mm, var 50.24mm], center = [var 195.09mm, var 50.24mm])
+  coincident([arc6.end, arc7.end])
+  arc8 = arc(start = [var 41.8mm, var 91.88mm], end = [var 26.02mm, var 68.01mm], center = [var 56.88mm, var 64.76mm])
+  coincident([arc7.start, arc8.end])
+  arc9 = arc(start = [var 41.8mm, var 91.88mm], end = [var 56.92mm, var 117.08mm], center = [var 27.49mm, var 117.6mm])
+  coincident([arc8.start, arc9.start])
+  line10 = line(start = [var 56.92mm, var 117.08mm], end = [var 57.33mm, var 140.24mm])
+  coincident([arc9.end, line10.start])
+  arc11 = arc(start = [var 60.93mm, var 140.44mm], end = [var 57.33mm, var 140.24mm], center = [var 59.14mm, var 140.2mm])
+  coincident([line10.end, arc11.end])
+  line12 = line(start = [var 60.93mm, var 140.44mm], end = [var 64.27mm, var 115.01mm])
+  coincident([arc11.start, line12.start])
+  arc13 = arc(start = [var 48.35mm, var 85.53mm], end = [var 64.27mm, var 115.01mm], center = [var 35.92mm, var 111.28mm])
+  coincident([line12.end, arc13.end])
+  arc14 = arc(start = [var 48.35mm, var 85.53mm], end = [var 35.2mm, var 67.73mm], center = [var 58.67mm, var 64.15mm])
+  coincident([arc13.start, arc14.start])
+  line15 = line(start = [var 35.2mm, var 67.73mm], end = [var 27.8mm, var 19.23mm])
+  coincident([arc14.end, line15.start])
+  line16 = line(start = [var 27.8mm, var 19.23mm], end = [var 22.9mm, var 0mm])
+  coincident([line15.end, line16.start])
+  coincident([line16.end, arc1.end])
+  radius(arc2) == 5mm
+  radius(arc3) == 120mm
+  radius(arc4) == 5mm
+  radius(arc5) == 120mm
+  radius(arc6) == 5mm
+  radius(arc7) == 170mm
+  radius(arc8) == 31.03mm
+  tangent([arc8, arc9])
+  tangent([arc13, arc14])
+}
+
+region001 = region(segments = [sketch001.arc1, sketch001.arc2])
+plateRevolve = revolve(region001, axis = Y, angle = 65, symmetric = true)
+hide(sketch001)
+
+// Step 2: Clearance-hole cutters and subtract
+holeSketch = sketch(on = XZ) {
+  centerGuide01 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12.25mm], construction = true)
+  radiusGuide01 = line(start = [var 0mm, var 12.25mm], end = [var 2.25mm, var 12.25mm], construction = true)
+  circle01 = circle(start = [var 2.25mm, var 12.25mm], center = [var 0mm, var 12.25mm])
+  coincident([centerGuide01.start, ORIGIN])
+  coincident([centerGuide01.end, radiusGuide01.start])
+  coincident([radiusGuide01.start, circle01.center])
+  coincident([radiusGuide01.end, circle01.start])
+  vertical(centerGuide01)
+  horizontal(radiusGuide01)
+  verticalDistance([centerGuide01.start, centerGuide01.end]) == 12.25mm
+  distance([radiusGuide01.start, radiusGuide01.end]) == boltSize / 2
+}
+
+holeRegion01 = region(segments = [holeSketch.circle01])
+baseHoleBody = extrude(holeRegion01, length = -100)
+
+hide(holeSketch)
+
+holeBody02 = clone(baseHoleBody)
+  |> translate(z = 17.25mm, global = true)
+holeBody03 = clone(baseHoleBody)
+  |> translate(z = 34mm, global = true)
+holeBody04 = clone(baseHoleBody)
+  |> translate(z = 64.75mm, global = true)
+holeBody05 = clone(baseHoleBody)
+  |> translate(z = 87.75mm, global = true)
+holeBody06 = clone(baseHoleBody)
+  |> translate(z = 117.75mm, global = true)
+holeBody07 = clone(baseHoleBody)
+  |> translate(x = -20mm, z = 117.75mm, global = true)
+holeBody08 = clone(baseHoleBody)
+  |> translate(x = 20mm, z = 117.75mm, global = true)
+
+solid = subtract(
+  [plateRevolve],
+  tools = [
+    baseHoleBody,
+    holeBody02,
+    holeBody03,
+    holeBody04,
+    holeBody05,
+    holeBody06,
+    holeBody07,
+    holeBody08
+  ],
+)
