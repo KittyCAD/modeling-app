@@ -5,7 +5,7 @@
 
 /// GD&T datum feature.
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 ///
 /// width = 5
@@ -27,7 +27,7 @@
 /// )
 /// ```
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,sketchSolve
 /// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
@@ -78,7 +78,7 @@ export fn datum(
 
 /// GD&T annotation specifying how flat faces should be.
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -92,7 +92,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -106,7 +106,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -120,7 +120,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d
+/// ```kcl,no3d,sketchSolve
 /// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {

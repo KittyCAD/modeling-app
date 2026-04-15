@@ -16,11 +16,11 @@
 angle-gauge/
 # axial-fan/
 ball-bearing/
-# bench/
+bench/
 bench-for-kids/
 bike-hub-washer/
 # bone-plate/
-# bottle/
+bottle/
 box/
 bracket/
 # bracket-with-slot/
@@ -28,10 +28,10 @@ c-shape-solid/
 # camshaft/
 # car-wheel-assembly/
 # cassette/
-# ceiling-fan/
+ceiling-fan/
 # coilover-assembly/
-# cold-plate/
-# color-cube/
+cold-plate/
+color-cube/
 cone/
 # contra-rotor/
 # counterdrilled-weldment/
@@ -56,18 +56,18 @@ engine-valve/
 fun-stacker-toy/
 # gallows-bracket/
 gas-impeller/
-# gear-rack/
+gear-rack/
 # gingerbread-man/
 # gingerbread-man-cookie-cutter/
 golf-tee/
-# gridfinity-baseplate/
-# gridfinity-bins/
-# gridfinity-bins-stacking-lip/
+gridfinity-baseplate/
+gridfinity-bins/
+gridfinity-bins-stacking-lip/
 # hammer/
 # hand-trolley/
 # helical-gear/
 # helical-planetary-gearset/
-# helium-tank/
+helium-tank/
 # herringbone-gear/
 # herringbone-planetary-gearset/
 hex-nut/
@@ -77,7 +77,7 @@ i-beam/
 # inner-thread/
 # keyboard/
 # kitt/
-# lattice-cubic/
+lattice-cubic/
 lego/
 # linear-shelf-system/
 # liquid-impeller/
