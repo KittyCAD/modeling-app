@@ -37,6 +37,10 @@ flowchart LR
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     50[Solid2d]
   end
+  subgraph path66 [Path]
+    66["Path<br>[2277, 2297, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
   1["Plane<br>[942, 991, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   2["Plane<br>[1006, 1023, 0]"]
@@ -107,9 +111,9 @@ flowchart LR
   63["SweepEdge Adjacent"]
   64["SweepEdge Opposite"]
   65["SweepEdge Adjacent"]
-  66["CompositeSolid Subtract<br>[2391, 2438, 0]<br>Consumed: true"]
+  67["CompositeSolid Subtract<br>[2391, 2438, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  67["CompositeSolid Subtract<br>[2456, 2509, 0]<br>Consumed: false"]
+  68["CompositeSolid Subtract<br>[2456, 2509, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 3
   3 --- 4
@@ -122,7 +126,7 @@ flowchart LR
   3 --- 11
   3 --- 12
   3 ---- 13
-  3 --- 66
+  3 --- 67
   4 --- 18
   4 x--> 23
   4 --- 33
@@ -225,6 +229,7 @@ flowchart LR
   39 <--x 24
   41 <--x 24
   43 --- 44
+  43 <--x 66
   44 --- 45
   44 --- 46
   44 --- 47
@@ -232,7 +237,7 @@ flowchart LR
   44 --- 49
   44 --- 50
   44 ---- 51
-  44 --- 66
+  44 --- 67
   45 --- 55
   45 x--> 56
   45 --- 64
@@ -279,5 +284,6 @@ flowchart LR
   60 <--x 57
   62 <--x 57
   64 <--x 57
-  66 --- 67
+  66 --- 68
+  67 --- 68
 ```

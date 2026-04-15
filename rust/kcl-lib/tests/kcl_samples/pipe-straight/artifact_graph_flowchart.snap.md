@@ -35,6 +35,10 @@ flowchart LR
       %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     26[Solid2d]
   end
+  subgraph path31 [Path]
+    31["Path<br>[2222, 2243, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
   1["Plane<br>[1017, 1034, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8["Sweep Extrusion<br>[1301, 1389, 0]<br>Consumed: false"]
@@ -93,6 +97,7 @@ flowchart LR
   17 --- 18
   17 --- 21
   17 --- 24
+  17 <--x 31
   18 --- 19
   18 --- 20
   18 <--x 21

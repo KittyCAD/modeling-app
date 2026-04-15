@@ -821,7 +821,7 @@ fn entity_clone_errors_when_source_artifact_missing() {
         &FnvHashMap::default(),
     );
 
-    assert!(updated.is_err());
+    updated.unwrap_err();
 }
 
 #[test]

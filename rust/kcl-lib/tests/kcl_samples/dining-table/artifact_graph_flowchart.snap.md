@@ -30,35 +30,55 @@ flowchart LR
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     31[Solid2d]
   end
-  subgraph path48 [Path]
-    48["Path<br>[2572, 2614, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    49["Segment<br>[2620, 2651, 0]"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    50["Segment<br>[2657, 2687, 0]"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    51["Segment<br>[2693, 2725, 0]"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    52["Segment<br>[2731, 2787, 0]"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    53["Segment<br>[2793, 2800, 0]"]
-      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    54[Solid2d]
+  subgraph path47 [Path]
+    47["Path<br>[1647, 1664, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
-  subgraph path70 [Path]
-    70["Path<br>[3141, 3183, 0]<br>Consumed: true"]
+  subgraph path48 [Path]
+    48["Path<br>[1734, 1751, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path49 [Path]
+    49["Path<br>[1822, 1839, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path51 [Path]
+    51["Path<br>[2572, 2614, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    52["Segment<br>[2620, 2651, 0]"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    53["Segment<br>[2657, 2687, 0]"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+    54["Segment<br>[2693, 2725, 0]"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+    55["Segment<br>[2731, 2787, 0]"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+    56["Segment<br>[2793, 2800, 0]"]
+      %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
+    57[Solid2d]
+  end
+  subgraph path73 [Path]
+    73["Path<br>[3040, 3057, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 32 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path74 [Path]
+    74["Path<br>[3141, 3183, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    71["Segment<br>[3189, 3219, 0]"]
+    75["Segment<br>[3189, 3219, 0]"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    72["Segment<br>[3225, 3257, 0]"]
+    76["Segment<br>[3225, 3257, 0]"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    73["Segment<br>[3263, 3294, 0]"]
+    77["Segment<br>[3263, 3294, 0]"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    74["Segment<br>[3300, 3356, 0]"]
+    78["Segment<br>[3300, 3356, 0]"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    75["Segment<br>[3362, 3369, 0]"]
+    79["Segment<br>[3362, 3369, 0]"]
       %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    76[Solid2d]
+    80[Solid2d]
+  end
+  subgraph path96 [Path]
+    96["Path<br>[3614, 3632, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   1["Plane<br>[588, 625, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -108,58 +128,58 @@ flowchart LR
   44["SweepEdge Adjacent"]
   45["SweepEdge Opposite"]
   46["SweepEdge Adjacent"]
-  47["Plane<br>[2440, 2503, 0]"]
+  50["Plane<br>[2440, 2503, 0]"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  55["Sweep Extrusion<br>[2973, 3026, 0]<br>Consumed: false"]
+  58["Sweep Extrusion<br>[2973, 3026, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  56[Wall]
-    %% face_code_ref=Missing NodePath
-  57[Wall]
-    %% face_code_ref=Missing NodePath
-  58[Wall]
-    %% face_code_ref=Missing NodePath
   59[Wall]
     %% face_code_ref=Missing NodePath
-  60["Cap Start"]
+  60[Wall]
     %% face_code_ref=Missing NodePath
-  61["Cap End"]
+  61[Wall]
     %% face_code_ref=Missing NodePath
-  62["SweepEdge Opposite"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Opposite"]
-  65["SweepEdge Adjacent"]
-  66["SweepEdge Opposite"]
-  67["SweepEdge Adjacent"]
-  68["SweepEdge Opposite"]
-  69["SweepEdge Adjacent"]
-  77["Sweep Extrusion<br>[3545, 3599, 0]<br>Consumed: false"]
+  62[Wall]
+    %% face_code_ref=Missing NodePath
+  63["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  64["Cap End"]
+    %% face_code_ref=Missing NodePath
+  65["SweepEdge Opposite"]
+  66["SweepEdge Adjacent"]
+  67["SweepEdge Opposite"]
+  68["SweepEdge Adjacent"]
+  69["SweepEdge Opposite"]
+  70["SweepEdge Adjacent"]
+  71["SweepEdge Opposite"]
+  72["SweepEdge Adjacent"]
+  81["Sweep Extrusion<br>[3545, 3599, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 35 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  78[Wall]
+  82[Wall]
     %% face_code_ref=Missing NodePath
-  79[Wall]
+  83[Wall]
     %% face_code_ref=Missing NodePath
-  80[Wall]
+  84[Wall]
     %% face_code_ref=Missing NodePath
-  81[Wall]
+  85[Wall]
     %% face_code_ref=Missing NodePath
-  82["Cap Start"]
+  86["Cap Start"]
     %% face_code_ref=Missing NodePath
-  83["Cap End"]
+  87["Cap End"]
     %% face_code_ref=Missing NodePath
-  84["SweepEdge Opposite"]
-  85["SweepEdge Adjacent"]
-  86["SweepEdge Opposite"]
-  87["SweepEdge Adjacent"]
   88["SweepEdge Opposite"]
   89["SweepEdge Adjacent"]
   90["SweepEdge Opposite"]
   91["SweepEdge Adjacent"]
-  92["StartSketchOnPlane<br>[643, 671, 0]"]
+  92["SweepEdge Opposite"]
+  93["SweepEdge Adjacent"]
+  94["SweepEdge Opposite"]
+  95["SweepEdge Adjacent"]
+  97["StartSketchOnPlane<br>[643, 671, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  93["StartSketchOnPlane<br>[2522, 2551, 0]"]
+  98["StartSketchOnPlane<br>[2522, 2551, 0]"]
     %% [ProgramBodyItem { index: 28 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
-  1 <--x 92
+  1 <--x 97
   2 --- 3
   2 --- 4
   2 --- 5
@@ -214,6 +234,9 @@ flowchart LR
   20 <--x 14
   22 <--x 14
   24 --- 25
+  24 <--x 47
+  24 <--x 48
+  24 <--x 49
   25 --- 26
   25 --- 27
   25 --- 28
@@ -267,113 +290,115 @@ flowchart LR
   41 <--x 38
   43 <--x 38
   45 <--x 38
-  47 --- 48
-  47 --- 70
-  47 <--x 93
-  48 --- 49
-  48 --- 50
-  48 --- 51
-  48 --- 52
-  48 --- 53
-  48 --- 54
-  48 ---- 55
-  49 --- 59
-  49 x--> 61
-  49 --- 68
-  49 --- 69
-  50 --- 58
-  50 x--> 61
-  50 --- 66
-  50 --- 67
+  50 --- 51
+  50 <--x 73
+  50 --- 74
+  50 <--x 96
+  50 <--x 98
+  51 --- 52
+  51 --- 53
+  51 --- 54
+  51 --- 55
+  51 --- 56
   51 --- 57
-  51 x--> 61
-  51 --- 64
-  51 --- 65
-  52 --- 56
-  52 x--> 61
+  51 ---- 58
   52 --- 62
-  52 --- 63
-  55 --- 56
-  55 --- 57
-  55 --- 58
+  52 x--> 64
+  52 --- 71
+  52 --- 72
+  53 --- 61
+  53 x--> 64
+  53 --- 69
+  53 --- 70
+  54 --- 60
+  54 x--> 64
+  54 --- 67
+  54 --- 68
   55 --- 59
-  55 --- 60
-  55 --- 61
-  55 --- 62
-  55 --- 63
-  55 --- 64
+  55 x--> 64
   55 --- 65
   55 --- 66
-  55 --- 67
-  55 --- 68
-  55 --- 69
-  56 --- 62
-  56 --- 63
-  65 <--x 56
-  57 --- 64
-  57 --- 65
-  67 <--x 57
+  58 --- 59
+  58 --- 60
+  58 --- 61
+  58 --- 62
+  58 --- 63
+  58 --- 64
+  58 --- 65
   58 --- 66
   58 --- 67
-  69 <--x 58
-  63 <--x 59
-  59 --- 68
-  59 --- 69
-  62 <--x 60
-  64 <--x 60
-  66 <--x 60
-  68 <--x 60
-  70 --- 71
-  70 --- 72
-  70 --- 73
-  70 --- 74
-  70 --- 75
-  70 --- 76
-  70 ---- 77
-  71 --- 81
-  71 x--> 83
-  71 --- 90
-  71 --- 91
-  72 --- 80
-  72 x--> 83
-  72 --- 88
-  72 --- 89
-  73 --- 79
-  73 x--> 83
-  73 --- 86
-  73 --- 87
+  58 --- 68
+  58 --- 69
+  58 --- 70
+  58 --- 71
+  58 --- 72
+  59 --- 65
+  59 --- 66
+  68 <--x 59
+  60 --- 67
+  60 --- 68
+  70 <--x 60
+  61 --- 69
+  61 --- 70
+  72 <--x 61
+  66 <--x 62
+  62 --- 71
+  62 --- 72
+  65 <--x 63
+  67 <--x 63
+  69 <--x 63
+  71 <--x 63
+  74 --- 75
+  74 --- 76
+  74 --- 77
   74 --- 78
-  74 x--> 83
-  74 --- 84
-  74 --- 85
-  77 --- 78
-  77 --- 79
-  77 --- 80
-  77 --- 81
-  77 --- 82
+  74 --- 79
+  74 --- 80
+  74 ---- 81
+  75 --- 85
+  75 x--> 87
+  75 --- 94
+  75 --- 95
+  76 --- 84
+  76 x--> 87
+  76 --- 92
+  76 --- 93
   77 --- 83
-  77 --- 84
-  77 --- 85
-  77 --- 86
-  77 --- 87
-  77 --- 88
-  77 --- 89
+  77 x--> 87
   77 --- 90
   77 --- 91
-  78 --- 84
-  78 --- 85
-  87 <--x 78
-  79 --- 86
-  79 --- 87
-  89 <--x 79
-  80 --- 88
-  80 --- 89
-  91 <--x 80
-  85 <--x 81
+  78 --- 82
+  78 x--> 87
+  78 --- 88
+  78 --- 89
+  81 --- 82
+  81 --- 83
+  81 --- 84
+  81 --- 85
+  81 --- 86
+  81 --- 87
+  81 --- 88
+  81 --- 89
   81 --- 90
   81 --- 91
-  84 <--x 82
-  86 <--x 82
-  88 <--x 82
-  90 <--x 82
+  81 --- 92
+  81 --- 93
+  81 --- 94
+  81 --- 95
+  82 --- 88
+  82 --- 89
+  91 <--x 82
+  83 --- 90
+  83 --- 91
+  93 <--x 83
+  84 --- 92
+  84 --- 93
+  95 <--x 84
+  89 <--x 85
+  85 --- 94
+  85 --- 95
+  88 <--x 86
+  90 <--x 86
+  92 <--x 86
+  94 <--x 86
 ```

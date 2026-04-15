@@ -30,6 +30,18 @@ flowchart LR
       %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     31[Solid2d]
   end
+  subgraph path47 [Path]
+    47["Path<br>[1096, 1113, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path48 [Path]
+    48["Path<br>[1181, 1198, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path49 [Path]
+    49["Path<br>[1267, 1284, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
   1["Plane<br>[379, 416, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   9["Sweep Extrusion<br>[715, 768, 0]<br>Consumed: false"]
@@ -78,10 +90,10 @@ flowchart LR
   44["SweepEdge Adjacent"]
   45["SweepEdge Opposite"]
   46["SweepEdge Adjacent"]
-  47["StartSketchOnPlane<br>[434, 462, 0]"]
+  50["StartSketchOnPlane<br>[434, 462, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
-  1 <--x 47
+  1 <--x 50
   2 --- 3
   2 --- 4
   2 --- 5
@@ -136,6 +148,9 @@ flowchart LR
   20 <--x 14
   22 <--x 14
   24 --- 25
+  24 <--x 47
+  24 <--x 48
+  24 <--x 49
   25 --- 26
   25 --- 27
   25 --- 28
