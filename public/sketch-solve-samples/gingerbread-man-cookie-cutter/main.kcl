@@ -4,40 +4,150 @@
 
 @settings(defaultLengthUnit = mm)
 
-// Define parameters
-origin2D = [0, 0]
 thickness = 100
-wallThickness = 10
 
-// create a sketch for the body of the gingerbread man
-sketch = startSketchOn(XY)
+// The legacy Sketch 1 sample scales the 2D outline by 1.2 before extrusion,
+// so these coordinates already include that factor. The inner loop below bakes
+// in the nominal 10 mm wall because shell() on the full closed body fails in
+// the current local engine.
+bodySketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var -105.6mm, var -134.4mm])
 
-// create the body
-sketch001 = sketch(on = sketch) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
-  arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
+  arc2 = arc(start = [var -204mm, var -63.6mm], end = [var -105.6mm, var -134.4mm], center = [var -153.3mm, var -96.92mm])
   coincident([line1.end, arc2.end])
-  line3 = line(start = [var -170mm, var -53mm], end = [var -77mm, var 57mm])
+
+  line3 = line(start = [var -204mm, var -63.6mm], end = [var -92.4mm, var 68.4mm])
   coincident([arc2.start, line3.start])
-  line4 = line(start = [var -77mm, var 57mm], end = [var -77mm, var 213mm])
+
+  line4 = line(start = [var -92.4mm, var 68.4mm], end = [var -92.4mm, var 255.6mm])
   coincident([line3.end, line4.start])
-  line5 = line(start = [var -77mm, var 213mm], end = [var -187mm, var 130mm])
+
+  line5 = line(start = [var -92.4mm, var 255.6mm], end = [var -224.4mm, var 156mm])
   coincident([line4.end, line5.start])
-  arc6 = arc(start = [var -232mm, var 195mm], end = [var -187mm, var 130mm], center = [var -210.83mm, var 161.58mm])
+
+  arc6 = arc(start = [var -278.4mm, var 234mm], end = [var -224.4mm, var 156mm], center = [var -253mm, var 193.9mm])
   coincident([line5.end, arc6.end])
-  line7 = line(start = [var -232mm, var 195mm], end = [var -108mm, var 290mm])
+
+  line7 = line(start = [var -278.4mm, var 234mm], end = [var -129.6mm, var 348mm])
   coincident([arc6.start, line7.start])
-  arc8 = arc(start = [var -59mm, var 312mm], end = [var -108mm, var 290mm], center = [var -36.89mm, var 197.18mm])
+
+  arc8 = arc(start = [var -70.8mm, var 374.4mm], end = [var -129.6mm, var 348mm], center = [var -44.27mm, var 236.62mm])
   coincident([line7.end, arc8.end])
-  line9 = line(start = [var -59mm, var 312mm], end = [var -59mm, var 335mm])
+
+  line9 = line(start = [var -70.8mm, var 374.4mm], end = [var -70.8mm, var 402mm])
   coincident([arc8.start, line9.start])
-  arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
+
+  arc10 = arc(start = [var 0mm, var 658.8mm], end = [var -70.8mm, var 402mm], center = [var 0.72mm, var 520.44mm])
   coincident([line9.end, arc10.end])
-  line11 = line(start = [var 0mm, var 549mm], end = [var 0mm, var 0mm])
-  coincident([arc10.start, line11.start])
+
+  line12 = line(start = [var 70.8mm, var 402mm], end = [var 70.8mm, var 374.4mm])
+  line14 = line(start = [var 129.6mm, var 348mm], end = [var 278.4mm, var 234mm])
+  line16 = line(start = [var 224.4mm, var 156mm], end = [var 92.4mm, var 255.6mm])
+
+  line17 = line(start = [var 92.4mm, var 255.6mm], end = [var 92.4mm, var 68.4mm])
+  coincident([line16.end, line17.start])
+
+  line18 = line(start = [var 92.4mm, var 68.4mm], end = [var 204mm, var -63.6mm])
+  coincident([line17.end, line18.start])
+
+  line20 = line(start = [var 105.6mm, var -134.4mm], end = [var 0mm, var 0mm])
+  coincident([line20.end, line1.start])
+
   vertical(line4)
   vertical(line9)
+
+  vertical(line12)
+  vertical(line17)
+
+  innerLine1 = line(start = [var 0mm, var 16.19mm], end = [var -113.46mm, var -128.22mm])
+  innerArc2 = arc(start = [var -195.93mm, var -69.54mm], end = [var -113.46mm, var -128.22mm], center = [var -153.3mm, var -96.92mm])
+
+  coincident([innerLine1.end, innerArc2.end])
+  innerLine3 = line(start = [var -195.93mm, var -69.54mm], end = [var -82.4mm, var 64.74mm])
+
+  coincident([innerArc2.start, innerLine3.start])
+  innerLine4 = line(start = [var -82.4mm, var 64.74mm], end = [var -82.4mm, var 275.67mm])
+
+  coincident([innerLine3.end, innerLine4.start])
+  innerLine5 = line(start = [var -82.4mm, var 275.67mm], end = [var -230.42mm, var 163.98mm])
+
+  coincident([innerLine4.end, innerLine5.start])
+  innerArc6 = arc(start = [var -272.59mm, var 225.85mm], end = [var -230.42mm, var 163.98mm], center = [var -253mm, var 193.9mm])
+  coincident([innerLine5.end, innerArc6.end])
+  innerLine7 = line(start = [var -272.59mm, var 225.85mm], end = [var -123.52mm, var 340.06mm])
+
+  coincident([innerArc6.start, innerLine7.start])
+  innerArc8 = arc(start = [var -60.73mm, var 365.88mm], end = [var -123.52mm, var 340.06mm], center = [var -44.27mm, var 236.62mm])
+  coincident([innerLine7.end, innerArc8.end])
+  innerLine9 = line(start = [var -60.73mm, var 365.88mm], end = [var -60.73mm, var 408.02mm])
+  coincident([innerArc8.start, innerLine9.start])
+
+  innerArc10 = arc(start = [var 0mm, var 648.58mm], end = [var -60.73mm, var 408.02mm], center = [var 0.44mm, var 520.52mm])
+
+  coincident([innerLine9.end, innerArc10.end])
+  innerLine12 = line(start = [var 60.86mm, var 407.62mm], end = [var 60.86mm, var 365.88mm])
+
+  innerLine14 = line(start = [var 123.52mm, var 340.06mm], end = [var 272.59mm, var 225.85mm])
+  innerLine16 = line(start = [var 230.42mm, var 163.98mm], end = [var 82.4mm, var 275.67mm])
+
+  innerLine17 = line(start = [var 82.4mm, var 275.67mm], end = [var 82.4mm, var 64.74mm])
+  coincident([innerLine16.end, innerLine17.start])
+
+  innerLine18 = line(start = [var 82.4mm, var 64.74mm], end = [var 195.93mm, var -69.54mm])
+  coincident([innerLine17.end, innerLine18.start])
+
+  innerLine20 = line(start = [var 113.46mm, var -128.22mm], end = [var 0mm, var 16.19mm])
+  coincident([innerLine20.end, innerLine1.start])
+
+  vertical(innerLine4)
+  vertical(innerLine9)
+
+  vertical(innerLine12)
+  vertical(innerLine17)
+
+  arc1 = arc(start = [var 129.6mm, var 348mm], end = [var 70.8mm, var 374.4mm], center = [var 44.27mm, var 236.62mm])
+  coincident([arc1.start, line14.start])
+
+  coincident([arc1.end, line12.end])
+  arc3 = arc(start = [var 123.52mm, var 340.06mm], end = [var 60.8mm, var 365.88mm], center = [var 44.27mm, var 236.62mm])
+
+  coincident([arc3.center, arc1.center])
+  coincident([arc3.start, innerLine14.start])
+  coincident([arc3.end, innerLine12.end])
+
+  arc4 = arc(start = [var 230.42mm, var 163.98mm], end = [var 272.59mm, var 225.85mm], center = [var 253mm, var 193.9mm])
+
+  coincident([arc4.start, innerLine16.start])
+  coincident([arc4.end, innerLine14.end])
+
+  arc5 = arc(start = [var 224.4mm, var 156mm], end = [var 278.4mm, var 234mm], center = [var 253mm, var 193.9mm])
+
+  coincident([arc5.center, arc4.center])
+  coincident([arc5.start, line16.start])
+  coincident([arc5.end, line14.end])
+
+  arc7 = arc(start = [var 113.46mm, var -128.22mm], end = [var 195.93mm, var -69.54mm], center = [var 153.3mm, var -96.92mm])
+  coincident([arc7.start, innerLine20.start])
+  coincident([arc7.end, innerLine18.end])
+
+  arc9 = arc(start = [var 105.6mm, var -134.4mm], end = [var 204mm, var -63.6mm], center = [var 153.3mm, var -96.92mm])
+  coincident([arc9.center, arc7.center])
+
+  coincident([arc9.start, line20.start])
+  coincident([arc9.end, line18.end])
+
+  arc12 = arc(start = [var 60.86mm, var 407.62mm], end = [var 0mm, var 648.58mm], center = [var 0.44mm, var 520.52mm])
+
+  coincident([arc12.center, innerArc10.center])
+  coincident([arc12.start, innerLine12.start])
+  coincident([arc12.end, innerArc10.start])
+
+  arc13 = arc(start = [var 70.8mm, var 402mm], end = [var 0mm, var 658.8mm], center = [var -0.72mm, var 520.44mm])
+  coincident([arc13.start, line12.start])
+  coincident([arc13.end, arc10.start])
 }
-region001 = region(segments = [sketch001.line1, sketch001.arc2])
-cutter = extrude(region001, length = thickness)
-  |> shell(thickness = wallThickness, faces = [START, END])
+
+bodyRegion = region(point = [87mm, 120mm], sketch = bodySketch)
+cutter = extrude(bodyRegion, length = thickness)
+
+hide(bodySketch)
