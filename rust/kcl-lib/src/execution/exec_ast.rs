@@ -4984,7 +4984,6 @@ a = PI * 2
     #[tokio::test(flavor = "multi_thread")]
     async fn sketch_block_unqualified_functions_use_sketch2() {
         let ast = r#"
-@settings(experimentalFeatures = allow)
 s = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
