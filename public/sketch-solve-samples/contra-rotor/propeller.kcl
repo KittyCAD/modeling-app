@@ -1,8 +1,0 @@
-// Propeller Generator
-// Rotating blade set with hub and twisted blades
-// Categories: Aerospace
-
-@settings(defaultLengthUnit = mm)
-
-import "propeller-hub.kcl" as propellerHub
-import "propeller-blades.kcl" as propellerBlades
