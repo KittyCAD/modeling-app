@@ -33,7 +33,7 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -352,7 +352,7 @@ describe('tangentialArcToolImpl', () => {
         input: {
           arcId: 4,
           endPoint: [1, 1],
-          endSnapTarget: { type: 'point', pointId: 99 },
+          endSnapTarget: { type: 'point', id: 99 },
           tangentInfo: {
             ownerId: 5,
             tangentStart: {
@@ -395,7 +395,8 @@ describe('tangentialArcToolImpl', () => {
           type: 'Tangent',
           input: [5, 4],
         },
-        expect.anything()
+        expect.anything(),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'tangent' },
@@ -403,6 +404,7 @@ describe('tangentialArcToolImpl', () => {
           ...createSceneGraphDelta([], [12]),
           new_objects: [4, 10, 11, 12],
         },
+        checkpointId: null,
       })
     })
   })

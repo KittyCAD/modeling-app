@@ -20,6 +20,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::NodePath;
 use crate::engine::DEFAULT_PLANE_INFO;
 use crate::engine::PlaneName;
 use crate::errors::KclError;
@@ -2071,6 +2072,13 @@ pub struct ConstrainablePoint2d {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
+pub enum ConstrainablePoint2dOrOrigin {
+    Point(ConstrainablePoint2d),
+    Origin,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
     pub vars: [crate::front::Point2d<SketchVarId>; 2],
@@ -2087,6 +2095,8 @@ pub struct UnsolvedSegment {
     pub kind: UnsolvedSegmentKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2127,6 +2137,19 @@ pub enum UnsolvedSegmentKind {
     },
 }
 
+impl UnsolvedSegmentKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point { .. } => "a Point",
+            Self::Line { .. } => "a Line",
+            Self::Arc { .. } => "an Arc",
+            Self::Circle { .. } => "a Circle",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -2142,6 +2165,8 @@ pub struct Segment {
     pub sketch: Option<Sketch>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2242,7 +2267,7 @@ pub enum SketchConstraintKind {
         line1: ConstrainableLine2d,
     },
     Distance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
@@ -2251,10 +2276,10 @@ pub enum SketchConstraintKind {
         points: [ConstrainablePoint2d; 2],
     },
     HorizontalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     VerticalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
 }
 

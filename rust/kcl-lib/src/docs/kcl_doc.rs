@@ -195,7 +195,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -225,28 +225,37 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
-    pub fn file_name(&self) -> String {
+    /// The effective documentation category, considering any `doc_category` override.
+    #[cfg(test)]
+    pub fn doc_category(&self) -> DocCategory {
         match self {
-            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
+            DocData::Fn(f) => f.properties.doc_category.unwrap_or(DocCategory::Functions),
+            DocData::Const(c) => c.properties.doc_category.unwrap_or(DocCategory::Constants),
+            DocData::Ty(t) => t.properties.doc_category.unwrap_or(DocCategory::Types),
+            DocData::Mod(_) => DocCategory::Modules,
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
+    pub fn file_name(&self) -> String {
+        format!(
+            "{}/{}",
+            self.doc_category().file_prefix(),
+            self.qual_name().replace("::", "-")
+        )
+    }
+
+    #[cfg(test)]
     pub fn example_name(&self) -> String {
-        match self {
-            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(_) => unimplemented!(),
-        }
+        format!(
+            "{}_{}",
+            self.doc_category().example_prefix(),
+            self.qual_name().replace("::", "-")
+        )
     }
 
     /// The path to the module through which the item is accessed, e.g., `std::sketch`
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn mod_name(&self) -> String {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
@@ -262,7 +271,7 @@ impl DocData {
         q[0..q.rfind("::").unwrap()].to_owned()
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn hide(&self) -> bool {
         match self {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
@@ -324,7 +333,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -400,6 +409,7 @@ impl ConstData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -428,7 +438,11 @@ impl ConstData {
                 detail: self.value.clone(),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::CONSTANT),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::CONSTANT)),
             detail: Some(detail),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -457,6 +471,7 @@ impl ConstData {
 pub struct ModData {
     pub name: String,
     /// How the module is indexed, etc.
+    #[allow(dead_code)]
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
@@ -491,11 +506,12 @@ impl ModData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: Default::default(),
+                doc_category: None,
             },
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -580,6 +596,7 @@ impl FnData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -630,7 +647,11 @@ impl FnData {
                 detail: Some(self.fn_signature()),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::FUNCTION)),
             detail: Some(self.qual_name.clone()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -709,6 +730,55 @@ impl FnData {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DocCategory {
+    Functions,
+    Constants,
+    Modules,
+    Types,
+}
+
+impl DocCategory {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "functions" => Some(DocCategory::Functions),
+            "consts" => Some(DocCategory::Constants),
+            "modules" => Some(DocCategory::Modules),
+            "types" => Some(DocCategory::Types),
+            _ => None,
+        }
+    }
+
+    #[cfg(test)]
+    fn file_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "functions",
+            DocCategory::Constants => "consts",
+            DocCategory::Modules => "modules",
+            DocCategory::Types => "types",
+        }
+    }
+
+    #[cfg(test)]
+    fn example_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "fn",
+            DocCategory::Constants => "const",
+            DocCategory::Modules => "module",
+            DocCategory::Types => "ty",
+        }
+    }
+
+    fn to_completion_item_kind(self) -> CompletionItemKind {
+        match self {
+            DocCategory::Functions => CompletionItemKind::FUNCTION,
+            DocCategory::Constants => CompletionItemKind::CONSTANT,
+            DocCategory::Types => CompletionItemKind::STRUCT,
+            DocCategory::Modules => CompletionItemKind::MODULE,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
@@ -717,12 +787,14 @@ pub struct Properties {
     #[allow(dead_code)]
     pub exported: bool,
     pub impl_kind: annotations::Impl,
+    pub doc_category: Option<DocCategory>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
+    #[allow(dead_code)]
     pub norun: bool,
+    #[allow(dead_code)]
     pub no3d: bool,
     pub inline: bool,
 }
@@ -879,7 +951,9 @@ impl ArgData {
             Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
                 Some((index, format!(r#"{label}${{{index}:X}}"#)))
             }
-            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
+            Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
+                Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
+            }
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
@@ -920,7 +994,6 @@ impl ArgData {
 }
 
 impl ArgKind {
-    #[allow(dead_code)]
     pub fn required(self) -> bool {
         match self {
             ArgKind::Special => true,
@@ -971,6 +1044,7 @@ impl TyData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
@@ -980,7 +1054,6 @@ impl TyData {
         }
     }
 
-    #[allow(dead_code)]
     pub fn qual_name(&self) -> &str {
         if self.properties.impl_kind == annotations::Impl::Primitive {
             &self.name
@@ -1004,7 +1077,11 @@ impl TyData {
                 detail: Some(format!("type {} = {t}", self.name)),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::STRUCT)),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -1045,6 +1122,7 @@ trait ApplyMeta {
     fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
+    fn doc_category(&mut self, doc_category: DocCategory);
 
     fn with_comments(&mut self, comments: &[String]) {
         if comments.iter().all(|s| s.is_empty()) {
@@ -1175,6 +1253,13 @@ trait ApplyMeta {
                                 self.doc_hidden(b);
                             }
                         }
+                        annotations::DOC_CATEGORY => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(cat) = DocCategory::from_str(s)
+                            {
+                                self.doc_category(cat);
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -1208,6 +1293,10 @@ impl ApplyMeta for ConstData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for FnData {
@@ -1237,6 +1326,10 @@ impl ApplyMeta for FnData {
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for ModData {
@@ -1264,6 +1357,10 @@ impl ApplyMeta for ModData {
     }
 
     fn impl_kind(&mut self, _: annotations::Impl) {}
+
+    fn doc_category(&mut self, _: DocCategory) {
+        panic!("doc_category is not supported for modules");
+    }
 }
 
 impl ApplyMeta for TyData {
@@ -1292,6 +1389,10 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
     }
 }
 
@@ -1326,6 +1427,10 @@ impl ApplyMeta for ArgData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
+        unreachable!();
+    }
+
+    fn doc_category(&mut self, _doc_category: DocCategory) {
         unreachable!();
     }
 }

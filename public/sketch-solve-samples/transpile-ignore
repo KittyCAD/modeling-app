@@ -13,18 +13,18 @@
 #
 # List of all samples:
 #
-# angle-gauge/
+angle-gauge/
 # axial-fan/
-# ball-bearing/
+ball-bearing/
 # bench/
-# bench-for-kids/
-# bike-hub-washer/
+bench-for-kids/
+bike-hub-washer/
 # bone-plate/
 # bottle/
-# box/
-# bracket/
+box/
+bracket/
 # bracket-with-slot/
-# c-shape-solid/
+c-shape-solid/
 # camshaft/
 # car-wheel-assembly/
 # cassette/
@@ -32,31 +32,34 @@
 # coilover-assembly/
 # cold-plate/
 # color-cube/
-# cone/
+cone/
 # contra-rotor/
 # counterdrilled-weldment/
-# countersunk-plate/
+countersunk-plate/
 # cpu-cooler/
 # crash-box/
 # curtain-wall-anchor-plate/
 # cycloidal-gear/
-# cylinder/
+cylinder/
 # desk-edge-stopper/
+dining-table/
 # dodecahedron/
 # dog-house-great-dane/
+double-hook/
 # enclosure/
-# engine-valve/
+engine-valve/
 # exhaust-manifold/
 # field-monitor-stand/
 # flange/
 # flat-bladed-impeller/
 # french-press/
+fun-stacker-toy/
 # gallows-bracket/
-# gas-impeller/
+gas-impeller/
 # gear-rack/
 # gingerbread-man/
 # gingerbread-man-cookie-cutter/
-# golf-tee/
+golf-tee/
 # gridfinity-baseplate/
 # gridfinity-bins/
 # gridfinity-bins-stacking-lip/
@@ -67,40 +70,44 @@
 # helium-tank/
 # herringbone-gear/
 # herringbone-planetary-gearset/
-# hex-nut/
-# hex-nut-with-chamfer/
+hex-nut/
+hex-nut-with-chamfer/
 # holder-rod-angle/
-# i-beam/
+i-beam/
 # inner-thread/
 # keyboard/
 # kitt/
 # lattice-cubic/
-# lego/
+lego/
 # linear-shelf-system/
 # liquid-impeller/
+m4-hex-socket-countersunk-head-screw/
+m4-insert/
 # makeup-mirror/
 # modular-shelf-grid/
 # mug/
-# multi-axis-robot/
-# parametric-shelf-unit/
+multi-axis-robot/
+parametric-shelf-unit/
 # pdu-faceplate/
 # pergola/
 # pillow-block-bearing/
-# pipe/
+pipe/
+pipe-elbow-90deg/
 # pipe-flange-assembly/
 # pipe-manifold/
+pipe-straight
 # poopy-shoe/
 # propellant-line-brackets/
 # propeller/
 # racing-seat-brackets/
-# rack-blanking-panel/
-# radial-flow-centrifugal-impeller/
-# rectangle-table/
-# round-table/
-# router-template-cross-bar/
-# router-template-slate/
+rack-blanking-panel/
+radial-flow-centrifugal-impeller/
+rectangle-table/
+round-table/
+router-template-cross-bar/
+router-template-slate/
 # sash-window/
-# saturn-v/
+saturn-v/
 scrub-daddy-holder/
 shaft-grommet/
 sheet-metal-bracket/
@@ -130,17 +137,17 @@ split-washer-spring-version/
 # t-slot-rail/
 # t-slot-rectangle/
 # t-slot-shelf/
-# teapot/
+teapot/
 # telemetry-antenna/
 # thermal-block-insert/
 # tooling-nest-block/
 torus/
 # tube-manifold/
-# usb-c/
+usb-c/
 # utility-sink/
 v-block/
 # walkie-talkie/
-# washer/
+washer/
 wedge/
 # wheel-hub/
 # wing-spar/

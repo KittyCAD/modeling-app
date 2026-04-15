@@ -97,6 +97,8 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
@@ -134,15 +136,25 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
         return (None, ctxt.errors).into();
     }
 
-    let result = match program.parse(i) {
-        Ok(result) => Some(result),
+    let ast = match program.parse(i) {
+        Ok(ast) => Some(ast),
         Err(e) => {
             ParseContext::err(error_from_winnow_error(e));
             None
         }
     };
+    #[cfg(feature = "artifact-graph")]
+    let ast = {
+        let mut ast = ast;
+        if let Some(ast) = &mut ast {
+            // Fill in NodePath on every AST node. We do this in the parser so
+            // that an AST never exists without NodePaths.
+            fill_node_paths(ast);
+        }
+        ast
+    };
     let ctxt = ParseContext::take();
-    (result, ctxt.errors).into()
+    (ast, ctxt.errors).into()
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -539,15 +551,18 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
                 expression,
             )
             .map(|(key, value)| {
-                Node::new_node(
-                    key.start,
-                    value.end(),
-                    key.module_id,
+                let start = key.start;
+                let end = value.end();
+                let module_id = key.module_id;
+                Node::new(
                     ObjectProperty {
                         key,
                         value,
                         digest: None,
                     },
+                    start,
+                    end,
+                    module_id,
                 )
             }),
             comma_sep,
@@ -1265,15 +1280,18 @@ fn array_end_start(i: &mut TokenSlice) -> ModalResult<Node<ArrayRangeExpression>
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    Ok(Node::new_node(
-        key.start,
-        key.end,
-        key.module_id,
+    let start = key.start;
+    let end = key.end;
+    let module_id = key.module_id;
+    Ok(Node::new(
         ObjectProperty {
             value: Expr::Name(Box::new(key.clone().into())),
             key,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -1320,15 +1338,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         })
     })?;
 
-    let result = Node::new_node(
-        key.start,
-        expr.end(),
-        key.module_id,
+    let start = key.start;
+    let end = expr.end();
+    let module_id = key.module_id;
+    let result = Node::new(
         ObjectProperty {
             key,
             value: expr,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     );
 
     if sep.token_type == TokenType::Colon {
@@ -2562,22 +2583,88 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(Node::new_node(
-        ret.start,
-        argument.end(),
-        ret.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         ReturnStatement { argument, digest: None },
+        ret.start,
+        end,
+        ret.module_id,
     ))
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
+    fn is_binary_operator_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Operator, "/")
+                | (TokenType::Operator, "*")
+                | (TokenType::Operator, "%")
+                | (TokenType::Operator, "^")
+                | (TokenType::Operator, "==")
+                | (TokenType::Operator, "!=")
+                | (TokenType::Operator, ">")
+                | (TokenType::Operator, ">=")
+                | (TokenType::Operator, "<")
+                | (TokenType::Operator, "<=")
+                | (TokenType::Operator, "|")
+                | (TokenType::Operator, "&")
+                | (TokenType::Operator, "||")
+                | (TokenType::Operator, "&&")
+        )
+    }
+
+    fn can_start_operand_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Word, _)
+                | (TokenType::String, _)
+                | (TokenType::Number, _)
+                | (TokenType::Bang, _)
+                | (TokenType::DoubleColon, _)
+                | (TokenType::Brace, "(")
+                | (TokenType::Brace, "[")
+                | (TokenType::Brace, "{")
+                | (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Keyword, "if")
+                | (TokenType::Keyword, "true")
+                | (TokenType::Keyword, "false")
+                | (TokenType::Keyword, "var")
+        )
+    }
+
+    fn has_binary_operator_after_optional_ascription(i: &mut TokenSlice) -> bool {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+
+        if peek(colon).parse_next(i).is_ok() && (colon, opt(whitespace), type_).parse_next(i).is_err() {
+            i.reset(&checkpoint);
+            return false;
+        }
+
+        let _ = opt(whitespace).parse_next(i);
+        let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
+            let _ = opt(whitespace).parse_next(i);
+            i.peek_token().as_ref().is_some_and(can_start_operand_token)
+        });
+        i.reset(&checkpoint);
+        has_binary_operator
+    }
+
+    let start = i.checkpoint();
     let mut expr = alt((
-        binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
     .parse_next(i)?;
+
+    if has_binary_operator_after_optional_ascription(i) {
+        i.reset(&start);
+        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+    }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
@@ -2797,20 +2884,21 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
     let end = val.end();
     let module_id = id.module_id;
+    let declaration_start = id.start;
     Ok(Node::boxed(
         start,
         end,
         module_id,
         VariableDeclaration {
-            declaration: Node::new_node(
-                id.start,
-                end,
-                module_id,
+            declaration: Node::new(
                 VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
                 },
+                declaration_start,
+                end,
+                module_id,
             ),
             visibility,
             kind,
@@ -3087,15 +3175,16 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
         .parse_next(i)?;
     ignore_whitespace(i);
     let argument = operand.parse_next(i)?;
-    Ok(Node::new_node(
-        op_token.start,
-        argument.end(),
-        op_token.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         UnaryExpression {
             operator,
             argument,
             digest: None,
         },
+        op_token.start,
+        end,
+        op_token.module_id,
     ))
 }
 
@@ -3168,14 +3257,17 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(Node::new_node(
-        val.start(),
-        val.end(),
-        val.module_id(),
+    let start = val.start();
+    let end = val.end();
+    let module_id = val.module_id();
+    Ok(Node::new(
         ExpressionStatement {
             expression: val,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -3489,11 +3581,14 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             }),
         // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let result = Node::new_node(
-                ident.start,
-                ident.end,
-                ident.module_id,
+            let start = ident.start;
+            let end = ident.end;
+            let module_id = ident.module_id;
+            let result = Node::new(
                 PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
+                start,
+                end,
+                module_id,
             );
 
             if *result == PrimitiveType::None {
@@ -3704,13 +3799,21 @@ fn is_safe_sketch_block_binding_name(name: &str) -> bool {
     !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
 }
 
+fn is_safe_binding_name_anywhere(name: &str) -> bool {
+    !name.starts_with("__kcl")
+}
+
+fn is_safe_binding_name(name: &str) -> bool {
+    is_safe_binding_name_anywhere(name) && is_safe_sketch_block_binding_name(name)
+}
+
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let ident = identifier
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)?;
 
-    if !is_safe_sketch_block_binding_name(&ident.name) {
+    if !is_safe_binding_name(&ident.name) {
         ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
             format!("`{}` is a reserved name and cannot be defined.", &ident.name),
@@ -3746,6 +3849,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             start,
             end: _,
             module_id,
+            node_path: _,
             pre_comments,
             comment_start,
             outer_attrs,
@@ -3758,7 +3862,6 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     digest: _,
                 },
         } = fn_call;
-        ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         if let Some(unlabeled) = unlabeled {
             ParseContext::err(CompilationIssue::err(
                 unlabeled.into(),
@@ -3769,6 +3872,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             start,
             end,
             module_id,
+            node_path: None,
             outer_attrs,
             pre_comments,
             comment_start,
@@ -3804,10 +3908,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
-            let result = Node::new_node(
-                fn_name.start,
-                end,
-                fn_name.module_id,
+            let start = fn_name.start;
+            let module_id = fn_name.module_id;
+            let result = Node::new(
                 CallExpressionKw {
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
@@ -3815,6 +3918,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     digest: None,
                     non_code_meta: Default::default(),
                 },
+                start,
+                end,
+                module_id,
             );
             return Ok(result);
         }
@@ -3932,10 +4038,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    let result = Node::new_node(
-        fn_name.start,
-        end,
-        fn_name.module_id,
+    let start = fn_name.start;
+    let module_id = fn_name.module_id;
+    let result = Node::new(
         CallExpressionKw {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
@@ -3943,6 +4048,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             digest: None,
             non_code_meta,
         },
+        start,
+        end,
+        module_id,
     );
 
     let callee_str = result.callee.name.name.to_string();
@@ -3966,11 +4074,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
+    use crate::NodePath;
+    use crate::NodePathStep;
     use crate::parsing::ast::types::BodyItem;
     use crate::parsing::ast::types::Expr;
     use crate::parsing::ast::types::VariableKind;
@@ -5016,7 +5128,21 @@ mySk1 = startSketchOn(XY)
 
             // Run the second parser, check it matches the first parser.
             let actual = in_ctx(|| declaration.parse(tokens.as_slice())).unwrap();
-            assert_eq!(expected, actual);
+            // Note: node_paths won't match since the narrow parse function
+            // won't add that.
+            assert_eq!(expected.as_source_range(), actual.as_source_range());
+            assert_eq!(expected.inner.declaration.inner.id, actual.inner.declaration.id);
+            assert_eq!(
+                expected.inner.declaration.inner.id.as_source_range(),
+                actual.inner.declaration.id.as_source_range()
+            );
+            match (&expected.inner.declaration.inner.init, &actual.inner.declaration.init) {
+                (Expr::Literal(expected), Expr::Literal(actual)) => {
+                    assert_eq!(expected.value, actual.value);
+                    assert_eq!(expected.as_source_range(), actual.as_source_range());
+                }
+                (left, right) => panic!("Unexpected expressions: left={left:#?}, right={right:#?}"),
+            }
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
@@ -5035,13 +5161,19 @@ mySk1 = startSketchOn(XY)
     fn test_math_parse() {
         let module_id = ModuleId::default();
         let actual = crate::parsing::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
-        let expr = Node::boxed(
+        let expr = Node::boxed_with_node_path(
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![
+                    NodePathStep::ProgramBodyItem { index: 0 },
+                    NodePathStep::ExpressionStatementExpr,
+                ],
+            },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::new(
+                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -5053,8 +5185,15 @@ mySk1 = startSketchOn(XY)
                     0,
                     1,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryLeft,
+                        ],
+                    },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::new(
+                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -5063,11 +5202,18 @@ mySk1 = startSketchOn(XY)
                     4,
                     7,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryRight,
+                        ],
+                    },
                 ))),
                 digest: None,
             },
         );
-        let expected = vec![BodyItem::ExpressionStatement(Node::new(
+        let expected = vec![BodyItem::ExpressionStatement(Node::with_node_path(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
                 digest: None,
@@ -5075,6 +5221,9 @@ mySk1 = startSketchOn(XY)
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+            },
         ))];
         assert_eq!(expected, actual);
     }
@@ -5086,14 +5235,20 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::parse_str(code, module_id).unwrap();
         let expected_result = Node::new(
             Program {
-                body: vec![BodyItem::ExpressionStatement(Node::new(
+                body: vec![BodyItem::ExpressionStatement(Node::with_node_path(
                     ExpressionStatement {
-                        expression: Expr::BinaryExpression(Node::boxed(
+                        expression: Expr::BinaryExpression(Node::boxed_with_node_path(
                             0,
                             4,
                             module_id,
+                            NodePath {
+                                steps: vec![
+                                    NodePathStep::ProgramBodyItem { index: 0 },
+                                    NodePathStep::ExpressionStatementExpr,
+                                ],
+                            },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::new(
+                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -5105,9 +5260,16 @@ mySk1 = startSketchOn(XY)
                                     0,
                                     1,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryLeft,
+                                        ],
+                                    },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::new(
+                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,
@@ -5119,6 +5281,13 @@ mySk1 = startSketchOn(XY)
                                     3,
                                     4,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryRight,
+                                        ],
+                                    },
                                 ))),
                                 digest: None,
                             },
@@ -5128,6 +5297,9 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
+                    NodePath {
+                        steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+                    },
                 ))],
                 shebang: None,
                 non_code_meta: NonCodeMeta::default(),
@@ -5339,6 +5511,12 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_z_percent_parens() {
         assert_err("z%)", "Unexpected token: %", [1, 2]);
+    }
+
+    #[test]
+    fn test_parse_ascription_in_binop() {
+        crate::parsing::top_level_parse("foo = tan(0): number(rad) - 4deg").unwrap();
+        crate::parsing::top_level_parse("foo = tan(0): rad - 4deg").unwrap();
     }
 
     #[test]
@@ -6387,6 +6565,18 @@ bar = 1
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_cannot_declare_vars_with_special_kcl_prefix() {
+        let program_source = "__kcl = 2";
+        let expected_src_start = program_source.find("_").unwrap();
+        let expected_src_end = expected_src_start + "__kcl".len();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert!(cause.err.message.contains("reserved name"));
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+        assert_eq!(cause.err.source_range.end(), expected_src_end);
     }
 
     #[test]

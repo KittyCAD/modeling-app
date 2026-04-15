@@ -8,9 +8,7 @@
 // Define parameters
 innerDiameter = 0.203
 outerDiameter = 0.438
-thicknessMax = 0.038
 thicknessNom = 0.032
-thicknessMin = 0.024
 
 // Define the sketch of the washer
 washerSketch = startSketchOn(XY)

@@ -3,7 +3,7 @@
 // Categories: Automotive, Aerospace, Computer Hardware
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 tubeDiameter = 5 / 8

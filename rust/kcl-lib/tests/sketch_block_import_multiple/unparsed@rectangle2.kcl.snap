@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/sketch_block_import_multiple/rectangle2.kcl
+---
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.86mm, var 1.27mm], end = [var 3.04mm, var 1.27mm])
+  line2 = line(start = [var 3.04mm, var 1.27mm], end = [var 3.04mm, var 3.06mm])
+  line3 = line(start = [var 3.04mm, var 3.06mm], end = [var 0.86mm, var 3.06mm])
+  line4 = line(start = [var 0.86mm, var 3.06mm], end = [var 0.86mm, var 1.27mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}

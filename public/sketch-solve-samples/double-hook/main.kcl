@@ -1,0 +1,128 @@
+// Double hook
+// Parametric double hook swept from a 5 mm circular section.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm)
+
+// Driving dimensions
+sectionDiameter = 5mm
+lowerTipLength = 5mm
+bendRadius = 3mm
+lowerHookDepth = 10mm
+connectorLength = 34mm
+upperBottomLength = 10mm
+upperSideLength = 10mm
+upperTopLength = 4mm
+
+lowerTipEndY = -lowerTipLength
+lowerBendStartX = -bendRadius
+lowerBendStartY = -(lowerTipLength + bendRadius)
+lowerBendCenterY = -lowerTipLength
+lowerBridgeEndX = bendRadius - lowerHookDepth
+upperEntryEndX = -lowerHookDepth
+connectorTopY = -lowerTipLength + connectorLength
+upperBottomEndY = connectorTopY + upperBottomLength
+upperLowerBendEndX = -(lowerHookDepth + bendRadius)
+upperLowerBendEndY = upperBottomEndY + bendRadius
+upperSideEndX = -(lowerHookDepth + bendRadius + upperSideLength)
+upperTopStartX = -(lowerHookDepth + upperSideLength + 2 * bendRadius)
+upperTopStartY = upperBottomEndY
+upperTopEndY = upperTopStartY - upperTopLength
+
+// Top-view path
+hookPath = sketch(on = XY) {
+  lowerTip = line(start = [var 0mm, var 0mm], end = [var 0mm, var -3.5mm])
+  coincident([lowerTip.start, [0mm, 0mm]])
+  vertical(lowerTip)
+  distance([lowerTip.start, lowerTip.end]) == lowerTipLength
+
+  lowerBend = arc(start = [var -3mm, var -6.5mm], end = [var 0mm, var -3.5mm], center = [var -3mm, var -3.5mm])
+  coincident([lowerBend.end, lowerTip.end])
+  coincident([
+    lowerBend.start,
+    [lowerBendStartX, lowerBendStartY]
+  ])
+  tangent([lowerTip, lowerBend])
+  radius(lowerBend) == bendRadius
+
+  lowerBridge = line(start = [var -3mm, var -6.5mm], end = [var -7mm, var -6.5mm])
+  coincident([lowerBridge.start, lowerBend.start])
+  horizontal(lowerBridge)
+  distance([lowerBridge.start, lowerBridge.end]) == lowerHookDepth - (2 * bendRadius)
+  tangent([lowerBend, lowerBridge])
+
+  upperEntry = arc(start = [var -10mm, var -3.5mm], end = [var -7mm, var -6.5mm], center = [var -7mm, var -3.5mm])
+  coincident([upperEntry.end, lowerBridge.end])
+  coincident([
+    upperEntry.start,
+    [upperEntryEndX, lowerBendCenterY]
+  ])
+  tangent([lowerBridge, upperEntry])
+  radius(upperEntry) == bendRadius
+
+  connector = line(start = [var -10mm, var -3.5mm], end = [var -10mm, var 30.5mm])
+  coincident([connector.start, upperEntry.start])
+  vertical(connector)
+  distance([connector.start, connector.end]) == connectorLength
+  tangent([upperEntry, connector])
+
+  upperBottom = line(start = [var -10mm, var 30.5mm], end = [var -10mm, var 40.5mm])
+  coincident([upperBottom.start, connector.end])
+  vertical(upperBottom)
+  distance([upperBottom.start, upperBottom.end]) == upperBottomLength
+
+  upperLowerBend = arc(start = [var -10mm, var 40.5mm], end = [var -13mm, var 43.5mm], center = [var -13mm, var 40.5mm])
+  coincident([upperLowerBend.start, upperBottom.end])
+  coincident([
+    upperLowerBend.end,
+    [upperLowerBendEndX, upperLowerBendEndY]
+  ])
+  tangent([upperBottom, upperLowerBend])
+  radius(upperLowerBend) == bendRadius
+
+  upperSide = line(start = [var -13mm, var 43.5mm], end = [var -23mm, var 43.5mm])
+  coincident([upperSide.start, upperLowerBend.end])
+  horizontal(upperSide)
+  distance([upperSide.start, upperSide.end]) == upperSideLength
+  tangent([upperLowerBend, upperSide])
+
+  upperTopBend = arc(start = [var -23mm, var 43.5mm], end = [var -26mm, var 40.5mm], center = [var -23mm, var 40.5mm])
+  coincident([upperTopBend.start, upperSide.end])
+  coincident([
+    upperTopBend.end,
+    [upperTopStartX, upperTopStartY]
+  ])
+  tangent([upperSide, upperTopBend])
+  radius(upperTopBend) == bendRadius
+
+  upperTop = line(start = [var -26mm, var 40.5mm], end = [var -26mm, var 36.5mm])
+  coincident([upperTop.start, upperTopBend.end])
+  vertical(upperTop)
+  distance([upperTop.start, upperTop.end]) == upperTopLength
+  tangent([upperTopBend, upperTop])
+}
+
+// Circular sweep section
+sectionSketch = sketch(on = XZ) {
+  sectionCircle = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([sectionCircle.center, [0mm, 0mm]])
+  diameter(sectionCircle) == sectionDiameter
+}
+
+sectionRegion = region(segments = [sectionSketch.sectionCircle])
+hook = sweep(
+       sectionRegion,
+       path = [
+         hookPath.lowerTip,
+         hookPath.lowerBend,
+         hookPath.lowerBridge,
+         hookPath.upperEntry,
+         hookPath.connector,
+         hookPath.upperBottom,
+         hookPath.upperLowerBend,
+         hookPath.upperSide,
+         hookPath.upperTopBend,
+         hookPath.upperTop
+       ],
+     )
+  |> appearance(color = "#8a8e93", metalness = 100, roughness = 50)

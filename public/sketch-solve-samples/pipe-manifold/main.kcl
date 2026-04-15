@@ -3,7 +3,7 @@
 // Categories: Automotive, Aerospace, Construction, Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 bodyWidth = 35

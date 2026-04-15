@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Define units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Bracket Parameters
 bracketSpacing = 11.75in

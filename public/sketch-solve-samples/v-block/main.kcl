@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 vBlockLength = 1 + 1 / 4

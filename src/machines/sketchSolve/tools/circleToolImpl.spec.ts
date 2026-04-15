@@ -21,6 +21,7 @@ type CreatingCircleEvent = {
   output: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
   }
 }
 
@@ -61,7 +62,8 @@ describe('circleToolImpl', () => {
           },
         },
         'circle',
-        expect.anything()
+        expect.any(Object),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'circle' },
@@ -101,7 +103,7 @@ describe('circleToolImpl', () => {
           centerPoint: [10, 20],
           startPoint: [30, 40],
           centerSnapTarget: { type: 'origin' },
-          startSnapTarget: { type: 'point', pointId: 99 },
+          startSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
@@ -116,7 +118,8 @@ describe('circleToolImpl', () => {
           type: 'Coincident',
           segments: [1, 'ORIGIN'],
         },
-        expect.anything()
+        expect.anything(),
+        true
       )
       expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
@@ -126,7 +129,8 @@ describe('circleToolImpl', () => {
           type: 'Coincident',
           segments: [2, 99],
         },
-        expect.anything()
+        expect.anything(),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'start-snap' },
@@ -134,6 +138,7 @@ describe('circleToolImpl', () => {
           ...startSnapResult.sceneGraphDelta,
           new_objects: [1, 2, 3, 10, 11],
         },
+        checkpointId: null,
       })
     })
   })
@@ -176,6 +181,7 @@ describe('circleToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
         },
       })
 

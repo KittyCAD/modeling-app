@@ -101,6 +101,7 @@ pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
+pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutorContext;
@@ -108,6 +109,8 @@ pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::Point2d;
+pub use execution::SketchConstraintReport;
+pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
 pub use execution::pre_execute_transpile;
@@ -187,6 +190,7 @@ pub mod pretty {
 }
 
 pub mod front {
+    pub use crate::frontend::MAX_SKETCH_CHECKPOINTS;
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
@@ -194,14 +198,16 @@ pub mod front {
         FrontendState,
         SetProgramOutcome,
         api::{
-            Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
-            ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
+            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, LifecycleApi, NewSketchOutcome, Number,
+            Object, ObjectId, ObjectKind, Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph,
+            SceneGraphDelta, Settings, SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version,
+            Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Fixed,
-            FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular,
-            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent,
-            Vertical,
+            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, EqualRadius,
+            ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength,
+            NewSegmentInfo, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch,
+            SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
@@ -333,6 +339,17 @@ impl Program {
         let module_infos = indexmap::IndexMap::new();
         let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
         NodePath::from_range(&programs, cached_body_items, range)
+    }
+
+    /// Fill node paths and consume the input so that the program without paths
+    /// isn't accidentally used. Filling node paths happens automatically during
+    /// parsing. Calling this is only needed after the caller invalidates the
+    /// node paths such as by mutating an AST or by making a round-trip through
+    /// serialization.
+    #[cfg(feature = "artifact-graph")]
+    pub fn fill_node_paths(mut self) -> Program {
+        parsing::ast::types::fill_node_paths(&mut self.ast);
+        self
     }
 
     pub fn recast(&self) -> String {

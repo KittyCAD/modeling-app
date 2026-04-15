@@ -2,7 +2,7 @@
 // Simple metal table with rectangular tabletop and four legs with a square section
 // Categories: Construction, Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Parameters
 tableHeight = 750
@@ -28,6 +28,8 @@ tableTopProfile = sketch(on = tableTopSketch) {
   vertical(line1)
   horizontal(line2)
   vertical(line3)
+  distance([line1.start, line1.end]) == tableLength
+  distance([line2.start, line2.end]) == tableWidth
 }
 region001 = region(segments = [
   tableTopProfile.line1,
@@ -48,13 +50,10 @@ legProfile = sketch(on = legSketch) {
   vertical(line1)
   horizontal(line2)
   vertical(line3)
+  equalLength([line4, line3, line2, line1])
+  distance([line4.start, line4.end]) == legThickness
 }
 region002 = region(segments = [legProfile.line1, legProfile.line2])
 legExtrude = extrude(region002, length = legHeight)
-
-leg2 = clone(legExtrude)
-  |> translate(x = tableWidth - legThickness, y = 0, z = 0)
-leg3 = clone(legExtrude)
-  |> translate(x = 0, y = tableLength - legThickness, z = 0)
-leg4 = clone(legExtrude)
-  |> translate(x = tableWidth - legThickness, y = tableLength - legThickness, z = 0)
+  |> patternLinear3d(instances = 2, distance = tableWidth - legThickness, axis = X)
+  |> patternLinear3d(instances = 2, distance = tableLength - legThickness, axis = Y)

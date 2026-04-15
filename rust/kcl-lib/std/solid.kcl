@@ -64,8 +64,6 @@ import Face from "std::types"
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -198,8 +196,6 @@ export fn fillet(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// baseProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -405,8 +401,6 @@ export fn chamfer(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// boxProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -1742,8 +1736,6 @@ export fn isSurface(
 /// deleteFace(cubeSolid, faceIndices = [0, 1])
 /// ```
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// boxProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
 ///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
@@ -1813,8 +1805,6 @@ export fn deleteFace(
 /// ```
 ///
 /// ```kcl
-/// @settings(experimentalFeatures = allow)
-///
 /// sketch001 = sketch(on = YZ) {
 ///   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
 ///   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
