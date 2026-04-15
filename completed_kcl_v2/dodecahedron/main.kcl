@@ -1,0 +1,94 @@
+// Dodecahedron
+// Sketch-solve reconstruction with matching feature order
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+dihedral = 116.565
+
+fn createFaceTemplate(@dither) {
+  halfSpan = 1000 + dither
+  faceSpan = halfSpan * 2
+
+  // STEP 01 START: Solver clipping slab
+  baseProfile = sketch(on = XY) {
+    line1 = line(start = [var -1000in, var -1000in], end = [var -1000in, var 1000in])
+    line2 = line(start = [var -1000in, var 1000in], end = [var 1000in, var 1000in])
+    coincident([line1.end, line2.start])
+
+    line3 = line(start = [var 1000in, var 1000in], end = [var 1000in, var -1000in])
+    coincident([line2.end, line3.start])
+
+    line4 = line(start = [var 1000in, var -1000in], end = [var -1000in, var -1000in])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+
+    vertical(line1)
+    horizontal(line2)
+    vertical(line3)
+    horizontal(line4)
+
+    horizontalDistance([line1.start, ORIGIN]) == halfSpan
+    verticalDistance([line1.start, ORIGIN]) == halfSpan
+    distance([line1.start, line1.end]) == faceSpan
+    distance([line2.start, line2.end]) == faceSpan
+  }
+  baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
+  hiddenBaseProfile = hide(baseProfile)
+  extruded = extrude(baseRegion, length = 2000 + dither)
+  // STEP 01 END
+
+  return extruded
+    |> translate(x = 0, y = 0, z = -260 - dither)
+}
+
+// STEP 02 START: Rotate the clipping slabs and intersect them into the final solid
+faceRotations = [
+  [0, 0, 0, 0],
+  [dihedral, 0, 0, 0.1],
+  [dihedral, 0, 72, 0.2],
+  [dihedral, 0, 144, 0.3],
+  [dihedral, 0, 216, 0.4],
+  [dihedral, 0, 288, 0.5],
+  [180, 0, 0, 0.6],
+  [180 - dihedral, 0, 36, 0.7],
+  [180 - dihedral, 0, 108, 0.8],
+  [180 - dihedral, 0, 180, 0.9],
+  [180 - dihedral, 0, 252, 0.11],
+  [180 - dihedral, 0, 324, 0.12],
+]
+
+dodecahedronFaces = map(
+  faceRotations,
+  f = fn(@rotation) {
+    return createFaceTemplate(rotation[3])
+      |> rotate(
+           pitch = rotation[0],
+           roll = rotation[1],
+           yaw = rotation[2],
+           global = true,
+         )
+  },
+)
+
+fn calculateArrayLength(@arr) {
+  return reduce(
+    arr,
+    initial = 0,
+    f = fn(@item, accum) {
+      return accum + 1
+    },
+  )
+}
+
+fn createIntersection(@solids) {
+  fn reduceIntersect(@previous, accum) {
+    return intersect([previous, accum])
+  }
+
+  lastIndex = calculateArrayLength(solids) - 1
+  lastSolid = solids[lastIndex]
+  remainingSolids = pop(solids)
+  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
+}
+
+dodecahedron = createIntersection(dodecahedronFaces)
+// STEP 02 END
