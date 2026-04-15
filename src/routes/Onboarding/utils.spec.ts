@@ -1,15 +1,39 @@
+import toast from 'react-hot-toast'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import type { OnboardingPath } from '@src/lib/onboardingPaths'
+import { ONBOARDING_TOAST_ID } from '@src/lib/constants'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   consumeRememberedOnboardingWorkflowPanes,
+  dismissOnboardingInvite,
   needsToOnboard,
   shouldApplyRememberedOnboardingWorkflow,
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
-import { expect, describe, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/toast', () => ({
+  waitForToastAnimationEnd: vi.fn(
+    async (_elementId: string, cb: () => void) => {
+      cb()
+    }
+  ),
+}))
+
+vi.mock('react-hot-toast', () => ({
+  default: {
+    dismiss: vi.fn(),
+    success: vi.fn(),
+  },
+}))
 
 describe('Onboarding utility functions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    consumeRememberedOnboardingWorkflowPanes()
+  })
+
   describe('useAdjacentOnboardingSteps', () => {
     it('Desktop beginning', () => {
       const stepResults = useAdjacentOnboardingSteps('/desktop', 'desktop')
@@ -87,6 +111,27 @@ describe('Onboarding utility functions', () => {
     it('returns null when no workflow was selected', () => {
       consumeRememberedOnboardingWorkflowPanes()
       expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
+    })
+
+    it('remembers the selected workflow panes when dismissing the browser invite', () => {
+      const settingsActor = {
+        send: vi.fn(),
+      } as any
+
+      dismissOnboardingInvite(settingsActor, {
+        workflowPreference: 'ai',
+        showSuccessToast: false,
+      })
+
+      expect(settingsActor.send).toHaveBeenCalledWith({
+        type: 'set.app.onboardingStatus',
+        data: { level: 'user', value: 'dismissed' },
+      })
+      expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
+        DefaultLayoutPaneID.TTC,
+      ])
+      expect(toast.dismiss).toHaveBeenCalledWith(ONBOARDING_TOAST_ID)
+      expect(toast.success).not.toHaveBeenCalled()
     })
   })
 
