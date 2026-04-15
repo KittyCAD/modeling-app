@@ -1,0 +1,36 @@
+// Spring for coilover assembly
+// Helical spring captured between the upper and lower coilover seats.
+
+import springRadius, springLength, springRevolutions, coilThickness from "parameters.kcl"
+
+export fn buildCoiloverSpring() {
+  springPath = helix(
+    axis = Z,
+    radius = springRadius,
+    length = springLength,
+    revolutions = springRevolutions,
+    angleStart = 360,
+    ccw = false,
+  )
+
+  springProfile = sketch(on = XZ) {
+    radiusGuide = line(start = [var 22mm, var 0mm], end = [var 25mm, var 0mm], construction = true)
+    circle1 = circle(start = [var 25mm, var 0mm], center = [var 22mm, var 0mm])
+
+    coincident([radiusGuide.start, circle1.center])
+    coincident([radiusGuide.end, circle1.start])
+    horizontal(radiusGuide)
+
+    horizontalDistance([ORIGIN, radiusGuide.start]) == springRadius
+    verticalDistance([ORIGIN, radiusGuide.start]) == 0mm
+    horizontalDistance([radiusGuide.start, radiusGuide.end]) == coilThickness / 2
+  }
+  region001 = region(segments = [springProfile.circle1])
+  springBody = sweep(region001, path = springPath)
+    |> appearance(color = "#d78109", roughness = 90, metalness = 50)
+
+  hide(springProfile)
+
+  springAssembly = springBody
+  return springAssembly
+}
