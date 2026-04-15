@@ -10,7 +10,7 @@
 /// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
 /// with type `any`, then it can accept any value.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// fn acceptAnything(@input: any) {
 ///   return true
 /// }
@@ -60,7 +60,7 @@ export type bool
 ///
 /// Strings may be delimited using either single or double quotes.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// "hello,"
 /// 'world!'
 /// ```
@@ -74,7 +74,7 @@ export type string
 /// The syntax for declaring a tag is `$myTag`. You would use it in the following
 /// way:
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// startSketchOn(XZ)
 ///   |> startProfile(at = origin)
 ///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
@@ -99,7 +99,7 @@ export type string
 ///
 /// However if the code was written like this:
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -129,7 +129,7 @@ export type string
 /// Tags are accessible through the sketch group they are declared in.
 /// For example the following code works.
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -207,7 +207,7 @@ export type fn
 /// e.g., `-XY`.
 /// - you can define an entirely custom plane, e.g.,
 ///
-/// ```kcl,inline,norun
+/// ```kcl,inline,norun,sketchSyntaxAgnostic
 /// myXY = {
 ///   origin = { x = 0, y = 0, z = 0 },
 ///   xAxis = { x = 1, y = 0, z = 0 },
@@ -231,7 +231,7 @@ export type Segment
 ///
 /// When you define a sketch to a variable like:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// mySketch = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
@@ -248,7 +248,7 @@ export type Segment
 /// If you would like to encapsulate the commands to create the sketch any time you call it,
 /// you can use a function.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// fn createSketch() {
 ///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
@@ -275,7 +275,7 @@ export type Sketch
 ///
 /// When you define a solid to a variable like:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// myPart = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
@@ -293,7 +293,7 @@ export type Sketch
 /// If you would like to encapsulate the commands to create the solid any time you call it,
 /// you can use a function.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// fn createPart() {
 ///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
@@ -353,7 +353,7 @@ export type Point3d = [number(Length); 3]
 ///
 /// The 2D version of the X axis could be defined like:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,sketchSyntaxAgnostic
 /// xAxis2d = {
 ///   origin = [0, 0],
 ///   direction = [1, 0],
@@ -372,7 +372,7 @@ export type Axis2d
 ///
 /// The 3D X axis is defined similar to the following:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,sketchSyntaxAgnostic
 /// xAxis = {
 ///   origin = [0, 0, 0],
 ///   direction = [1, 0, 0],

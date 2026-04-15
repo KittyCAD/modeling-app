@@ -75,6 +75,12 @@ impl Artifact {
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => {
                 let mut ids = vec![a.plane_id];
+                if let Some(sketch_block_id) = a.sketch_block_id {
+                    ids.push(sketch_block_id);
+                }
+                if let Some(origin_path_id) = a.origin_path_id {
+                    ids.push(origin_path_id);
+                }
                 if let Some(inner_path_id) = a.inner_path_id {
                     ids.push(inner_path_id);
                 }
@@ -130,7 +136,8 @@ impl Artifact {
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
                 // Note: Don't include these since they're parents: plane_id,
-                // inner_path_id, outer_path_id.
+                // sketch_block_id, origin_path_id, inner_path_id,
+                // outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -180,9 +187,13 @@ impl Artifact {
                 // Note: Don't include these since they're parents: plane_id.
                 Vec::new()
             }
-            Artifact::SketchBlock { .. } => {
-                // Note: Don't include these since they're parents: plane_id (if present).
-                Vec::new()
+            Artifact::SketchBlock(a) => {
+                // Note: Don't include these since they're parents: plane_id.
+                let mut ids = Vec::new();
+                if let Some(path_id) = a.path_id {
+                    ids.push(path_id);
+                }
+                ids
             }
             Artifact::SketchBlockConstraint { .. } => {
                 // Note: Constraints don't have artifact graph parents.
@@ -743,6 +754,8 @@ fn create_region_creates_region_path_sub_type() {
             solid2d_id: None,
             code_ref: source_code_ref,
             composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
             inner_path_id: None,
             outer_path_id: None,
         }),
@@ -785,6 +798,10 @@ fn create_region_creates_region_path_sub_type() {
     assert_eq!(region_path.id, ArtifactId::new(cmd_id));
     assert_eq!(region_path.sub_type, PathSubType::Region);
     assert_eq!(region_path.plane_id, origin_plane_id);
+    // A region path isn't created from a sketch block directly.
+    assert_eq!(region_path.sketch_block_id, None);
+    // It links back to the origin sketch path.
+    assert_eq!(region_path.origin_path_id, Some(origin_path_id));
 }
 
 #[test]

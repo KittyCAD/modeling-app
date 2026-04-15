@@ -460,6 +460,11 @@ impl ExecState {
         self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
+        self.mod_local.artifacts.artifacts.get_mut(&id)
+    }
+
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
         self.mod_local.artifacts.operations.push(op);

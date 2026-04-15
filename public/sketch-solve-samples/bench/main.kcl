@@ -16,16 +16,6 @@ seatAndBackPlaneOffset = -benchLength / 2 - (dividerThickness / 2)
 rightArmRestOffset = benchLength / 2
 rightArmRestProfileOffset = -rightArmRestOffset
 
-dividerArc2Radius = 12.856912537619596mm
-dividerArc3Radius = 8.20424280479314mm
-dividerArc4Radius = 29.202893692235364mm
-dividerArc8Radius = 11.532965793758343mm
-dividerArc12Radius = 18.147928256415387mm
-dividerArc13Radius = 25.875780181474724mm
-dividerArc16Radius = 3.442237644323821mm
-dividerArc19Radius = 3.1105787242890988mm
-dividerArc20Radius = 444.0897644620961mm
-
 // Create the dividers, these hold the seat and back slats
 dividerProfile = sketch(on = YZ) {
   line1 = line(start = [var -16.82mm, var 21.2mm], end = [var -16.95mm, var 19.93mm])
@@ -117,15 +107,15 @@ dividerProfile = sketch(on = YZ) {
   horizontalDistance([line18.end, line18.start]) == 3.74mm
   verticalDistance([line18.end, line18.start]) == 26.54mm
 
-  radius(arc2) == dividerArc2Radius
-  radius(arc3) == dividerArc3Radius
-  radius(arc4) == dividerArc4Radius
-  radius(arc8) == dividerArc8Radius
-  radius(arc12) == dividerArc12Radius
-  radius(arc13) == dividerArc13Radius
-  radius(arc16) == dividerArc16Radius
-  radius(arc19) == dividerArc19Radius
-  radius(arc20) == dividerArc20Radius
+  radius(arc2) == 12.85mm
+  radius(arc3) == 8.20mm
+  radius(arc4) == 29.20mm
+  radius(arc8) == 11.53mm
+  radius(arc12) == 18.15mm
+  radius(arc13) == 25.88mm
+  radius(arc16) == 3.44mm
+  radius(arc19) == 3.11mm
+  radius(arc20) == 444mm
 
   horizontalDistance([line1.start, ORIGIN]) == 16.82mm
   verticalDistance([ORIGIN, line1.start]) == 21.2mm

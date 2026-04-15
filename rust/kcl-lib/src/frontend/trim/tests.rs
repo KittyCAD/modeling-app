@@ -1269,8 +1269,6 @@ async fn test_execute_trim_flow_infrastructure() {
     // Simple test to verify the infrastructure works
     // This is a minimal test that just verifies we can parse KCL and set up the frontend
     let kcl_code = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
@@ -1310,9 +1308,7 @@ sketch(on = YZ) {
 async fn test_trim_line2_left_side() {
     // This test mirrors: "Case 1: trim line2 from [-2, -2] to [-2, 2] - should trim left side (start)"
     // from the TypeScript test file
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
@@ -1320,9 +1316,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line2.end, line1])
@@ -1335,9 +1329,7 @@ sketch(on = YZ) {
 async fn test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment() {
     // This test mirrors: "Case 1: trim line2 from [-2, -2] to [-2, 2] - should trim left side (start)"
     // from the TypeScript test file
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
   line2 = line(start = [var -5.1mm, var 0.75mm], end = [var 4.01mm, var 0.68mm])
   line3 = line(start = [var 4.26mm, var -3.44mm], end = [var 4.33mm, var 3.61mm])
@@ -1350,9 +1342,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.18, y: 4.92 }, Coords2d { x: -4.23, y: -5.15 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
   line3 = line(start = [var 4.03mm, var -3.44mm], end = [var 4mm, var 3.61mm])
@@ -1368,9 +1358,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_line2_right_side() {
     // Case 2: trim line2 from [2, -2] to [2, 2] - should trim right side (end)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
@@ -1378,9 +1366,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var -5mm, var 0mm])
   coincident([line2.start, line1])
@@ -1393,9 +1379,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_line1_bottom() {
     // Case 3: trim line1 from [-2, 2] to [2, 2] - should trim bottom (end)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
@@ -1403,9 +1387,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
   coincident([line1.start, line2])
@@ -1418,9 +1400,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_line1_top() {
     // Case 4: trim line1 from [-2, -2] to [2, -2] - should trim top (start)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
@@ -1428,9 +1408,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
   coincident([line1.end, line2])
@@ -1443,9 +1421,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_arc2_left_side() {
     // Case 1: trim arc2 from [-2, -2] to [-2, 2] - should trim left side (start)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
@@ -1453,9 +1429,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   coincident([arc2.end, arc1])
@@ -1468,9 +1442,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_arc2_right_side() {
     // Case 2: trim arc2 from [2, -2] to [2, 2] - should trim right side (end)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
@@ -1478,9 +1450,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   coincident([arc2.start, arc1])
@@ -1493,9 +1463,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_arc1_bottom() {
     // Case 3: trim arc1 from [-2, 2] to [2, 2] - should trim bottom (end)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
@@ -1503,9 +1471,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   coincident([arc1.start, arc2])
@@ -1518,9 +1484,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_arc1_top() {
     // Case 4: trim arc1 from [-2, -2] to [2, -2] - should trim top (start)
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
@@ -1528,9 +1492,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   coincident([arc1.end, arc2])
@@ -1543,9 +1505,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_delete_both_segments() {
     // should delete both segments when a single section of the trim line intersects two segments
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line2 = line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
   line1 = line(start = [var -4mm, var 3mm], end = [var -4mm, var -3mm])
 }
@@ -1553,9 +1513,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -5.0, y: 1.0 }, Coords2d { x: 5.0, y: 1.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
 }
 "#;
 
@@ -1565,9 +1523,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_remove_coincident_point_from_segment_end() {
     // Should remove coincident point from the end of a segment's end that is being trimmed
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
   line2 = line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
   coincident([line1.end, line2.start])
@@ -1579,9 +1535,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
   line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
   line3 = line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
@@ -1598,7 +1552,7 @@ sketch(on = YZ) {
 /// Trim line should produce equivalent trimmed sketches regardless of sketch default unit.
 #[tokio::test]
 async fn test_trim_should_work_with_different_units() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    let base_kcl_code = r#"@settings(defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
@@ -1609,7 +1563,7 @@ sketch(on = YZ) {
     let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
 
     // Expected: trim line at -15mm trims line2 to the intersection with line1 at -10mm.
-    let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    let expected_code = r#"@settings(defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
@@ -1620,7 +1574,7 @@ sketch(on = YZ) {
 
     assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
 
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
+    let base_kcl_code = r#"@settings(defaultLengthUnit = cm)
 
 sketch(on = YZ) {
   line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
@@ -1631,7 +1585,7 @@ sketch(on = YZ) {
     // Same physical trim line as mm case, still provided in mm.
     let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
+    let expected_code = r#"@settings(defaultLengthUnit = cm)
 
 sketch(on = YZ) {
   line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
@@ -1647,9 +1601,7 @@ sketch(on = YZ) {
 async fn test_split_trim_with_point_line_coincident_constraint() {
     // split trim where the end of the trimmed segment has a point-line coincident constraint,
     // should move the constraint to the newly created segment
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc9 = arc(start = [var -5.648mm, var 6.909mm], end = [var -6.864mm, var 2.472mm], center = [var -0.293mm, var 3.056mm])
   arc2 = arc(start = [var -7.463mm, var 5.878mm], end = [var -4.365mm, var 6.798mm], center = [var -6.237mm, var 7.425mm])
   line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.845mm, var 3.828mm])
@@ -1662,9 +1614,7 @@ sketch(on = YZ) {
     // Trim line that intersects arc9 at two points to cause a split trim
     let trim_points = vec![Coords2d { x: -5.69, y: 4.67 }, Coords2d { x: -7.65, y: 4.83 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc9 = arc(start = [var -5.65mm, var 6.91mm], end = [var -6.44mm, var 5.46mm], center = [var -0.29mm, var 3.06mm])
   arc2 = arc(start = [var -7.46mm, var 5.88mm], end = [var -4.36mm, var 6.8mm], center = [var -6.24mm, var 7.42mm])
   line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.84mm, var 3.83mm])
@@ -1682,9 +1632,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_arc_line_trim_replace_point_segment_coincident() {
     // replaces point-segment coincident with point-point when trimming at coincident endpoint
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
   coincident([line1.end, arc1])
@@ -1693,9 +1641,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
   coincident([arc1.start, line1.end])
@@ -1708,9 +1654,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_trim_line_trimmed_between_two_intersections() {
     // splits line1 into two segments when trimmed between two intersections
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
   line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
   arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
@@ -1719,9 +1663,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 2.0 }, Coords2d { x: 0.0, y: -2.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
   line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
   arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
@@ -1737,9 +1679,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_lines_with_point_segment_coincident_points() {
     // another edge case involving split lines and point-segment coincident points
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.301mm])
   line2 = line(start = [var -6.13mm, var 1.67mm], end = [var 4.25mm, var 5.351mm])
   arc4 = arc(start = [var 3.09mm, var 4.939mm], end = [var 2.691mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
@@ -1751,9 +1691,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 6.0 }, Coords2d { x: -1.1, y: 1.6 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.3mm])
   line2 = line(start = [var -6.13mm, var 1.67mm], end = [var -3.01mm, var 2.78mm])
   arc4 = arc(start = [var 3.09mm, var 4.94mm], end = [var 2.69mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
@@ -1771,9 +1709,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_arc_with_point_segment_coincident_constraints() {
     // Can split arc with point-segment coincident constraints
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -1.8mm, var -4.7mm], center = [var 1.8mm, var 1.3mm])
   arc2 = arc(start = [var -4.6mm, var -1.6mm], end = [var -6.5mm, var -2mm], center = [var -4.4mm, var -8.2mm])
   line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.1mm, var 2.3mm])
@@ -1789,9 +1725,7 @@ sketch(on = YZ) {
         vec![Coords2d { x: -3.77, y: 0.5 }, Coords2d { x: -6.11, y: 0.37 }],
     ];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
   arc2 = arc(start = [var -4.59mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
   line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
@@ -1811,9 +1745,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_arc_with_point_segment_coincident_on_one_side_and_intersection_on_other() {
     // split arc with point-segment coincident on one side and intersection on the other
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc2 = arc(start = [var 2.541mm, var -5.65mm], end = [var 1.979mm, var 6.83mm], center = [var -7.28mm, var 0.161mm])
   arc1 = arc(start = [var 5.69mm, var 4.559mm], end = [var -4.011mm, var -3.04mm], center = [var 5.1mm, var -4.678mm])
   line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
@@ -1824,9 +1756,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -0.4, y: 4.4 }, Coords2d { x: 1.3, y: 2.4 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc2 = arc(start = [var 2.54mm, var -5.65mm], end = [var 1.98mm, var 6.83mm], center = [var -7.28mm, var 0.16mm])
   arc1 = arc(start = [var 5.69mm, var 4.56mm], end = [var 3.31mm, var 4.4mm], center = [var 5.1mm, var -4.68mm])
   line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
@@ -1843,9 +1773,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_straight_segments_migrate_constraints() {
     // split straight segments should migrate other constraints correctly
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
   startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
   startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
@@ -1874,9 +1802,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 4.0 }, Coords2d { x: 0.0, y: -4.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var -2mm, var 0mm])
   startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
   startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
@@ -1918,9 +1844,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trim_with_distance_constraints_preserve_constraints() {
     // trim with distance constraints should preserve constraints correctly
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
   simpleDeleteLineDisConstraintDeletedAsWell = line(start = [var -3mm, var 5mm], end = [var 3.5mm, var 4.5mm])
   coincident([
@@ -1991,9 +1915,7 @@ sketch(on = YZ) {
         Coords2d { x: 0.14, y: -4.8 },
     ];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
   line4 = line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
   endTrimmedShouldDeleteDisConstraint = line(start = [var -3.5mm, var 2mm], end = [var -2.33mm, var 2mm])
@@ -2043,9 +1965,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_trim_migrate_angle_constraints() {
     // split trim should migrate angle constraints to new segment
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -2.01mm, var 6.12mm], end = [var 0.23mm, var 4.55mm])
   line2 = line(start = [var -4.15mm, var -0mm], end = [var 0.79mm, var -3.47mm])
   parallel([line1, line2])
@@ -2060,9 +1980,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -1.75, y: -0.56 }, Coords2d { x: -1.75, y: -2.93 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -2.05mm, var 6.06mm], end = [var 0.27mm, var 4.61mm])
   line2 = line(start = [var -4.18mm, var -0.05mm], end = [var -3.02mm, var -0.78mm])
   parallel([line1, line2])
@@ -2085,9 +2003,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_trim_migrate_horizontal_constraint() {
     // split trim should migrate horizontal constraint to new segment
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.64mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2097,9 +2013,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2117,9 +2031,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_trim_migrate_vertical_constraint() {
     // split trim should migrate vertical constraint to new segment
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var -2.66mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2129,9 +2041,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2149,9 +2059,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_trim_migrate_perpendicular_constraint() {
     // split trim should migrate perpendicular constraint to new segment
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line4 = line(start = [var -0.91mm, var 5.79mm], end = [var 1.86mm, var 7.22mm])
   line1 = line(start = [var -1.97mm, var 3.24mm], end = [var 0.55mm, var -2.31mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
@@ -2162,9 +2070,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.95, y: 1.67 }, Coords2d { x: -2.3, y: -0.08 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line4 = line(start = [var -0.92mm, var 5.82mm], end = [var 1.87mm, var 7.19mm])
   line1 = line(start = [var -2mm, var 3.22mm], end = [var -1.22mm, var 1.64mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
@@ -2183,9 +2089,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_split_arc_duplicate_center_point_constraints() {
     // split arc should duplicate center point constraints to new arc
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arcToSplit = arc(start = [var 10.5mm, var 1mm], end = [var -10.5mm, var 0.5mm], center = [var 0.5mm, var -8.5mm])
   line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
   line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
@@ -2206,9 +2110,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -1.66, y: 7.54 }, Coords2d { x: -1.81, y: 2.11 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arcToSplit = arc(start = [var 11.07mm, var 1.06mm], end = [var 3.54mm, var 5.27mm], center = [var 0.67mm, var -8.71mm])
   line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
   line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
@@ -2242,9 +2144,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_trimming_arcs_preserve_distance_constraints() {
     // Trimming arcs should preserve distance constraints that reference other segments
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0.87mm, var 2.9mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
   line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
   line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
@@ -2263,9 +2163,7 @@ sketch(on = YZ) {
         Coords2d { x: -1.57, y: 1.03 },
     ];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
   line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
   line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
@@ -2285,9 +2183,7 @@ sketch(on = YZ) {
 #[tokio::test]
 async fn test_stress_complex_trim_line_through_many_segments() {
     // stress test: complex trim line through many segments
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
   line2 = line(start = [var 4.84mm, var 6.49mm], end = [var -3.92mm, var 2.05mm])
   coincident([line1.end, line2.start])
@@ -2613,9 +2509,7 @@ async fn test_trim_through_segment_invalidates_ids() {
     // Test that trimming through a segment (which causes deletion) sets invalidates_ids to true
     // This is a regression test for the bug where segments disappear but points remain
     // due to ID mismatches when invalidates_ids is not properly propagated
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   arc3 = arc(start = [var 1.67mm, var 5.51mm], end = [var 5.77mm, var 1.36mm], center = [var 5.3mm, var 4.99mm])
   arc(start = [var 2.35mm, var 4.27mm], end = [var 0.44mm, var 4.55mm], center = [var 1.19mm, var 3.04mm])
   arc2 = arc(start = [var 6.49mm, var 5.09mm], end = [var 5.77mm, var 1.36mm], center = [var 7.56mm, var 2.95mm])
@@ -2777,9 +2671,7 @@ mod get_trim_spawn_terminations_tests {
 
     #[tokio::test]
     async fn test_line_segment_intersection_terminations() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.05mm, var 2.44mm], end = [var 2.88mm, var 2.81mm])
   line2 = line(start = [var -2.77mm, var 1mm], end = [var -1.91mm, var 4.06mm])
   arc1 = arc(start = [var 2.4mm, var 4.48mm], end = [var 3.4mm, var 5.41mm], center = [var 3.99mm, var 3.07mm])
@@ -2824,9 +2716,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_line_segment_intersection_with_circle_termination() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+        let kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
 }
@@ -2866,9 +2756,7 @@ sketch001 = sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_line_segment_seg_endpoint_with_coincident_constraints() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
   line2 = line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
   arc1 = arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
@@ -2911,9 +2799,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_line_segment_coincident_with_another_segment_point() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
   line2 = line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
   arc1 = arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
@@ -2970,9 +2856,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_line_segment_seg_endpoint_without_coincident_constraint() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.24mm, var 2.46mm], end = [var 2.6mm, var 2.9mm])
   line2 = line(start = [var -2.38mm, var 2.47mm], end = [var -3.94mm, var -0.64mm])
   arc1 = arc(start = [var 2.239mm, var 5.641mm], end = [var 1.651mm, var 2.85mm], center = [var 3.6mm, var 3.889mm])
@@ -3013,9 +2897,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_arc_segment_intersection_terminations() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
   arc(start = [var -0.072mm, var 4.051mm], end = [var -0.128mm, var -0.439mm], center = [var 5.32mm, var 1.738mm])
   line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
@@ -3060,9 +2942,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_arc_segment_seg_endpoint_with_coincident_constraints() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
   arc2 = arc(start = [var -0.07mm, var 4.05mm], end = [var -0.13mm, var -0.44mm], center = [var 5.32mm, var 1.74mm])
   line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
@@ -3105,9 +2985,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_arc_segment_coincident_with_another_segment_point() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
   arc2 = arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
   line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
@@ -3164,9 +3042,7 @@ sketch(on = YZ) {
 
     #[tokio::test]
     async fn test_arc_segment_seg_endpoint_without_coincident_constraint() {
-        let kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+        let kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
   arc2 = arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
   line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
@@ -3208,9 +3084,7 @@ sketch(on = YZ) {
 
 #[tokio::test]
 async fn point_on_arc_coincident_should_not_effect_initial_guesses() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
+    let base_kcl_code = r#"sketch(on = XY) {
   line3 = line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
   line4 = line(start = [var 1.06mm, var -3.26mm], end = [var -6.71mm, var -2.8mm])
   coincident([line3.end, line4.start])
@@ -3222,9 +3096,7 @@ sketch(on = XY) {
 
     let trim_points = vec![Coords2d { x: -0.29, y: -1.91 }, Coords2d { x: -0.34, y: -4.42 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
+    let expected_code = r#"sketch(on = XY) {
   line3 = line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
   line4 = line(start = [var -2.31mm, var -3.06mm], end = [var -6.71mm, var -2.8mm])
   arc1 = arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
@@ -3242,9 +3114,7 @@ sketch(on = XY) {
 /// trims a circle into an arc when cut in half by a line and trimmed on the side
 /// without the circle start point.
 async fn test_trim_circle_case_1_1_circle_to_arc_trimmed_without_start_point_side() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
 }
@@ -3252,9 +3122,7 @@ sketch001 = sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.21, y: 2.24 }, Coords2d { x: -1.23, y: 1.12 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let expected_code = r#"sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
   arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
   coincident([arc1.start, line1])
@@ -3270,9 +3138,7 @@ sketch001 = sketch(on = YZ) {
 /// trims a circle into an arc when cut in half by a line and trimmed on the side
 /// with the circle start point.
 async fn test_trim_circle_case_1_2_circle_to_arc_trimmed_with_start_point_side() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
 }
@@ -3280,9 +3146,7 @@ sketch001 = sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.86 }, Coords2d { x: -2.53, y: 1.1 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let expected_code = r#"sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
   arc1 = arc(start = [var -2.88mm, var 0.05mm], end = [var -1.04mm, var 2.23mm], center = [var -1.53mm, var 0.78mm])
   coincident([arc1.start, line1])
@@ -3297,9 +3161,7 @@ sketch001 = sketch(on = YZ) {
 /// Issue #10732 case 1.3:
 /// trims the line so its endpoint becomes coincident with the circle.
 async fn test_trim_circle_case_1_3_trim_line_to_be_coincident_with_circle() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
 }
@@ -3307,9 +3169,7 @@ sketch001 = sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -1.24, y: 2.78 }, Coords2d { x: -0.5, y: 2.3 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let expected_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
   coincident([line1.start, circle1])
@@ -3324,9 +3184,7 @@ sketch001 = sketch(on = YZ) {
 /// trims a line and circle such that the circle becomes an arc with coincident
 /// endpoints.
 async fn test_trim_circle_case_1_4_trim_line_and_circle_arc_with_coincident_endpoints() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
 }
@@ -3338,9 +3196,7 @@ sketch001 = sketch(on = YZ) {
         Coords2d { x: -0.4, y: 0.57 },
     ];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let expected_code = r#"sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
   arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
   coincident([arc1.start, line1.start])
@@ -3356,9 +3212,7 @@ sketch001 = sketch(on = YZ) {
 /// trimming a circle between two segments should convert it to one arc rather
 /// than split into multiple segments, with arc ends constrained to each segment.
 async fn test_trim_circle_case_2_convert_circle_to_arc_between_two_segments() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -0.75mm, var 2.93mm], end = [var -2.97mm, var -1.17mm])
   line2 = line(start = [var -0.1mm, var 2.46mm], end = [var -0.67mm, var 0.97mm])
@@ -3367,9 +3221,7 @@ sketch001 = sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -0.44, y: 2.72 }, Coords2d { x: -0.99, y: 1.38 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let expected_code = r#"sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -0.75mm, var 2.93mm], end = [var -2.97mm, var -1.17mm])
   line2 = line(start = [var -0.1mm, var 2.46mm], end = [var -0.67mm, var 0.97mm])
   arc1 = arc(start = [var -1.12mm, var 2.25mm], end = [var -0.36mm, var 1.77mm], center = [var -1.53mm, var 0.78mm])
@@ -3385,9 +3237,7 @@ sketch001 = sketch(on = YZ) {
 /// Issue #10732 comment case 3 variant A:
 /// trimming through a standalone circle should delete the circle.
 async fn test_trim_circle_case_3a_delete_standalone_circle() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -3.73mm, var 2.21mm], center = [var -2.22mm, var 0.63mm])
 }
 "#;
@@ -3416,9 +3266,7 @@ sketch001 = sketch(on = YZ) {
 /// Issue #10732 comment case 3 variant B:
 /// trimming through a circle in a circle+line sketch should delete only the circle.
 async fn test_trim_circle_case_3b_delete_circle_keep_line() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -3.73mm, var 2.21mm], center = [var -2.22mm, var 0.63mm])
   line1 = line(start = [var 0.01mm, var 3.31mm], end = [var -0.95mm, var 0.92mm])
 }
@@ -3454,9 +3302,7 @@ sketch001 = sketch(on = YZ) {
 /// trimming one of two intersecting circles should convert the trimmed circle to an arc
 /// with coincident constraints at both circle-circle intersections.
 async fn test_trim_circle_case_4_circle_circle_intersections_convert_to_arc() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -0.35mm, var 0.6mm], center = [var -1.13mm, var 0.57mm])
   circle2 = circle(start = [var -0.83mm, var 0.93mm], center = [var -0.16mm, var 1.56mm])
 }
@@ -3497,9 +3343,7 @@ sketch001 = sketch(on = YZ) {
 /// Regression: when a circle is converted to an arc during trim, pre-existing
 /// constraints should transfer from the circle to the new arc.
 async fn test_trim_circle_to_arc_transfers_constraints() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   circle1 = circle(start = [var -1.62mm, var 3.03mm], center = [var -3.29mm, var 5.8mm])
   line1 = line(start = [var -0.35mm, var 2.72mm], end = [var -0.69mm, var -1.58mm])
   line2 = line(start = [var -5.11mm, var 1.19mm], end = [var 0.52mm, var 9.59mm])
@@ -3560,9 +3404,7 @@ sketch(on = YZ) {
 /// Regression: three intersecting arcs should trim deterministically and preserve
 /// expected coincident relationships.
 async fn test_trim_three_arcs_intersecting_each_other() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch002 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch002 = sketch(on = YZ) {
   arc1 = arc(start = [var -0mm, var -0mm], end = [var -3.77mm, var 4.2mm], center = [var -1.93mm, var 2.06mm])
   arc2 = arc(start = [var 3.58mm, var 7.01mm], end = [var -0mm, var -0mm], center = [var 4.54mm, var 2.1mm])
   coincident([arc2.end, arc1.start])
@@ -3694,9 +3536,7 @@ sketch002 = sketch(on = YZ) {
 /// Regression: arc/arc trim should update arc2 start and create a point-segment
 /// coincident from arc2.start to arc1 while preserving existing arc relationships.
 async fn test_trim_arc_arc_intersection_updates_start_and_preserves_constraints() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let base_kcl_code = r#"sketch001 = sketch(on = YZ) {
   arc1 = arc(start = [var -2.27mm, var 1.02mm], end = [var -5.86mm, var 3.53mm], center = [var -3.85mm, var 2.58mm])
   arc2 = arc(start = [var 0.84mm, var 5.87mm], end = [var -2.27mm, var 1.02mm], center = [var 0.92mm, var 2.4mm])
   coincident([arc2.end, arc1.start])
