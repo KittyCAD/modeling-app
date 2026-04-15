@@ -7,4 +7,7 @@
 import "contra-propeller-hub.kcl" as contraPropellerHub
 import "contra-propeller-blades.kcl" as contraPropellerBlades
 
-contraPropellerAssembly = [contraPropellerHub, contraPropellerBlades]
+contraPropellerAssembly = [
+  contraPropellerHub,
+  contraPropellerBlades
+]

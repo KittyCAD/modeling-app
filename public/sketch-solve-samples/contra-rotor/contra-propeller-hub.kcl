@@ -74,7 +74,7 @@ toothSketch = sketch(on = XZ) {
 
 toothRegion = region(segments = [toothSketch.line1])
 toothBody = extrude(toothRegion, length = hubThickness * 1.1, symmetric = true)
-  |> rotate(axis=Y, angle=toothAngleDeg)
+  |> rotate(axis = Y, angle = toothAngleDeg)
 hiddenToothSketch = hide(toothSketch)
 
 teethTools = patternCircular3d(

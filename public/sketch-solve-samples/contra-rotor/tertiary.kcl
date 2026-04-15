@@ -34,10 +34,7 @@ revolve001 = revolve(region001, angle = 360deg, axis = X)
   |> translate(x = 279, y = -100, z = -211)
 hidden001 = hide(sketch001)
 
-
 // Insert a gear on the shaft
 helicalGear(nTeeth = 14, helixAngle = 25deg, bore = 100)
   |> translate(x = 279, y = -200, z = -211)
   |> rotate(pitch = 10)
-
-

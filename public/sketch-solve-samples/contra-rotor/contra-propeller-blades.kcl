@@ -57,27 +57,29 @@ bladeWithHubCutOut = subtract([bladeRevolve], tools = [hubBody])
 
 // Todo: Uncomment after the engine fix
 
+
 // Blade section and twist
 // bladeSectionSketch = sketch(on = YZ) {
-//   arc2 = arc(start = [var 250mm, var 0mm], end = [var -250mm, var 0mm], center = [var 0mm, var -1984.31mm])
-//   arc1 = arc(start = [var -250mm, var 0mm], end = [var 250mm, var 0mm], center = [var 0mm, var 1984.31mm])
-//   coincident([arc1.start, arc2.end])
-//   coincident([arc1.end, arc2.start])
-//   equalRadius([arc2, arc1])
-//   radius(arc2) == 2000
-//   horizontalDistance([arc1.start, ORIGIN]) == bladeDiameter / 10
-//   line1 = line(start = [var -250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
-//   coincident([line1.start, arc1.start])
-//   coincident([line1.end, ORIGIN])
-//   line2 = line(start = [var 250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
-//   coincident([line2.start, arc1.end])
-//   coincident([line2.end, line1.end])
-//   horizontal(line1)
-//   horizontal(line2)
-//   equalLength([line2, line1])
+// arc2 = arc(start = [var 250mm, var 0mm], end = [var -250mm, var 0mm], center = [var 0mm, var -1984.31mm])
+// arc1 = arc(start = [var -250mm, var 0mm], end = [var 250mm, var 0mm], center = [var 0mm, var 1984.31mm])
+// coincident([arc1.start, arc2.end])
+// coincident([arc1.end, arc2.start])
+// equalRadius([arc2, arc1])
+// radius(arc2) == 2000
+// horizontalDistance([arc1.start, ORIGIN]) == bladeDiameter / 10
+// line1 = line(start = [var -250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+// coincident([line1.start, arc1.start])
+// coincident([line1.end, ORIGIN])
+// line2 = line(start = [var 250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+// coincident([line2.start, arc1.end])
+// coincident([line2.end, line1.end])
+// horizontal(line1)
+// horizontal(line2)
+// equalLength([line2, line1])
 // }
 // bladeSectionRegion = region(segments = [bladeSectionSketch.arc1])
 // hide(bladeSectionSketch)
+
 
 // bladeTwistTool = extrude(bladeSectionRegion, length = bladeDiameter / 1.9, twistAngle = bladeTwistAngle)
 
@@ -85,7 +87,7 @@ bladeWithHubCutOut = subtract([bladeRevolve], tools = [hubBody])
 // Blade Body
 // blade = intersect([bladeWithHubCutOut, bladeTwistTool]) // engine bug
 
+
 // Blades pattern
 // |> patternCircular3d(instances = bladeCount, axis = Y, center = [0, 0, 0])
 // |> appearance(color = "#e88811", metalness = 10, roughness = 80)
-
