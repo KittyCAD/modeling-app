@@ -556,8 +556,8 @@ impl Node<Program> {
         // The position must be within the variable declaration.
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
-                crate::walk::Node::CallExpressionKw(call) => {
-                    if call.inner.callee.inner.name.inner.name == "appearance" {
+                crate::walk::Node::CallExpressionKw(call)
+                    if call.inner.callee.inner.name.inner.name == "appearance" => {
                         for arg in &call.arguments {
                             if let Some(l) = &arg.label
                                 && l.inner.name == "color"
@@ -569,7 +569,6 @@ impl Node<Program> {
                             }
                         }
                     }
-                }
                 crate::walk::Node::Literal(literal) => {
                     // Check if the literal is a color.
                     add_color(literal);
@@ -596,16 +595,15 @@ impl Node<Program> {
         // Find the literal with the same start and end.
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
-                crate::walk::Node::Literal(literal) => {
+                crate::walk::Node::Literal(literal)
                     // Account for the quotes in the literal.
                     if (literal.start + 1) == pos_start
                         && (literal.end - 1) == pos_end
                         && literal.value.is_color().is_some()
-                    {
+                    => {
                         found.replace(true);
                         return Ok(true);
                     }
-                }
                 _ => {
                     // Do nothing.
                 }
