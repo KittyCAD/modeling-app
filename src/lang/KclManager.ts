@@ -551,6 +551,7 @@ export class ZDSProject {
 
 const PERSIST_CODE_KEY = 'persistCode'
 const RECOVERY_SNAPSHOT_VERSION = 1
+const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 
@@ -871,9 +872,16 @@ export class KclManager extends File {
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
+    undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   private _lastKnownFileCode = ''
+  private pendingRecoverySnapshot: {
+    path: string
+    code: string
+    diskCode: string
+  } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -1522,6 +1530,7 @@ export class KclManager extends File {
     }
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
+    providedEditor.flushRecoverySnapshot()
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1599,6 +1608,7 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    this.flushRecoverySnapshot()
     this.unwatch()
   }
 
@@ -1617,15 +1627,34 @@ export class KclManager extends File {
     }
 
     if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
+      this.pendingRecoverySnapshot = null
+      clearTimeout(this.timeoutRecoverySnapshot)
+      this.timeoutRecoverySnapshot = undefined
       clearRecoverySnapshot(this.path)
       return
     }
 
-    writeRecoverySnapshot({
+    this.pendingRecoverySnapshot = {
       path: this.path,
       code: this.code,
       diskCode: this._lastKnownFileCode,
-    })
+    }
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = setTimeout(() => {
+      this.flushRecoverySnapshot()
+    }, RECOVERY_SNAPSHOT_DEBOUNCE_MS)
+  }
+
+  private flushRecoverySnapshot() {
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = undefined
+
+    if (!this.pendingRecoverySnapshot) {
+      return
+    }
+
+    writeRecoverySnapshot(this.pendingRecoverySnapshot)
+    this.pendingRecoverySnapshot = null
   }
 
   clearAst() {
