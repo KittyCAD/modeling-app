@@ -721,6 +721,7 @@ export function createOnDragCallback({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
+    suppressExecOutcomeIssues?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -851,7 +852,11 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
-        onNewSketchOutcome({ ...result, writeToDisk: false })
+        onNewSketchOutcome({
+          ...result,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        })
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
@@ -1354,6 +1359,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sourceDelta: outcome.kclSource,
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
+            suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
           },
         })
       },
