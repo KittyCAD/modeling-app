@@ -11,6 +11,7 @@ import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -394,6 +395,11 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      welcomeMessage={
+        // Replace this local component with a remote-authored content source
+        // later. `MlEphantConversation` already handles placement and ordering.
+        <MlEphantConversationWelcome />
+      }
       onProcess={(
         request: string,
         mode: MlCopilotMode,
