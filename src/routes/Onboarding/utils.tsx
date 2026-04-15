@@ -71,6 +71,12 @@ const preferredWorkflowPaneMap: Record<
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
   null
 
+export function rememberOnboardingWorkflowPreference(
+  preference: OnboardingWorkflowPreference
+) {
+  rememberedOnboardingWorkflowPreference = preference
+}
+
 export function consumeRememberedOnboardingWorkflowPanes():
   | DefaultLayoutPaneID[]
   | null {
@@ -369,6 +375,20 @@ export function needsToOnboard(
 }
 
 export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
+  dismissOnboardingInvite(settingsActor)
+}
+
+export function dismissOnboardingInvite(
+  settingsActor: SettingsActorType,
+  options: {
+    workflowPreference?: OnboardingWorkflowPreference
+    showSuccessToast?: boolean
+  } = {}
+) {
+  if (options.workflowPreference) {
+    rememberOnboardingWorkflowPreference(options.workflowPreference)
+  }
+
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -376,12 +396,15 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
     toast.dismiss(ONBOARDING_TOAST_ID)
   })
-  toast.success(
-    'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
-    {
-      duration: 5_000,
-    }
-  )
+
+  if (options.showSuccessToast ?? true) {
+    toast.success(
+      'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
+      {
+        duration: 5_000,
+      }
+    )
+  }
 }
 
 interface WorkflowInviteOptionCardProps {
@@ -438,11 +461,11 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { accountUrl: string }
 ) {
-  const { settings } = useApp()
   function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
-    rememberedOnboardingWorkflowPreference = preference
-    acceptOnboarding(props)
-    toast.dismiss(ONBOARDING_TOAST_ID)
+    dismissOnboardingInvite(props.settingsActor, {
+      workflowPreference: preference,
+      showSuccessToast: false,
+    })
   }
 
   return (
@@ -504,7 +527,7 @@ export function TutorialRequestToast(
       <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr] sm:items-center sm:gap-5">
         <ActionButton
           Element="button"
-          onClick={() => onDismissOnboardingInvite(settings.actor)}
+          onClick={() => onDismissOnboardingInvite(props.settingsActor)}
           iconStart={{
             icon: 'close',
             className: 'text-chalkboard-10',
