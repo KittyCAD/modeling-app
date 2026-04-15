@@ -485,11 +485,26 @@ impl SketchApi for FrontendState {
         only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        // Execute in mock mode to ensure state is up to date. The caller will
-        // want freedom analysis to display segments correctly.
-        let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch))
-            .await?;
+        // Execute in mock mode to ensure state is up to date. If cached mock
+        // memory is clearly incompatible for this sketch id, force a cold-start
+        // mock execution instead of attempting to restore stale memory first.
+        let mut mock_config = MockConfig::new_sketch_mode(sketch);
+        #[cfg(feature = "artifact-graph")]
+        if let Some(mem) = read_old_memory().await {
+            let len = sketch.0;
+            let cache_is_compatible = mem.scene_objects.get(0..len).is_some_and(|scene_objects| {
+                scene_objects
+                    .iter()
+                    .enumerate()
+                    .all(|(expected_id, object)| object.id.0 == expected_id)
+            });
+            if !cache_is_compatible {
+                mock_config.use_prev_memory = false;
+            }
+        }
+
+        // The caller wants freedom analysis to display segments correctly.
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
@@ -5333,9 +5348,14 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
+    use crate::EngineManager;
     use crate::engine::PlaneName;
+    use crate::execution::ExecutorSettings;
     use crate::execution::cache::SketchModeState;
+    use crate::execution::cache::bust_cache;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
     use crate::execution::cache::write_old_memory;
@@ -5751,6 +5771,67 @@ bad = missing_name
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_second_sketch_after_exit_matches_e2e_sequence() {
+        bust_cache().await;
+        clear_mem_cache().await;
+
+        let source = "\
+closedSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
+}
+openSketch = sketch(on = XY) {
+  line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
+  line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
+  coincident([line2.end, arc3.end])
+}
+";
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let engine: Arc<Box<dyn EngineManager>> =
+            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap()));
+        let ctx = ExecutorContext::new_with_engine(engine, ExecutorSettings::default());
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        let mut frontend = FrontendState::new();
+        frontend.hack_set_program(&ctx, program.clone()).await.unwrap();
+
+        let sketch_ids = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .filter_map(|obj| matches!(obj.kind, ObjectKind::Sketch(_)).then_some(obj.id))
+            .collect::<Vec<_>>();
+        assert!(sketch_ids.len() >= 2, "expected at least two sketch objects");
+        let closed_sketch_id = sketch_ids[0];
+        let open_sketch_id = sketch_ids[1];
+
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, closed_sketch_id)
+            .await
+            .unwrap();
+
+        frontend.exit_sketch(&ctx, version, closed_sketch_id).await.unwrap();
+
+        // Match the UI path, which calls hack_set_program before each edit.
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, open_sketch_id)
+            .await
+            .unwrap();
+
+        mock_ctx.close().await;
+        ctx.close().await;
+        clear_mem_cache().await;
+        bust_cache().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

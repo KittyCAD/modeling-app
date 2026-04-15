@@ -755,18 +755,22 @@ impl ModuleArtifactState {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
+    pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) -> Result<(), KclError> {
         self.scene_objects = scene_objects.to_vec();
         self.object_id_generator = IncIdGenerator::new(self.scene_objects.len());
         self.source_range_to_object.clear();
         self.artifact_id_to_scene_object.clear();
 
         for (expected_id, object) in self.scene_objects.iter().enumerate() {
-            debug_assert_eq!(
-                object.id.0, expected_id,
-                "Restored cached scene object ID {} does not match its position {}",
-                object.id.0, expected_id
-            );
+            if object.id.0 != expected_id {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    format!(
+                        "Restored cached scene object ID {} does not match its position {}",
+                        object.id.0, expected_id
+                    ),
+                    vec![SourceRange::synthetic()],
+                )));
+            }
 
             match &object.source {
                 crate::front::SourceRef::Simple { range, node_path: _ } => {
@@ -786,6 +790,8 @@ impl ModuleArtifactState {
                 self.artifact_id_to_scene_object.insert(object.artifact_id, object.id);
             }
         }
+
+        Ok(())
     }
 
     #[cfg(not(feature = "artifact-graph"))]
@@ -1072,7 +1078,7 @@ mod tests {
         ];
 
         let mut artifacts = ModuleArtifactState::default();
-        artifacts.restore_scene_objects(&cached_objects);
+        artifacts.restore_scene_objects(&cached_objects).unwrap();
 
         assert_eq!(artifacts.scene_objects, cached_objects);
         assert_eq!(
@@ -1094,5 +1100,34 @@ mod tests {
         );
         // We don't map all the ranges in a backtrace.
         assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1].0), None);
+    }
+
+    #[test]
+    fn restore_scene_objects_rejects_non_dense_ids() {
+        let cached_objects = vec![
+            Object {
+                id: ObjectId(0),
+                kind: ObjectKind::Nil,
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: ArtifactId::placeholder(),
+                source: SourceRef::new(SourceRange::synthetic(), None),
+            },
+            Object {
+                id: ObjectId(3),
+                kind: ObjectKind::Nil,
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: ArtifactId::placeholder(),
+                source: SourceRef::new(SourceRange::synthetic(), None),
+            },
+        ];
+
+        let mut artifacts = ModuleArtifactState::default();
+        let err = artifacts.restore_scene_objects(&cached_objects).unwrap_err();
+        assert!(
+            err.message()
+                .contains("Restored cached scene object ID 3 does not match its position 1")
+        );
     }
 }

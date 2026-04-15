@@ -306,7 +306,8 @@ impl ExecutorContext {
                     exec_state
                         .mod_local
                         .artifacts
-                        .restore_scene_objects(&exec_state.global.root_module_artifacts.scene_objects);
+                        .restore_scene_objects(&exec_state.global.root_module_artifacts.scene_objects)
+                        .map_err(|err| (err, None, None))?;
                 }
             }
             PreserveMem::Normal => {
@@ -314,7 +315,8 @@ impl ExecutorContext {
                 {
                     local_state
                         .artifacts
-                        .restore_scene_objects(&exec_state.mod_local.artifacts.scene_objects);
+                        .restore_scene_objects(&exec_state.mod_local.artifacts.scene_objects)
+                        .map_err(|err| (err, None, None))?;
                 }
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             }
