@@ -868,6 +868,7 @@ fn entity_clone_preserves_path_type() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let cmd_id = Uuid::new_v4();
     let plane_id = ArtifactId::new(Uuid::new_v4());
+    let sketch_block_id = ArtifactId::new(Uuid::new_v4());
     let mut artifacts = IndexMap::new();
     artifacts.insert(
         source_id,
@@ -875,6 +876,7 @@ fn entity_clone_preserves_path_type() {
             id: source_id,
             sub_type: PathSubType::Region,
             plane_id,
+            sketch_block_id: Some(sketch_block_id),
             seg_ids: vec![ArtifactId::new(Uuid::new_v4())],
             consumed: true,
             sweep_id: Some(ArtifactId::new(Uuid::new_v4())),
@@ -920,6 +922,7 @@ fn entity_clone_preserves_path_type() {
     assert_eq!(clone_path.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_path.sub_type, PathSubType::Region);
     assert_eq!(clone_path.plane_id, plane_id);
+    assert_eq!(clone_path.sketch_block_id, Some(sketch_block_id));
     assert!(clone_path.seg_ids.is_empty());
     assert_eq!(clone_path.sweep_id, None);
     assert_eq!(clone_path.trajectory_sweep_id, None);

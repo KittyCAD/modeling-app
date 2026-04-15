@@ -1447,6 +1447,7 @@ fn artifacts_to_update(
                     code_ref,
                     sub_type: source.sub_type,
                     plane_id: source.plane_id,
+                    sketch_block_id: source.sketch_block_id,
                     seg_ids: Vec::new(),
                     consumed: false,
                     sweep_id: None,
