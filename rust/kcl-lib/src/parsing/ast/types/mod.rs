@@ -557,18 +557,19 @@ impl Node<Program> {
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
                 crate::walk::Node::CallExpressionKw(call)
-                    if call.inner.callee.inner.name.inner.name == "appearance" => {
-                        for arg in &call.arguments {
-                            if let Some(l) = &arg.label
-                                && l.inner.name == "color"
-                            {
-                                // Get the value of the argument.
-                                if let Expr::Literal(literal) = &arg.arg {
-                                    add_color(literal);
-                                }
+                    if call.inner.callee.inner.name.inner.name == "appearance" =>
+                {
+                    for arg in &call.arguments {
+                        if let Some(l) = &arg.label
+                            && l.inner.name == "color"
+                        {
+                            // Get the value of the argument.
+                            if let Expr::Literal(literal) = &arg.arg {
+                                add_color(literal);
                             }
                         }
                     }
+                }
                 crate::walk::Node::Literal(literal) => {
                     // Check if the literal is a color.
                     add_color(literal);

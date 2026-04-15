@@ -8452,7 +8452,7 @@ sketch001 = sketch(on = XY) {
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
-        let point_id = *sketch.segments.get(0).unwrap();
+        let point_id = *sketch.segments.first().unwrap();
 
         let constraint = Constraint::Horizontal(Horizontal::Points {
             points: vec![ConstraintSegment::from(point_id), ConstraintSegment::ORIGIN],
