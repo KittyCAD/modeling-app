@@ -5180,15 +5180,11 @@ pub(crate) async fn execute_trim_operations_simple(
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
                         Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
-                        Constraint::Horizontal(Horizontal::Points { points }) => {
-                            original_segment_end_point_id
-                                .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id)))
-                        }
+                        Constraint::Horizontal(Horizontal::Points { points }) => original_segment_end_point_id
+                            .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
                         Constraint::Vertical(Vertical::Line { line }) => line == segment_id,
-                        Constraint::Vertical(Vertical::Points { points }) => {
-                            original_segment_end_point_id
-                                .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id)))
-                        }
+                        Constraint::Vertical(Vertical::Points { points }) => original_segment_end_point_id
+                            .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
                         _ => false,
                     };
 
