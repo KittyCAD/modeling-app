@@ -354,9 +354,7 @@ extrude001 = extrude(profile001, length = 4)
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_second_sketch_block_preserves_node_path() {
-    let code = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = YZ) {
+    let code = r#"sketch001 = sketch(on = YZ) {
   line1 = line(start = [var 4.14mm, var -0.05mm], end = [var 5.5mm, var 0mm])
   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
   line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.89mm, var 2.82mm])
