@@ -7,9 +7,7 @@
 
 tankHeight = 2.5ft
 tankDiameter = 9
-wallThickness = 0.125
 portDiameter = 1.25
-bracketThickness = 0.090
 boltSize = 1 / 4
 
 tankSketch = sketch(on = YZ) {

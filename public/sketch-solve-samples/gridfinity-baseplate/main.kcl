@@ -15,9 +15,6 @@ countBinWidth = 2
 countBinLength = 3
 
 height = firstStep + secondStep + thirdStep
-baseFaceHeight = height
-baseFaceUpperStepY = firstStep + secondStep
-baseFaceRightX = thirdStep + firstStep
 
 baseFacePlane = offsetPlane(YZ, offset = cornerRadius)
 baseFaceSketch = sketch(on = baseFacePlane) {
