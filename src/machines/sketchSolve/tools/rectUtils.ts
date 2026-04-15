@@ -897,7 +897,9 @@ async function addSingleLineConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    { type, line },
+    type === 'Horizontal'
+      ? { type: 'Horizontal', Line: { line_id: line } }
+      : { type: 'Vertical', Line: { line_id: line } },
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)

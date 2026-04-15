@@ -18,9 +18,6 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
-  buildEqualLengthConstraintInput,
-  buildFixedConstraintInput,
-  buildTangentConstraintInput,
   isArcSegment,
   isCircleSegment,
   isLineSegment,
@@ -53,6 +50,13 @@ import {
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
+import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
+import {
+  constraintToolNames,
+  constraintToolbarActionToToolName,
+  type ConstraintToolName,
+  type ConstraintToolbarActionEventType,
+} from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
@@ -90,13 +94,6 @@ async function runSketchSolveToolbarAction(
     console.error(`Failed to ${description}:`, error)
     toastSketchSolveError(error, `Failed to ${description}`)
   }
-}
-
-function isPointSelectionOrOrigin(selection: unknown): boolean {
-  return (
-    selection === ORIGIN_TARGET ||
-    isPointSegment(selection as Parameters<typeof isPointSegment>[0])
-  )
 }
 
 function getSelectionPointCoords(selection: unknown) {
@@ -188,67 +185,77 @@ async function addAxisDistanceConstraint(
   sendToolbarConstraintOutcome(self, result)
 }
 
-async function addLineOrientationConstraint(
+async function handleConstraintToolToolbarAction(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
-  type: 'Horizontal' | 'Vertical'
-) {
-  let result
-  for (const id of getObjectSelectionIds(context.selectedIds)) {
-    // TODO this is not how these constraints should operate long term, as they should be equipable tools
-    result = await context.rustContext.addConstraint(
-      0,
-      context.sketchId,
-      {
-        type,
-        line: id,
-      },
-      jsAppSettings(context.kclManager.systemDeps.settings),
-      true
-    )
-  }
-  sendToolbarConstraintOutcome(self, result)
-}
-
-async function addHorizontalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Horizontal')
-}
-
-async function addVerticalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Vertical')
-}
-
-async function addFixedConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
+  toolName: ConstraintToolName
 ) {
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-  const fixedInput = buildFixedConstraintInput(
-    getObjectSelectionIds(context.selectedIds),
-    objects
+  const preparedApply = getConstraintToolPreparedApply(
+    toolName,
+    context.selectedIds,
+    objects,
+    {
+      defaultLengthUnit: baseUnitToNumericSuffix(
+        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+      ) as Parameters<
+        typeof getConstraintToolPreparedApply
+      >[3]['defaultLengthUnit'],
+    }
   )
-  if (!fixedInput) {
+
+  if (!preparedApply) {
+    sendToActorIfActive(self, {
+      type: 'equip tool',
+      data: { tool: toolName },
+    })
     return
   }
 
-  const result = await context.rustContext.addConstraint(
-    0,
-    context.sketchId,
-    {
-      type: 'Fixed',
-      points: fixedInput,
-    },
-    jsAppSettings(context.kclManager.systemDeps.settings),
-    true
-  )
+  const settings = jsAppSettings(context.kclManager.systemDeps.settings)
+  let result:
+    | Awaited<ReturnType<SketchSolveContext['rustContext']['addConstraint']>>
+    | undefined
+
+  for (const [index, payload] of preparedApply.payloads.entries()) {
+    result = await context.rustContext.addConstraint(
+      0,
+      context.sketchId,
+      payload,
+      settings,
+      index === preparedApply.payloads.length - 1
+    )
+  }
+
   sendToolbarConstraintOutcome(self, result)
+}
+
+function getPreparedApplyForConstraintTool(
+  context: SketchSolveContext,
+  toolName: ConstraintToolName
+) {
+  const objects =
+    context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return getConstraintToolPreparedApply(
+    toolName,
+    context.selectedIds,
+    objects,
+    {
+      defaultLengthUnit: baseUnitToNumericSuffix(
+        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+      ) as Parameters<
+        typeof getConstraintToolPreparedApply
+      >[3]['defaultLengthUnit'],
+    }
+  )
+}
+
+function isConstraintToolName(
+  toolName: string
+): toolName is ConstraintToolName {
+  return constraintToolNames.includes(toolName as ConstraintToolName)
 }
 
 export const sketchSolveMachine = setup({
@@ -298,6 +305,27 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
+    'apply current selection with equipped constraint tool': async ({
+      context,
+      event,
+      self,
+    }) => {
+      assertEvent(event, 'equip tool')
+      if (!isConstraintToolName(event.data.tool)) {
+        return
+      }
+
+      await runSketchSolveToolbarAction(
+        `apply ${event.data.tool}`,
+        async () => {
+          await handleConstraintToolToolbarAction(
+            context,
+            self,
+            event.data.tool
+          )
+        }
+      )
+    },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
       data: { tool: context.sketchSolveToolName },
@@ -426,21 +454,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a coincident constraint',
           async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = context.selectedIds.map(
-              (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.coincident
             )
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Coincident',
-                segments: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -450,7 +468,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a fixed constraint',
           async () => {
-            await addFixedConstraint(context, self)
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Fixed
+            )
           }
         )
       },
@@ -460,24 +482,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a tangent constraint',
           async () => {
-            const objects =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-            const tangentConstraint = buildTangentConstraintInput(
-              getObjectSelectionIds(context.selectedIds),
-              objects
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Tangent
             )
-            if (!tangentConstraint) {
-              return
-            }
-
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              tangentConstraint,
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -692,19 +701,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a parallel constraint',
           async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Parallel',
-                lines: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Parallel
             )
-            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -714,19 +715,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a perpendicular constraint',
           async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Perpendicular',
-                lines: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Perpendicular
             )
-            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -736,26 +729,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add an equal length constraint',
           async () => {
-            // TODO this is not how EqualLength should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const objects =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-            const equalLengthConstraint = buildEqualLengthConstraintInput(
-              selectedIds,
-              objects
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.EqualLength
             )
-            if (!equalLengthConstraint) {
-              return
-            }
-
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              equalLengthConstraint,
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
           }
         )
       },
@@ -765,24 +743,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a vertical constraint',
           async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'horizontal', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addVerticalConstraint(context, self)
-            }
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Vertical
+            )
           }
         )
       },
@@ -792,24 +757,11 @@ export const sketchSolveMachine = setup({
         await runSketchSolveToolbarAction(
           'add a horizontal constraint',
           async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'vertical', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addHorizontalConstraint(context, self)
-            }
+            await handleConstraintToolToolbarAction(
+              context,
+              self,
+              constraintToolbarActionToToolName.Horizontal
+            )
           }
         )
       },
@@ -1001,10 +953,26 @@ export const sketchSolveMachine = setup({
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
-        'equip tool': {
-          target: 'using tool',
-          actions: 'store pending tool',
-        },
+        'equip tool': [
+          {
+            guard: ({ context, event }) => {
+              assertEvent(event, 'equip tool')
+              if (!isConstraintToolName(event.data.tool)) {
+                return false
+              }
+
+              return (
+                getPreparedApplyForConstraintTool(context, event.data.tool) !==
+                null
+              )
+            },
+            actions: 'apply current selection with equipped constraint tool',
+          },
+          {
+            target: 'using tool',
+            actions: 'store pending tool',
+          },
+        ],
         escape: {
           target: '#Sketch Solve Mode.exiting',
           actions: [

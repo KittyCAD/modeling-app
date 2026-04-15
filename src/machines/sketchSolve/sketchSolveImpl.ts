@@ -63,14 +63,21 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveErrors'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
+import { machine as coincidentConstraintTool } from '@src/machines/sketchSolve/tools/coincidentConstraintTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as equalLengthConstraintTool } from '@src/machines/sketchSolve/tools/equalLengthConstraintTool'
+import { machine as fixedConstraintTool } from '@src/machines/sketchSolve/tools/fixedConstraintTool'
+import { machine as horizontalConstraintTool } from '@src/machines/sketchSolve/tools/horizontalConstraintTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import { machine as parallelConstraintTool } from '@src/machines/sketchSolve/tools/parallelConstraintTool'
+import { machine as perpendicularConstraintTool } from '@src/machines/sketchSolve/tools/perpendicularConstraintTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as tangentConstraintTool } from '@src/machines/sketchSolve/tools/tangentConstraintTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { machine as verticalConstraintTool } from '@src/machines/sketchSolve/tools/verticalConstraintTool'
 import {
   type ActionArgs,
   type ActorRefFrom,
@@ -194,6 +201,14 @@ type ToolActorRef =
   | ActorRefFrom<typeof circleTool>
   | ActorRefFrom<typeof tangentialArcTool>
   | ActorRefFrom<typeof threePointArcTool>
+  | ActorRefFrom<typeof coincidentConstraintTool>
+  | ActorRefFrom<typeof tangentConstraintTool>
+  | ActorRefFrom<typeof parallelConstraintTool>
+  | ActorRefFrom<typeof equalLengthConstraintTool>
+  | ActorRefFrom<typeof horizontalConstraintTool>
+  | ActorRefFrom<typeof verticalConstraintTool>
+  | ActorRefFrom<typeof perpendicularConstraintTool>
+  | ActorRefFrom<typeof fixedConstraintTool>
 
 export const equipTools = Object.freeze({
   trimTool,
@@ -208,6 +223,14 @@ export const equipTools = Object.freeze({
   circleTool,
   tangentialArcTool,
   threePointArcTool,
+  coincidentConstraintTool,
+  tangentConstraintTool,
+  parallelConstraintTool,
+  equalLengthConstraintTool,
+  horizontalConstraintTool,
+  verticalConstraintTool,
+  perpendicularConstraintTool,
+  fixedConstraintTool,
 })
 
 export type SketchSolveContext = {
@@ -700,14 +723,6 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   // Clean up selection box if it exists
   const selectionBoxGroup = sketchSegments?.getObjectByName('selectionBox')
   if (selectionBoxGroup) {
-    selectionBoxGroup.traverse((child) => {
-      if (
-        child instanceof CSS2DObject &&
-        child.element instanceof HTMLElement
-      ) {
-        child.element.remove()
-      }
-    })
     selectionBoxGroup.removeFromParent()
   }
 }

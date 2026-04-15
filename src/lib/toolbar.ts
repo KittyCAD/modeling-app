@@ -12,11 +12,6 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import {
-  getSelectedEqualLengthConstraintInput,
-  getSelectedFixedConstraintInput,
-  getSelectedTangentConstraintInput,
-} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName =
@@ -1678,137 +1673,170 @@ export const useToolbarConfig = () => {
           },
           'break',
           {
-            id: 'coincident',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'coincident',
-              }),
-            icon: 'coincident',
-            status: 'available',
-            title: 'Coincident',
-            hotkey: 'X',
-            description: 'Constrain points or curves to be coincident.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'Tangent',
-            onClick: ({ modelingSend }) =>
-              modelingSend({
-                type: 'Tangent',
-              }),
-            icon: 'tangent',
-            status: 'available',
-            disabled: (state) =>
-              getSelectedTangentConstraintInput(state) === null,
-            disabledReason: (state) =>
-              getSelectedTangentConstraintInput(state) === null
-                ? 'Select a line and an arc, or two arcs, to add a tangent constraint.'
-                : undefined,
-            title: 'Tangent',
-            hotkey: 'T',
-            description:
-              'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'Parallel',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'Parallel',
-              }),
-            icon: 'parallel',
-            status: 'available',
-            title: 'Parallel',
-            hotkey: 'B',
-            description: 'Constrain lines or curves to be parallel.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'Perpendicular',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'Perpendicular',
-              }),
-            icon: 'perpendicular',
-            status: 'available',
-            title: 'Perpendicular',
-            hotkey: 'Shift+B',
-            description: 'Constrain lines or curves to be perpendicular.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'equalLength',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'EqualLength',
-              }),
-            icon: 'equal',
-            status: 'available',
-            disabled: (state) =>
-              getSelectedEqualLengthConstraintInput(state) === null,
-            disabledReason: (state) =>
-              getSelectedEqualLengthConstraintInput(state) === null
-                ? 'Select two or more lines, or two or more arcs and circles, to add an equal constraint.'
-                : undefined,
-            title: 'Equal',
-            hotkey: 'E',
-            description:
-              'Constrain lines to have equal length, or arcs and circles to have equal radius.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'vertical',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'Vertical',
-              }),
-            icon: 'vertical',
-            status: 'available',
-            title: 'Vertical',
-            hotkey: 'V',
-            description: 'Constrain lines to be vertical.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'Horizontal',
-            onClick: ({ modelingSend, isActive }) =>
-              modelingSend({
-                type: 'Horizontal',
-              }),
-            icon: 'horizontal',
-            status: 'available',
-            title: 'Horizontal',
-            hotkey: 'H',
-            description: 'Constrain lines to be horizontal.',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
-            id: 'Fixed',
-            onClick: ({ modelingSend }) =>
-              modelingSend({
-                type: 'Fixed',
-              }),
-            icon: 'fix',
-            status: 'available',
-            disabled: (state) =>
-              getSelectedFixedConstraintInput(state) === null,
-            disabledReason: (state) =>
-              getSelectedFixedConstraintInput(state) === null
-                ? 'Select one or more points to lock them in place.'
-                : undefined,
-            title: 'Fixed',
-            hotkey: 'F',
-            description:
-              'Lock selected points to their current x and y positions.',
-            links: [],
-            isActive: (state) => false,
+            id: 'constraints',
+            array: [
+              {
+                id: 'coincident',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'coincidentConstraintTool' },
+                      }),
+                icon: 'coincident',
+                status: 'available',
+                title: 'Coincident',
+                hotkey: 'X',
+                description: 'Constrain points or curves to be coincident.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'coincidentConstraintTool',
+              },
+              {
+                id: 'Tangent',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'tangentConstraintTool' },
+                      }),
+                icon: 'tangent',
+                status: 'available',
+                title: 'Tangent',
+                hotkey: 'T',
+                description:
+                  'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'tangentConstraintTool',
+              },
+              {
+                id: 'Parallel',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'parallelConstraintTool' },
+                      }),
+                icon: 'parallel',
+                status: 'available',
+                title: 'Parallel',
+                hotkey: 'B',
+                description: 'Constrain lines or curves to be parallel.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'parallelConstraintTool',
+              },
+              {
+                id: 'Perpendicular',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'perpendicularConstraintTool' },
+                      }),
+                icon: 'perpendicular',
+                status: 'available',
+                title: 'Perpendicular',
+                hotkey: 'Shift+B',
+                description: 'Constrain lines or curves to be perpendicular.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'perpendicularConstraintTool',
+              },
+              {
+                id: 'equalLength',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'equalLengthConstraintTool' },
+                      }),
+                icon: 'equal',
+                status: 'available',
+                title: 'Equal',
+                hotkey: 'E',
+                description:
+                  'Constrain lines to have equal length, or arcs and circles to have equal radius.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'equalLengthConstraintTool',
+              },
+              {
+                id: 'vertical',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'verticalConstraintTool' },
+                      }),
+                icon: 'vertical',
+                status: 'available',
+                title: 'Vertical',
+                hotkey: 'V',
+                description: 'Constrain lines to be vertical.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'verticalConstraintTool',
+              },
+              {
+                id: 'Horizontal',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'horizontalConstraintTool' },
+                      }),
+                icon: 'horizontal',
+                status: 'available',
+                title: 'Horizontal',
+                hotkey: 'H',
+                description: 'Constrain lines to be horizontal.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName ===
+                    'horizontalConstraintTool',
+              },
+              {
+                id: 'Fixed',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({ type: 'unequip tool' })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'fixedConstraintTool' },
+                      }),
+                icon: 'fix',
+                status: 'available',
+                title: 'Fixed',
+                hotkey: 'F',
+                description:
+                  'Lock selected points to their current x and y positions.',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'fixedConstraintTool',
+              },
+            ],
           },
           {
             id: 'Dimension',

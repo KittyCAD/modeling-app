@@ -243,12 +243,13 @@ const Toolbar_ = memo(
     ])
 
     // To remember the last selected item in an ActionButtonDropdown
-    const [lastSelectedMultiActionItem, _] = useState(
-      new Map<
-        number /* index in currentModeItems */,
-        number /* index in maybeIconConfig */
-      >()
-    )
+    const [lastSelectedMultiActionItem, setLastSelectedMultiActionItem] =
+      useState(
+        new Map<
+          number /* index in currentModeItems */,
+          number /* index in maybeIconConfig */
+        >()
+      )
 
     const hotkeyActions = useMemo(
       () => collectToolbarHotkeyActions(currentModeItems),
@@ -325,7 +326,14 @@ const Toolbar_ = memo(
                     id: itemConfig.id,
                     label: itemConfig.title,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => itemConfig.onClick(itemConfig.callbackProps),
+                    onClick: () => {
+                      setLastSelectedMultiActionItem((previous) => {
+                        const next = new Map(previous)
+                        next.set(i, maybeIconConfig.array.indexOf(itemConfig))
+                        return next
+                      })
+                      itemConfig.onClick(itemConfig.callbackProps)
+                    },
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
