@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactNode } from 'react'
-import { CustomIcon } from './CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 /**
  * Local authoring surface for the MlEphant welcome message.
@@ -12,9 +12,11 @@ import { CustomIcon } from './CustomIcon'
 export const MlEphantConversationWelcome = () => {
   return (
     <div data-testid="ml-ephant-conversation-welcome" className="px-4 py-3">
-      <div className="bg-img-mel w-16 h-16" />
-      <h2 className="text-xl font-bold">Hello there, I’m Zookeeper.</h2>
-      <p>
+      <div className="bg-img-mel w-16 h-16 rounded mb-4" />
+      <h2 className="text-lg font-semibold my-2">
+        Hello there, I’m Zookeeper.
+      </h2>
+      <p className="text-2 text-sm">
         I'm here to help you create and edit real, parametric CAD geometry
         through incremental, structured commands.
       </p>
@@ -22,12 +24,12 @@ export const MlEphantConversationWelcome = () => {
       <WelcomeItem
         graphic={
           <video
-            className="w-12 h-12 object-cover object-center"
+            className="w-16 h-16 object-cover object-center"
             muted
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-1.wemb" />
+            <source src="/mlephant-idle-1.webm" />
           </video>
         }
         heading="Ask me anything"
@@ -40,12 +42,12 @@ export const MlEphantConversationWelcome = () => {
       <WelcomeItem
         graphic={
           <video
-            className="w-12 h-12 object-cover object-center"
+            className="w-16 h-16 object-cover object-center"
             muted
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-1.wemb" />
+            <source src="/mlephant-idle-2.webm" />
           </video>
         }
         heading="Turn thoughts into geometry"
@@ -58,12 +60,12 @@ export const MlEphantConversationWelcome = () => {
       <WelcomeItem
         graphic={
           <video
-            className="w-12 h-12 object-cover object-center"
+            className="w-16 h-16 object-cover object-center"
             muted
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-1.wemb" />
+            <source src="/mlephant-idle-3.webm" />
           </video>
         }
         heading="Supplemental analysis"
@@ -75,7 +77,10 @@ export const MlEphantConversationWelcome = () => {
       </WelcomeItem>
       <WelcomeItem
         graphic={
-          <CustomIcon name="paperclip" className="w-8 h-8 m-2 flex-none" />
+          <CustomIcon
+            name="paperclip"
+            className="w-8 h-8 m-4 text-2 flex-none"
+          />
         }
         heading="Upload your image to work from real references"
       >
@@ -95,10 +100,10 @@ interface WelcomeItemProps extends PropsWithChildren {
 
 function WelcomeItem(props: WelcomeItemProps) {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 my-4">
       {props.graphic}
       <div>
-        <h2 className="font-bold text-base">{props.heading}</h2>
+        <h2 className="text-2 font-semibold text-sm">{props.heading}</h2>
         <div className="text-3 text-sm">{props.children}</div>
       </div>
     </div>
