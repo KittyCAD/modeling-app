@@ -789,6 +789,8 @@ fn create_region_creates_region_path_sub_type() {
     assert_eq!(region_path.id, ArtifactId::new(cmd_id));
     assert_eq!(region_path.sub_type, PathSubType::Region);
     assert_eq!(region_path.plane_id, origin_plane_id);
+    // It links back to the origin sketch path.
+    assert_eq!(region_path.origin_path_id, Some(origin_path_id));
 }
 
 #[test]
