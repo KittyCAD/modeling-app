@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use serde_json::json;
@@ -146,18 +147,23 @@ impl StdlibDocFlavor {
         }
     }
 
-    fn output_roots(self) -> [String; 2] {
-        [
-            format!("../../docs/{}", self.stdlib_dir()),
-            format!("../../../text-to-cad/data/kcl-docs/{}", self.stdlib_dir()),
-        ]
+    fn output_roots(self) -> Vec<PathBuf> {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let mut roots = vec![manifest_dir.join("../../docs").join(self.stdlib_dir())];
+
+        let text_to_cad_root = manifest_dir.join("../../../text-to-cad");
+        if text_to_cad_root.exists() {
+            roots.push(text_to_cad_root.join("data/kcl-docs").join(self.stdlib_dir()));
+        }
+
+        roots
     }
 }
 
 fn write_doc_output(flavor: StdlibDocFlavor, relative_file_name: &str, output: &str) -> Result<()> {
     for root in flavor.output_roots() {
-        let path = format!("{root}/{relative_file_name}.md");
-        if let Some(parent) = Path::new(&path).parent() {
+        let path = root.join(format!("{relative_file_name}.md"));
+        if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
         expectorate::assert_contents(path, output);
