@@ -118,6 +118,8 @@ describe('Onboarding utility functions', () => {
         send: vi.fn(),
       } as any
 
+      const dismissSpy = vi.spyOn(toast, 'dismiss')
+
       dismissOnboardingInvite(settingsActor, {
         workflowPreference: 'ai',
         showSuccessToast: false,
@@ -130,7 +132,7 @@ describe('Onboarding utility functions', () => {
       expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
         DefaultLayoutPaneID.TTC,
       ])
-      expect(toast.dismiss).toHaveBeenCalledWith(ONBOARDING_TOAST_ID)
+      expect(dismissSpy).toHaveBeenCalledWith(ONBOARDING_TOAST_ID)
       expect(toast.success).not.toHaveBeenCalled()
     })
   })
