@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Window state: 0 for closed, 1 for open
 windowState = 0

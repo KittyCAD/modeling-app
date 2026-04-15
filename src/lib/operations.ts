@@ -2388,14 +2388,6 @@ export function getOperationVariableName(
     return undefined
   }
 
-  // Handle inner sketch block variables
-  if (
-    op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlockBody')
-  ) {
-    return undefined
-  }
-
   if (
     op.type !== 'StdLibCall' &&
     op.type !== 'SketchSolve' &&

@@ -831,7 +831,7 @@ part002 = startSketchOn(XZ)
     const cases = [
       {
         codeAfter: `|> angledLine(angle = 73deg, length = segLen(seg01))`,
-        constraintName: 'Equal Length',
+        constraintName: 'Equal',
       },
       {
         codeAfter: `|> angledLine(angle = segAng(seg01), length = 102.05)`,

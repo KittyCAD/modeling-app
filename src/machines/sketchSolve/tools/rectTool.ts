@@ -19,12 +19,17 @@ import type { AssignArgs, ProvidedActor } from 'xstate'
 import { assertEvent, assign, createMachine, fromPromise, setup } from 'xstate'
 
 import type { Coords2d } from '@src/lang/util'
-import { pointsAreEqual } from '@src/lib/utils2d'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { SnapTarget } from '@src/machines/sketchSolve/snapping'
+import {
+  MIN_DRAFT_GEOMETRY_DELTA_MM,
+  hasCrossedDraftGeometryThreshold,
+} from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
   createDraftRectangle,
+  getAngledRectangleWidth,
+  getSeededAngledRectangleThirdPoint,
   updateDraftRectangleAligned,
   updateDraftRectangleAngled,
 } from '@src/machines/sketchSolve/tools/rectUtils'
@@ -84,6 +89,53 @@ function getRectSnappingExcludedPointIds(
 
   return draft.segmentIds.filter((id) =>
     isPointSegment(currentSketchObjects[id])
+  )
+}
+
+// Rectangle previews are seeded on the first click, then only replaced with
+// user-driven geometry once the next anchor is far enough away to keep the
+// solver out of a degenerate overlapping state. This matches the shared
+// multi-click draft policy in draftGeometryPolicy.ts for future polygon-like tools.
+function canPreviewAlignedRectangle(
+  origin: Coords2d,
+  point: Coords2d
+): boolean {
+  return hasCrossedDraftGeometryThreshold(origin, point)
+}
+
+function canCommitAlignedRectangle(
+  mode: RectOriginMode,
+  origin: Coords2d,
+  point: Coords2d
+): boolean {
+  const width = Math.abs(point[0] - origin[0]) * (mode === 'center' ? 2 : 1)
+  const height = Math.abs(point[1] - origin[1]) * (mode === 'center' ? 2 : 1)
+  return (
+    width >= MIN_DRAFT_GEOMETRY_DELTA_MM &&
+    height >= MIN_DRAFT_GEOMETRY_DELTA_MM
+  )
+}
+
+function canPreviewAngledRectangleSecondPoint(
+  origin: Coords2d,
+  point: Coords2d
+): boolean {
+  return hasCrossedDraftGeometryThreshold(origin, point)
+}
+
+function canPreviewAngledRectangleThirdPoint(
+  origin: Coords2d,
+  secondPoint: Coords2d,
+  thirdPoint: Coords2d
+): boolean {
+  return (
+    Math.abs(
+      getAngledRectangleWidth({
+        p1: origin,
+        p2: secondPoint,
+        p3: thirdPoint,
+      })
+    ) >= MIN_DRAFT_GEOMETRY_DELTA_MM
   )
 }
 
@@ -176,54 +228,79 @@ export const machine = setup({
             sceneInfra: context.sceneInfra,
             target: snappingCandidate,
           })
+          const candidatePoint = snappingCandidate?.position ?? [twoD.x, twoD.y]
 
           if (!isEditInProgress) {
             try {
-              isEditInProgress = true
-
               let result: {
                 kclSource: SourceDelta
                 sceneGraphDelta: SceneGraphDelta
-              }
+              } | null = null
+              let suppressExecOutcomeIssues = false
 
               if (context.rectOriginMode === 'angled') {
-                result = await updateDraftRectangleAngled({
-                  rustContext: context.rustContext,
-                  kclManager: context.kclManager,
-                  sketchId: context.sketchId,
-                  draft: context.draft,
-                  p1: context.origin,
-                  p2: [twoD.x, twoD.y],
-                  p3: [twoD.x, twoD.y], // no third click yet
-                })
+                if (
+                  canPreviewAngledRectangleSecondPoint(
+                    context.origin,
+                    candidatePoint
+                  )
+                ) {
+                  isEditInProgress = true
+                  result = await updateDraftRectangleAngled({
+                    rustContext: context.rustContext,
+                    kclManager: context.kclManager,
+                    sketchId: context.sketchId,
+                    draft: context.draft,
+                    p1: context.origin,
+                    p2: candidatePoint,
+                    // Keep a tiny non-zero width until the third click exists so
+                    // the preview remains non-degenerate during the second-point drag.
+                    p3: getSeededAngledRectangleThirdPoint(
+                      context.origin,
+                      candidatePoint
+                    ),
+                  })
+                }
               } else {
                 const start = context.origin
-                const end: Coords2d = [twoD.x, twoD.y]
+                const end = candidatePoint
 
-                const min: Coords2d = [
-                  Math.min(start[0], end[0]),
-                  Math.min(start[1], end[1]),
-                ]
-                const max: Coords2d = [
-                  Math.max(start[0], end[0]),
-                  Math.max(start[1], end[1]),
-                ]
+                if (canPreviewAlignedRectangle(start, end)) {
+                  suppressExecOutcomeIssues = !canCommitAlignedRectangle(
+                    context.rectOriginMode,
+                    start,
+                    end
+                  )
+                  isEditInProgress = true
+                  const min: Coords2d = [
+                    Math.min(start[0], end[0]),
+                    Math.min(start[1], end[1]),
+                  ]
+                  const max: Coords2d = [
+                    Math.max(start[0], end[0]),
+                    Math.max(start[1], end[1]),
+                  ]
 
-                if (context.rectOriginMode === 'center') {
-                  const size = [max[0] - min[0], max[1] - min[1]]
-                  min[0] = start[0] - size[0]
-                  min[1] = start[1] - size[1]
-                  max[0] = min[0] + size[0] * 2
-                  max[1] = min[1] + size[1] * 2
+                  if (context.rectOriginMode === 'center') {
+                    const size = [max[0] - min[0], max[1] - min[1]]
+                    min[0] = start[0] - size[0]
+                    min[1] = start[1] - size[1]
+                    max[0] = min[0] + size[0] * 2
+                    max[1] = min[1] + size[1] * 2
+                  }
+
+                  result = await updateDraftRectangleAligned({
+                    rustContext: context.rustContext,
+                    kclManager: context.kclManager,
+                    sketchId: context.sketchId,
+                    draft: context.draft,
+                    rect: { min, max },
+                  })
                 }
+              }
 
-                result = await updateDraftRectangleAligned({
-                  rustContext: context.rustContext,
-                  kclManager: context.kclManager,
-                  sketchId: context.sketchId,
-                  draft: context.draft,
-                  rect: { min, max },
-                })
+              if (!result) {
+                return
               }
 
               const sendData: SketchSolveMachineEvent = {
@@ -231,6 +308,7 @@ export const machine = setup({
                 data: {
                   sourceDelta: result.kclSource,
                   sceneGraphDelta: result.sceneGraphDelta,
+                  suppressExecOutcomeIssues,
                   writeToDisk: false,
                 },
               }
@@ -263,13 +341,28 @@ export const machine = setup({
               ),
           })
           const [x, y] = snappingCandidate?.position ?? mousePosition
+          const nextPoint: Coords2d = [x, y]
 
           if (context.rectOriginMode === 'angled') {
+            if (
+              !canPreviewAngledRectangleSecondPoint(context.origin, nextPoint)
+            ) {
+              return
+            }
             self.send({
               type: 'set second point',
-              data: [x, y],
+              data: nextPoint,
             })
           } else {
+            if (
+              !canCommitAlignedRectangle(
+                context.rectOriginMode,
+                context.origin,
+                nextPoint
+              )
+            ) {
+              return
+            }
             self.send({
               type: 'finalize',
             })
@@ -308,9 +401,20 @@ export const machine = setup({
             sceneInfra: context.sceneInfra,
             target: snappingCandidate,
           })
+          const candidatePoint = snappingCandidate?.position ?? [twoD.x, twoD.y]
 
           if (!isEditInProgress) {
             try {
+              if (
+                !canPreviewAngledRectangleThirdPoint(
+                  context.origin,
+                  context.secondPoint,
+                  candidatePoint
+                )
+              ) {
+                return
+              }
+
               isEditInProgress = true
               const result = await updateDraftRectangleAngled({
                 rustContext: context.rustContext,
@@ -319,7 +423,7 @@ export const machine = setup({
                 draft: context.draft,
                 p1: context.origin,
                 p2: context.secondPoint,
-                p3: [twoD.x, twoD.y],
+                p3: candidatePoint,
               })
 
               const sendData: SketchSolveMachineEvent = {
@@ -359,9 +463,14 @@ export const machine = setup({
               ),
           })
           const [x, y] = snappingCandidate?.position ?? mousePosition
+          const nextPoint: Coords2d = [x, y]
           if (
             context.secondPoint &&
-            pointsAreEqual(context.secondPoint, [x, y])
+            !canPreviewAngledRectangleThirdPoint(
+              context.origin,
+              context.secondPoint,
+              nextPoint
+            )
           ) {
             return
           }
@@ -571,7 +680,10 @@ export const machine = setup({
           guard: ({ context, event }) => {
             if (context.rectOriginMode !== 'angled') return false
             if (event.type !== 'set second point') return false
-            return !pointsAreEqual(context.origin, event.data)
+            return canPreviewAngledRectangleSecondPoint(
+              context.origin,
+              event.data
+            )
           },
           actions: assign(({ event }) => {
             if (event.type !== 'set second point') return {}

@@ -218,7 +218,7 @@ async fn inner_loft(
                 start: tag_start.as_ref(),
                 end: tag_end.as_ref(),
             },
-            kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            kittycad_modeling_cmds::shared::ExtrudeMethod::New,
             exec_state,
             &args,
             None,

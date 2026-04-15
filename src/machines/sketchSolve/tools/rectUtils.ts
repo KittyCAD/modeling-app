@@ -19,6 +19,7 @@ import {
   type SnapTarget,
   getConstraintForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -36,6 +37,7 @@ export type RectDraftIds = {
 }
 
 const INITIAL_CENTER_RECT_HALF_SIZE = 5
+const INITIAL_CORNER_RECT_SIZE = MIN_DRAFT_GEOMETRY_DELTA_MM
 
 function getLineFromDelta(
   sceneGraphDelta: SceneGraphDelta
@@ -124,10 +126,7 @@ export async function createDraftRectangle({
     kclManager.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
-  const centerDraftCorners =
-    mode === 'center'
-      ? getCenteredDraftRectangleCorners(origin, INITIAL_CENTER_RECT_HALF_SIZE)
-      : null
+  const draftCorners = getInitialDraftRectangleCorners(origin, mode)
 
   const centerPoint =
     mode === 'center'
@@ -145,32 +144,32 @@ export async function createDraftRectangle({
     rustContext,
     sketchId,
     settings,
-    start: centerDraftCorners?.start1,
-    end: centerDraftCorners?.start2,
+    start: draftCorners.start1,
+    end: draftCorners.start2,
   })
   const line2 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
-    start: centerDraftCorners?.start2,
-    end: centerDraftCorners?.start3,
+    start: draftCorners.start2,
+    end: draftCorners.start3,
   })
   const line3 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
-    start: centerDraftCorners?.start3,
-    end: centerDraftCorners?.start4,
+    start: draftCorners.start3,
+    end: draftCorners.start4,
   })
   const line4 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
-    start: centerDraftCorners?.start4,
-    end: centerDraftCorners?.start1,
+    start: draftCorners.start4,
+    end: draftCorners.start1,
   })
 
   /**
@@ -292,8 +291,8 @@ export async function createDraftRectangle({
       sketchId,
       settings,
       construction: true,
-      start: centerDraftCorners?.start1,
-      end: centerDraftCorners?.start3,
+      start: draftCorners.start1,
+      end: draftCorners.start3,
     })
     const diagonal2 = await makeDraftLine({
       units,
@@ -301,8 +300,8 @@ export async function createDraftRectangle({
       sketchId,
       settings,
       construction: true,
-      start: centerDraftCorners?.start2,
-      end: centerDraftCorners?.start4,
+      start: draftCorners.start2,
+      end: draftCorners.start4,
     })
 
     const diagonalStartCoincident = await addCoincidentConstraint({
@@ -516,6 +515,31 @@ function getCenteredDraftRectangleCorners(
   })
 }
 
+function getInitialDraftRectangleCorners(
+  origin: Coords2d,
+  mode: RectOriginMode
+): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  if (mode === 'center') {
+    return getCenteredDraftRectangleCorners(
+      origin,
+      INITIAL_CENTER_RECT_HALF_SIZE
+    )
+  }
+
+  return getAxisAlignedRectangleCorners({
+    min: origin,
+    max: [
+      origin[0] + INITIAL_CORNER_RECT_SIZE,
+      origin[1] + INITIAL_CORNER_RECT_SIZE,
+    ],
+  })
+}
+
 // Updates draft rectangle for angled (rotated) rectangle
 export async function updateDraftRectangleAngled({
   rustContext,
@@ -575,6 +599,12 @@ export function getAngledRectangleCorners({
 } {
   const side = subVec(p2, p1)
   const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return getAxisAlignedRectangleCorners({
+      min: p1,
+      max: [p1[0] + INITIAL_CORNER_RECT_SIZE, p1[1] + INITIAL_CORNER_RECT_SIZE],
+    })
+  }
 
   // Unit normal to the first side: rotate 90deg
   const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
@@ -590,6 +620,40 @@ export function getAngledRectangleCorners({
   const start4: Coords2d = addVec(p1, offset)
 
   return { start1, start2, start3, start4 }
+}
+
+export function getAngledRectangleWidth({
+  p1,
+  p2,
+  p3,
+}: {
+  p1: Coords2d
+  p2: Coords2d
+  p3: Coords2d
+}): number {
+  const side = subVec(p2, p1)
+  const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return 0
+  }
+
+  const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
+  return dot2d(subVec(p3, p1), normal)
+}
+
+export function getSeededAngledRectangleThirdPoint(
+  p1: Coords2d,
+  p2: Coords2d,
+  width = MIN_DRAFT_GEOMETRY_DELTA_MM
+): Coords2d {
+  const side = subVec(p2, p1)
+  const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return [p2[0], p2[1] + width]
+  }
+
+  const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
+  return addVec(p2, scaleVec(normal, width))
 }
 
 async function updateDraftRectangleFromCorners({

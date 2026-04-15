@@ -795,3 +795,104 @@ extrude(profile001, length = 100)"#
     assert!(first.1 != last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
+
+#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_second_sketch_block_import_succeeds() {
+    let rectangle1 = (
+        std::path::PathBuf::from("rectangle1.kcl"),
+        r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 1.36mm, var 1.07mm], end = [var 3.73mm, var 1.07mm])
+  line2 = line(start = [var 3.73mm, var 1.07mm], end = [var 3.73mm, var 3.51mm])
+  line3 = line(start = [var 3.73mm, var 3.51mm], end = [var 1.36mm, var 3.51mm])
+  line4 = line(start = [var 1.36mm, var 3.51mm], end = [var 1.36mm, var 1.07mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#
+        .to_string(),
+    );
+
+    let rectangle2 = (
+        std::path::PathBuf::from("rectangle2.kcl"),
+        r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.86mm, var 1.27mm], end = [var 3.04mm, var 1.27mm])
+  line2 = line(start = [var 3.04mm, var 1.27mm], end = [var 3.04mm, var 3.06mm])
+  line3 = line(start = [var 3.04mm, var 3.06mm], end = [var 0.86mm, var 3.06mm])
+  line4 = line(start = [var 0.86mm, var 3.06mm], end = [var 0.86mm, var 1.27mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#
+        .to_string(),
+    );
+
+    let code = "import \"rectangle1.kcl\"\n";
+    let code_with_second_import = code.to_owned()
+        + "
+import \"rectangle2.kcl\"
+";
+
+    let result = cache_test(
+        "add_second_sketch_block_import_preserves_node_path",
+        vec![
+            Variation {
+                code,
+                other_files: vec![rectangle1.clone()],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: &code_with_second_import,
+                other_files: vec![rectangle1, rectangle2],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let first = &result.first().unwrap().2;
+    let second = &result.last().unwrap().2;
+
+    assert!(
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
+    );
+    assert!(
+        first.operations.len() < second.operations.len(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.len(),
+        second.operations.len()
+    );
+    // Make sure we have NodePaths.
+    let first_graph = &first.artifact_graph;
+    assert!(!first_graph.is_empty());
+    for artifact in first_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+    // Make sure we have NodePaths.
+    let second_graph = &second.artifact_graph;
+    assert!(!second_graph.is_empty());
+    for artifact in second_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+}

@@ -33,14 +33,10 @@ export const defaultGlobalStatusBarItems = ({
         'data-testid': 'download-desktop-app',
         component: DownloadDesktopApp,
       },
-  ...(isDesktop()
-    ? [
-        {
-          id: 'environment',
-          component: EnvironmentStatusBarItem,
-        },
-      ]
-    : []),
+  {
+    id: 'environment',
+    component: EnvironmentStatusBarItem,
+  },
   {
     id: 'telemetry',
     element: 'link',
@@ -68,7 +64,7 @@ export const defaultGlobalStatusBarItems = ({
 ]
 
 function EnvironmentStatusBarItem() {
-  return isDesktop() ? (
+  return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
         className="m-0 p-0 border-0 flex items-stretch"
@@ -80,8 +76,6 @@ function EnvironmentStatusBarItem() {
         <EnvironmentDescription />
       </Popover.Panel>
     </Popover>
-  ) : (
-    <></>
   )
 }
 
