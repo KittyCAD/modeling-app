@@ -88,13 +88,15 @@ pub(super) async fn make_face(
     let object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
+        use crate::front::SourceRef;
+
         let face_object = crate::front::Object {
             id: object_id,
             kind: crate::front::ObjectKind::Face(crate::front::Face { id: object_id }),
             label: Default::default(),
             comments: Default::default(),
             artifact_id: extrude_plane_id.into(),
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(face_object, args.source_range);
     }

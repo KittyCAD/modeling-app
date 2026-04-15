@@ -12,7 +12,7 @@
 // room dividers, or library-style shelving.
 // Designed for clean stacking, clarity in construction, and modular expansion.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 unitCount = 5 // number of shelf units arranged side-by-side (horizontal repeat)
 
@@ -125,4 +125,3 @@ modularShelfArray = patternLinear3d(
   distance = unitWidth,
   axis = [1, 0, 0],
 )
-

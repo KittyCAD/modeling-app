@@ -18,4 +18,3 @@ coiloverSpring
 // Place the Top Coilover Part
 coiloverTop
   |> translate(x = 0, y = 0.0, z = 200)
-

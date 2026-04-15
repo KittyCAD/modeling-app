@@ -2,7 +2,7 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -87,4 +87,3 @@ twistedBlade = extrude(
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-

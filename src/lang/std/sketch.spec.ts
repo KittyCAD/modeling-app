@@ -1,5 +1,4 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {

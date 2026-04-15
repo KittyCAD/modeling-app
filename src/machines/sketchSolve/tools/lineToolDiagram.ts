@@ -1,37 +1,46 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import type RustContext from '@src/lib/rustContext'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
-import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclManager'
-import {
-  type ToolEvents,
-  type ToolContext,
-  type TOOL_ID,
-  type CONFIRMING_DIMENSIONS,
-  animateDraftSegmentListener,
-  addPointListener,
-  addNextDraftLineListener,
-  removePointListener,
-  sendResultToParent,
-  storePendingSketchOutcome,
-  sendStoredResultToParent,
-} from '@src/machines/sketchSolve/tools/lineToolImpl'
-import type {
-  SketchSolveMachineEvent,
-  ToolInput,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
 import {
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  type SnapTarget,
+  getCoincidentSegmentsForSnapTarget,
+  getConstraintForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
+  type CONFIRMING_DIMENSIONS,
+  type TOOL_ID,
+  type ToolContext,
+  type ToolEvents,
+  addNextDraftLineListener,
+  addPointListener,
+  animateDraftSegmentListener,
+  removePointListener,
+  sendResultToParent,
+  sendStoredResultToParent,
+  storePendingSketchOutcome,
+} from '@src/machines/sketchSolve/tools/lineToolImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -46,12 +55,19 @@ export const machine = setup({
     events: {} as ToolEvents,
     input: {} as ToolInput,
   },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
+  },
   actions: {
     'animate draft segment listener': animateDraftSegmentListener,
     'add point listener': addPointListener,
     'add next draft line listener': addNextDraftLineListener,
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     modAndSolveFirstClick: fromPromise(
@@ -60,7 +76,7 @@ export const machine = setup({
       }: {
         input: {
           pointData: [number, number]
-          snapTargetId?: number
+          snapTarget?: SnapTarget
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
@@ -69,6 +85,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             newlyAddedEntities?: {
               segmentIds: Array<number>
               constraintIds: Array<number>
@@ -78,7 +95,7 @@ export const machine = setup({
             error: string
           }
       > => {
-        const { pointData, snapTargetId, rustContext, kclManager, sketchId } =
+        const { pointData, snapTarget, rustContext, kclManager, sketchId } =
           input
         const [x, y] = pointData
 
@@ -111,10 +128,6 @@ export const machine = setup({
             settings
           )
 
-          if (snapTargetId === undefined) {
-            return result
-          }
-
           const startPointId = result.sceneGraphDelta.new_objects.find(
             (objId) => {
               const obj = result.sceneGraphDelta.new_graph.objects[objId]
@@ -129,13 +142,19 @@ export const machine = setup({
             }
           }
 
+          const snapConstraint = getConstraintForSnapTarget(
+            startPointId,
+            snapTarget,
+            units
+          )
+          if (snapConstraint === null) {
+            return result
+          }
+
           const snapResult = await rustContext.addConstraint(
             0,
             sketchId,
-            {
-              type: 'Coincident',
-              segments: [startPointId, snapTargetId],
-            },
+            snapConstraint,
             settings
           )
 
@@ -181,7 +200,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           id: number
-          snapTargetId?: number
+          snapTarget?: SnapTarget
           isDoubleClick?: boolean
           rustContext: RustContext
           kclManager: KclManager
@@ -191,6 +210,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             lastPointId?: number
           }
         | {
@@ -200,7 +220,7 @@ export const machine = setup({
         const {
           pointData,
           id,
-          snapTargetId,
+          snapTarget,
           isDoubleClick,
           rustContext,
           kclManager,
@@ -221,6 +241,10 @@ export const machine = setup({
               y: { type: 'Var', value: roundOff(y), units },
             },
           }
+          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+            id,
+            snapTarget
+          )
 
           // Call the editSegments method to update the point position
           const result = await rustContext.editSegments(
@@ -232,25 +256,31 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            settings
+            settings,
+            coincidentSegments === null
           )
 
           let latestKclSource = result.kclSource
           let latestSceneGraphDelta = result.sceneGraphDelta
+          let latestCheckpointId = result.checkpointId
           let snapConstraintNewObjects: Array<number> = []
 
-          if (snapTargetId !== undefined) {
+          const snapConstraint = getConstraintForSnapTarget(
+            id,
+            snapTarget,
+            units
+          )
+          if (snapConstraint !== null) {
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
-              {
-                type: 'Coincident',
-                segments: [id, snapTargetId],
-              },
-              settings
+              snapConstraint,
+              settings,
+              true
             )
             latestKclSource = snapResult.kclSource
             latestSceneGraphDelta = snapResult.sceneGraphDelta
+            latestCheckpointId = snapResult.checkpointId
             snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
           }
 
@@ -263,8 +293,9 @@ export const machine = setup({
                 ...snapConstraintNewObjects,
               ],
             },
+            checkpointId: latestCheckpointId,
             lastPointId:
-              snapTargetId === undefined && isDoubleClick !== true
+              snapConstraint === null && isDoubleClick !== true
                 ? id
                 : undefined,
           }
@@ -450,7 +481,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             id: event.id || 0,
-            snapTargetId: event.snapTargetId,
+            snapTarget: event.snapTarget,
             isDoubleClick: event.isDoubleClick,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -458,14 +489,22 @@ export const machine = setup({
           }
         },
 
-        onDone: {
-          target: 'check whether to stop drawing',
-          actions: [
-            assign(({ event }) => storePendingSketchOutcome({ event })),
-          ],
-        },
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'unequipping',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'check whether to stop drawing',
+            actions: [
+              assign(({ event }) => storePendingSketchOutcome({ event })),
+            ],
+          },
+        ],
         onError: {
           target: 'unequipping',
+          actions: 'toast sketch solve error',
         },
         src: 'modAndSolve',
       },
@@ -530,20 +569,35 @@ export const machine = setup({
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ShowDraftLine',
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for user click',
+            actions: [
+              'toast sketch solve error',
+              assign({
+                pendingSketchOutcome: undefined,
+              }),
+            ],
+          },
+          {
+            target: 'ShowDraftLine',
+            actions: [
+              'send result to parent',
+              assign({
+                pendingSketchOutcome: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: 'ready for user click',
           actions: [
-            'send result to parent',
+            'toast sketch solve error',
             assign({
               pendingSketchOutcome: undefined,
             }),
           ],
-        },
-        onError: {
-          target: 'ready for user click',
-          actions: assign({
-            pendingSketchOutcome: undefined,
-          }),
         },
       },
     },
@@ -569,17 +623,27 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             pointData: event.data,
-            snapTargetId: event.snapTargetId,
+            snapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: 'ShowDraftLine',
-          actions: 'send result to parent',
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for user click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ShowDraftLine',
+            actions: 'send result to parent',
+          },
+        ],
+        onError: {
+          target: 'ready for user click',
+          actions: 'toast sketch solve error',
         },
-        onError: 'ready for user click',
       },
     },
 

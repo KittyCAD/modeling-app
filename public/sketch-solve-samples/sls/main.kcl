@@ -2,7 +2,7 @@
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // RS-25 engine (x4)
 // Artemis uses four RS-25s — staged-combustion engines flight-proven on over 135 space shuttle flights.
@@ -264,4 +264,3 @@ profile001 = sketch(on = sketch001) {
 region009 = region(segments = [profile001.line1, profile001.arc2])
 revolve001 = revolve(region009, angle = 360, axis = Y)
   |> appearance(%, color = '#FFFFFF')
-

@@ -3,7 +3,7 @@
 // Categories: Aerospace
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 chordLength = 355
@@ -178,4 +178,3 @@ sketch005 = startSketchOn(rearSparProfile, face = seg09)
   |> close()
   |> patternLinear2d(instances = nSections - 1, distance = (sparSpan - (3 * foilThickness)) / (nSections - 1), axis = [0, -1])
 rearSparHoles = extrude(sketch005, length = -10)
-

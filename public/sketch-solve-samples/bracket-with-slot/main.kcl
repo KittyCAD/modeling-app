@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
 // default units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // model parameters
 halfBracketWidth = 20
@@ -107,4 +107,3 @@ appearance(
   roughness = 50,
   metalness = 0,
 )
-

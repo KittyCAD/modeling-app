@@ -2,7 +2,7 @@
 // Short offset shaft with small gear
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import gear and propeller
 import * from "helical.kcl"
@@ -28,4 +28,3 @@ tertiaryShaft = revolve(region001, axis = seg01)
 helicalGear(nTeeth = 14, helixAngle = 25deg, bore = 100)
   |> translate(x = 279, y = -200, z = -211)
   |> rotate(pitch = 10)
-

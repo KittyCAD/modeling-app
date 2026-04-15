@@ -2,7 +2,7 @@
 // A small electric motor to power the fan
 
 // Set Units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import Parameters
 import * from "parameters.kcl"
@@ -24,4 +24,3 @@ sketch002 = sketch(on = offsetPlane(XY, offset = 21)) {
 region002 = region(segments = [sketch002.circle1])
 extrude(region002, length = 3.8)
   |> appearance(color = "#dbc89e")
-

@@ -1,9 +1,9 @@
+import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
-
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -20,11 +20,14 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   createSettings,
   type Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import { getToken } from '@src/machines/authMachine'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -34,6 +37,75 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
+
+/**
+ * Returns whether a feature flag is enabled for the current user.
+ * Resolves to `true` when present, otherwise the provided default.
+ */
+export async function userHasFeature(
+  featureFlagId: string,
+  defaultValue: boolean
+): Promise<boolean> {
+  try {
+    const token = await getToken()
+    if (!token) {
+      return defaultValue
+    }
+
+    const now = Date.now()
+    const cacheValid =
+      featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+    type FeaturesResult = CachedFeaturesData | Error
+    let featuresData: FeaturesResult
+
+    if (cacheValid && featuresCache) {
+      featuresData = featuresCache.data
+    } else if (featuresFetchPromise) {
+      featuresData = await featuresFetchPromise
+    } else {
+      const client = createKCClient(token)
+      featuresFetchPromise = kcCall(() =>
+        users.user_features_get({ client })
+      ).then((result) => {
+        featuresFetchPromise = null
+        if (isCachedFeaturesData(result)) {
+          featuresCache = { data: result, fetchedAt: Date.now() }
+        }
+        return result
+      })
+      featuresData = await featuresFetchPromise
+    }
+
+    if (featuresData instanceof Error) {
+      console.error('Error fetching user features:', featuresData.message)
+      return defaultValue
+    }
+
+    const hasFeature = featuresData.features.some(
+      (feat: { id: string }) => feat.id === featureFlagId
+    )
+
+    return hasFeature ? true : defaultValue
+  } catch (error) {
+    console.error(`Error checking feature flag ${featureFlagId}:`, error)
+    return defaultValue
+  }
+}
 
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
@@ -326,6 +398,9 @@ export async function loadAndValidateSettings(
     'user',
     configurationToSettingsPayload(appSettingsPayload)
   )
+
+  settingsNext.modeling.useSketchSolveMode.default =
+    !isPlaywright() && !(await userHasFeature('classic_sketch_mode', false))
 
   // Load the project settings if they exist
   if (projectPath) {

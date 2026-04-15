@@ -18,6 +18,11 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  updateSelectedIds,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function createTestMouseEvent(detail = 1): MouseEvent {
   return new MouseEvent('click', {
@@ -86,12 +91,14 @@ function createDragSnappingDeps() {
       getClientSceneScaleFactor: vi.fn(() => 1),
     } as unknown as SceneInfra,
     onUpdateDragSnapping: vi.fn(),
+    setLastPreviewSegmentsToEdit: vi.fn(),
   }
 }
 
 function setUpMoveToolCallbacks({
   apiObjects = [],
   hoveredId = null,
+  selectedIds = [],
   isAreaSelectActive = false,
   sketchId = 0,
   showNonVisualConstraints = false,
@@ -100,6 +107,7 @@ function setUpMoveToolCallbacks({
 }: {
   apiObjects?: ApiObject[]
   hoveredId?: number | null
+  selectedIds?: Array<SketchSolveSelectionId>
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
@@ -149,7 +157,7 @@ function setUpMoveToolCallbacks({
       hoveredId,
       constraintHoverPopups,
       showNonVisualConstraints,
-      selectedIds: [],
+      selectedIds,
       duringAreaSelectIds: [],
       sketchId,
       draftEntities: undefined,
@@ -170,12 +178,13 @@ function setUpMoveToolCallbacks({
         }
       }
       if (event.type === 'update selected ids') {
-        if (event.data.selectedIds !== undefined) {
-          snapshot.context.selectedIds = event.data.selectedIds
-        }
-        if (event.data.duringAreaSelectIds !== undefined) {
-          snapshot.context.duringAreaSelectIds = event.data.duringAreaSelectIds
-        }
+        Object.assign(
+          snapshot.context,
+          updateSelectedIds({
+            context: snapshot.context,
+            event,
+          } as any)
+        )
       }
     }),
   }
@@ -184,7 +193,17 @@ function setUpMoveToolCallbacks({
     sceneInfra,
     rustContext: {
       editSegments: vi.fn(),
-      settingsActor: null,
+      addConstraint: vi.fn(),
+      deleteObjects: vi.fn(),
+      sketchExecuteMock: vi.fn(),
+      settingsActor: {
+        send: vi.fn(),
+        getSnapshot: vi.fn(() => ({
+          context: {
+            app: {},
+          },
+        })),
+      },
     },
     kclManager: {
       fileSettings: {
@@ -200,6 +219,9 @@ function setUpMoveToolCallbacks({
   }
   if (typeof callbacks.onDragStart !== 'function') {
     throw new Error('Move tool did not register an onDragStart callback')
+  }
+  if (typeof callbacks.onDragEnd !== 'function') {
+    throw new Error('Move tool did not register an onDragEnd callback')
   }
   if (typeof callbacks.onAreaSelect !== 'function') {
     throw new Error('Move tool did not register an onAreaSelect callback')
@@ -224,12 +246,20 @@ function setUpMoveToolCallbacks({
       intersects: Array<unknown>
       selected?: Group
     }) => void,
+    onDragEnd: callbacks.onDragEnd as (args: {
+      intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+      mouseEvent: MouseEvent
+      intersects: Array<unknown>
+      selected?: Group
+    }) => Promise<void>,
     onAreaSelect: callbacks.onAreaSelect as (args: {
+      mouseEvent?: MouseEvent
       startPoint: { twoD: Vector2; threeD: Vector3 }
       currentPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
     sceneInfra,
     getObjectByName,
+    rustContext: context.rustContext,
     send: self.send,
   }
 }
@@ -267,12 +297,14 @@ describe('createOnDragStartCallback', () => {
   it('should track the drag start position, dragged entity id, and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
     const setDraggedEntityId = vi.fn()
+    const setLastPreviewSegmentsToEdit = vi.fn()
     const getHoveredId = vi.fn(() => 13)
     const dismissConstraintHoverPopup = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getHoveredId,
       dismissConstraintHoverPopup,
     })
@@ -339,7 +371,7 @@ function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -385,7 +417,47 @@ function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
+function createCircleApiObject({
+  id,
+  center,
+  start,
+}: {
+  id: number
+  center: number
+  start: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Circle',
+        center,
+        start,
+        ctor: {
+          type: 'Circle',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -402,7 +474,7 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -441,7 +513,7 @@ function createLineApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -479,7 +551,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
     new_objects: [],
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
       operations: [],
       artifactGraph: { map: {}, itemCount: 0 },
@@ -574,6 +646,111 @@ describe('createOnDragCallback', () => {
     // Should still clear the dragging state even if no element was being dragged
     // This ensures state is always clean after drag ends
     expect(setDraggedEntityId).toHaveBeenCalledWith(null)
+  })
+
+  it('does not add a duplicate coincident constraint when re-snapping a point to the same line', async () => {
+    const lineTargetStart = createPointApiObject({
+      id: 1,
+      x: 60,
+      y: 30,
+      owner: 10,
+    })
+    const lineTargetEnd = createPointApiObject({
+      id: 2,
+      x: 60,
+      y: 70,
+      owner: 10,
+    })
+    const lineTarget = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const draggedStart = createPointApiObject({
+      id: 3,
+      x: 20,
+      y: 50,
+      owner: 11,
+    })
+    const draggedPoint = createPointApiObject({
+      id: 4,
+      x: 50,
+      y: 55,
+      owner: 11,
+    })
+    const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const coincidentConstraint = {
+      id: 20,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [4, 10],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+
+    const { onDragStart, onDragEnd, rustContext, send } =
+      setUpMoveToolCallbacks({
+        apiObjects: [
+          lineTargetStart,
+          lineTargetEnd,
+          lineTarget,
+          draggedStart,
+          draggedPoint,
+          draggedLine,
+          coincidentConstraint,
+        ],
+        hoveredId: 4,
+        selectedIds: [4],
+      })
+
+    const editResult = {
+      kclSource: { text: 'edited' },
+      sceneGraphDelta: createSceneGraphDelta([
+        lineTargetStart,
+        lineTargetEnd,
+        lineTarget,
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+        coincidentConstraint,
+      ]),
+      checkpointId: null,
+    }
+    ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(50, 55),
+        threeD: new Vector3(50, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDragEnd({
+      intersectionPoint: {
+        twoD: new Vector2(58, 55),
+        threeD: new Vector3(58, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(rustContext.editSegments).toHaveBeenCalledOnce()
+    expect(rustContext.addConstraint).not.toHaveBeenCalled()
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'update sketch outcome',
+        data: expect.objectContaining({
+          sourceDelta: editResult.kclSource,
+          sceneGraphDelta: editResult.sceneGraphDelta,
+        }),
+      })
+    )
   })
 
   it('should return early when no scene graph delta is available', async () => {
@@ -1050,6 +1227,265 @@ describe('createOnDragCallback', () => {
     expect(callArg).not.toBe(newPosition)
   })
 
+  it('should allow drag snapping for an arc child point when its owner arc remains selected', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const end = createPointApiObject({ id: 3, x: -10, y: 0, owner: 4 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+    const snapTarget = createPointApiObject({ id: 10, x: 12, y: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      center,
+      start,
+      end,
+      arc,
+      snapTarget,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [4],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(12, 2),
+        threeD: new Vector3(12, 2, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'point', id: 10 },
+        position: [12, 2],
+      })
+    )
+  })
+
+  it('should allow drag snapping for a circle child point when its owner circle remains selected', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const circle = createCircleApiObject({ id: 4, center: 1, start: 2 })
+    const snapTarget = createPointApiObject({ id: 10, x: 12, y: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      center,
+      start,
+      circle,
+      snapTarget,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [4],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(12, 2),
+        threeD: new Vector3(12, 2, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'point', id: 10 },
+        position: [12, 2],
+      })
+    )
+  })
+
+  it('should not drag-snap a point back onto its own owner line', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const start = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
+    const end = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      start,
+      end,
+      line,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 55),
+        threeD: new Vector3(30, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(null)
+  })
+
+  it('should drag-snap a point to another line target', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const start = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
+    const end = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const otherStart = createPointApiObject({ id: 4, x: 32, y: 30, owner: 6 })
+    const otherEnd = createPointApiObject({ id: 5, x: 32, y: 70, owner: 6 })
+    const otherLine = createLineApiObject({ id: 6, start: 4, end: 5 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      start,
+      end,
+      line,
+      otherStart,
+      otherEnd,
+      otherLine,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 55),
+        threeD: new Vector3(30, 55, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'line', id: 6 },
+        position: [32, 55],
+      })
+    )
+  })
+
   it('should send event to update sketch outcome after successful edit', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
@@ -1101,6 +1537,7 @@ describe('createOnDragCallback', () => {
     expect(onNewSketchOutcome).toHaveBeenCalledWith({
       ...result,
       writeToDisk: false,
+      suppressExecOutcomeIssues: true,
     })
   })
 
@@ -1224,7 +1661,7 @@ describe('createOnDragCallback', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
     const sceneGraphDelta = createSceneGraphDelta([sketchObject])
     const getContextData = vi.fn(() => ({
@@ -1315,6 +1752,59 @@ describe('createOnClickCallback', () => {
     // Clicking on empty space should clear selection, allowing user to start fresh
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select the origin when clicking near it', async () => {
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+
+    const callback = createOnClickCallback({
+      ...createOnClickDeps(),
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [ORIGIN_TARGET],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select a point at the origin instead of the origin target', async () => {
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const pointAtOrigin = createPointApiObject({ id: 1, x: 0, y: 0 })
+
+    const callback = createOnClickCallback({
+      ...createOnClickDeps([pointAtOrigin]),
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [1],
       duringAreaSelectIds: [],
     })
   })
@@ -1575,6 +2065,43 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     expect(send).toHaveBeenCalledWith({
       type: 'update hovered id',
       data: { hoveredId: 5 },
+    })
+  })
+
+  it('should update hovered id when moving onto the origin', () => {
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [],
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: ORIGIN_TARGET },
+    })
+  })
+
+  it('should update hovered id to a point at the origin instead of the origin target', () => {
+    const pointAtOrigin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [pointAtOrigin],
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: 1 },
     })
   })
 
@@ -2162,6 +2689,31 @@ describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
       data: { duringAreaSelectIds: [5] },
     })
     expect(getObjectByName).toHaveBeenCalledTimes(1)
+  })
+
+  it('should ignore area select updates during right-click drag', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onAreaSelect, send, getObjectByName } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+    })
+
+    onAreaSelect({
+      mouseEvent: new MouseEvent('mousemove', { buttons: 2 }),
+      startPoint: {
+        twoD: new Vector2(-5, -5),
+        threeD: new Vector3(-5, -5, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(15, 5),
+        threeD: new Vector3(15, 5, 0),
+      },
+    })
+
+    expect(send).not.toHaveBeenCalled()
+    expect(getObjectByName).not.toHaveBeenCalled()
   })
 
   it('should not treat an arc as contained when its sweep extends outside the box', () => {

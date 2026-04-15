@@ -1,6 +1,7 @@
 //! Functions for the `kcl` lsp server.
 #![allow(dead_code)]
 
+use std::cell::Cell;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -119,7 +120,6 @@ use crate::lsp::kcl::hover::HoverOpts;
 use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
-use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
@@ -172,10 +172,17 @@ pub struct Backend {
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
+    /// The stdlib completions inside a sketch block, where `solver::*`
+    /// shadows the regular sketch stdlib.
+    pub sketch_block_stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
+    /// The stdlib signatures inside a sketch block.
+    pub sketch_block_stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
     pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
+    /// KwArg docs inside a sketch block.
+    pub sketch_block_stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
     /// KCL keywords
     pub kcl_keywords: HashMap<String, CompletionItem>,
     /// Token maps.
@@ -228,16 +235,23 @@ impl Backend {
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
+        let sketch_block_stdlib_completions =
+            get_completions_from_stdlib_for_sketch_block(&kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
+        let sketch_block_stdlib_signatures = get_signatures_from_stdlib_for_sketch_block(&kcl_std);
         let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
+        let sketch_block_stdlib_args = get_arg_maps_from_stdlib_for_sketch_block(&kcl_std);
         let kcl_keywords = get_keywords();
 
         Ok(Self {
             client,
             fs: Arc::new(fs),
             stdlib_completions,
+            sketch_block_stdlib_completions,
             stdlib_signatures,
+            sketch_block_stdlib_signatures,
             stdlib_args,
+            sketch_block_stdlib_args,
             kcl_keywords,
             zoo_client,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
@@ -253,6 +267,58 @@ impl Backend {
         })
     }
 
+    fn is_in_sketch_block(ast: &crate::Program, position: usize) -> bool {
+        let in_sketch_block = Cell::new(false);
+        let _ = crate::walk::walk(&ast.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch_block) = node
+                && SourceRange::from(&sketch_block.body).contains(position)
+            {
+                in_sketch_block.set(true);
+                return Ok::<bool, anyhow::Error>(false);
+            }
+
+            Ok::<bool, anyhow::Error>(true)
+        });
+
+        in_sketch_block.get()
+    }
+
+    fn stdlib_completions_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, CompletionItem> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_completions
+        } else {
+            &self.stdlib_completions
+        }
+    }
+
+    fn stdlib_signatures_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, SignatureHelp> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_signatures
+        } else {
+            &self.stdlib_signatures
+        }
+    }
+
+    fn stdlib_args_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, HashMap<String, LspArgData>> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_args
+        } else {
+            &self.stdlib_args
+        }
+    }
+
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
@@ -260,11 +326,11 @@ impl Backend {
 
     fn try_arg_completions(
         &self,
-        ast: &Node<crate::parsing::ast::types::Program>,
+        program: &crate::Program,
         position: usize,
         current_code: &str,
     ) -> Option<impl Iterator<Item = CompletionItem>> {
-        let curr_expr = ast.get_expr_for_position(position)?;
+        let curr_expr = program.ast.get_expr_for_position(position)?;
         let hover =
             curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
 
@@ -286,7 +352,8 @@ impl Backend {
             } => Some(callee_name),
             Hover::Type { .. } => None,
         };
-        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+        let stdlib_args = self.stdlib_args_for_position(program, position);
+        let callee_args = maybe_callee.and_then(|fn_name| stdlib_args.get(&fn_name))?;
 
         let arg_label_completions = callee_args
             .iter()
@@ -1064,6 +1131,8 @@ impl LanguageServer for Backend {
         else {
             return Ok(None);
         };
+        let stdlib_completions = self.stdlib_completions_for_position(&ast, pos);
+        let stdlib_args = self.stdlib_args_for_position(&ast, pos);
 
         match hover {
             Hover::Function { name, range } => {
@@ -1082,7 +1151,7 @@ impl LanguageServer for Backend {
                     result
                 } else {
                     // Get the docs for this function.
-                    let Some(completion) = self.stdlib_completions.get(&name) else {
+                    let Some(completion) = stdlib_completions.get(&name) else {
                         return Ok(None);
                     };
                     let Some(docs) = &completion.documentation else {
@@ -1123,7 +1192,7 @@ impl LanguageServer for Backend {
                 }))
             }
             Hover::Type { name, range } => {
-                let Some(completion) = self.stdlib_completions.get(&name) else {
+                let Some(completion) = stdlib_completions.get(&name) else {
                     return Ok(None);
                 };
                 let Some(docs) = &completion.documentation else {
@@ -1157,7 +1226,7 @@ impl LanguageServer for Backend {
             } => {
                 // TODO handle user-defined functions too
 
-                let Some(arg_map) = self.stdlib_args.get(&callee_name) else {
+                let Some(arg_map) = stdlib_args.get(&callee_name) else {
                     return Ok(None);
                 };
 
@@ -1271,14 +1340,13 @@ impl LanguageServer for Backend {
             }
         }
 
-        completions.extend(self.stdlib_completions.values().cloned());
-        completions.extend(self.kcl_keywords.values().cloned());
-
         // Add more to the completions if we have more.
         let Some(ast) = self
             .ast_map
             .get(params.text_document_position.text_document.uri.as_ref())
         else {
+            completions.extend(self.stdlib_completions.values().cloned());
+            completions.extend(self.kcl_keywords.values().cloned());
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
@@ -1288,10 +1356,13 @@ impl LanguageServer for Backend {
             return Ok(None);
         }
 
+        completions.extend(self.stdlib_completions_for_position(&ast, position).values().cloned());
+        completions.extend(self.kcl_keywords.values().cloned());
+
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast, position, current_code) {
             completions.extend(arg_label_completions);
         }
 
@@ -1346,6 +1417,12 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        let ast = self.ast_map.get(&filename);
+        let stdlib_signatures = ast
+            .as_ref()
+            .map(|ast| self.stdlib_signatures_for_position(ast, pos))
+            .unwrap_or(&self.stdlib_signatures);
+
         // Get the character at the position.
         let Some(ch) = current_code.chars().nth(pos) else {
             return Ok(None);
@@ -1375,7 +1452,7 @@ impl LanguageServer for Backend {
                 let last_word = current_code[..p2].split_whitespace().last()?;
 
                 // Get the function name.
-                return self.stdlib_signatures.get(last_word);
+                return stdlib_signatures.get(last_word);
             } else if ch == ',' {
                 // If we have a comma, then get the string in front of
                 // the closest ( and try to get the signature.
@@ -1385,7 +1462,7 @@ impl LanguageServer for Backend {
                 // Get the string in front of the (.
                 let last_word = current_code[..last_paren].split_whitespace().last()?;
                 // Get the function name.
-                return self.stdlib_signatures.get(last_word);
+                return stdlib_signatures.get(last_word);
             }
 
             None
@@ -1409,8 +1486,7 @@ impl LanguageServer for Backend {
             }
         }
 
-        // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename) else {
+        let Some(ast) = ast else {
             return Ok(None);
         };
 
@@ -1427,7 +1503,7 @@ impl LanguageServer for Backend {
         match hover {
             Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
-                let Some(signature) = self.stdlib_signatures.get(&name) else {
+                let Some(signature) = stdlib_signatures.get(&name) else {
                     return Ok(None);
                 };
 
@@ -1438,7 +1514,7 @@ impl LanguageServer for Backend {
                 parameter_index,
                 range: _,
             } => {
-                let Some(signature) = self.stdlib_signatures.get(&name) else {
+                let Some(signature) = stdlib_signatures.get(&name) else {
                     return Ok(None);
                 };
 
@@ -1682,17 +1758,71 @@ impl LanguageServer for Backend {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum StdlibCompletionContext {
+    Default,
+    SketchBlock,
+}
+
+fn is_sketch2_doc(doc: &crate::docs::kcl_doc::DocData) -> bool {
+    doc.qual_name().starts_with("std::solver::")
+}
+
+fn strip_sketch2_prefix(value: &str) -> String {
+    value.strip_prefix("solver::").unwrap_or(value).to_owned()
+}
+
+fn rewrite_completion_for_sketch_block(mut completion: CompletionItem) -> CompletionItem {
+    completion.label = strip_sketch2_prefix(&completion.label);
+    completion.insert_text = completion.insert_text.map(|text| strip_sketch2_prefix(&text));
+    completion
+}
+
+fn rewrite_signature_for_sketch_block(mut signature: SignatureHelp) -> SignatureHelp {
+    for info in &mut signature.signatures {
+        info.label = strip_sketch2_prefix(&info.label);
+    }
+    signature
+}
+
+fn should_skip_stdlib_doc(
+    doc: &crate::docs::kcl_doc::DocData,
+    has_existing: bool,
+    context: StdlibCompletionContext,
+) -> bool {
+    if !has_existing {
+        return false;
+    }
+
+    match context {
+        StdlibCompletionContext::Default => doc.is_experimental() || is_sketch2_doc(doc),
+        StdlibCompletionContext::SketchBlock => doc.is_experimental() && !is_sketch2_doc(doc),
+    }
+}
+
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
+    get_completions_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_completions_from_stdlib_for_sketch_block(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
+    get_completions_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_completions_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
 
     for d in kcl_std.all_docs() {
-        if let Some(ci) = d.to_completion_item() {
+        if let Some(mut ci) = d.to_completion_item() {
             let name = d.name();
-            // When there are multiple items with the same name (e.g. line in
-            // both sketch and sketch2), prefer the stable one.
-            if d.is_experimental() && completions.contains_key(name) {
+            if should_skip_stdlib_doc(d, completions.contains_key(name), context) {
                 continue;
+            }
+            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                ci = rewrite_completion_for_sketch_block(ci);
             }
             completions.insert(name.to_owned(), ci);
         }
@@ -1708,15 +1838,27 @@ pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, 
 
 /// Get signatures from our stdlib.
 pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+    get_signatures_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_signatures_from_stdlib_for_sketch_block(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+    get_signatures_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_signatures_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
 
     for d in kcl_std.all_docs() {
-        if let Some(sig) = d.to_signature_help() {
+        if let Some(mut sig) = d.to_signature_help() {
             let name = d.name();
-            // When there are multiple items with the same name, prefer the
-            // stable one.
-            if d.is_experimental() && signatures.contains_key(name) {
+            if should_skip_stdlib_doc(d, signatures.contains_key(name), context) {
                 continue;
+            }
+            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                sig = rewrite_signature_for_sketch_block(sig);
             }
             signatures.insert(name.to_owned(), sig);
         }
@@ -1764,6 +1906,17 @@ pub struct LspArgData {
 
 /// Get signatures from our stdlib.
 pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
+    get_arg_maps_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_arg_maps_from_stdlib_for_sketch_block(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
+    get_arg_maps_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_arg_maps_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> HashMap<String, HashMap<String, LspArgData>> {
     let mut result = HashMap::new();
 
     for d in kcl_std.all_docs() {
@@ -1789,9 +1942,7 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
             })
             .collect();
         if !arg_map.is_empty() {
-            // When there are multiple items with the same name, prefer the
-            // stable one.
-            if d.is_experimental() && result.contains_key(&f.name) {
+            if should_skip_stdlib_doc(d, result.contains_key(&f.name), context) {
                 continue;
             }
             result.insert(f.name.clone(), arg_map);

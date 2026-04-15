@@ -1,0 +1,264 @@
+// French Press
+// A french press immersion coffee maker
+// Categories: Maker
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define parameters
+carafeDiameter = 4.41
+carafeHeight = 7.32
+handleThickness = 0.65
+
+// Upper ring of the metal structure
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 2.21in, var 5.7in], end = [var 2.31in, var 5.7in])
+  line2 = line(start = [var 2.31in, var 5.7in], end = [var 2.31in, var 6.45in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.31in, var 6.45in], end = [var 2.21in, var 6.45in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.21in, var 6.45in], end = [var 2.21in, var 5.7in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+upperRing = revolve(region001, angle = 360deg, axis = Y)
+  |> appearance(color = "#f93706", metalness = 70, roughness = 30)
+
+// Create an angled plane to sketch the supports
+supportsPlane = {
+  origin = [-0.26, 0.26, 0.0],
+  xAxis = [1, 1, 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+// Cross section of the metal supports
+sketch002 = sketch(on = supportsPlane) {
+  line1 = line(start = [var 2.21in, var 5.7in], end = [var 2.31in, var 5.7in])
+  line2 = line(start = [var 2.31in, var 5.7in], end = [var 2.31in, var 0.5in])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 2.31in, var 0.5in], end = [var 2.33in, var 0.37in], center = [var 2.61in, var 0.5in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 2.33in, var 0.37in], end = [var 2.63in, var -0.15in])
+  coincident([arc3.end, line4.start])
+  arc5 = arc(start = [var 1.81in, var -0.97in], end = [var 2.63in, var -0.15in], center = [var 2.11in, var -0.45in])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var 1.81in, var -0.97in], end = [var 0.49in, var -0.2in])
+  coincident([arc5.start, line6.start])
+  arc7 = arc(start = [var 0.49in, var -0.2in], end = [var 0.24in, var -0.13in], center = [var 0.24in, var -0.63in])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var 0.24in, var -0.13in], end = [var 0.1in, var -0.13in])
+  coincident([arc7.end, line8.start])
+  line9 = line(start = [var 0.1in, var -0.13in], end = [var 0.1in, var -0.03in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.1in, var -0.03in], end = [var 0.27in, var -0.03in])
+  coincident([line9.end, line10.start])
+  arc11 = arc(start = [var 0.57in, var -0.11in], end = [var 0.27in, var -0.03in], center = [var 0.27in, var -0.63in])
+  coincident([line10.end, arc11.end])
+  line12 = line(start = [var 0.57in, var -0.11in], end = [var 1.87in, var -0.86in])
+  coincident([arc11.start, line12.start])
+  arc13 = arc(start = [var 1.87in, var -0.86in], end = [var 2.55in, var -0.18in], center = [var 2.12in, var -0.43in])
+  coincident([line12.end, arc13.start])
+  line14 = line(start = [var 2.55in, var -0.18in], end = [var 2.27in, var 0.31in])
+  coincident([arc13.end, line14.start])
+  arc15 = arc(start = [var 2.21in, var 0.56in], end = [var 2.27in, var 0.31in], center = [var 2.81in, var 0.56in])
+  coincident([line14.end, arc15.end])
+  line16 = line(start = [var 2.21in, var 0.56in], end = [var 2.21in, var 5.7in])
+  coincident([arc15.start, line16.start])
+  horizontal(line2)
+  vertical(arc3)
+  horizontal(line9)
+  vertical(line10)
+  horizontal(arc11)
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+metalSupports = extrude(region002, length = 0.75)
+  |> patternCircular3d(
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 4,
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> appearance(color = "#f93706", metalness = 60, roughness = 30)
+
+// Cross plate
+sketch003 = sketch(on = offsetPlane(XY, offset = 1)) {
+  circle1 = circle(start = [var 2.06in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+crossPlate = extrude(region003, length = 0.050)
+  |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
+
+// Cross plate slot pattern profile
+crossPlateSlotsProfile = startSketchOn(crossPlate, face = END)
+  |> startProfile(at = [0.3, 0.17])
+  |> yLine(length = 1.2)
+  |> arc(angleStart = 90deg, angleEnd = -30deg, radius = 1.2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = 3,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+crossPlateSlotsCut = extrude(crossPlateSlotsProfile, length = -0.050)
+
+// Filter screen
+sketch004 = sketch(on = XZ) {
+  line1 = line(start = [var 0.15in, var 1.11in], end = [var 2.01in, var 1.11in])
+  line2 = line(start = [var 2.01in, var 1.11in], end = [var 2.14in, var 1.19in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.14in, var 1.19in], end = [var 2.16in, var 1.14in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.16in, var 1.14in], end = [var 2.03in, var 1.07in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.03in, var 1.07in], end = [var 0.15in, var 1.07in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.15in, var 1.07in], end = [var 0.15in, var 1.11in])
+  coincident([line5.end, line6.start])
+  horizontal(line2)
+  horizontal(line6)
+}
+region004 = region(segments = [sketch004.line1, sketch004.line2])
+filterScreen = revolve(region004, axis = Y)
+  |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
+
+// Plunger and stem
+sketch005 = sketch(on = XZ) {
+  line1 = line(start = [var 0.1in, var 1in], end = [var 0.2in, var 1in])
+  line2 = line(start = [var 0.2in, var 1in], end = [var 0.05in, var 0.97in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.05in, var 0.97in], end = [var 0.05in, var 10.97in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.05in, var 10.97in], end = [var 0.65in, var 10.97in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.65in, var 10.97in], end = [var 0.65in, var 10.92in])
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var 0.05in, var 10.32in], end = [var 0.65in, var 10.92in], center = [var 0.05in, var 10.92in])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var 0.05in, var 10.32in], end = [var 0.1in, var 1in])
+  coincident([arc6.start, line7.start])
+  vertical(line4)
+  vertical(arc6)
+}
+region005 = region(segments = [sketch005.line1, sketch005.line2])
+plungerStem = revolve(region005, axis = Y)
+  |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)
+
+// Spiral plate
+sketch006 = sketch(on = offsetPlane(XY, offset = 1.12)) {
+  circle1 = circle(start = [var 1.97in, var 0in], center = [var 0in, var 0in])
+}
+region006 = region(segments = [sketch006.circle1])
+spiralPlate = extrude(region006, length = 0.050)
+
+// Pattern holes in the spiral plate (large radius)
+sketch007 = startSketchOn(spiralPlate, face = END)
+  |> circle(center = [1.4, 0], radius = .3)
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = 8,
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+spiralPlateLargeHoles = extrude(sketch007, length = -0.050)
+
+// Pattern holes in the spiral plate (small radius)
+sketch008 = startSketchOn(spiralPlate, face = END)
+  |> circle(center = [0.6, 0], radius = .2)
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = 4,
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+spiralPlateSmallHoles = extrude(sketch008, length = -0.050)
+
+// Revolve a glass carafe body
+sketch009 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 1.71in, var 0in])
+  arc2 = arc(start = [var 1.71in, var 0in], end = [var 2.21in, var 0.5in], center = [var 1.71in, var 0.5in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 2.21in, var 0.5in], end = [var 2.21in, var 7.02in])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var 2.21in, var 7.02in], end = [var 2.22in, var 7.02in])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var 2.22in, var 7.02in], end = [var 2.07in, var 7.17in], center = [var 2.22in, var 7.17in])
+  coincident([line4.end, arc5.start])
+  line6 = line(start = [var 2.07in, var 7.17in], end = [var 2.06in, var 0.55in])
+  coincident([arc5.end, line6.start])
+  arc7 = arc(start = [var 1.56in, var 0.05in], end = [var 2.06in, var 0.55in], center = [var 1.56in, var 0.55in])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var 1.56in, var 0.05in], end = [var 0in, var 0.05in])
+  coincident([arc7.start, line8.start])
+  line9 = line(start = [var 0in, var 0.05in], end = [var 0in, var 0in])
+  coincident([line8.end, line9.start])
+  horizontal(arc2)
+  vertical(line4)
+  horizontal(arc5)
+  horizontal(line9)
+}
+region007 = region(segments = [sketch009.line1, sketch009.arc2])
+carafe = revolve(region007, axis = Y)
+  |> appearance(
+       color = "#ffffff",
+       metalness = 5,
+       roughness = 80,
+       opacity = 20,
+     )
+
+// Draw and revolve the lid
+sketch010 = sketch(on = XZ) {
+  line1 = line(start = [var 0.2in, var 6.62in], end = [var 2.11in, var 6.62in])
+  line2 = line(start = [var 2.11in, var 6.62in], end = [var 2.11in, var 7.32in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.11in, var 7.32in], end = [var 2.4in, var 7.32in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.4in, var 7.32in], end = [var 2.4in, var 7.72in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.4in, var 7.72in], end = [var 2.38in, var 7.74in])
+  coincident([line4.end, line5.start])
+  line7 = line(start = [var 0.08in, var 8.74in], end = [var 0.2in, var 6.62in])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+}
+region008 = region(segments = [sketch010.line1, sketch010.line2])
+lid = revolve(region008, axis = Y)
+  |> appearance(color = "#f93706", metalness = 60, roughness = 30)
+
+// Draw and extrude handle
+sketch011 = sketch(on = offsetPlane(XZ, offset = handleThickness / 2)) {
+  line1 = line(start = [var 2.3in, var 6.4in], end = [var 2.86in, var 6.4in])
+  arc2 = arc(start = [var 4.1in, var 5.26in], end = [var 2.86in, var 6.4in], center = [var 2.86in, var 5.16in])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var 4.17in, var 1.6in], end = [var 4.1in, var 5.26in], center = [var -24.04in, var 2.89in])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var 3.13in, var 0.61in], end = [var 4.17in, var 1.6in], center = [var 3.13in, var 1.65in])
+  coincident([arc3.start, arc4.end])
+  line5 = line(start = [var 3.13in, var 0.61in], end = [var 2.27in, var 0.61in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var 2.27in, var 0.61in], end = [var 2.27in, var 1.04in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 2.27in, var 1.04in], end = [var 3in, var 1.02in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var 3in, var 1.02in], end = [var 3.63in, var 1.6in], center = [var 3.02in, var 1.63in])
+  coincident([line7.end, arc8.start])
+  arc9 = arc(start = [var 3.63in, var 1.6in], end = [var 3.56in, var 5.15in], center = [var -20.05in, var 2.91in])
+  coincident([arc8.end, arc9.start])
+  arc10 = arc(start = [var 3.56in, var 5.15in], end = [var 2.72in, var 5.88in], center = [var 2.76in, var 5.07in])
+  coincident([arc9.end, arc10.start])
+  line11 = line(start = [var 2.72in, var 5.88in], end = [var 2.3in, var 5.88in])
+  coincident([arc10.end, line11.start])
+  line12 = line(start = [var 2.3in, var 5.88in], end = [var 2.3in, var 6.4in])
+  coincident([line11.end, line12.start])
+  tangent([arc8, arc9])
+  tangent([arc9, arc10])
+  horizontal(line12)
+}
+region009 = region(segments = [sketch011.line1, sketch011.arc2])
+handle = extrude(region009, length = -handleThickness)
+  |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)

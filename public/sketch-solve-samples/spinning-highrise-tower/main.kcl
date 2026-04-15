@@ -2,7 +2,7 @@
 // A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation
 // Categories: Maker
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Define global parameters for floor geometry and building layout
 floorCount = 17
@@ -98,4 +98,3 @@ facadeStart = facadeWidth / 2
 facadeGeometry = boxFn(plane = XY, width = facadeWidth, height = facadeHeight)
   |> patternTransform(instances = floorCount, transform = transformFn)
   |> appearance(color = "#151819")
-

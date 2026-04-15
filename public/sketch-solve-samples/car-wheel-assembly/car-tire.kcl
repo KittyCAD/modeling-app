@@ -2,7 +2,7 @@
 // A tire is a critical component of a vehicle that provides the necessary traction and grip between the car and the road. It supports the vehicle's weight and absorbs shocks from road irregularities.
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -41,4 +41,3 @@ region001 = region(segments = [tireSketch.line1, tireSketch.arc2])
 carTire = revolve(region001, axis = Y)
   |> appearance(color = "#0a0a0a", roughness = 20)
   |> translate(y = -tBell + offset)
-

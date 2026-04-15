@@ -2,7 +2,7 @@
 // A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.
 // Categories: Automotive
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // -----------------------------
 // Parameters
@@ -126,4 +126,3 @@ crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 
 
 appearance(crashBoxFinal, color = "#00aaff")
-

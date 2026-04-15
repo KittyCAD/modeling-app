@@ -179,6 +179,35 @@ description: Operations executed propeller.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "tolerance",
+      "value": {
+        "type": "Number",
+        "value": 0.000000005,
+        "ty": {
+          "type": "Default",
+          "len": "in",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -193,7 +222,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -295,7 +324,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -362,7 +391,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -424,7 +453,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -465,7 +494,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -511,7 +540,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -569,7 +598,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -600,7 +629,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -688,7 +717,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -719,7 +748,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -780,7 +809,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -817,6 +846,18 @@ description: Operations executed propeller.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.000000005,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
         "tools": {
           "value": {
             "type": "Solid",
@@ -831,7 +872,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -862,7 +903,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -950,7 +991,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1008,7 +1049,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1047,12 +1088,25 @@ description: Operations executed propeller.kcl
         },
         "sourceRange": []
       },
-      "labeledArgs": {},
+      "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.000000005,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1204,7 +1258,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1267,7 +1321,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "ExpressionStatementExpr"
@@ -1379,7 +1433,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1403,7 +1457,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1427,7 +1481,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1451,7 +1505,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1475,7 +1529,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1499,7 +1553,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1523,7 +1577,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1547,7 +1601,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

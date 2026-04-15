@@ -13,6 +13,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  getSelectedEqualLengthConstraintInput,
   getSelectedFixedConstraintInput,
   getSelectedTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -48,6 +49,14 @@ export const modelingMachineStateToToolbarModeName = (
   }
   return toolbarConfigurationName
 }
+
+export const isSketchToolbarTransitioning = (
+  state: StateFrom<typeof modelingMachine>
+): boolean =>
+  state.matches('animating to plane') ||
+  state.matches('animating to existing sketch') ||
+  state.matches('animating to sketch solve mode') ||
+  state.matches('animating to existing sketch solve')
 
 export type ToolbarDropdown = {
   id: string
@@ -1265,7 +1274,7 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain equal length' }),
                 status: 'available',
-                title: 'Equal Length',
+                title: 'Equal',
                 showTitle: false,
                 description:
                   'Constrain two or more segments to have equal length.',
@@ -1735,13 +1744,20 @@ export const useToolbarConfig = () => {
             id: 'equalLength',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
-                type: 'LinesEqualLength',
+                type: 'EqualLength',
               }),
             icon: 'equal',
             status: 'available',
-            title: 'Equal Length',
+            disabled: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null
+                ? 'Select two or more lines, or two or more arcs and circles, to add an equal constraint.'
+                : undefined,
+            title: 'Equal',
             hotkey: 'E',
-            description: 'Constrain lines to have equal length.',
+            description:
+              'Constrain lines to have equal length, or arcs and circles to have equal radius.',
             links: [],
             isActive: (state) => false,
           },
@@ -1850,23 +1866,6 @@ export const useToolbarConfig = () => {
             description: 'Toggle construction geometry on selected segments.',
             links: [],
             isActive: (state) => false,
-          },
-          {
-            id: 'show-constraints',
-            onClick: ({ modelingSend }) =>
-              modelingSend({
-                type: 'toggle non-visual constraints',
-              }),
-            icon: 'eyeOpen',
-            status: 'available',
-            title: 'Show Constraints',
-            hotkey: 'S',
-            description:
-              'Toggle visibility for sketch constraints that do not have their own UI yet.',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.showNonVisualConstraints,
           },
         ],
       },

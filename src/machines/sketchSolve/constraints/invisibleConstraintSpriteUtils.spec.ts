@@ -295,4 +295,33 @@ describe('invisibleConstraintSpriteUtils', () => {
 
     expect(segmentIds).toEqual([1, 2, 10, 12])
   })
+
+  it('includes directly constrained segments in a coincident constraint highlight', () => {
+    const point = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const otherPoint = createPointApiObject({ id: 2, x: 10, y: 0, owner: 10 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineStart = createPointApiObject({ id: 3, x: 20, y: 0, owner: 11 })
+    const lineEnd = createPointApiObject({ id: 4, x: 20, y: 10, owner: 11 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [1, 11],
+    })
+
+    const segmentIds = findSegmentsForInvisibleConstraint(
+      coincident as InvisibleConstraintObject,
+      createObjectsArray([
+        point,
+        otherPoint,
+        lineA,
+        lineStart,
+        lineEnd,
+        lineB,
+        coincident,
+      ])
+    )
+
+    expect(segmentIds).toEqual(expect.arrayContaining([1, 10, 11]))
+    expect(segmentIds).toHaveLength(3)
+  })
 })

@@ -1,4 +1,4 @@
-// Stylized Dump Truck
+// Stylized Toy Dump Truck
 // A simplified, parametric 3D toy dump truck with front cab, extended cargo bed, and four wheels.
 // Categories: Automotive, Maker
 
@@ -12,7 +12,7 @@
 // - Front circular headlights and rear rectangular taillights
 
 // Set units and version
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Chassis dimensions
 chassisLength = 4.2 // total vehicle length
@@ -293,4 +293,3 @@ taillightsProfile = startProfile(
      )
 taillightsBody = extrude(taillightsProfile, length = lightDepth)
   |> appearance(%, color = "#ff0000")
-

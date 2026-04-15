@@ -2,7 +2,7 @@
 // This is used to mount a rod to a 45° angled ceiling
 // Categories: Construction
 
-@settings(defaultLengthUnit = cm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = cm)
 
 depth = 1
 
@@ -213,4 +213,3 @@ mounting_hole4 = extrude(region007, length = -plate_thickness)
          getCommonEdge(faces = [capStart002, seg08])
        ],
      )
-

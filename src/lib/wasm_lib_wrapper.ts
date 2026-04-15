@@ -32,6 +32,7 @@ import type {
   relevant_file_extensions as RelevantFileExtensions,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
+  sketch_checkpoint_limit as SketchCheckpointLimit,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -140,4 +141,7 @@ export const import_file_extensions: typeof ImportFileExtensions = () => {
 }
 export const relevant_file_extensions: typeof RelevantFileExtensions = () => {
   return getModule().relevant_file_extensions()
+}
+export const sketch_checkpoint_limit: typeof SketchCheckpointLimit = () => {
+  return getModule().sketch_checkpoint_limit()
 }

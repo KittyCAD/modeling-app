@@ -1,5 +1,5 @@
-// Stylized Cybertruck
-// A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.
+// Stylized Toy Cybertruck
+// A simplified, parametric 3-D model of a low-poly toy cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.
 // Categories: Automotive, Maker
 
 // The model includes:
@@ -15,7 +15,7 @@
 // making it suitable for games, educational tools, or prototyping environments.
 // Set units and version
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Chassis dimensions
 chassisLength = 3.5 // total vehicle length
@@ -264,4 +264,3 @@ region002 = region(segments = [
 ])
 taillightsBody = extrude(region002, length = lightDepth)
   |> appearance(%, color = "#ff0000")
-

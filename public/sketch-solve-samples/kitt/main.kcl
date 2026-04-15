@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // Kitt
 // The beloved KittyCAD mascot in a voxelized style.
 // Categories: Maker
@@ -546,4 +544,3 @@ kitVentC = pixelBox(
   height = kitVentHoleWidth,
   depth = kitVentHoleDepth,
 )
-

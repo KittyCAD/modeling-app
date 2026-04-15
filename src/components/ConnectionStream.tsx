@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -10,8 +10,14 @@ import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sendSelectEventToEngine } from '@src/lib/selections'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import {
+  getEngineRegionSelectionFromEntity,
+  sendSelectEventToEngine,
+} from '@src/lib/selections'
+import {
+  getArtifactOfTypes,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -30,8 +36,10 @@ const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
+  sketchSolveStreamDimming?: number
 }) => {
-  const { settings, project } = useApp()
+  const { settings, project, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
@@ -105,7 +113,7 @@ export const ConnectionStream = (props: {
         sendSelectEventToEngine(e, videoRef.current, {
           engineCommandManager,
         })
-          .then((result) => {
+          .then(async (result) => {
             if (!result) {
               return
             }
@@ -114,6 +122,44 @@ export const ConnectionStream = (props: {
               // No entity selected. This is benign
               return
             }
+            const artifact = kclManager.artifactGraph.get(entity_id)
+            const sketchBlockArtifact = getSketchBlockForArtifact(
+              artifact,
+              kclManager.artifactGraph
+            )
+            if (sketchBlockArtifact) {
+              sceneInfra.modelingSend({
+                type: 'Edit sketch solve',
+                data: { artifactId: sketchBlockArtifact.id },
+              })
+              return
+            }
+
+            // If the selection is an undeclared region, get the corresponding sketch
+            if (!artifact) {
+              try {
+                const regionSelection =
+                  await getEngineRegionSelectionFromEntity(
+                    entity_id,
+                    kclManager.artifactGraph,
+                    kclManager.ast,
+                    engineCommandManager,
+                    wasmInstance
+                  )
+
+                if (regionSelection && regionSelection.sketchId) {
+                  sceneInfra.modelingSend({
+                    type: 'Edit sketch solve',
+                    data: { artifactId: regionSelection.sketchId },
+                  })
+                }
+
+                return
+              } catch (e) {
+                return e
+              }
+            }
+
             const path = getArtifactOfTypes(
               {
                 key: entity_id,
@@ -439,6 +485,7 @@ export const ConnectionStream = (props: {
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
+        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
       <ViewControlContextMenu
         event="mouseup"

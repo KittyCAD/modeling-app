@@ -3,7 +3,7 @@
 // Categories: Aerospace
 
 // Define units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 bracketWidth = 2
@@ -160,4 +160,3 @@ translate(
   z = bracketThickness,
   global = true,
 )
-

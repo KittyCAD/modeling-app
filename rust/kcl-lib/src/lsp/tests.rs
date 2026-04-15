@@ -572,7 +572,7 @@ async fn test_kcl_lsp_completions() {
                 version: 1,
                 // Blank lines to check that we get completions even in an AST newline thing.
                 text: r#"
-                
+
 thing= 1
 st"#
                 .to_string(),
@@ -738,6 +738,112 @@ async fn test_arg_label_completions() {
     assert!(
         twist_completions.contains("twistCenter"),
         "actual: {twist_completions:?}"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sketch_block_completion_unqualifies_sketch2_function() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"profile = sketch(on = XY) {
+  co
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 3, character: 4 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Unexpected response from LSP");
+    };
+
+    let coincident = completions
+        .into_iter()
+        .find(|completion| completion.label == "coincident")
+        .expect("missing coincident completion");
+
+    let insert_text = coincident.insert_text.expect("missing coincident insert text");
+    assert!(
+        insert_text.starts_with("coincident("),
+        "actual insert_text: {insert_text:?}"
+    );
+    assert!(
+        !insert_text.starts_with("solver::"),
+        "actual insert_text: {insert_text:?}"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sketch_block_completion_prefers_sketch2_shadowed_function() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"@settings(experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  li
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 3, character: 4 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Unexpected response from LSP");
+    };
+
+    let line = completions
+        .into_iter()
+        .find(|completion| completion.label == "line")
+        .expect("missing line completion");
+
+    let insert_text = line.insert_text.expect("missing line insert text");
+    assert!(
+        insert_text.starts_with("line(start = "),
+        "actual insert_text: {insert_text:?}"
     );
 }
 
@@ -1761,7 +1867,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5"#
@@ -1795,7 +1901,7 @@ sphereDia = 0.5"#
                 .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
                 .unwrap()
         );
-        assert_eq!(semantic_tokens.data[1].length, 232);
+        assert_eq!(semantic_tokens.data[1].length, 231);
         assert_eq!(semantic_tokens.data[1].delta_start, 0);
         assert_eq!(semantic_tokens.data[1].delta_line, 1);
         assert_eq!(
@@ -1988,7 +2094,7 @@ async fn test_kcl_lsp_formatting_extra_parens() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
@@ -2508,7 +2614,7 @@ async fn test_copilot_lsp_completions() {
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  
+
   |> close()
   |> extrude(length = 10)
 "#

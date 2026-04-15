@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 mugDiameter = 80
@@ -114,4 +114,3 @@ mug = revolve(region003, axis = Y)
 // Join the mug and handle, then add an appearance
 [handle, mug]
   |> appearance(color = "#9b1212", metalness = 40, roughness = 30)
-

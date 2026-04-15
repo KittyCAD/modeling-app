@@ -2,7 +2,7 @@
 // Part consists of a 70 mm diameter retainer plate with a cylindrical lower mount body below it, and a eye-end mount (or hole) at the bottom. Above the retainer plate, there is a cylindrical damper body with a hole through its length that allows a piston shaft to pass through it when included in the coilover assembly.
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import retainerPlateDia, retainerPlateLength, baseSeatingDia, baseSeatingLength, lowerMountDia, damperBodyLength, lowerMountLength, eyeEndMountOuterDia, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, damperBodyDia, pistonShaftHoleDia, lengthBelowRetainerPlate, lowerMountOverallLength, pointOffset from "parameters.kcl"
@@ -131,4 +131,3 @@ pistonShaftProfile = sketch(on = pistonShaftSketch) {
 }
 region008 = region(segments = [pistonShaftProfile.circle1])
 pistonShaftHole = extrude(region008, length = -damperBodyLength)
-

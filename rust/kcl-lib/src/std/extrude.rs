@@ -53,7 +53,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
-use crate::std::sketch2::create_segments_in_engine;
+use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -221,17 +221,17 @@ pub(crate) async fn build_segment_surface_sketch(
             )));
         }
 
-        if segment.is_construction() {
+        if matches!(segment.kind, SegmentKind::Point { .. }) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Construction segments cannot be used here. Select non-construction sketch segments instead."
-                    .to_owned(),
+                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
                 vec![source_range],
             )));
         }
 
-        if matches!(segment.kind, SegmentKind::Point { .. }) {
+        if segment.is_construction() {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
+                "Construction segments cannot be used here. Select non-construction sketch segments instead."
+                    .to_owned(),
                 vec![source_range],
             )));
         }
@@ -930,7 +930,7 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
             }
             other => {
                 exec_state.warn(
-                    crate::CompilationError {
+                    crate::CompilationIssue {
                         source_range: args.source_range,
                         message: format!("unknown extrusion face type {other:?}"),
                         suggestion: None,
@@ -1087,6 +1087,7 @@ mod tests {
             sketch_id: exec_state.next_uuid(),
             sketch: None,
             tag: None,
+            node_path: None,
             meta: vec![],
         };
         KclValue::Segment {

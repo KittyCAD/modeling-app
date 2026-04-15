@@ -14,7 +14,8 @@ import type { KclManager } from '@src/lang/KclManager'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const { engineCommandManager, kclManager, rustContext } = context
+  const { engineCommandManager, kclManager, rustContext, wasmInstance } =
+    context
   const stateRef = useRef(state)
   stateRef.current = state
 
@@ -49,11 +50,12 @@ export function useEngineConnectionSubscriptions() {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent, {
-            rustContext,
-            artifactGraph: kclManager.artifactGraph,
             engineCommandManager,
+            kclManager,
+            rustContext,
+            wasmInstance,
           })
-          event && send(event)
+          if (event) send(event)
         })().catch(reportRejection)
       },
     })
@@ -67,6 +69,7 @@ export function useEngineConnectionSubscriptions() {
     send,
     engineCommandManager,
     rustContext,
+    wasmInstance,
   ])
 
   useEffect(() => {

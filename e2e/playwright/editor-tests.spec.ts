@@ -1479,7 +1479,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     const toast1 = page.getByText('Submitting support ticket...')
     await expect(toast1).toBeVisible()
 
-    const toast2 = page.getByText('Support ticket created successfully')
+    const toast2 = page.getByText('Support ticket created successfully.')
     await expect(toast2).toBeVisible()
   })
 })

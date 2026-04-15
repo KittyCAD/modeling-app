@@ -2,7 +2,7 @@
 // 3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // ──────────────────
 // PROFILE PARAMETERS
@@ -149,4 +149,3 @@ fillets = fillet(
     ])
   ],
 )
-

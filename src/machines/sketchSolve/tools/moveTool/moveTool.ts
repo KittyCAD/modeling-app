@@ -1,3 +1,4 @@
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
   ApiObject,
   ExistingSegmentCtor,
@@ -5,28 +6,21 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isArray, roundOff } from '@src/lib/utils'
-import { Group, type Object3D, Vector2, Vector3 } from 'three'
-import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { Coords2d } from '@src/lang/util'
+import { type NumericSuffix, baseUnitToNumericSuffix } from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import {
-  buildSegmentCtorFromObject,
-  type SolveActionArgs,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
-import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
-import {
-  findContainedSegments,
-  findIntersectingSegments,
-  isIntersectionSelectionMode,
-  project3DToScreen,
-  removeSelectionBox,
-  type SelectionBoxVisualState,
-  updateSelectionBox,
-} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { isArray, roundOff } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
+import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   getCoincidentCluster,
   isConstraint,
@@ -35,29 +29,116 @@ import {
 import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
-  isInvisibleConstraintObject,
   isConstrainingSegment,
+  isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
-import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
-import type {
-  OnMoveCallbackArgs,
-  SceneInfra,
-} from '@src/clientSideScene/sceneInfra'
-import type { Coords2d } from '@src/lang/util'
-import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import { SKETCH_FILE_VERSION } from '@src/lib/constants'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import {
+  findClosestApiObjects,
+  getSketchHoverDistance,
+} from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  allowSnapping,
-  getSnappingCandidates,
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
+  type SolveActionArgs,
+  buildSegmentCtorFromObject,
+  getObjectSelectionIds,
+  isObjectSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
   type SnappingCandidate,
+  allowSnapping,
+  getConstraintForSnapTarget,
+  getObjectIdForSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
+  getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
-  hideSnappingPreviewSprite,
-  updateSnappingPreviewSprite,
-} from '@src/machines/sketchSolve/snappingPreviewSprite'
+  type SelectionBoxVisualState,
+  findContainedSegments,
+  findIntersectingSegments,
+  isIntersectionSelectionMode,
+  project3DToScreen,
+  removeSelectionBox,
+  updateSelectionBox,
+} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { Group, type Object3D, Vector2, Vector3 } from 'three'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+
+type ClosestSelectionTarget = {
+  distance: number
+  selectionId: SketchSolveSelectionId
+  apiObject: ApiObject | null
+}
+
+function getClosestSelectionTarget(
+  mousePosition: Coords2d,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+): ClosestSelectionTarget | null {
+  const closestObject = findClosestApiObjects(
+    mousePosition,
+    objects,
+    sceneInfra
+  )[0]
+
+  const selectionCandidates: ClosestSelectionTarget[] = []
+  if (closestObject) {
+    selectionCandidates.push({
+      distance: closestObject.distance,
+      selectionId: closestObject.apiObject.id,
+      apiObject: closestObject.apiObject,
+    })
+  }
+
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const hoverDistance = getSketchHoverDistance(
+    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
+  )
+  const originDistance = distance2d(mousePosition, [0, 0])
+
+  if (originDistance < hoverDistance) {
+    selectionCandidates.push({
+      distance: originDistance,
+      selectionId: ORIGIN_TARGET,
+      apiObject: null,
+    })
+  }
+
+  selectionCandidates.sort((a, b) => {
+    const priorityDelta = getSelectionPriority(a) - getSelectionPriority(b)
+    if (priorityDelta !== 0) {
+      return priorityDelta
+    }
+    return a.distance - b.distance
+  })
+  return selectionCandidates[0] ?? null
+}
+
+// Priorities are similar to snapping/getSnappingCandidates:
+// - point like objects (point segment, origin) should take precedence
+// However:
+// - axes cannot be selected, but they can be snapped to
+// - only points can be snapped to, other segment types cannot (for now)
+function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
+  if (isInvisibleConstraintObject(selectionTarget.apiObject)) {
+    return 0
+  }
+  if (isPointSegment(selectionTarget.apiObject)) {
+    return 1
+  }
+  if (selectionTarget.selectionId === 'origin') {
+    return 2
+  }
+
+  return 3
+}
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -174,17 +255,23 @@ function getDragPointSnappingCandidate({
   if (draggedEntityId === null) {
     return null
   }
-  if (
-    selectedIds.length >= 2 ||
-    (selectedIds.length === 1 && selectedIds[0] !== draggedEntityId)
-  ) {
-    // dragging more than 1 point -> not supported
-    return null
-  }
-
   const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
   if (!isPointSegment(draggedObject)) {
     // snapping only works with points for now
+    return null
+  }
+
+  const selectedIdsWithoutOwner = selectedIds.filter(
+    (selectedId) => selectedId !== draggedObject.kind.segment.owner
+  )
+  if (
+    selectedIdsWithoutOwner.length >= 2 ||
+    (selectedIdsWithoutOwner.length === 1 &&
+      selectedIdsWithoutOwner[0] !== draggedEntityId)
+  ) {
+    // Drag snapping only supports a single dragged point, but allow the point's
+    // owner segment to remain selected because arc/circle point drags often keep
+    // the parent segment selected in the move tool.
     return null
   }
 
@@ -192,6 +279,13 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedSegmentIds = new Set<number>()
+  for (const pointId of coincidentPointIds) {
+    const point = sceneGraphDelta.new_graph.objects[pointId]
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
+      excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
 
   const currentSketchObjects = getCurrentSketchObjectsById(
     sceneGraphDelta.new_graph.objects,
@@ -201,10 +295,69 @@ function getDragPointSnappingCandidate({
   // coincident point cluster as the dragged point.
   const candidate =
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) => !coincidentPointIds.includes(candidate.apiObject.id)
+      (candidate) => {
+        if (candidate.target.type === 'point') {
+          return !coincidentPointIds.includes(candidate.target.id)
+        }
+
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        return (
+          snapTargetSegmentId === null ||
+          !excludedSegmentIds.has(snapTargetSegmentId)
+        )
+      }
     ) ?? null
 
   return candidate
+}
+
+function hasCoincidentConstraintWithOrigin(
+  pointId: number,
+  objects: ApiObject[]
+) {
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      obj.kind.constraint.segments.includes(pointId) &&
+      obj.kind.constraint.segments.includes('ORIGIN')
+  )
+}
+
+function hasCoincidentConstraintForSnapTarget(
+  pointId: number,
+  target: SnappingCandidate['target'],
+  objects: ApiObject[]
+) {
+  const coincidentSegments = getCoincidentSegmentsForSnapTarget(pointId, target)
+  if (coincidentSegments === null) {
+    return false
+  }
+
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      coincidentSegments.every((segment) =>
+        (obj.kind.constraint.segments as ConstraintSegment[]).includes(segment)
+      )
+  )
+}
+
+function getZeroAxisDistanceConstraintWithOrigin(
+  pointId: number,
+  constraintType: 'HorizontalDistance' | 'VerticalDistance',
+  objects: ApiObject[]
+) {
+  return (
+    objects.find(
+      (obj) =>
+        isConstraint(obj, constraintType) &&
+        obj.kind.constraint.points.includes(pointId) &&
+        (obj.kind.constraint.points as Array<number | 'ORIGIN'>).includes(
+          'ORIGIN'
+        ) &&
+        obj.kind.constraint.distance.value === 0
+    ) ?? null
+  )
 }
 
 /**
@@ -216,12 +369,16 @@ function getDragPointSnappingCandidate({
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
   setDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
   getHoveredId,
   dismissConstraintHoverPopup,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   setDraggedEntityId: (entityId: number | null) => void
-  getHoveredId: () => number | null
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
+  getHoveredId: () => SketchSolveSelectionId | null
   dismissConstraintHoverPopup: () => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
@@ -232,7 +389,9 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
-    setDraggedEntityId(getHoveredId())
+    setLastPreviewSegmentsToEdit(null)
+    const hoveredId = getHoveredId()
+    setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
 }
 
@@ -286,7 +445,7 @@ export function createOnClickCallback({
   getApiObjects: () => ApiObject[]
   sceneInfra: SceneInfra
   onUpdateSelectedIds: (data: {
-    selectedIds: Array<number>
+    selectedIds: Array<SketchSolveSelectionId>
     duringAreaSelectIds: Array<number>
     replaceExistingSelection?: boolean
   }) => void
@@ -298,7 +457,7 @@ export function createOnClickCallback({
   intersects: Array<unknown>
 }) => Promise<void> {
   return async ({ mouseEvent, intersectionPoint }) => {
-    let closestObject: ClosestApiObject | undefined
+    let closestSelection: ClosestSelectionTarget | null = null
     let mousePosition: Coords2d | undefined
 
     if (intersectionPoint) {
@@ -307,37 +466,38 @@ export function createOnClickCallback({
         intersectionPoint.twoD.y,
       ] as Coords2d
 
-      const closestObjects = findClosestApiObjects(
+      closestSelection = getClosestSelectionTarget(
         mousePosition,
         getApiObjects(),
         sceneInfra
       )
-      closestObject = closestObjects[0]
     }
+
+    const selectedApiObject = closestSelection?.apiObject ?? undefined
 
     if (
       mouseEvent.detail === 2 &&
-      isConstraint(closestObject?.apiObject) &&
-      !isInvisibleConstraintObject(closestObject.apiObject)
+      isConstraint(selectedApiObject) &&
+      !isInvisibleConstraintObject(selectedApiObject)
     ) {
       // Double clicking on Constraint
-      onEditConstraint(closestObject.apiObject.id)
+      onEditConstraint(selectedApiObject.id)
     } else {
-      const shouldReplaceSelection = isConstraint(closestObject?.apiObject)
+      const shouldReplaceSelection = isConstraint(selectedApiObject)
       if (
         mousePosition &&
-        closestObject &&
-        isInvisibleConstraintObject(closestObject.apiObject)
+        selectedApiObject &&
+        isInvisibleConstraintObject(selectedApiObject)
       ) {
         pinSelectedInvisibleConstraintPopup(
-          closestObject.apiObject.id,
+          selectedApiObject.id,
           mousePosition,
           getApiObjects(),
           sceneInfra
         )
       }
       onUpdateSelectedIds({
-        selectedIds: closestObject ? [closestObject.apiObject.id] : [],
+        selectedIds: closestSelection ? [closestSelection.selectionId] : [],
         duringAreaSelectIds: [],
         ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
       })
@@ -524,6 +684,7 @@ export function createOnDragCallback({
   getLastSuccessfulDragFromPoint,
   setLastSuccessfulDragFromPoint,
   getDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
   getContextData,
   editSegments,
   onNewSketchOutcome,
@@ -537,6 +698,9 @@ export function createOnDragCallback({
   getLastSuccessfulDragFromPoint: () => Vector2
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   getDraggedEntityId: () => number | null
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -557,6 +721,7 @@ export function createOnDragCallback({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
+    suppressExecOutcomeIssues?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -659,9 +824,12 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
+        setLastPreviewSegmentsToEdit(null)
         setIsSolveInProgress(false)
         return
       }
+
+      setLastPreviewSegmentsToEdit(segmentsToEdit)
 
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
@@ -674,6 +842,7 @@ export function createOnDragCallback({
         settings
       ).catch((err) => {
         console.error('failed to edit segment', err)
+        toastSketchSolveError(err)
         return null
       })
 
@@ -683,7 +852,11 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
-        onNewSketchOutcome({ ...result, writeToDisk: false })
+        onNewSketchOutcome({
+          ...result,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        })
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
@@ -713,6 +886,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
+  const [getLastPreviewSegmentsToEdit, setLastPreviewSegmentsToEdit] =
+    createGetSet<Array<ExistingSegmentCtor> | null>(null)
   const constraintHoverPopupState: {
     lastHoveredTargetId: number | null
     entries: ConstraintHoverPopupEntry[]
@@ -800,7 +975,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }
   }
 
-  const sendHoveredState = (hoveredId: number | null) => {
+  const sendHoveredState = (hoveredId: SketchSolveSelectionId | null) => {
     self.send({
       type: 'update hovered id',
       data: {
@@ -819,7 +994,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
-      hideSnappingPreviewSprite(sketchSolveGroup)
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        snappingCandidate: null,
+      })
     }
   }
 
@@ -829,11 +1008,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSnappingPreviewSprite({
         sketchSolveGroup,
         sceneInfra: context.sceneInfra,
-        targetPoint: candidate?.apiObject ?? null,
+        snappingCandidate: candidate,
       })
     }
 
-    sendHoveredState(candidate?.apiObject.id ?? null)
+    sendHoveredState(
+      candidate?.target?.type === ORIGIN_TARGET
+        ? ORIGIN_TARGET
+        : getObjectIdForSnapTarget(candidate?.target)
+    )
   }
 
   const clearConstraintHoverPopups = () => {
@@ -894,6 +1077,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getHoveredId: () => self.getSnapshot().context.hoveredId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
@@ -912,16 +1096,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
           sendHoveredState(null)
 
           const snapshot = self.getSnapshot()
-          const sceneGraphDelta =
+          const currentSceneGraphDelta =
             snapshot.context.sketchExecOutcome?.sceneGraphDelta
           const snappingCandidate =
             allowSnapping(mouseEvent) &&
-            sceneGraphDelta &&
+            currentSceneGraphDelta &&
             intersectionPoint?.twoD
               ? getDragPointSnappingCandidate({
                   draggedEntityId,
-                  selectedIds: snapshot.context.selectedIds,
-                  sceneGraphDelta,
+                  selectedIds: getObjectSelectionIds(
+                    snapshot.context.selectedIds
+                  ),
+                  sceneGraphDelta: currentSceneGraphDelta,
                   sketchId: snapshot.context.sketchId,
                   mousePosition: [
                     intersectionPoint.twoD.x,
@@ -931,58 +1117,197 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 })
               : null
 
-          const settings = jsAppSettings(context.rustContext.settingsActor)
-          const result =
+          const units = baseUnitToNumericSuffix(
+            context.kclManager.fileSettings.defaultLengthUnit
+          )
+          const snapConstraint =
             snappingCandidate && draggedEntityId !== null
-              ? await (async () => {
-                  const units = baseUnitToNumericSuffix(
-                    context.kclManager.fileSettings.defaultLengthUnit
-                  )
-                  const [x, y] = snappingCandidate.position
+              ? getConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target,
+                  units
+                )
+              : null
+          const settings = jsAppSettings(context.rustContext.settingsActor)
+          let result: {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
+          }
 
-                  await context.rustContext.editSegments(
-                    0,
-                    context.sketchId,
-                    [
-                      {
-                        id: draggedEntityId,
-                        ctor: {
-                          type: 'Point',
-                          position: {
-                            x: {
-                              type: 'Var',
-                              value: roundOff(x),
-                              units,
-                            },
-                            y: {
-                              type: 'Var',
-                              value: roundOff(y),
-                              units,
-                            },
-                          },
-                        },
+          if (
+            snappingCandidate &&
+            draggedEntityId !== null &&
+            snapConstraint !== null
+          ) {
+            const [x, y] = snappingCandidate.position
+            const editResult = await context.rustContext.editSegments(
+              0,
+              context.sketchId,
+              [
+                {
+                  id: draggedEntityId,
+                  ctor: {
+                    type: 'Point',
+                    position: {
+                      x: {
+                        type: 'Var',
+                        value: roundOff(x),
+                        units,
                       },
-                    ],
+                      y: {
+                        type: 'Var',
+                        value: roundOff(y),
+                        units,
+                      },
+                    },
+                  },
+                },
+              ],
+              settings
+            )
+
+            if (
+              snapConstraint.type === 'HorizontalDistance' ||
+              snapConstraint.type === 'VerticalDistance'
+            ) {
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              const existingSameConstraint =
+                getZeroAxisDistanceConstraintWithOrigin(
+                  draggedEntityId,
+                  snapConstraint.type,
+                  objects
+                )
+              if (existingSameConstraint) {
+                // Same zero distance constraint already exists -> don't add it again
+                result = editResult
+              } else {
+                const oppositeConstraintType =
+                  snapConstraint.type === 'HorizontalDistance'
+                    ? 'VerticalDistance'
+                    : 'HorizontalDistance'
+                const existingOppositeConstraint =
+                  getZeroAxisDistanceConstraintWithOrigin(
+                    draggedEntityId,
+                    oppositeConstraintType,
+                    objects
+                  )
+                if (existingOppositeConstraint) {
+                  // If there is already a 0 distance opposite constraint:
+                  // delete that and add a Coincident constraint instead.
+                  const deleteResult = await context.rustContext.deleteObjects(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    [existingOppositeConstraint.id],
+                    [],
                     settings
                   )
 
-                  return context.rustContext.addConstraint(
+                  const addResult = await context.rustContext.addConstraint(
                     SKETCH_FILE_VERSION,
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [
-                        draggedEntityId,
-                        snappingCandidate.apiObject.id,
-                      ],
+                      segments: [draggedEntityId, 'ORIGIN'],
                     },
                     settings
                   )
-                })()
-              : await context.rustContext.sketchExecuteMock(
+
+                  result = {
+                    kclSource: addResult.kclSource,
+                    sceneGraphDelta: {
+                      ...addResult.sceneGraphDelta,
+                      invalidates_ids:
+                        deleteResult.sceneGraphDelta.invalidates_ids ||
+                        addResult.sceneGraphDelta.invalidates_ids,
+                    },
+                  }
+                } else {
+                  result = await context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    snapConstraint,
+                    settings,
+                    true
+                  )
+                }
+              }
+            } else {
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              if (
+                hasCoincidentConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target,
+                  objects
+                )
+              ) {
+                result = editResult
+              } else {
+                result = await context.rustContext.addConstraint(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId,
+                  snapConstraint,
+                  settings,
+                  true
+                )
+              }
+            }
+          } else {
+            const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
+            if (lastPreviewSegmentsToEdit?.length) {
+              result = await context.rustContext.editSegments(
+                0,
+                context.sketchId,
+                lastPreviewSegmentsToEdit,
+                settings,
+                true
+              )
+            } else if (!currentSceneGraphDelta) {
+              result = await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
+              )
+            } else {
+              const objects = currentSceneGraphDelta.new_graph.objects
+              const coincidentClusterPointIds =
+                draggedEntityId !== null
+                  ? getCoincidentCluster(draggedEntityId, objects)
+                  : []
+              const idsToEdit = new Set<number>()
+              coincidentClusterPointIds.forEach((id) => {
+                idsToEdit.add(id)
+              })
+              snapshot.context.selectedIds.forEach((id) => {
+                if (isObjectSelectionId(id)) {
+                  idsToEdit.add(id)
+                }
+              })
+
+              const segmentsToEdit: ExistingSegmentCtor[] = []
+              for (const id of idsToEdit) {
+                const obj = objects[id]
+                if (!obj || obj.kind.type !== 'Segment') continue
+                const ctor = buildSegmentCtorFromObject(obj, objects)
+                if (!ctor) continue
+                segmentsToEdit.push({ id, ctor })
+              }
+
+              if (segmentsToEdit.length === 0) {
+                result = await context.rustContext.sketchExecuteMock(
                   SKETCH_FILE_VERSION,
                   context.sketchId
                 )
+              } else {
+                result = await context.rustContext.editSegments(
+                  0,
+                  context.sketchId,
+                  segmentsToEdit,
+                  settings,
+                  true
+                )
+              }
+            }
+          }
 
           // Send the event to update the sketch outcome
           self.send({
@@ -990,11 +1315,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
             data: {
               sourceDelta: result.kclSource,
               sceneGraphDelta: result.sceneGraphDelta,
-              writeToDisk: false,
+              checkpointId: result.checkpointId ?? null,
             },
           })
         } catch (err) {
           console.error('error in onDragEnd sketchExecuteMock', err)
+          toastSketchSolveError(err)
         }
       },
     }),
@@ -1004,10 +1330,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
       getDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
-          selectedIds: snapshot.context.selectedIds,
+          selectedIds: getObjectSelectionIds(snapshot.context.selectedIds),
           sketchId: snapshot.context.sketchId,
           sketchExecOutcome: snapshot.context.sketchExecOutcome,
         }
@@ -1032,6 +1359,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sourceDelta: outcome.kclSource,
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
+            suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
           },
         })
       },
@@ -1043,7 +1371,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
       onUpdateDragSnapping: updateDragSnappingState,
     }),
     onMouseDownSelection: () => {
-      return self.getSnapshot().context.hoveredId !== null
+      const snapshot = self.getSnapshot()
+      const hoveredId = snapshot.context.hoveredId
+      if (!isObjectSelectionId(hoveredId)) {
+        // Only api objects can be dragged, ORIGIN cannot be.
+        return false
+      }
+
+      const objects =
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+        []
+      // If it's a point which is already coincident with ORIGIN -> don't allow dragging
+      return !(
+        isPointSegment(objects[hoveredId]) &&
+        hasCoincidentConstraintWithOrigin(hoveredId, objects)
+      )
     },
     onClick: createOnClickCallback({
       getApiObjects: () => {
@@ -1056,7 +1398,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
       sceneInfra: context.sceneInfra,
       onUpdateSelectedIds: (data: {
-        selectedIds: Array<number>
+        selectedIds: Array<SketchSolveSelectionId>
         duringAreaSelectIds: Array<number>
         replaceExistingSelection?: boolean
       }) => self.send({ type: 'update selected ids', data }),
@@ -1083,14 +1425,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
           [],
         snapshot.context.sketchId
       )
-      const closestObjects = findClosestApiObjects(
+      const hoveredTarget = getClosestSelectionTarget(
         mousePosition,
         apiObjects,
         context.sceneInfra
       )
-      const hoveredObject: ClosestApiObject | null = closestObjects[0] ?? null
-      const hoveredApiObject = hoveredObject?.apiObject ?? null
-      const hoveredId = hoveredApiObject?.id ?? null
+      const hoveredApiObject = hoveredTarget?.apiObject ?? null
+      const hoveredId = hoveredTarget?.selectionId ?? null
       const lastHoveredId = snapshot.context.hoveredId
       const constraintHoverPopupSegmentId =
         hoveredApiObject !== null && !isConstraint(hoveredApiObject)
@@ -1142,7 +1483,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         sendHoveredState(hoveredId)
       }
     },
-    onAreaSelectStart: ({ startPoint }) => {
+    onAreaSelectStart: ({ startPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
       const scaledStartPoint = startPoint.threeD
         .clone()
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
@@ -1161,7 +1506,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       }
     },
-    onAreaSelect: ({ startPoint, currentPoint }) => {
+    onAreaSelect: ({ startPoint, currentPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
       const startCoords: Coords2d = [startPoint.twoD.x, startPoint.twoD.y]
       const currentCoords: Coords2d = [currentPoint.twoD.x, currentPoint.twoD.y]
       const scaledStartPoint = startPoint.threeD
@@ -1221,9 +1570,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       }
     },
-    onAreaSelectEnd: () => {
+    onAreaSelectEnd: ({ mouseEvent }) => {
       // Remove selection box visual
       removeSelectionBox(selectionBoxState)
+
+      // Ignore non-primary button drags so right-click pan doesn't modify selection.
+      if (mouseEvent && mouseEvent.button !== 0) {
+        self.send({
+          type: 'update selected ids',
+          data: { duringAreaSelectIds: [] },
+        })
+        return
+      }
 
       // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
       const snapshot = self.getSnapshot()

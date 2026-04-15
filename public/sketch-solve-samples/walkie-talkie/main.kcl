@@ -56,4 +56,3 @@ button()
        z = screenYPosition - (buttonHeight * 2) - (tolerance * 2),
        global = true,
      )
-

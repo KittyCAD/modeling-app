@@ -507,10 +507,10 @@ export function TutorialRequestToast(
           onClick={() => onDismissOnboardingInvite(settings.actor)}
           iconStart={{
             icon: 'close',
-            bgClassName: 'bg-destroy-80 dark:bg-destroy-20',
-            iconClassName: 'text-destroy-10 dark:text-destroy-80',
+            className: 'text-chalkboard-10',
+            bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           }}
-          className="border-chalkboard-40 bg-chalkboard-20 text-default hover:border-chalkboard-50 dark:border-chalkboard-70 dark:bg-chalkboard-80 dark:hover:border-chalkboard-60"
+          className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
           data-testid="onboarding-not-right-now"
         >
           Dismiss

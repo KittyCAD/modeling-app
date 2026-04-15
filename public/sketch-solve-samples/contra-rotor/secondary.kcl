@@ -2,7 +2,7 @@
 // Offset shaft with gear placements
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import gear and propeller
 import * from "helical.kcl"
@@ -56,4 +56,3 @@ helicalGear(nTeeth = 16, helixAngle = -25deg, bore = 160)
 
 helicalGear(nTeeth = 14, helixAngle = -25deg, bore = 160)
   |> translate(y = -200, x = 392)
-

@@ -10,7 +10,7 @@
 // All dimensions and counts are parametric, enabling rapid iteration
 // for uses such as built-ins, modular wall storage, or retail shelving.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 columnCount = 5 // number of shelf modules in horizontal direction (X axis)
 rowCount = 3 // number of shelf modules in vertical direction (Z axis)
@@ -98,4 +98,3 @@ modularShelfArray = patternLinear3d(
        distance = unitHeight,
        axis = [0, 0, 1],
      )
-

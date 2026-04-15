@@ -2,7 +2,7 @@
 // A weldment is a frame constructed from welded metal pieces
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -199,4 +199,3 @@ a = patternLinear3d(
        a
      ]
   |> appearance(color, metalness = 40, roughness)
-

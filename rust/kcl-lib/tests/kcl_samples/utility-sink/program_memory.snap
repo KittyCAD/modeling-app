@@ -891,7 +891,7 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "startCapId": "[uuid]",
-          "endCapId": null,
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -992,7 +992,7 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "startCapId": "[uuid]",
-          "endCapId": null,
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }

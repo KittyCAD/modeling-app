@@ -3,7 +3,7 @@
 // Categories: Aerospace, Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 impellerDiameter = 4
@@ -75,4 +75,3 @@ vane = extrude(region003, length = vaneHeight)
        axis = Z,
        center = [0, 0, 0],
      )
-
