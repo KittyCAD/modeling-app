@@ -1093,14 +1093,14 @@ impl ExecutorContext {
                 exec_state
                     .global
                     .root_module_artifacts
-                    .restore_scene_objects(scene_objects)
-                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                    .restore_scene_objects(scene_objects);
             } else {
                 let message = format!(
                     "Cached scene objects length {} is less than expected length from cached object ID generator {}",
                     mem.scene_objects.len(),
                     len
                 );
+                debug_assert!(false, "{message}");
                 return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
                     KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
                 )));
@@ -1124,15 +1124,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => {
-                    // Guard against stale/incompatible memory snapshots. If restore
-                    // fails, clear and cold-start to avoid hard-failing sketch entry.
-                    if Self::restore_mock_memory(&mut exec_state, mem, mock_config).is_err() {
-                        cache::clear_mem_cache().await;
-                        exec_state = ExecState::new_mock(self, mock_config);
-                        self.prepare_mem(&mut exec_state).await?;
-                    }
-                }
+                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -3320,154 +3312,6 @@ extrude001 = extrude(region001, length = 1)
 
         clear_mem_cache().await;
         ctx.close().await;
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn run_mock_recovers_from_incompatible_cached_scene_objects() {
-        use crate::execution::cache::clear_mem_cache;
-        use crate::execution::cache::read_old_memory;
-        use crate::execution::cache::write_old_memory;
-
-        clear_mem_cache().await;
-
-        let ctx = ExecutorContext::new_mock(None).await;
-        let code = "sketchA = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
-}
-sketchB = sketch(on = XY) {
-  line2 = line(start = [var 0mm, var 1mm], end = [var 5mm, var 1mm])
-  line3 = line(start = [var 5mm, var 1mm], end = [var 5mm, var 4mm])
-}";
-        let program = crate::Program::parse_no_errs(code).unwrap();
-
-        // Seed valid mock memory.
-        let cold_start = MockConfig {
-            use_prev_memory: false,
-            ..Default::default()
-        };
-        let seed_outcome = ctx.run_mock(&program, &cold_start).await.unwrap();
-        let second_sketch_id = seed_outcome
-            .scene_objects
-            .iter()
-            .filter_map(|obj| matches!(obj.kind, crate::front::ObjectKind::Sketch(_)).then_some(obj.id))
-            .nth(1)
-            .expect("expected second sketch in seeded outcome");
-
-        // Corrupt cache so sketch ID is out-of-range for scene objects.
-        let mut corrupted_mem = read_old_memory().await.expect("expected seeded mock memory");
-        corrupted_mem.scene_objects.truncate(1);
-        write_old_memory(corrupted_mem).await;
-
-        // Should recover by clearing cache + cold-starting instead of failing.
-        let result = ctx
-            .run_mock(&program, &MockConfig::new_sketch_mode(second_sketch_id))
-            .await;
-        assert!(result.is_ok(), "expected run_mock to recover from stale cache");
-
-        // Re-seed valid mock memory so we can inject a non-dense ID mismatch.
-        ctx.run_mock(&program, &cold_start).await.unwrap();
-
-        // Corrupt cache so IDs are non-dense even though length is sufficient.
-        let mut non_dense_mem = read_old_memory().await.expect("expected fresh mock memory");
-        assert!(
-            !non_dense_mem.scene_objects.is_empty(),
-            "expected seeded scene objects for non-dense cache test"
-        );
-        non_dense_mem.scene_objects[0].id = ObjectId(999);
-        write_old_memory(non_dense_mem).await;
-
-        let result = ctx
-            .run_mock(&program, &MockConfig::new_sketch_mode(second_sketch_id))
-            .await;
-        assert!(
-            result.is_ok(),
-            "expected run_mock to recover from non-dense cached object IDs"
-        );
-
-        clear_mem_cache().await;
-        ctx.close().await;
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn run_with_caching_no_action_refreshes_mock_memory() {
-        use std::sync::Arc;
-
-        use crate::execution::cache::bust_cache;
-        use crate::execution::cache::clear_mem_cache;
-        use crate::execution::cache::read_old_memory;
-
-        bust_cache().await;
-        clear_mem_cache().await;
-
-        let engine: Arc<Box<dyn EngineManager>> =
-            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap()));
-        let live_ctx = ExecutorContext::new_with_engine(engine, ExecutorSettings::default());
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-
-        let full_code = "sketchA = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
-}
-sketchB = sketch(on = XY) {
-  line2 = line(start = [var 0mm, var 1mm], end = [var 5mm, var 1mm])
-  line3 = line(start = [var 5mm, var 1mm], end = [var 5mm, var 4mm])
-}";
-        let program = crate::Program::parse_no_errs(full_code).unwrap();
-        let full_outcome = live_ctx.run_with_caching(program.clone()).await.unwrap();
-        let full_scene_len = full_outcome.scene_objects.len();
-        assert!(full_scene_len > 0, "expected scene objects from full execution");
-
-        let first_sketch_id = full_outcome
-            .scene_objects
-            .iter()
-            .find_map(|obj| matches!(obj.kind, crate::front::ObjectKind::Sketch(_)).then_some(obj.id))
-            .expect("expected at least one sketch in full execution");
-        let second_sketch_id = full_outcome
-            .scene_objects
-            .iter()
-            .filter_map(|obj| matches!(obj.kind, crate::front::ObjectKind::Sketch(_)).then_some(obj.id))
-            .nth(1)
-            .expect("expected at least two sketches in full execution");
-
-        let first_sketch_only = crate::Program::parse_no_errs(
-            "sketchA = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
-}",
-        )
-        .unwrap();
-        mock_ctx
-            .run_mock(&first_sketch_only, &MockConfig::new_sketch_mode(first_sketch_id))
-            .await
-            .unwrap();
-        let sketch_mem_len = read_old_memory().await.unwrap().scene_objects.len();
-
-        // Same source means run_with_caching takes a NoAction fast path.
-        live_ctx.run_with_caching(program).await.unwrap();
-        let refreshed_mem_len = read_old_memory().await.unwrap().scene_objects.len();
-
-        assert_eq!(refreshed_mem_len, full_scene_len);
-        assert!(
-            refreshed_mem_len >= sketch_mem_len,
-            "expected full execution memory to be restored after NoAction path"
-        );
-
-        let second_sketch_only = crate::Program::parse_no_errs(
-            "sketchB = sketch(on = XY) {
-  line2 = line(start = [var 0mm, var 1mm], end = [var 5mm, var 1mm])
-  line3 = line(start = [var 5mm, var 1mm], end = [var 5mm, var 4mm])
-}",
-        )
-        .unwrap();
-        mock_ctx
-            .run_mock(&second_sketch_only, &MockConfig::new_sketch_mode(second_sketch_id))
-            .await
-            .unwrap();
-
-        mock_ctx.close().await;
-        live_ctx.close().await;
-        clear_mem_cache().await;
-        bust_cache().await;
     }
 
     #[cfg(feature = "artifact-graph")]
