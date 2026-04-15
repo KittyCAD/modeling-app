@@ -792,12 +792,42 @@ pub struct Properties {
 }
 
 #[derive(Debug, Clone)]
+pub enum ExampleSketchSyntax {
+    SketchSyntaxAgnostic,
+    Legacy,
+    SketchSolve,
+}
+
+impl ExampleSketchSyntax {
+    fn from_attr(attr: &str) -> Option<Self> {
+        match attr {
+            "sketchSyntaxAgnostic" => Some(Self::SketchSyntaxAgnostic),
+            "legacy" | "legacySketch" | "legacySketchSyntax" | "old" | "oldSketchSyntax" => Some(Self::Legacy),
+            "sketchSolve" | "sketch_solve" | "new" | "newSketchSyntax" | "sketchSolveSyntax" => Some(Self::SketchSolve),
+            _ => None,
+        }
+    }
+
+    fn infer_from_source(source: &str) -> Self {
+        if source.contains("sketch(on =") {
+            Self::SketchSolve
+        } else if source.contains("startSketchOn") || source.contains("startProfile") {
+            Self::Legacy
+        } else {
+            Self::SketchSyntaxAgnostic
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct ExampleProperties {
     #[allow(dead_code)]
     pub norun: bool,
     #[allow(dead_code)]
     pub no3d: bool,
     pub inline: bool,
+    pub sketch_syntax: ExampleSketchSyntax,
+    pub sketch_syntax_explicit: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1143,7 +1173,10 @@ trait ApplyMeta {
         }) {
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
-                if let Some((e, p)) = example {
+                if let Some((e, mut p)) = example {
+                    if !p.sketch_syntax_explicit {
+                        p.sketch_syntax = ExampleSketchSyntax::infer_from_source(&e);
+                    }
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
                     } else {
@@ -1155,15 +1188,31 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
+                    let mut sketch_syntax_explicit = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
-                            _ => {}
+                            other => {
+                                if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
+                                    sketch_syntax = tag;
+                                    sketch_syntax_explicit = true;
+                                }
+                            }
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
+                    example = Some((
+                        String::new(),
+                        ExampleProperties {
+                            norun,
+                            no3d,
+                            inline,
+                            sketch_syntax,
+                            sketch_syntax_explicit,
+                        },
+                    ));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");

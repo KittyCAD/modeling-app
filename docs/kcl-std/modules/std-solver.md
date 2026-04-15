@@ -7,7 +7,7 @@ layout: manual
 
 Functions for sketch-solve using constraints. This module's items are for use within sketch blocks. 
 
-```kcl,inline
+```kcl,inline,sketchSolve
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])

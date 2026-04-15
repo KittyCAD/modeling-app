@@ -10,6 +10,7 @@ use super::kcl_doc::ConstData;
 use super::kcl_doc::DocCategory;
 use super::kcl_doc::DocData;
 use super::kcl_doc::ExampleProperties;
+use super::kcl_doc::ExampleSketchSyntax;
 use super::kcl_doc::FnData;
 use super::kcl_doc::ModData;
 use super::kcl_doc::TyData;
@@ -102,7 +103,69 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
-fn generate_index(kcl_lib: &ModData) -> Result<()> {
+#[derive(Clone, Copy)]
+enum StdlibDocFlavor {
+    Combined,
+    Legacy,
+    SketchSolve,
+}
+
+impl StdlibDocFlavor {
+    const ALL: [Self; 3] = [Self::Combined, Self::Legacy, Self::SketchSolve];
+
+    fn stdlib_dir(self) -> &'static str {
+        match self {
+            Self::Combined => "kcl-std",
+            Self::Legacy => "kcl-std-legacy",
+            Self::SketchSolve => "kcl-std-sketch-solve",
+        }
+    }
+
+    fn stdlib_link_prefix(self) -> String {
+        format!("/docs/{}", self.stdlib_dir())
+    }
+
+    fn kcl_lang_types_link(self) -> &'static str {
+        match self {
+            Self::SketchSolve => "/docs/kcl-sketch-solve/types",
+            Self::Combined | Self::Legacy => "/docs/kcl-lang/types",
+        }
+    }
+
+    fn include_example(self, props: &ExampleProperties) -> bool {
+        match self {
+            Self::Combined => true,
+            Self::Legacy => matches!(
+                props.sketch_syntax,
+                ExampleSketchSyntax::SketchSyntaxAgnostic | ExampleSketchSyntax::Legacy
+            ),
+            Self::SketchSolve => matches!(
+                props.sketch_syntax,
+                ExampleSketchSyntax::SketchSyntaxAgnostic | ExampleSketchSyntax::SketchSolve
+            ),
+        }
+    }
+
+    fn output_roots(self) -> [String; 2] {
+        [
+            format!("../../docs/{}", self.stdlib_dir()),
+            format!("../../../text-to-cad/data/kcl-docs/{}", self.stdlib_dir()),
+        ]
+    }
+}
+
+fn write_doc_output(flavor: StdlibDocFlavor, relative_file_name: &str, output: &str) -> Result<()> {
+    for root in flavor.output_roots() {
+        let path = format!("{root}/{relative_file_name}.md");
+        if let Some(parent) = Path::new(&path).parent() {
+            fs::create_dir_all(parent)?;
+        }
+        expectorate::assert_contents(path, output);
+    }
+    Ok(())
+}
+
+fn generate_index(kcl_lib: &ModData, flavor: StdlibDocFlavor) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = HashMap::new();
@@ -127,7 +190,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
 
         group.push((
             d.preferred_name().to_owned(),
-            format!("/docs/kcl-std/{}", d.file_name()),
+            format!("{}/{}", flavor.stdlib_link_prefix(), d.file_name()),
         ));
     }
 
@@ -171,9 +234,9 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut tys)| {
             let file_name = if m == "Primitive types" {
-                "/docs/kcl-lang/types".to_owned()
+                flavor.kcl_lang_types_link().to_owned()
             } else {
-                format!("/docs/kcl-std/modules/{}", m.replace("::", "-"))
+                format!("{}/modules/{}", flavor.stdlib_link_prefix(), m.replace("::", "-"))
             };
             tys.sort();
             let val = json!({
@@ -194,11 +257,12 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         "functions": functions_data,
         "consts": consts_data,
         "types": types_data,
+        "types_overview_link": flavor.kcl_lang_types_link(),
     });
 
     let output = hbs.render("index", &data)?;
 
-    expectorate::assert_contents("../../docs/kcl-std/index.md", &output);
+    write_doc_output(flavor, "index", &output)?;
 
     Ok(())
 }
@@ -239,7 +303,13 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     }))
 }
 
-fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+fn generate_type_from_kcl(
+    ty: &TyData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+    flavor: StdlibDocFlavor,
+) -> Result<()> {
     if ty.properties.doc_hidden {
         return Ok(());
     }
@@ -250,6 +320,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         .examples
         .iter()
         .enumerate()
+        .filter(|(_, example)| flavor.include_example(&example.1))
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
@@ -266,18 +337,23 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(flavor, &file_name, &output)?;
 
     Ok(())
 }
 
-fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
-    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
+fn generate_mod_from_kcl(m: &ModData, file_name: String, flavor: StdlibDocFlavor) -> Result<()> {
+    fn list_items(m: &ModData, namespace: &str, flavor: StdlibDocFlavor) -> Vec<gltf_json::Value> {
         let mut items: Vec<_> = m
             .children
             .iter()
             .filter(|(k, _)| k.starts_with(namespace))
-            .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
+            .map(|(_, v)| {
+                (
+                    v.preferred_name().to_owned(),
+                    format!("{}/{}", flavor.stdlib_link_prefix(), v.file_name()),
+                )
+            })
             .collect();
 
         items.sort();
@@ -293,9 +369,9 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     }
     let hbs = init_handlebars()?;
 
-    let functions = list_items(m, "I:");
-    let modules = list_items(m, "M:");
-    let types = list_items(m, "T:");
+    let functions = list_items(m, "I:", flavor);
+    let modules = list_items(m, "M:", flavor);
+    let types = list_items(m, "T:", flavor);
 
     let data = json!({
         "name": m.name,
@@ -309,7 +385,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("module", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(flavor, &file_name, &output)?;
 
     Ok(())
 }
@@ -328,6 +404,7 @@ fn generate_function_from_kcl(
     file_name: String,
     example_name: String,
     kcl_std: &ModData,
+    flavor: StdlibDocFlavor,
 ) -> Result<()> {
     if function.properties.doc_hidden {
         return Ok(());
@@ -339,6 +416,7 @@ fn generate_function_from_kcl(
         .examples
         .iter()
         .enumerate()
+        .filter(|(_, example)| flavor.include_example(&example.1))
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
     let args = function.args.iter().map(|arg| {
@@ -377,7 +455,7 @@ fn generate_function_from_kcl(
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), output);
+    write_doc_output(flavor, &file_name, output)?;
 
     Ok(())
 }
@@ -395,7 +473,13 @@ fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     None
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+fn generate_const_from_kcl(
+    cnst: &ConstData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+    flavor: StdlibDocFlavor,
+) -> Result<()> {
     if cnst.properties.doc_hidden {
         return Ok(());
     }
@@ -405,6 +489,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .examples
         .iter()
         .enumerate()
+        .filter(|(_, example)| flavor.include_example(&example.1))
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
@@ -423,7 +508,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
 
     let output = hbs.render("const", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(flavor, &file_name, &output)?;
 
     Ok(())
 }
@@ -553,18 +638,23 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
 fn test_generate_stdlib_markdown_docs() {
     let kcl_std = crate::docs::kcl_doc::walk_prelude();
 
-    // Generate the index which is the table of contents.
-    generate_index(&kcl_std).unwrap();
+    for flavor in StdlibDocFlavor::ALL {
+        generate_index(&kcl_std, flavor).unwrap();
 
-    for d in kcl_std.all_docs() {
-        match d {
-            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
-            DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name(), &kcl_std).unwrap(),
-            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name(), &kcl_std).unwrap(),
-            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
+        for d in kcl_std.all_docs() {
+            match d {
+                DocData::Fn(f) => {
+                    generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std, flavor).unwrap()
+                }
+                DocData::Const(c) => {
+                    generate_const_from_kcl(c, d.file_name(), d.example_name(), &kcl_std, flavor).unwrap()
+                }
+                DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name(), &kcl_std, flavor).unwrap(),
+                DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name(), flavor).unwrap(),
+            }
         }
+        generate_mod_from_kcl(&kcl_std, "modules/std".to_owned(), flavor).unwrap();
     }
-    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]

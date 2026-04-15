@@ -4,13 +4,13 @@
 /// Build a color from its red, green and blue components.
 /// These must be between 0 and 255.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// startSketchOn(-XZ)
 ///   |> circle(center = [0, 0], radius = 10)
 ///   |> extrude(length = 4)
 ///   |> appearance(color = appearance::hexString([50, 160, 160]))
 /// ```
-/// ```
+/// ```kcl,legacySketch
 /// sideLen = 30
 /// n = 10
 /// 
@@ -32,7 +32,7 @@
 ///   },
 /// )
 /// ```
-/// ```
+/// ```kcl,legacySketch
 /// sideLen = 30
 /// n = 6
 /// 
@@ -59,7 +59,7 @@
 /// grid(offset = 0, red = 0)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sideLen = 30
 /// n = 4
 /// 
