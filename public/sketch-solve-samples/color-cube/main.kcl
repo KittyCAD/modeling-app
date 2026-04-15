@@ -61,7 +61,7 @@ purpleBody = clone(faceBody)
 redBody = clone(faceBody)
   |> rotate(axis = Y, angle = 90deg)
   |> translate(x = halfSize - (extrudeLength / 2), global = true)
-tealBody = clone(faceBody)
+tealBody = faceBody
   |> rotate(axis = Y, angle = 90deg)
   |> translate(x = -halfSize + extrudeLength / 2, global = true)
 
@@ -106,12 +106,3 @@ purpleFace = appearance(
   metalness = metalConstant,
   roughness = roughnessConstant,
 )
-
-colorCubeFaces = [
-  blueFace,
-  yellowFace,
-  greenFace,
-  redFace,
-  tealFace,
-  purpleFace
-]

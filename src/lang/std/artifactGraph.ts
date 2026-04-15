@@ -859,14 +859,10 @@ export function getSketchBlockForPathArtifact(
   pathArtifact: Extract<Artifact, { type: 'path' }>,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
-  // TODO: replace this pathToNode match once the artifact graph can map a Path to its SketchBlock directly.
-  return getArtifactsMatchingPathToNode(
-    pathArtifact.codeRef.pathToNode,
-    artifactGraph
-  ).find(
-    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
-      artifact.type === 'sketchBlock'
-  )
+  if (!pathArtifact.sketchBlockId) return undefined
+  const sketchBlock = artifactGraph.get(pathArtifact.sketchBlockId)
+  if (sketchBlock?.type !== 'sketchBlock') return undefined
+  return sketchBlock
 }
 
 export function getSketchBlockForArtifact(

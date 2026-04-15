@@ -3,7 +3,7 @@
 // Categories: Construction, Maker
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Hinge parameters
 hingeRadius = 8
@@ -20,66 +20,108 @@ mirrorThickness = 10
 archToMirrorGap = 5
 archThickness = 1
 archRadius = mirrorRadius + archToMirrorGap
+mirrorCenterZ = hingeHeight * 4 + hingeGap * 3 + mirrorRadius + archToMirrorGap + archThickness
+archCenterX = armLength + archThickness / 2
+archCenterZ = mirrorCenterZ - (archThickness / 2)
+archInnerRadius = sqrt((archRadius - (archThickness / 2)) ^ 2 + (archThickness / 2) ^ 2)
+archOuterRadius = sqrt((archRadius + archThickness / 2) ^ 2 + (archThickness / 2) ^ 2)
 
-// Geometry
-// Add a function to create the hinge
-fn hingeFn(x, y, z) {
-  sketch001 = startSketchOn(offsetPlane(XY, offset = z))
-    |> circle(center = [x, y], radius = hingeRadius)
-  hingeBody = extrude(sketch001, length = hingeHeight)
-  return hingeBody
+// Reuse a single hinge cylinder for the three pivot stacks.
+hingeProfile = sketch(on = XY) {
+  circle1 = circle(start = [var 8mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == hingeRadius
 }
+hingeRegion = region(segments = [hingeProfile.circle1])
+hingeCylinder = extrude(hingeRegion, length = hingeHeight)
+hide(hingeProfile)
 
-hingePartA1 = hingeFn(x = 0, y = 0, z = 0)
-hingePartA2 = hingeFn(x = 0, y = 0, z = hingeHeight + hingeGap)
-hingePartA3 = hingeFn(x = 0, y = 0, z = hingeHeight * 2 + hingeGap * 2)
-
-hingePartB2 = hingeFn(x = armLength, y = 0, z = hingeHeight + hingeGap)
-hingePartB3 = hingeFn(x = armLength, y = 0, z = hingeHeight * 2 + hingeGap * 2)
-
-hingePartC2 = hingeFn(x = armLength, y = -armLength, z = hingeHeight * 2 + hingeGap * 2)
-hingePartC3 = hingeFn(x = armLength, y = -armLength, z = hingeHeight * 3 + hingeGap * 3)
-
-// Add a function to create the arm
-fn armFn(plane, offset, altitude) {
-  sketch001 = startSketchOn(plane)
-    |> circle(center = [offset, altitude], radius = armRadius)
-  armBody = extrude(sketch001, length = armLength)
-  return armBody
-}
-
-armPartA = armFn(plane = YZ, offset = 0, altitude = hingeHeight * 1.5 + hingeGap)
-armPartB = armFn(plane = XZ, offset = armLength, altitude = hingeHeight * 2.5 + hingeGap * 2)
-
-// Add a function to create the mirror
-fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
-  armPlane = startSketchOn(offsetPlane(plane, offset = offsetY - (tiefe / 2)))
-  sketch001 = circle(armPlane, center = [offsetX, altitude], radius = radius)
-  armBody = extrude(sketch001, length = tiefe)
-
-  sketch002 = startProfile(armPlane, at = [offsetX - gestellR, altitude])
-    |> xLine(length = gestellD)
-    |> arc(interiorAbsolute = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])
-    |> xLine(length = gestellD)
-    |> arc(
-         interiorAbsolute = [
-           offsetX,
-           altitude - gestellR - gestellD
-         ],
-         endAbsolute = [profileStartX(%), profileStartY(%)],
-       )
-    |> close()
-  archBody = extrude(sketch002, length = tiefe)
-  return armBody
-}
-
-mirror = mirrorFn(
-  plane = XZ,
-  offsetX = armLength,
-  offsetY = armLength,
-  altitude = hingeHeight * 4 + hingeGap * 3 + mirrorRadius + archToMirrorGap + archThickness,
-  radius = mirrorRadius,
-  tiefe = mirrorThickness,
-  gestellR = archRadius,
-  gestellD = archThickness,
+hingePartA = patternLinear3d(
+  hingeCylinder,
+  instances = 3,
+  distance = hingeHeight + hingeGap,
+  axis = Z,
 )
+
+hingeBBase = clone(hingeCylinder)
+  |> translate(x = armLength, z = hingeHeight + hingeGap, global = true)
+hingePartB = patternLinear3d(
+  hingeBBase,
+  instances = 2,
+  distance = hingeHeight + hingeGap,
+  axis = Z,
+)
+
+hingeCBase = clone(hingeCylinder)
+  |> translate(
+       x = armLength,
+       y = -armLength,
+       z = hingeHeight * 2 + hingeGap * 2,
+       global = true,
+     )
+hingePartC = patternLinear3d(
+  hingeCBase,
+  instances = 2,
+  distance = hingeHeight + hingeGap,
+  axis = Z,
+)
+
+// Reuse one arm cylinder, then orient copies along the two arm directions.
+armProfile = startSketchOn(YZ)
+  |> circle(center = [0, 0], radius = armRadius)
+armBody = extrude(armProfile, length = armLength)
+hide(armProfile)
+
+armPartA = clone(armBody)
+  |> translate(z = hingeHeight * 1.5 + hingeGap, global = true)
+
+armPartB = clone(armBody)
+  |> rotate(axis = Z, angle = -90deg, global = true)
+  |> translate(x = armLength, z = hingeHeight * 2.5 + hingeGap * 2, global = true)
+
+mirrorPlane = XZ
+
+mirrorPlaneOffset = -armLength + (mirrorThickness / 2)
+
+mirrorSketch = sketch(on = mirrorPlane) {
+  circle1 = circle(start = [var 85mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == mirrorRadius
+}
+
+mirrorRegion = region(segments = [mirrorSketch.circle1])
+mirrorBody = extrude(mirrorRegion, length = mirrorThickness)
+  |> translate(
+       x = armLength,
+       y = mirrorPlaneOffset,
+       z = mirrorCenterZ,
+       global = true,
+     )
+hide(mirrorSketch)
+archPlane = offsetPlane(XZ, offset = 0.01)
+
+archSketch = sketch(on = archPlane) {
+  line1 = line(start = [var -90mm, var 0mm], end = [var -89mm, var 0mm])
+  horizontal(line1)
+  arc2 = arc(start = [var -89mm, var 0mm], end = [var 90mm, var 0mm], center = [var 0.5mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 90mm, var 0mm], end = [var 91mm, var 0mm])
+  coincident([arc2.end, line3.start])
+  horizontal(line3)
+  arc4 = arc(start = [var 91mm, var 0mm], end = [var -90mm, var 0mm], center = [var 0.5mm, var 0mm])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line1.start])
+  distance([line1.start, line1.end]) == archThickness
+  distance([line3.start, line3.end]) == archThickness
+  radius(arc2) == archRadius - (archThickness / 2)
+  radius(arc4) == archRadius + archThickness / 2
+}
+archRegion = region(segments = [archSketch.line1])
+mirrorArch = extrude(archRegion, length = mirrorThickness)
+  |> translate(
+       x = armLength,
+       y = mirrorPlaneOffset,
+       z = mirrorCenterZ,
+       global = true,
+     )
+hide(archSketch)

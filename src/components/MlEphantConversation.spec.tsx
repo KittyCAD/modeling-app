@@ -237,6 +237,87 @@ describe('MlEphantConversation', () => {
     ).toBeDisabled()
   })
 
+  test('renders a provided welcome message when the conversation is empty', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        welcomeMessage={
+          <div data-testid="custom-welcome-message">Welcome content</div>
+        }
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByTestId('custom-welcome-message')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('ml-request-chat-bubble')
+    ).not.toBeInTheDocument()
+  })
+
+  test('renders a provided welcome message above conversation exchanges', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Render a bracket',
+              },
+              responses: [
+                {
+                  end_of_stream: {
+                    whole_response: 'Rendered.',
+                  },
+                },
+              ],
+              deltasAggregated: 'Rendered.',
+            },
+          ],
+        }}
+        welcomeMessage={
+          <div data-testid="custom-welcome-message">Welcome content</div>
+        }
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const welcome = screen.getByTestId('custom-welcome-message')
+    const requestBubble = screen.getByTestId('ml-request-chat-bubble')
+
+    expect(
+      welcome.compareDocumentPosition(requestBubble) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-welcome-section')
+    ).toHaveClass('border-b')
+  })
+
   describe('file attachments', () => {
     const createMockFile = (
       name: string,

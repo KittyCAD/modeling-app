@@ -15,7 +15,7 @@ import Point2d from "std::types"
 /// It is better to use `units::toRadians` or `units::toDegrees` to convert between angles with
 /// different units where possible.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// circumference = 70
 ///
 /// exampleSketch = startSketchOn(XZ)
@@ -27,7 +27,7 @@ export PI = 3.14159265358979323846264338327950288_?
 
 /// The value of Euler’s number `e`.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -43,7 +43,7 @@ export E = 2.71828182845904523536028747135266250_
 
 /// The value of `tau`, the full circle constant (τ). Equal to 2π.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -59,7 +59,7 @@ export TAU = 6.28318530717958647692528676655900577_
 
 /// Compute the cosine of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -76,7 +76,7 @@ export fn cos(@num: number(Angle)): number {}
 
 /// Compute the sine of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -93,7 +93,7 @@ export fn sin(@num: number(Angle)): number {}
 
 /// Compute the tangent of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -110,7 +110,7 @@ export fn tan(@num: number(Angle)): number {}
 
 /// Compute the arccosine of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -128,7 +128,7 @@ export fn acos(@num: number(Count)): number(rad) {}
 
 /// Compute the arcsine of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -147,7 +147,7 @@ export fn asin(@num: number(Count)): number(rad) {}
 ///
 /// Consider using `atan2()` instead for the true inverse of tangent.
 ///
-/// ```no_run
+/// ```no_run,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -164,7 +164,7 @@ export fn atan(@num: number(Count)): number(rad) {}
 
 /// Compute the four quadrant arctangent of Y and X.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -182,7 +182,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 /// Convert polar/sphere (azimuth, elevation, distance) coordinates to
 /// cartesian (x/y/z grid) coordinates.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = polar(angle = 30deg, length = 5), tag = $thing)
@@ -203,7 +203,7 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 ///
-/// ```
+/// ```kcl,sketchSyntaxAgnostic
 /// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
 /// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
 /// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
@@ -221,7 +221,7 @@ export fn rem(
 
 /// Compute the square root of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -238,7 +238,7 @@ export fn sqrt(@input: number): number {}
 
 /// Compute the absolute value of a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// myAngle = -120deg
 ///
 /// sketch001 = startSketchOn(XZ)
@@ -262,7 +262,7 @@ export fn abs(@input: number): number {}
 
 /// Round a number to the nearest integer.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///    |> startProfile(at = [0, 0])
 ///    |> line(endAbsolute = [12, 10])
@@ -277,7 +277,7 @@ export fn round(@input: number): number {}
 
 /// Compute the largest integer less than or equal to a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///    |> startProfile(at = [0, 0])
 ///    |> line(endAbsolute = [12, 10])
@@ -292,7 +292,7 @@ export fn floor(@input: number): number {}
 
 /// Compute the smallest integer greater than or equal to a number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [12, 10])
@@ -307,7 +307,7 @@ export fn ceil(@input: number): number {}
 
 /// Compute the minimum of the given arguments.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -327,7 +327,7 @@ export fn min(
 
 /// Compute the maximum of the given arguments.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -347,7 +347,7 @@ export fn max(
 
 /// Compute the number to a power.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -373,7 +373,7 @@ export fn pow(
 /// details; `log2` can produce more accurate results for base 2,
 /// and `log10` can produce more accurate results for base 10.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [log(100, base = 5), 0])
@@ -393,7 +393,7 @@ export fn log(
 
 /// Compute the base 2 logarithm of the number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [log2(100), 0])
@@ -408,7 +408,7 @@ export fn log2(@input: number): number {}
 
 /// Compute the base 10 logarithm of the number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [log10(100), 0])
@@ -423,7 +423,7 @@ export fn log10(@input: number): number {}
 
 /// Compute the natural logarithm of the number.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [ln(100), 15])
@@ -438,7 +438,7 @@ export fn ln(@input: number): number {}
 
 /// Compute the length of the given leg.
 ///
-/// ```kcl,no_run
+/// ```kcl,no_run,sketchSyntaxAgnostic
 /// legLen(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -451,7 +451,7 @@ export fn legLen(
 
 /// Compute the angle of the given leg for x.
 ///
-/// ```kcl,no_run
+/// ```kcl,no_run,sketchSyntaxAgnostic
 /// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -464,7 +464,7 @@ export fn legAngX(
 
 /// Compute the angle of the given leg for y.
 ///
-/// ```kcl,no_run
+/// ```kcl,no_run,sketchSyntaxAgnostic
 /// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)
