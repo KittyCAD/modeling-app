@@ -6,6 +6,7 @@ import { Fragment, useEffect, useState } from 'react'
 
 export interface ShareDialogSubmitArgs {
   isRestrictedToOrg: boolean
+  password: string
 }
 
 type ShareDialogProps = {
@@ -13,6 +14,7 @@ type ShareDialogProps = {
   onCopyLink: (args: ShareDialogSubmitArgs) => Promise<boolean>
   onPublish: () => Promise<boolean>
   allowOrgRestrict: boolean
+  allowPassword: boolean
   shareDisabled?: boolean
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
@@ -23,17 +25,20 @@ export function ShareDialog({
   onCopyLink,
   onPublish,
   allowOrgRestrict,
+  allowPassword,
   shareDisabled = false,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
 }: ShareDialogProps) {
   const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
+  const [password, setPassword] = useState('')
   const [activeAction, setActiveAction] = useState<'copy' | 'publish' | null>(
     null
   )
 
   useEffect(() => {
     setIsRestrictedToOrg(false)
+    setPassword('')
     setActiveAction(null)
   }, [])
 
@@ -57,6 +62,7 @@ export function ShareDialog({
     try {
       const copied = await onCopyLink({
         isRestrictedToOrg,
+        password,
       })
       if (copied) {
         onClose()
@@ -105,7 +111,8 @@ export function ShareDialog({
                 Share project
               </h2>
               <p className="mt-2 text-xs leading-5 text-chalkboard-70 dark:text-chalkboard-30">
-                Copy a shareable link or publish this project for review.
+                Copy a shareable link for the current file or publish this
+                project for review.
               </p>
             </div>
             <ActionButton
@@ -155,7 +162,7 @@ export function ShareDialog({
                     </p>
                   </div>
                   <p className="pt-1 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
-                    They can open a copy of this project in Zoo.
+                    They can open a copy of this file in Zoo.
                   </p>
                 </div>
               </div>
@@ -192,6 +199,41 @@ export function ShareDialog({
                 </div>
               </div>
             </label>
+
+            <div
+              className={`rounded-xl border border-chalkboard-20/80 px-3 py-3 dark:border-chalkboard-80/70 ${
+                allowPassword
+                  ? 'bg-chalkboard-10/70 dark:bg-chalkboard-100/40'
+                  : 'opacity-60'
+              }`}
+            >
+              <label
+                htmlFor="share-link-password"
+                className="block text-chalkboard-100 dark:text-chalkboard-10"
+              >
+                Password
+              </label>
+              <input
+                id="share-link-password"
+                type="text"
+                value={password}
+                disabled={!allowPassword}
+                onChange={(event) => setPassword(event.target.value)}
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
+                placeholder="Set a password"
+                className={`mt-2 w-full rounded border border-chalkboard-20/80 bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:border-chalkboard-80/70 dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
+                  allowPassword ? '' : 'cursor-not-allowed'
+                }`}
+              />
+              {!allowPassword && (
+                <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
+                  Requires a paid plan.
+                </p>
+              )}
+            </div>
             {shareDisabled && (
               <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                 Share links are not currently supported for multi-file
