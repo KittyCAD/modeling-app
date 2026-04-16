@@ -1,6 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { CurrentProjectPublicationDetails } from '@src/lib/share'
 import { Fragment, useEffect, useState } from 'react'
 
@@ -16,6 +17,9 @@ type ShareDialogProps = {
   allowOrgRestrict: boolean
   allowPassword: boolean
   shareDisabled?: boolean
+  publishDisabled?: boolean
+  publishRequiresUsername?: boolean
+  accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
 }
@@ -27,6 +31,9 @@ export function ShareDialog({
   allowOrgRestrict,
   allowPassword,
   shareDisabled = false,
+  publishDisabled = false,
+  publishRequiresUsername = false,
+  accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
 }: ShareDialogProps) {
@@ -42,9 +49,10 @@ export function ShareDialog({
     setActiveAction(null)
   }, [])
 
-  const isSubmitting = activeAction !== null
-  const copyDisabled = shareDisabled || isSubmitting
-  const publishDisabled = isSubmitting
+  const isCopySubmitting = activeAction === 'copy'
+  const isPublishSubmitting = activeAction === 'publish'
+  const copyDisabled = shareDisabled || isCopySubmitting
+  const publishActionDisabled = isPublishSubmitting || publishDisabled
   const publishButtonLabel = getPublishButtonLabel(
     publicationDetails?.publicationStatus
   )
@@ -73,7 +81,7 @@ export function ShareDialog({
   }
 
   async function handlePublish() {
-    if (publishDisabled) {
+    if (publishActionDisabled) {
       return
     }
 
@@ -251,11 +259,24 @@ export function ShareDialog({
                 <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                   {publishPrompt}
                 </p>
+                {publishRequiresUsername && (
+                  <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
+                    Set a username in your{' '}
+                    <a
+                      href={accountUrl}
+                      onClick={openExternalBrowserIfDesktop(accountUrl)}
+                      className="underline underline-offset-2"
+                    >
+                      account settings
+                    </a>{' '}
+                    before publishing to Aquarium.
+                  </p>
+                )}
               </div>
               <ActionButton
                 Element="button"
                 type="button"
-                disabled={publishDisabled}
+                disabled={publishActionDisabled}
                 className="shrink-0 self-end whitespace-nowrap py-0.5 sm:self-auto"
                 onClick={() => {
                   void handlePublish()

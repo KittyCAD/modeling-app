@@ -6,6 +6,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { copyFileShareLink } from '@src/lib/links'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   type CurrentProjectPublicationDetails,
   getCurrentProjectPublicationDetails,
@@ -75,13 +76,19 @@ function SharePopoverContent({
   const app = useApp()
   const { auth, billing } = app
   const { kclManager } = useSingletons()
+  const authState = auth.useAuthState()
   const token = auth.useToken()
+  const user = auth.useUser()
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
   const allowOrgRestrict = !!billingContext.isOrg
   const allowPassword = !!billingContext.hasSubscription
   const ast = kclManager.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
+  const username = user?.username?.trim() || ''
+  const isCheckingUser = authState.matches('checkIfLoggedIn') && !!token
+  const publishRequiresUsername = !isCheckingUser && !!token && !username
+  const accountUrl = withSiteBaseURL('/account')
 
   const [publicationDetails, setPublicationDetails] =
     useState<CurrentProjectPublicationDetails | null>(null)
@@ -203,6 +210,9 @@ function SharePopoverContent({
           allowOrgRestrict={allowOrgRestrict}
           allowPassword={allowPassword}
           shareDisabled={shareDisabled}
+          publishDisabled={isCheckingUser || publishRequiresUsername}
+          publishRequiresUsername={publishRequiresUsername}
+          accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
         />
