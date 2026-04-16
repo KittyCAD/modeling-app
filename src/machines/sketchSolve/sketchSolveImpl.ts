@@ -78,6 +78,7 @@ import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/ta
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as verticalConstraintTool } from '@src/machines/sketchSolve/tools/verticalConstraintTool'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
   type ActorRefFrom,
@@ -708,6 +709,14 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   // Clean up selection box if it exists
   const selectionBoxGroup = sketchSegments?.getObjectByName('selectionBox')
   if (selectionBoxGroup) {
+    selectionBoxGroup.traverse((child) => {
+      if (
+        child instanceof CSS2DObject &&
+        child.element instanceof HTMLElement
+      ) {
+        child.element.remove()
+      }
+    })
     selectionBoxGroup.removeFromParent()
   }
 }

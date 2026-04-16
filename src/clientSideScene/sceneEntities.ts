@@ -16,6 +16,7 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
 import type { GetSketchModePlane } from '@kittycad/lib'
@@ -3730,6 +3731,14 @@ export class SceneEntities {
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
     if (sketchSegments) {
+      // We have to manually remove the CSS2DObjects
+      // as they don't get removed when the group is removed
+      sketchSegments.traverse((object) => {
+        if (object instanceof CSS2DObject) {
+          object.element.remove()
+          object.remove()
+        }
+      })
       this.sceneInfra.scene.remove(sketchSegments)
     }
     this.sceneInfra.camControls.enableRotate = true
