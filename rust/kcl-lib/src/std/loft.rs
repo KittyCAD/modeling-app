@@ -17,6 +17,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
 use crate::execution::ProfileClosed;
 use crate::execution::Sketch;
 use crate::execution::Solid;
@@ -195,8 +196,23 @@ async fn inner_loft(
         )
         .await?;
 
-    // Using the first sketch as the base curve, idk we might want to change this later.
-    let mut sketch = sketches[0].clone();
+    // Choose the base curve.
+    // Try to avoid choosing a circle...
+    let first_noncircle_sketch = sketches.iter().find(|sketch| {
+        // There must be a path in the sketch
+        let Some(first_path) = sketch.paths.first() else {
+            return false;
+        };
+        // And that path cannot be a circle, because I think it makes the engine
+        // do something weird.
+        if matches!(first_path, Path::Circle { .. }) {
+            return false;
+        };
+        true
+    });
+    // ...but if you have to, then OK.
+    let sketch: &Sketch = first_noncircle_sketch.clone().unwrap_or(&sketches[0]);
+    let mut sketch: Sketch = sketch.clone();
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
     Ok(Box::new(

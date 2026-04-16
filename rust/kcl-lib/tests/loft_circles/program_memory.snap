@@ -173,7 +173,36 @@ description: Variables in memory after executing loft_circles.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -184,34 +213,79 @@ description: Variables in memory after executing loft_circles.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
-            "center": [
-              0.0,
-              100.0
-            ],
             "from": [
-              50.0,
-              100.0
+              -100.0,
+              200.0
             ],
-            "radius": 50.0,
             "tag": null,
             "to": [
-              50.0,
-              100.0
+              100.0,
+              200.0
             ],
-            "type": "Circle",
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              100.0,
+              200.0
+            ],
+            "tag": null,
+            "to": [
+              100.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              100.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              -100.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -100.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              -100.0,
+              200.0
+            ],
+            "type": "ToPoint",
             "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
-          "objectId": 0,
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -200.0,
+            "z": 0.0,
             "units": "mm"
           },
           "type": "plane",
@@ -236,12 +310,12 @@ description: Variables in memory after executing loft_circles.kcl
         },
         "start": {
           "from": [
-            50.0,
-            100.0
+            -100.0,
+            200.0
           ],
           "to": [
-            50.0,
-            100.0
+            -100.0,
+            200.0
           ],
           "units": "mm",
           "tag": null,
@@ -254,8 +328,8 @@ description: Variables in memory after executing loft_circles.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
