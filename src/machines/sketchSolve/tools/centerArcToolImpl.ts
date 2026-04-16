@@ -633,7 +633,6 @@ export async function createArcActor({
         centerPoint: [number, number]
         startPoint: [number, number]
         centerSnapTarget?: SnapTarget
-        startSnapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
         sketchId: number
@@ -658,7 +657,6 @@ export async function createArcActor({
     centerPoint,
     startPoint,
     centerSnapTarget,
-    startSnapTarget,
     rustContext,
     kclManager,
     sketchId,
@@ -710,14 +708,12 @@ export async function createArcActor({
       return result
     }
 
+    // Defer the second-click endpoint snap until finalization so start/end can
+    // swap freely during preview without dragging constrained geometry.
     const snapTargets = [
       {
         segmentId: arcObj.kind.segment.center,
         snapTarget: centerSnapTarget,
-      },
-      {
-        segmentId: arcObj.kind.segment.start,
-        snapTarget: startSnapTarget,
       },
     ]
 
@@ -783,6 +779,7 @@ export async function finalizeArcActor({
         centerPoint: [number, number]
         endPoint: [number, number]
         sceneGraphDelta: SceneGraphDelta
+        startSnapTarget?: SnapTarget
         endSnapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
@@ -810,6 +807,7 @@ export async function finalizeArcActor({
     centerPoint,
     endPoint,
     sceneGraphDelta,
+    startSnapTarget,
     endSnapTarget,
     rustContext,
     kclManager,
@@ -946,7 +944,7 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      endSnapTarget === undefined || endSnapTarget === null
+      startSnapTarget == null && endSnapTarget == null
     )
 
     const editedArc = result.sceneGraphDelta.new_graph.objects[arcId]
@@ -954,38 +952,82 @@ export async function finalizeArcActor({
       return { error: 'Failed to find arc after final edit' }
     }
 
+    const fixedArcPointId = clickedPointIsStart
+      ? editedArc.kind.segment.end
+      : editedArc.kind.segment.start
     const clickedArcPointId = clickedPointIsStart
       ? editedArc.kind.segment.start
       : editedArc.kind.segment.end
-    const coincidentSegments = getCoincidentSegmentsForSnapTarget(
-      clickedArcPointId,
-      endSnapTarget
+    const snapTargets = [
+      {
+        segmentId: fixedArcPointId,
+        snapTarget: startSnapTarget,
+      },
+      {
+        segmentId: clickedArcPointId,
+        snapTarget: endSnapTarget,
+      },
+    ].filter(
+      (
+        target
+      ): target is { segmentId: number; snapTarget: NonNullable<SnapTarget> } =>
+        target.snapTarget != null
     )
-    if (coincidentSegments === null) {
+
+    if (snapTargets.length === 0) {
       return result
     }
 
-    const snapResult = await rustContext.addConstraint(
-      0,
-      sketchId,
-      {
-        type: 'Coincident',
-        segments: coincidentSegments,
-      },
-      settings,
-      true
-    )
+    const snapConstraints = snapTargets
+      .map(({ segmentId, snapTarget }) => ({
+        coincidentSegments: getCoincidentSegmentsForSnapTarget(
+          segmentId,
+          snapTarget
+        ),
+      }))
+      .filter(
+        (
+          target
+        ): target is {
+          coincidentSegments: NonNullable<
+            ReturnType<typeof getCoincidentSegmentsForSnapTarget>
+          >
+        } => target.coincidentSegments !== null
+      )
+
+    if (snapConstraints.length === 0) {
+      return result
+    }
+
+    const newObjects = [...result.sceneGraphDelta.new_objects]
+    let latestKclSource = result.kclSource
+    let latestSceneGraphDelta = result.sceneGraphDelta
+    let latestCheckpointId = result.checkpointId ?? null
+
+    for (const [index, { coincidentSegments }] of snapConstraints.entries()) {
+      const snapResult = await rustContext.addConstraint(
+        0,
+        sketchId,
+        {
+          type: 'Coincident',
+          segments: coincidentSegments,
+        },
+        settings,
+        index === snapConstraints.length - 1
+      )
+      latestKclSource = snapResult.kclSource
+      latestSceneGraphDelta = snapResult.sceneGraphDelta
+      latestCheckpointId = snapResult.checkpointId ?? null
+      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+    }
 
     return {
-      kclSource: snapResult.kclSource,
+      kclSource: latestKclSource,
       sceneGraphDelta: {
-        ...snapResult.sceneGraphDelta,
-        new_objects: [
-          ...result.sceneGraphDelta.new_objects,
-          ...snapResult.sceneGraphDelta.new_objects,
-        ],
+        ...latestSceneGraphDelta,
+        new_objects: newObjects,
       },
-      checkpointId: snapResult.checkpointId ?? result.checkpointId ?? null,
+      checkpointId: latestCheckpointId,
     }
   } catch (error) {
     console.error('Failed to finalize arc:', error)

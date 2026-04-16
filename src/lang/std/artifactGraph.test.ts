@@ -3,6 +3,7 @@ import {
   coerceSelectionsToBody,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
+  isFaceFromLegacySketch,
   type Artifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
@@ -178,6 +179,7 @@ describe('coerceSelectionsToBody', () => {
       segIds: ['segment-1'],
       trajectorySweepId: null,
       consumed: false,
+      sketchBlockId: 'sketch-block-1',
     }
 
     const segment: Artifact = {
@@ -306,5 +308,115 @@ describe('coerceSelectionsToBody', () => {
       expect(result.graphSelections[0].artifact?.type).toBe('path')
       expect(result.graphSelections[0].artifact?.id).toBe('path-1')
     }
+  })
+})
+
+describe('isFaceFromLegacySketch', () => {
+  it('returns true when the wall belongs to a legacy sketch path', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const path: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: ['wall-1'],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+
+    const wall: Artifact = {
+      type: 'wall',
+      id: 'wall-1',
+      cmdId: 'cmd-1',
+      segId: 'segment-1',
+      edgeCutEdgeIds: [],
+      pathIds: [],
+      sweepId: 'sweep-1',
+      faceCodeRef: {
+        range: [200, 300, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(wall.id, wall)
+
+    expect(isFaceFromLegacySketch('wall-1', artifactGraph)).toBe(true)
+  })
+
+  it('returns false when the wall does not resolve to a legacy sketch path', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const path: Artifact = {
+      type: 'path',
+      subType: 'region',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: ['wall-1'],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+
+    const wall: Artifact = {
+      type: 'wall',
+      id: 'wall-1',
+      cmdId: 'cmd-1',
+      segId: 'segment-1',
+      edgeCutEdgeIds: [],
+      pathIds: [],
+      sweepId: 'sweep-1',
+      faceCodeRef: {
+        range: [200, 300, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(wall.id, wall)
+
+    expect(isFaceFromLegacySketch('wall-1', artifactGraph)).toBe(false)
   })
 })

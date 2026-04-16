@@ -472,6 +472,50 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
   }
 }
 
+/** Given a face artifact's ID, determine if the solid's base path is a legacy or solve sketch. */
+export function isFaceFromLegacySketch(
+  faceId: string,
+  graph: ArtifactGraph
+): boolean {
+  const face = getArtifactOfTypes(
+    {
+      key: faceId,
+      types: ['wall'],
+    },
+    graph
+  )
+
+  if (err(face)) {
+    return false
+  }
+
+  const body = getArtifactOfTypes(
+    {
+      key: face.sweepId,
+      types: ['sweep'],
+    },
+    graph
+  )
+
+  if (err(body)) {
+    return false
+  }
+
+  const path = getArtifactOfTypes(
+    {
+      key: body.pathId,
+      types: ['path'],
+    },
+    graph
+  )
+
+  if (err(path)) {
+    return false
+  }
+
+  return path.subType === 'sketch'
+}
+
 function getPlaneFromPath(
   path: PathArtifact,
   graph: ArtifactGraph
@@ -801,18 +845,24 @@ export function getArtifactsMatchingPathToNode(
   )
 }
 
+export function getSketchBlockArtifactForPathToNode(
+  pathToNode: PathToNode,
+  artifactGraph: Map<string, Artifact>
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  return getArtifactsMatchingPathToNode(pathToNode, artifactGraph).find(
+    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+      artifact.type === 'sketchBlock'
+  )
+}
+
 export function getSketchBlockForPathArtifact(
   pathArtifact: Extract<Artifact, { type: 'path' }>,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
-  // TODO: replace this pathToNode match once the artifact graph can map a Path to its SketchBlock directly.
-  return getArtifactsMatchingPathToNode(
-    pathArtifact.codeRef.pathToNode,
-    artifactGraph
-  ).find(
-    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
-      artifact.type === 'sketchBlock'
-  )
+  if (!pathArtifact.sketchBlockId) return undefined
+  const sketchBlock = artifactGraph.get(pathArtifact.sketchBlockId)
+  if (sketchBlock?.type !== 'sketchBlock') return undefined
+  return sketchBlock
 }
 
 export function getSketchBlockForArtifact(

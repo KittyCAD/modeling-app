@@ -55,7 +55,7 @@ export function useEngineConnectionSubscriptions() {
             rustContext,
             wasmInstance,
           })
-          event && send(event)
+          if (event) send(event)
         })().catch(reportRejection)
       },
     })

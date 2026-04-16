@@ -68,7 +68,6 @@ export default class RustContext {
       this.engineCommandManager,
       projectFsManager
     )
-    this.rustInstance
 
     return ctxInstance
   }

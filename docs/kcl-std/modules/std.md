@@ -7,11 +7,14 @@ layout: manual
 
 The KCL standard library 
 
-Contains frequently used constants, functions for interacting with the KittyCAD servers to create sketches and geometry, and utility functions. 
+Contains frequently used constants, functions for interacting with the KittyCAD servers to
+create sketches and geometry, and utility functions.
 
-The standard library is organised into modules (listed below), but most things are always available in KCL programs. 
+The standard library is organised into modules (listed below), but most things are always available
+in KCL programs.
 
-You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html). 
+You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html).
+
 
 ## Modules
 
