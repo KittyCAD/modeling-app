@@ -14,6 +14,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 ## Dev environment tips
 
 - Generated stdlib docs live under `docs/kcl-std/` and are overwritten by tests; do not edit them directly.
+- If Electron Playwright tests fail locally with `bad option: --remote-debugging-port=0`, run them with `env -u ELECTRON_RUN_AS_NODE ...`, for example `env -u ELECTRON_RUN_AS_NODE npm run test:e2e:desktop -- e2e/playwright/sketch-solve-edit.spec.ts --grep "constraints can be added and undone one at a time in sketch solve mode"`.
 
 ## Code style
 
