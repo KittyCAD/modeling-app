@@ -920,7 +920,21 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
-  const segment = entries.find((entry) => entry.artifact.type === 'segment')
+  const regionPath = entries.find(
+    (entry) =>
+      entry.artifact.type === 'path' && entry.artifact.subType === 'region'
+  )
+  if (regionPath) {
+    return regionPath
+  }
+
+  const segment = entries.find((entry) => {
+    if (entry.artifact.type !== 'segment') {
+      return false
+    }
+    const parentPath = artifactGraph.get(entry.artifact.pathId)
+    return !(parentPath?.type === 'path' && parentPath.subType === 'region')
+  })
   if (segment) {
     return segment
   }
@@ -955,6 +969,14 @@ function getBestCandidate(
       return entry
     }
   }
+
+  const fallbackSegment = entries.find(
+    (entry) => entry.artifact.type === 'segment'
+  )
+  if (fallbackSegment) {
+    return fallbackSegment
+  }
+
   return undefined
 }
 

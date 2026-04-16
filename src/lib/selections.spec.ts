@@ -1329,6 +1329,97 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   )
 })
 
+describe('codeToIdSelections candidate ordering', () => {
+  test('prefers region path over region-derived segments when source ranges overlap', () => {
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'region-path',
+        {
+          type: 'path',
+          id: 'region-path',
+          subType: 'region',
+          planeId: 'plane-1',
+          segIds: ['region-segment'],
+          consumed: false,
+          trajectorySweepId: null,
+          codeRef: {
+            range: [10, 30, 0],
+            pathToNode: [],
+          },
+        } as unknown as Artifact,
+      ],
+      [
+        'region-segment',
+        {
+          type: 'segment',
+          id: 'region-segment',
+          pathId: 'region-path',
+          originalSegId: 'origin-segment',
+          edgeIds: [],
+          codeRef: {
+            range: [10, 30, 0],
+            pathToNode: [],
+          },
+          commonSurfaceIds: [],
+        } as unknown as Artifact,
+      ],
+    ])
+    const artifactIndex = buildArtifactIndex(artifactGraph)
+
+    const [selection] = codeToIdSelections(
+      [{ codeRef: { range: [20, 20, 0], pathToNode: [] } }],
+      artifactGraph,
+      artifactIndex
+    )
+
+    expect(selection.id).toBe('region-path')
+  })
+
+  test('still prefers segment for sketch path overlap', () => {
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-path',
+        {
+          type: 'path',
+          id: 'sketch-path',
+          subType: 'sketch',
+          planeId: 'plane-1',
+          segIds: ['sketch-segment'],
+          consumed: false,
+          trajectorySweepId: null,
+          codeRef: {
+            range: [10, 30, 0],
+            pathToNode: [],
+          },
+        } as unknown as Artifact,
+      ],
+      [
+        'sketch-segment',
+        {
+          type: 'segment',
+          id: 'sketch-segment',
+          pathId: 'sketch-path',
+          edgeIds: [],
+          codeRef: {
+            range: [10, 30, 0],
+            pathToNode: [],
+          },
+          commonSurfaceIds: [],
+        } as unknown as Artifact,
+      ],
+    ])
+    const artifactIndex = buildArtifactIndex(artifactGraph)
+
+    const [selection] = codeToIdSelections(
+      [{ codeRef: { range: [20, 20, 0], pathToNode: [] } }],
+      artifactGraph,
+      artifactIndex
+    )
+
+    expect(selection.id).toBe('sketch-segment')
+  })
+})
+
 describe('findLastRangeStartingBefore', () => {
   test('finds last range starting before target even if no overlap', () => {
     const mockIndex = [
