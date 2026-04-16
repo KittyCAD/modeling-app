@@ -864,6 +864,7 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
     let mut control_values = Vec::with_capacity(points.len());
     let mut controls = Vec::with_capacity(points.len());
     let mut control_object_ids = Vec::with_capacity(points.len());
+    let mut control_polygon_edge_object_ids = Vec::with_capacity(points.len().saturating_sub(1));
 
     for point in points {
         let KclValue::HomArray { value, .. } = point else {
@@ -908,6 +909,9 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
         controls.push([x, y]);
         control_object_ids.push(exec_state.next_object_id());
     }
+    for _ in 0..controls.len().saturating_sub(1) {
+        control_polygon_edge_object_ids.push(exec_state.next_object_id());
+    }
 
     let spline_object_id = exec_state.next_object_id();
     let ctor = ControlPointSplineCtor {
@@ -921,6 +925,7 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
             controls,
             ctor: Box::new(ctor),
             control_object_ids: control_object_ids.clone(),
+            control_polygon_edge_object_ids: control_polygon_edge_object_ids.clone(),
             degree,
             construction,
         },
@@ -937,6 +942,9 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
                 exec_state.add_placeholder_scene_object(*control_object_id, args.source_range, args.node_path.clone())
             })
             .collect::<Vec<_>>();
+        control_polygon_edge_object_ids.iter().for_each(|edge_object_id| {
+            exec_state.add_placeholder_scene_object(*edge_object_id, args.source_range, args.node_path.clone());
+        });
         let spline_object_id =
             exec_state.add_placeholder_scene_object(spline_object_id, args.source_range, args.node_path.clone());
 

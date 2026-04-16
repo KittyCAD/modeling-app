@@ -386,6 +386,7 @@ export function buildSegmentCtorFromObject(
  * Determines the correct segment update method based on the input type.
  */
 export function updateSegmentGroup({
+  apiObject,
   group,
   input,
   state,
@@ -394,6 +395,7 @@ export function updateSegmentGroup({
   hasSolveErrors,
   objects,
 }: {
+  apiObject: ApiObject
   group: Group
   input: SegmentCtor
   state: SegmentRenderState
@@ -414,6 +416,7 @@ export function updateSegmentGroup({
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -424,6 +427,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -434,6 +438,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -444,6 +449,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Circle') {
     segmentUtilsMap.CircleSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -454,6 +460,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'ControlPointSpline') {
     segmentUtilsMap.ControlPointSplineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -470,10 +477,12 @@ export function updateSegmentGroup({
  * Determines the correct segment init method based on the input type.
  */
 function initSegmentGroup({
+  apiObject,
   input,
   id,
   objects,
 }: {
+  apiObject: ApiObject
   input: SegmentCtor
   id: number
   objects: ApiObject[]
@@ -484,30 +493,35 @@ function initSegmentGroup({
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'ControlPointSpline') {
     group = segmentUtilsMap.ControlPointSplineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
@@ -648,6 +662,7 @@ export function updateSceneGraphFromDelta({
         return
       }
       const newGroup = initSegmentGroup({
+        apiObject: obj,
         input: ctor,
         id: obj.id,
         objects,
@@ -670,6 +685,7 @@ export function updateSceneGraphFromDelta({
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
       input: ctor,
       state,
@@ -868,6 +884,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         return
       }
       updateSegmentGroup({
+        apiObject: obj,
         group,
         input: ctor,
         state: getSegmentRenderState(
@@ -973,6 +990,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
       input: ctor,
       state: getSegmentRenderState(

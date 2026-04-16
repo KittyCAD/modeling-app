@@ -364,16 +364,6 @@ export function findClosestApiObjects(
           )
         }
 
-        for (let index = 0; index < controlPoints.length - 1; index++) {
-          closestDistance = Math.min(
-            closestDistance,
-            getClosestPointOnLineSegment(mousePosition, [
-              controlPoints[index],
-              controlPoints[index + 1],
-            ]).distance
-          )
-        }
-
         if (closestDistance <= hoverDistance) {
           candidates.push({
             distance: closestDistance,
@@ -446,7 +436,7 @@ function getApiObjectSelectionPriority(apiObject: ApiObject) {
   }
 
   if (isControlPointSplineSegment(apiObject)) {
-    return 2
+    return 3
   }
 
   return 2

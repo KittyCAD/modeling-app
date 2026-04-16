@@ -394,6 +394,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             controls,
             ctor,
             control_object_ids,
+            control_polygon_edge_object_ids,
             degree,
             construction,
         } => {
@@ -415,6 +416,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     controls: solved_controls,
                     ctor: ctor.clone(),
                     control_object_ids: control_object_ids.clone(),
+                    control_polygon_edge_object_ids: control_polygon_edge_object_ids.clone(),
                     control_freedoms,
                     degree: *degree,
                     construction: *construction,
@@ -659,6 +661,7 @@ pub(super) fn create_segment_scene_objects(
                         segment: crate::front::Segment::Line(crate::front::Line {
                             start: start_point_object_id,
                             end: end_point_object_id,
+                            owner: None,
                             ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
@@ -872,6 +875,7 @@ pub(super) fn create_segment_scene_objects(
                 controls,
                 ctor,
                 control_object_ids,
+                control_polygon_edge_object_ids,
                 control_freedoms,
                 degree,
                 construction,
@@ -908,6 +912,32 @@ pub(super) fn create_segment_scene_objects(
                     };
                     control_point_object_ids.push(point_object.id);
                     scene_objects.push(point_object);
+                }
+
+                for (index, edge_object_id) in control_polygon_edge_object_ids.iter().enumerate() {
+                    let edge_artifact_id = exec_state.next_artifact_id();
+                    let edge_object = Object {
+                        id: *edge_object_id,
+                        kind: ObjectKind::Segment {
+                            segment: crate::front::Segment::Line(crate::front::Line {
+                                start: control_point_object_ids[index],
+                                end: control_point_object_ids[index + 1],
+                                owner: Some(segment.object_id),
+                                ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                                    start: ctor.points[index].clone(),
+                                    end: ctor.points[index + 1].clone(),
+                                    construction: Some(*construction),
+                                }),
+                                ctor_applicable: false,
+                                construction: *construction,
+                            }),
+                        },
+                        label: Default::default(),
+                        comments: Default::default(),
+                        artifact_id: edge_artifact_id,
+                        source: source.clone(),
+                    };
+                    scene_objects.push(edge_object);
                 }
 
                 let artifact_id = exec_state.next_artifact_id();

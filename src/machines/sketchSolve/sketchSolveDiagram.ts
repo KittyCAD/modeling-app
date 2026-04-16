@@ -25,6 +25,7 @@ import {
   isCircleSegment,
   isControlPointSplineSegment,
   isLineSegment,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
@@ -843,6 +844,10 @@ export const sketchSolveMachine = setup({
             obj.kind.segment.type !== 'Circle' &&
             obj.kind.segment.type !== 'ControlPointSpline'
           ) {
+            continue
+          }
+
+          if (isOwnedLineSegment(obj)) {
             continue
           }
 

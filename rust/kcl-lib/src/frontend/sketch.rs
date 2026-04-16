@@ -299,6 +299,9 @@ pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
 pub struct Line {
     pub start: ObjectId,
     pub end: ObjectId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub owner: Option<ObjectId>,
     // Invariant: Line or MidPointLine
     pub ctor: SegmentCtor,
     // The constructor is applicable if changing the values of the constructor will change the rendering

@@ -103,6 +103,7 @@ mod sync {
                 segment: crate::frontend::sketch::Segment::Line(crate::frontend::sketch::Line {
                     start: ObjectId(start_id),
                     end: ObjectId(end_id),
+                    owner: None,
                     ctor,
                     ctor_applicable: false,
                     construction: false,
@@ -1088,6 +1089,7 @@ mod sync {
                 segment: Segment::Line(Line {
                     start: ObjectId(1),
                     end: ObjectId(2),
+                    owner: None,
                     ctor: SegmentCtor::Line(LineCtor {
                         start: Point2d {
                             x: expr(0.0),
@@ -1197,6 +1199,7 @@ mod sync {
                 segment: Segment::Line(Line {
                     start: ObjectId(1),
                     end: ObjectId(2),
+                    owner: None,
                     ctor: SegmentCtor::Line(LineCtor {
                         start: Point2d {
                             x: expr(0.0),

@@ -2140,6 +2140,7 @@ pub enum UnsolvedSegmentKind {
         controls: Vec<UnsolvedPoint2dExpr>,
         ctor: Box<ControlPointSplineCtor>,
         control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
         degree: u32,
         construction: bool,
     },
@@ -2246,6 +2247,7 @@ pub enum SegmentKind {
         controls: Vec<[TyF64; 2]>,
         ctor: Box<ControlPointSplineCtor>,
         control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
         #[serde(skip_serializing_if = "Vec::is_empty")]
         control_freedoms: Vec<Option<Freedom>>,
         degree: u32,

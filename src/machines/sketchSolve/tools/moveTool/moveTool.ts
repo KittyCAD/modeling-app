@@ -24,6 +24,7 @@ import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/In
 import {
   getCoincidentCluster,
   isConstraint,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -165,6 +166,10 @@ function buildSegmentCtorWithDrag({
     return null
   }
 
+  if (isOwnedLineSegment(obj)) {
+    return null
+  }
+
   if (baseCtor.type === 'Point') {
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
@@ -230,6 +235,14 @@ function buildSegmentCtorWithDrag({
       type: 'Circle',
       center: newCenter,
       start: newStart,
+      construction: baseCtor.construction,
+    }
+  } else if (baseCtor.type === 'ControlPointSpline') {
+    return {
+      type: 'ControlPointSpline',
+      points: baseCtor.points.map((point) =>
+        applyVectorToPoint2D(point, dragVec)
+      ),
       construction: baseCtor.construction,
     }
   }

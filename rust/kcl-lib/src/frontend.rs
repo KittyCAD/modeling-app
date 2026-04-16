@@ -153,6 +153,7 @@ const ARC_PROPERTY_CENTER: &str = "center";
 const CIRCLE_PROPERTY_START: &str = "start";
 const CIRCLE_PROPERTY_CENTER: &str = "center";
 const CONTROL_POINT_SPLINE_PROPERTY_CONTROLS: &str = "controls";
+const CONTROL_POINT_SPLINE_PROPERTY_EDGES: &str = "edges";
 
 const CONSTRUCTION_PARAM: &str = "construction";
 
@@ -831,10 +832,18 @@ impl SketchApi for FrontendState {
         let mut resolved_segment_ids_to_delete = AhashIndexSet::default();
 
         for segment_id in segment_ids_set.iter().copied() {
-            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
-                && let ObjectKind::Segment { segment } = &segment_object.kind
-                && let Segment::Point(point) = segment
-                && let Some(owner_id) = point.owner
+            let owner_id = self.scene_graph.objects.get(segment_id.0).and_then(|segment_object| {
+                let ObjectKind::Segment { segment } = &segment_object.kind else {
+                    return None;
+                };
+                match segment {
+                    Segment::Point(point) => point.owner,
+                    Segment::Line(line) => line.owner,
+                    _ => None,
+                }
+            });
+
+            if let Some(owner_id) = owner_id
                 && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
                 && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
                 && matches!(
@@ -842,10 +851,8 @@ impl SketchApi for FrontendState {
                     Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) | Segment::ControlPointSpline(_)
                 )
             {
-                // segment is owned -> delete the owner
                 resolved_segment_ids_to_delete.insert(owner_id);
             } else {
-                // segment is not owned by anything -> can be deleted
                 resolved_segment_ids_to_delete.insert(segment_id);
             }
         }
@@ -2223,7 +2230,17 @@ impl FrontendState {
                 )));
             };
 
-            let mut ids = spline.controls.clone();
+            let mut ids = outcome
+                .scene_objects
+                .iter()
+                .filter_map(|obj| match &obj.kind {
+                    ObjectKind::Segment {
+                        segment: Segment::Line(line),
+                    } if line.owner == Some(segment_id) => Some(obj.id),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            ids.extend(spline.controls.clone());
             ids.push(segment_id);
             ids
         };
@@ -2980,6 +2997,64 @@ impl FrontendState {
         }
     }
 
+    fn line_id_to_ast_reference(
+        &self,
+        line_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<ast::Expr, KclError> {
+        let line_object = self
+            .scene_graph
+            .objects
+            .get(line_id.0)
+            .ok_or_else(|| KclError::refactor(format!("Line not found: {line_id:?}")))?;
+        let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
+            return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
+        };
+        let Segment::Line(line) = line_segment else {
+            return Err(KclError::refactor(format!(
+                "Only lines are currently supported: {line_object:?}"
+            )));
+        };
+
+        if let Some(owner_id) = line.owner {
+            let owner_object = self.scene_graph.objects.get(owner_id.0).ok_or_else(|| {
+                KclError::refactor(format!(
+                    "Owner of line not found in scene graph: line={line_id:?}, owner={owner_id:?}"
+                ))
+            })?;
+            let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind else {
+                return Err(KclError::refactor(format!(
+                    "Owner of line is not a segment, but found {}",
+                    owner_object.kind.human_friendly_kind_with_article()
+                )));
+            };
+
+            match owner_segment {
+                Segment::ControlPointSpline(spline) => {
+                    let Some(index) = spline
+                        .controls
+                        .windows(2)
+                        .position(|window| window[0] == line.start && window[1] == line.end)
+                    else {
+                        return Err(KclError::refactor(format!(
+                            "Internal: Line is not part of owner's controlPointSpline segment: line={line_id:?}, spline={owner_id:?}"
+                        )));
+                    };
+                    let owner_expr =
+                        get_or_insert_ast_reference(new_ast, &owner_object.source, CONTROL_POINT_SPLINE_FN, None)?;
+                    let edges_expr =
+                        create_member_expression(owner_expr, CONTROL_POINT_SPLINE_PROPERTY_EDGES);
+                    Ok(create_index_expression(edges_expr, index))
+                }
+                _ => Err(KclError::refactor(format!(
+                    "Internal: Owner of line is not a supported segment type for constraints: {owner_segment:?}"
+                ))),
+            }
+        } else {
+            get_or_insert_ast_reference(new_ast, &line_object.source, "line", None)
+        }
+    }
+
     fn coincident_segment_to_ast(
         &self,
         segment: &ConstraintSegment,
@@ -3002,7 +3077,7 @@ impl FrontendState {
 
                 match segment {
                     Segment::Point(_) => self.point_id_to_ast_reference(*segment_id, new_ast),
-                    Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
+                    Segment::Line(_) => self.line_id_to_ast_reference(*segment_id, new_ast),
                     Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
                     Segment::Circle(_) => {
                         get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None)
@@ -3216,7 +3291,7 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg0_object:?}")));
         };
         let seg0_ast = match seg0_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
+            Segment::Line(_) => self.line_id_to_ast_reference(seg0_id, new_ast)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
@@ -3235,7 +3310,7 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg1_object:?}")));
         };
         let seg1_ast = match seg1_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
+            Segment::Line(_) => self.line_id_to_ast_reference(seg1_id, new_ast)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
@@ -3561,7 +3636,7 @@ impl FrontendState {
                 line_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
+        let line_ast = self.line_id_to_ast_reference(line_id, new_ast)?;
 
         // Create the horizontal() call using shared helper.
         let horizontal_ast = create_horizontal_ast(line_ast);
@@ -3613,7 +3688,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                self.line_id_to_ast_reference(*line_id, new_ast)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -3716,7 +3791,7 @@ impl FrontendState {
                 line0_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let line0_ast = self.line_id_to_ast_reference(line0_id, new_ast)?;
 
         let line1_object = self
             .scene_graph
@@ -3736,7 +3811,7 @@ impl FrontendState {
                 line1_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+        let line1_ast = self.line_id_to_ast_reference(line1_id, new_ast)?;
 
         // Create the parallel() or perpendicular() call.
         let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3789,7 +3864,7 @@ impl FrontendState {
                 line_segment.human_friendly_kind_with_article()
             )));
         };
-        let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
+        let line_ast = self.line_id_to_ast_reference(line_id, new_ast)?;
 
         // Create the vertical() call using shared helper.
         let vertical_ast = create_vertical_ast(line_ast);
@@ -3893,6 +3968,23 @@ impl FrontendState {
         let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
             return Err(KclError::refactor(format!("Object is not a sketch: {sketch_object:?}")));
         };
+        let segment_or_owner_matches = |segment_id: ObjectId| {
+            if segment_ids_set.contains(&segment_id) {
+                return true;
+            }
+            let segment_object = self.scene_graph.objects.get(segment_id.0);
+            if let Some(obj) = segment_object
+                && let ObjectKind::Segment { segment } = &obj.kind
+            {
+                match segment {
+                    Segment::Point(point) => point.owner.is_some_and(|owner_id| segment_ids_set.contains(&owner_id)),
+                    Segment::Line(line) => line.owner.is_some_and(|owner_id| segment_ids_set.contains(&owner_id)),
+                    _ => false,
+                }
+            } else {
+                false
+            }
+        };
         let mut constraint_ids_set = AhashIndexSet::default();
         for constraint_id in &sketch.constraints {
             let constraint_object = self
@@ -3907,79 +3999,29 @@ impl FrontendState {
                 )));
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.segment_ids().any(|seg_id| {
-                    // Check if the segment itself is being deleted
-                    if segment_ids_set.contains(&seg_id) {
-                        return true;
-                    }
-                    // For points, also check if the owner line/arc is being deleted
-                    let seg_object = self.scene_graph.objects.get(seg_id.0);
-                    if let Some(obj) = seg_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
-                Constraint::Distance(d) => d.point_ids().any(|pt_id| {
-                    if segment_ids_set.contains(&pt_id) {
-                        return true;
-                    }
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
+                Constraint::Coincident(c) => c.segment_ids().any(segment_or_owner_matches),
+                Constraint::Distance(d) => d.point_ids().any(segment_or_owner_matches),
                 Constraint::Fixed(_) => false,
-                Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
-                Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
-                Constraint::EqualRadius(equal_radius) => {
-                    equal_radius.input.iter().any(|seg_id| segment_ids_set.contains(seg_id))
-                }
-                Constraint::HorizontalDistance(d) => d.point_ids().any(|pt_id| {
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
-                Constraint::VerticalDistance(d) => d.point_ids().any(|pt_id| {
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
-                Constraint::Horizontal(h) => segment_ids_set.contains(&h.line),
-                Constraint::Vertical(v) => segment_ids_set.contains(&v.line),
+                Constraint::Radius(r) => segment_or_owner_matches(r.arc),
+                Constraint::Diameter(d) => segment_or_owner_matches(d.arc),
+                Constraint::EqualRadius(equal_radius) => equal_radius.input.iter().copied().any(segment_or_owner_matches),
+                Constraint::HorizontalDistance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::VerticalDistance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::Horizontal(h) => segment_or_owner_matches(h.line),
+                Constraint::Vertical(v) => segment_or_owner_matches(v.line),
                 Constraint::LinesEqualLength(lines_equal_length) => lines_equal_length
                     .lines
                     .iter()
-                    .any(|line_id| segment_ids_set.contains(line_id)),
-                Constraint::Parallel(parallel) => {
-                    parallel.lines.iter().any(|line_id| segment_ids_set.contains(line_id))
-                }
+                    .copied()
+                    .any(segment_or_owner_matches),
+                Constraint::Parallel(parallel) => parallel.lines.iter().copied().any(segment_or_owner_matches),
                 Constraint::Perpendicular(perpendicular) => perpendicular
                     .lines
                     .iter()
-                    .any(|line_id| segment_ids_set.contains(line_id)),
-                Constraint::Angle(angle) => angle.lines.iter().any(|line_id| segment_ids_set.contains(line_id)),
-                Constraint::Tangent(tangent) => tangent.input.iter().any(|seg_id| segment_ids_set.contains(seg_id)),
+                    .copied()
+                    .any(segment_or_owner_matches),
+                Constraint::Angle(angle) => angle.lines.iter().copied().any(segment_or_owner_matches),
+                Constraint::Tangent(tangent) => tangent.input.iter().copied().any(segment_or_owner_matches),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
@@ -8555,6 +8597,72 @@ sketch(on = XY) {
             6,
             "{:#?}",
             scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_control_point_spline_edge_horizontal() {
+        let initial_source = "\
+sketch(on = XY) {
+  controlPointSpline(points = [
+    [var 0mm, var 0mm],
+    [var 10mm, var 20mm],
+    [var 20mm, var 0mm],
+  ])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let spline_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::ControlPointSpline(_)
+                    }
+                )
+            })
+            .expect("Expected a control point spline segment in sketch");
+        let edge_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| match &obj.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } if line.owner == Some(spline_id) => Some(obj.id),
+                _ => None,
+            })
+            .expect("Expected an owned control-polygon edge");
+
+        let constraint = Constraint::Horizontal(Horizontal { line: edge_id });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("horizontal(controlPointSpline1.edges[0])"),
+            "Expected horizontal constraint on spline edge, got: {}",
+            src_delta.text
         );
 
         ctx.close().await;

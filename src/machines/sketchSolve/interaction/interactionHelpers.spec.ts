@@ -167,6 +167,31 @@ describe('findClosestApiObjects', () => {
     expect(result[0]?.apiObject.id).toBe(4)
   })
 
+  it('prefers an owned control-polygon edge over the spline when both are under the cursor', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20, owner: 10 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const edge = createLineApiObject({
+      id: 11,
+      start: 1,
+      end: 2,
+      owner: 10,
+    })
+
+    const result = findClosestApiObjects(
+      [5, 10],
+      createObjectsArray([p1, p2, p3, edge, spline]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(11)
+    expect(result[1]?.apiObject.id).toBe(10)
+  })
+
   it('prefers the higher id for coincident point candidates', () => {
     const pointA = createPointApiObject({ id: 4, x: 20, y: 2 })
     const pointB = createPointApiObject({ id: 8, x: 20 + 1e-9, y: 2 + 1e-9 })

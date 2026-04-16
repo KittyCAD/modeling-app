@@ -1,4 +1,4 @@
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject, SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
@@ -153,6 +153,7 @@ const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN = 24
 
 interface CreateSegmentArgs {
+  apiObject: ApiObject
   input: SegmentCtor
   id: number
   isConstruction: boolean
@@ -166,6 +167,7 @@ export type SegmentRenderState = {
 }
 
 interface UpdateSegmentArgs {
+  apiObject: ApiObject
   input: SegmentCtor
   theme: Themes
   scale: number
@@ -453,19 +455,28 @@ class LineSegment implements SketchEntityUtils {
     const startY = input.start.y.value
     const endX = input.end.x.value
     const endY = input.end.y.value
+    const isOwnedControlPolygonEdge =
+      args.apiObject.kind.type === 'Segment' &&
+      args.apiObject.kind.segment.type === 'Line' &&
+      args.apiObject.kind.segment.owner != null
     const segmentGroup = new Group()
     const geometry = new LineGeometry()
     geometry.setPositions([startX, startY, 0, endX, endY, 0])
     // Construction geometry uses dashed pattern
     // LineMaterial uses screen-space units (pixels) when worldUnits is false
     const material = new LineMaterial({
-      color: KCL_DEFAULT_COLOR,
-      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      color: isOwnedControlPolygonEdge ? 0x8a8a8a : KCL_DEFAULT_COLOR,
+      linewidth:
+        (isOwnedControlPolygonEdge
+          ? Math.max(1, SEGMENT_WIDTH_PX * 0.65)
+          : SEGMENT_WIDTH_PX) * window.devicePixelRatio,
       dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
       dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
       gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
       resolution: new Vector2(window.innerWidth, window.innerHeight),
+      transparent: isOwnedControlPolygonEdge,
+      opacity: isOwnedControlPolygonEdge ? 0.45 : 1,
     })
 
     // For construction geometry, inject custom screen-space dash shader
@@ -483,6 +494,7 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
+      controlPolygonEdge: isOwnedControlPolygonEdge,
     }
 
     segmentGroup.add(mesh)
@@ -523,6 +535,10 @@ class LineSegment implements SketchEntityUtils {
     geometry.computeBoundingSphere()
 
     const freedom = args.freedom
+    const isOwnedControlPolygonEdge =
+      args.apiObject.kind.type === 'Segment' &&
+      args.apiObject.kind.segment.type === 'Line' &&
+      args.apiObject.kind.segment.owner != null
 
     if (straightSegmentBody.material instanceof LineMaterial) {
       const previousIsConstruction =
@@ -590,17 +606,36 @@ class LineSegment implements SketchEntityUtils {
           window.innerHeight
         )
       }
+      straightSegmentBody.material.linewidth =
+        (isOwnedControlPolygonEdge
+          ? Math.max(1, SEGMENT_WIDTH_PX * 0.65)
+          : SEGMENT_WIDTH_PX) * window.devicePixelRatio
+      straightSegmentBody.material.transparent = isOwnedControlPolygonEdge
+      straightSegmentBody.material.opacity =
+        isOwnedControlPolygonEdge && !state.selected && !state.hovered
+          ? 0.45
+          : 1
     }
 
-    this.updateLineColors(
-      straightSegmentBody,
-      state.selected,
-      state.hovered,
-      state.draft,
-      theme,
-      args.hasSolveErrors,
-      freedom
-    )
+    if (
+      isOwnedControlPolygonEdge &&
+      !state.selected &&
+      !state.hovered &&
+      !state.draft &&
+      !args.hasSolveErrors
+    ) {
+      straightSegmentBody.material.color.set(0x8a8a8a)
+    } else {
+      this.updateLineColors(
+        straightSegmentBody,
+        state.selected,
+        state.hovered,
+        state.draft,
+        theme,
+        args.hasSolveErrors,
+        freedom
+      )
+    }
   }
 }
 
@@ -1231,6 +1266,7 @@ class ControlPointSplineSegment implements SketchEntityUtils {
       polygonMaterial.resolution.set(window.innerWidth, window.innerHeight)
       polygonMaterial.opacity =
         args.state.hovered || args.state.selected ? 0.7 : 0.45
+      polygonMaterial.color.set(0x8a8a8a)
     }
 
     updateLineMaterial(curveBody.material, {
@@ -1241,10 +1277,6 @@ class ControlPointSplineSegment implements SketchEntityUtils {
       hasSolveErrors: args.hasSolveErrors,
       freedom: args.freedom,
     })
-
-    if (polygonMaterial instanceof LineMaterial) {
-      polygonMaterial.color.set(0x8a8a8a)
-    }
   }
 }
 

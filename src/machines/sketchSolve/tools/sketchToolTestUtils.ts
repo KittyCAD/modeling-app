@@ -95,10 +95,12 @@ export function createLineApiObject({
   id,
   start,
   end,
+  owner,
 }: {
   id: number
   start: number
   end: number
+  owner?: number
 }): ApiObject {
   return {
     id,
@@ -108,6 +110,7 @@ export function createLineApiObject({
         type: 'Line',
         start,
         end,
+        owner,
         ctor: {
           type: 'Line',
           start: {

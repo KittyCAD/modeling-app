@@ -44,6 +44,14 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
+export function isOwnedLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment & {
+  kind: { type: 'Segment'; segment: { type: 'Line'; owner: number } }
+} {
+  return isLineSegment(obj) && obj.kind.segment.owner != null
+}
+
 export function isArcSegment(
   obj: ApiObject | undefined | null
 ): obj is ArcSegment {
