@@ -121,12 +121,12 @@ export function getConstraintForSnapTarget(
       return {
         type: 'Horizontal',
         points: [segmentId, 'ORIGIN'],
-      } as ApiConstraint
+      }
     case Y_AXIS_TARGET:
       return {
         type: 'Vertical',
         points: [segmentId, 'ORIGIN'],
-      } as ApiConstraint
+      }
     default:
       return null
   }

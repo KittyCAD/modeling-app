@@ -145,7 +145,7 @@ describe('rectUtils.createDraftRectangle', () => {
       { type: 'Parallel', lines: [2, 4] },
       { type: 'Parallel', lines: [3, 1] },
       { type: 'Perpendicular', lines: [1, 2] },
-      { type: 'Horizontal', line: 3 } as ApiConstraint,
+      { type: 'Horizontal', line: 3 },
       { type: 'Coincident', segments: [19, 11] },
       { type: 'Coincident', segments: [20, 14] },
       { type: 'Coincident', segments: [21, 12] },
@@ -271,7 +271,7 @@ describe('rectUtils.createDraftRectangle', () => {
       { type: 'Parallel', lines: [2, 4] },
       { type: 'Parallel', lines: [3, 1] },
       { type: 'Perpendicular', lines: [1, 2] },
-      { type: 'Horizontal', line: 3 } as ApiConstraint,
+      { type: 'Horizontal', line: 3 },
       {
         type: 'Coincident',
         segments: [11, 'ORIGIN'] as unknown as [number, number],

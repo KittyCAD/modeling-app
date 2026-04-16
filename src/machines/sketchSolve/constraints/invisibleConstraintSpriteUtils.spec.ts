@@ -158,7 +158,7 @@ describe('invisibleConstraintSpriteUtils', () => {
     const horizontal = createConstraintApiObject(21, {
       type: 'Horizontal',
       line: 10,
-    } as ApiConstraint)
+    })
 
     const relatedConstraintIds = findInvisibleConstraintsForSegment(
       point,
@@ -178,7 +178,7 @@ describe('invisibleConstraintSpriteUtils', () => {
     const horizontal = createConstraintApiObject(21, {
       type: 'Horizontal',
       points: [1, 2],
-    } as ApiConstraint)
+    })
 
     const relatedConstraintIds = findInvisibleConstraintsForSegment(
       point,
@@ -206,7 +206,7 @@ describe('invisibleConstraintSpriteUtils', () => {
     const horizontal = createConstraintApiObject(21, {
       type: 'Horizontal',
       points: [1, 2, 'ORIGIN'],
-    } as ApiConstraint)
+    })
 
     const segmentIds = findSegmentsForInvisibleConstraint(
       horizontal as InvisibleConstraintObject,

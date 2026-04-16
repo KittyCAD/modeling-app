@@ -88,8 +88,8 @@ function createConstraintApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
-  } as ApiObject
+    source: { type: 'Simple', range: [0, 0, 0], node_path: { steps: [] } },
+  }
 }
 
 function createDraggedEntityIdGetter(entityId: number | null = null) {
