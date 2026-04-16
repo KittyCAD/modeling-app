@@ -1,0 +1,58 @@
+// Secondary Shaft Body
+// Offset shaft
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+
+// Revolve the secondary shaft
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -435mm, var 0mm], end = [var 425mm, var 0mm])
+  line2 = line(start = [var -430mm, var -47mm], end = [var -435mm, var -42mm])
+  line3 = line(start = [var 425mm, var 0mm], end = [var 425mm, var -37mm])
+  line4 = line(start = [var 415mm, var -47mm], end = [var 425mm, var -37mm])
+  line5 = line(start = [var 415mm, var -47mm], end = [var 45mm, var -47mm])
+  line6 = line(start = [var 45mm, var -47mm], end = [var 45mm, var -78mm])
+  line7 = line(start = [var 45mm, var -78mm], end = [var -355mm, var -78mm])
+  line8 = line(start = [var -355mm, var -78mm], end = [var -355mm, var -47mm])
+  line9 = line(start = [var -355mm, var -47mm], end = [var -430mm, var -47mm])
+  line10 = line(start = [var -435mm, var -42mm], end = [var -435mm, var 0mm])
+
+  coincident([line3.start, line1.end])
+  coincident([line4.start, line5.start])
+  coincident([line4.end, line3.end])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line9.start])
+  coincident([line2.start, line9.end])
+  coincident([line2.end, line10.start])
+  coincident([line10.end, line1.start])
+
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(line8)
+  horizontal(line9)
+  vertical(line10)
+
+  verticalDistance([line3.start, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, line3.start]) == 425
+  horizontalDistance([line10.end, ORIGIN]) == 435
+  horizontalDistance([line7.end, line7.start]) == 400
+  verticalDistance([line9.end, line10.end]) == 47
+  verticalDistance([line5.start, line3.start]) == 47
+  angle([line2, line9]) == 45
+  horizontalDistance([line2.end, line2.start]) == 5
+  horizontalDistance([line2.end, line9.start]) == 80
+  angle([line4, line5]) == 135
+  horizontalDistance([line4.start, line4.end]) == 10
+  verticalDistance([line8.start, ORIGIN]) == 78
+}
+region001 = region(segments = [sketch001.line1])
+hidden001 = hide(sketch001)
+
+secondaryShaft = revolve(region001, axis = { direction = [1, 0], origin = [0, 0] })
