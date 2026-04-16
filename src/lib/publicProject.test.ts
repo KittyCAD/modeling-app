@@ -3,8 +3,12 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import env from '@src/env'
 import {
+  createOpenPrivateProjectUrl,
+  createOpenSharedProjectUrl,
   createOpenPublicProjectUrl,
+  downloadPrivateProject,
   downloadPublicProject,
+  downloadSharedProject,
 } from '@src/lib/publicProject'
 
 afterEach(() => {
@@ -17,6 +21,22 @@ describe('public project helpers', () => {
 
     expect(result.toString()).toBe(
       `${env().VITE_ZOO_SITE_APP_URL}/?public-project=project-123&ask-open-desktop=true`
+    )
+  })
+
+  test('createOpenSharedProjectUrl builds a share-link URL that can prompt for desktop', () => {
+    const result = createOpenSharedProjectUrl('share-key-123')
+
+    expect(result.toString()).toBe(
+      `${env().VITE_ZOO_SITE_APP_URL}/projects/shared/share-key-123?ask-open-desktop=true`
+    )
+  })
+
+  test('createOpenPrivateProjectUrl builds a private-project URL that can prompt for desktop', () => {
+    const result = createOpenPrivateProjectUrl('project-789')
+
+    expect(result.toString()).toBe(
+      `${env().VITE_ZOO_SITE_APP_URL}/projects/project-789?ask-open-desktop=true`
     )
   })
 
@@ -80,5 +100,71 @@ describe('public project helpers', () => {
 
     expect(result).toBeInstanceOf(Error)
     expect((result as Error).message).toContain('openable KCL entry file')
+  })
+
+  test('downloadSharedProject parses a zip archive into project files', async () => {
+    const zip = new JSZip()
+    zip.file('sample-project/main.kcl', 'part001 = startSketchOn("XY")')
+    zip.file('sample-project/project.toml', 'default_file = "main.kcl"')
+    zip.file('sample-project/assets/shape.stl', new Uint8Array([1, 2, 3]))
+
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(archive, {
+        headers: {
+          'content-type': 'application/zip',
+          'content-disposition': 'attachment; filename="sample-project.zip"',
+        },
+      })
+    )
+
+    const result = await downloadSharedProject('share-key-123')
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/projects/shared/share-key-123/download?format=zip'),
+      expect.anything()
+    )
+    expect(result.projectName).toBe('sample-project')
+    expect(result.entrypointFilePath).toBe('main.kcl')
+  })
+
+  test('downloadPrivateProject parses a zip archive into project files', async () => {
+    const zip = new JSZip()
+    zip.file('sample-project/main.kcl', 'part001 = startSketchOn("XY")')
+    zip.file('sample-project/project.toml', 'default_file = "main.kcl"')
+    zip.file('sample-project/assets/shape.stl', new Uint8Array([1, 2, 3]))
+
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(archive, {
+        headers: {
+          'content-type': 'application/zip',
+          'content-disposition': 'attachment; filename="sample-project.zip"',
+        },
+      })
+    )
+
+    const result = await downloadPrivateProject('project-789')
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/user/projects/project-789/download?format=zip'),
+      expect.objectContaining({
+        method: 'GET',
+      })
+    )
+    expect(result.projectName).toBe('sample-project')
+    expect(result.entrypointFilePath).toBe('main.kcl')
   })
 })

@@ -11,6 +11,7 @@ import {
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
 import { isArray } from '@src/lib/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
 
 const DEFAULT_PUBLIC_PROJECT_NAME = 'shared-project'
@@ -19,6 +20,12 @@ const PUBLIC_PROJECT_DOWNLOAD_FORMAT = 'zip'
 type DownloadedProjectArchive = {
   archive: ArrayBuffer
   contentDisposition: string | null
+}
+
+type DownloadedProject = {
+  projectName: string
+  files: RequestedProjectFile[]
+  entrypointFilePath?: string
 }
 
 export function createOpenPublicProjectUrl(projectId: string) {
@@ -31,16 +38,75 @@ export function createOpenPublicProjectUrl(projectId: string) {
   return new URL(`?${searchParams.toString()}`, origin)
 }
 
-export async function downloadPublicProject(projectId: string): Promise<{
-  projectName: string
-  files: RequestedProjectFile[]
-  entrypointFilePath?: string
-} | Error> {
-  console.info('[public-project] starting download', { projectId })
-  const archive = await downloadPublicProjectArchive(projectId)
+export function createOpenSharedProjectUrl(shareKey: string) {
+  const origin = env().VITE_ZOO_SITE_APP_URL
+  const sharePath = `/projects/shared/${encodeURIComponent(shareKey)}`
+  const shareUrl = new URL(sharePath, origin)
+  shareUrl.searchParams.set(ASK_TO_OPEN_QUERY_PARAM, String(true))
+
+  return shareUrl
+}
+
+export function createOpenPrivateProjectUrl(projectId: string) {
+  const origin = env().VITE_ZOO_SITE_APP_URL
+  const projectPath = `/projects/${encodeURIComponent(projectId)}`
+  const projectUrl = new URL(projectPath, origin)
+  projectUrl.searchParams.set(ASK_TO_OPEN_QUERY_PARAM, String(true))
+
+  return projectUrl
+}
+
+export async function downloadPublicProject(
+  projectId: string
+): Promise<DownloadedProject | Error> {
+  return downloadProjectFromArchiveSource({
+    logPrefix: 'public-project',
+    identifierLabel: 'projectId',
+    identifierValue: projectId,
+    loadArchive: () => downloadPublicProjectArchive(projectId),
+  })
+}
+
+export async function downloadSharedProject(
+  shareKey: string
+): Promise<DownloadedProject | Error> {
+  return downloadProjectFromArchiveSource({
+    logPrefix: 'shared-project',
+    identifierLabel: 'shareKey',
+    identifierValue: shareKey,
+    loadArchive: () => downloadSharedProjectArchive(shareKey),
+  })
+}
+
+export async function downloadPrivateProject(
+  projectId: string
+): Promise<DownloadedProject | Error> {
+  return downloadProjectFromArchiveSource({
+    logPrefix: 'private-project',
+    identifierLabel: 'projectId',
+    identifierValue: projectId,
+    loadArchive: () => downloadPrivateProjectArchive(projectId),
+  })
+}
+
+async function downloadProjectFromArchiveSource({
+  logPrefix,
+  identifierLabel,
+  identifierValue,
+  loadArchive,
+}: {
+  logPrefix: 'public-project' | 'shared-project' | 'private-project'
+  identifierLabel: 'projectId' | 'shareKey'
+  identifierValue: string
+  loadArchive: () => Promise<DownloadedProjectArchive | Error>
+}): Promise<DownloadedProject | Error> {
+  console.info(`[${logPrefix}] starting download`, {
+    [identifierLabel]: identifierValue,
+  })
+  const archive = await loadArchive()
   if (archive instanceof Error) {
-    console.error('[public-project] download failed', {
-      projectId,
+    console.error(`[${logPrefix}] download failed`, {
+      [identifierLabel]: identifierValue,
       message: archive.message,
     })
     return archive
@@ -48,15 +114,15 @@ export async function downloadPublicProject(projectId: string): Promise<{
 
   const parsedProject = await parseDownloadedProject(archive)
   if (parsedProject instanceof Error) {
-    console.error('[public-project] failed to parse downloaded archive', {
-      projectId,
+    console.error(`[${logPrefix}] failed to parse downloaded archive`, {
+      [identifierLabel]: identifierValue,
       message: parsedProject.message,
     })
     return parsedProject
   }
 
-  console.info('[public-project] parsed download', {
-    projectId,
+  console.info(`[${logPrefix}] parsed download`, {
+    [identifierLabel]: identifierValue,
     projectName: parsedProject.projectName,
     fileCount: parsedProject.files.length,
     entrypointFilePath: parsedProject.entrypointFilePath || null,
@@ -68,12 +134,44 @@ export async function downloadPublicProject(projectId: string): Promise<{
 async function downloadPublicProjectArchive(
   projectId: string
 ): Promise<DownloadedProjectArchive | Error> {
+  return downloadGeneratedProjectArchive({
+    pathPattern: /\/projects\/public\/[^/]+\/download$/,
+    download: (client) =>
+      projects.download_public_project({
+        client,
+        id: projectId,
+        format: PUBLIC_PROJECT_DOWNLOAD_FORMAT,
+      }),
+  })
+}
+
+async function downloadPrivateProjectArchive(
+  projectId: string
+): Promise<DownloadedProjectArchive | Error> {
+  return downloadGeneratedProjectArchive({
+    pathPattern: /\/user\/projects\/[^/]+\/download$/,
+    download: (client) =>
+      projects.download_project({
+        client,
+        id: projectId,
+        format: PUBLIC_PROJECT_DOWNLOAD_FORMAT,
+      }),
+  })
+}
+
+async function downloadGeneratedProjectArchive({
+  pathPattern,
+  download,
+}: {
+  pathPattern: RegExp
+  download: (client: ReturnType<typeof createKCClient>) => Promise<unknown>
+}): Promise<DownloadedProjectArchive | Error> {
   const client = createKCClient()
   const originalFetch = client.fetch || fetch
 
   client.fetch = async (input, init) => {
     const response = await originalFetch(
-      ensurePublicProjectDownloadFormat(input),
+      ensureProjectDownloadFormat(input, pathPattern),
       init
     )
     if (!response.ok || isJsonResponse(response)) {
@@ -84,13 +182,7 @@ async function downloadPublicProjectArchive(
     return createArchiveResponse(response, archive)
   }
 
-  const result = await kcCall(() =>
-    projects.download_public_project({
-      client,
-      id: projectId,
-      format: PUBLIC_PROJECT_DOWNLOAD_FORMAT,
-    })
-  )
+  const result = await kcCall(() => download(client))
 
   if (result instanceof Error) {
     return result
@@ -99,13 +191,30 @@ async function downloadPublicProjectArchive(
   return result as DownloadedProjectArchive
 }
 
-function ensurePublicProjectDownloadFormat(input: RequestInfo | URL) {
+async function downloadSharedProjectArchive(
+  shareKey: string
+): Promise<DownloadedProjectArchive | Error> {
+  const client = createKCClient()
+  const fetchImpl = client.fetch || fetch
+  const response = await fetchImpl(
+    withAPIBaseURL(
+      `/projects/shared/${encodeURIComponent(shareKey)}/download?format=${PUBLIC_PROJECT_DOWNLOAD_FORMAT}`
+    )
+  )
+
+  if (!response.ok) {
+    return new Error(await getDownloadErrorMessage(response))
+  }
+
+  return {
+    archive: await response.arrayBuffer(),
+    contentDisposition: response.headers.get('content-disposition'),
+  }
+}
+
+function ensureProjectDownloadFormat(input: RequestInfo | URL, pathPattern: RegExp) {
   const url = getRequestUrl(input)
-  if (
-    !url ||
-    !/\/projects\/public\/[^/]+\/download$/.test(url.pathname) ||
-    url.searchParams.has('format')
-  ) {
+  if (!url || !pathPattern.test(url.pathname) || url.searchParams.has('format')) {
     return input
   }
 
@@ -150,6 +259,20 @@ function createArchiveResponse(response: Response, archive: ArrayBuffer) {
 
 function isJsonResponse(response: Response) {
   return response.headers.get('content-type')?.includes('application/json')
+}
+
+async function getDownloadErrorMessage(response: Response) {
+  try {
+    const data = (await response.json()) as { message?: string }
+    if (data.message) {
+      return data.message
+    }
+  } catch {
+    // Fall through to plain-text parsing below.
+  }
+
+  const text = await response.text()
+  return text || 'Failed to download the shared project.'
 }
 
 async function parseDownloadedProject({

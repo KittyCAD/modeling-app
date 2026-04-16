@@ -12,13 +12,19 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_FILE_NAME,
   FILE_NAME_QUERY_PARAM,
+  PRIVATE_PROJECT_QUERY_PARAM,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
   PUBLIC_PROJECT_QUERY_PARAM,
+  SHARED_PROJECT_QUERY_PARAM,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { downloadPublicProject } from '@src/lib/publicProject'
+import {
+  downloadPrivateProject,
+  downloadPublicProject,
+  downloadSharedProject,
+} from '@src/lib/publicProject'
 import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
@@ -55,6 +61,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
     !hasAskToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldOpenPublicProject =
     !hasAskToOpen && searchParams.has(PUBLIC_PROJECT_QUERY_PARAM)
+  const shouldOpenSharedProject =
+    !hasAskToOpen && searchParams.has(SHARED_PROJECT_QUERY_PARAM)
+  const shouldOpenPrivateProject =
+    !hasAskToOpen && searchParams.has(PRIVATE_PROJECT_QUERY_PARAM)
   const shouldInvokeGenericCmd =
     !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
@@ -156,6 +166,152 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldOpenPublicProject, setSearchParams, authState])
+
+  useEffect(() => {
+    if (!shouldOpenSharedProject || !authState.matches('loggedIn')) return
+
+    const shareKey = searchParams.get(SHARED_PROJECT_QUERY_PARAM)
+    if (!shareKey) {
+      return
+    }
+
+    let cancelled = false
+    const clearSharedProjectSearchParam = () => {
+      const nextSearchParams = new URLSearchParams(searchParams)
+      nextSearchParams.delete(SHARED_PROJECT_QUERY_PARAM)
+      setSearchParams(nextSearchParams)
+    }
+
+    void (async () => {
+      console.info('[shared-project] opening project from share link', {
+        shareKey,
+      })
+      const downloadedProject = await downloadSharedProject(shareKey)
+      const downloadFailed = err(downloadedProject)
+      if (cancelled || downloadFailed) {
+        if (!cancelled && downloadFailed) {
+          console.error('[shared-project] failed before import handoff', {
+            shareKey,
+            message: downloadedProject.message,
+          })
+          clearSharedProjectSearchParam()
+          toast.error(downloadedProject.message)
+        }
+        return
+      }
+
+      console.info('[shared-project] handing parsed project to system IO', {
+        shareKey,
+        projectName: downloadedProject.projectName,
+        fileCount: downloadedProject.files.length,
+        entrypointFilePath: downloadedProject.entrypointFilePath,
+      })
+
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject,
+        data: {
+          files: downloadedProject.files,
+          requestedProjectName: downloadedProject.projectName,
+          requestedFileNameWithExtension: downloadedProject.entrypointFilePath,
+        },
+      })
+      clearSharedProjectSearchParam()
+    })().catch((error) => {
+      if (cancelled) {
+        return
+      }
+
+      console.error('[shared-project] unexpected failure while opening', {
+        shareKey,
+        error,
+      })
+      clearSharedProjectSearchParam()
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to open the shared project.'
+      )
+    })
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [shouldOpenSharedProject, setSearchParams, authState])
+
+  useEffect(() => {
+    if (!shouldOpenPrivateProject || !authState.matches('loggedIn')) return
+
+    const projectId = searchParams.get(PRIVATE_PROJECT_QUERY_PARAM)
+    if (!projectId) {
+      return
+    }
+
+    let cancelled = false
+    const clearPrivateProjectSearchParam = () => {
+      const nextSearchParams = new URLSearchParams(searchParams)
+      nextSearchParams.delete(PRIVATE_PROJECT_QUERY_PARAM)
+      setSearchParams(nextSearchParams)
+    }
+
+    void (async () => {
+      console.info('[private-project] opening private project from query param', {
+        projectId,
+      })
+      const downloadedProject = await downloadPrivateProject(projectId)
+      const downloadFailed = err(downloadedProject)
+      if (cancelled || downloadFailed) {
+        if (!cancelled && downloadFailed) {
+          console.error('[private-project] failed before import handoff', {
+            projectId,
+            message: downloadedProject.message,
+          })
+          clearPrivateProjectSearchParam()
+          toast.error(downloadedProject.message)
+        }
+        return
+      }
+
+      console.info('[private-project] handing parsed project to system IO', {
+        projectId,
+        projectName: downloadedProject.projectName,
+        fileCount: downloadedProject.files.length,
+        entrypointFilePath: downloadedProject.entrypointFilePath,
+      })
+
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject,
+        data: {
+          files: downloadedProject.files,
+          requestedProjectName: downloadedProject.projectName,
+          requestedFileNameWithExtension: downloadedProject.entrypointFilePath,
+        },
+      })
+      clearPrivateProjectSearchParam()
+    })().catch((error) => {
+      if (cancelled) {
+        return
+      }
+
+      console.error('[private-project] unexpected failure while opening', {
+        projectId,
+        error,
+      })
+      clearPrivateProjectSearchParam()
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to open the private project.'
+      )
+    })
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [shouldOpenPrivateProject, setSearchParams, authState])
 
   /**
    * Generic commands are triggered by query parameters

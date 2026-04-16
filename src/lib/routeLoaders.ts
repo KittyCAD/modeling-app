@@ -1,4 +1,10 @@
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
+  PRIVATE_PROJECT_QUERY_PARAM,
+  PROJECT_ENTRYPOINT,
+  SHARED_PROJECT_QUERY_PARAM,
+} from '@src/lib/constants'
 import type { LoaderFunction } from 'react-router-dom'
 import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
@@ -23,6 +29,67 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSkeletonCreate } from '@src/lang/project'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
+export const sharedProjectLinkLoader: LoaderFunction = async ({
+  params,
+  request,
+}) => {
+  return normalizeProjectLinkRequest({
+    request,
+    identifier: params.key,
+    queryParam: SHARED_PROJECT_QUERY_PARAM,
+  })
+}
+
+export const privateProjectLinkLoader: LoaderFunction = async ({
+  params,
+  request,
+}) => {
+  return normalizeProjectLinkRequest({
+    request,
+    identifier: params.id,
+    queryParam: PRIVATE_PROJECT_QUERY_PARAM,
+    requireSignIn: true,
+  })
+}
+
+function normalizeProjectLinkRequest({
+  request,
+  identifier,
+  queryParam,
+  requireSignIn = false,
+}: {
+  request: Request
+  identifier: string | undefined
+  queryParam: typeof SHARED_PROJECT_QUERY_PARAM | typeof PRIVATE_PROJECT_QUERY_PARAM
+  requireSignIn?: boolean
+}) {
+  if (!identifier) {
+    return redirect(PATHS.INDEX)
+  }
+
+  const url = new URL(request.url)
+  const normalizedShareLink = new URL(PATHS.INDEX, url.origin)
+  normalizedShareLink.searchParams.set(queryParam, identifier)
+  normalizedShareLink.searchParams.set(ASK_TO_OPEN_QUERY_PARAM, String(true))
+  if (requireSignIn) {
+    normalizedShareLink.searchParams.set(
+      IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
+      String(true)
+    )
+  }
+
+  for (const [key, value] of url.searchParams.entries()) {
+    if (key === ASK_TO_OPEN_QUERY_PARAM) {
+      continue
+    }
+    normalizedShareLink.searchParams.set(key, value)
+  }
+
+  return redirect(
+    normalizedShareLink.pathname + normalizedShareLink.search
+  )
+}
 
 /**
  * The base loader is used to reroute `/` root path requests,

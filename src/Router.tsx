@@ -20,7 +20,13 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import {
+  baseLoader,
+  fileLoader,
+  homeLoader,
+  privateProjectLinkLoader,
+  sharedProjectLinkLoader,
+} from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
@@ -52,6 +58,16 @@ export const Router = () => {
           // Gotcha: declaring errorElement on the root will unmount the element causing our forever React components to unmount.
           // Leave errorElement on the child components, this allows for the entire react context on error pages as well.
           children: [
+            {
+              path: '/projects/shared/:key',
+              errorElement: <ErrorPage />,
+              loader: sharedProjectLinkLoader,
+            },
+            {
+              path: '/projects/:id',
+              errorElement: <ErrorPage />,
+              loader: privateProjectLinkLoader,
+            },
             {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
