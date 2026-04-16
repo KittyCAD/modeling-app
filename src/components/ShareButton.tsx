@@ -175,6 +175,7 @@ function SharePopoverContent({
         <Tooltip
           position="bottom-right"
           contentClassName="max-w-none flex items-center gap-4"
+          hoverOnly
         >
           <span className="flex-1">
             {billingLoading
