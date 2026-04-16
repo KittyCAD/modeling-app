@@ -550,6 +550,8 @@ export class ZDSProject {
 }
 
 const PERSIST_CODE_KEY = 'persistCode'
+const RECOVERY_SNAPSHOT_VERSION = 1
+const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 
@@ -687,6 +689,8 @@ export class KclManager extends File {
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
+  private _documentVersion = 0
+  private _userDocumentVersion = 0
   private lastCommittedCode = ''
   private lastCommittedAdditionalSpec:
     | UpdateCodeEditorAdditionalSpec
@@ -806,12 +810,31 @@ export class KclManager extends File {
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
+    const requestedDocumentVersion = this._documentVersion
     File.ioImplementations
       .read(path)
       .then((code) => {
+        if (requestedDocumentVersion !== this._documentVersion) {
+          return
+        }
         const isInSketchMode =
           this.modelingState?.matches('Sketch') ||
           this.modelingState?.matches('sketchSolveMode')
+
+        if (isCodeTheSame(code, this.code)) {
+          this.markFileCodeAsSynced(code)
+          return
+        }
+
+        if (this.hasUnsavedLocalChanges()) {
+          console.warn(
+            'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+          )
+          toast.error(
+            'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+          )
+          return
+        }
 
         if (!isCodeTheSame(code, this.code)) {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
@@ -823,6 +846,7 @@ export class KclManager extends File {
             // the file system and not the editor.
             shouldWriteToDisk: false,
           })
+          this.markFileCodeAsSynced(code)
 
           toast('Reloading file from disk.', { icon: '📁' })
         }
@@ -848,8 +872,16 @@ export class KclManager extends File {
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
+    undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private _lastKnownFileCode = ''
+  private pendingRecoverySnapshot: {
+    path: string
+    code: string
+    diskCode: string
+  } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -1049,7 +1081,20 @@ export class KclManager extends File {
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
+      this._documentVersion += 1
+      const isProgrammaticUpdate = update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return ignoredEvents.some((value) => Boolean(value))
+      })
+      if (!isProgrammaticUpdate) {
+        this._userDocumentVersion += 1
+      }
       this._code.value = newCode
+      this.persistRecoverySnapshot()
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
@@ -1215,6 +1260,9 @@ export class KclManager extends File {
     const hasWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
     )
+    const isProgrammaticWrite = update.transactions.some((tr) =>
+      Boolean(tr.annotation(updateOutsideEditorEvent.type))
+    )
     const notIgnoredUpdate =
       this.engineCommandManager.started &&
       update.docChanged &&
@@ -1231,7 +1279,9 @@ export class KclManager extends File {
 
     if (shouldWriteToFile) {
       // We don't want to block on writing to file
-      void this.writeToFile(update.state.doc.toString())
+      void this.writeToFile(update.state.doc.toString(), undefined, {
+        suppressConflictToast: isProgrammaticWrite,
+      })
     }
   })
 
@@ -1464,15 +1514,23 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const initialCode = normalizeLineEndings(
-      providedCode || (await file.read())
-    )
+    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    const recoverySnapshot = readRecoverySnapshot(file.path)
+    const initialCode =
+      recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
+        ? normalizeLineEndings(recoverySnapshot.code)
+        : diskCode
 
     if (!providedEditor) {
-      return new KclManager(file.path, initialCode, systemDeps, file.id)
+      const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
+      if (!isCodeTheSame(initialCode, diskCode)) {
+        editor.markFileCodeAsSynced(diskCode)
+      }
+      return editor
     }
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
+    providedEditor.flushRecoverySnapshot()
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1485,6 +1543,7 @@ export class KclManager extends File {
       // the file system and not the editor.
       shouldWriteToDisk: false,
     })
+    providedEditor.markFileCodeAsSynced(diskCode)
     return providedEditor
   }
 
@@ -1520,6 +1579,7 @@ export class KclManager extends File {
     this._editorView = this.createEditorView(initialCode)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
+    this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     this.systemDeps.wasmInstancePromise
@@ -1548,7 +1608,53 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    this.flushRecoverySnapshot()
     this.unwatch()
+  }
+
+  private markFileCodeAsSynced(code: string) {
+    this._lastKnownFileCode = normalizeLineEndings(code)
+    this.persistRecoverySnapshot()
+  }
+
+  private hasUnsavedLocalChanges() {
+    return !isCodeTheSame(this.code, this._lastKnownFileCode)
+  }
+
+  private persistRecoverySnapshot() {
+    if (!this.path) {
+      return
+    }
+
+    if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
+      this.pendingRecoverySnapshot = null
+      clearTimeout(this.timeoutRecoverySnapshot)
+      this.timeoutRecoverySnapshot = undefined
+      clearRecoverySnapshot(this.path)
+      return
+    }
+
+    this.pendingRecoverySnapshot = {
+      path: this.path,
+      code: this.code,
+      diskCode: this._lastKnownFileCode,
+    }
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = setTimeout(() => {
+      this.flushRecoverySnapshot()
+    }, RECOVERY_SNAPSHOT_DEBOUNCE_MS)
+  }
+
+  private flushRecoverySnapshot() {
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = undefined
+
+    if (!this.pendingRecoverySnapshot) {
+      return
+    }
+
+    writeRecoverySnapshot(this.pendingRecoverySnapshot)
+    this.pendingRecoverySnapshot = null
   }
 
   clearAst() {
@@ -2686,10 +2792,12 @@ export class KclManager extends File {
     }
 
     const requestId = ++this.lastSketchCheckpointRestoreRequestId
+    const requestedDocumentVersion = this._documentVersion
     try {
       const result =
         await this.rustContext.restoreSketchCheckpoint(checkpointId)
       if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+      if (requestedDocumentVersion !== this._documentVersion) return
 
       this.sendModelingEvent({
         type: 'update sketch outcome',
@@ -2715,6 +2823,7 @@ export class KclManager extends File {
         )
 
         if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+        if (requestedDocumentVersion !== this._documentVersion) return
         if (setProgramOutcome.type !== 'Success') return
 
         this.sendModelingEvent({
@@ -2811,6 +2920,7 @@ export class KclManager extends File {
       } else {
         this.editorView.dispatch({
           annotations: [
+            updateOutsideEditorEvent,
             Transaction.addToHistory.of(false),
             ...(additionalSpec?.annotations || []),
           ],
@@ -2849,6 +2959,7 @@ export class KclManager extends File {
       changes,
       selection: mappedSelection,
       annotations: [
+        updateOutsideEditorEvent,
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
@@ -2871,7 +2982,11 @@ export class KclManager extends File {
     this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
   }
-  async writeToFile(newCode = this.codeSignal.value) {
+  async writeToFile(
+    newCode = this.codeSignal.value,
+    requestedDocumentVersion = this._documentVersion,
+    options: { suppressConflictToast?: boolean } = {}
+  ) {
     if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
@@ -2880,28 +2995,11 @@ export class KclManager extends File {
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
-          if (!this.path) {
-            return reject(new Error('currentFilePath not set'))
-          }
-          // Wait one event loop to give a chance for params to be set
-          // Save the file to disk
-          this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          this.unwatch()
-          this.write(newCode)
-            .then(resolve)
-            .then(() => {
-              // After a cooldown, start watching this file again on disk.
-              this.timeoutRewatch = setTimeout(() => {
-                this.watch()
-                this.timeoutRewatch = undefined
-              }, 1_000)
-            })
-            .catch((err: unknown) => {
-              // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-              console.warn('error saving file', err)
-              toast.error('Error saving file, please check file permissions.')
-              reject(err)
-            })
+          this.performDelayedWriteToFile({
+            newCode,
+            requestedDocumentVersion,
+            options,
+          }).then(resolve, reject)
         }, 1000)
       }).catch((err: unknown) => {
         if (
@@ -2916,16 +3014,110 @@ export class KclManager extends File {
       })
     }
   }
+
+  /**
+   * Performs the debounced disk-sync work after `writeToFile()` schedules it.
+   * This keeps the timeout callback synchronous while preserving the existing
+   * version checks, conflict detection, and watcher re-arm behavior.
+   */
+  private async performDelayedWriteToFile({
+    newCode,
+    requestedDocumentVersion,
+    options,
+  }: {
+    newCode: string
+    requestedDocumentVersion: number
+    options: { suppressConflictToast?: boolean }
+  }) {
+    if (!this.path) {
+      return Promise.reject(new Error('currentFilePath not set'))
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+
+    let currentDiskCode: string | null = null
+    try {
+      currentDiskCode = normalizeLineEndings(
+        await File.ioImplementations.read(this.path)
+      )
+    } catch (err: unknown) {
+      if (isEnoentError(err)) {
+        currentDiskCode = null
+      } else {
+        return Promise.reject(err)
+      }
+    }
+
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+    if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
+      this.markFileCodeAsSynced(currentDiskCode)
+      return
+    }
+
+    const diskChangedSinceLastSync =
+      currentDiskCode !== null
+        ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
+        : this._lastKnownFileCode.length > 0
+    if (diskChangedSinceLastSync) {
+      console.warn(
+        'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
+      )
+      if (!options.suppressConflictToast) {
+        toast.error(
+          'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
+        )
+      }
+      return
+    }
+
+    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+    this.unwatch()
+
+    try {
+      await this.write(newCode)
+      this.markFileCodeAsSynced(newCode)
+
+      // After a cooldown, start watching this file again on disk.
+      this.timeoutRewatch = setTimeout(() => {
+        this.watch()
+        this.timeoutRewatch = undefined
+      }, 1_000)
+    } catch (err: unknown) {
+      // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+      console.warn('error saving file', err)
+      toast.error('Error saving file, please check file permissions.')
+      return Promise.reject(err)
+    }
+  }
+
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
+    options?: Partial<
+      {
+        isDeleting: boolean
+        allowProgrammaticDocumentChanges: boolean
+      } & UpdateCodeEditorOptions
+    >
   ) {
+    const requestedDocumentVersion = this._documentVersion
+    const requestedUserDocumentVersion = this._userDocumentVersion
     const resolvedOptions: NonNullable<typeof options> = Object.assign(
-      { shouldExecute: false },
+      {
+        shouldExecute: false,
+        allowProgrammaticDocumentChanges: false,
+      },
       options ?? {},
       { shouldWriteToDisk: true }
     )
+    const hasStaleVersion = () =>
+      resolvedOptions.allowProgrammaticDocumentChanges
+        ? requestedUserDocumentVersion !== this._userDocumentVersion
+        : requestedDocumentVersion !== this._documentVersion
     const wasmInstance = await this.wasmInstancePromise
+    if (hasStaleVersion()) return
 
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
@@ -2935,6 +3127,7 @@ export class KclManager extends File {
     if (ast.body.length === 0 && !resolvedOptions.isDeleting) return
     const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
+    if (hasStaleVersion()) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
     const result = parse(newCode, wasmInstance)
@@ -2942,6 +3135,7 @@ export class KclManager extends File {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
+    if (hasStaleVersion()) return
     this.updateCodeEditor(newCode, resolvedOptions)
   }
 }
@@ -2949,4 +3143,87 @@ export class KclManager extends File {
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
+}
+
+function safeLSSetItem(key: string, value: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.setItem(key, value)
+}
+
+function safeLSRemoveItem(key: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.removeItem(key)
+}
+
+type RecoverySnapshot = {
+  version: typeof RECOVERY_SNAPSHOT_VERSION
+  path: string
+  code: string
+  diskCode: string
+  savedAt: string
+}
+
+function getRecoverySnapshotKey(path: string) {
+  return `kclRecovery:${path || '__untitled__'}`
+}
+
+function readRecoverySnapshot(path: string): RecoverySnapshot | null {
+  const persisted = safeLSGetItem(getRecoverySnapshotKey(path))
+  if (!persisted) return null
+
+  try {
+    const parsed = JSON.parse(persisted) as Partial<RecoverySnapshot>
+    if (
+      parsed.version !== RECOVERY_SNAPSHOT_VERSION ||
+      typeof parsed.code !== 'string' ||
+      typeof parsed.diskCode !== 'string' ||
+      typeof parsed.path !== 'string'
+    ) {
+      return null
+    }
+
+    return {
+      version: RECOVERY_SNAPSHOT_VERSION,
+      path: parsed.path,
+      code: parsed.code,
+      diskCode: parsed.diskCode,
+      savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
+    }
+  } catch {
+    return null
+  }
+}
+
+function writeRecoverySnapshot({
+  path,
+  code,
+  diskCode,
+}: {
+  path: string
+  code: string
+  diskCode: string
+}) {
+  safeLSSetItem(
+    getRecoverySnapshotKey(path),
+    JSON.stringify({
+      version: RECOVERY_SNAPSHOT_VERSION,
+      path,
+      code,
+      diskCode,
+      savedAt: new Date().toISOString(),
+    } satisfies RecoverySnapshot)
+  )
+}
+
+function clearRecoverySnapshot(path: string) {
+  safeLSRemoveItem(getRecoverySnapshotKey(path))
+}
+
+function isEnoentError(err: unknown) {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'cause' in err &&
+    err.cause === 'ENOENT'
+  )
 }

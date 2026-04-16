@@ -1,14 +1,14 @@
 ---
 title: "solver::horizontal"
 subtitle: "Function in std::solver"
-excerpt: "Constrain a line to be horizontal."
+excerpt: "Constrain a line, or a list of points, to be horizontal."
 layout: manual
 ---
 
-Constrain a line to be horizontal.
+Constrain a line, or a list of points, to be horizontal.
 
 ```kcl
-solver::horizontal(@input: Segment)
+solver::horizontal(@input: Segment | [Segment | Point2d; 2+])
 ```
 
 
@@ -17,7 +17,7 @@ solver::horizontal(@input: Segment)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | `Segment` | The line segment that should remain horizontal. | Yes |
+| `input` | `Segment | [Segment | Point2d; 2+]` | Either - A single line segment that should remain horizontal. - A list of points which should all be horizontal. | Yes |
 
 
 
