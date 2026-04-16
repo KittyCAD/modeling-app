@@ -96,7 +96,7 @@ export function ShareDialog({
     >
       <Popover.Panel
         focus={true}
-        className="absolute right-0 top-full z-20 mt-2 flex w-[26rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10"
+        className="absolute right-0 top-full z-20 mt-3 flex w-[26rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden border border-chalkboard-30/80 bg-chalkboard-10/95 rounded text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10"
       >
         <div className="border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
           <div className="flex flex-row items-start justify-between gap-3">
