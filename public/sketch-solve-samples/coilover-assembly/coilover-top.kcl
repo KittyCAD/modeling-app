@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = mm)
 
 // Import parameters
-import retainerPlateRadius, eyeEndMountRadius, eyeEndMountLength, eyeEndTipFillet, eyeEndOuterHalfWidth, eyeEndShoulderHalfWidth, eyeEndSlotHalfWidth, eyeEndShoulderRadius, eyeEndCutThickness, upperPistonRodStopLength, upperPistonRodRadius, upperMountPlateThickness, upperEyeEndCutTop, upperEyeEndCutBottom, upperEyeEndSlotTop, upperEyeEndSlotBottom, upperEyeEndHoleCenterZ from "parameters.kcl"
+import * from "parameters.kcl"
 
 // Stopper for the Piston Rod located just below Upper Mount Plate
 upperStopperProfile = sketch(on = XY) {
