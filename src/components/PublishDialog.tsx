@@ -13,6 +13,9 @@ type PublishDialogProps = {
   onClose: () => void
   onSubmit: (args: ProjectPublishSubmission) => Promise<boolean>
   initialTitle?: string
+  publishDisabled?: boolean
+  publishRequiresUsername?: boolean
+  accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
 }
@@ -23,6 +26,9 @@ export function PublishDialog({
   onClose,
   onSubmit,
   initialTitle = '',
+  publishDisabled = false,
+  publishRequiresUsername = false,
+  accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
 }: PublishDialogProps) {
@@ -117,7 +123,12 @@ export function PublishDialog({
   async function handleSubmit() {
     setHasTriedSubmit(true)
 
-    if (!titleIsValid || !descriptionIsValid || isSubmitting) {
+    if (
+      !titleIsValid ||
+      !descriptionIsValid ||
+      isSubmitting ||
+      publishDisabled
+    ) {
       return
     }
 
@@ -338,11 +349,26 @@ export function PublishDialog({
                     </>
                   )}
                 </p>
+                {publishRequiresUsername && (
+                  <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
+                    Set a username in your{' '}
+                    <a
+                      href={accountUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={openExternalBrowserIfDesktop(accountUrl)}
+                      className="underline underline-offset-2"
+                    >
+                      account settings
+                    </a>{' '}
+                    before publishing to Aquarium.
+                  </p>
+                )}
               </div>
               <ActionButton
                 Element="button"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || publishDisabled}
                 className="shrink-0 self-end whitespace-nowrap py-0.5 sm:self-auto"
               >
                 {isSubmitting

@@ -9,6 +9,7 @@ import {
   publishCurrentProject,
 } from '@src/lib/share'
 import { err } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   memo,
   type ComponentProps,
@@ -48,11 +49,17 @@ function PublishPopoverContent({
 }) {
   const { auth } = useApp()
   const { kclManager } = useSingletons()
+  const authState = auth.useAuthState()
   const token = auth.useToken()
+  const user = auth.useUser()
   const [publicationDetails, setPublicationDetails] =
     useState<CurrentProjectPublicationDetails | null>(null)
   const [isLoadingPublicationDetails, setIsLoadingPublicationDetails] =
     useState(false)
+  const username = user?.username?.trim() || ''
+  const isCheckingUser = authState.matches('checkIfLoggedIn') && !!token
+  const publishRequiresUsername = !isCheckingUser && !!token && !username
+  const accountUrl = withSiteBaseURL('/account')
 
   const fetchPublicationDetails = useCallback(async () => {
     if (!token || !project) {
@@ -140,6 +147,9 @@ function PublishPopoverContent({
           onClose={close}
           onSubmit={handlePublish}
           initialTitle={project?.name || ''}
+          publishDisabled={isCheckingUser || publishRequiresUsername}
+          publishRequiresUsername={publishRequiresUsername}
+          accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
         />
