@@ -539,13 +539,6 @@ function removeConstraintToolListener({
     }
   }
 }) {
-  context.sceneInfra.setCallbacks({
-    onClick: () => {},
-    onMove: () => {},
-    onAreaSelectStart: () => {},
-    onAreaSelect: () => {},
-    onAreaSelectEnd: () => {},
-  })
   removeSelectionBox(context.selectionBoxState)
   sendDuringAreaSelectionToParent(self, [])
 
