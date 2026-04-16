@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import { assign, createActor, setup, waitFor } from 'xstate'
-import { machine as horizontalConstraintTool } from '@src/machines/sketchSolve/tools/horizontalConstraintTool'
-import { machine as equalLengthConstraintTool } from '@src/machines/sketchSolve/tools/equalLengthConstraintTool'
-import { machine as fixedConstraintTool } from '@src/machines/sketchSolve/tools/fixedConstraintTool'
-import { machine as tangentConstraintTool } from '@src/machines/sketchSolve/tools/tangentConstraintTool'
+import {
+  equalLengthConstraintTool,
+  fixedConstraintTool,
+  horizontalConstraintTool,
+  tangentConstraintTool,
+} from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import {
   createArcApiObject,
   createMockKclManager,
@@ -49,9 +51,6 @@ type ParentEvent =
     }
 
 type ConstraintToolActorLogic = typeof horizontalConstraintTool
-const parentContextType: ParentContext = null!
-const parentEventType: ParentEvent = null!
-const parentInputType: Record<string, never> = null!
 
 function createHarness({
   childMachine,
@@ -70,9 +69,9 @@ function createHarness({
 
   const parentMachine = setup({
     types: {
-      context: parentContextType,
-      events: parentEventType,
-      input: parentInputType,
+      context: {} as ParentContext,
+      events: {} as ParentEvent,
+      input: {} as Record<string, never>,
     },
     actors: {
       childTool: childMachine,
@@ -134,6 +133,8 @@ function createHarness({
             rustContext,
             kclManager,
             sketchId: 0,
+            initialSelectionIds: selectedIds,
+            initialObjects: sceneGraphDelta.new_graph.objects,
           },
         },
       },

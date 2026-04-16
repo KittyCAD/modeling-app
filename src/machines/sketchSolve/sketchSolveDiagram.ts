@@ -70,10 +70,6 @@ type SketchSolveInput = {
   initialSceneGraphDelta: SceneGraphDelta
 }
 
-const sketchSolveContextType: SketchSolveContext = null!
-const sketchSolveEventType: SketchSolveMachineEvent = null!
-const sketchSolveInputType: SketchSolveInput = null!
-
 function sendToolbarConstraintOutcome(
   self: SolveActionArgs['self'],
   result:
@@ -225,9 +221,9 @@ function isConstraintToolName(
 
 export const sketchSolveMachine = setup({
   types: {
-    context: sketchSolveContextType,
-    events: sketchSolveEventType,
-    input: sketchSolveInputType,
+    context: {} as SketchSolveContext,
+    events: {} as SketchSolveMachineEvent,
+    input: {} as SketchSolveInput,
   },
   actions: {
     'initialize intersection plane': initializeIntersectionPlane,

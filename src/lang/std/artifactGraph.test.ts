@@ -179,6 +179,7 @@ describe('coerceSelectionsToBody', () => {
       segIds: ['segment-1'],
       trajectorySweepId: null,
       consumed: false,
+      sketchBlockId: 'sketch-block-1',
     }
 
     const segment: Artifact = {

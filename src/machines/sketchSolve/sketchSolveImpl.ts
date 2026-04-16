@@ -63,21 +63,14 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveErrors'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
-import { machine as coincidentConstraintTool } from '@src/machines/sketchSolve/tools/coincidentConstraintTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
-import { machine as equalLengthConstraintTool } from '@src/machines/sketchSolve/tools/equalLengthConstraintTool'
-import { machine as fixedConstraintTool } from '@src/machines/sketchSolve/tools/fixedConstraintTool'
-import { machine as horizontalConstraintTool } from '@src/machines/sketchSolve/tools/horizontalConstraintTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
-import { machine as parallelConstraintTool } from '@src/machines/sketchSolve/tools/parallelConstraintTool'
-import { machine as perpendicularConstraintTool } from '@src/machines/sketchSolve/tools/perpendicularConstraintTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
-import { machine as tangentConstraintTool } from '@src/machines/sketchSolve/tools/tangentConstraintTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { machine as verticalConstraintTool } from '@src/machines/sketchSolve/tools/verticalConstraintTool'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -184,18 +177,6 @@ export type UpdateSketchOutcomeEvent = {
   }
 }
 
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof rectTool>
-  | ActorRefFrom<typeof pointTool>
-  | ActorRefFrom<typeof lineTool>
-  | ActorRefFrom<typeof trimTool>
-  | ActorRefFrom<typeof centerArcTool>
-  | ActorRefFrom<typeof circleTool>
-  | ActorRefFrom<typeof tangentialArcTool>
-  | ActorRefFrom<typeof threePointArcTool>
-  | ActorRefFrom<typeof coincidentConstraintTool>
-
 export const equipTools = Object.freeze({
   trimTool,
   // both use the same tool, opened with a different flag
@@ -209,15 +190,10 @@ export const equipTools = Object.freeze({
   circleTool,
   tangentialArcTool,
   threePointArcTool,
-  coincidentConstraintTool,
-  tangentConstraintTool,
-  parallelConstraintTool,
-  equalLengthConstraintTool,
-  horizontalConstraintTool,
-  verticalConstraintTool,
-  perpendicularConstraintTool,
-  fixedConstraintTool,
+  ...constraintToolMachines,
 })
+
+type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -1316,6 +1292,9 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      initialSelectionIds: context.selectedIds,
+      initialObjects:
+        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
@@ -1353,6 +1332,8 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds?: SketchSolveSelectionId[]
+  initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 

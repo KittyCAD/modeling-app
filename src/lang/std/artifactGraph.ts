@@ -859,10 +859,10 @@ export function getSketchBlockForPathArtifact(
   pathArtifact: Extract<Artifact, { type: 'path' }>,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
-  return getSketchBlockArtifactForPathToNode(
-    pathArtifact.codeRef.pathToNode,
-    artifactGraph
-  )
+  if (!pathArtifact.sketchBlockId) return undefined
+  const sketchBlock = artifactGraph.get(pathArtifact.sketchBlockId)
+  if (sketchBlock?.type !== 'sketchBlock') return undefined
+  return sketchBlock
 }
 
 export function getSketchBlockForArtifact(

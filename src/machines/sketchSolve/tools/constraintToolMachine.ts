@@ -52,7 +52,8 @@ type ConstraintToolContext = {
   kclManager: KclManager
   sketchId: number
   toolName: ConstraintToolName
-  didInitialSelectionSync: boolean
+  initialSelectionIds: SketchSolveSelectionId[]
+  initialObjects: ApiObject[]
   selectionBoxState: SelectionBoxVisualState
   pendingApply?: ConstraintToolPreparedApply
 }
@@ -62,6 +63,8 @@ type ConstraintToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds: SketchSolveSelectionId[]
+  initialObjects: ApiObject[]
   toolVariant?: string
 }
 
@@ -70,10 +73,6 @@ type ConstraintToolApplyResult = {
   sceneGraphDelta: SceneGraphDelta
   checkpointId?: number | null
 }
-
-const constraintToolContextType: ConstraintToolContext = null!
-const constraintToolEventType: ConstraintToolEvent = null!
-const constraintToolInputType: ConstraintToolInput = null!
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
   return baseUnitToNumericSuffix(
@@ -322,28 +321,6 @@ function createSelectionBoxVisualState(): SelectionBoxVisualState {
   }
 }
 
-function syncCurrentSelectionFromParent({
-  self,
-}: {
-  self: {
-    send: (event: ConstraintToolEvent) => void
-    _parent?: {
-      getSnapshot?: () => unknown
-    }
-  }
-}) {
-  const parentData = getParentSketchData(self)
-  if (!parentData) {
-    return
-  }
-
-  self.send({
-    type: 'normalize selection',
-    selectionIds: parentData.selectedIds,
-    objects: parentData.objects,
-  })
-}
-
 function addConstraintToolListener({
   context,
   self,
@@ -551,27 +528,6 @@ function addConstraintToolListener({
   })
 }
 
-function maybeSyncCurrentSelectionFromParent({
-  context,
-  self,
-}: {
-  context: ConstraintToolContext
-  self: {
-    send: (event: ConstraintToolEvent) => void
-    _parent?: {
-      getSnapshot?: () => unknown
-    }
-  }
-}) {
-  if (context.didInitialSelectionSync) {
-    return
-  }
-
-  queueMicrotask(() => {
-    syncCurrentSelectionFromParent({ self })
-  })
-}
-
 function removeConstraintToolListener({
   context,
   self,
@@ -667,6 +623,25 @@ function getPreviewSelectionIds(
   return []
 }
 
+function initializeSelectionFromInput({
+  context,
+  self,
+}: {
+  context: ConstraintToolContext
+  self: {
+    _parent?: {
+      send?: (event: ParentSketchSolveEvent) => void
+    }
+  }
+}) {
+  const normalized = getNormalizedSelection(
+    context.toolName,
+    context.initialSelectionIds,
+    context.initialObjects
+  )
+  sendSelectionToParent(self, normalized.selectionIds)
+}
+
 export function createConstraintToolMachine({
   toolName,
   toolId,
@@ -676,9 +651,9 @@ export function createConstraintToolMachine({
 }) {
   return setup({
     types: {
-      context: constraintToolContextType,
-      events: constraintToolEventType,
-      input: constraintToolInputType,
+      context: {} as ConstraintToolContext,
+      events: {} as ConstraintToolEvent,
+      input: {} as ConstraintToolInput,
     },
     guards: {
       'normalized selection can apply': ({ event, context }) => {
@@ -714,11 +689,7 @@ export function createConstraintToolMachine({
     },
     actions: {
       'add constraint tool listener': addConstraintToolListener,
-      'maybe sync current selection from parent':
-        maybeSyncCurrentSelectionFromParent,
-      'mark initial selection synced': assign({
-        didInitialSelectionSync: true,
-      }),
+      'initialize selection from input': initializeSelectionFromInput,
       'remove constraint tool listener': removeConstraintToolListener,
       'normalize selection in parent': ({ event, context, self }) => {
         assertEvent(event, 'normalize selection')
@@ -908,7 +879,8 @@ export function createConstraintToolMachine({
       kclManager: input.kclManager,
       sketchId: input.sketchId,
       toolName,
-      didInitialSelectionSync: false,
+      initialSelectionIds: input.initialSelectionIds,
+      initialObjects: input.initialObjects,
       selectionBoxState: createSelectionBoxVisualState(),
     }),
     id: toolId,
@@ -925,8 +897,7 @@ export function createConstraintToolMachine({
       active: {
         entry: [
           'add constraint tool listener',
-          'maybe sync current selection from parent',
-          'mark initial selection synced',
+          'initialize selection from input',
         ],
         exit: 'remove constraint tool listener',
         on: {
@@ -1018,3 +989,54 @@ export function createConstraintToolMachine({
     },
   })
 }
+
+export const coincidentConstraintTool = createConstraintToolMachine({
+  toolName: 'coincidentConstraintTool',
+  toolId: 'Coincident constraint tool',
+})
+
+export const tangentConstraintTool = createConstraintToolMachine({
+  toolName: 'tangentConstraintTool',
+  toolId: 'Tangent constraint tool',
+})
+
+export const parallelConstraintTool = createConstraintToolMachine({
+  toolName: 'parallelConstraintTool',
+  toolId: 'Parallel constraint tool',
+})
+
+export const equalLengthConstraintTool = createConstraintToolMachine({
+  toolName: 'equalLengthConstraintTool',
+  toolId: 'Equal length constraint tool',
+})
+
+export const horizontalConstraintTool = createConstraintToolMachine({
+  toolName: 'horizontalConstraintTool',
+  toolId: 'Horizontal constraint tool',
+})
+
+export const verticalConstraintTool = createConstraintToolMachine({
+  toolName: 'verticalConstraintTool',
+  toolId: 'Vertical constraint tool',
+})
+
+export const perpendicularConstraintTool = createConstraintToolMachine({
+  toolName: 'perpendicularConstraintTool',
+  toolId: 'Perpendicular constraint tool',
+})
+
+export const fixedConstraintTool = createConstraintToolMachine({
+  toolName: 'fixedConstraintTool',
+  toolId: 'Fixed constraint tool',
+})
+
+export const constraintToolMachines = Object.freeze({
+  coincidentConstraintTool,
+  tangentConstraintTool,
+  parallelConstraintTool,
+  equalLengthConstraintTool,
+  horizontalConstraintTool,
+  verticalConstraintTool,
+  perpendicularConstraintTool,
+  fixedConstraintTool,
+})
