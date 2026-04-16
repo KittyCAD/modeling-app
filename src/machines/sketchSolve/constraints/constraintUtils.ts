@@ -365,6 +365,7 @@ export function buildTangentConstraintInput(
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
   const arcObjects = selectedObjects.filter(isArcLikeSegment)
+  const splineObj = selectedObjects.find(isControlPointSplineSegment)
 
   if (lineObj && arcObjects.length === 1) {
     // tangent(line, arc)
@@ -380,6 +381,20 @@ export function buildTangentConstraintInput(
     return {
       type: 'Tangent' as const,
       input: [arcObjects[0].id, arcObjects[1].id] as [number, number],
+    }
+  }
+
+  if (splineObj && lineObj) {
+    return {
+      type: 'Tangent' as const,
+      input: [splineObj.id, lineObj.id] as [number, number],
+    }
+  }
+
+  if (splineObj && arcObjects.length === 1) {
+    return {
+      type: 'Tangent' as const,
+      input: [splineObj.id, arcObjects[0].id] as [number, number],
     }
   }
 

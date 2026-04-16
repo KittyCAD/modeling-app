@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
+  createControlPointSplineApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
@@ -211,6 +212,70 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([11, 10], objects)).toEqual({
       type: 'Tangent',
       input: [11, 10],
+    })
+  })
+
+  it('supports tangent constraints between a spline and a line', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })
+    const lineStart = createPointApiObject({ id: 4, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const line = createLineApiObject({ id: 11, start: 4, end: 5 })
+    const objects = createObjectsArray([
+      p1,
+      p2,
+      p3,
+      lineStart,
+      lineEnd,
+      spline,
+      line,
+    ])
+
+    expect(buildTangentConstraintInput([10, 11], objects)).toEqual({
+      type: 'Tangent',
+      input: [10, 11],
+    })
+    expect(buildTangentConstraintInput([11, 10], objects)).toEqual({
+      type: 'Tangent',
+      input: [10, 11],
+    })
+  })
+
+  it('supports tangent constraints between a spline and an arc', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })
+    const arcCenter = createPointApiObject({ id: 4, x: 5, y: 5 })
+    const arcStart = createPointApiObject({ id: 5, x: 0, y: 0 })
+    const arcEnd = createPointApiObject({ id: 6, x: 10, y: 0 })
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const arc = createArcApiObject({ id: 11, center: 4, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      p1,
+      p2,
+      p3,
+      arcCenter,
+      arcStart,
+      arcEnd,
+      spline,
+      arc,
+    ])
+
+    expect(buildTangentConstraintInput([10, 11], objects)).toEqual({
+      type: 'Tangent',
+      input: [10, 11],
+    })
+    expect(buildTangentConstraintInput([11, 10], objects)).toEqual({
+      type: 'Tangent',
+      input: [10, 11],
     })
   })
 })
