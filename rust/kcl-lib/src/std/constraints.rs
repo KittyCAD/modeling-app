@@ -85,6 +85,60 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     x.n == 0.0 && y.n == 0.0
 }
 
+/// Arcs have 6 scalar values (start, end and center; x and y).
+/// These could be fixed constants or sketch variables to be solved.
+/// Each of these needs a sketch variable to feed into the solver.
+/// If it's a solver variable, then use it.
+/// If it's a fixed constant, then create a solver variable for it,
+/// and return a constraint to fix it.
+fn extract_arc_component(
+    value: &KclValue,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+    description: &str,
+) -> Result<(SketchVarId, Option<SolverConstraint>), KclError> {
+    match value.as_unsolved_expr() {
+        None => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{description} must be a number or sketch var"),
+            vec![range],
+        ))),
+        Some(UnsolvedExpr::Unknown(var_id)) => Ok((var_id, None)),
+        Some(UnsolvedExpr::Known(_)) => {
+            let value_in_solver_units = normalize_to_solver_distance_unit(value, range, exec_state, description)?;
+            let Some(normalized_value) = value_in_solver_units.as_ty_f64() else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "Expected number after coercion".to_owned(),
+                    vec![range],
+                )));
+            };
+
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "arc() can only be used inside a sketch block".to_owned(),
+                    vec![range],
+                )));
+            };
+            let var_id = sketch_state.next_sketch_var_id();
+            sketch_state.sketch_vars.push(KclValue::SketchVar {
+                value: Box::new(crate::execution::SketchVar {
+                    id: var_id,
+                    initial_value: normalized_value.n,
+                    ty: normalized_value.ty,
+                    meta: vec![],
+                }),
+            });
+
+            Ok((
+                var_id,
+                Some(SolverConstraint::Fixed(
+                    var_id.to_constraint_id(range)?,
+                    normalized_value.n,
+                )),
+            ))
+        }
+    }
+}
+
 #[cfg(feature = "artifact-graph")]
 fn coincident_segments_for_segment_and_point2d(
     segment_id: ObjectId,
@@ -414,42 +468,24 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         ))
     })?;
 
-    let Some(UnsolvedExpr::Unknown(start_x)) = start_x_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start x must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(start_y)) = start_y_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start y must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(end_x)) = end_x_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "end x must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(end_y)) = end_y_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "end y must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(center_x)) = center_x_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center x must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(center_y)) = center_y_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center y must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
+    let (start_x, start_x_fixed) = extract_arc_component(&start_x_value, exec_state, args.source_range, "start x")?;
+    let (start_y, start_y_fixed) = extract_arc_component(&start_y_value, exec_state, args.source_range, "start y")?;
+    let (end_x, end_x_fixed) = extract_arc_component(&end_x_value, exec_state, args.source_range, "end x")?;
+    let (end_y, end_y_fixed) = extract_arc_component(&end_y_value, exec_state, args.source_range, "end y")?;
+    let (center_x, center_x_fixed) = extract_arc_component(&center_x_value, exec_state, args.source_range, "center x")?;
+    let (center_y, center_y_fixed) = extract_arc_component(&center_y_value, exec_state, args.source_range, "center y")?;
+    // If any of the points had any components that were fixed, then they'll become constraints
+    // in this list.
+    let arc_fixed_constraints = [
+        start_x_fixed,
+        start_y_fixed,
+        end_x_fixed,
+        end_y_fixed,
+        center_x_fixed,
+        center_y_fixed,
+    ]
+    .into_iter()
+    .flatten();
 
     let ctor = ArcCtor {
         start: Point2d {
@@ -614,7 +650,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     // Build the implicit arc constraint.
     let range = args.source_range;
-    let constraint = ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
+    let mut required_constraints = Vec::with_capacity(7);
+    required_constraints.extend(arc_fixed_constraints);
+    required_constraints.push(ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
         center: ezpz::datatypes::inputs::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
@@ -627,7 +665,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             end_x.to_constraint_id(range)?,
             end_y.to_constraint_id(range)?,
         ),
-    });
+    }));
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -637,8 +675,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
     // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
-    // Save the constraint to be used for solving.
-    sketch_state.solver_constraints.push(constraint);
+    // Save the constraints to be used for solving.
+    sketch_state.solver_constraints.extend(required_constraints);
     // The constraint isn't added to scene objects since it's implicit in the
     // arc segment. You cannot have an arc without it.
 
