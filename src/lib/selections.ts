@@ -65,6 +65,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err, isErr } from '@src/lib/trap'
 import {
+  dedupeBy,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -476,9 +477,9 @@ export function handleSelectionBatch({
     selectionToEngine,
     systemDeps
   )
-  uniqueCodeRefsByRange(editorCodeRefs).forEach((codeRef) => {
-    if (codeRef.range?.[1]) {
-      const safeEnd = Math.min(codeRef.range[1], code.length)
+  dedupeSourceRanges(editorCodeRefs.map((c) => c.range)).forEach((range) => {
+    if (range?.[1]) {
+      const safeEnd = Math.min(range[1], code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
@@ -561,22 +562,8 @@ function getCodeRefsForEngineRegionSelection(
   return getCodeRefsByArtifactId(fallbackSketchBlock.id, artifactGraph) ?? []
 }
 
-/**
- * Deduplicate code refs using the source range as the unique key.
- */
-function uniqueCodeRefsByRange(codeRefs: CodeRef[]): CodeRef[] {
-  // Multiple selections can resolve to the same range, resulting in duplicates;
-  // collapse duplicates so the editor does not get duplicate cursors.
-  const seen = new Set<string>()
-
-  return codeRefs.filter((codeRef) => {
-    const key = JSON.stringify(codeRef.range)
-    if (seen.has(key)) {
-      return false
-    }
-    seen.add(key)
-    return true
-  })
+function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
+  return dedupeBy(sourceRanges, (range) => range.join(':'))
 }
 
 type SelectionToEngine = {
