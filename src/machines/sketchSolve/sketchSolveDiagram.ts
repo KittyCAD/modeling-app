@@ -318,6 +318,10 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
+    'clear selection': assign({
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    }),
     'toggle non-visual constraints': assign(({ context }) => ({
       showNonVisualConstraints: !context.showNonVisualConstraints,
     })),
@@ -1066,7 +1070,11 @@ export const sketchSolveMachine = setup({
       on: {
         'equip tool': {
           target: 'using tool',
-          actions: 'store pending tool',
+          actions: [
+            'clear selection',
+            'refresh selection styling',
+            'store pending tool',
+          ],
         },
         escape: {
           target: '#Sketch Solve Mode.exiting',
@@ -1104,7 +1112,12 @@ export const sketchSolveMachine = setup({
 
         'equip tool': {
           target: 'switching tool',
-          actions: ['send unequip to tool', 'store pending tool'],
+          actions: [
+            'clear selection',
+            'refresh selection styling',
+            'send unequip to tool',
+            'store pending tool',
+          ],
         },
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
