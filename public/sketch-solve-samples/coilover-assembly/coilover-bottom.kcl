@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = mm)
 
 // Import parameters
-import retainerPlateLength, retainerPlateRadius, retainerPlateChamfer, baseSeatingLength, baseSeatingRadius, lowerMountLength, lowerMountRadius, lowerMountChamfer, eyeEndMountRadius, eyeEndMountLength, eyeEndTipFillet, eyeEndRootFillet, eyeEndOuterHalfWidth, eyeEndShoulderHalfWidth, eyeEndSlotHalfWidth, eyeEndCutTop, eyeEndCutBottom, eyeEndSlotTop, eyeEndSlotBottom, eyeEndShoulderRadius, eyeEndCutThickness, damperBodyLength, pistonShaftHoleRadius from "parameters.kcl"
+import * from "parameters.kcl"
 
 
 // Retainer Plate
