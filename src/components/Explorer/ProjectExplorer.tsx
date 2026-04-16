@@ -19,8 +19,9 @@ import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
-import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
+import { importLocalFilesToProject } from '@src/lib/importLocalFilesToProject'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
@@ -325,7 +326,6 @@ export const ProjectExplorer = ({
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
       if (readOnly || !window.electron) return
-      const electron = window.electron
 
       const supportedFiles: { file: File; relativePath: string }[] = []
       const unsupportedFiles: string[] = []
@@ -398,35 +398,21 @@ export const ProjectExplorer = ({
       // Copy supported files to the target directory
       if (supportedFiles.length > 0) {
         const targetPath = getDropTargetPath(target, project.path)
-        const createdDirs = new Set<string>()
 
-        for (const { file, relativePath } of supportedFiles) {
-          try {
-            const destinationDirPath = relativePath
-              ? joinOSPaths(targetPath, relativePath)
-              : targetPath
-
-            // Create parent directories if needed
-            if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await electron.mkdir(destinationDirPath, { recursive: true })
-              createdDirs.add(destinationDirPath)
-            }
-
-            const { path: destinationPath } = await getNextFileName({
-              entryName: file.name,
-              baseDir: destinationDirPath,
-              wasmInstance,
-            })
-
-            const arrayBuffer = await file.arrayBuffer()
-            await electron.writeFile(
-              destinationPath,
-              new Uint8Array(arrayBuffer)
-            )
-          } catch (e) {
-            console.error('Failed to copy file:', file.name, e)
-            toast.error(`Failed to import ${file.name}.`)
-          }
+        try {
+          await importLocalFilesToProject({
+            files: supportedFiles.map(({ file, relativePath }) => ({
+              name: file.name,
+              relativePath,
+              readData: async () => new Uint8Array(await file.arrayBuffer()),
+            })),
+            projectPath: targetPath,
+            wasmInstance,
+          })
+        } catch (e) {
+          console.error('Failed to import dropped files:', e)
+          toast.error('Failed to import dropped files.')
+          return
         }
 
         // Open the target folder so the user can see the imported files
