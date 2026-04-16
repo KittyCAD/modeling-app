@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
+  X_AXIS_TARGET,
+  Y_AXIS_TARGET,
+  getConstraintForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
@@ -30,6 +33,22 @@ describe('snapping', () => {
       expect(
         getCoincidentSegmentsForSnapTarget(5, { type: 'circle', id: 12 })
       ).toEqual([5, 12])
+    })
+  })
+
+  describe('getConstraintForSnapTarget', () => {
+    it('uses horizontal point alignment when snapping to the x axis', () => {
+      expect(getConstraintForSnapTarget(5, { type: X_AXIS_TARGET })).toEqual({
+        type: 'Horizontal',
+        points: [5, 'ORIGIN'],
+      })
+    })
+
+    it('uses vertical point alignment when snapping to the y axis', () => {
+      expect(getConstraintForSnapTarget(5, { type: Y_AXIS_TARGET })).toEqual({
+        type: 'Vertical',
+        points: [5, 'ORIGIN'],
+      })
     })
   })
 

@@ -378,11 +378,7 @@ export async function createDraftRectangle({
     lastOperation = equalDiagonals
   }
 
-  const snapConstraint = getConstraintForSnapTarget(
-    originPointId,
-    snapTarget,
-    units
-  )
+  const snapConstraint = getConstraintForSnapTarget(originPointId, snapTarget)
   if (snapConstraint !== null) {
     const snapResult = await rustContext.addConstraint(
       0,

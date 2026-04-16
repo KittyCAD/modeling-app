@@ -626,6 +626,7 @@ export type ModelingMachineEvent =
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
@@ -1026,22 +1027,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Add start point') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'line'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -1057,22 +1051,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Continue existing profile') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'tangentialArc'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'tangentialArc'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -1460,6 +1447,7 @@ export const modelingMachine = setup({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
+        shouldWriteToDisk: false,
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
@@ -3905,9 +3893,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3933,9 +3918,6 @@ export const modelingMachine = setup({
             data.p2
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3960,9 +3942,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3986,9 +3965,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4011,9 +3987,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4037,9 +4010,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }

@@ -113,6 +113,7 @@ const Toolbar_ = memo(
         sketchPathId,
         editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
+        keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
@@ -326,13 +327,16 @@ const Toolbar_ = memo(
                     id: itemConfig.id,
                     label: itemConfig.title,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => {
+                    onClick: (event) => {
                       setLastSelectedMultiActionItem((previous) => {
                         const next = new Map(previous)
                         next.set(i, maybeIconConfig.array.indexOf(itemConfig))
                         return next
                       })
-                      itemConfig.onClick(itemConfig.callbackProps)
+                      itemConfig.onClick({
+                        ...itemConfig.callbackProps,
+                        keepSelection: event.metaKey || event.ctrlKey,
+                      })
                     },
                     disabled:
                       disableAllButtons ||

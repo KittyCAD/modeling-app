@@ -65,6 +65,7 @@ export interface ToolbarItemCallbackProps {
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
   isActive: boolean
+  keepSelection: boolean
 }
 
 export type ToolbarItem = {
@@ -1799,9 +1800,10 @@ export function buildToolbarConfig(
         },
         {
           id: 'Dimension',
-          onClick: ({ modelingSend, isActive }) =>
+          onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'Dimension',
+              keepSelection,
             }),
           icon: 'dimension',
           status: 'available',
@@ -1809,48 +1811,55 @@ export function buildToolbarConfig(
           hotkey: 'D',
           description:
             'Constrain distance between points, length of lines, or radius of arcs.',
+          extraNote: constraintsExtraNote,
           links: [],
           isActive: (state) => false,
         },
         {
           id: 'HorizontalDistance',
-          onClick: ({ modelingSend, isActive }) =>
+          onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'HorizontalDistance',
+              keepSelection,
             }),
           icon: 'horizontalDimension',
           status: 'available',
           title: 'Horizontal Distance',
           hotkey: 'Alt+D',
           description: 'Constrain horizontal distance between two points.',
+          extraNote: constraintsExtraNote,
           links: [],
           isActive: (state) => false,
         },
         {
           id: 'VerticalDistance',
-          onClick: ({ modelingSend, isActive }) =>
+          onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'VerticalDistance',
+              keepSelection,
             }),
           icon: 'verticalDimension',
           status: 'available',
           title: 'Vertical Distance',
           hotkey: 'Shift+D',
           description: 'Constrain vertical distance between two points.',
+          extraNote: constraintsExtraNote,
           links: [],
           isActive: (state) => false,
         },
         {
           id: 'construction',
-          onClick: ({ modelingSend, isActive }) =>
+          onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'construction',
+              keepSelection,
             }),
           icon: 'construction',
           status: 'available',
           title: 'Construction',
           hotkey: 'Q',
           description: 'Toggle construction geometry on selected segments.',
+          extraNote: constraintsExtraNote,
           links: [],
           isActive: (state) => false,
         },
@@ -1858,6 +1867,8 @@ export function buildToolbarConfig(
     },
   }
 }
+
+const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
