@@ -48,7 +48,12 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
-          if (stateRef.current.matches('Sketch no face')) return
+          if (
+            stateRef.current.matches('Sketch no face') ||
+            stateRef.current.matches('sketchSolveMode')
+          ) {
+            return
+          }
           const event = await getEventForSelectWithPoint(engineEvent, {
             engineCommandManager,
             kclManager,
