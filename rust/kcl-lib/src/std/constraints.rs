@@ -2972,8 +2972,16 @@ pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             vec![args.source_range],
         )));
     };
-    let first_line = constrainable_lines[0];
-    for line in constrainable_lines.iter().skip(1) {
+
+    let n = constrainable_lines.len();
+    let mut constrainable_lines_iter = constrainable_lines.iter();
+    let first_line = constrainable_lines_iter
+        .next()
+        .ok_or(KclError::new_semantic(KclErrorDetails::new(
+            format!("parallel() requires at least 2 lines, but you provided {}", n),
+            vec![args.source_range],
+        )))?;
+    for line in constrainable_lines_iter {
         sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
             first_line.solver_line,
             line.solver_line,
