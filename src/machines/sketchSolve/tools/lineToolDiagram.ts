@@ -144,8 +144,7 @@ export const machine = setup({
 
           const snapConstraint = getConstraintForSnapTarget(
             startPointId,
-            snapTarget,
-            units
+            snapTarget
           )
           if (snapConstraint === null) {
             return result
@@ -265,11 +264,7 @@ export const machine = setup({
           let latestCheckpointId = result.checkpointId
           let snapConstraintNewObjects: Array<number> = []
 
-          const snapConstraint = getConstraintForSnapTarget(
-            id,
-            snapTarget,
-            units
-          )
+          const snapConstraint = getConstraintForSnapTarget(id, snapTarget)
           if (snapConstraint !== null) {
             const snapResult = await rustContext.addConstraint(
               0,
