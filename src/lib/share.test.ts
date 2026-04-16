@@ -156,6 +156,11 @@ describe('publishCurrentProject', () => {
       currentFilePath: '/projects/bracket/main.kcl',
       currentFileContents: 'part001 = startSketchOn(XY)',
       wasmInstance: {} as never,
+      submission: {
+        title: 'Bracket',
+        description: 'A mounting bracket.',
+        categoryIds: ['category-a', 'category-b'],
+      },
     })
 
     expect(published).toBe(true)
@@ -167,6 +172,25 @@ describe('publishCurrentProject', () => {
       },
       files: expect.any(Array),
     })
+    const createProjectCall = mockState.createProject.mock.calls.at(0) as
+      | [
+          {
+            files: Array<{ name: string; data: Blob }>
+          },
+        ]
+      | undefined
+    const createProjectArgs = createProjectCall?.[0]
+    const createProjectFiles = createProjectArgs?.files ?? []
+    const bodyFile = createProjectFiles.find((file) => file.name === 'body')
+
+    expect(bodyFile).toBeDefined()
+    await expect(bodyFile?.data.text()).resolves.toBe(
+      JSON.stringify({
+        title: 'Bracket',
+        description: 'A mounting bracket.',
+        category_ids: ['category-a', 'category-b'],
+      })
+    )
     expect(mockState.publishProject).toHaveBeenCalledWith({
       client: {
         mocked: true,
@@ -216,8 +240,12 @@ describe('getCurrentProjectPublicationDetails', () => {
     expect(details).toEqual({
       projectId: 'project-existing',
       publicationStatus: 'published',
+      title: 'Bracket',
+      description: 'Existing description',
+      categoryIds: [],
       updatedAt: '2026-04-09T15:00:00Z',
       publishedAt: '2026-04-07T12:34:56Z',
+      submittedAt: undefined,
     })
   })
 
