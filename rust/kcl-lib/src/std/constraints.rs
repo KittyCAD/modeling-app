@@ -85,17 +85,27 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     x.n == 0.0 && y.n == 0.0
 }
 
-fn arc_coordinate_to_solver_var(
+/// Arcs have 6 scalar values (start, end and center; x and y).
+/// These could be fixed constants or sketch variables to be solved.
+/// Each of these needs a sketch variable to feed into the solver.
+/// If it's a solver variable, then use it.
+/// If it's a fixed constant, then create a solver variable for it,
+/// and return a constraint to fix it.
+fn extract_arc_component(
     value: &KclValue,
     exec_state: &mut ExecState,
     range: crate::SourceRange,
     description: &str,
 ) -> Result<(SketchVarId, Option<SolverConstraint>), KclError> {
     match value.as_unsolved_expr() {
+        None => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{description} must be a number or sketch var"),
+            vec![range],
+        ))),
         Some(UnsolvedExpr::Unknown(var_id)) => Ok((var_id, None)),
         Some(UnsolvedExpr::Known(_)) => {
-            let normalized_value = normalize_to_solver_distance_unit(value, range, exec_state, description)?;
-            let Some(normalized_value) = normalized_value.as_ty_f64() else {
+            let value_in_solver_units = normalize_to_solver_distance_unit(value, range, exec_state, description)?;
+            let Some(normalized_value) = value_in_solver_units.as_ty_f64() else {
                 return Err(KclError::new_internal(KclErrorDetails::new(
                     "Expected number after coercion".to_owned(),
                     vec![range],
@@ -126,10 +136,6 @@ fn arc_coordinate_to_solver_var(
                 )),
             ))
         }
-        None => Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("{description} must be a number or sketch var"),
-            vec![range],
-        ))),
     }
 }
 
@@ -462,16 +468,24 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         ))
     })?;
 
-    let (start_x, start_x_fixed) =
-        arc_coordinate_to_solver_var(&start_x_value, exec_state, args.source_range, "start x")?;
-    let (start_y, start_y_fixed) =
-        arc_coordinate_to_solver_var(&start_y_value, exec_state, args.source_range, "start y")?;
-    let (end_x, end_x_fixed) = arc_coordinate_to_solver_var(&end_x_value, exec_state, args.source_range, "end x")?;
-    let (end_y, end_y_fixed) = arc_coordinate_to_solver_var(&end_y_value, exec_state, args.source_range, "end y")?;
-    let (center_x, center_x_fixed) =
-        arc_coordinate_to_solver_var(&center_x_value, exec_state, args.source_range, "center x")?;
-    let (center_y, center_y_fixed) =
-        arc_coordinate_to_solver_var(&center_y_value, exec_state, args.source_range, "center y")?;
+    let (start_x, start_x_fixed) = extract_arc_component(&start_x_value, exec_state, args.source_range, "start x")?;
+    let (start_y, start_y_fixed) = extract_arc_component(&start_y_value, exec_state, args.source_range, "start y")?;
+    let (end_x, end_x_fixed) = extract_arc_component(&end_x_value, exec_state, args.source_range, "end x")?;
+    let (end_y, end_y_fixed) = extract_arc_component(&end_y_value, exec_state, args.source_range, "end y")?;
+    let (center_x, center_x_fixed) = extract_arc_component(&center_x_value, exec_state, args.source_range, "center x")?;
+    let (center_y, center_y_fixed) = extract_arc_component(&center_y_value, exec_state, args.source_range, "center y")?;
+    // If any of the points had any components that were fixed, then they'll become constraints
+    // in this list.
+    let arc_fixed_constraints = [
+        start_x_fixed,
+        start_y_fixed,
+        end_x_fixed,
+        end_y_fixed,
+        center_x_fixed,
+        center_y_fixed,
+    ]
+    .into_iter()
+    .flatten();
 
     let ctor = ArcCtor {
         start: Point2d {
@@ -637,18 +651,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     // Build the implicit arc constraint.
     let range = args.source_range;
     let mut required_constraints = Vec::with_capacity(7);
-    required_constraints.extend(
-        [
-            start_x_fixed,
-            start_y_fixed,
-            end_x_fixed,
-            end_y_fixed,
-            center_x_fixed,
-            center_y_fixed,
-        ]
-        .into_iter()
-        .flatten(),
-    );
+    required_constraints.extend(arc_fixed_constraints);
     required_constraints.push(ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
         center: ezpz::datatypes::inputs::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
