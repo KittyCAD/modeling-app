@@ -168,6 +168,77 @@ describe('invisibleConstraintSpriteUtils', () => {
     expect(relatedConstraintIds).toEqual([20])
   })
 
+  it('finds point-list axis constraints related to a hovered point', () => {
+    const point = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const otherPoint = createPointApiObject({ id: 2, x: 10, y: 0, owner: 11 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 3 })
+    const otherLine = createLineApiObject({ id: 11, start: 2, end: 4 })
+    const extraPointA = createPointApiObject({ id: 3, x: -10, y: 5, owner: 10 })
+    const extraPointB = createPointApiObject({ id: 4, x: 20, y: 5, owner: 11 })
+    const horizontal = createConstraintApiObject(21, {
+      type: 'Horizontal',
+      points: [1, 2],
+    })
+
+    const relatedConstraintIds = findInvisibleConstraintsForSegment(
+      point,
+      createObjectsArray([
+        point,
+        otherPoint,
+        extraPointA,
+        extraPointB,
+        line,
+        otherLine,
+        horizontal,
+      ])
+    )
+
+    expect(relatedConstraintIds).toEqual([21])
+  })
+
+  it('highlights constrained points and owners for point-list axis constraints', () => {
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 5, owner: 10 })
+    const pointB = createPointApiObject({ id: 2, x: 10, y: 5, owner: 11 })
+    const extraPointA = createPointApiObject({ id: 3, x: 0, y: 0, owner: 10 })
+    const extraPointB = createPointApiObject({ id: 4, x: 10, y: 10, owner: 11 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 3 })
+    const lineB = createLineApiObject({ id: 11, start: 2, end: 4 })
+    const horizontal = createConstraintApiObject(21, {
+      type: 'Horizontal',
+      points: [1, 2, 'ORIGIN'],
+    })
+
+    const segmentIds = findSegmentsForInvisibleConstraint(
+      horizontal as InvisibleConstraintObject,
+      createObjectsArray([
+        pointA,
+        pointB,
+        extraPointA,
+        extraPointB,
+        lineA,
+        lineB,
+        horizontal,
+      ])
+    )
+    const anchor = getInvisibleConstraintAnchor(
+      horizontal as InvisibleConstraintObject,
+      createObjectsArray([
+        pointA,
+        pointB,
+        extraPointA,
+        extraPointB,
+        lineA,
+        lineB,
+        horizontal,
+      ])
+    )
+
+    expect(segmentIds).toEqual([1, 2, 10, 11])
+    expect(anchor?.x).toBeCloseTo(10 / 3)
+    expect(anchor?.y).toBeCloseTo(10 / 3)
+    expect(anchor?.z).toBe(0)
+  })
+
   it('finds the invisible constraint cluster for a coincident point cluster', () => {
     const pointA = createPointApiObject({ id: 1, x: 0, y: 0 })
     const pointB = createPointApiObject({ id: 2, x: 0, y: 0 })

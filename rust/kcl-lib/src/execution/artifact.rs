@@ -928,35 +928,27 @@ fn fill_in_node_paths(
     import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
-        Artifact::StartSketchOnFace(face) => {
-            if face.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
-                face.code_ref.range = range;
-                face.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
+            face.code_ref.range = range;
+            face.code_ref.node_path = node_path;
         }
-        Artifact::StartSketchOnPlane(plane) => {
-            if plane.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
-                plane.code_ref.range = range;
-                plane.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnPlane(plane) if plane.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
+            plane.code_ref.range = range;
+            plane.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlock(block) => {
-            if block.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
-                block.code_ref.range = range;
-                block.code_ref.node_path = node_path;
-            }
+        Artifact::SketchBlock(block) if block.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
+            block.code_ref.range = range;
+            block.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlockConstraint(constraint) => {
-            if constraint.code_ref.node_path.is_empty() {
-                constraint.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
-            }
+        Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
+            constraint.code_ref.node_path =
+                NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
         }
         _ => {}
     }
