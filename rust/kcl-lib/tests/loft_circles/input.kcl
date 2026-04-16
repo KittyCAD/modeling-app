@@ -1,0 +1,28 @@
+// Circle (bottom)
+circ0 = startSketchOn(offsetPlane(XY, offset = -200))
+  |> circle(center = [0, 100], radius = 50)
+
+// Square (middle)
+square0 = startSketchOn(XY)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+  
+// Square (middle)
+square1 = startSketchOn(offsetPlane(XY, offset = 50))
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Circle (top)
+circ1 = startSketchOn(offsetPlane(XY, offset = 200))
+  |> circle(center = [0, 100], radius = 50)
+
+loftedSolid = loft([circ0, square0, square1, circ1], vDegree = 2)
