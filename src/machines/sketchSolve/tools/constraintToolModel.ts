@@ -28,38 +28,6 @@ export type ConstraintToolName =
   | 'perpendicularConstraintTool'
   | 'fixedConstraintTool'
 
-export const constraintToolbarActionEventTypes = [
-  'coincident',
-  'Tangent',
-  'Parallel',
-  'EqualLength',
-  'Horizontal',
-  'Vertical',
-  'Perpendicular',
-  'Fixed',
-] satisfies readonly ConstraintToolbarActionEventType[]
-
-export type ConstraintToolbarActionEventType =
-  | 'coincident'
-  | 'Tangent'
-  | 'Parallel'
-  | 'EqualLength'
-  | 'Horizontal'
-  | 'Vertical'
-  | 'Perpendicular'
-  | 'Fixed'
-
-export const constraintToolbarActionToToolName = {
-  coincident: 'coincidentConstraintTool',
-  Tangent: 'tangentConstraintTool',
-  Parallel: 'parallelConstraintTool',
-  EqualLength: 'equalLengthConstraintTool',
-  Horizontal: 'horizontalConstraintTool',
-  Vertical: 'verticalConstraintTool',
-  Perpendicular: 'perpendicularConstraintTool',
-  Fixed: 'fixedConstraintTool',
-} satisfies Record<ConstraintToolbarActionEventType, ConstraintToolName>
-
 export type ConstraintSelectionKind =
   | 'point'
   | 'origin'

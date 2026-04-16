@@ -2,7 +2,10 @@ import { describe, expect, it, vi } from 'vitest'
 import { assign, createActor, setup, waitFor } from 'xstate'
 import { machine as horizontalConstraintTool } from '@src/machines/sketchSolve/tools/horizontalConstraintTool'
 import { machine as equalLengthConstraintTool } from '@src/machines/sketchSolve/tools/equalLengthConstraintTool'
+import { machine as fixedConstraintTool } from '@src/machines/sketchSolve/tools/fixedConstraintTool'
+import { machine as tangentConstraintTool } from '@src/machines/sketchSolve/tools/tangentConstraintTool'
 import {
+  createArcApiObject,
   createMockKclManager,
   createMockRustContext,
   createMockSceneInfra,
@@ -321,6 +324,146 @@ describe('constraintToolMachine', () => {
       {
         type: 'Horizontal',
         line: 11,
+      },
+      expect.anything(),
+      true
+    )
+  })
+
+  it('applies a fixed constraint for a single clicked point and stays equipped', async () => {
+    const point = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const objects = [point]
+    const { child, rustContext } = createHarness({
+      childMachine: fixedConstraintTool,
+      objects,
+    })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+
+    addConstraintMock.mockResolvedValue({
+      kclSource: { text: 'fixed' },
+      sceneGraphDelta: createSceneGraphDelta(objects),
+      checkpointId: 3,
+    })
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [],
+      clickedSelectionId: 10,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+    })
+
+    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+
+    expect(addConstraintMock).toHaveBeenCalledWith(
+      0,
+      0,
+      {
+        type: 'Fixed',
+        points: [
+          {
+            point: 10,
+            position: {
+              x: { value: 3, units: 'Mm' },
+              y: { value: 4, units: 'Mm' },
+            },
+          },
+        ],
+      },
+      expect.anything(),
+      true
+    )
+    expect(child.getSnapshot().status).toBe('active')
+  })
+
+  it('filters tangent selections through the first valid partial selection path', async () => {
+    const center = createPointApiObject({ id: 1 })
+    const arcStart = createPointApiObject({ id: 2 })
+    const arcEnd = createPointApiObject({ id: 3 })
+    const lineStart = createPointApiObject({ id: 4 })
+    const lineEnd = createPointApiObject({ id: 5 })
+    const otherLineStart = createPointApiObject({ id: 6 })
+    const otherLineEnd = createPointApiObject({ id: 7 })
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+    const line = createLineApiObject({ id: 11, start: 4, end: 5 })
+    const otherLine = createLineApiObject({ id: 12, start: 6, end: 7 })
+    const objects = [
+      center,
+      arcStart,
+      arcEnd,
+      lineStart,
+      lineEnd,
+      otherLineStart,
+      otherLineEnd,
+      arc,
+      line,
+      otherLine,
+    ]
+    const { actor, child, rustContext } = createHarness({
+      childMachine: tangentConstraintTool,
+      objects,
+    })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+
+    addConstraintMock.mockResolvedValue({
+      kclSource: { text: 'tangent' },
+      sceneGraphDelta: createSceneGraphDelta(objects),
+      checkpointId: 4,
+    })
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [],
+      clickedSelectionId: 11,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+    })
+
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([11])
+    )
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [11],
+      clickedSelectionId: 12,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+    })
+
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([])
+    )
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [],
+      clickedSelectionId: 11,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+    })
+
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([11])
+    )
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [11],
+      clickedSelectionId: 10,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+    })
+
+    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+
+    expect(addConstraintMock).toHaveBeenCalledWith(
+      0,
+      0,
+      {
+        type: 'Tangent',
+        input: [11, 10],
       },
       expect.anything(),
       true

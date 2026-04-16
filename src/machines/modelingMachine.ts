@@ -622,14 +622,6 @@ export type ModelingMachineEvent =
     }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
@@ -7176,30 +7168,6 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             'unequip tool': {
-              actions: ['forward event to sketch solve if active'],
-            },
-            coincident: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Fixed: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Tangent: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Parallel: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Perpendicular: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            EqualLength: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Vertical: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Horizontal: {
               actions: ['forward event to sketch solve if active'],
             },
             Dimension: {

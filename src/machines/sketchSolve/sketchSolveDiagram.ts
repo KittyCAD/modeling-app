@@ -54,9 +54,9 @@ import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
   constraintToolNames,
-  constraintToolbarActionToToolName,
   type ConstraintToolName,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
@@ -198,50 +198,6 @@ async function addAxisDistanceConstraint(
   sendToolbarConstraintOutcome(self, result)
 }
 
-async function handleConstraintToolToolbarAction(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self'],
-  toolName: ConstraintToolName
-) {
-  const objects =
-    context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-  const preparedApply = getConstraintToolPreparedApply(
-    toolName,
-    context.selectedIds,
-    objects,
-    {
-      defaultLengthUnit: baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ),
-    }
-  )
-
-  if (!preparedApply) {
-    sendToActorIfActive(self, {
-      type: 'equip tool',
-      data: { tool: toolName },
-    })
-    return
-  }
-
-  const settings = jsAppSettings(context.kclManager.systemDeps.settings)
-  let result:
-    | Awaited<ReturnType<SketchSolveContext['rustContext']['addConstraint']>>
-    | undefined
-
-  for (const [index, payload] of preparedApply.payloads.entries()) {
-    result = await context.rustContext.addConstraint(
-      0,
-      context.sketchId,
-      payload,
-      settings,
-      index === preparedApply.payloads.length - 1
-    )
-  }
-
-  sendToolbarConstraintOutcome(self, result)
-}
-
 function getPreparedApplyForConstraintTool(
   context: SketchSolveContext,
   toolName: ConstraintToolName
@@ -315,7 +271,28 @@ export const sketchSolveMachine = setup({
       }
 
       void runSketchSolveToolbarAction(`apply ${toolName}`, async () => {
-        await handleConstraintToolToolbarAction(context, self, toolName)
+        const result = await applyOrEquipConstraintToolFromToolbar({
+          toolName,
+          selectedIds: context.selectedIds,
+          objects:
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
+          defaultLengthUnit: baseUnitToNumericSuffix(
+            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+          ),
+          rustContext: context.rustContext,
+          sketchId: context.sketchId,
+          settings: jsAppSettings(context.kclManager.systemDeps.settings),
+          equipConstraintTool: (nextToolName) => {
+            sendToActorIfActive(self, {
+              type: 'equip tool',
+              data: { tool: nextToolName },
+            })
+          },
+        })
+
+        if (result.type === 'applied') {
+          sendToolbarConstraintOutcome(self, result.result)
+        }
       })
     },
     'send tool equipped to parent': sendParent(({ context }) => ({
@@ -440,48 +417,6 @@ export const sketchSolveMachine = setup({
       // If in 'unequipping tool' or 'switching tool', ignore (tool is already stopping)
       description:
         'ESC key - forwarded to child tool when a tool is equipped. Handled at state level when no tool is equipped.',
-    },
-    coincident: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a coincident constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.coincident
-            )
-          }
-        )
-      },
-    },
-    Fixed: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a fixed constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Fixed
-            )
-          }
-        )
-      },
-    },
-    Tangent: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a tangent constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Tangent
-            )
-          }
-        )
-      },
     },
     Dimension: {
       actions: async ({ self, context }) => {
@@ -684,76 +619,6 @@ export const sketchSolveMachine = setup({
           'add a vertical distance constraint',
           async () => {
             await addAxisDistanceConstraint(context, self, 'vertical')
-          }
-        )
-      },
-    },
-    Parallel: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a parallel constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Parallel
-            )
-          }
-        )
-      },
-    },
-    Perpendicular: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a perpendicular constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Perpendicular
-            )
-          }
-        )
-      },
-    },
-    EqualLength: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add an equal length constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.EqualLength
-            )
-          }
-        )
-      },
-    },
-    Vertical: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a vertical constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Vertical
-            )
-          }
-        )
-      },
-    },
-    Horizontal: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a horizontal constraint',
-          async () => {
-            await handleConstraintToolToolbarAction(
-              context,
-              self,
-              constraintToolbarActionToToolName.Horizontal
-            )
           }
         )
       },

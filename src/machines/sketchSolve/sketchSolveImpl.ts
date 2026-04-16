@@ -116,14 +116,6 @@ export type SketchSolveMachineEvent =
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'

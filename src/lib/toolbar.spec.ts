@@ -2,6 +2,10 @@ import { describe, expect, test } from 'vitest'
 import type { StateFrom } from 'xstate'
 
 import {
+  buildToolbarConfig,
+  getConstraintToolbarToggleEvent,
+  getSketchSolveToolIconMap,
+  isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
 } from '@src/lib/toolbar'
@@ -43,5 +47,63 @@ describe('toolbar state helpers', () => {
     expect(
       isSketchToolbarTransitioning(stubModelingState(['sketchSolveMode']))
     ).toBe(false)
+  })
+
+  test('tracks active sketch-solve constraint tools independently of the dropdown shell', () => {
+    expect(
+      isSketchSolveConstraintToolActive(
+        {
+          matches: (state) => state === 'sketchSolveMode',
+          context: {
+            sketchSolveToolName: 'horizontalConstraintTool',
+          },
+        },
+        'horizontalConstraintTool'
+      )
+    ).toBe(true)
+
+    expect(
+      isSketchSolveConstraintToolActive(
+        {
+          matches: () => false,
+          context: {
+            sketchSolveToolName: 'horizontalConstraintTool',
+          },
+        },
+        'horizontalConstraintTool'
+      )
+    ).toBe(false)
+  })
+
+  test('maps constraint dropdown clicks to equip and unequip events', () => {
+    expect(
+      getConstraintToolbarToggleEvent(false, 'horizontalConstraintTool')
+    ).toEqual({
+      type: 'equip tool',
+      data: { tool: 'horizontalConstraintTool' },
+    })
+
+    expect(
+      getConstraintToolbarToggleEvent(true, 'horizontalConstraintTool')
+    ).toEqual({
+      type: 'unequip tool',
+    })
+  })
+
+  test('includes the sketch-solve constraint dropdown items in the icon map', () => {
+    const toolbarConfig = buildToolbarConfig({
+      send: () => {},
+    })
+
+    expect(getSketchSolveToolIconMap(toolbarConfig)).toMatchObject({
+      coincidentConstraintTool: 'coincident',
+      tangentConstraintTool: 'tangent',
+      parallelConstraintTool: 'parallel',
+      equalLengthConstraintTool: 'equal',
+      horizontalConstraintTool: 'horizontal',
+      verticalConstraintTool: 'vertical',
+      perpendicularConstraintTool: 'perpendicular',
+      fixedConstraintTool: 'fix',
+    })
   })
 })
