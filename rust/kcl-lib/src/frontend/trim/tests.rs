@@ -1550,9 +1550,7 @@ async fn test_trim_remove_coincident_point_from_segment_end() {
 
 #[tokio::test]
 async fn test_trim_remove_point_axis_constraint_from_segment_end() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
   line2 = line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
   vertical([line1.end, line2.start])
@@ -1564,9 +1562,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
   line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
   line3 = line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
@@ -2061,9 +2057,7 @@ async fn test_split_trim_migrate_horizontal_constraint() {
 
 #[tokio::test]
 async fn test_split_trim_migrate_horizontal_points_constraint() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.64mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2074,9 +2068,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2121,9 +2113,7 @@ async fn test_split_trim_migrate_vertical_constraint() {
 
 #[tokio::test]
 async fn test_split_trim_migrate_vertical_points_constraint() {
-    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let base_kcl_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var -2.66mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
@@ -2134,9 +2124,7 @@ sketch(on = YZ) {
 
     let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
 
-    let expected_code = r#"@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
+    let expected_code = r#"sketch(on = YZ) {
   line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
