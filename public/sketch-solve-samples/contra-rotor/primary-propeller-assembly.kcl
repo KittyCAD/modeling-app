@@ -1,0 +1,13 @@
+// Propeller Assembly
+// Rotating blade set with hub and twisted blades
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+import "primary-propeller-hub.kcl" as primaryPropellerHub
+import "primary-propeller-blades.kcl" as primaryPropellerBlades
+
+primaryPropellerAssembly = [
+  primaryPropellerHub,
+  primaryPropellerBlades
+]
