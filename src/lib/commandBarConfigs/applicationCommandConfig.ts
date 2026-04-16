@@ -15,6 +15,7 @@ import {
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { importLocalFilesToProject } from '@src/lib/importLocalFilesToProject'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -185,25 +186,31 @@ export function createApplicationCommands({
 
           const fileNameWithExtension =
             getStringAfterLastSeparator(selectedFilePath)
-          const fr = new FileReader()
-          fr.addEventListener('load', () => {
-            app.systemIOActor.send({
-              type: SystemIOMachineEvents.importFileFromURL,
-              data: {
-                requestedProjectName: uniqueNameIfNeeded,
-                requestedFileNameWithExtension: fileNameWithExtension,
-                requestedCode:
-                  typeof fr.result === 'string'
-                    ? fr.result
-                    : '// Tried importing a binary',
+          const projectDirectoryPath =
+            app.systemIOActor.getSnapshot().context.projectDirectoryPath
+
+          void importLocalFilesToProject({
+            files: [
+              {
+                name: fileNameWithExtension,
+                readData: () => fsZds.readFile(selectedFilePath),
               },
-            })
+            ],
+            projectPath: fsZds.join(projectDirectoryPath, uniqueNameIfNeeded),
+            wasmInstance,
           })
-          fsZds
-            .readFile(selectedFilePath)
-            .then((content) => {
-              const blob = new Blob([new Uint8Array(content)])
-              fr.readAsText(blob)
+            .then(() => {
+              if (isProjectNew || app.project?.name !== uniqueNameIfNeeded) {
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.navigateToProject,
+                  data: {
+                    requestedProjectName: uniqueNameIfNeeded,
+                  },
+                })
+              }
+              app.systemIOActor.send({
+                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              })
             })
             .catch(() => toast.error(error))
         } else {
