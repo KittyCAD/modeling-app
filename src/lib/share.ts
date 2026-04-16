@@ -1,7 +1,4 @@
-import {
-  type KclProjectPublicationStatus,
-  projects,
-} from '@kittycad/lib'
+import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
@@ -298,10 +295,7 @@ async function buildProjectUploadFiles({
   currentFilePath,
   currentFileContents,
   wasmInstance,
-}: Omit<
-  PublishCurrentProjectArgs,
-  'token' | 'project'
-> & {
+}: Omit<PublishCurrentProjectArgs, 'token' | 'project'> & {
   project: Project
 }): Promise<UploadFile[] | Error> {
   if (!project.children) {
