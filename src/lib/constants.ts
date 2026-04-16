@@ -358,6 +358,9 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
 
+/** How often we write to disk when autosave is on (it's always on right now, TODO: add a ZDS-only setting) */
+export const AUTOSAVE_TIMEOUT = 10_000
+
 // Zookeeper input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 

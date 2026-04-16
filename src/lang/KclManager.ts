@@ -33,6 +33,7 @@ import {
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
+  AUTOSAVE_TIMEOUT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
@@ -2902,7 +2903,7 @@ export class KclManager extends File {
               toast.error('Error saving file, please check file permissions.')
               reject(err)
             })
-        }, 1000)
+        }, AUTOSAVE_TIMEOUT)
       }).catch((err: unknown) => {
         if (
           typeof err === 'object' &&
