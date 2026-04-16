@@ -202,7 +202,8 @@ describe('copyCurrentFileShareLink', () => {
       body: { access_mode: 'anyone_with_link' },
     })
 
-    const createProjectCalls = mockState.createProject.mock.calls as unknown as Array<
+    const createProjectCalls = mockState.createProject.mock
+      .calls as unknown as Array<
       [
         {
           client: unknown
@@ -221,11 +222,9 @@ describe('copyCurrentFileShareLink', () => {
       baseUrl: 'https://api.dev.zoo.dev',
     })
 
-    expect(createArgs.files.map((file: { name: string }) => file.name)).toEqual([
-      'body',
-      'project.toml',
-      'main.kcl',
-    ])
+    expect(createArgs.files.map((file: { name: string }) => file.name)).toEqual(
+      ['body', 'project.toml', 'main.kcl']
+    )
 
     const bodyFile = createArgs.files.find(
       (file: { name: string }) => file.name === 'body'
@@ -256,7 +255,9 @@ describe('copyCurrentFileShareLink', () => {
     if (!mainFile) {
       throw new Error('Expected main.kcl file to be uploaded')
     }
-    await expect(mainFile.data.text()).resolves.toBe('part001 = startSketchOn(XY)')
+    await expect(mainFile.data.text()).resolves.toBe(
+      'part001 = startSketchOn(XY)'
+    )
     expect(mockState.writeText).toHaveBeenCalledWith(
       'https://zoo.dev/project/share-key'
     )
@@ -315,7 +316,8 @@ describe('copyCurrentFileShareLink', () => {
       'https://zoo.dev/project/existing-share-key'
     )
 
-    const updateProjectCalls = mockState.updateProject.mock.calls as unknown as Array<
+    const updateProjectCalls = mockState.updateProject.mock
+      .calls as unknown as Array<
       [
         {
           files: Array<{ name: string; data: Blob }>

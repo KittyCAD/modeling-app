@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
@@ -10,18 +11,13 @@ vi.mock('@src/lang/wasmUtils', () => ({
 }))
 
 vi.mock('@src/lib/fs-zds', () => {
-  const join = (...parts: string[]) => {
-    const joined = parts.filter(Boolean).join('/').replace(/\/+/g, '/')
-    return parts[0]?.startsWith('/') && !joined.startsWith('/')
-      ? `/${joined}`
-      : joined
-  }
+  const join = (...parts: string[]) => path.posix.join(...parts.filter(Boolean))
 
   return {
     default: {
       join,
       sep: '/',
-      basename: (targetPath: string) => targetPath.split('/').pop() || '',
+      basename: (targetPath: string) => path.posix.basename(targetPath),
       mkdir: vi.fn(() => Promise.resolve(undefined)),
       readFile: vi.fn(),
       writeFile: vi.fn(() => Promise.resolve(undefined)),
