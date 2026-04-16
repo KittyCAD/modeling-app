@@ -30,7 +30,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 
 import {
   getCapCodeRef,
@@ -167,7 +167,10 @@ export async function getEngineRegionSelectionFromEntity(
     type: 'engineRegion',
     id: regionEntityId,
     point,
+    // Keep the sketch block id for downstream edits and the parent path id so
+    // selection -> editor highlighting can prefer `region()` when one exists.
     sketchId: sketch.id,
+    pathId: path.id,
   }
 }
 
@@ -433,10 +436,15 @@ export function handleSelectionBatch({
   codeMirrorSelection: EditorSelection
   updateSceneObjectColors: () => void
 } {
+  // Editor ranges can come from regular graph selections or from engine-only
+  // selections, so gather them in one list before building the CodeMirror
+  // selection.
+  const editorCodeRefs: CodeRef[] = []
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  selections.graphSelections.forEach(({ artifact }) => {
+  selections.graphSelections.forEach(({ artifact, codeRef }) => {
+    editorCodeRefs.push(codeRef)
     if (artifact?.id) {
       selectionToEngine.push({
         id: artifact?.id,
@@ -459,13 +467,16 @@ export function handleSelectionBatch({
         id: s.id,
         range: defaultSourceRange(),
       })
+      editorCodeRefs.push(
+        ...getCodeRefsForEngineRegionSelection(s, artifactGraph)
+      )
     }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
     selectionToEngine,
     systemDeps
   )
-  selections.graphSelections.forEach(({ codeRef }) => {
+  uniqueCodeRefsByRange(editorCodeRefs).forEach((codeRef) => {
     if (codeRef.range?.[1]) {
       const safeEnd = Math.min(codeRef.range[1], code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
@@ -474,10 +485,7 @@ export function handleSelectionBatch({
   if (ranges.length)
     return {
       engineEvents,
-      codeMirrorSelection: EditorSelection.create(
-        ranges,
-        selections.graphSelections.length - 1
-      ),
+      codeMirrorSelection: EditorSelection.create(ranges, ranges.length - 1),
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
@@ -491,6 +499,84 @@ export function handleSelectionBatch({
     updateSceneObjectColors: () =>
       updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
   }
+}
+
+function getCodeRefsForEngineRegionSelection(
+  selection: EngineRegionSelection,
+  artifactGraph: ArtifactGraph
+): CodeRef[] {
+  // A clicked region comes from an engine-only entity id. Recover the best code
+  // target by preferring the explicit `region()` path, then the linked sketch
+  // block, and finally any path/sketch fallback we can still resolve.
+  if (selection.pathId) {
+    const pathArtifact = artifactGraph.get(selection.pathId)
+    if (pathArtifact?.type === 'path') {
+      if (pathArtifact.subType === 'region') {
+        const regionCodeRefs = getCodeRefsByArtifactId(
+          pathArtifact.id,
+          artifactGraph
+        )
+        if (regionCodeRefs?.length) {
+          return regionCodeRefs
+        }
+      }
+
+      const sketchBlock = getSketchBlockForPathArtifact(
+        pathArtifact,
+        artifactGraph
+      )
+      if (sketchBlock) {
+        const sketchBlockCodeRefs = getCodeRefsByArtifactId(
+          sketchBlock.id,
+          artifactGraph
+        )
+        if (sketchBlockCodeRefs?.length) {
+          return sketchBlockCodeRefs
+        }
+      }
+
+      const pathCodeRefs = getCodeRefsByArtifactId(
+        pathArtifact.id,
+        artifactGraph
+      )
+      if (pathCodeRefs?.length) {
+        return pathCodeRefs
+      }
+    }
+  }
+
+  const sketchBlock = artifactGraph.get(selection.sketchId)
+  if (sketchBlock?.type === 'sketchBlock') {
+    return getCodeRefsByArtifactId(sketchBlock.id, artifactGraph) ?? []
+  }
+
+  const fallbackSketchBlock = Array.from(artifactGraph.values()).find(
+    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+      artifact.type === 'sketchBlock' && artifact.id === selection.sketchId
+  )
+  if (!fallbackSketchBlock) {
+    return []
+  }
+
+  return getCodeRefsByArtifactId(fallbackSketchBlock.id, artifactGraph) ?? []
+}
+
+/**
+ * Deduplicate code refs using the source range as the unique key.
+ */
+function uniqueCodeRefsByRange(codeRefs: CodeRef[]): CodeRef[] {
+  // Multiple selections can resolve to the same range, resulting in duplicates;
+  // collapse duplicates so the editor does not get duplicate cursors.
+  const seen = new Set<string>()
+
+  return codeRefs.filter((codeRef) => {
+    const key = JSON.stringify(codeRef.range)
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
 }
 
 type SelectionToEngine = {

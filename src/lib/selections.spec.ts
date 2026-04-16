@@ -11,6 +11,7 @@ import {
   codeToIdSelections,
   findLastRangeStartingBefore,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
 } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -1407,6 +1408,163 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+describe('handleSelectionBatch engine regions', () => {
+  const systemDeps = {
+    sceneEntitiesManager: { activeSegments: {} },
+    engineCommandManager: { connection: undefined },
+    wasmInstance: {},
+  } as any
+
+  test('highlights the region() call for a region-backed engine region selection', () => {
+    const sketchSnippet = 's = startSketchOn(XY)'
+    const regionSnippet = 'r = region(point = [1mm, 1mm], sketch = s)'
+    const code = `${sketchSnippet}\n${regionSnippet}\n`
+
+    const sketchRange: SourceRange = [
+      code.indexOf(sketchSnippet),
+      code.indexOf(sketchSnippet) + sketchSnippet.length,
+      0,
+    ]
+    const regionRange: SourceRange = [
+      code.indexOf(regionSnippet),
+      code.indexOf(regionSnippet) + regionSnippet.length,
+      0,
+    ]
+
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-block-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          codeRef: {
+            range: sketchRange,
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          planeId: 'plane-1',
+          sketchId: 7,
+        },
+      ],
+      [
+        'region-path-1',
+        {
+          type: 'path',
+          subType: 'region',
+          id: 'region-path-1',
+          codeRef: {
+            range: regionRange,
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+        },
+      ],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'engineRegion',
+            id: 'engine-region-1',
+            point: { x: 1, y: 1 },
+            sketchId: 'sketch-block-1',
+            pathId: 'region-path-1',
+          },
+        ],
+      },
+      artifactGraph,
+      code,
+      ast: {} as any,
+      systemDeps,
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.ranges[0].from).toBe(regionRange[1])
+    expect(result.codeMirrorSelection.ranges[0].to).toBe(regionRange[1])
+  })
+
+  test('highlights the linked sketch block for a sketch-backed engine region selection', () => {
+    const sketchSnippet = 's = startSketchOn(XY)'
+    const pathSnippet = 'profile = startProfile(s, at = [0, 0])'
+    const code = `${sketchSnippet}\n${pathSnippet}\n`
+
+    const sketchRange: SourceRange = [
+      code.indexOf(sketchSnippet),
+      code.indexOf(sketchSnippet) + sketchSnippet.length,
+      0,
+    ]
+    const pathRange: SourceRange = [
+      code.indexOf(pathSnippet),
+      code.indexOf(pathSnippet) + pathSnippet.length,
+      0,
+    ]
+
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-block-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          codeRef: {
+            range: sketchRange,
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          planeId: 'plane-1',
+          sketchId: 7,
+        },
+      ],
+      [
+        'sketch-path-1',
+        {
+          type: 'path',
+          subType: 'sketch',
+          id: 'sketch-path-1',
+          codeRef: {
+            range: pathRange,
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: 'sketch-block-1',
+        },
+      ],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'engineRegion',
+            id: 'engine-region-1',
+            point: { x: 1, y: 1 },
+            sketchId: 'sketch-block-1',
+            pathId: 'sketch-path-1',
+          },
+        ],
+      },
+      artifactGraph,
+      code,
+      ast: {} as any,
+      systemDeps,
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.ranges[0].from).toBe(sketchRange[1])
+    expect(result.codeMirrorSelection.ranges[0].to).toBe(sketchRange[1])
   })
 })
 

@@ -36,6 +36,9 @@ export interface EngineRegionSelection {
   id: string
   point: Point2d
   sketchId: ArtifactId
+  // Regions are engine-only entities, so keep the parent path artifact to map
+  // the selection back to `region()` or a linked sketch block in the editor.
+  pathId?: ArtifactId
 }
 
 export type NonCodeSelection =
