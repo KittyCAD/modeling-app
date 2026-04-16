@@ -19,34 +19,34 @@ ball-bearing/
 bench/
 bench-for-kids/
 bike-hub-washer/
-# bone-plate/
+bone-plate/
 bottle/
 box/
 bracket/
-# bracket-with-slot/
+bracket-with-slot/
 c-shape-solid/
 # camshaft/
 # car-wheel-assembly/
 # cassette/
 ceiling-fan/
-# coilover-assembly/
+coilover-assembly/
 cold-plate/
 color-cube/
 cone/
 # contra-rotor/
-# counterdrilled-weldment/
+counterdrilled-weldment/
 countersunk-plate/
 # cpu-cooler/
-# crash-box/
-# curtain-wall-anchor-plate/
-# cycloidal-gear/
+crash-box/
+curtain-wall-anchor-plate/
+cycloidal-gear/
 cylinder/
-# desk-edge-stopper/
+desk-edge-stopper/
 dining-table/
-# dodecahedron/
+dodecahedron/
 # dog-house-great-dane/
 double-hook/
-# enclosure/
+enclosure/
 engine-valve/
 # exhaust-manifold/
 # field-monitor-stand/
@@ -126,12 +126,12 @@ split-washer-spring-version/
 # spur-reduction-gearset/
 # starlink-mini-bracket/
 # straight-rung-ladder/
-# stylized-car/
-# stylized-cybertruck/
-# stylized-dump-truck/
-# stylized-firetruck/
-# stylized-mini-bus/
-# stylized-pickup-truck/
+stylized-car/
+stylized-cybertruck/
+stylized-dump-truck/
+stylized-firetruck/
+stylized-mini-bus/
+stylized-pickup-truck/
 # surgical-drill-guide/
 # t-slot-frame/
 # t-slot-rail/
@@ -151,4 +151,4 @@ washer/
 wedge/
 # wheel-hub/
 # wing-spar/
-# zoo-logo/
+zoo-logo/
