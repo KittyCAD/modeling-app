@@ -1,0 +1,283 @@
+// Exhaust Manifold
+// A welded exhaust header for an inline 4-cylinder engine
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define parameters
+primaryTubeDiameter = 1.625
+wallThickness = 0.080
+plateHeight = 0.125
+bendRadius = 3
+tubeWallMidRadius = primaryTubeDiameter / 2 - wallThickness / 2
+
+// Draw the first primary tube
+sweepPlane001 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
+}
+pathSketch001 = sketch(on = sweepPlane001) {
+  line1 = line(start = [var 0in, var 0.125in], end = [var 0in, var 3.125in])
+  arc2 = arc(
+    start = [var 2.47905547in, var 6.07942326in],
+    end = [var 0in, var 3.125in],
+    center = [var 3in, var 3.125in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 2.47905547in, var 6.07942326in], end = [var 8.38790159in, var 7.12131215in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 8.38790159in, var 7.12131215in],
+    end = [var 10.85553546in, var 10.33720139in],
+    center = [var 7.86695706in, var 10.07573542in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 10.85553546in, var 10.33720139in], end = [var 10.41975769in, var 15.31817476in])
+  coincident([arc4.end, line5.start])
+
+  fixed([line1.start, [0in, 0.125in]])
+  fixed([line1.end, [0in, 3.125in]])
+  fixed([arc2.start, [2.47905547in, 6.07942326in]])
+  fixed([arc2.center, [3in, 3.125in]])
+  fixed([line3.end, [8.38790159in, 7.12131215in]])
+  fixed([arc4.end, [10.85553546in, 10.33720139in]])
+  fixed([arc4.center, [7.86695706in, 10.07573542in]])
+  fixed([line5.end, [10.41975769in, 15.31817476in]])
+}
+
+sectionPlane001 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.0, 0.0, 1.0]
+}
+sectionSketch001 = sketch(on = sectionPlane001) {
+  circle1 = circle(start = [var 0.8125in, var 0in], center = [var 0in, var 0in])
+  circle2 = circle(start = [var 0.7325in, var 0in], center = [var 0in, var 0in])
+
+  fixed([circle1.center, [0in, 0in]])
+  fixed([circle1.start, [0.8125in, 0in]])
+  fixed([circle2.center, [0in, 0in]])
+  fixed([circle2.start, [0.7325in, 0in]])
+}
+sectionRegion001 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch001)
+primaryTube001 = sweep(sectionRegion001, path = pathSketch001)
+hide(sectionSketch001)
+hide(pathSketch001)
+
+// Clone the first tube and apply the slight angle offset for the second cylinder
+primaryTube002 = clone(primaryTube001)
+  |> rotate(axis = [0, 0, 1], angle = -1deg)
+  |> translate(x = 2, global = true)
+
+// Draw the third primary tube
+sweepPlane003 = {
+  origin = [4.0, 0.0, 0.0],
+  xAxis = [sin(-24.3deg), cos(-24.3deg), 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
+}
+pathSketch003 = sketch(on = sweepPlane003) {
+  line1 = line(start = [var 0in, var 0.125in], end = [var 0in, var 5.125in])
+  arc2 = arc(
+    start = [var 2.47905547in, var 8.07942326in],
+    end = [var 0in, var 5.125in],
+    center = [var 3in, var 5.125in],
+  )
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 2.47905547in, var 8.07942326in], end = [var 7.40309401in, var 8.94766401in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(
+    start = [var 7.40309401in, var 8.94766401in],
+    end = [var 9.87072787in, var 12.16355325in],
+    center = [var 6.88214948in, var 11.90208728in],
+  )
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 9.87072787in, var 12.16355325in], end = [var 9.60926191in, var 15.15213727in])
+  coincident([arc4.end, line5.start])
+
+  fixed([line1.start, [0in, 0.125in]])
+  fixed([line1.end, [0in, 5.125in]])
+  fixed([arc2.start, [2.47905547in, 8.07942326in]])
+  fixed([arc2.center, [3in, 5.125in]])
+  fixed([line3.end, [7.40309401in, 8.94766401in]])
+  fixed([arc4.end, [9.87072787in, 12.16355325in]])
+  fixed([arc4.center, [6.88214948in, 11.90208728in]])
+  fixed([line5.end, [9.60926191in, 15.15213727in]])
+}
+
+sectionPlane003 = {
+  origin = [4.0, 0.0, 0.0],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.0, 0.0, 1.0]
+}
+sectionSketch003 = sketch(on = sectionPlane003) {
+  circle1 = circle(start = [var 0.8125in, var 0in], center = [var 0in, var 0in])
+  circle2 = circle(start = [var 0.7325in, var 0in], center = [var 0in, var 0in])
+
+  fixed([circle1.center, [0in, 0in]])
+  fixed([circle1.start, [0.8125in, 0in]])
+  fixed([circle2.center, [0in, 0in]])
+  fixed([circle2.start, [0.7325in, 0in]])
+}
+sectionRegion003 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch003)
+primaryTube003 = sweep(sectionRegion003, path = pathSketch003)
+hide(sectionSketch003)
+hide(pathSketch003)
+
+// Clone the third tube and apply the final angle offset for the fourth cylinder
+primaryTube004 = clone(primaryTube003)
+  |> rotate(axis = [0, 0, 1], angle = -0.9deg)
+  |> translate(x = 2, global = true)
+
+// Create the mounting flange for the header
+flangeSketch = sketch(on = XY) {
+  line1 = line(start = [var 4.3in, var -1.25in], end = [var 1.7in, var -1.25in])
+  arc2 = arc(
+    start = [var 1.50716372in, var -1.17981333in],
+    end = [var 1.7in, var -1.25in],
+    center = [var 1.7in, var -0.95in],
+  )
+  coincident([line1.end, arc2.end])
+  arc3 = arc(
+    start = [var 1.50716372in, var -1.17981333in],
+    end = [var 0.35014602in, var -1.17981333in],
+    center = [var 0.92865487in, var -1.86925333in],
+  )
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(
+    start = [var 0.15730974in, var -1.25in],
+    end = [var 0.35014602in, var -1.17981333in],
+    center = [var 0.15730974in, var -0.95in],
+  )
+  coincident([arc3.end, arc4.end])
+  line5 = line(start = [var 0.15730974in, var -1.25in], end = [var -1.24269026in, var -1.25in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var -1.24269026in, var -1.25in], end = [var -1.24269026in, var 1.35in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -1.24269026in, var 1.35in], end = [var 1.85730974in, var 1.35in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(
+    start = [var 2.05014602in, var 1.27981333in],
+    end = [var 1.85730974in, var 1.35in],
+    center = [var 1.85730974in, var 1.05in],
+  )
+  coincident([line7.end, arc8.end])
+  arc9 = arc(
+    start = [var 2.05014602in, var 1.27981333in],
+    end = [var 3.97850885in, var 1.27981333in],
+    center = [var 3.01432743in, var 2.42888in],
+  )
+  coincident([arc8.start, arc9.start])
+  arc10 = arc(
+    start = [var 4.17134513in, var 1.35in],
+    end = [var 3.97850885in, var 1.27981333in],
+    center = [var 4.17134513in, var 1.05in],
+  )
+  coincident([arc9.end, arc10.end])
+  line11 = line(start = [var 4.17134513in, var 1.35in], end = [var 7.27134513in, var 1.35in])
+  coincident([arc10.start, line11.start])
+  line12 = line(start = [var 7.27134513in, var 1.35in], end = [var 7.27134513in, var -1.25in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 7.27134513in, var -1.25in], end = [var 5.87134513in, var -1.25in])
+  coincident([line12.end, line13.start])
+  arc14 = arc(
+    start = [var 5.67850885in, var -1.17981333in],
+    end = [var 5.87134513in, var -1.25in],
+    center = [var 5.87134513in, var -0.95in],
+  )
+  coincident([line13.end, arc14.end])
+  arc15 = arc(
+    start = [var 5.67850885in, var -1.17981333in],
+    end = [var 4.52149115in, var -1.17981333in],
+    center = [var 5.1in, var -1.86925333in],
+  )
+  coincident([arc14.start, arc15.start])
+  arc16 = arc(
+    start = [var 4.3in, var -1.25in],
+    end = [var 4.52149115in, var -1.17981333in],
+    center = [var 4.32567654in, var -0.94645056in],
+  )
+  coincident([arc15.end, arc16.end])
+  coincident([arc16.start, line1.start])
+
+  circle17 = circle(start = [var 0.7325in, var 0in], center = [var 0in, var 0in])
+  circle18 = circle(start = [var 2.7325in, var 0in], center = [var 2in, var 0in])
+  circle19 = circle(start = [var 4.7325in, var 0in], center = [var 4in, var 0in])
+  circle20 = circle(start = [var 6.7325in, var 0in], center = [var 6in, var 0in])
+  circle21 = circle(start = [var -0.85in, var -0.975in], center = [var -0.975in, var -0.975in])
+  circle22 = circle(start = [var 1.1in, var 0.975in], center = [var 0.975in, var 0.975in])
+  circle23 = circle(start = [var 5.15in, var 0.975in], center = [var 5.025in, var 0.975in])
+  circle24 = circle(start = [var 7.1in, var -0.975in], center = [var 6.975in, var -0.975in])
+
+  fixed([line1.start, [4.3in, -1.25in]])
+  fixed([line1.end, [1.7in, -1.25in]])
+  fixed([arc2.start, [1.50716372in, -1.17981333in]])
+  fixed([arc2.center, [1.7in, -0.95in]])
+  fixed([arc3.end, [0.35014602in, -1.17981333in]])
+  fixed([arc3.center, [0.92865487in, -1.86925333in]])
+  fixed([arc4.start, [0.15730974in, -1.25in]])
+  fixed([arc4.center, [0.15730974in, -0.95in]])
+  fixed([line5.end, [-1.24269026in, -1.25in]])
+  fixed([line6.end, [-1.24269026in, 1.35in]])
+  fixed([line7.end, [1.85730974in, 1.35in]])
+  fixed([arc8.start, [2.05014602in, 1.27981333in]])
+  fixed([arc8.center, [1.85730974in, 1.05in]])
+  fixed([arc9.end, [3.97850885in, 1.27981333in]])
+  fixed([arc9.center, [3.01432743in, 2.42888in]])
+  fixed([arc10.start, [4.17134513in, 1.35in]])
+  fixed([arc10.center, [4.17134513in, 1.05in]])
+  fixed([line11.end, [7.27134513in, 1.35in]])
+  fixed([line12.end, [7.27134513in, -1.25in]])
+  fixed([line13.end, [5.87134513in, -1.25in]])
+  fixed([arc14.start, [5.67850885in, -1.17981333in]])
+  fixed([arc14.center, [5.87134513in, -0.95in]])
+  fixed([arc15.end, [4.52149115in, -1.17981333in]])
+  fixed([arc15.center, [5.1in, -1.86925333in]])
+  fixed([arc16.center, [4.32567654in, -0.94645056in]])
+
+  fixed([circle17.center, [0in, 0in]])
+  fixed([circle17.start, [0.7325in, 0in]])
+  fixed([circle18.center, [2in, 0in]])
+  fixed([circle18.start, [2.7325in, 0in]])
+  fixed([circle19.center, [4in, 0in]])
+  fixed([circle19.start, [4.7325in, 0in]])
+  fixed([circle20.center, [6in, 0in]])
+  fixed([circle20.start, [6.7325in, 0in]])
+  fixed([circle21.center, [-0.975in, -0.975in]])
+  fixed([circle21.start, [-0.85in, -0.975in]])
+  fixed([circle22.center, [0.975in, 0.975in]])
+  fixed([circle22.start, [1.1in, 0.975in]])
+  fixed([circle23.center, [5.025in, 0.975in]])
+  fixed([circle23.start, [5.15in, 0.975in]])
+  fixed([circle24.center, [6.975in, -0.975in]])
+  fixed([circle24.start, [7.1in, -0.975in]])
+}
+flangeRegion = region(point = [-0.9in, 0in], sketch = flangeSketch)
+flangeExtrude = extrude(flangeRegion, length = plateHeight)
+hide(flangeSketch)
+
+flangeTopLeftFillet = fillet(
+  flangeExtrude,
+  radius = 1.5,
+  tags = [getNextAdjacentEdge(flangeExtrude.sketch.tags.line7)],
+)
+flangeTopFillets = fillet(
+  flangeTopLeftFillet,
+  radius = 1.5,
+  tags = [getNextAdjacentEdge(flangeExtrude.sketch.tags.line12)],
+)
+flangeBottomLeftFillet = fillet(
+  flangeTopFillets,
+  radius = 0.25,
+  tags = [getNextAdjacentEdge(flangeExtrude.sketch.tags.line6)],
+)
+flangeBody = fillet(
+  flangeBottomLeftFillet,
+  radius = 0.25,
+  tags = [getNextAdjacentEdge(flangeExtrude.sketch.tags.line13)],
+)
