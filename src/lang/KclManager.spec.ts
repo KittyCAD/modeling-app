@@ -500,6 +500,8 @@ describe('KclManager diagnostics', () => {
   })
 
   it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
+    vi.useFakeTimers()
+
     const path = '/tmp/kcl-manager-recovery-test.kcl'
     const recoveryKey = getRecoverySnapshotKey(path)
     const { kclManager } = createKclManagerTestHarness('disk base')
@@ -514,8 +516,11 @@ describe('KclManager diagnostics', () => {
       shouldAddToHistory: false,
     })
 
+    await vi.advanceTimersByTimeAsync(300)
+
     const persistedSnapshot = localStorage.getItem(recoveryKey)
-    expect(persistedSnapshot).toContain('recovered newer')
+    expect(persistedSnapshot).not.toBeNull()
+    expect(persistedSnapshot!).toContain('recovered newer')
 
     vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
 
