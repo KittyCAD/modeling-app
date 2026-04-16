@@ -160,3 +160,16 @@ Paste link to the PR below.
 </details><br>
 
 Release PR: ???
+
+# API
+
+<details><summary>Instructions</summary><br>
+
+Clone https://github.com/KittyCAD/api and update its dependencies on `kittycad-modeling-cmds` and `kcl-lib` to the latest versions. Open a PR and merge it to main.
+
+Paste link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
