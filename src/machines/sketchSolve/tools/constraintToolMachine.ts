@@ -3,12 +3,14 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { isArray, isRecord } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import {
   findClosestApiObjects,
@@ -41,7 +43,7 @@ import {
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Group, Vector2 } from 'three'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 type ConstraintToolContext = {
@@ -55,18 +57,28 @@ type ConstraintToolContext = {
   pendingApply?: ConstraintToolPreparedApply
 }
 
-function getDefaultLengthUnit(kclManager: KclManager) {
-  return baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-  ) as Parameters<typeof getConstraintToolPreparedApply>[3]['defaultLengthUnit']
-}
-
 type ConstraintToolInput = {
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   toolVariant?: string
+}
+
+type ConstraintToolApplyResult = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+  checkpointId?: number | null
+}
+
+const constraintToolContextType: ConstraintToolContext = null!
+const constraintToolEventType: ConstraintToolEvent = null!
+const constraintToolInputType: ConstraintToolInput = null!
+
+function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
+  return baseUnitToNumericSuffix(
+    kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+  )
 }
 
 type ParentSketchSolveEvent =
@@ -184,6 +196,34 @@ type ConstraintToolEvent =
       objects: ApiObject[]
     }
 
+type ParentSketchSnapshot = {
+  context: {
+    selectedIds: SketchSolveSelectionId[]
+    sketchId: number
+    sketchExecOutcome: {
+      sceneGraphDelta: SceneGraphDelta
+    }
+  }
+}
+
+function isParentSketchSnapshot(value: unknown): value is ParentSketchSnapshot {
+  if (!isRecord(value)) {
+    return false
+  }
+
+  const { context } = value
+  if (!isRecord(context)) {
+    return false
+  }
+
+  return (
+    isArray(context.selectedIds) &&
+    typeof context.sketchId === 'number' &&
+    isRecord(context.sketchExecOutcome) &&
+    isRecord(context.sketchExecOutcome.sceneGraphDelta)
+  )
+}
+
 function getParentSketchData(self: {
   _parent?: {
     send?: (event: ParentSketchSolveEvent) => void
@@ -194,32 +234,22 @@ function getParentSketchData(self: {
   sketchId: number
   objects: ApiObject[]
 } | null {
-  const snapshot = self._parent?.getSnapshot?.() as
-    | {
-        context?: {
-          selectedIds?: SketchSolveSelectionId[]
-          sketchId?: number
-          sketchExecOutcome?: {
-            sceneGraphDelta?: SceneGraphDelta
-          }
-        }
-      }
-    | undefined
+  const snapshot = self._parent?.getSnapshot?.()
+  if (!isParentSketchSnapshot(snapshot)) {
+    return null
+  }
 
-  const selectedIds = snapshot?.context?.selectedIds
-  const sketchId = snapshot?.context?.sketchId
   const objects =
-    snapshot?.context?.sketchExecOutcome?.sceneGraphDelta?.new_graph.objects
-
-  if (!Array.isArray(selectedIds) || typeof sketchId !== 'number') {
+    snapshot.context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  if (!isArray(objects)) {
     return null
   }
 
-  if (!Array.isArray(objects)) {
-    return null
+  return {
+    selectedIds: snapshot.context.selectedIds,
+    sketchId: snapshot.context.sketchId,
+    objects,
   }
-
-  return { selectedIds, sketchId, objects }
 }
 
 function sendSelectionToParent(
@@ -590,9 +620,7 @@ function getPreparedApplyFromClick({
   currentSelectionIds: SketchSolveSelectionId[]
   clickedSelectionId: SketchSolveSelectionId | null
   objects: ApiObject[]
-  defaultLengthUnit: Parameters<
-    typeof getConstraintToolPreparedApply
-  >[3]['defaultLengthUnit']
+  defaultLengthUnit: NumericSuffix
 }) {
   return resolveConstraintToolClickAction(
     toolName,
@@ -614,9 +642,7 @@ function getSelectionActionFromCandidates({
   currentSelectionIds: SketchSolveSelectionId[]
   candidateSelectionIds: SketchSolveSelectionId[]
   objects: ApiObject[]
-  defaultLengthUnit: Parameters<
-    typeof getConstraintToolPreparedApply
-  >[3]['defaultLengthUnit']
+  defaultLengthUnit: NumericSuffix
 }) {
   return resolveConstraintToolSelectionAction(
     toolName,
@@ -650,9 +676,9 @@ export function createConstraintToolMachine({
 }) {
   return setup({
     types: {
-      context: {} as ConstraintToolContext,
-      events: {} as ConstraintToolEvent,
-      input: {} as ConstraintToolInput,
+      context: constraintToolContextType,
+      events: constraintToolEventType,
+      input: constraintToolInputType,
     },
     guards: {
       'normalized selection can apply': ({ event, context }) => {
@@ -831,27 +857,6 @@ export function createConstraintToolMachine({
       'clear selection in parent': ({ self }) => {
         sendSelectionToParent(self, [])
       },
-      'send result to parent': ({ event, self }) => {
-        const output = ('output' in event ? event.output : undefined) as
-          | {
-              kclSource: SourceDelta
-              sceneGraphDelta: SceneGraphDelta
-              checkpointId?: number | null
-            }
-          | undefined
-        if (!output) {
-          return
-        }
-
-        self._parent?.send?.({
-          type: 'update sketch outcome',
-          data: {
-            sourceDelta: output.kclSource,
-            sceneGraphDelta: output.sceneGraphDelta,
-            checkpointId: output.checkpointId ?? null,
-          },
-        })
-      },
       'restore attempted selection in parent': ({ context, self }) => {
         sendSelectionToParent(self, context.pendingApply?.selectionIds ?? [])
       },
@@ -871,13 +876,7 @@ export function createConstraintToolMachine({
           }
         }) => {
           const settings = jsAppSettings(input.rustContext.settingsActor)
-          let latestResult:
-            | {
-                kclSource: SourceDelta
-                sceneGraphDelta: SceneGraphDelta
-                checkpointId?: number | null
-              }
-            | undefined
+          let latestResult: ConstraintToolApplyResult | undefined
 
           for (const [
             index,
@@ -893,7 +892,9 @@ export function createConstraintToolMachine({
           }
 
           if (!latestResult) {
-            throw new Error('No constraint payloads were prepared for apply')
+            return Promise.reject(
+              new Error('No constraint payloads were prepared for apply')
+            )
           }
 
           return latestResult
@@ -987,7 +988,16 @@ export function createConstraintToolMachine({
             target: 'active',
             actions: [
               'clear selection in parent',
-              'send result to parent',
+              ({ event, self }) => {
+                self._parent?.send?.({
+                  type: 'update sketch outcome',
+                  data: {
+                    sourceDelta: event.output.kclSource,
+                    sceneGraphDelta: event.output.sceneGraphDelta,
+                    checkpointId: event.output.checkpointId ?? null,
+                  },
+                })
+              },
               'clear pending apply',
             ],
           },

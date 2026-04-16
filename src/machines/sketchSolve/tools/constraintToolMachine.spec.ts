@@ -4,6 +4,7 @@ import { machine as horizontalConstraintTool } from '@src/machines/sketchSolve/t
 import { machine as equalLengthConstraintTool } from '@src/machines/sketchSolve/tools/equalLengthConstraintTool'
 import {
   createMockKclManager,
+  createMockRustContext,
   createMockSceneInfra,
   createLineApiObject,
   createPointApiObject,
@@ -12,64 +13,63 @@ import {
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 
+type ParentContext = {
+  selectedIds: SketchSolveSelectionId[]
+  sketchId: number
+  sketchExecOutcome: {
+    sceneGraphDelta: ReturnType<typeof createSceneGraphDelta>
+  }
+}
+
+type ParentEvent =
+  | {
+      type: 'update selected ids'
+      data: {
+        selectedIds: SketchSolveSelectionId[]
+        duringAreaSelectIds: number[]
+        replaceExistingSelection: true
+      }
+    }
+  | {
+      type: 'update hovered id'
+      data: {
+        hoveredId: SketchSolveSelectionId | null
+      }
+    }
+  | {
+      type: 'update sketch outcome'
+      data: {
+        sourceDelta: { text: string }
+        sceneGraphDelta: ReturnType<typeof createSceneGraphDelta>
+        checkpointId: number | null
+      }
+    }
+
+type ConstraintToolActorLogic = typeof horizontalConstraintTool
+const parentContextType: ParentContext = null!
+const parentEventType: ParentEvent = null!
+const parentInputType: Record<string, never> = null!
+
 function createHarness({
   childMachine,
   selectedIds = [],
   objects = [],
 }: {
-  childMachine: any
+  childMachine: ConstraintToolActorLogic
   selectedIds?: SketchSolveSelectionId[]
   objects?: ApiObject[]
 }) {
   const sceneInfra = createMockSceneInfra()
-  const rustContext = {
-    addConstraint: vi.fn(),
-    settingsActor: {
-      send: vi.fn(),
-      getSnapshot: vi.fn(() => ({
-        context: {
-          app: {},
-        },
-      })),
-    },
-  } as any
+  const rustContext = createMockRustContext()
   const kclManager = createMockKclManager()
   const events: Array<{ type: string; data?: Record<string, unknown> }> = []
   const sceneGraphDelta = createSceneGraphDelta(objects)
 
   const parentMachine = setup({
     types: {
-      context: {} as {
-        selectedIds: SketchSolveSelectionId[]
-        sketchId: number
-        sketchExecOutcome: {
-          sceneGraphDelta: ReturnType<typeof createSceneGraphDelta>
-        }
-      },
-      events: {} as
-        | {
-            type: 'update selected ids'
-            data: {
-              selectedIds: SketchSolveSelectionId[]
-              duringAreaSelectIds: number[]
-              replaceExistingSelection: true
-            }
-          }
-        | {
-            type: 'update hovered id'
-            data: {
-              hoveredId: SketchSolveSelectionId | null
-            }
-          }
-        | {
-            type: 'update sketch outcome'
-            data: {
-              sourceDelta: { text: string }
-              sceneGraphDelta: ReturnType<typeof createSceneGraphDelta>
-              checkpointId: number | null
-            }
-          },
-      input: {} as Record<string, never>,
+      context: parentContextType,
+      events: parentEventType,
+      input: parentInputType,
     },
     actors: {
       childTool: childMachine,
@@ -137,8 +137,11 @@ function createHarness({
     },
   })
 
-  const actor = createActor(parentMachine as any).start()
-  const child = actor.getSnapshot().children.childTool!
+  const actor = createActor(parentMachine, { input: {} }).start()
+  const child = actor.getSnapshot().children.childTool
+  if (!child) {
+    throw new Error('Expected child tool actor to be spawned')
+  }
 
   return {
     actor,
@@ -158,13 +161,16 @@ describe('constraintToolMachine', () => {
         type: 'Constraint',
         constraint: {
           type: 'Distance',
+          points: [1, 2],
+          distance: { value: 5, units: 'Mm' },
+          source: { expr: '5', is_literal: true },
         },
       },
       label: '',
       comments: '',
       artifact_id: '0',
       source: { type: 'Simple', range: [0, 0, 0], node_path: null },
-    } as ApiObject
+    } satisfies ApiObject
     const { actor, events } = createHarness({
       childMachine: horizontalConstraintTool,
       selectedIds: [1, 3],
@@ -199,7 +205,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [1],
       objects: createSceneGraphDelta([point1]).new_graph.objects,
-    } as any)
+    })
 
     await waitFor(
       actor,
@@ -230,11 +236,12 @@ describe('constraintToolMachine', () => {
       lineC,
     ]
     const { child, rustContext } = createHarness({
-      childMachine: equalLengthConstraintTool as any,
+      childMachine: equalLengthConstraintTool,
       objects,
     })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
 
-    rustContext.addConstraint.mockResolvedValue({
+    addConstraintMock.mockResolvedValue({
       kclSource: { text: 'next' },
       sceneGraphDelta: createSceneGraphDelta(objects),
       checkpointId: 1,
@@ -245,14 +252,11 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [10, 11, 12],
       objects: createSceneGraphDelta(objects).new_graph.objects,
-    } as any)
+    })
 
-    await waitFor(
-      child as any,
-      () => rustContext.addConstraint.mock.calls.length > 0
-    )
+    await waitFor(child, () => addConstraintMock.mock.calls.length > 0)
 
-    expect(rustContext.addConstraint).toHaveBeenCalledWith(
+    expect(addConstraintMock).toHaveBeenCalledWith(
       0,
       0,
       {
@@ -273,11 +277,12 @@ describe('constraintToolMachine', () => {
     const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
     const objects = [pointA, pointB, pointC, pointD, lineA, lineB]
     const { child, rustContext } = createHarness({
-      childMachine: horizontalConstraintTool as any,
+      childMachine: horizontalConstraintTool,
       objects,
     })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
 
-    rustContext.addConstraint
+    addConstraintMock
       .mockResolvedValueOnce({
         kclSource: { text: 'next-1' },
         sceneGraphDelta: createSceneGraphDelta(objects),
@@ -294,31 +299,28 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [10, 11],
       objects: createSceneGraphDelta(objects).new_graph.objects,
-    } as any)
+    })
 
-    await waitFor(
-      child as any,
-      () => rustContext.addConstraint.mock.calls.length === 2
-    )
+    await waitFor(child, () => addConstraintMock.mock.calls.length === 2)
 
-    expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+    expect(addConstraintMock).toHaveBeenNthCalledWith(
       1,
       0,
       0,
       {
         type: 'Horizontal',
-        Line: { line_id: 10 },
+        line: 10,
       },
       expect.anything(),
       false
     )
-    expect(rustContext.addConstraint).toHaveBeenNthCalledWith(
+    expect(addConstraintMock).toHaveBeenNthCalledWith(
       2,
       0,
       0,
       {
         type: 'Horizontal',
-        Line: { line_id: 11 },
+        line: 11,
       },
       expect.anything(),
       true

@@ -16,9 +16,17 @@ export const constraintToolNames = [
   'verticalConstraintTool',
   'perpendicularConstraintTool',
   'fixedConstraintTool',
-] as const
+] satisfies readonly ConstraintToolName[]
 
-export type ConstraintToolName = (typeof constraintToolNames)[number]
+export type ConstraintToolName =
+  | 'coincidentConstraintTool'
+  | 'tangentConstraintTool'
+  | 'parallelConstraintTool'
+  | 'equalLengthConstraintTool'
+  | 'horizontalConstraintTool'
+  | 'verticalConstraintTool'
+  | 'perpendicularConstraintTool'
+  | 'fixedConstraintTool'
 
 export const constraintToolbarActionEventTypes = [
   'coincident',
@@ -29,10 +37,17 @@ export const constraintToolbarActionEventTypes = [
   'Vertical',
   'Perpendicular',
   'Fixed',
-] as const
+] satisfies readonly ConstraintToolbarActionEventType[]
 
 export type ConstraintToolbarActionEventType =
-  (typeof constraintToolbarActionEventTypes)[number]
+  | 'coincident'
+  | 'Tangent'
+  | 'Parallel'
+  | 'EqualLength'
+  | 'Horizontal'
+  | 'Vertical'
+  | 'Perpendicular'
+  | 'Fixed'
 
 export const constraintToolbarActionToToolName = {
   coincident: 'coincidentConstraintTool',
@@ -94,6 +109,14 @@ export type ConstraintToolSelectionMatch = {
   mode: ConstraintToolSelectionMode
   status: ConstraintToolSelectionStatus
   matchedSelectionCount: number
+}
+
+type ConstraintToolSelectionMatchesResult = {
+  config: ConstraintToolConfig
+  classifiedSelections: ClassifiedConstraintSelection[]
+  matches: ConstraintToolSelectionMatch[]
+  bestMatch: ConstraintToolSelectionMatch | null
+  status: ConstraintToolSelectionStatus
 }
 
 export const constraintToolConfigs = {
@@ -436,7 +459,7 @@ export function getConstraintToolSelectionMatches(
   toolName: ConstraintToolName,
   selectionIds: readonly SketchSolveSelectionId[],
   objects: readonly ApiObject[]
-) {
+): ConstraintToolSelectionMatchesResult {
   const config = getConstraintToolConfig(toolName)
   const classifiedSelections = selectionIds.map((selectionId) =>
     classifyConstraintSelection(selectionId, objects)
@@ -456,7 +479,7 @@ export function getConstraintToolSelectionMatches(
     matches,
     bestMatch,
     status: bestMatch?.status ?? 'invalid',
-  } as const
+  }
 }
 
 export function getConstraintToolPermittedSelectionKinds(

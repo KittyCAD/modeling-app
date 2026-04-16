@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -55,12 +56,23 @@ import {
   constraintToolNames,
   constraintToolbarActionToToolName,
   type ConstraintToolName,
-  type ConstraintToolbarActionEventType,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
+const constraintToolNameSet = new Set<string>(constraintToolNames)
+
+type SketchSolveInput = {
+  kclManager: KclManager
+  initialSketchSolvePlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
+  sketchId: number
+  initialSceneGraphDelta: SceneGraphDelta
+}
+
+const sketchSolveContextType: SketchSolveContext = null!
+const sketchSolveEventType: SketchSolveMachineEvent = null!
+const sketchSolveInputType: SketchSolveInput = null!
 
 function sendToolbarConstraintOutcome(
   self: SolveActionArgs['self'],
@@ -96,19 +108,20 @@ async function runSketchSolveToolbarAction(
   }
 }
 
-function getSelectionPointCoords(selection: unknown) {
+function getSelectionPointCoords(
+  selection: ApiObject | typeof ORIGIN_TARGET | undefined
+) {
   if (selection === ORIGIN_TARGET) {
     return { x: 0, y: 0 }
   }
 
-  const pointSelection = selection as Parameters<typeof isPointSegment>[0]
-  if (!isPointSegment(pointSelection)) {
+  if (!isPointSegment(selection)) {
     return null
   }
 
   return {
-    x: pointSelection.kind.segment.position.x.value,
-    y: pointSelection.kind.segment.position.y.value,
+    x: selection.kind.segment.position.x.value,
+    y: selection.kind.segment.position.y.value,
   }
 }
 
@@ -173,7 +186,7 @@ async function addAxisDistanceConstraint(
       distance: { value: distance, units },
       points: segmentsToConstrain.map(
         (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-      ) as unknown as number[],
+      ),
       source: {
         expr: distance.toString(),
         is_literal: true,
@@ -199,9 +212,7 @@ async function handleConstraintToolToolbarAction(
     {
       defaultLengthUnit: baseUnitToNumericSuffix(
         context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ) as Parameters<
-        typeof getConstraintToolPreparedApply
-      >[3]['defaultLengthUnit'],
+      ),
     }
   )
 
@@ -245,9 +256,7 @@ function getPreparedApplyForConstraintTool(
     {
       defaultLengthUnit: baseUnitToNumericSuffix(
         context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ) as Parameters<
-        typeof getConstraintToolPreparedApply
-      >[3]['defaultLengthUnit'],
+      ),
     }
   )
 }
@@ -255,25 +264,14 @@ function getPreparedApplyForConstraintTool(
 function isConstraintToolName(
   toolName: string
 ): toolName is ConstraintToolName {
-  return constraintToolNames.includes(toolName as ConstraintToolName)
+  return constraintToolNameSet.has(toolName)
 }
 
 export const sketchSolveMachine = setup({
   types: {
-    context: {} as SketchSolveContext,
-    events: {} as SketchSolveMachineEvent,
-    input: {} as {
-      // dependencies
-      kclManager: KclManager
-      // end dependencies
-      initialSketchSolvePlane?:
-        | DefaultPlane
-        | OffsetPlane
-        | ExtrudeFacePlane
-        | null
-      sketchId: number
-      initialSceneGraphDelta: SceneGraphDelta
-    },
+    context: sketchSolveContextType,
+    events: sketchSolveEventType,
+    input: sketchSolveInputType,
   },
   actions: {
     'initialize intersection plane': initializeIntersectionPlane,
@@ -305,26 +303,20 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
-    'apply current selection with equipped constraint tool': async ({
+    'apply current selection with equipped constraint tool': ({
       context,
       event,
       self,
     }) => {
       assertEvent(event, 'equip tool')
-      if (!isConstraintToolName(event.data.tool)) {
+      const toolName = event.data.tool
+      if (!isConstraintToolName(toolName)) {
         return
       }
 
-      await runSketchSolveToolbarAction(
-        `apply ${event.data.tool}`,
-        async () => {
-          await handleConstraintToolToolbarAction(
-            context,
-            self,
-            event.data.tool
-          )
-        }
-      )
+      void runSketchSolveToolbarAction(`apply ${toolName}`, async () => {
+        await handleConstraintToolToolbarAction(context, self, toolName)
+      })
     },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
@@ -662,7 +654,7 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Distance',
                 distance: { value: distance, units },
-                points: pointsForDistance as unknown as number[],
+                points: pointsForDistance,
                 source: {
                   expr: distance.toString(),
                   is_literal: true,

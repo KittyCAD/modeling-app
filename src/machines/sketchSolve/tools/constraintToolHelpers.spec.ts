@@ -4,6 +4,7 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   getConstraintToolPreparedApply,
@@ -37,7 +38,7 @@ function createConstraintApiObject({
 }): ApiObject {
   const constraint: ApiConstraint =
     type === 'Horizontal'
-      ? { type: 'Horizontal', Line: { line_id: 3 } }
+      ? { type: 'Horizontal', line: 3 }
       : {
           type: 'Distance',
           points: [1, 2],
@@ -59,8 +60,8 @@ function createConstraintApiObject({
 }
 
 const applyOptions = {
-  defaultLengthUnit: 'Mm' as const,
-}
+  defaultLengthUnit: 'Mm',
+} satisfies { defaultLengthUnit: NumericSuffix }
 
 describe('constraintToolHelpers', () => {
   it('normalizes away incompatible selections when a tool is equipped', () => {
@@ -102,7 +103,7 @@ describe('constraintToolHelpers', () => {
     )
     expect(validApply?.payload).toEqual({
       type: 'Horizontal',
-      Line: { line_id: 3 },
+      line: 3,
     })
 
     const invalidApply = getConstraintToolPreparedApply(
@@ -356,16 +357,16 @@ describe('constraintToolHelpers', () => {
     expect(batchApply?.payloads).toEqual([
       {
         type: 'Horizontal',
-        Line: { line_id: 10 },
+        line: 10,
       },
       {
         type: 'Horizontal',
-        Line: { line_id: 11 },
+        line: 11,
       },
     ])
     expect(batchApply?.payload).toEqual({
       type: 'Horizontal',
-      Line: { line_id: 10 },
+      line: 10,
     })
   })
 

@@ -71,6 +71,10 @@ export type NormalizeConstraintToolSelectionResult = {
   status: 'empty' | 'partial' | 'complete' | 'invalid'
 }
 
+type ConstraintToolApplyOptions = {
+  defaultLengthUnit: NumericSuffix
+}
+
 function toConstraintSegments(
   selectionIds: readonly SketchSolveSelectionId[]
 ): ConstraintSegment[] {
@@ -89,6 +93,19 @@ function uniqueSelectionIds(
   selectionIds: readonly SketchSolveSelectionId[]
 ): SketchSolveSelectionId[] {
   return Array.from(new Set(selectionIds))
+}
+
+function toPair<T>(values: readonly T[]): [T, T] | null {
+  if (values.length !== 2) {
+    return null
+  }
+
+  const [first, second] = values
+  if (first === undefined || second === undefined) {
+    return null
+  }
+
+  return [first, second]
 }
 
 function includesAllSelectionIds(
@@ -147,7 +164,7 @@ function chooseBetterNormalizedMatch(
     empty: 0,
     partial: 1,
     complete: 2,
-  } as const
+  } satisfies Record<NormalizeConstraintToolSelectionResult['status'], number>
 
   const currentRank = rank[current.status]
   const candidateRank = rank[candidate.status]
@@ -190,23 +207,31 @@ function buildConstraintToolPayloads(
         return null
       }
 
+      const tangentPair = toPair(tangentInput.input)
+      if (!tangentPair) {
+        return null
+      }
+
       return [
         {
           type: 'Tangent',
-          input: tangentInput.input as [number, number],
+          input: tangentPair,
         },
       ]
     }
-    case 'parallelConstraintTool':
-      if (objectSelectionIds.length !== 2) {
+    case 'parallelConstraintTool': {
+      const linePair = toPair(objectSelectionIds)
+      if (!linePair) {
         return null
       }
+
       return [
         {
           type: 'Parallel',
-          lines: objectSelectionIds as [number, number],
+          lines: linePair,
         },
       ]
+    }
     case 'equalLengthConstraintTool': {
       const equalLengthInput = buildEqualLengthConstraintInput(
         objectSelectionIds,
@@ -240,7 +265,7 @@ function buildConstraintToolPayloads(
 
         return objectSelectionIds.map((lineId) => ({
           type: 'Horizontal',
-          Line: { line_id: lineId },
+          line: lineId,
         }))
       }
 
@@ -260,7 +285,7 @@ function buildConstraintToolPayloads(
 
         return objectSelectionIds.map((lineId) => ({
           type: 'Vertical',
-          Line: { line_id: lineId },
+          line: lineId,
         }))
       }
 
@@ -272,16 +297,19 @@ function buildConstraintToolPayloads(
           source: { expr: '0', is_literal: true },
         },
       ]
-    case 'perpendicularConstraintTool':
-      if (objectSelectionIds.length !== 2) {
+    case 'perpendicularConstraintTool': {
+      const linePair = toPair(objectSelectionIds)
+      if (!linePair) {
         return null
       }
+
       return [
         {
           type: 'Perpendicular',
-          lines: objectSelectionIds as [number, number],
+          lines: linePair,
         },
       ]
+    }
     case 'fixedConstraintTool': {
       const fixedPoints = buildFixedConstraintInput(objectSelectionIds, [
         ...objects,
@@ -344,9 +372,7 @@ export function getConstraintToolPreparedApply(
   toolName: ConstraintToolName,
   selectionIds: readonly SketchSolveSelectionId[],
   objects: readonly ApiObject[],
-  options: {
-    defaultLengthUnit: NumericSuffix
-  }
+  options: ConstraintToolApplyOptions
 ): ConstraintToolPreparedApply | null {
   const selectionResult = getConstraintToolSelectionMatches(
     toolName,
@@ -384,9 +410,7 @@ export function resolveConstraintToolClickAction(
   currentSelectionIds: readonly SketchSolveSelectionId[],
   clickedSelectionId: SketchSolveSelectionId | null,
   objects: readonly ApiObject[],
-  options: {
-    defaultLengthUnit: NumericSuffix
-  }
+  options: ConstraintToolApplyOptions
 ): ConstraintToolClickAction {
   if (clickedSelectionId === null) {
     return {
@@ -409,9 +433,7 @@ export function resolveConstraintToolSelectionAction(
   currentSelectionIds: readonly SketchSolveSelectionId[],
   candidateSelectionIds: readonly SketchSolveSelectionId[],
   objects: readonly ApiObject[],
-  options: {
-    defaultLengthUnit: NumericSuffix
-  }
+  options: ConstraintToolApplyOptions
 ): ConstraintToolSelectionAction {
   const uniqueCandidateSelectionIds = uniqueSelectionIds(candidateSelectionIds)
   if (uniqueCandidateSelectionIds.length === 0) {

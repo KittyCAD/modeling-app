@@ -898,8 +898,8 @@ async function addSingleLineConstraint({
     0,
     sketchId,
     type === 'Horizontal'
-      ? { type: 'Horizontal', Line: { line_id: line } }
-      : { type: 'Vertical', Line: { line_id: line } },
+      ? { type: 'Horizontal', line }
+      : { type: 'Vertical', line },
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)

@@ -37,7 +37,7 @@ function createConstraintApiObject({
 }): ApiObject {
   const constraint: ApiConstraint =
     type === 'Horizontal'
-      ? { type: 'Horizontal', Line: { line_id: 3 } }
+      ? { type: 'Horizontal', line: 3 }
       : {
           type: 'Distance',
           points: [1, 2],

@@ -202,13 +202,6 @@ type ToolActorRef =
   | ActorRefFrom<typeof tangentialArcTool>
   | ActorRefFrom<typeof threePointArcTool>
   | ActorRefFrom<typeof coincidentConstraintTool>
-  | ActorRefFrom<typeof tangentConstraintTool>
-  | ActorRefFrom<typeof parallelConstraintTool>
-  | ActorRefFrom<typeof equalLengthConstraintTool>
-  | ActorRefFrom<typeof horizontalConstraintTool>
-  | ActorRefFrom<typeof verticalConstraintTool>
-  | ActorRefFrom<typeof perpendicularConstraintTool>
-  | ActorRefFrom<typeof fixedConstraintTool>
 
 export const equipTools = Object.freeze({
   trimTool,
