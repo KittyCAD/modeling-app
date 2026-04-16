@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ProjectResponse, ProjectShareLinkResponse } from '@kittycad/lib'
+import type { ProjectResponse } from '@kittycad/lib'
 import type { Project } from '@src/lib/project'
-
-type ShareLink = Pick<ProjectShareLinkResponse, 'access_mode' | 'key' | 'url'>
 
 function makeRemoteProject(
   overrides: Partial<ProjectResponse> = {}
@@ -49,20 +47,6 @@ const mockState = vi.hoisted(() => ({
       publication_status: 'pending_review',
     })
   ),
-  listProjectShareLinks: vi.fn(
-    async (_args: { client?: unknown; id: string }): Promise<ShareLink[]> => []
-  ),
-  createProjectShareLink: vi.fn(
-    async (_args: {
-      client?: unknown
-      id: string
-      body: { access_mode: ShareLink['access_mode'] }
-    }): Promise<ShareLink> => ({
-      access_mode: 'anyone_with_link',
-      key: 'share-key',
-      url: 'https://zoo.dev/project/share-key',
-    })
-  ),
   readProjectSettingsFile: vi.fn(async () => ({})),
   writeProjectSettingsFile: vi.fn(async () => {}),
   serializeProjectConfiguration: vi.fn(() => 'serialized-project-toml'),
@@ -96,8 +80,6 @@ vi.mock('@kittycad/lib', () => ({
     update_project: mockState.updateProject,
     get_project: mockState.getProject,
     publish_project: mockState.publishProject,
-    list_project_share_links: mockState.listProjectShareLinks,
-    create_project_share_link: mockState.createProjectShareLink,
   },
 }))
 
@@ -132,7 +114,6 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 import {
-  copyCurrentFileShareLink,
   getCurrentProjectPublicationDetails,
   publishCurrentProject,
 } from '@src/lib/share'
@@ -160,206 +141,6 @@ function makeProject(): Project {
     readWriteAccess: true,
   }
 }
-
-describe('copyCurrentFileShareLink', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockState.readProjectSettingsFile.mockResolvedValue({})
-    mockState.getProject.mockResolvedValue(makeRemoteProject())
-    mockState.listProjectShareLinks.mockResolvedValue([])
-    Object.defineProperty(globalThis.navigator, 'clipboard', {
-      configurable: true,
-      value: {
-        writeText: mockState.writeText,
-      },
-    })
-  })
-
-  it('creates a remote project, persists the env binding, and creates a share link', async () => {
-    const copied = await copyCurrentFileShareLink({
-      token: 'token-123',
-      project: makeProject(),
-      currentFilePath: '/projects/bracket/main.kcl',
-      currentFileContents: 'part001 = startSketchOn(XY)',
-      wasmInstance: {} as never,
-      isRestrictedToOrg: false,
-    })
-
-    expect(copied).toBe(true)
-    expect(mockState.createProject).toHaveBeenCalledTimes(1)
-    expect(mockState.getProject).not.toHaveBeenCalled()
-    expect(mockState.writeProjectSettingsFile).toHaveBeenCalledWith(
-      '/projects/bracket',
-      'serialized-project-toml'
-    )
-    expect(mockState.createProjectShareLink).toHaveBeenCalledWith({
-      client: {
-        mocked: true,
-        token: 'token-123',
-        baseUrl: 'https://api.dev.zoo.dev',
-      },
-      id: 'project-created',
-      body: { access_mode: 'anyone_with_link' },
-    })
-
-    const createProjectCalls = mockState.createProject.mock.calls as unknown as Array<
-      [
-        {
-          client: unknown
-          files: Array<{ name: string; data: Blob }>
-        },
-      ]
-    >
-    const createArgs = createProjectCalls[0]?.[0]
-    if (!createArgs) {
-      throw new Error('Expected project upload to be called')
-    }
-
-    expect(createArgs.client).toEqual({
-      mocked: true,
-      token: 'token-123',
-      baseUrl: 'https://api.dev.zoo.dev',
-    })
-
-    expect(createArgs.files.map((file: { name: string }) => file.name)).toEqual([
-      'body',
-      'project.toml',
-      'main.kcl',
-    ])
-
-    const bodyFile = createArgs.files.find(
-      (file: { name: string }) => file.name === 'body'
-    )
-    if (!bodyFile) {
-      throw new Error('Expected body file to be uploaded')
-    }
-    await expect(bodyFile.data.text()).resolves.toBe(
-      JSON.stringify({
-        title: 'bracket',
-        description: '',
-      })
-    )
-
-    const projectToml = createArgs.files.find(
-      (file: { name: string }) => file.name === 'project.toml'
-    )
-    if (!projectToml) {
-      throw new Error('Expected project.toml file to be uploaded')
-    }
-    await expect(projectToml.data.text()).resolves.toBe(
-      'raw:/projects/bracket/project.toml'
-    )
-
-    const mainFile = createArgs.files.find(
-      (file: { name: string }) => file.name === 'main.kcl'
-    )
-    if (!mainFile) {
-      throw new Error('Expected main.kcl file to be uploaded')
-    }
-    await expect(mainFile.data.text()).resolves.toBe('part001 = startSketchOn(XY)')
-    expect(mockState.writeText).toHaveBeenCalledWith(
-      'https://zoo.dev/project/share-key'
-    )
-    expect(mockState.toastSuccess).toHaveBeenCalledWith(
-      'Link copied to clipboard.',
-      { duration: 5000 }
-    )
-  })
-
-  it('updates an existing remote project and reuses a matching share link', async () => {
-    mockState.readProjectSettingsFile.mockResolvedValue({
-      cloud: {
-        'dev.zoo.dev': {
-          project_id: 'project-existing',
-        },
-      },
-    })
-    mockState.listProjectShareLinks.mockResolvedValue([
-      {
-        access_mode: 'organization_only',
-        key: 'existing-share-key',
-        url: 'https://zoo.dev/project/existing-share-key',
-      },
-    ])
-
-    const copied = await copyCurrentFileShareLink({
-      token: 'token-123',
-      project: makeProject(),
-      currentFilePath: '/projects/bracket/main.kcl',
-      currentFileContents: 'part001 = startSketchOn(XY)',
-      wasmInstance: {} as never,
-      isRestrictedToOrg: true,
-    })
-
-    expect(copied).toBe(true)
-    expect(mockState.updateProject).toHaveBeenCalledWith({
-      client: {
-        mocked: true,
-        token: 'token-123',
-        baseUrl: 'https://api.dev.zoo.dev',
-      },
-      id: 'project-existing',
-      files: expect.any(Array),
-    })
-    expect(mockState.getProject).toHaveBeenCalledWith({
-      client: {
-        mocked: true,
-        token: 'token-123',
-        baseUrl: 'https://api.dev.zoo.dev',
-      },
-      id: 'project-existing',
-    })
-    expect(mockState.writeProjectSettingsFile).not.toHaveBeenCalled()
-    expect(mockState.createProjectShareLink).not.toHaveBeenCalled()
-    expect(mockState.writeText).toHaveBeenCalledWith(
-      'https://zoo.dev/project/existing-share-key'
-    )
-
-    const updateProjectCalls = mockState.updateProject.mock.calls as unknown as Array<
-      [
-        {
-          files: Array<{ name: string; data: Blob }>
-        },
-      ]
-    >
-    const updateArgs = updateProjectCalls[0]?.[0]
-    if (!updateArgs) {
-      throw new Error('Expected update project upload to be called')
-    }
-    expect(updateArgs.files).toHaveLength(3)
-    const updateBody = updateArgs.files.find(
-      (file: { name: string; data: Blob }) => file.name === 'body'
-    )
-    if (!updateBody) {
-      throw new Error('Expected update body file to be uploaded')
-    }
-    await expect(updateBody.data.text()).resolves.toBe(
-      JSON.stringify({
-        title: 'Bracket',
-        description: 'Existing description',
-      })
-    )
-  })
-
-  it('rejects when there is no auth token', async () => {
-    const copied = await copyCurrentFileShareLink({
-      token: '',
-      project: makeProject(),
-      currentFilePath: '/projects/bracket/main.kcl',
-      currentFileContents: 'part001 = startSketchOn(XY)',
-      wasmInstance: {} as never,
-      isRestrictedToOrg: false,
-    })
-
-    expect(copied).toBe(false)
-    expect(mockState.createProject).not.toHaveBeenCalled()
-    expect(mockState.writeText).not.toHaveBeenCalled()
-    expect(mockState.toastError).toHaveBeenCalledWith(
-      'You need to be signed in to share a file.',
-      { duration: 5000 }
-    )
-  })
-})
 
 describe('publishCurrentProject', () => {
   beforeEach(() => {

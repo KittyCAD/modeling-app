@@ -5,8 +5,8 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { copyFileShareLink } from '@src/lib/links'
 import {
-  copyCurrentFileShareLink,
   type CurrentProjectPublicationDetails,
   getCurrentProjectPublicationDetails,
   publishCurrentProject,
@@ -79,6 +79,7 @@ function SharePopoverContent({
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
   const allowOrgRestrict = !!billingContext.isOrg
+  const allowPassword = !!billingContext.hasSubscription
   const ast = kclManager.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
 
@@ -88,16 +89,19 @@ function SharePopoverContent({
     useState(false)
 
   const onCopyShareLink = useCallback(
-    async ({ isRestrictedToOrg }: { isRestrictedToOrg: boolean }) => {
-      const wasmInstance = await kclManager.wasmInstancePromise
-
-      return copyCurrentFileShareLink({
+    async ({
+      isRestrictedToOrg,
+      password,
+    }: {
+      isRestrictedToOrg: boolean
+      password: string
+    }) => {
+      return copyFileShareLink({
         token,
-        project: currentProject,
-        currentFilePath: kclManager.path,
-        currentFileContents: kclManager.code,
-        wasmInstance,
+        code: kclManager.code,
+        name: currentProject?.name || '',
         isRestrictedToOrg,
+        password: password || undefined,
       })
     },
     [currentProject, kclManager, token]
@@ -197,6 +201,7 @@ function SharePopoverContent({
           onCopyLink={onCopyShareLink}
           onPublish={onPublishProject}
           allowOrgRestrict={allowOrgRestrict}
+          allowPassword={allowPassword}
           shareDisabled={shareDisabled}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
