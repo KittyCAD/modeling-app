@@ -390,6 +390,43 @@ pub(super) fn substitute_sketch_var_in_segment(
                 meta: segment.meta,
             })
         }
+        UnsolvedSegmentKind::ControlPointSpline {
+            controls,
+            ctor,
+            control_object_ids,
+            degree,
+            construction,
+        } => {
+            let mut solved_controls = Vec::with_capacity(controls.len());
+            let mut control_freedoms = Vec::with_capacity(controls.len());
+            for control in controls {
+                let (x, x_freedom) =
+                    substitute_sketch_var_in_unsolved_expr(&control[0], solve_outcome, solution_ty, analysis, &srs)?;
+                let (y, y_freedom) =
+                    substitute_sketch_var_in_unsolved_expr(&control[1], solve_outcome, solution_ty, analysis, &srs)?;
+                solved_controls.push([x, y]);
+                control_freedoms.push(point_freedom(x_freedom, y_freedom));
+            }
+
+            Ok(Segment {
+                id: segment.id,
+                object_id: segment.object_id,
+                kind: SegmentKind::ControlPointSpline {
+                    controls: solved_controls,
+                    ctor: ctor.clone(),
+                    control_object_ids: control_object_ids.clone(),
+                    control_freedoms,
+                    degree: *degree,
+                    construction: *construction,
+                },
+                surface: surface.clone(),
+                sketch_id,
+                sketch,
+                tag: segment.tag,
+                node_path: segment.node_path,
+                meta: segment.meta,
+            })
+        }
     }
 }
 
@@ -827,6 +864,67 @@ pub(super) fn create_segment_scene_objects(
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: circle_artifact_id,
+                    source,
+                };
+                scene_objects.push(segment_object);
+            }
+            SegmentKind::ControlPointSpline {
+                controls,
+                ctor,
+                control_object_ids,
+                control_freedoms,
+                degree,
+                construction,
+            } => {
+                let mut control_point_object_ids = Vec::with_capacity(controls.len());
+
+                for ((control, control_object_id), control_freedom) in controls
+                    .iter()
+                    .zip(control_object_ids.iter())
+                    .zip(control_freedoms.iter())
+                {
+                    let control_point2d = TyF64::to_point2d(control).map_err(|_| {
+                        KclError::new_internal(KclErrorDetails::new(
+                            format!("Error converting control point runtime type to API value: {:?}", control),
+                            vec![sketch_block_range],
+                        ))
+                    })?;
+                    let artifact_id = exec_state.next_artifact_id();
+                    let point_object = Object {
+                        id: *control_object_id,
+                        kind: ObjectKind::Segment {
+                            segment: crate::front::Segment::Point(crate::front::Point {
+                                position: control_point2d,
+                                ctor: None,
+                                owner: Some(segment.object_id),
+                                freedom: control_freedom.unwrap_or(Freedom::Free),
+                                constraints: Vec::new(),
+                            }),
+                        },
+                        label: Default::default(),
+                        comments: Default::default(),
+                        artifact_id,
+                        source: source.clone(),
+                    };
+                    control_point_object_ids.push(point_object.id);
+                    scene_objects.push(point_object);
+                }
+
+                let artifact_id = exec_state.next_artifact_id();
+                let segment_object = Object {
+                    id: segment.object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::ControlPointSpline(crate::front::ControlPointSpline {
+                            controls: control_point_object_ids,
+                            degree: *degree,
+                            ctor: crate::front::SegmentCtor::ControlPointSpline(ctor.as_ref().clone()),
+                            ctor_applicable: true,
+                            construction: *construction,
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id,
                     source,
                 };
                 scene_objects.push(segment_object);

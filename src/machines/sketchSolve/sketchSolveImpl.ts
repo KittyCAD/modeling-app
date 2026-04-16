@@ -45,6 +45,7 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
+  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -360,6 +361,22 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       construction: obj.kind.segment.construction,
     }
+  } else if (isControlPointSplineSegment(obj)) {
+    const points = obj.kind.segment.controls
+      .map((pointId) => getLinkedPoint({ objects, pointId }))
+      .filter((point) => point !== null)
+    if (points.length !== obj.kind.segment.controls.length) {
+      console.error(
+        'Failed to find linked points for ControlPointSpline segment',
+        obj
+      )
+      return null
+    }
+    return {
+      type: 'ControlPointSpline',
+      points,
+      construction: obj.kind.segment.construction,
+    }
   }
   return null
 }
@@ -435,6 +452,16 @@ export function updateSegmentGroup({
       hasSolveErrors,
       freedom: freedomResult,
     })
+  } else if (input.type === 'ControlPointSpline') {
+    segmentUtilsMap.ControlPointSplineSegment.update({
+      input,
+      theme,
+      scale,
+      group,
+      state,
+      hasSolveErrors,
+      freedom: freedomResult,
+    })
   }
 }
 
@@ -475,6 +502,12 @@ function initSegmentGroup({
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
+      input,
+      id,
+      isConstruction,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    group = segmentUtilsMap.ControlPointSplineSegment.init({
       input,
       id,
       isConstruction,

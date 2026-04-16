@@ -1411,6 +1411,10 @@ fn load_curve_handle(
             "Point segment {} cannot be used as trim curve",
             segment_obj.id.0
         )),
+        Segment::ControlPointSpline(_) => Err(format!(
+            "Control point spline segment {} cannot be used as trim curve yet",
+            segment_obj.id.0
+        )),
     }
 }
 

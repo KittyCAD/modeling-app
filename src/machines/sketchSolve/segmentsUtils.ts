@@ -1,5 +1,8 @@
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isControlPointSplineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
@@ -78,6 +81,13 @@ export function deriveSegmentFreedom(
     }
     if (isPointSegment(centerPoint)) {
       pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
+    }
+  } else if (segmentData.type === 'ControlPointSpline') {
+    for (const controlId of segmentData.controls) {
+      const point = getObjById(controlId)
+      if (isPointSegment(point)) {
+        pointFreedoms.push(point.kind.segment.freedom ?? null)
+      }
     }
   }
 

@@ -32,6 +32,7 @@ use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Distance;
 use crate::front::EqualRadius;
 use crate::front::Error;
@@ -126,6 +127,8 @@ const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
+const CONTROL_POINT_SPLINE_FN: &str = "controlPointSpline";
+const CONTROL_POINT_SPLINE_POINTS_PARAM: &str = "points";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -149,6 +152,7 @@ const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
 const CIRCLE_PROPERTY_START: &str = "start";
 const CIRCLE_PROPERTY_CENTER: &str = "center";
+const CONTROL_POINT_SPLINE_PROPERTY_CONTROLS: &str = "controls";
 
 const CONSTRUCTION_PARAM: &str = "construction";
 
@@ -575,6 +579,7 @@ impl SketchApi for FrontendState {
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
             SegmentCtor::Arc(ctor) => self.add_arc(ctx, sketch, ctor).await,
             SegmentCtor::Circle(ctor) => self.add_circle(ctx, sketch, ctor).await,
+            SegmentCtor::ControlPointSpline(ctor) => self.add_control_point_spline(ctx, sketch, ctor).await,
         }
     }
 
@@ -723,6 +728,36 @@ impl SketchApi for FrontendState {
                                 }
                                 continue;
                             }
+                            Segment::ControlPointSpline(spline)
+                                if spline.controls.iter().any(|control_id| *control_id == segment_id) =>
+                            {
+                                let Some(control_index) =
+                                    spline.controls.iter().position(|control_id| *control_id == segment_id)
+                                else {
+                                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                                        "Internal: Point is not part of owner's controlPointSpline segment: point={segment_id:?}, spline={owner_id:?}"
+                                    ))));
+                                };
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::ControlPointSpline(spline_ctor) = existing else {
+                                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                                            "Internal: Expected controlPointSpline ctor for owner, but found {}",
+                                            existing.human_friendly_kind_with_article()
+                                        ))));
+                                    };
+                                    spline_ctor.points[control_index] = ctor.position;
+                                } else if let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor {
+                                    let mut spline_ctor = spline_ctor.clone();
+                                    spline_ctor.points[control_index] = ctor.position;
+                                    final_edits.insert(owner_id, SegmentCtor::ControlPointSpline(spline_ctor));
+                                } else {
+                                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                                        "Internal: Control point spline does not have controlPointSpline ctor, but found {}",
+                                        spline.ctor.human_friendly_kind_with_article()
+                                    ))));
+                                }
+                                continue;
+                            }
                             _ => {}
                         }
                     }
@@ -738,6 +773,9 @@ impl SketchApi for FrontendState {
                 }
                 SegmentCtor::Circle(ctor) => {
                     final_edits.insert(segment_id, SegmentCtor::Circle(ctor));
+                }
+                SegmentCtor::ControlPointSpline(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::ControlPointSpline(ctor));
                 }
             }
         }
@@ -755,6 +793,9 @@ impl SketchApi for FrontendState {
                     .map_err(KclErrorWithOutputs::no_outputs)?,
                 SegmentCtor::Circle(ctor) => self
                     .edit_circle(&mut new_ast, sketch, segment_id, ctor)
+                    .map_err(KclErrorWithOutputs::no_outputs)?,
+                SegmentCtor::ControlPointSpline(ctor) => self
+                    .edit_control_point_spline(&mut new_ast, sketch, segment_id, ctor)
                     .map_err(KclErrorWithOutputs::no_outputs)?,
             }
         }
@@ -796,7 +837,10 @@ impl SketchApi for FrontendState {
                 && let Some(owner_id) = point.owner
                 && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
                 && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
-                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_))
+                && matches!(
+                    owner_segment,
+                    Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) | Segment::ControlPointSpline(_)
+                )
             {
                 // segment is owned -> delete the owner
                 resolved_segment_ids_to_delete.insert(owner_id);
@@ -1178,6 +1222,9 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Circle(ctor) => self
                     .edit_circle(&mut new_ast, sketch, segment.id, ctor)
                     .map_err(KclErrorWithOutputs::no_outputs)?,
+                SegmentCtor::ControlPointSpline(ctor) => self
+                    .edit_control_point_spline(&mut new_ast, sketch, segment.id, ctor)
+                    .map_err(KclErrorWithOutputs::no_outputs)?,
             }
         }
 
@@ -1324,6 +1371,9 @@ impl SketchApi for FrontendState {
                     .map_err(KclErrorWithOutputs::no_outputs)?,
                 SegmentCtor::Circle(ctor) => self
                     .edit_circle(&mut new_ast, sketch, segment.id, ctor)
+                    .map_err(KclErrorWithOutputs::no_outputs)?,
+                SegmentCtor::ControlPointSpline(ctor) => self
+                    .edit_control_point_spline(&mut new_ast, sketch, segment.id, ctor)
                     .map_err(KclErrorWithOutputs::no_outputs)?,
             }
         }
@@ -2062,6 +2112,132 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
+    async fn add_control_point_spline(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: ControlPointSplineCtor,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let points_ast = to_ast_point2d_array(&ctor.points)
+            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
+        let mut arguments = vec![ast::LabeledArg {
+            label: Some(ast::Identifier::new(CONTROL_POINT_SPLINE_POINTS_PARAM)),
+            arg: points_ast,
+        }];
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+        let spline_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(CONTROL_POINT_SPLINE_FN)),
+            unlabeled: None,
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Sketch not found: {sketch:?}")))
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object is not a sketch, it is {}",
+                sketch_object.kind.human_friendly_kind_with_article(),
+            ))));
+        };
+
+        let mut new_ast = self.program.ast.clone();
+        let (sketch_block_ref, _) = self
+            .mutate_ast(
+                &mut new_ast,
+                sketch,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: spline_ast },
+            )
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        let new_source = source_from_ast(&new_ast);
+        let (new_program, errors) = Program::parse(&new_source)
+            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
+        if !errors.is_empty() {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Error parsing KCL source after adding controlPointSpline: {errors:?}"
+            ))));
+        }
+        let Some(new_program) = new_program else {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                "No AST produced after adding controlPointSpline".to_string(),
+            )));
+        };
+
+        let spline_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Source range of controlPointSpline not found in sketch block: {sketch_block_ref:?}; {err:?}"
+            )))
+        })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = spline_node_ref;
+
+        self.program = new_program.clone();
+
+        let mut truncated_program = new_program;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let outcome = ctx
+            .run_mock(
+                &truncated_program,
+                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
+            )
+            .await?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let make_err =
+                |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&spline_node_ref.range)
+                .copied()
+                .ok_or_else(|| make_err(format!("Source range of controlPointSpline not found: {spline_node_ref:?}")))?;
+            let segment_object = outcome
+                .scene_objects
+                .get(segment_id.0)
+                .ok_or_else(|| make_err(format!("Segment not found: {segment_id:?}")))?;
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
+                return Err(make_err(format!(
+                    "Object is not a segment, it is {}",
+                    segment_object.kind.human_friendly_kind_with_article()
+                )));
+            };
+            let Segment::ControlPointSpline(spline) = segment else {
+                return Err(make_err(format!(
+                    "Segment is not a control point spline, it is {}",
+                    segment.human_friendly_kind_with_article()
+                )));
+            };
+
+            let mut ids = spline.controls.clone();
+            ids.push(segment_id);
+            ids
+        };
+        let src_delta = SourceDelta { text: new_source };
+        let outcome = self.update_state_after_exec(outcome, false);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
     fn edit_point(
         &mut self,
         new_ast: &mut ast::Node<ast::Program>,
@@ -2180,6 +2356,23 @@ impl FrontendState {
                     )));
                 }
                 return self.edit_circle(new_ast, sketch_id, owner_id, circle_ctor);
+            }
+
+            if let Segment::ControlPointSpline(spline) = segment {
+                let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor else {
+                    return Err(KclError::refactor(format!(
+                        "Internal: Owner of point does not have controlPointSpline ctor, but found {}",
+                        spline.ctor.human_friendly_kind_with_article()
+                    )));
+                };
+                let mut spline_ctor = spline_ctor.clone();
+                let Some(control_index) = spline.controls.iter().position(|id| *id == point_id) else {
+                    return Err(KclError::refactor(format!(
+                        "Internal: Point is not part of owner's controlPointSpline segment: point={point_id:?}, spline={owner_id:?}"
+                    )));
+                };
+                spline_ctor.points[control_index] = ctor.position;
+                return self.edit_control_point_spline(new_ast, sketch_id, owner_id, spline_ctor);
             }
 
             // If owner is neither Line, Arc, nor Circle, allow editing the point directly
@@ -2342,6 +2535,51 @@ impl FrontendState {
             AstMutateCommand::EditCircle {
                 start: new_start_ast,
                 center: new_center_ast,
+                construction: ctor.construction,
+            },
+        )?;
+        Ok(())
+    }
+
+    fn edit_control_point_spline(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        spline: ObjectId,
+        ctor: ControlPointSplineCtor,
+    ) -> Result<(), KclError> {
+        let points_ast = to_ast_point2d_array(&ctor.points).map_err(|err| KclError::refactor(err.to_string()))?;
+
+        let sketch_object = self
+            .scene_graph
+            .objects
+            .get(sketch.0)
+            .ok_or_else(|| KclError::refactor(format!("Sketch not found: {sketch:?}")))?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(KclError::refactor(format!("Object is not a sketch: {sketch_object:?}")));
+        };
+        sketch.segments.iter().find(|o| **o == spline).ok_or_else(|| {
+            KclError::refactor(format!(
+                "Control point spline not found in sketch: spline={spline:?}, sketch={sketch:?}"
+            ))
+        })?;
+
+        let spline_object = self
+            .scene_graph
+            .objects
+            .get(spline.0)
+            .ok_or_else(|| KclError::refactor(format!("Control point spline not found in scene graph: {spline:?}")))?;
+        let ObjectKind::Segment { .. } = &spline_object.kind else {
+            return Err(KclError::refactor(format!(
+                "Object is not a segment: {spline_object:?}"
+            )));
+        };
+
+        self.mutate_ast(
+            new_ast,
+            spline,
+            AstMutateCommand::EditControlPointSpline {
+                points: points_ast,
                 construction: ctor.construction,
             },
         )?;
@@ -2720,6 +2958,18 @@ impl FrontendState {
                     };
                     get_or_insert_ast_reference(new_ast, &owner_object.source, CIRCLE_VARIABLE, Some(property))
                 }
+                Segment::ControlPointSpline(spline) => {
+                    let Some(index) = spline.controls.iter().position(|id| *id == point_id) else {
+                        return Err(KclError::refactor(format!(
+                            "Internal: Point is not part of owner's controlPointSpline segment: point={point_id:?}, spline={owner_id:?}"
+                        )));
+                    };
+                    let owner_expr =
+                        get_or_insert_ast_reference(new_ast, &owner_object.source, CONTROL_POINT_SPLINE_FN, None)?;
+                    let controls_expr =
+                        create_member_expression(owner_expr, CONTROL_POINT_SPLINE_PROPERTY_CONTROLS);
+                    Ok(create_index_expression(controls_expr, index))
+                }
                 _ => Err(KclError::refactor(format!(
                     "Internal: Owner of point is not a supported segment type for constraints: {owner_segment:?}"
                 ))),
@@ -2756,6 +3006,9 @@ impl FrontendState {
                     Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
                     Segment::Circle(_) => {
                         get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None)
+                    }
+                    Segment::ControlPointSpline(_) => {
+                        get_or_insert_ast_reference(new_ast, &segment_object.source, CONTROL_POINT_SPLINE_FN, None)
                     }
                 }
             }
@@ -4391,6 +4644,10 @@ enum AstMutateCommand {
         center: ast::Expr,
         construction: Option<bool>,
     },
+    EditControlPointSpline {
+        points: ast::Expr,
+        construction: Option<bool>,
+    },
     EditConstraintValue {
         value: ast::BinaryPart,
     },
@@ -4818,6 +5075,55 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditControlPointSpline {
+            points,
+            construction,
+        } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != CONTROL_POINT_SPLINE_FN {
+                    return TraversalReturn::new_continue(());
+                }
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str())
+                        == Some(CONTROL_POINT_SPLINE_POINTS_PARAM)
+                    {
+                        labeled_arg.arg = points.clone();
+                    }
+                }
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        if construction_exists {
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditConstraintValue { value } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let left_is_constraint = matches!(
@@ -5019,6 +5325,17 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
         pre_comments: Default::default(),
         comment_start: Default::default(),
     })))
+}
+
+pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<ast::Expr> {
+    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: points
+            .iter()
+            .map(to_ast_point2d)
+            .collect::<anyhow::Result<Vec<_>>>()?,
+        digest: None,
+        non_code_meta: Default::default(),
+    }))))
 }
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
@@ -5241,6 +5558,20 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
             digest: None,
         }))),
         computed: false,
+        digest: None,
+    })))
+}
+
+pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> ast::Expr {
+    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+        object: object_expr,
+        property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
+            value: index as f64,
+            suffix: NumericSuffix::None,
+            raw: index.to_string(),
+            digest: None,
+        })))),
+        computed: true,
         digest: None,
     })))
 }

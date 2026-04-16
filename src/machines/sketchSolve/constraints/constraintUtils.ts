@@ -64,6 +64,19 @@ export type CircleSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Circle' } }
 }
 
+export function isControlPointSplineSegment(
+  obj: ApiObject | undefined | null
+): obj is ControlPointSplineSegment {
+  return (
+    obj?.kind.type === 'Segment' &&
+    obj.kind.segment.type === 'ControlPointSpline'
+  )
+}
+
+export type ControlPointSplineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'ControlPointSpline' } }
+}
+
 export function isArcLikeSegment(
   obj: ApiObject | undefined | null
 ): obj is ArcSegment | CircleSegment {
@@ -72,7 +85,10 @@ export function isArcLikeSegment(
 
 export function isConstruction(obj: ApiObject | undefined | null): boolean {
   return (
-    (isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)) &&
+    (isLineSegment(obj) ||
+      isArcSegment(obj) ||
+      isCircleSegment(obj) ||
+      isControlPointSplineSegment(obj)) &&
     obj.kind.segment.construction === true
   )
 }
@@ -150,6 +166,127 @@ export function getArcPoints(
     end: pointToCoords2d(endObj),
     isCircle: false,
   }
+}
+
+export function getControlPointSplinePoints(
+  splineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+): Coords2d[] | null {
+  if (!isControlPointSplineSegment(splineObj)) {
+    return null
+  }
+
+  const points: Coords2d[] = []
+  for (const controlId of splineObj.kind.segment.controls) {
+    const pointObj = objects[controlId]
+    if (!isPointSegment(pointObj)) {
+      return null
+    }
+    points.push(pointToCoords2d(pointObj))
+  }
+
+  return points
+}
+
+function buildOpenUniformKnotVector(
+  pointCount: number,
+  degree: number
+): number[] {
+  const order = degree + 1
+  const knotCount = pointCount + order
+  const interiorCount = knotCount - 2 * order
+  const knots = new Array<number>(knotCount)
+
+  for (let index = 0; index < knotCount; index++) {
+    if (index < order) {
+      knots[index] = 0
+    } else if (index >= knotCount - order) {
+      knots[index] = 1
+    } else {
+      knots[index] = (index - degree) / (interiorCount + 1)
+    }
+  }
+
+  return knots
+}
+
+function findKnotSpan(u: number, degree: number, knots: number[]): number {
+  const pointCount = knots.length - degree - 1
+  const lastSpan = pointCount - 1
+  if (u >= knots[lastSpan + 1]) {
+    return lastSpan
+  }
+  if (u <= knots[degree]) {
+    return degree
+  }
+
+  let low = degree
+  let high = lastSpan + 1
+  let mid = Math.floor((low + high) / 2)
+  while (u < knots[mid] || u >= knots[mid + 1]) {
+    if (u < knots[mid]) {
+      high = mid
+    } else {
+      low = mid
+    }
+    mid = Math.floor((low + high) / 2)
+  }
+
+  return mid
+}
+
+function deBoorPoint(
+  points: Coords2d[],
+  degree: number,
+  knots: number[],
+  u: number
+): Coords2d {
+  const span = findKnotSpan(u, degree, knots)
+  const d = Array.from({ length: degree + 1 }, (_, offset) => {
+    const point = points[span - degree + offset]
+    return [point[0], point[1]] as Coords2d
+  })
+
+  for (let r = 1; r <= degree; r++) {
+    for (let j = degree; j >= r; j--) {
+      const knotIndex = span - degree + j
+      const denom = knots[knotIndex + degree - r + 1] - knots[knotIndex]
+      const alpha = denom === 0 ? 0 : (u - knots[knotIndex]) / denom
+      d[j] = [
+        (1 - alpha) * d[j - 1][0] + alpha * d[j][0],
+        (1 - alpha) * d[j - 1][1] + alpha * d[j][1],
+      ]
+    }
+  }
+
+  return d[degree]
+}
+
+export function sampleControlPointSplinePoints(
+  points: Coords2d[],
+  degree: number,
+  samplesPerSpan = 24
+): Coords2d[] {
+  if (points.length < 2) {
+    return points
+  }
+
+  const effectiveDegree = Math.max(1, Math.min(degree, points.length - 1))
+  if (effectiveDegree === 1) {
+    return points
+  }
+
+  const knots = buildOpenUniformKnotVector(points.length, effectiveDegree)
+  const spanCount = Math.max(1, points.length - effectiveDegree)
+  const sampleCount = Math.max(spanCount * samplesPerSpan, 2)
+  const result: Coords2d[] = []
+
+  for (let index = 0; index <= sampleCount; index++) {
+    const u = index === sampleCount ? 1 : index / sampleCount
+    result.push(deBoorPoint(points, effectiveDegree, knots, u))
+  }
+
+  return result
 }
 
 // Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]

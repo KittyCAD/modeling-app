@@ -207,7 +207,7 @@ pub mod front {
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, EqualRadius,
             ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength,
             NewSegmentInfo, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch,
-            SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
+            SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical, ControlPointSpline, ControlPointSplineCtor,
         },
         // Re-export trim module items
         trim::{

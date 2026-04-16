@@ -23,6 +23,7 @@ import {
   buildTangentConstraintInput,
   isArcSegment,
   isCircleSegment,
+  isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -835,11 +836,12 @@ export const sketchSolveMachine = setup({
             continue
           }
 
-          // Only Line, Arc, and Circle segments support construction geometry
+          // Only drawable curve segments support construction geometry
           if (
             obj.kind.segment.type !== 'Line' &&
             obj.kind.segment.type !== 'Arc' &&
-            obj.kind.segment.type !== 'Circle'
+            obj.kind.segment.type !== 'Circle' &&
+            obj.kind.segment.type !== 'ControlPointSpline'
           ) {
             continue
           }
@@ -852,7 +854,10 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+            isLineSegment(obj) ||
+            isArcSegment(obj) ||
+            isCircleSegment(obj) ||
+            isControlPointSplineSegment(obj)
               ? obj.kind.segment.construction
               : false
 
@@ -877,6 +882,14 @@ export const sketchSolveMachine = setup({
               },
             })
           } else if (baseCtor.type === 'Circle') {
+            segmentsToEdit.push({
+              id,
+              ctor: {
+                ...baseCtor,
+                construction: newConstruction,
+              },
+            })
+          } else if (baseCtor.type === 'ControlPointSpline') {
             segmentsToEdit.push({
               id,
               ctor: {
