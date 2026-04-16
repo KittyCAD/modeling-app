@@ -69,6 +69,7 @@ export interface ToolbarItemCallbackProps {
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
   isActive: boolean
+  keepSelection: boolean
 }
 
 export type ToolbarItem = {
@@ -1696,9 +1697,10 @@ export const useToolbarConfig = () => {
           'break',
           {
             id: 'coincident',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'coincident',
+                keepSelection,
               }),
             icon: 'coincident',
             status: 'available',
@@ -1711,9 +1713,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Tangent',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Tangent',
+                keepSelection,
               }),
             icon: 'tangent',
             status: 'available',
@@ -1733,9 +1736,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Parallel',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Parallel',
+                keepSelection,
               }),
             icon: 'parallel',
             status: 'available',
@@ -1748,9 +1752,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Perpendicular',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Perpendicular',
+                keepSelection,
               }),
             icon: 'perpendicular',
             status: 'available',
@@ -1763,9 +1768,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'equalLength',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'EqualLength',
+                keepSelection,
               }),
             icon: 'equal',
             status: 'available',
@@ -1785,9 +1791,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'vertical',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Vertical',
+                keepSelection,
               }),
             icon: 'vertical',
             status: 'available',
@@ -1800,9 +1807,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Horizontal',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Horizontal',
+                keepSelection,
               }),
             icon: 'horizontal',
             status: 'available',
@@ -1815,9 +1823,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Fixed',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Fixed',
+                keepSelection,
               }),
             icon: 'fix',
             status: 'available',
@@ -1837,9 +1846,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'Dimension',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Dimension',
+                keepSelection,
               }),
             icon: 'dimension',
             status: 'available',
@@ -1853,9 +1863,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'HorizontalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'HorizontalDistance',
+                keepSelection,
               }),
             icon: 'horizontalDimension',
             status: 'available',
@@ -1868,9 +1879,10 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'VerticalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'VerticalDistance',
+                keepSelection,
               }),
             icon: 'verticalDimension',
             status: 'available',
