@@ -20,23 +20,12 @@ export type PublishCurrentProjectArgs = {
   currentFilePath: string
   currentFileContents: string
   wasmInstance: ModuleType
-  submission: ProjectPublishSubmission
-}
-
-export type ProjectPublishSubmission = {
-  title: string
-  description: string
-  categoryIds: string[]
 }
 
 export type CurrentProjectPublicationDetails = {
   projectId: string
   publicationStatus: KclProjectPublicationStatus
-  title: string
-  description: string
-  categoryIds: string[]
   publishedAt?: string
-  submittedAt?: string
   updatedAt: string
 }
 
@@ -59,7 +48,6 @@ type UploadFile = {
 type ProjectUpsertBody = {
   title: string
   description: string
-  category_ids: string[]
 }
 
 export async function publishCurrentProject(
@@ -158,11 +146,7 @@ export async function getCurrentProjectPublicationDetails({
   return {
     projectId,
     publicationStatus: remoteProject.publication_status,
-    title: remoteProject.title || getDefaultProjectTitle(project),
-    description: remoteProject.description || '',
-    categoryIds: remoteProject.category_ids || [],
     publishedAt: remoteProject.publication.last_published_at,
-    submittedAt: remoteProject.publication.submitted_at,
     updatedAt: remoteProject.updated_at,
   }
 }
@@ -203,7 +187,14 @@ async function ensureCurrentProjectUploaded(
   }
 
   if (existingProjectId) {
-    const projectBody = getProjectUpsertBody(project, args.submission)
+    const projectBody = await getProjectUpsertBody({
+      client,
+      project,
+      projectId: existingProjectId,
+    })
+    if (err(projectBody)) {
+      return projectBody
+    }
 
     const projectResp = await kcCall(() =>
       projects.update_project({
@@ -222,7 +213,7 @@ async function ensureCurrentProjectUploaded(
     }
   }
 
-  const projectBody = getProjectUpsertBody(project, args.submission)
+  const projectBody = getDefaultProjectUpsertBody(project)
   const projectResp = await kcCall(() =>
     projects.create_project({
       client,
@@ -250,14 +241,33 @@ async function ensureCurrentProjectUploaded(
   }
 }
 
-function getProjectUpsertBody(
-  project: Project,
-  submission: ProjectPublishSubmission
-): ProjectUpsertBody {
+async function getProjectUpsertBody({
+  client,
+  project,
+  projectId,
+}: {
+  client: ReturnType<typeof createKCClient>
+  project: Project
+  projectId: string
+}): Promise<ProjectUpsertBody | Error> {
+  const remoteProject = await getRemoteProject({
+    client,
+    projectId,
+  })
+  if (err(remoteProject)) {
+    return remoteProject
+  }
+
   return {
-    title: submission.title.trim() || getDefaultProjectTitle(project),
-    description: submission.description.trim(),
-    category_ids: submission.categoryIds,
+    title: remoteProject.title || getDefaultProjectTitle(project),
+    description: remoteProject.description || '',
+  }
+}
+
+function getDefaultProjectUpsertBody(project: Project): ProjectUpsertBody {
+  return {
+    title: getDefaultProjectTitle(project),
+    description: '',
   }
 }
 
@@ -285,7 +295,7 @@ async function buildProjectUploadFiles({
   currentFilePath,
   currentFileContents,
   wasmInstance,
-}: Omit<PublishCurrentProjectArgs, 'token' | 'project' | 'submission'> & {
+}: Omit<PublishCurrentProjectArgs, 'token' | 'project'> & {
   project: Project
 }): Promise<UploadFile[] | Error> {
   if (!project.children) {

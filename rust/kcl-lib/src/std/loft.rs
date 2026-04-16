@@ -211,7 +211,7 @@ async fn inner_loft(
         true
     });
     // ...but if you have to, then OK.
-    let sketch: &Sketch = first_noncircle_sketch.clone().unwrap_or(&sketches[0]);
+    let sketch: &Sketch = first_noncircle_sketch.unwrap_or(&sketches[0]);
     let mut sketch: Sketch = sketch.clone();
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
