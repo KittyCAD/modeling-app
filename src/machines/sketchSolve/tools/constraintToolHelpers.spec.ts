@@ -293,6 +293,52 @@ describe('constraintToolHelpers', () => {
     }
   })
 
+  it('prepares one payload per additional line for parallel area selection', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+
+    const apply = getConstraintToolPreparedApply(
+      'parallelConstraintTool',
+      [10, 11, 12],
+      objects,
+      applyOptions
+    )
+
+    expect(apply?.selectionIds).toEqual([10, 11, 12])
+    expect(apply?.payloads).toEqual([
+      {
+        type: 'Parallel',
+        lines: [10, 11],
+      },
+      {
+        type: 'Parallel',
+        lines: [10, 12],
+      },
+    ])
+    expect(apply?.payload).toEqual({
+      type: 'Parallel',
+      lines: [10, 11],
+    })
+  })
+
   it('uses the same compatibility rules for area-style batch selections', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
@@ -327,6 +373,52 @@ describe('constraintToolHelpers', () => {
         distance: { value: 0, units: 'Mm' },
         source: { expr: '0', is_literal: true },
       })
+    }
+  })
+
+  it('applies the full compatible line set for parallel area selection', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+
+    const areaSelection = resolveConstraintToolSelectionAction(
+      'parallelConstraintTool',
+      [],
+      [10, 11, 12],
+      objects,
+      applyOptions
+    )
+
+    expect(areaSelection.type).toBe('apply')
+    if (areaSelection.type === 'apply') {
+      expect(areaSelection.apply.selectionIds).toEqual([10, 11, 12])
+      expect(areaSelection.apply.payloads).toEqual([
+        {
+          type: 'Parallel',
+          lines: [10, 11],
+        },
+        {
+          type: 'Parallel',
+          lines: [10, 12],
+        },
+      ])
     }
   })
 

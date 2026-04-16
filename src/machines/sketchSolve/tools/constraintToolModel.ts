@@ -183,10 +183,11 @@ export const constraintToolConfigs = {
     keepEquippedAfterApply: true,
     modes: [
       {
-        id: 'line-line',
+        id: 'line-set',
         resultingConstraintType: 'Parallel',
         slots: [['line'], ['line']],
-        areaSelectionPolicy: 'consume-minimal',
+        repeatableLastSlot: true,
+        areaSelectionPolicy: 'consume-all-compatible',
       },
     ],
   },

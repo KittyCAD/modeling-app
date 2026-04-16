@@ -220,17 +220,15 @@ function buildConstraintToolPayloads(
       ]
     }
     case 'parallelConstraintTool': {
-      const linePair = toPair(objectSelectionIds)
-      if (!linePair) {
+      const [anchorLineId, ...otherLineIds] = objectSelectionIds
+      if (anchorLineId === undefined || otherLineIds.length === 0) {
         return null
       }
 
-      return [
-        {
-          type: 'Parallel',
-          lines: linePair,
-        },
-      ]
+      return otherLineIds.map((lineId) => ({
+        type: 'Parallel',
+        lines: [anchorLineId, lineId],
+      }))
     }
     case 'equalLengthConstraintTool': {
       const equalLengthInput = buildEqualLengthConstraintInput(

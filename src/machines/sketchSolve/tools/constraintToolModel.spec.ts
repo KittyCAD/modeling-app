@@ -143,16 +143,22 @@ describe('constraintToolModel', () => {
     const pointB = createPointApiObject({ id: 2 })
     const pointC = createPointApiObject({ id: 3 })
     const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
     const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
     const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 13, start: 5, end: 6 })
     const arc = createArcApiObject({ id: 12, center: 1, start: 2, end: 3 })
     const objects = createObjectsArray([
       pointA,
       pointB,
       pointC,
       pointD,
+      pointE,
+      pointF,
       lineA,
       lineB,
+      lineC,
       arc,
     ])
 
@@ -160,6 +166,13 @@ describe('constraintToolModel', () => {
       getConstraintToolSelectionMatches(
         'parallelConstraintTool',
         [10, 11],
+        objects
+      ).status
+    ).toBe('complete')
+    expect(
+      getConstraintToolSelectionMatches(
+        'parallelConstraintTool',
+        [10, 11, 13],
         objects
       ).status
     ).toBe('complete')
