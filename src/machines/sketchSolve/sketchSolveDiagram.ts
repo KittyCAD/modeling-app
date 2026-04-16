@@ -208,7 +208,7 @@ function getAxisConstraintInputs(
         points: context.selectedIds.map(
           (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
         ),
-      } as unknown as ApiConstraint,
+      } as ApiConstraint,
     ]
   }
 
@@ -219,7 +219,7 @@ function getAxisConstraintInputs(
         ({
           type,
           line,
-        }) as unknown as ApiConstraint
+        }) as ApiConstraint
     )
 }
 

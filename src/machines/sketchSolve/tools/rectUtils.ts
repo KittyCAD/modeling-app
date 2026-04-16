@@ -894,7 +894,7 @@ async function addSingleLineConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    { type, line } as unknown as ApiConstraint,
+    { type, line } as ApiConstraint,
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)

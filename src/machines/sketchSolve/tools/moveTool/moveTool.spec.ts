@@ -71,12 +71,12 @@ function createConstraintApiObject({
     constraint = {
       type,
       points,
-    } as unknown as ApiConstraint
+    } as ApiConstraint
   } else {
     constraint = {
       type,
       line,
-    } as unknown as ApiConstraint
+    } as ApiConstraint
   }
 
   return {
