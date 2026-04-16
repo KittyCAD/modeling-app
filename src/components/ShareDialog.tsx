@@ -117,7 +117,7 @@ export function ShareDialog({
                 bgClassName: '!bg-transparent',
                 size: 'sm',
               }}
-              className="ml-2 shrink-0 whitespace-nowrap py-0.5 pr-2"
+              className="shrink-0 whitespace-nowrap py-0.5 px-2"
               onClick={() => {
                 void handleCopyLink()
               }}
