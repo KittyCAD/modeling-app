@@ -24,60 +24,103 @@ crashBoxOuterWidth = 400
 // Crash box: square tube profile and extrusion
 // -----------------------------
 
+crashBoxProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var -205mm, var -198mm], end = [var 193mm, var -205mm])
+  rightEdge = line(start = [var 207mm, var -191mm], end = [var 212mm, var 188mm])
+  topEdge = line(start = [var 204mm, var 209mm], end = [var -196mm, var 212mm])
+  leftEdge = line(start = [var -214mm, var 197mm], end = [var -206mm, var -201mm])
+  verticalCenterGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var -190mm], construction = true)
+  horizontalCenterGuide = line(start = [var 0mm, var 0mm], end = [var 193mm, var 0mm], construction = true)
 
-sketchCrashBox = startSketchOn(XY)
-profileCrashBoxOuter = sketch(on = sketchCrashBox) {
-  line1 = line(start = [var -200mm, var -200mm], end = [var 200mm, var -200mm])
-  line2 = line(start = [var 200mm, var -200mm], end = [var 200mm, var 200mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 200mm, var 200mm], end = [var -200mm, var 200mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -200mm, var 200mm], end = [var -200mm, var -200mm])
-  coincident([line3.end, line4.start])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  coincident([verticalCenterGuide.start, ORIGIN])
+  coincident([
+    horizontalCenterGuide.start,
+    verticalCenterGuide.start
+  ])
+  coincident([verticalCenterGuide.end, bottomEdge])
+  coincident([horizontalCenterGuide.end, rightEdge])
+
+  horizontal(bottomEdge)
+  horizontal(topEdge)
+  horizontal(horizontalCenterGuide)
+  vertical(rightEdge)
+  vertical(leftEdge)
+  vertical(verticalCenterGuide)
+
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == crashBoxOuterWidth
+  verticalDistance([leftEdge.end, leftEdge.start]) == crashBoxOuterWidth
+  verticalDistance([
+  verticalCenterGuide.end,
+  verticalCenterGuide.start
+]) == crashBoxOuterWidth / 2
+  horizontalDistance([
+  horizontalCenterGuide.start,
+  horizontalCenterGuide.end
+]) == crashBoxOuterWidth / 2
 }
 
-region001 = region(segments = [
-  profileCrashBoxOuter.line1,
-  profileCrashBoxOuter.line2
+crashBoxRegion = region(segments = [
+  crashBoxProfile.bottomEdge,
+  crashBoxProfile.rightEdge
 ])
+
 // Create a solid crash box from the square profile
-crashBoxSolid = extrude(region001, length = crashBoxExtrudeLength)
+crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
+
 
 // Optional exterior edge softening
-filletCrashBoxCorners = fillet(
+crashBoxOuterCornerFillets = fillet(
   crashBoxSolid,
   tags = [
-    getCommonEdge(faces = [seg01, seg02]),
-    getCommonEdge(faces = [rectangleSegmentA001, seg02]),
-    getCommonEdge(faces = [rectangleSegmentA001, seg03]),
-    getCommonEdge(faces = [seg03, seg01])
+    edgeId(crashBoxSolid, closestTo = [-200mm, -200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [200mm, -200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [200mm, 200mm, -600mm]),
+    edgeId(crashBoxSolid, closestTo = [-200mm, 200mm, -600mm])
   ],
   radius = 60,
 )
 
 // Shell the crash box from both ends to create a constant wall thickness
-crashBoxShelled = shell(crashBoxSolid, faces = [END, START], thickness = 20)
+crashBoxShelled = shell(crashBoxOuterCornerFillets, faces = [END, START], thickness = 20)
+hide(crashBoxProfile)
 
 // -----------------------------
 // Bumper beam surrogate: used to cut a mating pocket in the crash box
 // -----------------------------
 
+beamProfile = sketch(on = -YZ) {
+  topEdge = line(start = [var -861mm, var 6mm], end = [var 882mm, var -4mm])
+  rightEdge = line(start = [var 874mm, var -1mm], end = [var 879mm, var -307mm])
+  bottomEdge = line(start = [var 872mm, var -298mm], end = [var -864mm, var -304mm])
+  leftEdge = line(start = [var -871mm, var -292mm], end = [var -868mm, var 4mm])
 
-sketchBeam = startSketchOn(-YZ)
-profileBeam = sketch(on = sketchBeam) {
-  line1 = line(start = [var -870.13mm, var 0mm], end = [var 873.98mm, var 0mm])
-  line2 = line(start = [var 873.98mm, var 0mm], end = [var 873.98mm, var -300mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 873.98mm, var -300mm], end = [var -870.13mm, var -300mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -870.13mm, var -300mm], end = [var -870.13mm, var 0mm])
-  coincident([line3.end, line4.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+
+  horizontal(topEdge)
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  vertical(leftEdge)
+
+  horizontalDistance([topEdge.start, ORIGIN]) == 870.13mm
+  verticalDistance([ORIGIN, topEdge.start]) == 0mm
+  horizontalDistance([topEdge.start, topEdge.end]) == 1744.11mm
+  verticalDistance([rightEdge.end, rightEdge.start]) == beamCutoutDepth
 }
 
-region002 = region(segments = [profileBeam.line1, profileBeam.line2])
 // Extrude the beam surrogate symmetrically, tagging start/end faces for fillets
+beamRegion = region(segments = [
+  beamProfile.topEdge,
+  beamProfile.rightEdge
+])
 beamSolid = extrude(
-  region002,
+  beamRegion,
   length = 250,
   symmetric = true,
   tagStart = $capStart001,
@@ -85,44 +128,47 @@ beamSolid = extrude(
 )
 
 // Ease the beam pocket edges for a better fit
-filletBeamEnds = fillet(
+beamEndFillets = fillet(
   beamSolid,
   tags = [
-    getCommonEdge(faces = [seg04, capStart001]),
-    getCommonEdge(faces = [seg04, capEnd001])
+    edgeId(beamSolid, closestTo = [-125mm, 0mm, -300mm]),
+    edgeId(beamSolid, closestTo = [125mm, 0mm, -300mm])
   ],
   radius = 80,
 )
+hide(beamProfile)
 
 // -----------------------------
 // Subtract the beam volume from the crash box to form the mating pocket
 // -----------------------------
 
-
-crashBoxWithPocket = subtract(crashBoxSolid, tools = beamSolid)
+crashBoxWithPocket = subtract(crashBoxShelled, tools = beamEndFillets)
 
 // -----------------------------
 // Mounting holes: through-holes from front to back of crash box
 // -----------------------------
 
-// Sketch on one side face (seg02) and pierce through to opposite face (seg03)
-sketchHoles = startSketchOn(crashBoxWithPocket, face = seg02)
-profileHoleLeft = sketch(on = sketchHoles) {
-  circle1 = circle(start = [var -84mm, var -150mm], center = [var -100mm, var -150mm])
-}
-profileHoleRight = sketch(on = sketchHoles) {
-  circle1 = circle(start = [var 116mm, var -150mm], center = [var 100mm, var -150mm])
-}
-
-// Create cylindrical cutters to the opposite wall; keep as new bodies to subtract
-holeCutters = extrude([profileHoleLeft, profileHoleRight], to = seg03, method = NEW)
+leftHoleProfile = circle(
+  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
+  center = [-mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  radius = mountHoleRadius,
+)
+rightHoleProfile = circle(
+  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
+  center = [mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  radius = mountHoleRadius,
+)
 
 // Apply the hole cut to the crash box with pocket
+holeCutters = extrude(
+  [leftHoleProfile, rightHoleProfile],
+  to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm),
+  method = NEW,
+)
+
 crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 
 // -----------------------------
 // Appearance
 // -----------------------------
-
-
 appearance(crashBoxFinal, color = "#00aaff")
