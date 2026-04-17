@@ -5,6 +5,8 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { Platform } from '@src/lib/utils'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
@@ -17,6 +19,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
     disabled?: boolean
     status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   }[]
+  platform: Platform
 }
 
 export function ActionButtonDropdown({
@@ -24,6 +27,7 @@ export function ActionButtonDropdown({
   className,
   dropdownTooltipText = 'More tools',
   children,
+  platform,
   ...props
 }: ActionButtonSplitProps) {
   const baseClassNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10`
@@ -76,6 +80,7 @@ export function ActionButtonDropdown({
                   popover.close()
                 }}
                 key={item.label}
+                platform={platform}
               />
             ))}
           </Popover.Panel>
@@ -88,9 +93,11 @@ export function ActionButtonDropdown({
 function ActionButtonDropdownListItem({
   item,
   onClick,
+  platform,
 }: {
   item: ActionButtonSplitProps['splitMenuItems'][number]
   onClick: (event: MouseEvent<HTMLButtonElement>) => void
+  platform: Platform
 }) {
   return (
     <li className="contents">
@@ -126,7 +133,7 @@ function ActionButtonDropdownListItem({
           </div>
         ) : item.hotkey ? (
           <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-            {filterEscHotkey(item.hotkey)}
+            {hotkeyDisplay(filterEscHotkey(item.hotkey)[0], platform)}
           </kbd>
         ) : null}
         {item.status === 'experimental' ? (
