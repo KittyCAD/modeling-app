@@ -3508,7 +3508,114 @@ fn into_ezpz_angle(angle: kcmc::shared::Angle) -> ezpz::datatypes::Angle {
 }
 
 pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    lines_at_angle(LinesAtAngleKind::Parallel, exec_state, args).await
+    #[derive(Clone, Copy)]
+    struct ConstrainableLine {
+        solver_line: DatumLineSegment,
+        #[cfg(feature = "artifact-graph")]
+        object_id: ObjectId,
+    }
+
+    let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "lines",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(2),
+        ),
+        exec_state,
+    )?;
+    let range = args.source_range;
+    let constrainable_lines: Vec<ConstrainableLine> = lines
+        .iter()
+        .map(|line| {
+            let KclValue::Segment { value: segment } = line else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line argument must be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "line must be an unsolved Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line argument must be a line, no other type of Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p0_x) = &start[0] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's start x coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p0_y) = &start[1] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's start y coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p1_x) = &end[0] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's end x coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p1_y) = &end[1] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's end y coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let solver_line_p0 =
+                DatumPoint::new_xy(line_p0_x.to_constraint_id(range)?, line_p0_y.to_constraint_id(range)?);
+            let solver_line_p1 =
+                DatumPoint::new_xy(line_p1_x.to_constraint_id(range)?, line_p1_y.to_constraint_id(range)?);
+
+            Ok(ConstrainableLine {
+                solver_line: DatumLineSegment::new(solver_line_p0, solver_line_p1),
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            })
+        })
+        .collect::<Result<_, _>>()?;
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "parallel() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+
+    let n = constrainable_lines.len();
+    let mut constrainable_lines_iter = constrainable_lines.iter();
+    let first_line = constrainable_lines_iter
+        .next()
+        .ok_or(KclError::new_semantic(KclErrorDetails::new(
+            format!("parallel() requires at least 2 lines, but you provided {}", n),
+            vec![args.source_range],
+        )))?;
+    for line in constrainable_lines_iter {
+        sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
+            first_line.solver_line,
+            line.solver_line,
+            AngleKind::Parallel,
+        ));
+    }
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = Constraint::Parallel(Parallel {
+            lines: constrainable_lines.iter().map(|line| line.object_id).collect(),
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+    Ok(KclValue::none())
 }
 
 pub async fn perpendicular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
