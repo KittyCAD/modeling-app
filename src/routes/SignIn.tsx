@@ -3,7 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
-import env, { updateEnvironment } from '@src/env'
+import env, { updateEnvironment, updateEnvironmentApiSubdomain } from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import {
@@ -15,7 +15,12 @@ import {
   APP_NAME,
   SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY,
 } from '@src/lib/constants'
-import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
+import {
+  readEnvironmentConfigurationApiSubdomain,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationApiSubdomain,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { mark } from '@src/lib/performance'
@@ -44,6 +49,7 @@ let didReadFromDiskCacheForEnvironment = false
 const SignIn = () => {
   const { auth, fileOperations, settings } = useApp()
   const routerLocation = useLocation()
+  const authState = auth.useAuthState()
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
   const signInAttemptRef = useRef(0)
@@ -55,6 +61,7 @@ const SignIn = () => {
   const [selectedEnvironment, setSelectedEnvironment] = useState(
     lastSelectedEnvironmentName
   )
+  const [apiSubdomainOverride, setApiSubdomainOverride] = useState('')
 
   // See if the user added a real URL if they did, auto take the hostname!
   const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
@@ -150,11 +157,50 @@ const SignIn = () => {
     }
   }, [fileOperations])
 
+  useEffect(() => {
+    if (!window.electron || !selectedEnvironment) {
+      setApiSubdomainOverride('')
+      return
+    }
+
+    setApiSubdomainOverride('')
+    let cancelled = false
+    readEnvironmentConfigurationApiSubdomain(
+      fileOperations,
+      selectedEnvironment
+    )
+      .then((subdomain) => {
+        if (!cancelled) setApiSubdomainOverride(subdomain)
+      })
+      .catch(reportRejection)
+
+    return () => {
+      cancelled = true
+    }
+  }, [fileOperations, selectedEnvironment])
+
   const {
     app: { theme },
   } = settings.useSettings()
   const signInUrl = generateSignInUrl()
   const kclSampleUrl = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
+  const activeApiUrl = `https://${apiSubdomainOverride}.${selectedEnvironment}`
+
+  const clearApiOverride = useCallback(() => {
+    const environmentName = selectedEnvironment.trim()
+    if (!window.electron || !environmentName) return
+
+    writeEnvironmentConfigurationApiSubdomain(
+      fileOperations,
+      environmentName,
+      ''
+    )
+      .then(() => {
+        updateEnvironmentApiSubdomain(environmentName, '')
+        window.location.reload()
+      })
+      .catch(reportRejection)
+  }, [fileOperations, selectedEnvironment])
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -346,6 +392,34 @@ const SignIn = () => {
             </p>
             {window.electron ? (
               <div className="flex flex-col gap-2">
+                {apiSubdomainOverride && (
+                  <div className="mt-4 max-w-xl rounded-lg border border-solid border-destroy-60/40 bg-destroy-10/70 px-4 py-3 text-sm text-default dark:bg-destroy-90/20">
+                    <p className="font-medium text-destroy-80 dark:text-destroy-20">
+                      API override active
+                    </p>
+                    <p className="mt-1 break-all">
+                      Using <code>{activeApiUrl}</code>.
+                    </p>
+                    {authState.context.error && (
+                      <p className="mt-2 text-destroy-80 dark:text-destroy-20">
+                        {authState.context.error}
+                      </p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <ActionButton
+                        Element="button"
+                        onClick={clearApiOverride}
+                        iconStart={{
+                          icon: 'close',
+                          bgClassName: '!bg-transparent',
+                        }}
+                        className="!bg-destroy-70 !text-chalkboard-10 !border-transparent"
+                      >
+                        Clear API override
+                      </ActionButton>
+                    </div>
+                  </div>
+                )}
                 {!userCode ? (
                   <>
                     <button

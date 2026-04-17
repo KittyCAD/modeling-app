@@ -2,6 +2,7 @@ import type { UserResponse } from '@kittycad/lib'
 import { oauth2, users } from '@kittycad/lib'
 import env, {
   updateEnvironment,
+  updateEnvironmentApiSubdomain,
   updateEnvironmentKittycadWebSocketUrl,
   updateEnvironmentZookeeperWebSocketUrl,
   generateDomainsFromBaseDomain,
@@ -22,6 +23,7 @@ import {
   reportClientError,
 } from '@src/lib/clientErrors'
 import {
+  readEnvironmentConfigurationApiSubdomain,
   readEnvironmentConfigurationKittycadWebSocketUrl,
   readEnvironmentConfigurationZookeeperWebSocketUrl,
 } from '@src/lib/desktop'
@@ -86,6 +88,7 @@ export interface UserContext {
   fileOperations: Promise<FileOperationsRegistryService>
   user?: UserResponse
   token: string
+  error?: string
 }
 
 export type Events =
@@ -163,6 +166,7 @@ export const authMachine = setup({
           {
             target: 'loggedIn',
             actions: assign(({ context, event }) => ({
+              error: undefined,
               user: event.output.user,
               token: event.output.token || context.token,
             })),
@@ -187,9 +191,14 @@ export const authMachine = setup({
                   },
                 })
               },
-              assign({
-                user: () => undefined,
-              }),
+              assign(({ event }) => ({
+                error:
+                  event.error instanceof Error &&
+                  !isNoTokenFoundError(event.error)
+                    ? event.error.message
+                    : undefined,
+                user: undefined,
+              })),
             ],
           },
         ],
@@ -330,6 +339,13 @@ async function getUser(input: {
     },
   })
 
+  // Update the API subdomain override
+  const cachedApiSubdomain = await readEnvironmentConfigurationApiSubdomain(
+    fileOperations,
+    environment
+  )
+  updateEnvironmentApiSubdomain(environment, cachedApiSubdomain)
+
   // Update the Engine WebSocket URL override
   const cachedKittycadWebSocketUrl =
     await readEnvironmentConfigurationKittycadWebSocketUrl(
@@ -388,7 +404,16 @@ async function getUser(input: {
   if (!token) return Promise.reject(new Error(NO_TOKEN_FOUND_MESSAGE))
 
   const me = await kcCall(() => users.get_user_self({ client }))
-  if (me instanceof Error) return Promise.reject(me)
+  if (me instanceof Error) {
+    if (cachedApiSubdomain) {
+      return Promise.reject(
+        new Error(
+          `Failed to use API override https://${cachedApiSubdomain}.${environment}: ${me.message}`
+        )
+      )
+    }
+    return Promise.reject(me)
+  }
 
   // Necessary here because we use Kurt's API key in CI
   if (localStorage.getItem('FORCE_NO_IMAGE')) {

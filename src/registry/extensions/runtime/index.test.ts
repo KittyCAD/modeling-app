@@ -1,4 +1,4 @@
-import { updateEnvironment } from '@src/env'
+import { updateEnvironment, updateEnvironmentApiSubdomain } from '@src/env'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import runtimeRegistryItem from '@src/registry/extensions/runtime'
 import { Registry } from 'plankton'
@@ -25,7 +25,7 @@ describe('runtime extension', () => {
     expect(runtime.current.value).toEqual(current)
     expect(runtime.refresh()).toEqual(runtime.current.value)
   })
-  it('refreshes runtime metadata when the desktop environment changes', async () => {
+  it('refreshes runtime metadata when the desktop environment or API override changes', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Electron' })
     vi.stubGlobal('electron', {
       process: {
@@ -46,5 +46,18 @@ describe('runtime extension', () => {
       baseDomain: 'customer.example',
       apiBaseUrl: 'https://api.customer.example',
     })
+
+    updateEnvironmentApiSubdomain('customer.example', 'api-pr-3072')
+
+    expect(runtime.current.value).toMatchObject({
+      environmentName: 'customer.example',
+      apiBaseUrl: 'https://api-pr-3072.customer.example',
+    })
+
+    updateEnvironmentApiSubdomain('customer.example', '')
+
+    expect(runtime.current.value.apiBaseUrl).toBe(
+      'https://api.customer.example'
+    )
   })
 })

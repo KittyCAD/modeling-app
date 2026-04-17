@@ -5,6 +5,17 @@ import {
 import { describe, expect, it } from 'vitest'
 
 describe('getEnvironmentLabel', () => {
+  it('shows DNS review labs as a non-standard environment', () => {
+    const label = getEnvironmentLabel('dev.zoo.dev', [
+      new URL('https://api-pr-3072.dev.zoo.dev'),
+      new URL('wss://api.dev.zoo.dev/ws/modeling/commands'),
+      new URL('wss://api.dev.zoo.dev/ws/ml/copilot'),
+    ])
+
+    expect(label).toBe('dev.zoo.dev + api-pr-3072')
+    expect(isNonStandardEnvironment(label, false)).toBe(true)
+  })
+
   it('returns the domain when urls have no overrides', () => {
     expect(
       getEnvironmentLabel('dev.zoo.dev', [

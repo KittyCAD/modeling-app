@@ -12,6 +12,12 @@ export function getEnvironmentLabel(
       label = `${label} + local`
     } else if (url.search) {
       label = `${label} + ${url.search.substring(1)}`
+    } else if (domain && url.hostname !== `api.${domain}`) {
+      const suffix = `.${domain}`
+      const host = url.hostname.endsWith(suffix)
+        ? url.hostname.slice(0, -suffix.length)
+        : url.hostname
+      label = `${label} + ${host}`
     }
   }
   return label

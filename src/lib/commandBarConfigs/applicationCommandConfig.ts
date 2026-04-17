@@ -1,10 +1,11 @@
 import { getFileRoute } from '@src/lib/paths'
 import { selectCommand } from '@src/lib/commandUtils'
 import { createProjectLibraryArgument } from '@src/lib/homeProjects/commands'
-import env from '@src/env'
+import env, { normalizeApiSubdomainOverride } from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
+  writeEnvironmentConfigurationApiSubdomain,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
@@ -21,7 +22,7 @@ import {
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import { getStringAfterLastSeparator, joinOSPaths } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
-import { reportRejection, trap } from '@src/lib/trap'
+import { isErr, reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -33,6 +34,23 @@ import {
 } from '@src/registry/contracts/commands'
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
+
+function getApiSubdomainOverrideFromCurrentEnvironment() {
+  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+  if (!apiBaseUrl || !baseDomain) return ''
+
+  try {
+    const hostname = new URL(apiBaseUrl).hostname
+    const suffix = `.${baseDomain}`
+    if (!hostname.endsWith(suffix)) {
+      return ''
+    }
+    return hostname.slice(0, -suffix.length)
+  } catch {
+    return ''
+  }
+}
 
 async function onSubmitKCLSampleCreation({
   sample,
@@ -448,6 +466,66 @@ export function createApplicationCommands({
     },
   }
 
+  const overrideApiCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
+    name: 'override-api',
+    hide: 'web',
+    displayName: 'Override API',
+    description: 'Route API requests to a custom API subdomain',
+    icon: 'gear',
+    groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const requestedSubdomain = context.argumentsToSubmit.subdomain as
+        | string
+        | undefined
+      const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+      if (!requestedSubdomain || !baseDomain) {
+        return
+      }
+
+      const normalizedSubdomain = normalizeApiSubdomainOverride(
+        requestedSubdomain,
+        baseDomain
+      )
+
+      if (isErr(normalizedSubdomain)) return normalizedSubdomain
+    },
+    onSubmit: (data) => {
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (!environmentName) return
+      const subdomain = normalizeApiSubdomainOverride(
+        data?.subdomain ?? '',
+        environmentName
+      )
+      if (isErr(subdomain)) {
+        trap(subdomain)
+        return
+      }
+      return writeEnvironmentConfigurationApiSubdomain(
+        app.fileOperations,
+        environmentName,
+        subdomain
+      )
+        .then(() => {
+          window.location.reload()
+        })
+        .catch(reportRejection)
+    },
+    args: {
+      subdomain: {
+        inputType: 'string',
+        required: false,
+        displayName: 'Subdomain',
+        description: `
+          Default cluster: **api**
+          Pull Requests: **api-pr-NUMBER**
+        `.trim(),
+        defaultValue: () => getApiSubdomainOverrideFromCurrentEnvironment(),
+      },
+    },
+  }
+
   const overrideZookeeperCommand: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     name: 'override-zookeeper',
@@ -599,6 +677,7 @@ export function createApplicationCommands({
     setLayoutCommand,
     createASample,
     switchEnvironmentsCommand,
+    overrideApiCommand,
     overrideEngineCommand,
     overrideZookeeperCommand,
   ]

@@ -1,11 +1,14 @@
 import env, {
   generateDomainsFromBaseDomain,
   getEnvironmentNameFromEnv,
+  normalizeApiSubdomainOverride,
   processEnv,
+  updateEnvironment,
+  updateEnvironmentApiSubdomain,
   viteEnv,
   windowElectronProcessEnv,
 } from '@src/env'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('@src/env', () => {
   describe('default export', () => {
@@ -158,6 +161,91 @@ describe('@src/env', () => {
           VITE_ZOO_API_BASE_URL: undefined,
         })
       ).toBeUndefined()
+    })
+  })
+
+  describe('runtime API overrides', () => {
+    beforeEach(() => {
+      vi.stubGlobal('electron', {})
+      updateEnvironment('dev.zoo.dev')
+    })
+
+    afterEach(() => {
+      updateEnvironment(null)
+      vi.unstubAllGlobals()
+    })
+
+    it('should override the API URL while keeping the selected base domain', () => {
+      updateEnvironmentApiSubdomain('dev.zoo.dev', 'api-pr-3072')
+
+      const actual = env()
+
+      expect(actual.VITE_ZOO_BASE_DOMAIN).toBe('dev.zoo.dev')
+      expect(actual.VITE_ZOO_API_BASE_URL).toBe(
+        'https://api-pr-3072.dev.zoo.dev'
+      )
+      expect(actual.VITE_ZOO_SITE_BASE_URL).toBe('https://dev.zoo.dev')
+      expect(actual.VITE_ZOO_SITE_APP_URL).toBe('https://app.dev.zoo.dev')
+      expect(actual.VITE_KITTYCAD_WEBSOCKET_URL).toBe(
+        'wss://api.dev.zoo.dev/ws/modeling/commands'
+      )
+      expect(actual.VITE_ZOOKEEPER_WEBSOCKET_URL).toBe(
+        'wss://api.dev.zoo.dev/ws/ml/copilot'
+      )
+    })
+
+    it('restores the configured API URL when the override is cleared', () => {
+      const defaultApiUrl = env().VITE_ZOO_API_BASE_URL
+      updateEnvironmentApiSubdomain('dev.zoo.dev', 'api-pr-3072')
+      updateEnvironmentApiSubdomain('dev.zoo.dev', '')
+
+      expect(env().VITE_ZOO_API_BASE_URL).toBe(defaultApiUrl)
+    })
+
+    it('keeps the override for the same environment and clears it when switching', () => {
+      updateEnvironmentApiSubdomain('dev.zoo.dev', 'api-pr-3072')
+      updateEnvironment('dev.zoo.dev')
+      expect(env().VITE_ZOO_API_BASE_URL).toBe(
+        'https://api-pr-3072.dev.zoo.dev'
+      )
+
+      updateEnvironment('zoo.dev')
+
+      expect(env().VITE_ZOO_BASE_DOMAIN).toBe('zoo.dev')
+      expect(env().VITE_ZOO_API_BASE_URL).not.toContain('api-pr-3072')
+
+      updateEnvironmentApiSubdomain('dev.zoo.dev', 'api-pr-3072')
+      expect(env().VITE_ZOO_API_BASE_URL).not.toContain('api-pr-3072')
+    })
+  })
+
+  describe('normalizeApiSubdomainOverride', () => {
+    it.each([
+      'api-pr-3072',
+      'api-pr-3072.dev.zoo.dev',
+      ' https://API-PR-3072.dev.zoo.dev/ ',
+    ])('accepts a preview subdomain or URL: %s', (requestedValue) => {
+      expect(normalizeApiSubdomainOverride(requestedValue, 'dev.zoo.dev')).toBe(
+        'api-pr-3072'
+      )
+    })
+
+    it.each([
+      'api/path',
+      'api?query',
+      'api#fragment',
+      'user@api',
+      '-api',
+      'api-',
+      'a'.repeat(64),
+    ])('rejects invalid DNS labels: %s', (requestedValue) => {
+      expect(
+        normalizeApiSubdomainOverride(requestedValue, 'dev.zoo.dev')
+      ).toBeInstanceOf(Error)
+    })
+
+    it('accepts an empty value to clear the override', () => {
+      expect(normalizeApiSubdomainOverride('  ', 'dev.zoo.dev')).toBe('')
     })
   })
 })

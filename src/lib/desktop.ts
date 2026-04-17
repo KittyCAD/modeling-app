@@ -1144,6 +1144,17 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   })
 }
 
+export const writeEnvironmentConfigurationApiSubdomain = async (
+  fileOperations: FileOperationsRegistryService,
+  environmentName: string,
+  apiSubdomain: string
+) => {
+  apiSubdomain = apiSubdomain.trim()
+  return updateEnvironmentConfiguration(fileOperations, environmentName, {
+    apiSubdomain,
+  })
+}
+
 export const getEnvironmentConfigurationObject = async (
   fileOperations: FileOperationsRegistryService,
   environmentName: string
@@ -1188,6 +1199,18 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
     return ''
   }
   return environmentConfiguration.kittycadWebSocketUrl.trim()
+}
+
+export const readEnvironmentConfigurationApiSubdomain = async (
+  fileOperations: FileOperationsRegistryService,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    fileOperations,
+    environmentName
+  )
+  if (!environmentConfiguration?.apiSubdomain) return ''
+  return environmentConfiguration.apiSubdomain.trim()
 }
 
 export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (

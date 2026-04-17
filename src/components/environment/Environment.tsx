@@ -10,6 +10,7 @@ import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export function EnvironmentChip() {
   const label = getEnvironmentLabel(env().VITE_ZOO_BASE_DOMAIN, [
+    new URL(env().VITE_ZOO_API_BASE_URL ?? ''),
     new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
     new URL(env().VITE_ZOOKEEPER_WEBSOCKET_URL ?? ''),
   ])
@@ -63,9 +64,25 @@ export function EnvironmentDescription() {
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100 dark:text-chalkboard-10">Account</p>{' '}
-          <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_ZOO_API_BASE_URL}
+          <p className="text-default">API</p>{' '}
+          <p className="text-2 flex flex-row justify-between items-center">
+            <span className="flex-1 min-w-0 truncate">
+              {env().VITE_ZOO_API_BASE_URL}
+            </span>
+            {window.electron && (
+              <ActionButton
+                Element="button"
+                aria-label="Override API"
+                onClick={() => {
+                  selectCommand(commands, {
+                    groupId: 'application',
+                    name: 'override-api',
+                  })
+                }}
+                iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+                className="ml-3 p-0.5 pr-2 flex-shrink-0"
+              />
+            )}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">

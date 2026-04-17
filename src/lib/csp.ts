@@ -5,12 +5,16 @@ import path from 'path'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
 import { net, app, session } from 'electron'
+import { normalizeApiSubdomainOverride } from '@src/env'
 
 import {
   STAGING_BUILD_SUFFIX,
   getAppFolderNameFromBuild,
 } from '@src/lib/appFolderName'
-import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
+import {
+  ENVIRONMENT_CONFIGURATION_FOLDER,
+  ENVIRONMENT_FILE_NAME,
+} from '@src/lib/constants'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -93,17 +97,37 @@ const readEnvironmentDomainForCsp = async () => {
   }
 }
 
-const buildCsp = (domain?: string) => {
+const readApiSubdomainForCsp = async (domain?: string) => {
+  if (!domain) return undefined
+  try {
+    const configPath = path.join(
+      app.getPath('appData'),
+      getEnvironmentFolderName(),
+      ENVIRONMENT_CONFIGURATION_FOLDER,
+      `${domain}.json`
+    )
+    const config = JSON.parse(await fs.promises.readFile(configPath, 'utf8'))
+    if (typeof config?.apiSubdomain !== 'string') return undefined
+    const subdomain = normalizeApiSubdomainOverride(config.apiSubdomain, domain)
+    return typeof subdomain === 'string' ? subdomain || undefined : undefined
+  } catch {
+    return undefined
+  }
+}
+
+const buildCsp = (domain?: string, apiSubdomain?: string) => {
   const connectSources = uniqueSources([
     "'self'",
     'https://plausible.corp.zoo.dev',
     domain ? `https://api.${domain}` : undefined,
     domain ? `wss://api.${domain}` : undefined,
+    domain && apiSubdomain ? `https://${apiSubdomain}.${domain}` : undefined,
   ])
 
   return (
     [
       "default-src 'self'",
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline'",
       "img-src * blob: data: 'unsafe-inline'",
       `connect-src ${connectSources.join(' ')}`,
@@ -115,7 +139,9 @@ const buildCsp = (domain?: string) => {
 
 const buildIndexHtmlWithCsp = async (indexPath: string) => {
   const domain = await readEnvironmentDomainForCsp()
-  const csp = buildCsp(domain)
+  const apiSubdomain = await readApiSubdomainForCsp(domain)
+  if (isStagingOrDebugBuild && !apiSubdomain) return undefined
+  const csp = buildCsp(domain, apiSubdomain)
   const html = await fs.promises.readFile(indexPath, 'utf8')
   const metaTag = `<meta http-equiv="Content-Security-Policy" content="${csp}">`
   const withoutCsp = html.replace(CSP_META_REGEX, '')
@@ -127,10 +153,6 @@ const buildIndexHtmlWithCsp = async (indexPath: string) => {
 }
 
 export const registerFileProtocolCsp = () => {
-  if (isStagingOrDebugBuild) {
-    return
-  }
-
   session.defaultSession.protocol.handle('file', async (request) => {
     const filePath = fileURLToPath(request.url)
 
@@ -144,6 +166,9 @@ export const registerFileProtocolCsp = () => {
 
     try {
       const data = await buildIndexHtmlWithCsp(filePath)
+      if (!data) {
+        return net.fetch(request, { bypassCustomProtocolHandlers: true })
+      }
       return new Response(data, {
         headers: { 'Content-Type': 'text/html' },
       })

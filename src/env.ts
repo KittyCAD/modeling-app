@@ -65,6 +65,31 @@ function notifyEnvironmentDomainChange() {
   }
 }
 
+export function normalizeApiSubdomainOverride(
+  requestedValue: string,
+  baseDomain: string
+) {
+  let hostname = requestedValue.trim().toLowerCase()
+  if (!hostname) return ''
+
+  if (hostname.includes('://')) {
+    try {
+      hostname = new URL(hostname).hostname
+    } catch {
+      return new Error('Invalid API subdomain override')
+    }
+  }
+
+  const suffix = `.${baseDomain.toLowerCase()}`
+  const subdomain = hostname.endsWith(suffix)
+    ? hostname.slice(0, -suffix.length)
+    : hostname
+  if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(subdomain)) {
+    return new Error('Invalid API subdomain override')
+  }
+  return subdomain
+}
+
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
   if (environment === '') {
@@ -76,6 +101,9 @@ export const updateEnvironment = (environment: string | null) => {
     ENVIRONMENT = null
   } else {
     if (ENVIRONMENT) {
+      if (ENVIRONMENT.domain !== environment) {
+        ENVIRONMENT.apiSubdomain = undefined
+      }
       ENVIRONMENT.domain = environment
     } else {
       ENVIRONMENT = {
@@ -97,6 +125,17 @@ export const updateEnvironmentKittycadWebSocketUrl = (
   }
 }
 
+export const updateEnvironmentApiSubdomain = (
+  environmentName: string,
+  apiSubdomain: string
+) => {
+  if (!ENVIRONMENT || ENVIRONMENT.domain !== environmentName) return
+  const subdomain = apiSubdomain || undefined
+  if (ENVIRONMENT.apiSubdomain === subdomain) return
+  ENVIRONMENT.apiSubdomain = subdomain
+  notifyEnvironmentDomainChange()
+}
+
 export const updateEnvironmentZookeeperWebSocketUrl = (
   environmentName: string,
   zookeeperWebSocketUrl: string
@@ -112,6 +151,7 @@ const getEnvironmentFromThisFile = (baseDomain: string | undefined) => {
   return (
     ENVIRONMENT || {
       domain: baseDomain ?? '',
+      apiSubdomain: undefined,
       kittycadWebSocketUrl: undefined,
       zookeeperWebSocketUrl: undefined,
       mlephantWebSocketUrl: undefined,
@@ -222,6 +262,10 @@ export default (): EnvironmentVariables => {
         : undefined
   if (envZookeeperWebSocketUrl) {
     ZOOKEEPER_WEBSOCKET_URL = envZookeeperWebSocketUrl
+  }
+
+  if (environment.apiSubdomain) {
+    API_URL = `https://${environment.apiSubdomain}.${environment.domain || BASE_DOMAIN}`
   }
 
   // Allow the in-app settings to override local WebSocket URLs
