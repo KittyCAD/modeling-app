@@ -36,7 +36,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
-import { isArray } from './lib/utils'
+import { isArray } from '@src/lib/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
