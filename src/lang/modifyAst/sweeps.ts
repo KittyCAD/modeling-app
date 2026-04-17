@@ -22,14 +22,18 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
+  getVariableNameFromNodePath,
+  isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
   Expr,
   LabeledArg,
   PathToNode,
@@ -44,7 +48,10 @@ import {
   KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EngineRegionSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import {
   getFacesExprsFromSelection,
   isFaceArtifact,
@@ -145,6 +152,15 @@ export function addExtrude({
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -327,7 +343,7 @@ export function addSweep({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -345,6 +361,15 @@ export function addSweep({
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -451,7 +476,7 @@ export function addLoft({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -469,6 +494,15 @@ export function addLoft({
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -599,6 +633,15 @@ export function addRevolve({
   }
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -694,6 +737,113 @@ export function addRevolve({
 }
 
 // Utilities
+
+function addHideCallsForRegionSketches({
+  engineRegions,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  engineRegions: EngineRegionSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Node<Program> {
+  let updatedAst = modifiedAst
+  const hiddenSketches = collectHiddenSketchNames(updatedAst)
+  const hiddenSketchIds = new Set<string>()
+
+  for (const regionSelection of engineRegions) {
+    if (hiddenSketchIds.has(regionSelection.sketchId)) {
+      continue
+    }
+
+    const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+    if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+      return new Error("Couldn't retrieve sketch block artifact")
+    }
+
+    const sketchVarNameForHide = getVariableNameFromNodePath(
+      sketchArtifact.codeRef.pathToNode,
+      updatedAst,
+      wasmInstance
+    )
+    if (!sketchVarNameForHide) {
+      return new Error("Couldn't retrieve sketch block variable")
+    }
+
+    if (hiddenSketches.has(sketchVarNameForHide)) {
+      hiddenSketchIds.add(regionSelection.sketchId)
+      continue
+    }
+
+    const hideResult = addHide({
+      ast: updatedAst,
+      artifactGraph,
+      objects: {
+        graphSelections: [
+          {
+            artifact: sketchArtifact,
+            codeRef: sketchArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance,
+    })
+    if (err(hideResult)) {
+      return hideResult
+    }
+
+    updatedAst = hideResult.modifiedAst
+    hiddenSketchIds.add(regionSelection.sketchId)
+    hiddenSketches.add(sketchVarNameForHide)
+  }
+
+  return updatedAst
+}
+
+function collectHiddenSketchNames(modifiedAst: Node<Program>): Set<string> {
+  const hiddenSketches = new Set<string>()
+
+  for (const bodyItem of modifiedAst.body) {
+    const maybeCall =
+      bodyItem.type === 'VariableDeclaration'
+        ? bodyItem.declaration.init
+        : bodyItem.type === 'ExpressionStatement'
+          ? bodyItem.expression
+          : undefined
+
+    if (!maybeCall || !isCallExprWithName(maybeCall, 'hide')) {
+      continue
+    }
+
+    const sketchNames = getSketchNamesFromHideArg(maybeCall.unlabeled)
+    sketchNames.forEach((name) => hiddenSketches.add(name))
+  }
+
+  return hiddenSketches
+}
+
+function getSketchNamesFromHideArg(
+  hideArg: CallExpressionKw['unlabeled']
+): string[] {
+  if (!hideArg) {
+    return []
+  }
+
+  if (hideArg.type === 'Name') {
+    return [hideArg.name.name]
+  }
+
+  if (hideArg.type === 'ArrayExpression') {
+    return hideArg.elements
+      .filter((element) => element.type === 'Name')
+      .map((element) => element.name.name)
+  }
+
+  return []
+}
 
 export function getAxisExpression(
   axis: string | undefined,
