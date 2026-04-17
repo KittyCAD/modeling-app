@@ -7,10 +7,19 @@ import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { updateEnvironment } from '@src/env'
+import {
+  generateDomainsFromBaseDomain,
+  updateEnvironment,
+  updateEnvironmentApiSubdomain,
+} from '@src/env'
 import env from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
-import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
+import {
+  readEnvironmentConfigurationApiSubdomain,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationApiSubdomain,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
@@ -29,6 +38,7 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
+  const authState = auth.useAuthState()
   // Only create the native file menus on desktop
   if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
@@ -46,6 +56,7 @@ const SignIn = () => {
   const [selectedEnvironment, setSelectedEnvironment] = useState(
     lastSelectedEnvironmentName
   )
+  const [apiSubdomainOverride, setApiSubdomainOverride] = useState('')
 
   // See if the user added a real URL if they did, auto take the hostname!
   const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
@@ -88,11 +99,40 @@ const SignIn = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (!window.electron || !selectedEnvironment) {
+      setApiSubdomainOverride('')
+      return
+    }
+
+    readEnvironmentConfigurationApiSubdomain(selectedEnvironment)
+      .then(setApiSubdomainOverride)
+      .catch(reportRejection)
+  }, [selectedEnvironment])
+
   const {
     app: { theme },
   } = settings.useSettings()
   const signInUrl = generateSignInUrl()
   const kclSampleUrl = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
+  const defaultApiUrl =
+    generateDomainsFromBaseDomain(selectedEnvironment).API_URL
+  const activeApiUrl =
+    apiSubdomainOverride && selectedEnvironment
+      ? `https://${apiSubdomainOverride}.${selectedEnvironment}`
+      : defaultApiUrl
+
+  const clearApiOverride = useCallback(() => {
+    const environmentName = selectedEnvironment.trim()
+    if (!window.electron || !environmentName) return
+
+    writeEnvironmentConfigurationApiSubdomain(environmentName, '')
+      .then(() => {
+        updateEnvironmentApiSubdomain(environmentName, '')
+        window.location.reload()
+      })
+      .catch(reportRejection)
+  }, [selectedEnvironment])
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -178,6 +218,35 @@ const SignIn = () => {
             </p>
             {window.electron ? (
               <div className="flex flex-col gap-2">
+                {apiSubdomainOverride && (
+                  <div className="mt-4 max-w-xl rounded-lg border border-solid border-destroy-60/40 bg-destroy-10/70 px-4 py-3 text-sm text-chalkboard-90 dark:bg-destroy-90/20 dark:text-chalkboard-10">
+                    <p className="font-medium text-destroy-80 dark:text-destroy-20">
+                      API override active
+                    </p>
+                    <p className="mt-1 break-all">
+                      Using <code>{activeApiUrl}</code> instead of{' '}
+                      <code>{defaultApiUrl}</code>.
+                    </p>
+                    {authState.context.error && (
+                      <p className="mt-2 text-destroy-80 dark:text-destroy-20">
+                        {authState.context.error}
+                      </p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <ActionButton
+                        Element="button"
+                        onClick={clearApiOverride}
+                        iconStart={{
+                          icon: 'close',
+                          bgClassName: '!bg-transparent',
+                        }}
+                        className="!bg-destroy-70 !text-chalkboard-10 !border-transparent"
+                      >
+                        Clear API override
+                      </ActionButton>
+                    </div>
+                  </div>
+                )}
                 {!userCode ? (
                   <>
                     <button

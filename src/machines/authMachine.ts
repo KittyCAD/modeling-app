@@ -2,6 +2,7 @@ import type { UserResponse } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
+  updateEnvironmentApiSubdomain,
   updateEnvironmentKittycadWebSocketUrl,
   updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
@@ -16,6 +17,7 @@ import {
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
 import {
+  readEnvironmentConfigurationApiSubdomain,
   readEnvironmentConfigurationKittycadWebSocketUrl,
   readEnvironmentConfigurationMlephantWebSocketUrl,
 } from '@src/lib/desktop'
@@ -34,6 +36,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 export interface UserContext {
   user?: UserResponse
   token: string
+  error?: string
 }
 
 export type Events =
@@ -96,6 +99,7 @@ export const authMachine = setup({
           {
             target: 'loggedIn',
             actions: assign(({ context, event }) => ({
+              error: undefined,
               user: event.output.user,
               token: event.output.token || context.token,
             })),
@@ -104,9 +108,14 @@ export const authMachine = setup({
         onError: [
           {
             target: 'loggedOut',
-            actions: assign({
-              user: () => undefined,
-            }),
+            actions: assign(({ event }) => ({
+              error:
+                event.error instanceof Error &&
+                event.error.message !== 'No token found'
+                  ? event.error.message
+                  : undefined,
+              user: undefined,
+            })),
           },
         ],
       },
@@ -177,6 +186,13 @@ async function getUser(input: { token?: string }) {
     (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
   updateEnvironment(environment)
 
+  // Update the API subdomain override
+  const cachedApiSubdomain =
+    await readEnvironmentConfigurationApiSubdomain(environment)
+  if (cachedApiSubdomain) {
+    updateEnvironmentApiSubdomain(environment, cachedApiSubdomain)
+  }
+
   // Update the Engine WebSocket URL override
   const cachedKittycadWebSocketUrl =
     await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
@@ -219,7 +235,16 @@ async function getUser(input: { token?: string }) {
   if (!token) return Promise.reject(new Error('No token found'))
 
   const me = await kcCall(() => users.get_user_self({ client }))
-  if (me instanceof Error) return Promise.reject(me)
+  if (me instanceof Error) {
+    if (cachedApiSubdomain) {
+      return Promise.reject(
+        new Error(
+          `Failed to use API override https://${cachedApiSubdomain}.${environment}: ${me.message}`
+        )
+      )
+    }
+    return Promise.reject(me)
+  }
 
   // Necessary here because we use Kurt's API key in CI
   if (localStorage.getItem('FORCE_NO_IMAGE')) {
