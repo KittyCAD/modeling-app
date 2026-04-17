@@ -69,6 +69,7 @@ export interface ToolbarItemCallbackProps {
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
   isActive: boolean
+  keepSelection: boolean
 }
 
 export type ToolbarItem = {
@@ -119,6 +120,8 @@ export const isToolbarItemResolvedDropdown = (
 ): item is ToolbarItemResolvedDropdown => {
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
+
+const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
@@ -1200,6 +1203,7 @@ export const useToolbarConfig = () => {
                 title: 'Length',
                 showTitle: false,
                 description: 'Constrain the length of a straight segment.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1215,6 +1219,7 @@ export const useToolbarConfig = () => {
                 title: 'Angle',
                 showTitle: false,
                 description: 'Constrain the angle between two segments.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1231,6 +1236,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain a straight segment to be vertical relative to the sketch.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1247,6 +1253,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain a straight segment to be horizontal relative to the sketch.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1262,6 +1269,7 @@ export const useToolbarConfig = () => {
                 title: 'Parallel',
                 showTitle: false,
                 description: 'Constrain two segments to be parallel.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1278,6 +1286,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain two or more segments to have equal length.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1294,6 +1303,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain the horizontal distance between two points.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1310,6 +1320,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain the vertical distance between two points.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1325,6 +1336,7 @@ export const useToolbarConfig = () => {
                 title: 'Absolute X',
                 showTitle: false,
                 description: 'Constrain the x-coordinate of a point.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1340,6 +1352,7 @@ export const useToolbarConfig = () => {
                 title: 'Absolute Y',
                 showTitle: false,
                 description: 'Constrain the y-coordinate of a point.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1356,6 +1369,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Constrain the perpendicular distance between two segments.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1372,6 +1386,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Align the ends of two or more segments horizontally.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1388,6 +1403,7 @@ export const useToolbarConfig = () => {
                 showTitle: false,
                 description:
                   'Align the ends of two or more segments vertically.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1403,6 +1419,7 @@ export const useToolbarConfig = () => {
                 title: 'Snap to X',
                 showTitle: false,
                 description: 'Snap a point to an x-coordinate.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1418,6 +1435,7 @@ export const useToolbarConfig = () => {
                 title: 'Snap to Y',
                 showTitle: false,
                 description: 'Snap a point to a y-coordinate.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1679,23 +1697,26 @@ export const useToolbarConfig = () => {
           'break',
           {
             id: 'coincident',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'coincident',
+                keepSelection,
               }),
             icon: 'coincident',
             status: 'available',
             title: 'Coincident',
             hotkey: 'X',
             description: 'Constrain points or curves to be coincident.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Tangent',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Tangent',
+                keepSelection,
               }),
             icon: 'tangent',
             status: 'available',
@@ -1709,42 +1730,48 @@ export const useToolbarConfig = () => {
             hotkey: 'T',
             description:
               'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Parallel',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Parallel',
+                keepSelection,
               }),
             icon: 'parallel',
             status: 'available',
             title: 'Parallel',
             hotkey: 'B',
             description: 'Constrain lines or curves to be parallel.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Perpendicular',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Perpendicular',
+                keepSelection,
               }),
             icon: 'perpendicular',
             status: 'available',
             title: 'Perpendicular',
             hotkey: 'Shift+B',
             description: 'Constrain lines or curves to be perpendicular.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'equalLength',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'EqualLength',
+                keepSelection,
               }),
             icon: 'equal',
             status: 'available',
@@ -1758,42 +1785,48 @@ export const useToolbarConfig = () => {
             hotkey: 'E',
             description:
               'Constrain lines to have equal length, or arcs and circles to have equal radius.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'vertical',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Vertical',
+                keepSelection,
               }),
             icon: 'vertical',
             status: 'available',
             title: 'Vertical',
             hotkey: 'V',
             description: 'Constrain lines to be vertical.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Horizontal',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Horizontal',
+                keepSelection,
               }),
             icon: 'horizontal',
             status: 'available',
             title: 'Horizontal',
             hotkey: 'H',
             description: 'Constrain lines to be horizontal.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Fixed',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Fixed',
+                keepSelection,
               }),
             icon: 'fix',
             status: 'available',
@@ -1807,14 +1840,16 @@ export const useToolbarConfig = () => {
             hotkey: 'F',
             description:
               'Lock selected points to their current x and y positions.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Dimension',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Dimension',
+                keepSelection,
               }),
             icon: 'dimension',
             status: 'available',
@@ -1822,34 +1857,39 @@ export const useToolbarConfig = () => {
             hotkey: 'D',
             description:
               'Constrain distance between points, length of lines, or radius of arcs.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'HorizontalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'HorizontalDistance',
+                keepSelection,
               }),
             icon: 'horizontalDimension',
             status: 'available',
             title: 'Horizontal Distance',
             hotkey: 'Alt+D',
             description: 'Constrain horizontal distance between two points.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'VerticalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'VerticalDistance',
+                keepSelection,
               }),
             icon: 'verticalDimension',
             status: 'available',
             title: 'Vertical Distance',
             hotkey: 'Shift+D',
             description: 'Constrain vertical distance between two points.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },

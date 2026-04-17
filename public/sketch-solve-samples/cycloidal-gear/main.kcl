@@ -3,43 +3,118 @@
 // Categories: Manufacturing, Medical
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
-// Create a function for the cycloidal gear
-fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle: number(deg)) {
-  // Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height
-  fn gearSketch(@gHeight) {
-    helixAngleP = helixAngle * gHeight / gearHeight
-    gearProfile = startSketchOn(offsetPlane(XY, offset = gHeight))
-      |> startProfile(at = [
-           gearPitch * 1.55 * cos(helixAngleP) + gearPitch * sin(-helixAngleP),
-           gearPitch * 1.55 * sin(helixAngleP) + gearPitch * cos(-helixAngleP)
-         ])
-      |> arc(angleStart = 90deg + helixAngleP, angleEnd = -90deg + helixAngleP, radius = gearPitch)
-      |> tangentialArc(radius = gearPitch * 1.67, angle = 60deg)
-      |> tangentialArc(radius = gearPitch, angle = -180deg)
-      |> tangentialArc(radius = gearPitch * 1.67, angle = 60deg)
-      |> tangentialArc(radius = gearPitch, angle = -180deg)
-      |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-      |> subtract2d(tool = circle(center = [0, 0], radius = holeDiameter / 2))
-    return gearProfile
-  }
+gearPitch = 0.3
+gearHeight = 1.5
+holeDiameter = 0.297
+helixAngle = -80deg
 
-  // Draw sketches of the gear profile along the gear height and loft them together
-  gearLoft = loft([
-    gearSketch(0),
-    gearSketch(gearHeight / 2),
-    gearSketch(gearHeight)
+smallRadius = gearPitch
+largeRadius = gearPitch * 1.67
+centerSpacing = smallRadius + largeRadius
+centerOffsetX = gearPitch * 1.55
+outerProbeRadius = 0.2in
+boreProbeRadius = holeDiameter / 4
+
+outerProfile = sketch(on = XY) {
+  baseline = line(start = [var 0in, var 0in], end = [var 0.3in, var 0in], construction = true)
+
+  c2ToC1 = line(start = [var 0.465in, var -0.801in], end = [var 0.465in, var 0in], construction = true)
+  c1ToC6 = line(start = [var 0.465in, var 0in], end = [var 0.465in, var 0.801in], construction = true)
+  c2ToC3 = line(start = [var 0.465in, var -0.801in], end = [var -0.229in, var -0.401in], construction = true)
+  c3ToC4 = line(start = [var -0.229in, var -0.401in], end = [var -0.922in, var 0in], construction = true)
+  c4ToC5 = line(start = [var -0.922in, var 0in], end = [var -0.229in, var 0.401in], construction = true)
+  c5ToC6 = line(start = [var -0.229in, var 0.401in], end = [var 0.465in, var 0.801in], construction = true)
+
+  coincident([baseline.start, ORIGIN])
+  horizontal(baseline)
+  distance([baseline.start, baseline.end]) == gearPitch
+
+  coincident([c2ToC1.end, c1ToC6.start])
+  coincident([c2ToC1.start, c2ToC3.start])
+  coincident([c2ToC3.end, c3ToC4.start])
+  coincident([c3ToC4.end, c4ToC5.start])
+  coincident([c4ToC5.end, c5ToC6.start])
+  coincident([c5ToC6.end, c1ToC6.end])
+
+  vertical(c2ToC1)
+  vertical(c1ToC6)
+  angle([baseline, c2ToC3]) == 150deg
+  angle([baseline, c4ToC5]) == 30deg
+  parallel([c2ToC3, c3ToC4])
+  parallel([c4ToC5, c5ToC6])
+
+  equalLength([
+    c2ToC1,
+    c1ToC6,
+    c2ToC3,
+    c3ToC4,
+    c4ToC5,
+    c5ToC6
   ])
+  distance([c2ToC1.start, c2ToC1.end]) == centerSpacing
+  horizontalDistance([ORIGIN, c2ToC1.end]) == centerOffsetX
+  verticalDistance([ORIGIN, c2ToC1.end]) == 0in
 
-  return gearLoft
+  arc1 = arc(start = [var 0.465in, var -0.3in], end = [var 0.465in, var 0.3in], center = [var 0.465in, var 0in])
+  arc2 = arc(start = [var 0.465in, var -0.3in], end = [var 0.031in, var -0.551in], center = [var 0.465in, var -0.801in])
+  arc3 = arc(start = [var -0.488in, var -0.251in], end = [var 0.031in, var -0.551in], center = [var -0.229in, var -0.401in])
+  arc4 = arc(start = [var -0.488in, var -0.251in], end = [var -0.488in, var 0.251in], center = [var -0.922in, var 0in])
+  arc5 = arc(start = [var 0.031in, var 0.551in], end = [var -0.488in, var 0.251in], center = [var -0.229in, var 0.401in])
+  arc6 = arc(start = [var 0.031in, var 0.551in], end = [var 0.465in, var 0.3in], center = [var 0.465in, var 0.801in])
+
+  coincident([arc1.center, c2ToC1.end])
+  coincident([arc2.center, c2ToC1.start])
+  coincident([arc3.center, c2ToC3.end])
+  coincident([arc4.center, c3ToC4.end])
+  coincident([arc5.center, c4ToC5.end])
+  coincident([arc6.center, c1ToC6.end])
+
+  radius(arc1) == smallRadius
+  radius(arc2) == largeRadius
+  radius(arc3) == smallRadius
+  radius(arc4) == largeRadius
+  radius(arc5) == smallRadius
+  radius(arc6) == largeRadius
+
+  coincident([arc1.start, arc2.start])
+  coincident([arc2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, arc5.end])
+  coincident([arc5.start, arc6.start])
+  coincident([arc6.end, arc1.end])
+
+  coincident([arc1.start, c2ToC1])
+  coincident([arc2.end, c2ToC3])
+  coincident([arc3.start, c3ToC4])
+  coincident([arc4.end, c4ToC5])
+  coincident([arc5.start, c5ToC6])
+  coincident([arc6.end, c1ToC6])
 }
 
-// Call the cycloidal gear function
-cycloidalGear(
-  gearPitch = .3,
-  gearHeight = 1.5,
-  holeDiameter = 0.297,
-  helixAngle = -80deg,
+boreProfile = sketch(on = XY) {
+  hole = circle(start = [var 0.149in, var 0in], center = [var 0in, var 0in])
+  coincident([hole.center, ORIGIN])
+  radius(hole) == holeDiameter / 2
+  horizontalDistance([hole.center, hole.start]) == holeDiameter / 2
+  verticalDistance([hole.center, hole.start]) == 0in
+}
+
+outerRegion = region(point = [0in, outerProbeRadius], sketch = outerProfile)
+boreRegion = region(point = [boreProbeRadius, 0in], sketch = boreProfile)
+
+gearBlank = extrude(
+  outerRegion,
+  length = gearHeight,
+  twistAngle = helixAngle,
+  twistCenter = [0in, 0in],
 )
+gearBore = extrude(boreRegion, length = gearHeight)
+
+hiddenGearBlank = hide(gearBlank)
+hiddenGearBore = hide(gearBore)
+gearLoft = subtract([hiddenGearBlank], tools = [hiddenGearBore])
+
+hide(outerProfile)
+hide(boreProfile)

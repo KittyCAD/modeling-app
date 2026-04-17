@@ -1,0 +1,17 @@
+// Contra-Rotor Module
+// Shaft, spine teeth, and sample instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import "contra-shaft.kcl" as contraShaft
+import "contra-propeller-assembly.kcl" as contraPropellerAssembly
+
+translate(contraShaft, y = -770, global = true)
+translate(contraPropellerAssembly, y = -630, global = true)
+
+// Build helical gear and propeller bodies
+helicalGear(nTeeth = 28, helixAngle = -25deg, bore = 300)
+  |> translate(y = -200, global = true)

@@ -226,11 +226,7 @@ export const machine = setup({
             }
           }
 
-          const snapConstraint = getConstraintForSnapTarget(
-            pointId,
-            snapTarget,
-            units
-          )
+          const snapConstraint = getConstraintForSnapTarget(pointId, snapTarget)
           if (snapConstraint === null) {
             return result
           }
