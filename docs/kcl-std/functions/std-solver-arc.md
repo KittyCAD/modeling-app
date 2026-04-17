@@ -60,4 +60,26 @@ solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
 >
 </model-viewer>
 
+```kcl
+height = 2
+profile = sketch(on = XY) {
+  arc1 = arc(start = [0, 0], end = [0, height], center = [0, height / 2])
+}
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the solver::arc function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-arc1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-arc1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 

@@ -43,11 +43,11 @@ export fn helicalGear(nTeeth, helixAngle, bore) {
     |> close()
     |> subtract2d(tool = circle(diameter = bore))
   gear = extrude(
-         sketch001,
-         length = gearHeight,
-         twistAngle = (360 * gearHeight * tan(helixAngle) / (PI * pitchDiameter)): deg,
-         twistAngleStep = 0,
-       )
+    sketch001,
+    length = gearHeight,
+    twistAngle = (360 * gearHeight * tan(helixAngle) / (PI * pitchDiameter)): deg,
+    twistAngleStep = 0,
+  )
 
   return gear
 }

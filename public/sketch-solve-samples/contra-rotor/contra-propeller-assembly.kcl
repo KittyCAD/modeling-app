@@ -1,0 +1,13 @@
+// Propeller Assembly
+// Rotating blade set with hub and twisted blades
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+import "contra-propeller-hub.kcl" as contraPropellerHub
+import "contra-propeller-blades.kcl" as contraPropellerBlades
+
+contraPropellerAssembly = [
+  contraPropellerHub,
+  contraPropellerBlades
+]

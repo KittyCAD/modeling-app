@@ -1,5 +1,6 @@
 import type RustContext from '@src/lib/rustContext'
 import type {
+  ApiConstraint,
   SceneGraphDelta,
   SourceDelta,
   SegmentCtor,
@@ -378,11 +379,7 @@ export async function createDraftRectangle({
     lastOperation = equalDiagonals
   }
 
-  const snapConstraint = getConstraintForSnapTarget(
-    originPointId,
-    snapTarget,
-    units
-  )
+  const snapConstraint = getConstraintForSnapTarget(originPointId, snapTarget)
   if (snapConstraint !== null) {
     const snapResult = await rustContext.addConstraint(
       0,
@@ -897,7 +894,7 @@ async function addSingleLineConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    { type, line },
+    { type, line } as ApiConstraint,
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)
