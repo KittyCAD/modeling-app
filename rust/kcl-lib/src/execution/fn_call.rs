@@ -465,7 +465,7 @@ impl FunctionSource {
         if self.is_std()
             && let Ok(Some(result)) = &mut result
         {
-            update_memory_for_tags_of_geometry(self.std_fn_name(), &args.unlabeled, result, exec_state)?;
+            update_memory_for_tags_of_geometry(result, exec_state)?;
         }
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
@@ -481,33 +481,41 @@ impl FunctionBody {
     }
 }
 
-fn is_extruding_a_region(std_fn_name: Option<&str>, unlabeled_arg: &KclValue) -> bool {
-    if !is_extruding(std_fn_name) {
-        return false;
+fn originates_from_sketch_block(value: &KclValue) -> bool {
+    match value {
+        KclValue::Uuid { .. } => false,
+        KclValue::Bool { .. } => false,
+        KclValue::Number { .. } => false,
+        KclValue::String { .. } => false,
+        KclValue::SketchVar { .. } => true,
+        KclValue::SketchConstraint { .. } => true,
+        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
+        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
+        // TODO: sketch block result should return true.
+        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::TagIdentifier(_) => false,
+        KclValue::TagDeclarator(_) => false,
+        KclValue::GdtAnnotation { .. } => false,
+        KclValue::Plane { .. } => false,
+        KclValue::Face { .. } => false,
+        KclValue::BoundedEdge { .. } => false,
+        KclValue::Segment { .. } => true,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Solid { value: solid } => solid
+            .sketch()
+            .map(|sketch| sketch.origin_sketch_id.is_some())
+            .unwrap_or(false),
+        KclValue::Helix { .. } => false,
+        KclValue::ImportedGeometry(_) => false,
+        KclValue::Function { .. } => false,
+        KclValue::Module { .. } => false,
+        KclValue::Type { .. } => false,
+        KclValue::KclNone { .. } => false,
     }
-    let Some(sketch) = unlabeled_arg.as_sketch() else {
-        return false;
-    };
-    sketch.origin_sketch_id.is_some()
 }
 
-fn is_extruding(std_fn_name: Option<&str>) -> bool {
-    let Some(fn_name) = std_fn_name else {
-        return false;
-    };
-    match fn_name {
-        "std::sketch::extrude" | "std::sketch::revolve" | "std::sketch::loft" | "std::sketch::sweep" => true,
-        _ => false,
-    }
-}
-
-fn update_memory_for_tags_of_geometry(
-    std_fn_name: Option<&str>,
-    unlabeled_arg: &KclValue,
-    result: &mut KclValue,
-    exec_state: &mut ExecState,
-) -> Result<(), KclError> {
-    if std_fn_name == Some("std::sketch::region") || is_extruding_a_region(std_fn_name, unlabeled_arg) {
+fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    if originates_from_sketch_block(&*result) {
         return Ok(());
     }
     // If the return result is a sketch or solid, we want to update the
@@ -634,7 +642,7 @@ fn update_memory_for_tags_of_geometry(
         }
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
-                update_memory_for_tags_of_geometry(std_fn_name, v, exec_state)?;
+                update_memory_for_tags_of_geometry(v, exec_state)?;
             }
         }
         _ => {}

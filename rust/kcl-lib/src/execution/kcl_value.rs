@@ -262,10 +262,6 @@ impl FunctionSource {
     pub(crate) fn is_std(&self) -> bool {
         self.std_props.is_some()
     }
-
-    pub(crate) fn std_fn_name(&self) -> Option<&str> {
-        self.std_props.as_ref().map(|p| p.name.as_str())
-    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
