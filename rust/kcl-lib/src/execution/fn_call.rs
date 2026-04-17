@@ -464,9 +464,8 @@ impl FunctionSource {
 
         if self.is_std()
             && let Ok(Some(result)) = &mut result
-            && self.std_fn_name() != Some("std::sketch::region")
         {
-            update_memory_for_tags_of_geometry(result, exec_state)?;
+            update_memory_for_tags_of_geometry(self.std_fn_name(), &args.unlabeled, result, exec_state)?;
         }
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
@@ -482,7 +481,35 @@ impl FunctionBody {
     }
 }
 
-fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+fn is_extruding_a_region(std_fn_name: Option<&str>, unlabeled_arg: &KclValue) -> bool {
+    if !is_extruding(std_fn_name) {
+        return false;
+    }
+    let Some(sketch) = unlabeled_arg.as_sketch() else {
+        return false;
+    };
+    sketch.origin_sketch_id.is_some()
+}
+
+fn is_extruding(std_fn_name: Option<&str>) -> bool {
+    let Some(fn_name) = std_fn_name else {
+        return false;
+    };
+    match fn_name {
+        "std::sketch::extrude" | "std::sketch::revolve" | "std::sketch::loft" | "std::sketch::sweep" => true,
+        _ => false,
+    }
+}
+
+fn update_memory_for_tags_of_geometry(
+    std_fn_name: Option<&str>,
+    unlabeled_arg: &KclValue,
+    result: &mut KclValue,
+    exec_state: &mut ExecState,
+) -> Result<(), KclError> {
+    if std_fn_name == Some("std::sketch::region") || is_extruding_a_region(std_fn_name, unlabeled_arg) {
+        return Ok(());
+    }
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
@@ -607,7 +634,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         }
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
-                update_memory_for_tags_of_geometry(v, exec_state)?;
+                update_memory_for_tags_of_geometry(std_fn_name, v, exec_state)?;
             }
         }
         _ => {}
