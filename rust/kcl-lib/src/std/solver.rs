@@ -504,9 +504,9 @@ pub(crate) async fn create_segments_in_engine(
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN, build_open_uniform_knot_vector, sample_control_point_spline_points,
-    };
+    use super::CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN;
+    use super::build_open_uniform_knot_vector;
+    use super::sample_control_point_spline_points;
 
     fn assert_point_approx_eq(actual: [f64; 2], expected: [f64; 2]) {
         assert!(
