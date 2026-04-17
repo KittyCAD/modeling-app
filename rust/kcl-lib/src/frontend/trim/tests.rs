@@ -1551,6 +1551,33 @@ async fn test_trim_remove_coincident_point_from_segment_end() {
     assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
 }
 
+#[tokio::test]
+async fn test_trim_remove_point_axis_constraint_from_segment_end() {
+    let base_kcl_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
+  vertical([line1.end, line2.start])
+  line3 = line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
+  horizontal([line2.end, line3.start])
+  arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
+
+    let expected_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
+  line3 = line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
+  horizontal([line2.end, line3.start])
+  arc1 = arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+  coincident([line2.start, arc1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
 /// Same logical trim line [[-15, 50], [-15, -50]] (vertical at -15mm) and equivalent sketches in cm vs mm.
 /// Trim line should produce equivalent trimmed sketches regardless of sketch default unit.
 #[tokio::test]
@@ -2032,6 +2059,34 @@ async fn test_split_trim_migrate_horizontal_constraint() {
 }
 
 #[tokio::test]
+async fn test_split_trim_migrate_horizontal_points_constraint() {
+    let base_kcl_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  point1 = point(at = [var 5mm, var 1.26mm])
+  horizontal([line1.end, point1])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
+
+    let expected_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  point1 = point(at = [var 5mm, var 1.26mm])
+  line4 = line(start = [var 2.12mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
+  coincident([line1.end, line2])
+  coincident([line4.start, line3])
+  horizontal([line4.end, point1])
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
 async fn test_split_trim_migrate_vertical_constraint() {
     // split trim should migrate vertical constraint to new segment
     let base_kcl_code = r#"sketch(on = YZ) {
@@ -2053,6 +2108,34 @@ async fn test_split_trim_migrate_vertical_constraint() {
   coincident([line1.end, line2])
   coincident([line4.start, line3])
   vertical(line4)
+}
+"#;
+
+    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+}
+
+#[tokio::test]
+async fn test_split_trim_migrate_vertical_points_constraint() {
+    let base_kcl_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var -2.66mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  point1 = point(at = [var -0.36mm, var -4mm])
+  vertical([line1.end, point1])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
+
+    let expected_code = r#"sketch(on = YZ) {
+  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  point1 = point(at = [var -0.36mm, var -4mm])
+  line4 = line(start = [var -0.36mm, var -0.87mm], end = [var -0.36mm, var -2.66mm])
+  coincident([line1.end, line2])
+  coincident([line4.start, line3])
+  vertical([line4.end, point1])
 }
 "#;
 

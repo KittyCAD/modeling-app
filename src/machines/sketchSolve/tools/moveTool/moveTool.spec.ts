@@ -10,6 +10,7 @@ import {
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import type {
+  ApiConstraint,
   ApiObject,
   SceneGraphDelta,
   SourceDelta,
@@ -47,35 +48,48 @@ function createOnClickDeps(objects: ApiObject[] = []) {
 function createConstraintApiObject({
   id,
   type,
+  line = 3,
+  points,
 }: {
   id: number
-  type: 'Distance' | 'Horizontal'
+  type: 'Distance' | 'Horizontal' | 'Vertical'
+  line?: number
+  points?: Array<number | 'ORIGIN'>
 }): ApiObject {
+  let constraint: ApiConstraint
+  if (type === 'Distance') {
+    constraint = {
+      type,
+      points: [1, 2],
+      distance: { value: 10, units: 'Mm' },
+      source: {
+        expr: '10',
+        is_literal: true,
+      },
+    }
+  } else if (points) {
+    constraint = {
+      type,
+      points,
+    } as ApiConstraint
+  } else {
+    constraint = {
+      type,
+      line,
+    } as ApiConstraint
+  }
+
   return {
     id,
     kind: {
       type: 'Constraint',
-      constraint:
-        type === 'Distance'
-          ? {
-              type,
-              points: [1, 2],
-              distance: { value: 10, units: 'Mm' },
-              source: {
-                expr: '10',
-                is_literal: true,
-              },
-            }
-          : {
-              type,
-              line: 3,
-            },
+      constraint,
     },
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
-  } as ApiObject
+    source: { type: 'Simple', range: [0, 0, 0], node_path: { steps: [] } },
+  }
 }
 
 function createDraggedEntityIdGetter(entityId: number | null = null) {
@@ -859,6 +873,142 @@ describe('createOnDragCallback', () => {
         }),
       })
     )
+  })
+
+  it('adds a horizontal point-alignment constraint when snapping a dragged point to the x axis', async () => {
+    const draggedPoint = createPointApiObject({
+      id: 4,
+      x: 20,
+      y: 10,
+      owner: 11,
+    })
+    const draggedStart = createPointApiObject({
+      id: 3,
+      x: 10,
+      y: 0,
+      owner: 11,
+    })
+    const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
+
+    const { onDragStart, onDragEnd, rustContext } = setUpMoveToolCallbacks({
+      apiObjects: [draggedStart, draggedPoint, draggedLine],
+      hoveredId: 4,
+      selectedIds: [4],
+    })
+
+    const editResult = {
+      kclSource: { text: 'edited' },
+      sceneGraphDelta: createSceneGraphDelta([
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+      ]),
+      checkpointId: null,
+    }
+    const addResult = {
+      kclSource: { text: 'constrained' },
+      sceneGraphDelta: createSceneGraphDelta([
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+      ]),
+      checkpointId: null,
+    }
+    ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+    ;(rustContext.addConstraint as any).mockResolvedValue(addResult)
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(20, 10),
+        threeD: new Vector3(20, 10, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDragEnd({
+      intersectionPoint: {
+        twoD: new Vector2(20, 1),
+        threeD: new Vector3(20, 1, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(rustContext.addConstraint).toHaveBeenCalledTimes(1)
+    expect(rustContext.addConstraint.mock.calls[0]?.[2]).toEqual({
+      type: 'Horizontal',
+      points: [4, 'ORIGIN'],
+    })
+  })
+
+  it('does not add a duplicate horizontal point-alignment constraint when re-snapping to the x axis', async () => {
+    const draggedPoint = createPointApiObject({
+      id: 4,
+      x: 20,
+      y: 10,
+      owner: 11,
+    })
+    const draggedStart = createPointApiObject({
+      id: 3,
+      x: 10,
+      y: 0,
+      owner: 11,
+    })
+    const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+      points: [4, 'ORIGIN'],
+    })
+
+    const { onDragStart, onDragEnd, rustContext } = setUpMoveToolCallbacks({
+      apiObjects: [
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+        horizontalConstraint,
+      ],
+      hoveredId: 4,
+      selectedIds: [4],
+    })
+
+    const editResult = {
+      kclSource: { text: 'edited' },
+      sceneGraphDelta: createSceneGraphDelta([
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+        horizontalConstraint,
+      ]),
+      checkpointId: null,
+    }
+    ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(20, 10),
+        threeD: new Vector3(20, 10, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDragEnd({
+      intersectionPoint: {
+        twoD: new Vector2(20, 1),
+        threeD: new Vector3(20, 1, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(rustContext.editSegments).toHaveBeenCalledOnce()
+    expect(rustContext.addConstraint).not.toHaveBeenCalled()
   })
 
   it('should return early when no scene graph delta is available', async () => {

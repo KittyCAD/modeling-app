@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react'
 import { Popover } from '@headlessui/react'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -12,7 +13,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
     id: string
     label: string
     hotkey?: string | string[]
-    onClick: () => void
+    onClick: (event: MouseEvent<HTMLButtonElement>) => void
     disabled?: boolean
     status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   }[]
@@ -69,8 +70,8 @@ export function ActionButtonDropdown({
             {splitMenuItems.map((item) => (
               <ActionButtonDropdownListItem
                 item={item}
-                onClick={() => {
-                  item.onClick()
+                onClick={(event) => {
+                  item.onClick(event)
                   // Close the popover
                   popover.close()
                 }}
@@ -89,7 +90,7 @@ function ActionButtonDropdownListItem({
   onClick,
 }: {
   item: ActionButtonSplitProps['splitMenuItems'][number]
-  onClick: () => void
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void
 }) {
   return (
     <li className="contents">
