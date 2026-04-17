@@ -14,6 +14,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import {
   createArcApiObject,
+  createControlPointSplineApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
@@ -323,5 +324,71 @@ describe('invisibleConstraintSpriteUtils', () => {
 
     expect(segmentIds).toEqual(expect.arrayContaining([1, 10, 11]))
     expect(segmentIds).toHaveLength(3)
+  })
+
+  it('hides coincident badges for internal same-spline control polygon constraints', () => {
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const pointB = createPointApiObject({ id: 2, x: 10, y: 0, owner: 10 })
+    const pointC = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const edge = createLineApiObject({ id: 11, start: 1, end: 2, owner: 10 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [2, 11],
+    })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      spline,
+      edge,
+      coincident,
+    ])
+
+    expect(
+      isInvisibleConstraintObject(
+        coincident as InvisibleConstraintObject,
+        objects
+      )
+    ).toBe(false)
+    expect(findInvisibleConstraintsForSegment(pointB, objects)).toEqual([])
+  })
+
+  it('keeps coincident badges when a spline control point is constrained to outside geometry', () => {
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const pointB = createPointApiObject({ id: 2, x: 10, y: 0, owner: 10 })
+    const pointC = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const lineStart = createPointApiObject({ id: 4, x: 10, y: 0 })
+    const lineEnd = createPointApiObject({ id: 5, x: 10, y: 20 })
+    const line = createLineApiObject({ id: 11, start: 4, end: 5 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [2, 11],
+    })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      lineStart,
+      lineEnd,
+      spline,
+      line,
+      coincident,
+    ])
+
+    expect(
+      isInvisibleConstraintObject(
+        coincident as InvisibleConstraintObject,
+        objects
+      )
+    ).toBe(true)
+    expect(findInvisibleConstraintsForSegment(pointB, objects)).toEqual([20])
   })
 })

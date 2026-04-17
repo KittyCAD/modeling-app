@@ -1499,6 +1499,27 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'pointTool',
           },
           {
+            id: 'spline',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'splineTool' },
+                  }),
+            icon: 'spline',
+            status: 'available',
+            title: 'Spline',
+            hotkey: 'S',
+            description: 'Draw a control-point spline.',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'splineTool',
+          },
+          {
             id: 'circle-center',
             onClick: ({ modelingSend, isActive }) =>
               isActive

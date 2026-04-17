@@ -68,6 +68,7 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
@@ -190,6 +191,7 @@ type ToolActorRef =
   | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
+  | ActorRefFrom<typeof splineTool>
   | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
   | ActorRefFrom<typeof circleTool>
@@ -205,6 +207,7 @@ export const equipTools = Object.freeze({
   dimensionTool,
   pointTool,
   lineTool,
+  splineTool,
   centerArcTool,
   circleTool,
   tangentialArcTool,

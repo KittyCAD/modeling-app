@@ -79,9 +79,7 @@ fn find_knot_span(parameter: f64, degree: usize, knots: &[f64], control_count: u
 
 fn de_boor_point(parameter: f64, degree: usize, knots: &[f64], controls: &[[f64; 2]]) -> [f64; 2] {
     let span = find_knot_span(parameter, degree, knots, controls.len());
-    let mut points = (0..=degree)
-        .map(|j| controls[span - degree + j])
-        .collect::<Vec<_>>();
+    let mut points = (0..=degree).map(|j| controls[span - degree + j]).collect::<Vec<_>>();
 
     for r in 1..=degree {
         for j in (r..=degree).rev() {
@@ -166,15 +164,12 @@ pub(crate) async fn create_segments_in_engine(
             SegmentKind::Line { start, .. } => start.clone(),
             SegmentKind::Arc { start, .. } => start.clone(),
             SegmentKind::Circle { start, .. } => start.clone(),
-            SegmentKind::ControlPointSpline { controls, .. } => controls
-                .first()
-                .cloned()
-                .ok_or_else(|| {
-                    KclError::new_internal(KclErrorDetails::new(
-                        "Control point spline is missing control points".to_owned(),
-                        vec![sketch_block_range],
-                    ))
-                })?,
+            SegmentKind::ControlPointSpline { controls, .. } => controls.first().cloned().ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "Control point spline is missing control points".to_owned(),
+                    vec![sketch_block_range],
+                ))
+            })?,
         };
 
         // Get the source range of the segment from its metadata, falling back to the sketch block's.
@@ -448,9 +443,7 @@ pub(crate) async fn create_segments_in_engine(
 
                 outer_sketch = Some(new_sketch);
             }
-            SegmentKind::ControlPointSpline {
-                controls, degree, ..
-            } => {
+            SegmentKind::ControlPointSpline { controls, degree, .. } => {
                 let common_unit = controls
                     .first()
                     .and_then(|point| point[0].ty.as_length())

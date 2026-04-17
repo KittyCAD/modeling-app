@@ -38,11 +38,11 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
-use crate::front::ControlPointSplineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Coincident;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Constraint;
+use crate::front::ControlPointSplineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::EqualRadius;
 #[cfg(feature = "artifact-graph")]
@@ -1424,15 +1424,15 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         })
                         .collect::<Result<Vec<_>, KclError>>()?;
                     let spline_degree = *degree as usize;
-                    let parameter_initial_value =
-                        estimate_spline_parameter_guess(&control_positions, spline_degree, |point, _tangent, _parameter| {
+                    let parameter_initial_value = estimate_spline_parameter_guess(
+                        &control_positions,
+                        spline_degree,
+                        |point, _tangent, _parameter| {
                             libm::hypot(point[0] - point_position[0], point[1] - point_position[1])
-                        });
-
-                    let point = DatumPoint::new_xy(
-                        point_x.to_constraint_id(range)?,
-                        point_y.to_constraint_id(range)?,
+                        },
                     );
+
+                    let point = DatumPoint::new_xy(point_x.to_constraint_id(range)?, point_y.to_constraint_id(range)?);
                     let spline = datum_control_point_spline(&spline_controls, spline_degree, range)?;
 
                     #[cfg(feature = "artifact-graph")]
@@ -3310,9 +3310,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     let distance_score = point_line_distance(point, line_start, line_end);
                     let tangent_score = match (normalize_vector(tangent), line_direction) {
                         (Some(tangent_direction), Some(line_direction)) => {
-                            (tangent_direction[0] * line_direction[1]
-                                - tangent_direction[1] * line_direction[0])
-                                .abs()
+                            (tangent_direction[0] * line_direction[1] - tangent_direction[1] * line_direction[0]).abs()
                         }
                         _ => 1.0,
                     };
@@ -3338,7 +3336,11 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             let parameter = DatumDistance::new(parameter_id.to_constraint_id(range)?);
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::SplineLineTangent(solver_spline, solver_line, parameter));
+                .push(SolverConstraint::SplineLineTangent(
+                    solver_spline,
+                    solver_line,
+                    parameter,
+                ));
         }
         TangentCase::SplineCircular(spline, circular) => {
             let center = datum_point(circular.center, range)?;
@@ -3358,8 +3360,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     let radial_distance_score = (radial_distance - radius_initial_value).abs();
                     let tangent_score = match (normalize_vector(tangent), normalize_vector(radial)) {
                         (Some(tangent_direction), Some(radial_direction)) => {
-                            (tangent_direction[0] * radial_direction[0]
-                                + tangent_direction[1] * radial_direction[1])
+                            (tangent_direction[0] * radial_direction[0] + tangent_direction[1] * radial_direction[1])
                                 .abs()
                         }
                         _ => 1.0,

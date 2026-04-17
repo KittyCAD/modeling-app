@@ -14,6 +14,7 @@ import {
   getLinePoints,
   isArcLikeSegment,
   isConstraint,
+  isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
@@ -45,9 +46,18 @@ export type ConstraintHoverPopup = {
 }
 
 export function isInvisibleConstraintObject(
-  obj: ApiObject | undefined | null
+  obj: ApiObject | undefined | null,
+  objects?: ApiObject[]
 ): obj is InvisibleConstraintObject {
   if (!obj || !isConstraint(obj)) {
+    return false
+  }
+
+  if (
+    obj.kind.constraint.type === 'Coincident' &&
+    objects &&
+    isInternalControlPointSplineCoincident(obj.kind.constraint, objects)
+  ) {
     return false
   }
 
@@ -142,7 +152,7 @@ export function findInvisibleConstraintsForSegment(
     return objects
       .filter(
         (constraint): constraint is InvisibleConstraintObject =>
-          isInvisibleConstraintObject(constraint) &&
+          isInvisibleConstraintObject(constraint, objects) &&
           isConstrainingCoincidentPointCluster(constraint, coincidentPointIds)
       )
       .map((constraint) => constraint.id)
@@ -151,7 +161,7 @@ export function findInvisibleConstraintsForSegment(
   return objects
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
-        isInvisibleConstraintObject(constraint) &&
+        isInvisibleConstraintObject(constraint, objects) &&
         isConstrainingSegment(constraint, segment, objects)
     )
     .map((constraint) => constraint.id)
@@ -224,6 +234,45 @@ function getCoincidentHighlightedSegmentIds(
   })
 
   return [...coincidentSegmentIds, ...ownerSegmentIds]
+}
+
+function isInternalControlPointSplineCoincident(
+  constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
+  objects: ApiObject[]
+): boolean {
+  const ownerSplineIds = getCoincidentSegmentIds(constraint)
+    .map((segmentId) => getOwningControlPointSplineId(segmentId, objects))
+    .filter((ownerId): ownerId is number => ownerId !== null)
+
+  return (
+    ownerSplineIds.length === getCoincidentSegmentIds(constraint).length &&
+    new Set(ownerSplineIds).size === 1
+  )
+}
+
+function getOwningControlPointSplineId(
+  segmentId: number,
+  objects: ApiObject[]
+): number | null {
+  const segment = objects[segmentId]
+  if (!segment || segment.kind.type !== 'Segment') {
+    return null
+  }
+
+  if (isControlPointSplineSegment(segment)) {
+    return segment.id
+  }
+
+  if (!isPointSegment(segment) && !isLineSegment(segment)) {
+    return null
+  }
+
+  const ownerId = segment.kind.segment.owner
+  if (ownerId == null) {
+    return null
+  }
+
+  return isControlPointSplineSegment(objects[ownerId]) ? ownerId : null
 }
 
 // Returns if the given non-visual constraint is constraining the given segment.

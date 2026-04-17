@@ -889,7 +889,10 @@ pub(super) fn create_segment_scene_objects(
                 {
                     let control_point2d = TyF64::to_point2d(control).map_err(|_| {
                         KclError::new_internal(KclErrorDetails::new(
-                            format!("Error converting control point runtime type to API value: {:?}", control),
+                            format!(
+                                "Error converting control point runtime type to API value: {:?}",
+                                control
+                            ),
                             vec![sketch_block_range],
                         ))
                     })?;
