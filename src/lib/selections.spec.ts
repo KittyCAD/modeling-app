@@ -1419,7 +1419,8 @@ describe('handleSelectionBatch engine regions', () => {
   } as any
 
   test('highlights the region() call for a region-backed engine region selection', () => {
-    const sketchSnippet = 's = startSketchOn(XY)'
+    const sketchSnippet =
+      's = sketch(on = XY) { line1 = line(start = [var 0, var 0], end = [var 1, var 0]) }'
     const regionSnippet = 'r = region(point = [1mm, 1mm], sketch = s)'
     const code = `${sketchSnippet}\n${regionSnippet}\n`
 
@@ -1450,6 +1451,24 @@ describe('handleSelectionBatch engine regions', () => {
         },
       ],
       [
+        'sketch-path-1',
+        {
+          type: 'path',
+          subType: 'sketch',
+          id: 'sketch-path-1',
+          codeRef: {
+            range: sketchRange,
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: 'sketch-block-1',
+        },
+      ],
+      [
         'region-path-1',
         {
           type: 'path',
@@ -1463,6 +1482,7 @@ describe('handleSelectionBatch engine regions', () => {
           planeId: 'plane-1',
           segIds: [],
           trajectorySweepId: null,
+          originPathId: 'sketch-path-1',
           consumed: false,
         },
       ],
@@ -1493,18 +1513,13 @@ describe('handleSelectionBatch engine regions', () => {
   })
 
   test('highlights the linked sketch block for a sketch-backed engine region selection', () => {
-    const sketchSnippet = 's = startSketchOn(XY)'
-    const pathSnippet = 'profile = startProfile(s, at = [0, 0])'
-    const code = `${sketchSnippet}\n${pathSnippet}\n`
+    const sketchSnippet =
+      's = sketch(on = XY) { line1 = line(start = [var 0, var 0], end = [var 1, var 0]) }'
+    const code = sketchSnippet
 
     const sketchRange: SourceRange = [
       code.indexOf(sketchSnippet),
       code.indexOf(sketchSnippet) + sketchSnippet.length,
-      0,
-    ]
-    const pathRange: SourceRange = [
-      code.indexOf(pathSnippet),
-      code.indexOf(pathSnippet) + pathSnippet.length,
       0,
     ]
 
@@ -1530,7 +1545,7 @@ describe('handleSelectionBatch engine regions', () => {
           subType: 'sketch',
           id: 'sketch-path-1',
           codeRef: {
-            range: pathRange,
+            range: sketchRange,
             pathToNode: [],
             nodePath: { steps: [] },
           },
