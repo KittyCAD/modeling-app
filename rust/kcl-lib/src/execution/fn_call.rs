@@ -330,7 +330,7 @@ impl FunctionSource {
         // Do add operations if the KCL being executed is
         // user-defined, or the calling code is user-defined,
         // because that's relevant to the user.
-        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std();
         // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
@@ -341,7 +341,7 @@ impl FunctionSource {
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
-            if self.is_std {
+            if self.is_std() {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
@@ -376,7 +376,7 @@ impl FunctionSource {
 
         let is_calling_into_stdlib = match &self.body {
             FunctionBody::Rust(_) => true,
-            FunctionBody::Kcl(_) => self.is_std,
+            FunctionBody::Kcl(_) => self.is_std(),
         };
         let is_crossing_into_stdlib = is_calling_into_stdlib && !exec_state.mod_local.inside_stdlib;
         let is_crossing_out_of_stdlib = !is_calling_into_stdlib && exec_state.mod_local.inside_stdlib;
@@ -462,8 +462,9 @@ impl FunctionSource {
             Err(e) => Err(e),
         };
 
-        if self.is_std
+        if self.is_std()
             && let Ok(Some(result)) = &mut result
+            && self.std_fn_name() != Some("std::sketch::region")
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
         }
@@ -1087,7 +1088,7 @@ mod test {
                 Box::new(func_expr),
                 EnvironmentRef::dummy(),
                 crate::execution::kcl_value::KclFunctionSourceParams {
-                    is_std: false,
+                    std_props: None,
                     experimental: false,
                     include_in_feature_tree: false,
                 },
