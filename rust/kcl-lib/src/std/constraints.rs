@@ -2678,6 +2678,9 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         exec_state: &mut ExecState,
         range: crate::SourceRange,
     ) -> Result<ConstrainableLineVars, KclError> {
+        // DEBUG(dr): Temporarily disabling this as it overrides constraint behavior
+        return Ok(line);
+
         let [sx, sy] = point_initial_position(sketch_vars, line.start, exec_state, range)?;
         let [ex, ey] = point_initial_position(sketch_vars, line.end, exec_state, range)?;
         let [cx, cy] = point_initial_position(sketch_vars, arc_center, exec_state, range)?;
