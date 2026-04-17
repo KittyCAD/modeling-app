@@ -29,6 +29,7 @@ export enum SystemIOMachineActors {
   deleteKCLFile = 'delete kcl delete',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkCreateProjectFilesAndNavigateToProject = 'bulk create project files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
   renameFolder = 'renameFolder',
@@ -60,6 +61,7 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
+  bulkCreatingProjectFilesAndNavigateToProject = 'bulkCreatingProjectFilesAndNavigateToProject',
   bulkCreateAndDeletingKCLFilesAndNavigateToFile = 'bulk create and deleting kcl files and navigate to file',
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
@@ -101,6 +103,7 @@ export enum SystemIOMachineEvents {
   deleteKCLFile = 'delete kcl file',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkCreateProjectFilesAndNavigateToProject = 'bulk create project files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
     'bulk create kcl files and navigate to file',
@@ -197,6 +200,12 @@ export type RequestedKCLFile = {
   requestedProjectName: string
   requestedFileName: string
   requestedCode: string
+}
+
+export type RequestedProjectFile = {
+  requestedProjectName: string
+  requestedFileName: string
+  requestedData: Uint8Array<ArrayBuffer>
 }
 
 export const waitForIdleState = async ({
