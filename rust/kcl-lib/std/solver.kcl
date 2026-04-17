@@ -165,7 +165,7 @@ export fn circle(
 /// The minimum input is three control points. The current degree policy is:
 /// - 3 control points -> degree 2
 /// - 4 or more control points -> degree 3
-@(impl = std_rust_constrainable, feature_tree = true)
+@(impl = std_rust_constrainable, experimental = true, feature_tree = true)
 export fn controlPointSpline(
   /// The ordered control points of the spline's control polygon.
   points: [Point2d; 3+],

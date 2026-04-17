@@ -17,6 +17,7 @@ import {
   getSelectedFixedConstraintInput,
   getSelectedTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName =
@@ -122,6 +123,27 @@ export const isToolbarItemResolvedDropdown = (
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
+  const splineToolbarItem: ToolbarItem = {
+    id: 'spline',
+    onClick: ({ modelingSend, isActive }) =>
+      isActive
+        ? modelingSend({
+            type: 'unequip tool',
+          })
+        : modelingSend({
+            type: 'equip tool',
+            data: { tool: 'splineTool' },
+          }),
+    icon: 'spline',
+    status: 'experimental',
+    title: 'Spline',
+    hotkey: 'S',
+    description: 'Draw a control-point spline.',
+    links: [],
+    isActive: (state) =>
+      state.matches('sketchSolveMode') &&
+      state.context.sketchSolveToolName === 'splineTool',
+  }
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
       onlyCancel: {
@@ -1498,27 +1520,7 @@ export const useToolbarConfig = () => {
               state.matches('sketchSolveMode') &&
               state.context.sketchSolveToolName === 'pointTool',
           },
-          {
-            id: 'spline',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'splineTool' },
-                  }),
-            icon: 'spline',
-            status: 'available',
-            title: 'Spline',
-            hotkey: 'S',
-            description: 'Draw a control-point spline.',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'splineTool',
-          },
+          ...(IS_STAGING_OR_DEBUG ? [splineToolbarItem] : []),
           {
             id: 'circle-center',
             onClick: ({ modelingSend, isActive }) =>
