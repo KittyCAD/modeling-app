@@ -113,6 +113,7 @@ const Toolbar_ = memo(
         sketchPathId,
         editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
+        keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
@@ -325,7 +326,11 @@ const Toolbar_ = memo(
                     id: itemConfig.id,
                     label: itemConfig.title,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => itemConfig.onClick(itemConfig.callbackProps),
+                    onClick: (event) =>
+                      itemConfig.onClick({
+                        ...itemConfig.callbackProps,
+                        keepSelection: event.metaKey || event.ctrlKey,
+                      }),
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
@@ -369,8 +374,11 @@ const Toolbar_ = memo(
                       // aria-description is still in ARIA 1.3 draft.
 
                       aria-description={selectedIcon.description}
-                      onClick={() =>
-                        selectedIcon.onClick(selectedIcon.callbackProps)
+                      onClick={(event) =>
+                        selectedIcon.onClick({
+                          ...selectedIcon.callbackProps,
+                          keepSelection: event.metaKey || event.ctrlKey,
+                        })
                       }
                     >
                       <span
@@ -444,7 +452,12 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={() => itemConfig.onClick(itemConfig.callbackProps)}
+                  onClick={(event) =>
+                    itemConfig.onClick({
+                      ...itemConfig.callbackProps,
+                      keepSelection: event.metaKey || event.ctrlKey,
+                    })
+                  }
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}

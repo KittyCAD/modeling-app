@@ -122,6 +122,7 @@ export type SketchSolveMachineEvent =
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }
   | {
