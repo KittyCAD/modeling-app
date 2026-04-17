@@ -1,7 +1,5 @@
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  isPointSegment,
-} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
