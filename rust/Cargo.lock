@@ -1111,6 +1111,7 @@ dependencies = [
 [[package]]
 name = "ezpz"
 version = "0.2.22"
+source = "git+https://github.com/KittyCAD/ezpz.git?branch=kurt-11103-spline#c11d7279baa5e492c182c1b3870a5d75c28df9e4"
 dependencies = [
  "faer",
  "indexmap 2.14.0",

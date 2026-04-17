@@ -84,6 +84,6 @@ debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 [patch.crates-io]
-ezpz = { path = "../../ezpz/ezpz" }
+ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "kurt-11103-spline" }
 # kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
