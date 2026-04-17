@@ -81,6 +81,7 @@ import {
   assertEvent,
   fromPromise,
 } from 'xstate'
+import { dedupeSourceRanges } from '@src/lang/util'
 
 export {
   getObjectSelectionIds,
@@ -936,18 +937,6 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
-}
-
-function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
-  const seen = new Set<string>()
-  return sourceRanges.filter((range) => {
-    const key = range.join(':')
-    if (seen.has(key)) {
-      return false
-    }
-    seen.add(key)
-    return true
-  })
 }
 
 export function initializeInitialSceneGraph({

@@ -40,7 +40,11 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
-import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import {
+  dedupeSourceRanges,
+  isCursorInSketchCommandRange,
+  topLevelRange,
+} from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -65,7 +69,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err, isErr } from '@src/lib/trap'
 import {
-  dedupeBy,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -560,10 +563,6 @@ function getCodeRefsForEngineRegionSelection(
   }
 
   return getCodeRefsByArtifactId(fallbackSketchBlock.id, artifactGraph) ?? []
-}
-
-function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
-  return dedupeBy(sourceRanges, (range) => range.join(':'))
 }
 
 type SelectionToEngine = {
