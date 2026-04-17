@@ -3807,7 +3807,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article(),
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                self.line_id_to_ast_reference(line, new_ast)?
             }
             Horizontal::Points { points } => {
                 let point_asts = points
@@ -4097,7 +4097,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article()
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                self.line_id_to_ast_reference(line, new_ast)?
             }
             Vertical::Points { points } => {
                 let point_asts = points
@@ -9024,7 +9024,7 @@ sketch(on = XY) {
     async fn test_control_point_spline_edge_horizontal() {
         let initial_source = "\
 sketch(on = XY) {
-  controlPointSpline(points = [
+  controlPointSpline1 = controlPointSpline(points = [
     [var 0mm, var 0mm],
     [var 10mm, var 20mm],
     [var 20mm, var 0mm],

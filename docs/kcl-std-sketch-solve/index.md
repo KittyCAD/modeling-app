@@ -146,6 +146,7 @@ layout: manual
   * [`solver::arc`](/docs/kcl-std-sketch-solve/functions/std-solver-arc)
   * [`solver::circle`](/docs/kcl-std-sketch-solve/functions/std-solver-circle)
   * [`solver::coincident`](/docs/kcl-std-sketch-solve/functions/std-solver-coincident)
+  * [`solver::controlPointSpline`](/docs/kcl-std-sketch-solve/functions/std-solver-controlPointSpline)
   * [`solver::diameter`](/docs/kcl-std-sketch-solve/functions/std-solver-diameter)
   * [`solver::distance`](/docs/kcl-std-sketch-solve/functions/std-solver-distance)
   * [`solver::equalLength`](/docs/kcl-std-sketch-solve/functions/std-solver-equalLength)

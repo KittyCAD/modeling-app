@@ -18,7 +18,7 @@ A single `Point2d` (e.g. `[1mm, 2.5mm]`) can be used to pin a point to a fixed p
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `points` | `[Segment | Point2d; 2]` | Two points, or one point and one line/arc segment, that should occupy the same location. | Yes |
+| `points` | `[Segment | Point2d; 2]` | Two points, or one point and one line/arc/circle/controlPointSpline segment, that should occupy the same location. | Yes |
 
 
 ### Examples
