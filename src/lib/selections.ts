@@ -920,6 +920,25 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const regionPath = entries.find(
+    (entry) =>
+      entry.artifact.type === 'path' && entry.artifact.subType === 'region'
+  )
+  if (regionPath) {
+    return regionPath
+  }
+
+  const segment = entries.find((entry) => {
+    if (entry.artifact.type !== 'segment') {
+      return false
+    }
+    const parentPath = artifactGraph.get(entry.artifact.pathId)
+    return !(parentPath?.type === 'path' && parentPath.subType === 'region')
+  })
+  if (segment) {
+    return segment
+  }
+
   const sketchBlock = entries.find(
     (entry) => entry.artifact.type === 'sketchBlock'
   )
@@ -928,11 +947,6 @@ function getBestCandidate(
   }
 
   for (const entry of entries) {
-    // Segments take precedence
-    if (entry.artifact.type === 'segment') {
-      return entry
-    }
-
     // Handle paths and their solid2d references
     if (entry.artifact.type === 'path') {
       const solid2dId = entry.artifact.solid2dId
@@ -955,6 +969,14 @@ function getBestCandidate(
       return entry
     }
   }
+
+  const fallbackSegment = entries.find(
+    (entry) => entry.artifact.type === 'segment'
+  )
+  if (fallbackSegment) {
+    return fallbackSegment
+  }
+
   return undefined
 }
 
