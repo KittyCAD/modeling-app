@@ -1,5 +1,6 @@
 use anyhow::Result;
 use ezpz::Constraint as SolverConstraint;
+use ezpz::LineSide;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumCircularArc;
@@ -2794,7 +2795,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::LineTangentToCircle(line_datum, circle));
+                .push(SolverConstraint::LineTangentToCircle(line_datum, circle, LineSide::Undefined));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
             let center0 = datum_point(circular0.center, range)?;
