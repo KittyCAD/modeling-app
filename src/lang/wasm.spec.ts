@@ -250,6 +250,16 @@ describe('relevantFileExtensions', () => {
       )
       expect(actual).toBe(expected)
     })
+
+    it('contains md', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some(
+        (extension) => {
+          return extension === 'md'
+        }
+      )
+      expect(actual).toBe(expected)
+    })
   })
 })
 
