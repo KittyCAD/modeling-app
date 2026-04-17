@@ -844,6 +844,24 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   return result
 }
 
+export const writeEnvironmentConfigurationApiSubdomain = async (
+  environmentName: string,
+  apiSubdomain: string
+) => {
+  apiSubdomain = apiSubdomain.trim()
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
+  environmentConfiguration.apiSubdomain = apiSubdomain
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
 export const getEnvironmentConfigurationObject = async (
   environmentName: string
 ) => {
@@ -875,6 +893,15 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
     await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
   return environmentConfiguration.kittycadWebSocketUrl.trim()
+}
+
+export const readEnvironmentConfigurationApiSubdomain = async (
+  environmentName: string
+) => {
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (!environmentConfiguration?.apiSubdomain) return ''
+  return environmentConfiguration.apiSubdomain.trim()
 }
 
 export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (

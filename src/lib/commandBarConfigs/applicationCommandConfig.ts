@@ -3,6 +3,7 @@ import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  writeEnvironmentConfigurationApiSubdomain,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
@@ -29,6 +30,38 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { App } from '@src/lib/app'
+
+function getApiSubdomainOverrideFromCurrentEnvironment() {
+  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+  if (!apiBaseUrl || !baseDomain) return ''
+
+  try {
+    const hostname = new URL(apiBaseUrl).hostname
+    const suffix = `.${baseDomain}`
+    if (!hostname.endsWith(suffix)) {
+      return ''
+    }
+    return hostname.slice(0, -suffix.length)
+  } catch {
+    return ''
+  }
+}
+
+function normalizeApiSubdomainOverride(
+  requestedValue: string,
+  baseDomain: string | undefined
+) {
+  const trimmedValue = requestedValue.trim()
+  if (!trimmedValue || !baseDomain) return trimmedValue
+
+  const hostname = returnSelfOrGetHostNameFromURL(trimmedValue)
+  const suffix = `.${baseDomain}`
+  if (hostname.endsWith(suffix)) {
+    return hostname.slice(0, -suffix.length)
+  }
+  return hostname
+}
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -511,6 +544,59 @@ export function createApplicationCommands({
     },
   }
 
+  const overrideApiCommand: Command = {
+    name: 'override-api',
+    displayName: 'Override API',
+    description: 'Route API requests to a custom API subdomain',
+    icon: 'gear',
+    groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const requestedSubdomain = context.argumentsToSubmit.subdomain as
+        | string
+        | undefined
+      const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+      if (!requestedSubdomain || !baseDomain) {
+        return
+      }
+
+      const normalizedSubdomain = normalizeApiSubdomainOverride(
+        requestedSubdomain,
+        baseDomain
+      )
+
+      try {
+        new URL(`https://${normalizedSubdomain}.${baseDomain}`)
+      } catch {
+        return new Error('Invalid API subdomain override')
+      }
+    },
+    onSubmit: (data) => {
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationApiSubdomain(
+          environmentName,
+          normalizeApiSubdomainOverride(data?.subdomain ?? '', environmentName)
+        )
+          .then(() => {
+            window.location.reload()
+          })
+          .catch(reportRejection)
+    },
+    args: {
+      subdomain: {
+        inputType: 'string',
+        required: false,
+        displayName: 'Subdomain',
+        description: `
+          Default cluster: **api**
+          Pull Requests: **api-pr-NUMBER**
+        `.trim(),
+        defaultValue: () => getApiSubdomainOverrideFromCurrentEnvironment(),
+      },
+    },
+  }
+
   const overrideZookeeperCommand: Command = {
     name: 'override-zookeeper',
     displayName: 'Override Zookeeper',
@@ -609,6 +695,7 @@ export function createApplicationCommands({
     setLayoutCommand,
     createASampleDesktopOnly,
     switchEnvironmentsCommand,
+    overrideApiCommand,
     overrideEngineCommand,
     overrideZookeeperCommand,
   ]
