@@ -60,16 +60,6 @@ pub enum Operation {
         source_range: SourceRange,
     },
     GroupEnd,
-    #[allow(dead_code)]
-    #[serde(rename_all = "camelCase")]
-    SketchSolve {
-        /// The ID of the sketch being modified.
-        sketch_id: ObjectId,
-        /// The node path of the operation in the source code.
-        node_path: NodePath,
-        /// The source range of the operation in the source code.
-        source_range: SourceRange,
-    },
 }
 
 impl Operation {
@@ -77,7 +67,7 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { is_error, .. } => *is_error = is_err,
-            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd | Self::SketchSolve { .. } => {}
+            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
         }
     }
 
@@ -110,13 +100,6 @@ impl Operation {
                 node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
             Operation::GroupEnd => {}
-            Operation::SketchSolve {
-                node_path,
-                source_range,
-                ..
-            } => {
-                node_path.fill_placeholder(programs, cached_body_items, *source_range);
-            }
         }
     }
 }
@@ -148,6 +131,13 @@ pub enum Group {
         name: String,
         /// The ID of the module which can be used to determine its path.
         module_id: ModuleId,
+    },
+    /// A sketch block.
+    #[allow(dead_code)]
+    #[serde(rename_all = "camelCase")]
+    SketchBlock {
+        /// The ID of the sketch this group wraps.
+        sketch_id: ObjectId,
     },
 }
 

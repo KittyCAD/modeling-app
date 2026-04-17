@@ -19,6 +19,8 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
@@ -1305,6 +1307,13 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
+
+        #[cfg(feature = "artifact-graph")]
+        exec_state.push_op(Operation::GroupBegin {
+            group: Group::SketchBlock { sketch_id },
+            node_path: NodePath::placeholder(),
+            source_range: range,
+        });
             artifact_id
         };
 
@@ -1613,11 +1622,7 @@ impl Node<SketchBlock> {
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
 
             // Push sketch solve operation
-            exec_state.push_op(Operation::SketchSolve {
-                sketch_id,
-                node_path: NodePath::placeholder(),
-                source_range: range,
-            });
+            exec_state.push_op(Operation::GroupEnd);
         }
 
         let properties = self.sketch_properties(sketch, variables);
