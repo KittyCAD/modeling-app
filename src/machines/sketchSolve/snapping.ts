@@ -1,7 +1,6 @@
 import type {
   ApiConstraint,
   ApiObject,
-  Number as ConstraintNumber,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
@@ -102,8 +101,7 @@ export function getCoincidentSegmentsForSnapTarget(
 
 export function getConstraintForSnapTarget(
   segmentId: number,
-  target: SnapTarget | undefined,
-  units: ConstraintNumber['units']
+  target: SnapTarget | undefined
 ): ApiConstraint | null {
   switch (target?.type) {
     case 'point':
@@ -121,23 +119,13 @@ export function getConstraintForSnapTarget(
     }
     case X_AXIS_TARGET:
       return {
-        type: 'VerticalDistance',
-        points: [segmentId, 'ORIGIN'] as unknown as [number, number],
-        distance: { value: 0, units },
-        source: {
-          expr: `0${units.toLowerCase()}`,
-          is_literal: true,
-        },
+        type: 'Horizontal',
+        points: [segmentId, 'ORIGIN'],
       }
     case Y_AXIS_TARGET:
       return {
-        type: 'HorizontalDistance',
-        points: [segmentId, 'ORIGIN'] as unknown as [number, number],
-        distance: { value: 0, units },
-        source: {
-          expr: `0${units.toLowerCase()}`,
-          is_literal: true,
-        },
+        type: 'Vertical',
+        points: [segmentId, 'ORIGIN'],
       }
     default:
       return null

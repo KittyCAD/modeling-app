@@ -33,6 +33,10 @@ import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { useSelector } from '@xstate/react'
+import type { SnapshotFrom } from 'xstate'
+import { isArray } from '@src/lib/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -100,6 +104,13 @@ const Toolbar_ = memo(
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
+    const sketchSolveSelectedIdsKey = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot)
+          ? snapshot.context.selectedIds.join('|')
+          : ''
+    )
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -113,6 +124,7 @@ const Toolbar_ = memo(
         sketchPathId,
         editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
+        keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
@@ -240,6 +252,7 @@ const Toolbar_ = memo(
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
+      sketchSolveSelectedIdsKey,
     ])
 
     // To remember the last selected item in an ActionButtonDropdown
@@ -325,7 +338,11 @@ const Toolbar_ = memo(
                     id: itemConfig.id,
                     label: itemConfig.title,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => itemConfig.onClick(itemConfig.callbackProps),
+                    onClick: (event) =>
+                      itemConfig.onClick({
+                        ...itemConfig.callbackProps,
+                        keepSelection: event.metaKey || event.ctrlKey,
+                      }),
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
@@ -369,8 +386,11 @@ const Toolbar_ = memo(
                       // aria-description is still in ARIA 1.3 draft.
 
                       aria-description={selectedIcon.description}
-                      onClick={() =>
-                        selectedIcon.onClick(selectedIcon.callbackProps)
+                      onClick={(event) =>
+                        selectedIcon.onClick({
+                          ...selectedIcon.callbackProps,
+                          keepSelection: event.metaKey || event.ctrlKey,
+                        })
                       }
                     >
                       <span
@@ -444,7 +464,12 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={() => itemConfig.onClick(itemConfig.callbackProps)}
+                  onClick={(event) =>
+                    itemConfig.onClick({
+                      ...itemConfig.callbackProps,
+                      keepSelection: event.metaKey || event.ctrlKey,
+                    })
+                  }
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}
@@ -707,4 +732,18 @@ function isToolbarDropdown(
   item: ToolbarItem | ToolbarDropdown
 ): item is ToolbarDropdown {
   return 'array' in item
+}
+
+function isSketchSolveSnapshot(
+  snapshot: unknown
+): snapshot is SnapshotFrom<typeof sketchSolveMachine> {
+  return !!(
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'context' in snapshot &&
+    snapshot.context &&
+    typeof snapshot.context === 'object' &&
+    'selectedIds' in snapshot.context &&
+    isArray(snapshot.context.selectedIds)
+  )
 }
