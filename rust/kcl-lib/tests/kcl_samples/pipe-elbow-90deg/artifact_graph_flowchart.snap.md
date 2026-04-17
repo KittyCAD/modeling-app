@@ -27,6 +27,8 @@ flowchart LR
     22["Segment<br>[1666, 1777, 0]"]
       %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     23[Solid2d]
+    33["Segment<br>[2509, 2530, 0]"]
+      %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   subgraph path24 [Path]
     24["Path<br>[1807, 1941, 0]<br>Consumed: true"]
@@ -34,6 +36,14 @@ flowchart LR
     25["Segment<br>[1807, 1941, 0]"]
       %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     26[Solid2d]
+    34["Segment<br>[2509, 2530, 0]"]
+      %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
+  subgraph path31 [Path]
+    31["Path<br>[2509, 2530, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    32["Segment<br>[2509, 2530, 0]"]
+      %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   1["Plane<br>[858, 875, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -59,6 +69,10 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   29["SweepEdge Opposite"]
   30["SweepEdge Adjacent"]
+  35[Wall]
+    %% face_code_ref=Missing NodePath
+  36["SweepEdge Opposite"]
+  37["SweepEdge Adjacent"]
   1 --- 2
   1 --- 5
   2 --- 3
@@ -93,6 +107,7 @@ flowchart LR
   17 --- 18
   17 --- 21
   17 --- 24
+  17 <--x 31
   18 --- 19
   18 --- 20
   18 <--x 21
@@ -101,13 +116,26 @@ flowchart LR
   19 --- 28
   19 --- 29
   19 --- 30
+  31 <--x 20
   21 --- 22
   21 --- 23
+  21 <--x 33
   24 --- 25
   24 --- 26
+  24 <--x 34
   27 --- 28
   27 --- 29
   27 --- 30
+  31 <---x 27
+  27 <--x 35
+  27 <--x 36
+  27 <--x 37
   28 --- 29
   28 --- 30
+  31 --- 32
+  32 --- 35
+  32 --- 36
+  32 --- 37
+  35 --- 36
+  35 --- 37
 ```

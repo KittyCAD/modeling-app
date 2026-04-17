@@ -37,6 +37,18 @@ flowchart LR
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     50[Solid2d]
   end
+  subgraph path66 [Path]
+    66["Path<br>[2277, 2297, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    67["Segment<br>[2277, 2297, 0]"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    68["Segment<br>[2277, 2297, 0]"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    69["Segment<br>[2277, 2297, 0]"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    70["Segment<br>[2277, 2297, 0]"]
+      %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  end
   1["Plane<br>[942, 991, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   2["Plane<br>[1006, 1023, 0]"]
@@ -107,9 +119,29 @@ flowchart LR
   63["SweepEdge Adjacent"]
   64["SweepEdge Opposite"]
   65["SweepEdge Adjacent"]
-  66["CompositeSolid Subtract<br>[2391, 2438, 0]<br>Consumed: true"]
+  71[Wall]
+    %% face_code_ref=Missing NodePath
+  72[Wall]
+    %% face_code_ref=Missing NodePath
+  73[Wall]
+    %% face_code_ref=Missing NodePath
+  74[Wall]
+    %% face_code_ref=Missing NodePath
+  75["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  76["Cap End"]
+    %% face_code_ref=Missing NodePath
+  77["SweepEdge Opposite"]
+  78["SweepEdge Adjacent"]
+  79["SweepEdge Opposite"]
+  80["SweepEdge Adjacent"]
+  81["SweepEdge Opposite"]
+  82["SweepEdge Adjacent"]
+  83["SweepEdge Opposite"]
+  84["SweepEdge Adjacent"]
+  85["CompositeSolid Subtract<br>[2391, 2438, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  67["CompositeSolid Subtract<br>[2456, 2509, 0]<br>Consumed: false"]
+  86["CompositeSolid Subtract<br>[2456, 2509, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 3
   3 --- 4
@@ -122,7 +154,7 @@ flowchart LR
   3 --- 11
   3 --- 12
   3 ---- 13
-  3 --- 66
+  3 --- 85
   4 --- 18
   4 x--> 23
   4 --- 33
@@ -225,6 +257,7 @@ flowchart LR
   39 <--x 24
   41 <--x 24
   43 --- 44
+  43 <--x 66
   44 --- 45
   44 --- 46
   44 --- 47
@@ -232,7 +265,7 @@ flowchart LR
   44 --- 49
   44 --- 50
   44 ---- 51
-  44 --- 66
+  44 --- 85
   45 --- 55
   45 x--> 56
   45 --- 64
@@ -249,6 +282,8 @@ flowchart LR
   48 x--> 56
   48 --- 58
   48 --- 59
+  66 <--x 49
+  66 <--x 50
   51 --- 52
   51 --- 53
   51 --- 54
@@ -263,6 +298,21 @@ flowchart LR
   51 --- 63
   51 --- 64
   51 --- 65
+  66 <---x 51
+  51 <--x 71
+  51 <--x 72
+  51 <--x 73
+  51 <--x 74
+  51 <--x 75
+  51 <--x 76
+  51 <--x 77
+  51 <--x 78
+  51 <--x 79
+  51 <--x 80
+  51 <--x 81
+  51 <--x 82
+  51 <--x 83
+  51 <--x 84
   52 --- 58
   52 --- 59
   61 <--x 52
@@ -280,4 +330,41 @@ flowchart LR
   62 <--x 57
   64 <--x 57
   66 --- 67
+  66 --- 68
+  66 --- 69
+  66 --- 70
+  66 --- 86
+  67 --- 74
+  67 x--> 75
+  67 --- 83
+  67 --- 84
+  68 --- 73
+  68 x--> 75
+  68 --- 81
+  68 --- 82
+  69 --- 72
+  69 x--> 75
+  69 --- 79
+  69 --- 80
+  70 --- 71
+  70 x--> 75
+  70 --- 77
+  70 --- 78
+  71 --- 77
+  71 --- 78
+  80 <--x 71
+  72 --- 79
+  72 --- 80
+  82 <--x 72
+  73 --- 81
+  73 --- 82
+  84 <--x 73
+  78 <--x 74
+  74 --- 83
+  74 --- 84
+  77 <--x 76
+  79 <--x 76
+  81 <--x 76
+  83 <--x 76
+  85 --- 86
 ```
