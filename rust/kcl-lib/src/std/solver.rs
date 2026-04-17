@@ -501,3 +501,64 @@ pub(crate) async fn create_segments_in_engine(
 
     Ok(outer_sketch)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN, build_open_uniform_knot_vector, sample_control_point_spline_points,
+    };
+
+    fn assert_point_approx_eq(actual: [f64; 2], expected: [f64; 2]) {
+        assert!(
+            (actual[0] - expected[0]).abs() <= 1e-9 && (actual[1] - expected[1]).abs() <= 1e-9,
+            "expected point {expected:?}, got {actual:?}"
+        );
+    }
+
+    #[test]
+    fn open_uniform_knots_match_degree_policy() {
+        assert_eq!(build_open_uniform_knot_vector(3, 2), vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(
+            build_open_uniform_knot_vector(5, 3),
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0]
+        );
+    }
+
+    #[test]
+    fn sampled_control_point_spline_preserves_endpoints() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
+        let sampled = sample_control_point_spline_points(&controls, 3);
+
+        assert!(!sampled.is_empty(), "expected sampled spline points");
+        assert_point_approx_eq(sampled[0], controls[0]);
+        assert_point_approx_eq(sampled[sampled.len() - 1], controls[controls.len() - 1]);
+    }
+
+    #[test]
+    fn sampled_control_point_spline_uses_expected_points_per_span() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0], [40.0, 0.0]];
+        let degree = 3;
+        let span_count = controls.len() - degree;
+        let sampled = sample_control_point_spline_points(&controls, degree);
+        let expected_count = span_count * (CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN - 1) + 2;
+
+        assert_eq!(
+            sampled.len(),
+            expected_count,
+            "unexpected sampled point count for temporary polyline lowering"
+        );
+    }
+
+    #[test]
+    fn reversing_controls_reverses_sampled_path() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
+        let forward = sample_control_point_spline_points(&controls, 3);
+        let reversed_controls = controls.into_iter().rev().collect::<Vec<_>>();
+        let reversed = sample_control_point_spline_points(&reversed_controls, 3);
+
+        assert_eq!(forward.len(), reversed.len(), "expected matching sample counts");
+        for (forward_point, reversed_point) in forward.iter().zip(reversed.iter().rev()) {
+            assert_point_approx_eq(*forward_point, *reversed_point);
+        }
+    }
+}
