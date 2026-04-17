@@ -6,6 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
@@ -30,7 +31,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect, Transaction } from '@codemirror/state'
+import { StateEffect, Transaction, EditorSelection } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
@@ -752,6 +753,45 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   return updates
 }
 
+// Updates codemirror selection highlights based on currently selected objects.
+export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return
+  }
+
+  const selectedObjectIds = Array.from(
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
+  )
+
+  // Deduplicate sources as different selected ids can refer to the same objects
+  // eg. line point and its owner line, or overlap between selectedIds and areaSelectIds.
+  const sourceRanges = dedupeSourceRanges(
+    selectedObjectIds.flatMap((id) => getSourceRangesForObjectId(objects, id))
+  ).sort((a, b) => a[0] - b[0])
+  const codeMirrorSelections = sourceRanges.flatMap((range) =>
+    range[1]
+      ? [
+          EditorSelection.cursor(
+            Math.min(range[1], context.kclManager.code.length)
+          ),
+        ]
+      : []
+  )
+
+  context.kclManager.editorView.dispatch({
+    selection: EditorSelection.create(
+      codeMirrorSelections.length
+        ? codeMirrorSelections
+        : [EditorSelection.cursor(context.kclManager.code.length)],
+      Math.max(codeMirrorSelections.length - 1, 0)
+    ),
+  })
+}
+
 export function refreshSelectionStyling({ context }: SolveActionArgs) {
   // Update selection styling for all existing sketch-solve segments
   if (!context.sketchExecOutcome?.sceneGraphDelta) {
@@ -842,6 +882,60 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         objects,
       })
     }
+  })
+}
+
+export function updateHoveredId({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update hovered id')
+  const hoveredId = event.data.hoveredId
+  let highlightRanges: SourceRange[] = []
+
+  if (isObjectSelectionId(hoveredId)) {
+    const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+    if (objects) {
+      highlightRanges = getSourceRangesForObjectId(objects, hoveredId)
+    }
+  }
+
+  context.kclManager.setHighlightRange(highlightRanges)
+
+  return {
+    hoveredId,
+    constraintHoverPopups: event.data.constraintHoverPopups ?? [],
+  }
+}
+
+export function clearHoveredCodeHighlight({ context }: SolveActionArgs) {
+  context.kclManager.setHighlightRange([])
+}
+
+function getSourceRangesForObjectId(
+  objects: ApiObject[],
+  objectId: number
+): SourceRange[] {
+  const object = objects[objectId]
+
+  if (object?.source.type === 'Simple') {
+    return [object.source.range]
+  }
+  if (object?.source.type === 'BackTrace') {
+    return object.source.ranges.map(([range]) => range)
+  }
+  return []
+}
+
+function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
+  const seen = new Set<string>()
+  return sourceRanges.filter((range) => {
+    const key = range.join(':')
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
   })
 }
 

@@ -39,6 +39,10 @@ import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { useSelector } from '@xstate/react'
+import type { SnapshotFrom } from 'xstate'
+import { isArray } from '@src/lib/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -106,6 +110,13 @@ const Toolbar_ = memo(
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
+    const sketchSolveSelectedIdsKey = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot)
+          ? snapshot.context.selectedIds.join('|')
+          : ''
+    )
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -250,6 +261,7 @@ const Toolbar_ = memo(
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
+      sketchSolveSelectedIdsKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -904,4 +916,18 @@ function isToolbarDropdown(
   item: ToolbarItem | ToolbarDropdown
 ): item is ToolbarDropdown {
   return 'array' in item
+}
+
+function isSketchSolveSnapshot(
+  snapshot: unknown
+): snapshot is SnapshotFrom<typeof sketchSolveMachine> {
+  return !!(
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'context' in snapshot &&
+    snapshot.context &&
+    typeof snapshot.context === 'object' &&
+    'selectedIds' in snapshot.context &&
+    isArray(snapshot.context.selectedIds)
+  )
 }

@@ -50,6 +50,8 @@ export function useEngineConnectionSubscriptions() {
         ;(async () => {
           if (
             stateRef.current.matches('Sketch no face') ||
+            // Ignore select_with_point in sketch solve: without this selection is overridden
+            // and breaks multiple line highlights
             stateRef.current.matches('sketchSolveMode')
           ) {
             return
@@ -60,6 +62,14 @@ export function useEngineConnectionSubscriptions() {
             rustContext,
             wasmInstance,
           })
+          // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
+          // This is probably rare, but we do go into sketch mode on double click.
+          if (
+            stateRef.current.matches('Sketch no face') ||
+            stateRef.current.matches('sketchSolveMode')
+          ) {
+            return
+          }
           if (event) send(event)
         })().catch(reportRejection)
       },
