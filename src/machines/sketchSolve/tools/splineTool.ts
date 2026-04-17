@@ -3,7 +3,6 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type {
   ApiObject,
   SceneGraphDelta,
-  SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -964,11 +963,7 @@ export const machine = setup({
           for (const [index, snapTarget] of snapTargets.entries()) {
             const pointId = splineObj.kind.segment.controls[index]
             if (snapTarget === undefined || pointId === undefined) continue
-            const constraint = getConstraintForSnapTarget(
-              pointId,
-              snapTarget,
-              units
-            )
+            const constraint = getConstraintForSnapTarget(pointId, snapTarget)
             if (constraint === null) continue
             const snapResult = await rustContext.addConstraint(
               0,
@@ -1061,8 +1056,7 @@ export const machine = setup({
           if (snapTarget) {
             const constraint = getConstraintForSnapTarget(
               draftPointId,
-              snapTarget,
-              units
+              snapTarget
             )
             if (constraint !== null) {
               const snapResult = await rustContext.addConstraint(
@@ -1441,12 +1435,12 @@ export const machine = setup({
             splineId: context.splineId!,
           })
           if (!state) {
-            throw new Error('Expected current spline state while appending.')
+            console.error('Expected current spline state while appending.')
           }
           return {
             splineId: context.splineId!,
-            points: state.points,
-            construction: state.splineObj.kind.segment.construction,
+            points: state?.points ?? [],
+            construction: state?.splineObj.kind.segment.construction ?? false,
             draftPoint: event.data,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
@@ -1496,12 +1490,12 @@ export const machine = setup({
             splineId: context.splineId!,
           })
           if (!state) {
-            throw new Error('Expected current spline state while cancelling.')
+            console.error('Expected current spline state while cancelling.')
           }
           return {
             splineId: context.splineId!,
-            points: state.points,
-            construction: state.splineObj.kind.segment.construction,
+            points: state?.points ?? [],
+            construction: state?.splineObj.kind.segment.construction ?? false,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,

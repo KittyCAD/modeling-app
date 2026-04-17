@@ -1,6 +1,5 @@
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  isControlPointSplineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {

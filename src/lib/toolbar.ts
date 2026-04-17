@@ -126,30 +126,32 @@ const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
-  const splineToolbarItem: ToolbarItem = {
-    id: 'spline',
-    onClick: ({ modelingSend, isActive }) =>
-      isActive
-        ? modelingSend({
-            type: 'unequip tool',
-          })
-        : modelingSend({
-            type: 'equip tool',
-            data: { tool: 'splineTool' },
-          }),
-    icon: 'spline',
-    status: 'experimental',
-    title: 'Spline',
-    hotkey: 'S',
-    description: 'Draw a control-point spline.',
-    links: [],
-    isActive: (state) =>
-      state.matches('sketchSolveMode') &&
-      state.context.sketchSolveToolName === 'splineTool',
-  }
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => ({
-      onlyCancel: {
+    () => {
+      const splineToolbarItem: ToolbarItem = {
+        id: 'spline',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'splineTool' },
+              }),
+        icon: 'spline',
+        status: 'experimental',
+        title: 'Spline',
+        hotkey: 'S',
+        description: 'Draw a control-point spline.',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'splineTool',
+      }
+
+      return {
+        onlyCancel: {
         check: (state) => !state.matches('Sketch no face'),
         items: [
           {
@@ -1931,8 +1933,9 @@ export const useToolbarConfig = () => {
             isActive: (state) => false,
           },
         ],
-      },
-    }),
+        },
+      }
+    },
     [commands]
   )
 }

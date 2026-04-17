@@ -676,15 +676,14 @@ impl SketchApi for FrontendState {
         // are passed to `execute_after_edit` which changes the result of the solver, causing tests to fail.
         for segment in &segments {
             segment_ids_edited.insert(segment.id);
-            if let SegmentCtor::ControlPointSpline(new_ctor) = &segment.ctor {
-                if let Some(existing_object) = self.scene_graph.objects.get(segment.id.0)
-                    && let ObjectKind::Segment {
-                        segment: Segment::ControlPointSpline(existing_spline),
-                    } = &existing_object.kind
-                    && existing_spline.controls.len() != new_ctor.points.len()
-                {
-                    invalidates_ids = true;
-                }
+            if let SegmentCtor::ControlPointSpline(new_ctor) = &segment.ctor
+                && let Some(existing_object) = self.scene_graph.objects.get(segment.id.0)
+                && let ObjectKind::Segment {
+                    segment: Segment::ControlPointSpline(existing_spline),
+                } = &existing_object.kind
+                && existing_spline.controls.len() != new_ctor.points.len()
+            {
+                invalidates_ids = true;
             }
         }
 
@@ -813,9 +812,7 @@ impl SketchApi for FrontendState {
                                 }
                                 continue;
                             }
-                            Segment::ControlPointSpline(spline)
-                                if spline.controls.iter().any(|control_id| *control_id == segment_id) =>
-                            {
+                            Segment::ControlPointSpline(spline) if spline.controls.contains(&segment_id) => {
                                 let Some(control_index) =
                                     spline.controls.iter().position(|control_id| *control_id == segment_id)
                                 else {
@@ -8847,7 +8844,7 @@ sketch(on = XY) {
             })
             .expect("Expected an owned control-polygon edge");
 
-        let constraint = Constraint::Horizontal(Horizontal { line: edge_id });
+        let constraint = Constraint::Horizontal(Horizontal::Line { line: edge_id });
         let (src_delta, _) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
