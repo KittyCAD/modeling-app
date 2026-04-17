@@ -21,9 +21,13 @@ flowchart LR
   subgraph path19 [Path]
     19["Path<br>[2128, 2163, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    20["Segment<br>[2128, 2163, 0]"]
+      %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
-  subgraph path20 [Path]
-    20["Path<br>[2265, 2300, 0]<br>Consumed: false"]
+  subgraph path26 [Path]
+    26["Path<br>[2265, 2300, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+    27["Segment<br>[2265, 2300, 0]"]
       %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   1["Plane<br>[709, 726, 0]"]
@@ -44,6 +48,22 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   17["SweepEdge Opposite"]
   18["SweepEdge Adjacent"]
+  21[Wall]
+    %% face_code_ref=Missing NodePath
+  22["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  23["Cap End"]
+    %% face_code_ref=Missing NodePath
+  24["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  28[Wall]
+    %% face_code_ref=Missing NodePath
+  29["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  30["Cap End"]
+    %% face_code_ref=Missing NodePath
+  31["SweepEdge Opposite"]
+  32["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -55,7 +75,7 @@ flowchart LR
   7 --- 8
   9 --- 10
   9 <--x 19
-  9 <--x 20
+  9 <--x 26
   10 --- 11
   10 --- 12
   10 ---- 13
@@ -63,12 +83,42 @@ flowchart LR
   11 x--> 16
   11 --- 17
   11 --- 18
+  19 <--x 12
+  26 <--x 12
   13 --- 14
   13 --- 15
   13 --- 16
   13 --- 17
   13 --- 18
+  19 <---x 13
+  13 <--x 21
+  13 <--x 22
+  13 <--x 23
+  13 <--x 24
+  13 <--x 25
+  26 <---x 13
+  13 <--x 28
+  13 <--x 29
+  13 <--x 30
+  13 <--x 31
+  13 <--x 32
   14 --- 17
   14 --- 18
   17 <--x 15
+  19 --- 20
+  20 --- 21
+  20 x--> 23
+  20 --- 24
+  20 --- 25
+  21 --- 24
+  21 --- 25
+  24 <--x 22
+  26 --- 27
+  27 --- 28
+  27 x--> 30
+  27 --- 31
+  27 --- 32
+  28 --- 31
+  28 --- 32
+  31 <--x 29
 ```
