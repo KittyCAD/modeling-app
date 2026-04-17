@@ -6364,16 +6364,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "angle": "degrees"
     }
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
-  "circle2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle2"
-  },
   "insideWall": {
     "type": "Solid",
     "value": {

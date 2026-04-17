@@ -3979,11 +3979,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       }
     }
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
   "diskCircle": {
     "type": "Object",
     "value": {

@@ -2171,11 +2171,6 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "sectional": false
     }
   },
-  "boltHoleCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "boltHoleCircle"
-  },
   "boltHoleCount": {
     "type": "Number",
     "value": 16.0,

@@ -228,46 +228,6 @@ description: Variables in memory after executing teapot.kcl
       }
     }
   },
-  "arc1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc1"
-  },
-  "arc2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc2"
-  },
-  "arc3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc3"
-  },
-  "arc4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc4"
-  },
-  "arc5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc5"
-  },
-  "arc6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc6"
-  },
-  "arc7": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc7"
-  },
-  "arc8": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc8"
-  },
   "beltlineDiameter": {
     "type": "Number",
     "value": 160.0,
@@ -797,16 +757,6 @@ description: Variables in memory after executing teapot.kcl
       "units": "mm",
       "sectional": false
     }
-  },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
-  "circle2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle2"
   },
   "handle": {
     "type": "Solid",
@@ -2186,31 +2136,6 @@ description: Variables in memory after executing teapot.kcl
       }
     },
     "constrainable": false
-  },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line10": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line10"
-  },
-  "line5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line5"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
-  },
-  "line9": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line9"
   },
   "outletHeight": {
     "type": "Number",

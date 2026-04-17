@@ -67,26 +67,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       }
     }
   },
-  "arc1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc1"
-  },
-  "arc2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc2"
-  },
-  "arc3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc3"
-  },
-  "arc4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc4"
-  },
   "baseExtrusion": {
     "type": "Solid",
     "value": {
@@ -3096,16 +3076,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "angle": "degrees"
     }
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
-  "circle2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle2"
-  },
   "extrudeHoles": {
     "type": "HomArray",
     "value": [
@@ -5121,46 +5091,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "units": "in",
       "sectional": false
     }
-  },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
-  "line5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line5"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
-  },
-  "line7": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line7"
-  },
-  "line8": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line8"
   },
   "region001": {
     "type": "Sketch",

@@ -322,14 +322,6 @@ description: Variables in memory after executing crash-box.kcl
             "type": "TagIdentifier",
             "value": "bottomEdge"
           },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
           "leftEdge": {
             "type": "TagIdentifier",
             "value": "leftEdge"
@@ -1204,14 +1196,6 @@ description: Variables in memory after executing crash-box.kcl
           "type": "TagIdentifier",
           "value": "bottomEdge"
         },
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        },
         "leftEdge": {
           "type": "TagIdentifier",
           "value": "leftEdge"
@@ -1475,14 +1459,6 @@ description: Variables in memory after executing crash-box.kcl
           "bottomEdge": {
             "type": "TagIdentifier",
             "value": "bottomEdge"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
           },
           "leftEdge": {
             "type": "TagIdentifier",

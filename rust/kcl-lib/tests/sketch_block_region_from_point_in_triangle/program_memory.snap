@@ -35,21 +35,6 @@ description: Variables in memory after executing sketch_block_region_from_point_
       }
     }
   },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
   "r": {
     "type": "Sketch",
     "value": {

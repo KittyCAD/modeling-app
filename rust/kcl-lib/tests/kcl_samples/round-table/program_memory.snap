@@ -502,11 +502,6 @@ description: Variables in memory after executing round-table.kcl
       "angle": "degrees"
     }
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
   "legExtrude": {
     "type": "Solid",
     "value": {
