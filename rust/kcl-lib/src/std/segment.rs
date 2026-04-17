@@ -8,8 +8,13 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::TagIdentifier;
+use crate::execution::UnsolvedExpr;
+use crate::execution::UnsolvedSegment;
+use crate::execution::UnsolvedSegmentKind;
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
@@ -190,26 +195,135 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
 
 /// Returns the length of the segment.
 pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag", &RuntimeType::tagged_edge(), exec_state)?;
-    let result = inner_segment_length(&tag, exec_state, args.clone())?;
+    let input = args.get_unlabeled_kw_arg::<KclValue>(
+        "tag",
+        &RuntimeType::Union(vec![
+            RuntimeType::tagged_edge(),
+            RuntimeType::Primitive(PrimitiveType::Segment),
+        ]),
+        exec_state,
+    )?;
+    let result = inner_segment_length(&input, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(result))
 }
 
-fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
-    let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
-        KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{line:?}`"),
-            vec![args.source_range],
-        ))
-    })?;
+fn inner_segment_length(input: &KclValue, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
+    match input {
+        KclValue::TagIdentifier(tag) => {
+            let line = args.get_tag_engine_info(exec_state, tag)?;
+            let path = line.path.clone().ok_or_else(|| {
+                KclError::new_type(KclErrorDetails::new(
+                    format!("Expected a line segment with a path, found `{line:?}`"),
+                    vec![args.source_range],
+                ))
+            })?;
 
-    path.length().ok_or_else(|| {
-        KclError::new_semantic(KclErrorDetails::new(
+            path.length().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Computing the length of this segment type is unsupported".to_owned(),
+                    vec![args.source_range],
+                ))
+            })
+        }
+        KclValue::Segment { value } => match &value.repr {
+            crate::execution::SegmentRepr::Solved { segment } => segment_length_from_segment(segment, args),
+            crate::execution::SegmentRepr::Unsolved { segment } => {
+                segment_length_from_unsolved_segment(segment, exec_state, args)
+            }
+        },
+        _ => Err(KclError::new_type(KclErrorDetails::new(
+            format!(
+                "Expected a tagged edge or Segment, found `{}`",
+                input.human_friendly_type()
+            ),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+fn segment_length_from_unsolved_segment(
+    segment: &UnsolvedSegment,
+    exec_state: &ExecState,
+    args: Args,
+) -> Result<TyF64, KclError> {
+    match &segment.kind {
+        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
             "Computing the length of this segment type is unsupported".to_owned(),
             vec![args.source_range],
-        ))
-    })
+        ))),
+        UnsolvedSegmentKind::Line { start, end, .. } => {
+            let start_x = unsolved_expr_to_ty_f64(&start[0], exec_state, args.source_range)?;
+            let start_y = unsolved_expr_to_ty_f64(&start[1], exec_state, args.source_range)?;
+            let end_x = unsolved_expr_to_ty_f64(&end[0], exec_state, args.source_range)?;
+            let end_y = unsolved_expr_to_ty_f64(&end[1], exec_state, args.source_range)?;
+            Ok(TyF64::new(
+                linear_distance(&[start_x.clone(), start_y], &[end_x, end_y]),
+                start_x.ty,
+            ))
+        }
+        UnsolvedSegmentKind::Arc { start, end, .. } => {
+            let start_x = unsolved_expr_to_ty_f64(&start[0], exec_state, args.source_range)?;
+            let start_y = unsolved_expr_to_ty_f64(&start[1], exec_state, args.source_range)?;
+            let end_x = unsolved_expr_to_ty_f64(&end[0], exec_state, args.source_range)?;
+            let end_y = unsolved_expr_to_ty_f64(&end[1], exec_state, args.source_range)?;
+            Ok(TyF64::new(
+                linear_distance(&[start_x.clone(), start_y], &[end_x, end_y]),
+                start_x.ty,
+            ))
+        }
+        UnsolvedSegmentKind::Circle { start, center, .. } => {
+            let start_x = unsolved_expr_to_ty_f64(&start[0], exec_state, args.source_range)?;
+            let start_y = unsolved_expr_to_ty_f64(&start[1], exec_state, args.source_range)?;
+            let center_x = unsolved_expr_to_ty_f64(&center[0], exec_state, args.source_range)?;
+            let center_y = unsolved_expr_to_ty_f64(&center[1], exec_state, args.source_range)?;
+            let radius = linear_distance(&[start_x.clone(), start_y], &[center_x, center_y]);
+            Ok(TyF64::new(std::f64::consts::TAU * radius, start_x.ty))
+        }
+    }
+}
+
+fn unsolved_expr_to_ty_f64(
+    expr: &UnsolvedExpr,
+    exec_state: &ExecState,
+    source_range: crate::SourceRange,
+) -> Result<TyF64, KclError> {
+    match expr {
+        UnsolvedExpr::Known(value) => Ok(value.clone()),
+        UnsolvedExpr::Unknown(var_id) => {
+            let Some(sketch_var) = exec_state
+                .sketch_block()
+                .and_then(|state| state.sketch_vars.get(var_id.0))
+                .and_then(KclValue::as_sketch_var)
+            else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    format!("Missing sketch variable with id {}", var_id.0),
+                    vec![source_range],
+                )));
+            };
+            Ok(TyF64::new(sketch_var.initial_value, sketch_var.ty))
+        }
+    }
+}
+
+fn segment_length_from_segment(segment: &Segment, args: Args) -> Result<TyF64, KclError> {
+    match &segment.kind {
+        SegmentKind::Point { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+            "Computing the length of this segment type is unsupported".to_owned(),
+            vec![args.source_range],
+        ))),
+        SegmentKind::Line { start, end, .. } => Ok(TyF64::new(linear_distance(start, end), start[0].ty)),
+        SegmentKind::Arc { start, end, .. } => Ok(TyF64::new(linear_distance(start, end), start[0].ty)),
+        SegmentKind::Circle { start, center, .. } => {
+            let radius = linear_distance(start, center);
+            Ok(TyF64::new(std::f64::consts::TAU * radius, start[0].ty))
+        }
+    }
+}
+
+fn linear_distance(a: &[TyF64; 2], b: &[TyF64; 2]) -> f64 {
+    let dx = a[0].n - b[0].n;
+    let dy = a[1].n - b[1].n;
+    f64::hypot(dx, dy)
 }
 
 /// Returns the angle of the segment.
