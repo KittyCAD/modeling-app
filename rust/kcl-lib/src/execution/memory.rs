@@ -1359,7 +1359,7 @@ mod test {
                     crate::parsing::ast::types::FunctionExpression::dummy(),
                     sn2,
                     crate::execution::kcl_value::KclFunctionSourceParams {
-                        is_std: false,
+                        std_props: None,
                         experimental: false,
                         include_in_feature_tree: false,
                     },

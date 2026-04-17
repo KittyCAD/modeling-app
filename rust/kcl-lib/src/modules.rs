@@ -249,6 +249,16 @@ impl ModulePath {
             Ok(ModulePath::Std { value: path[1].clone() })
         }
     }
+
+    /// If we have std path, return the fully qualified name of the given item
+    /// in the module.
+    pub(crate) fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
+        match self {
+            ModulePath::Main => None,
+            ModulePath::Local { .. } => None,
+            ModulePath::Std { .. } => Some(format!("{self}::{local_item_name}")),
+        }
+    }
 }
 
 impl fmt::Display for ModulePath {

@@ -55,7 +55,7 @@ pub struct StdFnProps {
 }
 
 impl StdFnProps {
-    fn default(name: &str) -> Self {
+    pub(crate) fn default(name: &str) -> Self {
         Self { name: name.to_owned() }
     }
 }
