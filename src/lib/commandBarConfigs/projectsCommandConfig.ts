@@ -17,8 +17,10 @@ export type ProjectsCommandSchema = {
 
 export function createProjectCommands({
   systemIOActor,
+  webAppFileBrowserEnabled = isDesktop(),
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  webAppFileBrowserEnabled?: boolean
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -287,8 +289,7 @@ export function createProjectCommands({
     },
   }
 
-  /** No disk-writing commands are available in the browser */
-  const projectCommands = window.electron
+  const projectCommands = webAppFileBrowserEnabled
     ? [
         openProjectCommand,
         createProjectCommand,

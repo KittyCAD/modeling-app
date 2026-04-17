@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -20,6 +20,10 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
+import {
+  userHasFeature,
+  WEB_APP_FILE_BROWSER_FEATURE_FLAG,
+} from '@src/lib/settings/settingsUtils'
 
 import fsZds from '@src/lib/fs-zds'
 
@@ -35,6 +39,33 @@ const ProjectSidebarMenu = ({
   enableMenu = false,
   children,
 }: ProjectSidebarMenuProps) => {
+  const app = useApp()
+  const token = app.auth.useToken()
+  const [webAppFileBrowserEnabled, setWebAppFileBrowserEnabled] = useState(
+    isDesktop()
+  )
+
+  useEffect(() => {
+    let cancelled = false
+
+    if (isDesktop()) {
+      setWebAppFileBrowserEnabled(true)
+      return
+    }
+
+    void userHasFeature(WEB_APP_FILE_BROWSER_FEATURE_FLAG, false).then(
+      (enabled) => {
+        if (!cancelled) {
+          setWebAppFileBrowserEnabled(enabled)
+        }
+      }
+    )
+
+    return () => {
+      cancelled = true
+    }
+  }, [token])
+
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
@@ -42,11 +73,21 @@ const ProjectSidebarMenu = ({
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
-        <AppLogoLink project={project} file={file} />
-        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+        <AppLogoLink
+          project={project}
+          file={file}
+          webAppFileBrowserEnabled={webAppFileBrowserEnabled}
+        />
+        {(isDesktop() || webAppFileBrowserEnabled) && (
+          <Tooltip position="bottom-left">Go home</Tooltip>
+        )}
       </div>
       {enableMenu ? (
-        <ProjectMenuPopover project={project} file={file} />
+        <ProjectMenuPopover
+          project={project}
+          file={file}
+          webAppFileBrowserEnabled={webAppFileBrowserEnabled}
+        />
       ) : (
         <span
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
@@ -63,9 +104,11 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
+  webAppFileBrowserEnabled,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  webAppFileBrowserEnabled: boolean
 }) {
   const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
@@ -73,7 +116,7 @@ function AppLogoLink({
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  if (!window.electron) {
+  if (!window.electron && !webAppFileBrowserEnabled) {
     return (
       <div
         data-testid="app-logo"
@@ -104,9 +147,11 @@ function AppLogoLink({
 function ProjectMenuPopover({
   project,
   file,
+  webAppFileBrowserEnabled,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  webAppFileBrowserEnabled: boolean
 }) {
   const { machineManager, commands, settings } = useApp()
   const { kclManager } = useSingletons()
@@ -226,7 +271,8 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isDesktop() ? 'hidden' : '',
+          className:
+            !isDesktop() && !webAppFileBrowserEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             kclManager.switchedFiles = true
@@ -247,6 +293,7 @@ function ProjectMenuPopover({
       kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
+      webAppFileBrowserEnabled,
     ]
   )
 
