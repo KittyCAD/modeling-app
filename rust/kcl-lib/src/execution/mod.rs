@@ -2184,7 +2184,7 @@ yo2 = hmm([identifierGuy + 5])"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn multiple_sketch_blocks_do_not_reuse_on_cache_name() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"
 firstProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -2215,9 +2215,35 @@ secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length
         assert!(result.exec_state.issues().is_empty());
     }
 
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_artifact_preserves_standard_plane_name() {
+        let code = r#"
+sketch001 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 1mm])
+}
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let sketch_blocks = result
+            .exec_state
+            .global
+            .artifacts
+            .graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::SketchBlock(block) => Some(block),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(sketch_blocks.len(), 1);
+        assert_eq!(sketch_blocks[0].standard_plane, Some(crate::engine::PlaneName::NegYz));
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn issue_10639_blend_example_with_two_sketch_blocks_executes() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"
 sketch001 = sketch(on = YZ) {
   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
@@ -2254,7 +2280,7 @@ myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn issue_10741_point_circle_coincident_executes() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"
 sketch001 = sketch(on = YZ) {
   circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
   line1 = line(start = [var -1.05mm, var 2.22mm], end = [var -3.58mm, var -0.78mm])
@@ -3204,9 +3230,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
-        let code = "@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
+        let code = "s = sketch(on = XY) {
     line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
     line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
     coincident([line1.end, line2.start])
@@ -3544,8 +3568,6 @@ sketch(on = YZ) {
     async fn test_constraint_report_under_constrained() {
         // No constraints at all — all points are free.
         let kcl = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
   line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
 }

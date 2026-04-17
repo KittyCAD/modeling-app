@@ -22,6 +22,8 @@ import { isArray, roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
+  axisConstraintIncludesOrigin,
+  getAxisConstraintPointIds,
   getCoincidentCluster,
   isConstraint,
   isPointSegment,
@@ -342,20 +344,17 @@ function hasCoincidentConstraintForSnapTarget(
   )
 }
 
-function getZeroAxisDistanceConstraintWithOrigin(
+function getAxisConstraintWithOrigin(
   pointId: number,
-  constraintType: 'HorizontalDistance' | 'VerticalDistance',
+  constraintType: 'Horizontal' | 'Vertical',
   objects: ApiObject[]
 ) {
   return (
     objects.find(
       (obj) =>
         isConstraint(obj, constraintType) &&
-        obj.kind.constraint.points.includes(pointId) &&
-        (obj.kind.constraint.points as Array<number | 'ORIGIN'>).includes(
-          'ORIGIN'
-        ) &&
-        obj.kind.constraint.distance.value === 0
+        getAxisConstraintPointIds(obj.kind.constraint).includes(pointId) &&
+        axisConstraintIncludesOrigin(obj.kind.constraint)
     ) ?? null
   )
 }
@@ -721,6 +720,7 @@ export function createOnDragCallback({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
+    suppressExecOutcomeIssues?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -851,7 +851,11 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
-        onNewSketchOutcome({ ...result, writeToDisk: false })
+        onNewSketchOutcome({
+          ...result,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        })
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
@@ -1119,8 +1123,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             snappingCandidate && draggedEntityId !== null
               ? getConstraintForSnapTarget(
                   draggedEntityId,
-                  snappingCandidate.target,
-                  units
+                  snappingCandidate.target
                 )
               : null
           const settings = jsAppSettings(context.rustContext.settingsActor)
@@ -1163,30 +1166,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
             )
 
             if (
-              snapConstraint.type === 'HorizontalDistance' ||
-              snapConstraint.type === 'VerticalDistance'
+              snapConstraint.type === 'Horizontal' ||
+              snapConstraint.type === 'Vertical'
             ) {
               const objects = currentSceneGraphDelta?.new_graph.objects ?? []
-              const existingSameConstraint =
-                getZeroAxisDistanceConstraintWithOrigin(
-                  draggedEntityId,
-                  snapConstraint.type,
-                  objects
-                )
+              const existingSameConstraint = getAxisConstraintWithOrigin(
+                draggedEntityId,
+                snapConstraint.type,
+                objects
+              )
               if (existingSameConstraint) {
                 // Same zero distance constraint already exists -> don't add it again
                 result = editResult
               } else {
                 const oppositeConstraintType =
-                  snapConstraint.type === 'HorizontalDistance'
-                    ? 'VerticalDistance'
-                    : 'HorizontalDistance'
-                const existingOppositeConstraint =
-                  getZeroAxisDistanceConstraintWithOrigin(
-                    draggedEntityId,
-                    oppositeConstraintType,
-                    objects
-                  )
+                  snapConstraint.type === 'Horizontal'
+                    ? 'Vertical'
+                    : 'Horizontal'
+                const existingOppositeConstraint = getAxisConstraintWithOrigin(
+                  draggedEntityId,
+                  oppositeConstraintType,
+                  objects
+                )
                 if (existingOppositeConstraint) {
                   // If there is already a 0 distance opposite constraint:
                   // delete that and add a Coincident constraint instead.
@@ -1354,6 +1355,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sourceDelta: outcome.kclSource,
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
+            suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
           },
         })
       },

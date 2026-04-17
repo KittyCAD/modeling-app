@@ -17,6 +17,7 @@ use crate::KclError;
 use crate::ModuleId;
 use crate::NodePath;
 use crate::SourceRange;
+use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::state::ModuleInfoMap;
@@ -153,6 +154,14 @@ pub struct Path {
     /// this can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// For sketch paths, the ID of the sketch block this path was created
+    /// from. `None` for region paths and paths created in other ways.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sketch_block_id: Option<ArtifactId>,
+    /// For region paths, the ID of the sketch path this region was created
+    /// from. `None` for sketch paths.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin_path_id: Option<ArtifactId>,
     /// The hole, if any, from a subtract2d() call.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inner_path_id: Option<ArtifactId>,
@@ -280,9 +289,17 @@ pub struct StartSketchOnPlane {
 #[serde(rename_all = "camelCase")]
 pub struct SketchBlock {
     pub id: ArtifactId,
-    /// The plane ID if the sketch block is on a specific plane, None if it's on a default plane.
+    /// The semantic standard plane name when the sketch block is on a standard plane.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub standard_plane: Option<PlaneName>,
+    /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
+    /// The path artifact ID created from the sketch block, if there is one.
+    /// There are edge cases when a path isn't created, like when there are no
+    /// segments.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
     /// The sketch ID (ObjectId) for the sketch scene object.
     pub sketch_id: ObjectId,
@@ -477,6 +494,7 @@ pub struct Helix {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[expect(clippy::large_enum_variant)]
 pub enum Artifact {
     CompositeSolid(CompositeSolid),
     Plane(Plane),
@@ -635,6 +653,8 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.sketch_block_id, new.sketch_block_id);
+        merge_opt_id(&mut self.origin_path_id, new.origin_path_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
         self.consumed = new.consumed;
@@ -908,35 +928,27 @@ fn fill_in_node_paths(
     import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
-        Artifact::StartSketchOnFace(face) => {
-            if face.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
-                face.code_ref.range = range;
-                face.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
+            face.code_ref.range = range;
+            face.code_ref.node_path = node_path;
         }
-        Artifact::StartSketchOnPlane(plane) => {
-            if plane.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
-                plane.code_ref.range = range;
-                plane.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnPlane(plane) if plane.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
+            plane.code_ref.range = range;
+            plane.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlock(block) => {
-            if block.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
-                block.code_ref.range = range;
-                block.code_ref.node_path = node_path;
-            }
+        Artifact::SketchBlock(block) if block.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
+            block.code_ref.range = range;
+            block.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlockConstraint(constraint) => {
-            if constraint.code_ref.node_path.is_empty() {
-                constraint.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
-            }
+        Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
+            constraint.code_ref.node_path =
+                NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
         }
         _ => {}
     }
@@ -1128,6 +1140,20 @@ fn artifacts_to_update(
                     vec![range],
                 ))
             })?;
+            let sketch_block_id = exec_artifacts
+                .values()
+                .find(|a| {
+                    if let Artifact::SketchBlock(s) = a {
+                        if let Some(path_id) = s.path_id {
+                            path_id == id
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                })
+                .map(|a| a.id());
             return_arr.push(Artifact::Path(Path {
                 id,
                 sub_type: PathSubType::Sketch,
@@ -1138,6 +1164,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
+                sketch_block_id,
+                origin_path_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
                 consumed: false,
@@ -1242,6 +1270,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref: code_ref.clone(),
                 composite_solid_id: None,
+                sketch_block_id: None,
+                origin_path_id: Some(ArtifactId::new(*origin_path_id)),
                 inner_path_id: None,
                 outer_path_id: None,
             }));
@@ -1348,6 +1378,8 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
+                        sketch_block_id: None,
+                        origin_path_id: original_path.origin_path_id,
                         inner_path_id: None,
                         outer_path_id: None,
                         consumed: false,

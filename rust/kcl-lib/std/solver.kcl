@@ -1,7 +1,7 @@
 /// Functions for sketch-solve using constraints. This module's items are for
 /// use within sketch blocks.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,sketchSolve
 /// triangle = sketch(on = XY) {
 ///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
 ///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -45,7 +45,7 @@ export ORIGIN = [0mm, 0mm]: Point2d
 
 /// Create a point in a sketch.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -68,7 +68,7 @@ export fn point(
 
 /// Create a straight line segment in a sketch.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
 ///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
@@ -95,7 +95,7 @@ export fn line(
 /// Create a circular arc. The arc segment always sweeps counterclockwise from start to end.
 /// To change direction, swap the start and end points.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
 ///   top = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 5mm])
@@ -104,6 +104,12 @@ export fn line(
 /// }
 ///
 /// solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
+/// ```
+/// ```kcl,sketchSolve
+/// height = 2
+/// profile = sketch(on = XY) {
+///   arc1 = arc(start = [0, 0], end = [0, height], center = [0, height/2])
+/// }
 /// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn arc(
@@ -120,7 +126,7 @@ export fn arc(
 /// Create a circle in a sketch. The circle segment always has a starting point
 /// and sweeps counterclockwise from it.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
 ///   edge1 = line(start = [var -3mm, var -2mm], end = [var 3mm, var -2mm])
@@ -150,7 +156,7 @@ export fn circle(
 /// Supports two points, or one point and one segment (line/arc).
 /// A single `Point2d` (e.g. `[1mm, 2.5mm]`) can be used to pin a point to a fixed position.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -172,7 +178,7 @@ export fn coincident(
 
 /// Constrain the distance between two points.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -196,7 +202,7 @@ export fn distance(
 /// Constrain the radius of an arc segment.
 /// Accepts a single arc segment and constrains the distance from its center to its start point.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   base = line(start = [var -4mm, var 0mm], end = [var 4mm, var 0mm])
 ///   arch = arc(start = [var 4mm, var 0mm], end = [var -4mm, var 0mm], center = [var 0mm, var 0mm])
@@ -218,7 +224,7 @@ export fn radius(
 /// Note: Diameter uses the same solver constraint as radius (distance between two points),
 /// but is stored as a separate constraint type for proper UI display.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   guide = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
 ///   diameter(guide) == 4mm
@@ -242,7 +248,7 @@ export fn diameter(
 
 /// Constrain the horizontal distance between two points.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
 ///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
@@ -265,7 +271,7 @@ export fn horizontalDistance(
 
 /// Constrain the vertical distance between two points.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 5mm])
@@ -288,7 +294,7 @@ export fn verticalDistance(
 
 /// Constrain lines to have equal length.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   base = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
 ///   side1 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 4mm])
@@ -310,7 +316,7 @@ export fn equalLength(
 
 /// Constrain circular segments to have equal radius.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// sketch1 = sketch(on = XY) {
 ///   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])
 ///   circle2 = circle(start = [var 10mm, var 0mm], center = [var 6mm, var 0mm])
@@ -329,9 +335,7 @@ export fn equalRadius(
 
 /// Constrain lines to be parallel.
 ///
-/// Currently limited to two lines.
-///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   base = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
 ///   right = line(start = [var 5mm, var 0mm], end = [var 4mm, var 3mm])
@@ -348,7 +352,7 @@ export fn equalRadius(
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn parallel(
-  /// The line segments that should remain parallel. Currently limited to two lines.
+  /// The line segments that should remain parallel.
   @input: [Segment; 2+],
 ) {}
 
@@ -356,7 +360,7 @@ export fn parallel(
 ///
 /// Currently limited to two lines.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -379,7 +383,7 @@ export fn perpendicular(
 
 /// Constrain lines to meet at a given angle.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
@@ -407,7 +411,7 @@ export fn angle(
 /// - `Circle` / `CircularArc`
 /// - `CircularArc` / `CircularArc`
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   guideArc = arc(start = [var 0mm, var 2mm], end = [var 2mm, var 0mm], center = [var 2mm, var 2mm])
 ///   tangentLine = line(start = [var 0mm, var 2mm], end = [var 0mm, var 4mm])
@@ -434,9 +438,9 @@ export fn tangent(
 @(doc_category = "functions")
 export fixed = coincident
 
-/// Constrain a line to be horizontal.
+/// Constrain a line, or a list of points, to be horizontal.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -451,15 +455,38 @@ export fixed = coincident
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
+/// ```kcl
+/// profile = sketch(on = XY) {
+///   p0 = [var 0mm, var 0mm]
+///   p1 = [var 4mm, var 0mm]
+///   horizontal([p0, p1])
+/// }
+/// ```
+/// ```kcl
+/// sketch001 = sketch(on = XY) {
+///   p0 = point(at = [var -0.04mm, var 2.3mm])
+///   horizontal([p0, ORIGIN])
+/// }
+/// ```
+/// ```
+/// sketch001 = sketch(on = XY) {
+///   p0 = point(at = [var -2.23mm, var 3.1mm])
+///   p1 = point(at = [var -3.05mm, var -1.89mm])
+///   pf = point(at = [4, 4])
+///   horizontal([p0, p1, pf])
+/// }
+/// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn horizontal(
-  /// The line segment that should remain horizontal.
-  @input: Segment,
+  /// Either
+  /// - A single line segment that should remain horizontal.
+  /// - A list of points which should all be horizontal.
+  @input: Segment | [Segment | Point2d; 2+],
 ) {}
 
-/// Constrain a line to be vertical.
+/// Constrain a line, or a list of points, to be vertical.
 ///
-/// ```kcl
+/// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
@@ -474,8 +501,23 @@ export fn horizontal(
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
+/// ```kcl
+/// profile = sketch(on = XY) {
+///   p0 = [var 0mm, var 0mm]
+///   p1 = [var 4mm, var 0mm]
+///   vertical([p0, p1])
+/// }
+/// ```
+/// ```kcl
+/// sketch001 = sketch(on = XY) {
+///   p0 = point(at = [var 2.1mm, var -0.03mm])
+///   vertical([p0, ORIGIN])
+/// }
+/// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn vertical(
-  /// The line segment that should remain vertical.
-  @input: Segment,
+  /// Either
+  /// - A single line segment that should remain vertical.
+  /// - A list of points which should all be vertical.
+  @input: Segment | [Segment | Point2d; 2+],
 ) {}

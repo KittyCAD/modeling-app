@@ -25,7 +25,7 @@ export async function copyFileShareLink(
     toast.error('You need to be signed in to share a file.', {
       duration: 5000,
     })
-    return
+    return false
   }
   const shareUrl = createCreateFileUrl(args)
   const shortlink = await createShortlink(
@@ -39,7 +39,7 @@ export async function copyFileShareLink(
     toast.error(shortlink.message, {
       duration: 5000,
     })
-    return
+    return false
   }
 
   await globalThis.navigator.clipboard.writeText(shortlink.url)
@@ -49,6 +49,7 @@ export async function copyFileShareLink(
       duration: 5000,
     }
   )
+  return true
 }
 
 /**

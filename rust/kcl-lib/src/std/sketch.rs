@@ -5,6 +5,7 @@ use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use itertools::Itertools;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -3164,6 +3165,33 @@ async fn inner_region(
                 }
             }
         }
+
+        // After mirror2d, sketch.paths still has the original (pre-mirror)
+        // segment IDs. The region_mapping values are mirrored entity edge
+        // IDs which don't match, so the remapping above produces no paths.
+        // Fall back to creating paths from the region_mapping keys directly.
+        if new_paths.is_empty() && !region_mapping.is_empty() {
+            // Sort because the input order is undefined. We need to be
+            // deterministic.
+            for region_edge_id in region_mapping.keys().sorted_unstable() {
+                // We don't know what the actual values are. We just need
+                // something so that `do_post_extrude()` has the correct segment
+                // IDs.
+                new_paths.push(Path::ToPoint {
+                    base: BasePath {
+                        from: [0.0, 0.0],
+                        to: [0.0, 0.0],
+                        units,
+                        tag: None,
+                        geo_meta: GeoMeta {
+                            id: *region_edge_id,
+                            metadata: args.source_range.into(),
+                        },
+                    },
+                });
+            }
+        }
+
         sketch.paths = new_paths;
 
         for (_tag_name, tag) in &mut sketch.tags {
@@ -3186,6 +3214,13 @@ async fn inner_region(
                 }
             }
         }
+    }
+
+    // After mirror2d, sketch.mirror holds an edge from the mirrored entity
+    // which is not valid on the region. Update it to a region edge so that
+    // do_post_extrude can use it for Solid3dGetExtrusionFaceInfo.
+    if sketch.mirror.is_some() {
+        sketch.mirror = sketch.paths.first().map(|p| p.get_id());
     }
 
     sketch.meta.push(args.source_range.into());
