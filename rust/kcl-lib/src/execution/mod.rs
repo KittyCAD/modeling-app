@@ -1172,22 +1172,6 @@ impl ExecutorContext {
             GridScaleBehavior::ScaleWithZoom
         };
 
-        async fn sync_old_memory(exec_state: &ExecState, env_ref: EnvironmentRef) {
-            let mut stack = exec_state.stack().deep_clone();
-            stack.restore_env(env_ref);
-            let state = cache::SketchModeState {
-                stack,
-                module_infos: exec_state.global.module_infos.clone(),
-                path_to_source_id: exec_state.global.path_to_source_id.clone(),
-                id_to_source: exec_state.global.id_to_source.clone(),
-                #[cfg(feature = "artifact-graph")]
-                scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
-                #[cfg(not(feature = "artifact-graph"))]
-                scene_objects: Default::default(),
-            };
-            cache::write_old_memory(state).await;
-        }
-
         let original_program = program.clone();
 
         let (_program, exec_state, result) = match cache::read_old_ast().await {
@@ -1279,10 +1263,6 @@ impl ExecutorContext {
                             });
 
                             if !clear_scene {
-                                // Keep sketch-mode memory aligned with the latest full-program
-                                // cached state, even when run_with_caching returns early.
-                                let cached_exec_state = cached_state.reconstitute_exec_state();
-                                sync_old_memory(&cached_exec_state, cached_state.main.result_env).await;
                                 // Return early we don't need to clear the scene.
                                 return Ok(cached_state.into_exec_outcome(self).await);
                             }
@@ -1316,15 +1296,11 @@ impl ExecutorContext {
                             ))
                             .await;
 
-                            let cached_exec_state = cached_state.reconstitute_exec_state();
-                            sync_old_memory(&cached_exec_state, cached_state.main.result_env).await;
                             return Ok(cached_state.into_exec_outcome(self).await);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
-                        let cached_exec_state = cached_state.reconstitute_exec_state();
-                        sync_old_memory(&cached_exec_state, cached_state.main.result_env).await;
                         return Ok(cached_state.into_exec_outcome(self).await);
                     }
                 };
