@@ -4,6 +4,7 @@ import {
   equalLengthConstraintTool,
   fixedConstraintTool,
   horizontalConstraintTool,
+  parallelConstraintTool,
   tangentConstraintTool,
 } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import {
@@ -209,6 +210,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [1],
       objects: createSceneGraphDelta([point1]).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(
@@ -256,6 +258,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [10, 11, 12],
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(child, () => addConstraintMock.mock.calls.length > 0)
@@ -303,6 +306,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       candidateSelectionIds: [10, 11],
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(child, () => addConstraintMock.mock.calls.length === 2)
@@ -351,6 +355,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       clickedSelectionId: 10,
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
@@ -374,6 +379,64 @@ describe('constraintToolMachine', () => {
       true
     )
     expect(child.getSnapshot().status).toBe('active')
+  })
+
+  it('keeps the reusable partial selection while Cmd/Ctrl is held and clears it on release', async () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const objects = [pointA, pointB, pointC, pointD, lineA, lineB]
+    const { actor, child, rustContext } = createHarness({
+      childMachine: parallelConstraintTool,
+      objects,
+    })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+
+    addConstraintMock.mockResolvedValue({
+      kclSource: { text: 'parallel' },
+      sceneGraphDelta: createSceneGraphDelta(objects),
+      checkpointId: 5,
+    })
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [],
+      clickedSelectionId: 10,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
+    })
+
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([10])
+    )
+
+    child.send({
+      type: 'click selection',
+      currentSelectionIds: [10],
+      clickedSelectionId: 11,
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: true,
+    })
+
+    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([10])
+    )
+
+    child.send({ type: 'clear modifier-kept selection' })
+
+    await waitFor(
+      actor,
+      (snapshot) =>
+        JSON.stringify(snapshot.context.selectedIds) === JSON.stringify([])
+    )
   })
 
   it('filters tangent selections through the first valid partial selection path', async () => {
@@ -416,6 +479,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       clickedSelectionId: 11,
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(
@@ -429,6 +493,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [11],
       clickedSelectionId: 12,
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(
@@ -442,6 +507,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [],
       clickedSelectionId: 11,
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(
@@ -455,6 +521,7 @@ describe('constraintToolMachine', () => {
       currentSelectionIds: [11],
       clickedSelectionId: 10,
       objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
     })
 
     await waitFor(child, () => addConstraintMock.mock.calls.length === 1)

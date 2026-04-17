@@ -107,7 +107,11 @@ export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'unequip tool' }
-  | { type: 'equip tool'; data: { tool: EquipTool } }
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
+      keepSelection?: boolean
+    }
   | {
       type:
         | 'Dimension'

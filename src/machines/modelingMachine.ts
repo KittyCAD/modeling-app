@@ -619,6 +619,7 @@ export type ModelingMachineEvent =
   | {
       type: 'equip tool'
       data: { tool: EquipTool }
+      keepSelection?: boolean
     }
   | {
       type:

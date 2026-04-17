@@ -55,6 +55,10 @@ type ConstraintToolContext = {
   initialSelectionIds: SketchSolveSelectionId[]
   initialObjects: ApiObject[]
   selectionBoxState: SelectionBoxVisualState
+  hasInitializedSelectionFromInput: boolean
+  modifierKeptSelectionIds: SketchSolveSelectionId[]
+  modifierKeepSelectionActive: boolean
+  removeModifierKeepSelectionListener?: () => void
   pendingApply?: ConstraintToolPreparedApply
 }
 
@@ -181,6 +185,7 @@ type ConstraintToolEvent =
       currentSelectionIds: SketchSolveSelectionId[]
       clickedSelectionId: SketchSolveSelectionId | null
       objects: ApiObject[]
+      modifierKeepSelection: boolean
     }
   | {
       type: 'preview area selection'
@@ -193,6 +198,10 @@ type ConstraintToolEvent =
       currentSelectionIds: SketchSolveSelectionId[]
       candidateSelectionIds: SketchSolveSelectionId[]
       objects: ApiObject[]
+      modifierKeepSelection: boolean
+    }
+  | {
+      type: 'clear modifier-kept selection'
     }
 
 type ParentSketchSnapshot = {
@@ -381,6 +390,7 @@ function addConstraintToolListener({
         currentSelectionIds: parentData.selectedIds,
         clickedSelectionId,
         objects: parentData.objects,
+        modifierKeepSelection: mouseEvent.metaKey || mouseEvent.ctrlKey,
       })
     },
     onMove: ({ intersectionPoint }) => {
@@ -523,6 +533,7 @@ function addConstraintToolListener({
         currentSelectionIds: parentData.selectedIds,
         candidateSelectionIds,
         objects: parentData.objects,
+        modifierKeepSelection: mouseEvent.metaKey || mouseEvent.ctrlKey,
       })
     },
   })
@@ -616,6 +627,60 @@ function getPreviewSelectionIds(
   return []
 }
 
+function getModifierPreservedSelectionIds({
+  toolName,
+  currentSelectionIds,
+  objects,
+  modifierKeepSelection,
+}: {
+  toolName: ConstraintToolName
+  currentSelectionIds: SketchSolveSelectionId[]
+  objects: ApiObject[]
+  modifierKeepSelection: boolean
+}) {
+  if (!modifierKeepSelection) {
+    return []
+  }
+
+  const normalizedCurrentSelection = getNormalizedSelection(
+    toolName,
+    currentSelectionIds,
+    objects
+  )
+
+  return normalizedCurrentSelection.status === 'partial'
+    ? normalizedCurrentSelection.selectionIds
+    : []
+}
+
+function addModifierKeepSelectionListener({
+  self,
+}: {
+  self: {
+    send: (event: ConstraintToolEvent) => void
+  }
+}) {
+  const clearModifierKeptSelection = () => {
+    self.send({ type: 'clear modifier-kept selection' })
+  }
+  const handleWindowBlur = () => {
+    clearModifierKeptSelection()
+  }
+  const handleWindowKeyUp = (event: KeyboardEvent) => {
+    if (!event.metaKey && !event.ctrlKey) {
+      clearModifierKeptSelection()
+    }
+  }
+
+  window.addEventListener('blur', handleWindowBlur)
+  window.addEventListener('keyup', handleWindowKeyUp)
+
+  return () => {
+    window.removeEventListener('blur', handleWindowBlur)
+    window.removeEventListener('keyup', handleWindowKeyUp)
+  }
+}
+
 function initializeSelectionFromInput({
   context,
   self,
@@ -627,6 +692,10 @@ function initializeSelectionFromInput({
     }
   }
 }) {
+  if (context.hasInitializedSelectionFromInput) {
+    return
+  }
+
   const normalized = getNormalizedSelection(
     context.toolName,
     context.initialSelectionIds,
@@ -683,7 +752,25 @@ export function createConstraintToolMachine({
     actions: {
       'add constraint tool listener': addConstraintToolListener,
       'initialize selection from input': initializeSelectionFromInput,
+      'mark selection input initialized': assign({
+        hasInitializedSelectionFromInput: true,
+      }),
       'remove constraint tool listener': removeConstraintToolListener,
+      'register modifier keep selection listener': assign(({ self }) => ({
+        removeModifierKeepSelectionListener: addModifierKeepSelectionListener({
+          self,
+        }),
+      })),
+      'remove modifier keep selection listener': assign(({ context }) => {
+        context.removeModifierKeepSelectionListener?.()
+        return {
+          removeModifierKeepSelectionListener: undefined,
+        }
+      }),
+      'clear modifier kept selection state': assign({
+        modifierKeptSelectionIds: [],
+        modifierKeepSelectionActive: false,
+      }),
       'normalize selection in parent': ({ event, context, self }) => {
         assertEvent(event, 'normalize selection')
         const normalized = getNormalizedSelection(
@@ -747,6 +834,13 @@ export function createConstraintToolMachine({
           return {
             pendingApply:
               clickAction.type === 'apply' ? clickAction.apply : undefined,
+            modifierKeptSelectionIds: getModifierPreservedSelectionIds({
+              toolName: context.toolName,
+              currentSelectionIds: event.currentSelectionIds,
+              objects: event.objects,
+              modifierKeepSelection: event.modifierKeepSelection,
+            }),
+            modifierKeepSelectionActive: false,
           }
         }
       ),
@@ -812,13 +906,28 @@ export function createConstraintToolMachine({
               selectionAction.type === 'apply'
                 ? selectionAction.apply
                 : undefined,
+            modifierKeptSelectionIds: getModifierPreservedSelectionIds({
+              toolName: context.toolName,
+              currentSelectionIds: event.currentSelectionIds,
+              objects: event.objects,
+              modifierKeepSelection: event.modifierKeepSelection,
+            }),
+            modifierKeepSelectionActive: false,
           }
         }
       ),
       'clear pending apply': assign({
         pendingApply: undefined,
       }),
-      'clear selection in parent': ({ self }) => {
+      'activate modifier kept selection': assign(({ context }) => ({
+        modifierKeepSelectionActive:
+          context.modifierKeptSelectionIds.length > 0,
+      })),
+      'clear modifier kept selection in parent': ({ context, self }) => {
+        if (!context.modifierKeepSelectionActive) {
+          return
+        }
+
         sendSelectionToParent(self, [])
       },
       'restore attempted selection in parent': ({ context, self }) => {
@@ -875,6 +984,9 @@ export function createConstraintToolMachine({
       initialSelectionIds: input.initialSelectionIds,
       initialObjects: input.initialObjects,
       selectionBoxState: createSelectionBoxVisualState(),
+      hasInitializedSelectionFromInput: false,
+      modifierKeptSelectionIds: [],
+      modifierKeepSelectionActive: false,
     }),
     id: toolId,
     initial: 'active',
@@ -890,9 +1002,14 @@ export function createConstraintToolMachine({
       active: {
         entry: [
           'add constraint tool listener',
+          'register modifier keep selection listener',
           'initialize selection from input',
+          'mark selection input initialized',
         ],
-        exit: 'remove constraint tool listener',
+        exit: [
+          'remove constraint tool listener',
+          'remove modifier keep selection listener',
+        ],
         on: {
           'normalize selection': [
             {
@@ -901,7 +1018,10 @@ export function createConstraintToolMachine({
               actions: 'store pending apply from normalized selection',
             },
             {
-              actions: 'normalize selection in parent',
+              actions: [
+                'normalize selection in parent',
+                'clear modifier kept selection state',
+              ],
             },
           ],
           'click selection': [
@@ -911,7 +1031,10 @@ export function createConstraintToolMachine({
               actions: 'store pending apply from clicked selection',
             },
             {
-              actions: 'resolve click selection in parent',
+              actions: [
+                'resolve click selection in parent',
+                'clear modifier kept selection state',
+              ],
             },
           ],
           'preview area selection': {
@@ -935,9 +1058,18 @@ export function createConstraintToolMachine({
               actions: 'store pending apply from committed area selection',
             },
             {
-              actions: 'resolve committed area selection in parent',
+              actions: [
+                'resolve committed area selection in parent',
+                'clear modifier kept selection state',
+              ],
             },
           ],
+          'clear modifier-kept selection': {
+            actions: [
+              'clear modifier kept selection in parent',
+              'clear modifier kept selection state',
+            ],
+          },
         },
       },
       applying: {
@@ -951,7 +1083,15 @@ export function createConstraintToolMachine({
           onDone: {
             target: 'active',
             actions: [
-              'clear selection in parent',
+              ({ context, self }) => {
+                if (context.modifierKeptSelectionIds.length > 0) {
+                  sendSelectionToParent(self, context.modifierKeptSelectionIds)
+                  return
+                }
+
+                sendSelectionToParent(self, [])
+              },
+              'activate modifier kept selection',
               ({ event, self }) => {
                 self._parent?.send?.({
                   type: 'update sketch outcome',
@@ -970,6 +1110,7 @@ export function createConstraintToolMachine({
             actions: [
               'restore attempted selection in parent',
               'clear pending apply',
+              'clear modifier kept selection state',
               'toast sketch solve error',
             ],
           },
@@ -977,7 +1118,10 @@ export function createConstraintToolMachine({
       },
       unequipping: {
         type: 'final',
-        entry: 'remove constraint tool listener',
+        entry: [
+          'remove constraint tool listener',
+          'clear modifier kept selection state',
+        ],
       },
     },
   })

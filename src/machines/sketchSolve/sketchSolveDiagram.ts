@@ -266,6 +266,7 @@ export const sketchSolveMachine = setup({
     }) => {
       assertEvent(event, 'equip tool')
       const toolName = event.data.tool
+      const keepSelection = event.keepSelection ?? false
       if (!isConstraintToolName(toolName)) {
         return
       }
@@ -291,7 +292,7 @@ export const sketchSolveMachine = setup({
         })
 
         if (result.type === 'applied') {
-          sendToolbarConstraintOutcome(self, result.result)
+          sendToolbarConstraintOutcome(self, result.result, keepSelection)
         }
       })
     },
