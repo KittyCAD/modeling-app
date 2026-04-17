@@ -3385,6 +3385,16 @@ foo() |> extrude(length = 1)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_accepts_segment_values_in_sketch_blocks() {
+        let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [3, 4])
+  length1 = segLen(line1)
+}"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn experimental() {
         let code = r#"
 startSketchOn(XY)

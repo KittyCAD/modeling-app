@@ -2158,8 +2158,8 @@ export fn lastSegY(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn segLen(
-  /// The line segment being queried by its tag.
-  @tag: TaggedEdge,
+  /// The segment being queried, either by tag or directly.
+  @tag: TaggedEdge | Segment,
 ): number(Length) {}
 
 /// Compute the angle (in degrees) of the provided line segment.
