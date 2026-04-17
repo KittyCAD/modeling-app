@@ -51,4 +51,24 @@ test.describe('Share link tests', () => {
       await expect(getToastError(page)).toBeVisible()
     }
   )
+
+  test(
+    'should prefill demo project name on web',
+    { tag: ['@web'] },
+    async ({ page }) => {
+      const code = 'Zm9vYmFyID0gMQ==' // KCL: foobar = 1
+      const next = new URL(page.url())
+      next.searchParams.set('create-file', 'true')
+      next.searchParams.set('name', 'test')
+      next.searchParams.set('code', code)
+      await page.goto(next.toString())
+
+      const projectTab = page
+        .getByTestId('cmd-bar-input-tab')
+        .filter({ has: page.getByTestId('arg-name-projectname') })
+      await expect(projectTab.getByTestId('header-arg-value')).toHaveText(
+        'demo-project'
+      )
+    }
+  )
 })

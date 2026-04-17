@@ -1,52 +1,40 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { CurrentProjectPublicationDetails } from '@src/lib/share'
 import { Fragment, useEffect, useState } from 'react'
 
 export interface ShareDialogSubmitArgs {
   isRestrictedToOrg: boolean
+  password: string
 }
 
 type ShareDialogProps = {
   onClose: () => void
   onCopyLink: (args: ShareDialogSubmitArgs) => Promise<boolean>
-  onPublish: () => Promise<boolean>
   allowOrgRestrict: boolean
+  allowPassword: boolean
   shareDisabled?: boolean
-  publicationDetails?: CurrentProjectPublicationDetails | null
-  isLoadingPublicationDetails?: boolean
 }
 
 export function ShareDialog({
   onClose,
   onCopyLink,
-  onPublish,
   allowOrgRestrict,
+  allowPassword,
   shareDisabled = false,
-  publicationDetails = null,
-  isLoadingPublicationDetails = false,
 }: ShareDialogProps) {
   const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
-  const [activeAction, setActiveAction] = useState<'copy' | 'publish' | null>(
-    null
-  )
+  const [password, setPassword] = useState('')
+  const [activeAction, setActiveAction] = useState<'copy' | null>(null)
 
   useEffect(() => {
     setIsRestrictedToOrg(false)
+    setPassword('')
     setActiveAction(null)
   }, [])
 
   const isSubmitting = activeAction !== null
   const copyDisabled = shareDisabled || isSubmitting
-  const publishDisabled = isSubmitting
-  const publishButtonLabel = getPublishButtonLabel(
-    publicationDetails?.publicationStatus
-  )
-  const publishPrompt = getPublishPrompt({
-    publicationDetails,
-    isLoadingPublicationDetails,
-  })
 
   async function handleCopyLink() {
     if (copyDisabled) {
@@ -57,24 +45,9 @@ export function ShareDialog({
     try {
       const copied = await onCopyLink({
         isRestrictedToOrg,
+        password,
       })
       if (copied) {
-        onClose()
-      }
-    } finally {
-      setActiveAction(null)
-    }
-  }
-
-  async function handlePublish() {
-    if (publishDisabled) {
-      return
-    }
-
-    setActiveAction('publish')
-    try {
-      const published = await onPublish()
-      if (published) {
         onClose()
       }
     } finally {
@@ -105,7 +78,7 @@ export function ShareDialog({
                 Share project
               </h2>
               <p className="mt-2 text-xs leading-5 text-chalkboard-70 dark:text-chalkboard-30">
-                Copy a shareable link or publish this project for review.
+                Copy a shareable link for the current file.
               </p>
             </div>
             <ActionButton
@@ -155,7 +128,7 @@ export function ShareDialog({
                     </p>
                   </div>
                   <p className="pt-1 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
-                    They can open a copy of this project in Zoo.
+                    They can open a copy of this file in Zoo.
                   </p>
                 </div>
               </div>
@@ -192,6 +165,41 @@ export function ShareDialog({
                 </div>
               </div>
             </label>
+
+            <div
+              className={`rounded-xl border border-chalkboard-20/80 px-3 py-3 dark:border-chalkboard-80/70 ${
+                allowPassword
+                  ? 'bg-chalkboard-10/70 dark:bg-chalkboard-100/40'
+                  : 'opacity-60'
+              }`}
+            >
+              <label
+                htmlFor="share-link-password"
+                className="block text-chalkboard-100 dark:text-chalkboard-10"
+              >
+                Password
+              </label>
+              <input
+                id="share-link-password"
+                type="text"
+                value={password}
+                disabled={!allowPassword}
+                onChange={(event) => setPassword(event.target.value)}
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
+                placeholder="Set a password"
+                className={`mt-2 w-full rounded border border-chalkboard-20/80 bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:border-chalkboard-80/70 dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
+                  allowPassword ? '' : 'cursor-not-allowed'
+                }`}
+              />
+              {!allowPassword && (
+                <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
+                  Requires a paid plan.
+                </p>
+              )}
+            </div>
             {shareDisabled && (
               <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                 Share links are not currently supported for multi-file
@@ -199,97 +207,8 @@ export function ShareDialog({
               </p>
             )}
           </section>
-
-          <section className="border-t border-chalkboard-20/70 pt-4 dark:border-chalkboard-80/70">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium uppercase tracking-[0.14em] text-chalkboard-60 dark:text-chalkboard-40">
-                  Publish to Aquarium
-                </p>
-                <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
-                  {publishPrompt}
-                </p>
-              </div>
-              <ActionButton
-                Element="button"
-                type="button"
-                disabled={publishDisabled}
-                className="shrink-0 self-end whitespace-nowrap py-0.5 sm:self-auto"
-                onClick={() => {
-                  void handlePublish()
-                }}
-              >
-                {activeAction === 'publish'
-                  ? 'Publishing...'
-                  : publishButtonLabel}
-              </ActionButton>
-            </div>
-          </section>
         </form>
       </Popover.Panel>
     </Transition>
   )
-}
-
-function getPublishButtonLabel(
-  publicationStatus?: CurrentProjectPublicationDetails['publicationStatus']
-) {
-  switch (publicationStatus) {
-    case 'published':
-      return 'Update published version'
-    case 'pending_review':
-      return 'Update review submission'
-    case 'rejected':
-      return 'Resubmit for review'
-    default:
-      return 'Publish'
-  }
-}
-
-function getPublishPrompt({
-  publicationDetails,
-  isLoadingPublicationDetails,
-}: {
-  publicationDetails: CurrentProjectPublicationDetails | null
-  isLoadingPublicationDetails: boolean
-}) {
-  if (isLoadingPublicationDetails) {
-    return 'Checking whether this project has already been published.'
-  }
-
-  if (!publicationDetails) {
-    return 'Submit this project for review so it can be approved for public listing.'
-  }
-
-  switch (publicationDetails.publicationStatus) {
-    case 'published': {
-      const publishedOn = publicationDetails.publishedAt
-        ? formatDate(publicationDetails.publishedAt)
-        : null
-      return publishedOn
-        ? `This project was last published on ${publishedOn}. Publish again to update the public version.`
-        : 'This project has already been published. Publish again to update the public version.'
-    }
-    case 'pending_review':
-      return `This project was last submitted for review on ${formatDate(publicationDetails.updatedAt)}. Publish again to update the pending review version.`
-    case 'rejected':
-      return 'This project has been submitted before. Publish again to resubmit it for approval.'
-    case 'deleted':
-      return 'This project was previously published. Publish again to submit a new version for review.'
-    default:
-      return 'Submit this project for review so it can be approved for public listing.'
-  }
-}
-
-function formatDate(value: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.valueOf())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date)
 }

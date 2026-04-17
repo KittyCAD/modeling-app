@@ -5,21 +5,8 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import {
-  copyCurrentFileShareLink,
-  type CurrentProjectPublicationDetails,
-  getCurrentProjectPublicationDetails,
-  publishCurrentProject,
-} from '@src/lib/share'
-import { err } from '@src/lib/trap'
-import {
-  memo,
-  type RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { copyFileShareLink } from '@src/lib/links'
+import { memo, type RefObject, useCallback, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
@@ -79,88 +66,28 @@ function SharePopoverContent({
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
   const allowOrgRestrict = !!billingContext.isOrg
+  const allowPassword = !!billingContext.hasSubscription
   const ast = kclManager.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
 
-  const [publicationDetails, setPublicationDetails] =
-    useState<CurrentProjectPublicationDetails | null>(null)
-  const [isLoadingPublicationDetails, setIsLoadingPublicationDetails] =
-    useState(false)
-
   const onCopyShareLink = useCallback(
-    async ({ isRestrictedToOrg }: { isRestrictedToOrg: boolean }) => {
-      const wasmInstance = await kclManager.wasmInstancePromise
-
-      return copyCurrentFileShareLink({
+    async ({
+      isRestrictedToOrg,
+      password,
+    }: {
+      isRestrictedToOrg: boolean
+      password: string
+    }) => {
+      return copyFileShareLink({
         token,
-        project: currentProject,
-        currentFilePath: kclManager.path,
-        currentFileContents: kclManager.code,
-        wasmInstance,
+        code: kclManager.code,
+        name: currentProject?.name || '',
         isRestrictedToOrg,
+        password: password || undefined,
       })
     },
     [currentProject, kclManager, token]
   )
-
-  const onPublishProject = useCallback(async () => {
-    const wasmInstance = await kclManager.wasmInstancePromise
-
-    return publishCurrentProject({
-      token,
-      project: currentProject,
-      currentFilePath: kclManager.path,
-      currentFileContents: kclManager.code,
-      wasmInstance,
-    })
-  }, [currentProject, kclManager, token])
-
-  useEffect(() => {
-    let isCancelled = false
-
-    if (!open) {
-      setPublicationDetails(null)
-      setIsLoadingPublicationDetails(false)
-      return
-    }
-
-    if (!token || !currentProject) {
-      setPublicationDetails(null)
-      setIsLoadingPublicationDetails(false)
-      return
-    }
-
-    setIsLoadingPublicationDetails(true)
-    void (async () => {
-      const wasmInstance = await kclManager.wasmInstancePromise
-      if (isCancelled) {
-        return
-      }
-
-      const details = await getCurrentProjectPublicationDetails({
-        token,
-        project: currentProject,
-        wasmInstance,
-      })
-
-      if (isCancelled) {
-        return
-      }
-
-      if (err(details)) {
-        console.error('Failed to load project publication details', details)
-        setPublicationDetails(null)
-      } else {
-        setPublicationDetails(details)
-      }
-
-      setIsLoadingPublicationDetails(false)
-    })()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [currentProject, kclManager, open, token])
 
   return (
     <>
@@ -181,8 +108,8 @@ function SharePopoverContent({
             {billingLoading
               ? 'Loading share options'
               : shareDisabled
-                ? `Share links are not currently supported for multi-file assemblies, but you can still publish this project`
-                : `Share or publish this project`}
+                ? `Share links are not currently supported for multi-file assemblies`
+                : `Share this project`}
           </span>
           {!billingLoading && (
             <kbd className="hotkey text-xs capitalize">
@@ -195,11 +122,9 @@ function SharePopoverContent({
         <ShareDialog
           onClose={close}
           onCopyLink={onCopyShareLink}
-          onPublish={onPublishProject}
           allowOrgRestrict={allowOrgRestrict}
+          allowPassword={allowPassword}
           shareDisabled={shareDisabled}
-          publicationDetails={publicationDetails}
-          isLoadingPublicationDetails={isLoadingPublicationDetails}
         />
       )}
     </>
