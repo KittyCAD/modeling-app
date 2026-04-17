@@ -210,6 +210,18 @@ export function OpenedProject() {
     kclManager
   )
 
+  useHotkeyWrapper(
+    ['alt + shift + f'],
+    () => {
+      void kclManager.format()
+    },
+    kclManager,
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: true,
+    }
+  )
+
   useEngineConnectionSubscriptions()
 
   useEffect(() => {

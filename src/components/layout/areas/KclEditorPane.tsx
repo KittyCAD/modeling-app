@@ -19,7 +19,6 @@ export const editorShortcutMeta = {
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
-    codeMirror: 'Ctrl-Shift-c',
     display: 'Ctrl + Shift + C',
   },
 }
