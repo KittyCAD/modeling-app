@@ -4659,6 +4659,27 @@ mod sketch_block_tags_do_not_leak_to_parent_from_region {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_tags_do_not_leak_to_parent_from_extrude {
+    const TEST_NAME: &str = "sketch_block_tags_do_not_leak_to_parent_from_extrude";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod sketch_block_import_multiple {
     const TEST_NAME: &str = "sketch_block_import_multiple";
 
