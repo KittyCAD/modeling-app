@@ -917,14 +917,14 @@ mod sync {
         let line_curve = load_curve_handle(&objects[3], &objects, UnitLength::Millimeters).expect("line curve");
 
         let polyline_hits = curve_polyline_intersections(
-            circle_curve,
+            &circle_curve,
             &[Coords2d { x: -2.0, y: 0.0 }, Coords2d { x: 2.0, y: 0.0 }],
             EPSILON_POINT_ON_SEGMENT,
         );
         assert_eq!(polyline_hits.len(), 2);
         assert!(polyline_hits.iter().all(|(_, seg_i)| *seg_i == 0));
 
-        let curve_hits = curve_curve_intersections(circle_curve, line_curve, EPSILON_POINT_ON_SEGMENT);
+        let curve_hits = curve_curve_intersections(&circle_curve, &line_curve, EPSILON_POINT_ON_SEGMENT);
         assert_eq!(curve_hits.len(), 2);
         assert!(curve_hits.iter().any(|p| (p.x - -1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
         assert!(curve_hits.iter().any(|p| (p.x - 1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
@@ -3775,4 +3775,350 @@ async fn test_trim_arc_arc_intersection_updates_start_and_preserves_constraints(
         "Expected arc2.start to become point-segment coincident with arc1 after trim, got KCL:\n{}",
         result.kcl_code
     );
+}
+
+#[tokio::test]
+/// Control point spline trim case 1:
+/// tail-trimming a spline should keep the same number of control points, redistribute
+/// them along the kept side, and drop constraints authored on internal control points.
+async fn test_trim_control_point_spline_tail_trim_drops_control_constraints() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  controlPointSpline(points = [
+    [var -7.66mm, var 11.1mm],
+    [var 0.85mm, var 4.44mm],
+    [var -3.27mm, var -2.28mm]
+  ])
+  controlPointSpline1 = controlPointSpline(points = [
+    [var -12.66mm, var -1.26mm],
+    [var -10.22mm, var 5.67mm],
+    [var -5.67mm, var 3.6mm],
+    [var 0mm, var 9.06mm],
+    [var 5.74mm, var 9.61mm],
+    [var 9.03mm, var 5.65mm]
+  ])
+  vertical([
+    controlPointSpline1.controls[3],
+    ORIGIN
+  ])
+  distance([
+    controlPointSpline1.controls[1],
+    controlPointSpline1.controls[2]
+  ]) == 5
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -2.81, y: 9.23 }, Coords2d { x: 1.13, y: 6.22 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+
+    let large_spline = objects
+        .iter()
+        .find_map(|obj| match &obj.kind {
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+            } if spline.controls.len() == 6 => Some((obj.id, spline)),
+            _ => None,
+        })
+        .expect("Expected a six-control spline after tail trim");
+
+    let control_positions = large_spline
+        .1
+        .controls
+        .iter()
+        .map(|control_id| {
+            let point = objects
+                .iter()
+                .find(|obj| obj.id == *control_id)
+                .and_then(|obj| match &obj.kind {
+                    crate::frontend::api::ObjectKind::Segment {
+                        segment: crate::frontend::sketch::Segment::Point(point),
+                    } => Some(point),
+                    _ => None,
+                })
+                .expect("Expected spline control point object");
+            Coords2d {
+                x: point.position.x.value,
+                y: point.position.y.value,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(control_positions.len(), 6);
+    assert!((control_positions[0].x - -12.66).abs() < 1e-2);
+    assert!((control_positions[0].y - -1.26).abs() < 1e-2);
+    assert!((control_positions[5].x - -3.12).abs() < 5e-2);
+    assert!((control_positions[5].y - 6.21).abs() < 5e-2);
+
+    for obj in &objects {
+        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+            continue;
+        };
+        match constraint {
+            crate::frontend::sketch::Constraint::Distance(distance)
+            | crate::frontend::sketch::Constraint::HorizontalDistance(distance)
+            | crate::frontend::sketch::Constraint::VerticalDistance(distance) => {
+                assert!(
+                    !distance.point_ids().any(|id| large_spline.1.controls.contains(&id)),
+                    "Tail-trimmed spline should not keep point distance constraints on controls, got KCL:\n{}",
+                    result.kcl_code
+                );
+            }
+            crate::frontend::sketch::Constraint::Vertical(crate::frontend::sketch::Vertical::Points { points })
+            | crate::frontend::sketch::Constraint::Horizontal(crate::frontend::sketch::Horizontal::Points { points }) =>
+            {
+                assert!(
+                    !points.iter().any(
+                        |point| matches!(point, crate::frontend::sketch::ConstraintSegment::Segment(id) if large_spline.1.controls.contains(id))
+                    ),
+                    "Tail-trimmed spline should not keep point-axis constraints on controls, got KCL:\n{}",
+                    result.kcl_code
+                );
+            }
+            _ => {}
+        }
+    }
+}
+
+#[tokio::test]
+/// Control point spline trim case 2:
+/// splitting a spline should produce two splines, drop internal control-point
+/// constraints, and preserve endpoint coincident/tangent constraints on the kept sides.
+async fn test_trim_control_point_spline_split_preserves_endpoint_constraints() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  controlPointSpline(points = [
+    [var -7.66mm, var 11.1mm],
+    [var 0.85mm, var 4.44mm],
+    [var -3.27mm, var -2.28mm]
+  ])
+  controlPointSpline1 = controlPointSpline(points = [
+    [var -11.26mm, var 1.52mm],
+    [var -10.81mm, var 3.84mm],
+    [var -8.13mm, var 3.66mm],
+    [var -5.27mm, var 6.15mm],
+    [var -2.58mm, var 7.69mm],
+    [var -0.86mm, var 7.33mm],
+    [var 2.51mm, var 9.14mm],
+    [var 7.3mm, var 10.4mm],
+    [var 7.89mm, var 8.93mm]
+  ])
+  line1 = line(start = [var -0.49mm, var 4.43mm], end = [var 0.73mm, var 11.36mm])
+  line2 = line(start = [var -11.26mm, var 1.52mm], end = [var -12.49mm, var -3.1mm])
+  coincident([
+    line2.start,
+    controlPointSpline1.controls[0]
+  ])
+  line3 = line(start = [var 7.89mm, var 8.93mm], end = [var 9.58mm, var 4.68mm])
+  coincident([
+    line3.start,
+    controlPointSpline1.controls[8]
+  ])
+  tangent([controlPointSpline1, line3])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -2.81, y: 9.23 }, Coords2d { x: -1.36, y: 5.11 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+
+    let splines = objects
+        .iter()
+        .filter_map(|obj| match &obj.kind {
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+            } => Some((obj.id, spline)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        splines.len(),
+        3,
+        "Expected 3 splines after split trim, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    let nine_control_splines = splines
+        .iter()
+        .filter(|(_, spline)| spline.controls.len() == 9)
+        .copied()
+        .collect::<Vec<_>>();
+    assert_eq!(
+        nine_control_splines.len(),
+        2,
+        "Expected two 9-control splines after split trim, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    let control_position = |control_id: ObjectId| -> Coords2d {
+        let point = objects
+            .iter()
+            .find(|obj| obj.id == control_id)
+            .and_then(|obj| match &obj.kind {
+                crate::frontend::api::ObjectKind::Segment {
+                    segment: crate::frontend::sketch::Segment::Point(point),
+                } => Some(point),
+                _ => None,
+            })
+            .expect("Expected spline control point object");
+        Coords2d {
+            x: point.position.x.value,
+            y: point.position.y.value,
+        }
+    };
+
+    let left_split = nine_control_splines
+        .iter()
+        .copied()
+        .find(|(_, spline)| {
+            let start = control_position(*spline.controls.first().expect("left split start"));
+            (start.x - -11.26).abs() < 0.1 && (start.y - 1.52).abs() < 0.1
+        })
+        .expect("Expected a left split spline");
+    let right_split = nine_control_splines
+        .iter()
+        .copied()
+        .find(|(id, _)| *id != left_split.0)
+        .expect("Expected a right split spline");
+
+    let line_segments = objects
+        .iter()
+        .filter_map(|obj| match &obj.kind {
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::Line(line),
+            } => Some((obj.id, line)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    let line1_id = line_segments
+        .iter()
+        .copied()
+        .find(|(_, line)| {
+            let start = control_position(line.start);
+            let end = control_position(line.end);
+            (start.x - -0.49).abs() < 0.25 && (end.y - 11.36).abs() < 0.25
+        })
+        .map(|(id, _)| id)
+        .expect("Expected line1 after split trim");
+    let line2_start_id = line_segments
+        .iter()
+        .copied()
+        .find(|(_, line)| {
+            let start = control_position(line.start);
+            let end = control_position(line.end);
+            (start.x - -11.26).abs() < 0.1 && (end.y - -3.1).abs() < 0.1
+        })
+        .map(|(_, line)| line.start)
+        .expect("Expected line2 after split trim");
+    let line3 = line_segments
+        .iter()
+        .copied()
+        .find(|(_, line)| {
+            let start = control_position(line.start);
+            (start.x - 7.8).abs() < 0.3 && (start.y - 8.9).abs() < 0.3
+        })
+        .expect("Expected line3 after split trim");
+
+    let has_point_point = |a: ObjectId, b: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.len() == 2 && ids.contains(&a) && ids.contains(&b)
+        })
+    };
+
+    let has_point_segment = |point: ObjectId, segment: ObjectId| -> bool {
+        objects.iter().any(|obj| {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                return false;
+            };
+            let crate::frontend::sketch::Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+            let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+            ids.contains(&point) && ids.contains(&segment)
+        })
+    };
+
+    assert!(
+        has_point_point(line2_start_id, left_split.1.controls[0]),
+        "Expected left split spline start to remain coincident with line2.start, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_segment(right_split.1.controls[0], line1_id),
+        "Expected right split spline start to be coincident with line1, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        has_point_point(line3.1.start, right_split.1.controls[8]),
+        "Expected right split spline end to remain coincident with line3.start, got KCL:\n{}",
+        result.kcl_code
+    );
+    assert!(
+        objects.iter().any(|obj| {
+            matches!(
+                &obj.kind,
+                crate::frontend::api::ObjectKind::Constraint {
+                    constraint: crate::frontend::sketch::Constraint::Tangent(tangent),
+                } if tangent.input.contains(&right_split.0) && tangent.input.contains(&line3.0)
+            )
+        }),
+        "Expected tangent to migrate onto the right split spline, got KCL:\n{}",
+        result.kcl_code
+    );
+
+    for (_, spline) in [left_split, right_split] {
+        let internal_controls = spline
+            .controls
+            .iter()
+            .copied()
+            .skip(1)
+            .take(spline.controls.len().saturating_sub(2))
+            .collect::<Vec<_>>();
+        for obj in &objects {
+            let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                continue;
+            };
+            match constraint {
+                crate::frontend::sketch::Constraint::Distance(distance)
+                | crate::frontend::sketch::Constraint::HorizontalDistance(distance)
+                | crate::frontend::sketch::Constraint::VerticalDistance(distance) => {
+                    assert!(
+                        !distance.point_ids().any(|id| internal_controls.contains(&id)),
+                        "Split-trimmed spline should not keep internal control distance constraints, got KCL:\n{}",
+                        result.kcl_code
+                    );
+                }
+                crate::frontend::sketch::Constraint::Vertical(crate::frontend::sketch::Vertical::Points { points })
+                | crate::frontend::sketch::Constraint::Horizontal(crate::frontend::sketch::Horizontal::Points {
+                    points,
+                }) => {
+                    assert!(
+                        !points.iter().any(
+                            |point| matches!(point, crate::frontend::sketch::ConstraintSegment::Segment(id) if internal_controls.contains(id))
+                        ),
+                        "Split-trimmed spline should not keep internal point-axis constraints, got KCL:\n{}",
+                        result.kcl_code
+                    );
+                }
+                _ => {}
+            }
+        }
+    }
 }
