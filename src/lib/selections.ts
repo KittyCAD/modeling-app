@@ -171,8 +171,6 @@ export async function getEngineRegionSelectionFromEntity(
     type: 'engineRegion',
     id: regionEntityId,
     point,
-    // Keep the sketch block id for downstream edits and the parent path id so
-    // selection -> editor highlighting can prefer `region()` when one exists.
     sketchId: sketch.id,
     pathId: path.id,
   }
