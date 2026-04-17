@@ -282,7 +282,8 @@ extrude002 = extrude(seg01, length = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `region001 = region(point = [1mm, 1mm], sketch = s)
+        `hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
 extrude001 = extrude(region001, length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -959,7 +960,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `region001 = region(point = [1mm, 1mm], sketch = s)
+        `hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
 sweep001 = sweep(region001, path = profile001)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -1011,7 +1013,8 @@ sketch002 = sketch(on = XZ) {
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `region001 = region(point = [1mm, 1mm], sketch = s)
+        `hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
 sweep001 = sweep(region001, path = sketch002.line1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -1381,6 +1384,8 @@ t = sketch(on = plane001) {
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`loft001 = loft([`)
+      expect(newCode).toContain(`hidden001 = hide(s)`)
+      expect(newCode).toContain(`hidden002 = hide(t)`)
       expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = s)`)
       expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = t)`)
       if (err(newCode)) throw newCode
@@ -1669,7 +1674,8 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `region001 = region(point = [1mm, 1mm], sketch = s)
+        `hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
 revolve001 = revolve(region001, angle = 10, axis = X)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -2039,7 +2045,8 @@ revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain(
-        `region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+        `hidden001 = hide(sketch001)
+region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
 revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
       )
     })

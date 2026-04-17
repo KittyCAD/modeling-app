@@ -1084,9 +1084,10 @@ export function insertRegionVariablesAndOffsetPathToNode({
     settings.defaultLengthUnit
   )
 
+  const hiddenSketches = collectHiddenSketchNames(modifiedAst)
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
-  for (const [index, regionSelection] of engineRegions.entries()) {
+  for (const regionSelection of engineRegions) {
     const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
     if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
       return new Error("Couldn't retrieve sketch block artifact")
@@ -1098,6 +1099,35 @@ export function insertRegionVariablesAndOffsetPathToNode({
     )
     if (!sketchVarName) {
       return new Error("Couldn't retrieve sketch block variable")
+    }
+
+    if (!hiddenSketches.has(sketchVarName)) {
+      const hideExpr = createCallExpressionStdLibKw(
+        'hide',
+        createLocalName(sketchVarName),
+        []
+      )
+      const hideVariableName = findUniqueName(
+        modifiedAst,
+        KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN
+      )
+      insertVariableAndOffsetPathToNode(
+        {
+          valueAst: hideExpr,
+          valueText: '',
+          valueCalculated: '',
+          variableName: hideVariableName,
+          variableDeclarationAst: createVariableDeclaration(
+            hideVariableName,
+            hideExpr
+          ),
+          variableIdentifierAst: createLocalName(hideVariableName),
+          insertIndex,
+        },
+        modifiedAst
+      )
+      hiddenSketches.add(sketchVarName)
+      insertIndex++
     }
 
     const { x, y } = regionSelection.point
@@ -1130,15 +1160,61 @@ export function insertRegionVariablesAndOffsetPathToNode({
           regionExpr
         ),
         variableIdentifierAst,
-        insertIndex: insertIndex + index,
+        insertIndex,
       },
       modifiedAst
     )
+    insertIndex++
 
     regionExprs.push(variableIdentifierAst)
   }
 
   return regionExprs
+}
+
+function collectHiddenSketchNames(modifiedAst: Node<Program>): Set<string> {
+  const hiddenSketches = new Set<string>()
+
+  for (const bodyItem of modifiedAst.body) {
+    const maybeCall =
+      bodyItem.type === 'VariableDeclaration'
+        ? bodyItem.declaration.init
+        : bodyItem.type === 'ExpressionStatement'
+          ? bodyItem.expression
+          : undefined
+
+    if (
+      maybeCall?.type !== 'CallExpressionKw' ||
+      maybeCall.callee.name.name !== 'hide'
+    ) {
+      continue
+    }
+
+    const sketchNames = getSketchNamesFromHideArg(maybeCall.unlabeled)
+    sketchNames.forEach((name) => hiddenSketches.add(name))
+  }
+
+  return hiddenSketches
+}
+
+function getSketchNamesFromHideArg(
+  hideArg: CallExpressionKw['unlabeled']
+): string[] {
+  if (!hideArg) {
+    return []
+  }
+
+  if (hideArg.type === 'Name') {
+    return [hideArg.name.name]
+  }
+
+  if (hideArg.type === 'ArrayExpression') {
+    return hideArg.elements
+      .filter((element) => element.type === 'Name')
+      .map((element) => element.name.name)
+  }
+
+  return []
 }
 
 // Create an array expression for variables,
