@@ -810,7 +810,10 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
-    /// If this is created from a region, the sketch ID it was created from.
+    /// If this sketch represents a region created from `region()`, the origin
+    /// sketch ID is the ID of the sketch block it was created from. None,
+    /// otherwise. This field corresponds to the `origin_path_id` of the `Path`
+    /// artifact.
     #[serde(skip)]
     pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
