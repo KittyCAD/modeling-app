@@ -335,7 +335,7 @@ region001 = region(segments = [sketch001.circle1])`
   }) => {
     const initialCode = `closedSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
-}
+} // End: closedSketch
 openSketch = sketch(on = XY) {
   line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
   line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
@@ -369,7 +369,7 @@ openSketch = sketch(on = XY) {
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.openPane()
-      await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
+      await editor.expectActiveLinesToBe(['} // End: closedSketch'])
     })
 
     await test.step(`Exit the closed sketch and wait for scene`, async () => {
