@@ -33,7 +33,7 @@ jobs:
         run: |
           cp .github/workflows/nightly-rust-toolchain.toml rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.15.4
         with:
           cache-workspaces: rust
           components: rustfmt

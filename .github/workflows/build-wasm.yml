@@ -19,7 +19,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@v4.0.1
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -70,12 +70,12 @@ jobs:
 
       - name: Install Rust
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.15.4
         with:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
