@@ -35,7 +35,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@v4.0.1
         with:
           filters: |
             rust:
@@ -80,7 +80,7 @@ jobs:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
 
-      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
