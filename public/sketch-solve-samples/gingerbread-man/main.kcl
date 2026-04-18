@@ -4,107 +4,258 @@
 
 @settings(defaultLengthUnit = mm)
 
-// Define parameters
-origin2D = [0, 0]
 thickness = 50
 eyeDiameter = 30
 gumDropDiameter = 60
 decorationThickness = 10
+mouthInnerScale = 0.85
+mouthInnerScaleCenterX = -1mm
+mouthInnerScaleCenterY = 401mm
 
-// create a sketch for the body of the gingerbread man
-bodySketch = startSketchOn(XY)
+bodySketch = sketch(on = XY) {
+  centerline = line(start = [var 0mm, var 0mm], end = [var 0mm, var 549mm], construction = true)
+  torsoRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 57mm], construction = true)
+  torsoReachGuide = line(start = [var 0mm, var 57mm], end = [var 77mm, var 57mm], construction = true)
 
-// create the body
-sketch001 = sketch(on = bodySketch) {
   line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
+  coincident([line1.start, centerline.start])
+  coincident([torsoRiseGuide.start, ORIGIN])
+  coincident([
+    torsoRiseGuide.end,
+    torsoReachGuide.start
+  ])
+
   arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
   coincident([line1.end, arc2.end])
+
   line3 = line(start = [var -170mm, var -53mm], end = [var -77mm, var 57mm])
   coincident([arc2.start, line3.start])
+
   line4 = line(start = [var -77mm, var 57mm], end = [var -77mm, var 213mm])
   coincident([line3.end, line4.start])
+
   line5 = line(start = [var -77mm, var 213mm], end = [var -187mm, var 130mm])
   coincident([line4.end, line5.start])
+
   arc6 = arc(start = [var -232mm, var 195mm], end = [var -187mm, var 130mm], center = [var -210.83mm, var 161.58mm])
   coincident([line5.end, arc6.end])
+
   line7 = line(start = [var -232mm, var 195mm], end = [var -108mm, var 290mm])
   coincident([arc6.start, line7.start])
+
   arc8 = arc(start = [var -59mm, var 312mm], end = [var -108mm, var 290mm], center = [var -36.89mm, var 197.18mm])
   coincident([line7.end, arc8.end])
+
   line9 = line(start = [var -59mm, var 312mm], end = [var -59mm, var 335mm])
   coincident([arc8.start, line9.start])
+
   arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
   coincident([line9.end, arc10.end])
-  line11 = line(start = [var 0mm, var 549mm], end = [var 0mm, var 0mm])
-  coincident([arc10.start, line11.start])
+  coincident([arc10.start, centerline.end])
+
+  arc11 = arc(start = [var 59mm, var 335mm], end = [var 0mm, var 549mm], center = [var -0.6mm, var 433.7mm])
+  coincident([arc10.start, arc11.end])
+
+  line12 = line(start = [var 59mm, var 335mm], end = [var 59mm, var 312mm])
+  coincident([arc11.start, line12.start])
+
+  arc13 = arc(start = [var 108mm, var 290mm], end = [var 59mm, var 312mm], center = [var 36.89mm, var 197.18mm])
+  coincident([line12.end, arc13.end])
+
+  line14 = line(start = [var 108mm, var 290mm], end = [var 232mm, var 195mm])
+  coincident([arc13.start, line14.start])
+
+  arc15 = arc(start = [var 187mm, var 130mm], end = [var 232mm, var 195mm], center = [var 210.83mm, var 161.58mm])
+  coincident([line14.end, arc15.end])
+
+  line16 = line(start = [var 187mm, var 130mm], end = [var 77mm, var 213mm])
+  coincident([arc15.start, line16.start])
+
+  line17 = line(start = [var 77mm, var 213mm], end = [var 77mm, var 57mm])
+  coincident([line16.end, line17.start])
+  coincident([torsoReachGuide.end, line17.end])
+
+  line18 = line(start = [var 77mm, var 57mm], end = [var 170mm, var -53mm])
+  coincident([line17.end, line18.start])
+
+  arc19 = arc(start = [var 88mm, var -112mm], end = [var 170mm, var -53mm], center = [var 127.75mm, var -80.77mm])
+  coincident([line18.end, arc19.end])
+
+  line20 = line(start = [var 88mm, var -112mm], end = [var 0mm, var 0mm])
+  coincident([arc19.start, line20.start])
+  coincident([line20.end, line1.start])
+  coincident([centerline.start, ORIGIN])
+
+  vertical(centerline)
+  vertical(torsoRiseGuide)
+  horizontal(torsoReachGuide)
   vertical(line4)
   vertical(line9)
+  vertical(line12)
+  vertical(line17)
+  equalLength([line4, line17])
+  equalLength([line9, line12])
+  distance([centerline.start, centerline.end]) == 549mm
+  verticalDistance([
+  torsoRiseGuide.start,
+  torsoRiseGuide.end
+]) == 57mm
+  horizontalDistance([
+  torsoReachGuide.start,
+  torsoReachGuide.end
+]) == 77mm
 }
-region001 = region(segments = [sketch001.line1, sketch001.arc2])
-body = extrude(region001, length = thickness)
-  |> appearance(%, color = "#ad5b25")
+bodyRegion = region(point = [0mm, 180mm], sketch = bodySketch)
+body = extrude(bodyRegion, length = thickness)
+  |> appearance(color = "#ad5b25")
+hide(bodySketch)
 
-// create a sketch for the decorations
-decorationSketch = startSketchOn(offsetPlane(XY, offset = thickness))
+decorationPlane = offsetPlane(XY, offset = thickness)
 
-// sketch the inner profile
-innermouth = sketch(on = decorationSketch) {
-  arc1 = arc(start = [var -41mm, var 401mm], end = [var 38.45mm, var 399.54mm], center = [var -0.71mm, var 431.15mm])
-  arc2 = arc(start = [var 52.56mm, var 391.68mm], end = [var 38.45mm, var 399.54mm], center = [var 44.83mm, var 394.39mm])
+innerMouthSketch = sketch(on = decorationPlane) {
+  mouthRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 401mm], construction = true)
+  mouthReachGuide = line(start = [var -41mm, var 401mm], end = [var 0mm, var 401mm], construction = true)
+  arc1 = arc(start = [var -41mm, var 401mm], end = [var 36.53mm, var 402.72mm], center = [var -3mm, var 436.27mm])
+  coincident([mouthRiseGuide.start, ORIGIN])
+  coincident([
+    mouthRiseGuide.end,
+    mouthReachGuide.end
+  ])
+  coincident([mouthReachGuide.start, arc1.start])
+  arc2 = arc(start = [var 53.36mm, var 390.87mm], end = [var 36.53mm, var 402.72mm], center = [var 43.77mm, var 395.13mm])
   coincident([arc1.end, arc2.end])
-  arc3 = arc(start = [var -54.93mm, var 391.2mm], end = [var 52.56mm, var 391.68mm], center = [var -1.34mm, var 426.01mm])
+  arc3 = arc(start = [var -56.28mm, var 391.65mm], end = [var 53.36mm, var 390.87mm], center = [var -1.27mm, var 417.95mm])
   coincident([arc2.start, arc3.end])
-  arc4 = arc(start = [var -41mm, var 401mm], end = [var -54.93mm, var 391.2mm], center = [var -47.78mm, var 395.84mm])
+  arc4 = arc(start = [var -41mm, var 401mm], end = [var -56.28mm, var 391.65mm], center = [var -48.34mm, var 395.83mm])
   coincident([arc3.start, arc4.end])
+  vertical(mouthRiseGuide)
+  horizontal(mouthReachGuide)
+  verticalDistance([
+  mouthRiseGuide.start,
+  mouthRiseGuide.end
+]) == 401mm
+  horizontalDistance([
+  mouthReachGuide.start,
+  mouthReachGuide.end
+]) == 41mm
+  coincident([arc1.start, arc4.start])
 }
+innerMouthRegion = region(segments = [
+  innerMouthSketch.arc1,
+  innerMouthSketch.arc2,
+  innerMouthSketch.arc3,
+  innerMouthSketch.arc4
+])
+mouthInner = extrude(innerMouthRegion, length = decorationThickness)
+  |> translate(x = 0mm - mouthInnerScaleCenterX, y = 0mm - mouthInnerScaleCenterY, global = true)
+  |> translate(x = mouthInnerScaleCenterX, y = mouthInnerScaleCenterY, global = true)
+hide(innerMouthSketch)
 
-// create the mouth by sketching the outer mouth profile and subtracting the inner
-sketch002 = sketch(on = decorationSketch) {
-  arc1 = arc(start = [var -37.56mm, var 405.86mm], end = [var 32.65mm, var 404.69mm], center = [var -1.96mm, var 435.04mm])
-  arc2 = arc(start = [var 56.9mm, var 389.24mm], end = [var 32.65mm, var 404.69mm], center = [var 43.59mm, var 395.1mm])
+mouthSketch = sketch(on = decorationPlane) {
+  mouthRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 405.86mm], construction = true)
+  mouthReachGuide = line(start = [var -37.56mm, var 405.86mm], end = [var 0mm, var 405.86mm], construction = true)
+  arc1 = arc(start = [var -37.56mm, var 405.86mm], end = [var 32.63mm, var 404.52mm], center = [var -1.73mm, var 443.68mm])
+  coincident([mouthRiseGuide.start, ORIGIN])
+  coincident([
+    mouthRiseGuide.end,
+    mouthReachGuide.end
+  ])
+  coincident([mouthReachGuide.start, arc1.start])
+  arc2 = arc(start = [var 56.91mm, var 389.24mm], end = [var 32.63mm, var 404.52mm], center = [var 43.64mm, var 395.07mm])
   coincident([arc1.end, arc2.end])
-  arc3 = arc(start = [var -60.78mm, var 391.48mm], end = [var 56.9mm, var 389.24mm], center = [var -1.47mm, var 414.93mm])
+  arc3 = arc(start = [var -60.97mm, var 391.45mm], end = [var 56.91mm, var 389.24mm], center = [var -1.57mm, var 414.93mm])
   coincident([arc2.start, arc3.end])
-  arc4 = arc(start = [var -37.56mm, var 405.86mm], end = [var -60.78mm, var 391.48mm], center = [var -47.88mm, var 396.58mm])
+  arc4 = arc(start = [var -37.56mm, var 405.86mm], end = [var -60.97mm, var 391.45mm], center = [var -46.34mm, var 393.9mm])
   coincident([arc3.start, arc4.end])
+  vertical(mouthRiseGuide)
+  horizontal(mouthReachGuide)
+  verticalDistance([
+  mouthRiseGuide.start,
+  mouthRiseGuide.end
+]) == 405.86mm
+  horizontalDistance([
+  mouthReachGuide.start,
+  mouthReachGuide.end
+]) == 37.56mm
+  coincident([arc4.start, arc1.start])
 }
-region002 = region(segments = [sketch002.arc1, sketch002.arc2])
-mouth = extrude(region002, length = decorationThickness)
+mouthRegion = region(segments = [
+  mouthSketch.arc1,
+  mouthSketch.arc2,
+  mouthSketch.arc3,
+  mouthSketch.arc4
+])
+mouthOuter = extrude(mouthRegion, length = decorationThickness)
+mouth = subtract([mouthOuter], tools = [mouthInner])
   |> appearance(color = "#ff0000")
+hide(mouthSketch)
 
-// create the eyes
-sketch003 = sketch(on = decorationSketch) {
+eyesSketch = sketch(on = decorationPlane) {
+  eyeRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 440mm], construction = true)
+  eyeReachGuide = line(start = [var -55mm, var 440mm], end = [var 0mm, var 440mm], construction = true)
   circle1 = circle(start = [var -40mm, var 440mm], center = [var -55mm, var 440mm])
+  coincident([eyeRiseGuide.start, ORIGIN])
+  coincident([eyeRiseGuide.end, eyeReachGuide.end])
+  coincident([eyeReachGuide.start, circle1.center])
+  vertical(eyeRiseGuide)
+  horizontal(eyeReachGuide)
+  verticalDistance([eyeRiseGuide.start, eyeRiseGuide.end]) == 440mm
+  horizontalDistance([eyeReachGuide.start, eyeReachGuide.end]) == 55mm
+  distance([circle1.center, circle1.start]) == eyeDiameter / 2
 }
-region003 = region(segments = [sketch003.circle1])
-eyes = extrude(region003, length = decorationThickness)
+eyesRegion = region(segments = [eyesSketch.circle1])
+eyes = extrude(eyesRegion, length = decorationThickness)
   |> appearance(color = "#ffffff")
   |> patternLinear3d(instances = 2, distance = 110, axis = [1, 0, 0])
+hide(eyesSketch)
 
-// create the buttons
-sketch004 = sketch(on = decorationSketch) {
+buttonsSketch = sketch(on = decorationPlane) {
+  buttonGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 250mm], construction = true)
   circle1 = circle(start = [var 30mm, var 250mm], center = [var 0mm, var 250mm])
+  coincident([buttonGuide.start, ORIGIN])
+  coincident([buttonGuide.end, circle1.center])
+  vertical(buttonGuide)
+  distance([buttonGuide.start, buttonGuide.end]) == 250mm
+  distance([circle1.center, circle1.start]) == gumDropDiameter / 2
 }
-region004 = region(segments = [sketch004.circle1])
-buttons = extrude(region004, length = decorationThickness)
+buttonsRegion = region(segments = [buttonsSketch.circle1])
+buttons = extrude(buttonsRegion, length = decorationThickness)
   |> appearance(color = "#fb00ff")
   |> patternLinear3d(instances = 2, distance = 75, axis = [0, -1, 0])
+hide(buttonsSketch)
 
-// create the eyebrows
-sketch005 = sketch(on = decorationSketch) {
+eyebrowSketch = sketch(on = decorationPlane) {
+  eyebrowRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 503.47mm], construction = true)
+  eyebrowReachGuide = line(start = [var -37.9mm, var 503.47mm], end = [var 0mm, var 503.47mm], construction = true)
   arc1 = arc(start = [var -37.9mm, var 503.47mm], end = [var -73.02mm, var 483.5mm], center = [var -45.82mm, var 476.53mm])
+  coincident([eyebrowRiseGuide.start, ORIGIN])
+  coincident([
+    eyebrowRiseGuide.end,
+    eyebrowReachGuide.end
+  ])
+  coincident([eyebrowReachGuide.start, arc1.start])
   arc2 = arc(start = [var -37.9mm, var 503.47mm], end = [var -34.91mm, var 514.62mm], center = [var -36.27mm, var 509.01mm])
   coincident([arc1.start, arc2.start])
   arc3 = arc(start = [var -34.91mm, var 514.62mm], end = [var -86.17mm, var 485mm], center = [var -45.03mm, var 472.96mm])
   coincident([arc2.end, arc3.start])
-  arc4 = arc(start = [var -86.17mm, var 485mm], end = [var -73.02mm, var 483.5mm], center = [var -79.72mm, var 483.11mm])
-  coincident([arc3.end, arc4.start])
   tangent([arc1, arc2])
   tangent([arc2, arc3])
-  tangent([arc3, arc4])
+  vertical(eyebrowRiseGuide)
+  horizontal(eyebrowReachGuide)
+  verticalDistance([
+  eyebrowRiseGuide.start,
+  eyebrowRiseGuide.end
+]) == 503.47mm
+  horizontalDistance([
+  eyebrowReachGuide.start,
+  eyebrowReachGuide.end
+]) == 37.9mm
+  arc5 = arc(start = [var -86.17mm, var 485mm], end = [var -73.02mm, var 483.5mm], center = [var -79.72mm, var 483.11mm])
+  coincident([arc5.start, arc3.end])
+  coincident([arc5.end, arc1.end])
 }
-region005 = region(segments = [sketch005.arc1, sketch005.arc2])
-eyebrow = extrude(region005, length = decorationThickness)
+eyebrowRegion = region(segments = [eyebrowSketch.arc2, eyebrowSketch.arc3], direction = CCW)
+eyebrow = extrude(eyebrowRegion, length = decorationThickness)
   |> appearance(color = "#00fffb")
   |> patternCircular3d(
        instances = 2,
@@ -117,37 +268,70 @@ eyebrow = extrude(region005, length = decorationThickness)
        arcDegrees = 360,
        rotateDuplicates = true,
      )
+hide(eyebrowSketch)
 
-// create the belt
-sketch006 = sketch(on = decorationSketch) {
-  arc1 = arc(start = [var -59.59mm, var 99.65mm], end = [var -22.49mm, var 96.09mm], center = [var -39.78mm, var 111.03mm])
-  arc2 = arc(start = [var 17.76mm, var 96.49mm], end = [var -22.49mm, var 96.09mm], center = [var -2.17mm, var 76.96mm])
+beltSketch = sketch(on = decorationPlane) {
+  beltAnchor = line(start = [var -59.59mm, var 99.65mm], end = [var 0mm, var 0mm], construction = true)
+  arc1 = arc(start = [var -59.59mm, var 99.65mm], end = [var -21.76mm, var 95.98mm], center = [var -39.39mm, var 111.05mm])
+  coincident([beltAnchor.start, arc1.start])
+  coincident([beltAnchor.end, ORIGIN])
+  arc2 = arc(start = [var 17.69mm, var 96.41mm], end = [var -21.76mm, var 95.98mm], center = [var -1.82mm, var 76.97mm])
   coincident([arc1.end, arc2.end])
-  arc3 = arc(start = [var 17.76mm, var 96.49mm], end = [var 58.8mm, var 96.09mm], center = [var 38.37mm, var 105.84mm])
+  arc3 = arc(start = [var 17.69mm, var 96.41mm], end = [var 59.1mm, var 96.85mm], center = [var 38.3mm, var 105.84mm])
   coincident([arc2.start, arc3.start])
-  arc4 = arc(start = [var 69.46mm, var 92.15mm], end = [var 58.8mm, var 96.09mm], center = [var 63.95mm, var 93.63mm])
+  arc4 = arc(start = [var 69.37mm, var 92.09mm], end = [var 59.1mm, var 96.85mm], center = [var 63.86mm, var 93.67mm])
   coincident([arc3.end, arc4.end])
-  arc5 = arc(start = [var 41.83mm, var 72.02mm], end = [var 69.46mm, var 92.15mm], center = [var 43.16mm, var 99.23mm])
+  arc5 = arc(start = [var 41.83mm, var 72.03mm], end = [var 69.37mm, var 92.09mm], center = [var 43.12mm, var 99.2mm])
   coincident([arc4.start, arc5.end])
-  arc6 = arc(start = [var 10.66mm, var 89.39mm], end = [var 41.83mm, var 72.02mm], center = [var 43.79mm, var 112.19mm])
+  arc6 = arc(start = [var 10.66mm, var 89.4mm], end = [var 41.83mm, var 72.03mm], center = [var 43.78mm, var 112.2mm])
   coincident([arc5.start, arc6.end])
-  arc7 = arc(start = [var 10.66mm, var 89.39mm], end = [var -14.6mm, var 87.41mm], center = [var -1.4mm, var 81.09mm])
+  arc7 = arc(start = [var 10.66mm, var 89.4mm], end = [var -14.61mm, var 87.41mm], center = [var -1.4mm, var 81.1mm])
   coincident([arc6.start, arc7.start])
-  arc8 = arc(start = [var -43.8mm, var 77.94mm], end = [var -14.6mm, var 87.41mm], center = [var -33.7mm, var 96.55mm])
+  arc8 = arc(start = [var -43.82mm, var 78.02mm], end = [var -14.61mm, var 87.41mm], center = [var -33.66mm, var 96.56mm])
   coincident([arc7.end, arc8.end])
-  arc9 = arc(start = [var -67.09mm, var 100.83mm], end = [var -43.8mm, var 77.94mm], center = [var -15.56mm, var 129.97mm])
+  arc9 = arc(start = [var -66.06mm, var 99.61mm], end = [var -43.82mm, var 78.02mm], center = [var -15.29mm, var 129.69mm])
   coincident([arc8.start, arc9.end])
-  arc10 = arc(start = [var -59.59mm, var 99.65mm], end = [var -67.09mm, var 100.83mm], center = [var -62.87mm, var 103.22mm])
+  arc10 = arc(start = [var -59.59mm, var 99.65mm], end = [var -66.06mm, var 99.61mm], center = [var -62.85mm, var 103.25mm])
   coincident([arc9.start, arc10.end])
   tangent([arc6, arc7])
+  horizontalDistance([beltAnchor.start, beltAnchor.end]) == 59.59mm
+  verticalDistance([beltAnchor.end, beltAnchor.start]) == 99.65mm
+  coincident([arc10.start, arc1.start])
 }
-region006 = region(segments = [sketch006.arc1, sketch006.arc2])
-belt = extrude(region006, length = decorationThickness)
+beltRegion = region(segments = [
+  beltSketch.arc1,
+  beltSketch.arc2,
+  beltSketch.arc3,
+  beltSketch.arc4,
+  beltSketch.arc5,
+  beltSketch.arc6,
+  beltSketch.arc7,
+  beltSketch.arc8,
+  beltSketch.arc9,
+  beltSketch.arc10
+])
+belt = extrude(beltRegion, length = decorationThickness)
   |> appearance(color = "#ffffff")
+  |> patternCircular3d(
+       instances = 1,
+       axis = [0, 1, 0],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+hide(beltSketch)
 
-// create the cuffs
-sketch007 = sketch(on = decorationSketch) {
+cuffSketch = sketch(on = decorationPlane) {
+  cuffRiseGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 184.88mm], construction = true)
+  cuffReachGuide = line(start = [var -224.97mm, var 184.88mm], end = [var 0mm, var 184.88mm], construction = true)
   arc1 = arc(start = [var -224.97mm, var 184.88mm], end = [var -207.34mm, var 167.5mm], center = [var -209.07mm, var 183.37mm])
+  coincident([cuffRiseGuide.start, ORIGIN])
+  coincident([cuffRiseGuide.end, cuffReachGuide.end])
+  coincident([cuffReachGuide.start, arc1.start])
   arc2 = arc(start = [var -189.21mm, var 143.41mm], end = [var -207.34mm, var 167.5mm], center = [var -205.3mm, var 150.17mm])
   coincident([arc1.end, arc2.end])
   arc3 = arc(start = [var -196.41mm, var 145.15mm], end = [var -189.21mm, var 143.41mm], center = [var -192.67mm, var 144.86mm])
@@ -159,9 +343,17 @@ sketch007 = sketch(on = decorationSketch) {
   arc6 = arc(start = [var -224.97mm, var 184.88mm], end = [var -232.92mm, var 185.38mm], center = [var -228.95mm, var 185.09mm])
   coincident([arc5.start, arc6.end])
   tangent([arc3, arc4])
+  vertical(cuffRiseGuide)
+  horizontal(cuffReachGuide)
+  verticalDistance([cuffRiseGuide.start, cuffRiseGuide.end]) == 184.88mm
+  horizontalDistance([
+  cuffReachGuide.start,
+  cuffReachGuide.end
+]) == 224.97mm
+  coincident([arc6.start, arc1.start])
 }
-region007 = region(segments = [sketch007.arc1, sketch007.arc2])
-cuffs = extrude(region007, length = decorationThickness)
+cuffRegion = region(segments = [cuffSketch.arc1, cuffSketch.arc2], direction = CW)
+cuffs = extrude(cuffRegion, length = decorationThickness)
   |> appearance(color = "#ffffff")
   |> patternCircular3d(
        instances = 2,
@@ -174,3 +366,4 @@ cuffs = extrude(region007, length = decorationThickness)
        arcDegrees = 360,
        rotateDuplicates = true,
      )
+hide(cuffSketch)

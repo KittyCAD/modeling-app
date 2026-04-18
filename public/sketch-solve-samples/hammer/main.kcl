@@ -5,122 +5,415 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Sketch the side profile of the hammer head
-sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var 0.33in, var 11.26in], end = [var 0.33in, var 11.36in])
-  arc2 = arc(start = [var 0.95in, var 11.92in], end = [var 0.33in, var 11.36in], center = [var 0.89in, var 11.36in])
-  coincident([line1.end, arc2.end])
-  arc3 = arc(start = [var 2.72in, var 11.26in], end = [var 0.95in, var 11.92in], center = [var 0.57in, var 8.2in])
-  coincident([arc2.start, arc3.end])
-  line4 = line(start = [var 2.72in, var 11.26in], end = [var 2.83in, var 11.42in])
-  coincident([arc3.start, line4.start])
-  line5 = line(start = [var 2.83in, var 11.42in], end = [var 2.48in, var 11.78in])
-  coincident([line4.end, line5.start])
-  arc6 = arc(start = [var 2.48in, var 11.78in], end = [var -0.91in, var 12.78in], center = [var -0.13in, var 9.17in])
-  coincident([line5.end, arc6.start])
-  arc7 = arc(start = [var -1.67in, var 12.85in], end = [var -0.91in, var 12.78in], center = [var -1.18in, var 14.03in])
-  coincident([arc6.end, arc7.end])
-  line8 = line(start = [var -1.67in, var 12.85in], end = [var -1.92in, var 12.85in])
-  coincident([arc7.start, line8.start])
-  arc9 = arc(start = [var -1.92in, var 12.85in], end = [var -1.97in, var 12.8in], center = [var -1.92in, var 12.8in])
-  coincident([line8.end, arc9.start])
-  line10 = line(start = [var -1.97in, var 12.8in], end = [var -1.97in, var 11.68in])
-  coincident([arc9.end, line10.start])
-  arc11 = arc(start = [var -1.97in, var 11.68in], end = [var -1.92in, var 11.62in], center = [var -1.92in, var 11.68in])
-  coincident([line10.end, arc11.start])
-  line12 = line(start = [var -1.92in, var 11.62in], end = [var -1.67in, var 11.62in])
-  coincident([arc11.end, line12.start])
-  line13 = line(start = [var -1.67in, var 11.62in], end = [var -1.58in, var 11.66in])
-  coincident([line12.end, line13.start])
-  arc14 = arc(start = [var -0.33in, var 11.26in], end = [var -1.58in, var 11.66in], center = [var -1.19in, var 10.74in])
-  coincident([line13.end, arc14.end])
-  line15 = line(start = [var -0.33in, var 11.26in], end = [var 0.33in, var 11.26in])
-  coincident([arc14.start, line15.start])
-  vertical(arc2)
-  horizontal(arc9)
-  vertical(arc11)
-  horizontal(line13)
-}
-region001 = region(segments = [sketch001.line1, sketch001.arc2])
-headSideProfile = extrude(region001, length = 3, symmetric = true)
-
-// Sketch the top profile of the hammer head
-headTopProfile = startSketchOn(offsetPlane(XY, offset = 13))
-sketch002 = sketch(on = headTopProfile) {
-  line1 = line(start = [var -4in, var -1.6in], end = [var -1.97in, var -0.56in])
-  arc2 = arc(start = [var -1.97in, var -0.56in], end = [var -1.92in, var -0.61in], center = [var -1.92in, var -0.56in])
-  coincident([line1.end, arc2.start])
-  line3 = line(start = [var -1.92in, var -0.61in], end = [var -1.67in, var -0.61in])
-  coincident([arc2.end, line3.start])
-  arc4 = arc(start = [var -0.91in, var -0.61in], end = [var -1.67in, var -0.61in], center = [var -1.29in, var -1.7in])
-  coincident([line3.end, arc4.end])
-  arc5 = arc(start = [var -0.91in, var -0.61in], end = [var 3.39in, var -1.15in], center = [var 2.49in, var 9.08in])
-  coincident([arc4.start, arc5.start])
-  line6 = line(start = [var 3.39in, var -1.15in], end = [var 3.39in, var -1.6in])
-  coincident([arc5.end, line6.start])
-  line7 = line(start = [var 3.39in, var -1.6in], end = [var -4in, var -1.6in])
-  coincident([line6.end, line7.start])
-  radius(arc2) == 0.05in
+// Build the head from paired lofts. This keeps the front silhouette and claw
+// opening close to the reference while the engine still rejects trimmed extrudes.
+upperSection001 = sketch(on = offsetPlane(YZ, offset = -1.97in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.68in], construction = true)
+  line1 = line(start = [var 0in, var 11.68in], end = [var 0.5625in, var 11.68in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.start])
+  line2 = line(start = [var 0.5625in, var 11.68in], end = [var 0.5625in, var 12.8in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.5625in, var 12.8in], end = [var 0in, var 12.8in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 12.8in], end = [var 0in, var 11.68in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
   horizontal(line3)
-  tangent([arc4, arc5])
-  vertical(line6)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.68in
+  distance([line1.start, line1.end]) == 0.5625in
+  distance([line2.start, line2.end]) == 1.12in
 }
-region002 = region(segments = [sketch002.line1, sketch002.arc2])
-leftSideCut = extrude(region002, length = -14)
-
-sketch003 = sketch(on = headTopProfile) {
-  line1 = line(start = [var 3.39in, var -0.56in], end = [var 3.29in, var -0.55in])
-  arc2 = arc(start = [var 1.86in, var -0.37in], end = [var 3.29in, var -0.55in], center = [var 3.79in, var 8.91in])
-  coincident([line1.end, arc2.end])
-  arc3 = arc(start = [var 1.86in, var 0.37in], end = [var 1.86in, var -0.37in], center = [var 1.94in, var 0in])
-  coincident([arc2.start, arc3.end])
-  arc4 = arc(start = [var 3.39in, var 0.56in], end = [var 1.86in, var 0.37in], center = [var 3.79in, var -8.95in])
-  coincident([arc3.start, arc4.end])
-  line5 = line(start = [var 3.39in, var 0.56in], end = [var 3.39in, var -0.56in])
-  coincident([arc4.start, line5.start])
-}
-region003 = region(segments = [sketch003.line1, sketch003.arc2])
-rearCut = extrude(region003, length = -14)
-
-sketch004 = sketch(on = headTopProfile) {
-  line1 = line(start = [var -4in, var 1.6in], end = [var -1.97in, var 0.56in])
-  arc2 = arc(start = [var -1.92in, var 0.61in], end = [var -1.97in, var 0.56in], center = [var -1.92in, var 0.56in])
-  coincident([line1.end, arc2.end])
-  line3 = line(start = [var -1.92in, var 0.61in], end = [var -1.67in, var 0.61in])
-  coincident([arc2.start, line3.start])
-  arc4 = arc(start = [var -1.67in, var 0.61in], end = [var -0.91in, var 0.61in], center = [var -1.29in, var 1.7in])
-  coincident([line3.end, arc4.start])
-  arc5 = arc(start = [var 3.39in, var 1.15in], end = [var -0.91in, var 0.61in], center = [var 2.49in, var -9.08in])
-  coincident([arc4.end, arc5.end])
-  line6 = line(start = [var 3.39in, var 1.15in], end = [var 3.39in, var 1.6in])
-  coincident([arc5.start, line6.start])
-  line7 = line(start = [var 3.39in, var 1.6in], end = [var -4in, var 1.6in])
-  coincident([line6.end, line7.start])
-  radius(arc2) == 0.05in
+upperSection002 = sketch(on = offsetPlane(YZ, offset = -0.33in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.2503in], construction = true)
+  line1 = line(start = [var 0in, var 11.2503in], end = [var 0.7968in, var 11.2503in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.start])
+  line2 = line(start = [var 0.7968in, var 11.2503in], end = [var 0.7968in, var 12.8579in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.7968in, var 12.8579in], end = [var 0in, var 12.8579in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 12.8579in], end = [var 0in, var 11.2503in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
   horizontal(line3)
-  vertical(line6)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.2503in
+  distance([line1.start, line1.end]) == 0.7968in
+  distance([line2.start, line2.end]) == 1.6076in
 }
-region004 = region(segments = [sketch004.line1, sketch004.arc2])
-rightSideCut = extrude(region004, length = -14)
+upperSection003 = sketch(on = offsetPlane(YZ, offset = 0.33in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.26in], construction = true)
+  line1 = line(start = [var 0in, var 11.26in], end = [var 0.9619in, var 11.26in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.start])
+  line2 = line(start = [var 0.9619in, var 11.26in], end = [var 0.9619in, var 12.8345in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.9619in, var 12.8345in], end = [var 0in, var 12.8345in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 12.8345in], end = [var 0in, var 11.26in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.26in
+  distance([line1.start, line1.end]) == 0.9619in
+  distance([line2.start, line2.end]) == 1.5745in
+}
+upperSection004 = sketch(on = offsetPlane(YZ, offset = 0.95in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.92in], construction = true)
+  line1 = line(start = [var 0in, var 11.92in], end = [var 1.0754in, var 11.92in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.start])
+  line2 = line(start = [var 1.0754in, var 11.92in], end = [var 1.0754in, var 12.7019in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.0754in, var 12.7019in], end = [var 0in, var 12.7019in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 12.7019in], end = [var 0in, var 11.92in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.92in
+  distance([line1.start, line1.end]) == 1.0754in
+  distance([line2.start, line2.end]) == 0.7819in
+}
+upperSection005 = sketch(on = offsetPlane(YZ, offset = 1.86in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.7098in], construction = true)
+  sectionReachGuide = line(start = [var 0in, var 11.7098in], end = [var 0.37in, var 11.7098in], construction = true)
+  line1 = line(start = [var 0.37in, var 11.7098in], end = [var 1.1722in, var 11.7098in])
+  line2 = line(start = [var 1.1722in, var 11.7098in], end = [var 1.1722in, var 12.2813in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.1722in, var 12.2813in], end = [var 0.37in, var 12.2813in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.37in, var 12.2813in], end = [var 0.37in, var 11.7098in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.start])
+  coincident([sectionReachGuide.end, line4.end])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.7098in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.37in
+  distance([line1.start, line1.end]) == 0.8022in
+  distance([line2.start, line2.end]) == 0.5715in
+}
+upperSection006 = sketch(on = offsetPlane(YZ, offset = 2.48in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.4148in], construction = true)
+  sectionReachGuide = line(start = [var 0in, var 11.4148in], end = [var 0.4747in, var 11.4148in], construction = true)
+  line1 = line(start = [var 0.4747in, var 11.4148in], end = [var 1.1915in, var 11.4148in])
+  line2 = line(start = [var 1.1915in, var 11.4148in], end = [var 1.1915in, var 11.7831in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.1915in, var 11.7831in], end = [var 0.4747in, var 11.7831in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.4747in, var 11.7831in], end = [var 0.4747in, var 11.4148in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.start])
+  coincident([sectionReachGuide.end, line4.end])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.4148in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.4747in
+  distance([line1.start, line1.end]) == 0.7168in
+  distance([line2.start, line2.end]) == 0.3683in
+}
+upperSection007 = sketch(on = offsetPlane(YZ, offset = 2.72in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.2595in], construction = true)
+  sectionReachGuide = line(start = [var 0in, var 11.2595in], end = [var 0.505in, var 11.2595in], construction = true)
+  line1 = line(start = [var 0.505in, var 11.2595in], end = [var 1.189in, var 11.2595in])
+  line2 = line(start = [var 1.189in, var 11.2595in], end = [var 1.189in, var 11.5331in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.189in, var 11.5331in], end = [var 0.505in, var 11.5331in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.505in, var 11.5331in], end = [var 0.505in, var 11.2595in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.start])
+  coincident([sectionReachGuide.end, line4.end])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.2595in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.505in
+  distance([line1.start, line1.end]) == 0.684in
+  distance([line2.start, line2.end]) == 0.2736in
+}
+upperSection008 = sketch(on = offsetPlane(YZ, offset = 2.79in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.3618in], construction = true)
+  sectionReachGuide = line(start = [var 0in, var 11.3618in], end = [var 0.5127in, var 11.3618in], construction = true)
+  line1 = line(start = [var 0.5127in, var 11.3618in], end = [var 1.1872in, var 11.3618in])
+  line2 = line(start = [var 1.1872in, var 11.3618in], end = [var 1.1872in, var 11.4611in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.1872in, var 11.4611in], end = [var 0.5127in, var 11.4611in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.5127in, var 11.4611in], end = [var 0.5127in, var 11.3618in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.start])
+  coincident([sectionReachGuide.end, line4.end])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.3618in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.5127in
+  distance([line1.start, line1.end]) == 0.6745in
+  distance([line2.start, line2.end]) == 0.0993in
+}
 
-// Subtract the top profiles from the side profile to create a CSG hammer shape
-firstProfiles = subtract(
-  [headSideProfile],
-  tools = [
-    union([
-      leftSideCut,
-      union([rearCut, rightSideCut])
-    ])
-  ],
-)
+lowerSection001 = sketch(on = offsetPlane(YZ, offset = -1.97in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.68in], construction = true)
+  line1 = line(start = [var -0.5625in, var 11.68in], end = [var 0in, var 11.68in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.end])
+  line2 = line(start = [var 0in, var 11.68in], end = [var 0in, var 12.8in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var 12.8in], end = [var -0.5625in, var 12.8in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.5625in, var 12.8in], end = [var -0.5625in, var 11.68in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.68in
+  distance([line1.start, line1.end]) == 0.5625in
+  distance([line2.start, line2.end]) == 1.12in
+}
+lowerSection002 = sketch(on = offsetPlane(YZ, offset = -0.33in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.2503in], construction = true)
+  line1 = line(start = [var -0.7968in, var 11.2503in], end = [var 0in, var 11.2503in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.end])
+  line2 = line(start = [var 0in, var 11.2503in], end = [var 0in, var 12.8579in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var 12.8579in], end = [var -0.7968in, var 12.8579in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.7968in, var 12.8579in], end = [var -0.7968in, var 11.2503in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.2503in
+  distance([line1.start, line1.end]) == 0.7968in
+  distance([line2.start, line2.end]) == 1.6076in
+}
+lowerSection003 = sketch(on = offsetPlane(YZ, offset = 0.33in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.26in], construction = true)
+  line1 = line(start = [var -0.9619in, var 11.26in], end = [var 0in, var 11.26in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.end])
+  line2 = line(start = [var 0in, var 11.26in], end = [var 0in, var 12.8345in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var 12.8345in], end = [var -0.9619in, var 12.8345in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.9619in, var 12.8345in], end = [var -0.9619in, var 11.26in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.26in
+  distance([line1.start, line1.end]) == 0.9619in
+  distance([line2.start, line2.end]) == 1.5745in
+}
+lowerSection004 = sketch(on = offsetPlane(YZ, offset = 0.95in)) {
+  sectionDatum = line(start = [var 0in, var 0in], end = [var 0in, var 11.92in], construction = true)
+  line1 = line(start = [var -1.0754in, var 11.92in], end = [var 0in, var 11.92in])
+  coincident([sectionDatum.start, ORIGIN])
+  coincident([sectionDatum.end, line1.end])
+  line2 = line(start = [var 0in, var 11.92in], end = [var 0in, var 12.7019in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var 12.7019in], end = [var -1.0754in, var 12.7019in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.0754in, var 12.7019in], end = [var -1.0754in, var 11.92in])
+  coincident([line3.end, line4.start])
+  vertical(sectionDatum)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionDatum.start, sectionDatum.end]) == 11.92in
+  distance([line1.start, line1.end]) == 1.0754in
+  distance([line2.start, line2.end]) == 0.7819in
+}
+lowerSection005 = sketch(on = offsetPlane(YZ, offset = 1.86in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.7098in], construction = true)
+  sectionReachGuide = line(start = [var -0.37in, var 11.7098in], end = [var 0in, var 11.7098in], construction = true)
+  line1 = line(start = [var -1.1722in, var 11.7098in], end = [var -0.37in, var 11.7098in])
+  line2 = line(start = [var -0.37in, var 11.7098in], end = [var -0.37in, var 12.2813in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.37in, var 12.2813in], end = [var -1.1722in, var 12.2813in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.1722in, var 12.2813in], end = [var -1.1722in, var 11.7098in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.end])
+  coincident([sectionReachGuide.start, line2.start])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.7098in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.37in
+  distance([line1.start, line1.end]) == 0.8022in
+  distance([line2.start, line2.end]) == 0.5715in
+}
+lowerSection006 = sketch(on = offsetPlane(YZ, offset = 2.48in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.4148in], construction = true)
+  sectionReachGuide = line(start = [var -0.4747in, var 11.4148in], end = [var 0in, var 11.4148in], construction = true)
+  line1 = line(start = [var -1.1915in, var 11.4148in], end = [var -0.4747in, var 11.4148in])
+  line2 = line(start = [var -0.4747in, var 11.4148in], end = [var -0.4747in, var 11.7831in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.4747in, var 11.7831in], end = [var -1.1915in, var 11.7831in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.1915in, var 11.7831in], end = [var -1.1915in, var 11.4148in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.end])
+  coincident([sectionReachGuide.start, line2.start])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.4148in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.4747in
+  distance([line1.start, line1.end]) == 0.7168in
+  distance([line2.start, line2.end]) == 0.3683in
+}
+lowerSection007 = sketch(on = offsetPlane(YZ, offset = 2.72in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.2595in], construction = true)
+  sectionReachGuide = line(start = [var -0.505in, var 11.2595in], end = [var 0in, var 11.2595in], construction = true)
+  line1 = line(start = [var -1.189in, var 11.2595in], end = [var -0.505in, var 11.2595in])
+  line2 = line(start = [var -0.505in, var 11.2595in], end = [var -0.505in, var 11.5331in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.505in, var 11.5331in], end = [var -1.189in, var 11.5331in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.189in, var 11.5331in], end = [var -1.189in, var 11.2595in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.end])
+  coincident([sectionReachGuide.start, line2.start])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.2595in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.505in
+  distance([line1.start, line1.end]) == 0.684in
+  distance([line2.start, line2.end]) == 0.2736in
+}
+lowerSection008 = sketch(on = offsetPlane(YZ, offset = 2.79in)) {
+  sectionRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 11.3618in], construction = true)
+  sectionReachGuide = line(start = [var -0.5127in, var 11.3618in], end = [var 0in, var 11.3618in], construction = true)
+  line1 = line(start = [var -1.1872in, var 11.3618in], end = [var -0.5127in, var 11.3618in])
+  line2 = line(start = [var -0.5127in, var 11.3618in], end = [var -0.5127in, var 11.4611in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.5127in, var 11.4611in], end = [var -1.1872in, var 11.4611in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.1872in, var 11.4611in], end = [var -1.1872in, var 11.3618in])
+  coincident([line3.end, line4.start])
+  coincident([sectionRiseGuide.start, ORIGIN])
+  coincident([sectionRiseGuide.end, sectionReachGuide.end])
+  coincident([sectionReachGuide.start, line2.start])
+  vertical(sectionRiseGuide)
+  horizontal(sectionReachGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([sectionRiseGuide.start, sectionRiseGuide.end]) == 11.3618in
+  horizontalDistance([sectionReachGuide.start, sectionReachGuide.end]) == 0.5127in
+  distance([line1.start, line1.end]) == 0.6745in
+  distance([line2.start, line2.end]) == 0.0993in
+}
 
-// Extrude a polygon through the center of the hammer head to create the mounting hole for the handle
-sketch005 = sketch(on = XY) {
+upperSection001Region = region(segments = [upperSection001.line1])
+upperSection002Region = region(segments = [upperSection002.line1])
+upperSection003Region = region(segments = [upperSection003.line1])
+upperSection004Region = region(segments = [upperSection004.line1])
+upperSection005Region = region(segments = [upperSection005.line1])
+upperSection006Region = region(segments = [upperSection006.line1])
+upperSection007Region = region(segments = [upperSection007.line1])
+upperSection008Region = region(segments = [upperSection008.line1])
+
+lowerSection001Region = region(segments = [lowerSection001.line1])
+lowerSection002Region = region(segments = [lowerSection002.line1])
+lowerSection003Region = region(segments = [lowerSection003.line1])
+lowerSection004Region = region(segments = [lowerSection004.line1])
+lowerSection005Region = region(segments = [lowerSection005.line1])
+lowerSection006Region = region(segments = [lowerSection006.line1])
+lowerSection007Region = region(segments = [lowerSection007.line1])
+lowerSection008Region = region(segments = [lowerSection008.line1])
+
+upperHead = loft([
+  upperSection001Region,
+  upperSection002Region,
+  upperSection003Region,
+  upperSection004Region,
+  upperSection005Region,
+  upperSection006Region,
+  upperSection007Region,
+  upperSection008Region
+])
+lowerHead = loft([
+  lowerSection001Region,
+  lowerSection002Region,
+  lowerSection003Region,
+  lowerSection004Region,
+  lowerSection005Region,
+  lowerSection006Region,
+  lowerSection007Region,
+  lowerSection008Region
+])
+
+handleHoleSketch = sketch(on = XY) {
+  rightGuide = line(start = [var 0in, var 0in], end = [var 0.28in, var 0in], construction = true)
+  topRiseGuide = line(start = [var 0in, var 0in], end = [var 0in, var 0.27in], construction = true)
+  topReachGuide = line(start = [var 0in, var 0.27in], end = [var 0.09in, var 0.27in], construction = true)
   line1 = line(start = [var 0.28in, var 0in], end = [var 0.23in, var 0.16in])
+  coincident([rightGuide.start, ORIGIN])
+  coincident([rightGuide.end, line1.start])
+  coincident([topRiseGuide.start, ORIGIN])
+  coincident([topRiseGuide.end, topReachGuide.start])
   line2 = line(start = [var 0.23in, var 0.16in], end = [var 0.09in, var 0.27in])
   coincident([line1.end, line2.start])
   line3 = line(start = [var 0.09in, var 0.27in], end = [var -0.09in, var 0.27in])
   coincident([line2.end, line3.start])
+  coincident([topReachGuide.end, line3.start])
   line4 = line(start = [var -0.09in, var 0.27in], end = [var -0.23in, var 0.16in])
   coincident([line3.end, line4.start])
   line5 = line(start = [var -0.23in, var 0.16in], end = [var -0.28in, var 0in])
@@ -135,30 +428,64 @@ sketch005 = sketch(on = XY) {
   coincident([line8.end, line9.start])
   line10 = line(start = [var 0.23in, var -0.16in], end = [var 0.28in, var 0in])
   coincident([line9.end, line10.start])
+  coincident([line10.end, line1.start])
+  horizontal(rightGuide)
+  vertical(topRiseGuide)
+  horizontal(topReachGuide)
+  distance([rightGuide.start, rightGuide.end]) == 0.28in
+  verticalDistance([topRiseGuide.start, topRiseGuide.end]) == 0.27in
+  horizontalDistance([topReachGuide.start, topReachGuide.end]) == 0.09in
 }
-region005 = region(segments = [sketch005.line1, sketch005.line2])
-handleHole = extrude(region005, length = 14)
+upperHandleHoleRegion = region(segments = [handleHoleSketch.line1])
+lowerHandleHoleRegion = region(segments = [handleHoleSketch.line1])
+upperHandleHole = extrude(upperHandleHoleRegion, length = 14in)
+lowerHandleHole = extrude(lowerHandleHoleRegion, length = 14in)
+upperHeadCut = subtract(upperHead, tools = upperHandleHole, legacyMethod = true)
+lowerHeadCut = subtract(lowerHead, tools = lowerHandleHole, legacyMethod = true)
+hammerHead = [upperHeadCut, lowerHeadCut]
+  |> appearance(color = "#c9c9c9")
 
-// Add an additional fillet feature to support the handle, and union it to the rest of the head
-sketch006 = sketch(on = offsetPlane(XY, offset = 11.5)) {
-  circle1 = circle(start = [var 0.45in, var 0in], center = [var 0in, var 0in])
-}
-region006 = region(segments = [sketch006.circle1])
-baseSupport = extrude(region006, length = 1, tagStart = $capStart001)
-  |> fillet(
-       radius = .05,
-       tags = [
-         getCommonEdge(faces = [seg05, capStart001])
-       ],
-     )
+hide(upperSection001Region)
+hide(upperSection002Region)
+hide(upperSection003Region)
+hide(upperSection004Region)
+hide(upperSection005Region)
+hide(upperSection006Region)
+hide(upperSection007Region)
+hide(upperSection008Region)
+hide(lowerSection001Region)
+hide(lowerSection002Region)
+hide(lowerSection003Region)
+hide(lowerSection004Region)
+hide(lowerSection005Region)
+hide(lowerSection006Region)
+hide(lowerSection007Region)
+hide(lowerSection008Region)
+hide(upperSection001)
+hide(upperSection002)
+hide(upperSection003)
+hide(upperSection004)
+hide(upperSection005)
+hide(upperSection006)
+hide(upperSection007)
+hide(upperSection008)
+hide(lowerSection001)
+hide(lowerSection002)
+hide(lowerSection003)
+hide(lowerSection004)
+hide(lowerSection005)
+hide(lowerSection006)
+hide(lowerSection007)
+hide(lowerSection008)
+hide(handleHoleSketch)
 
-// Union all pieces into a single solid, then cut the handle hole
-hammerHead = union([firstProfiles, baseSupport])
-  |> subtract(tools = [handleHole])
-
-// Draw a profile for the handle, then revolve around the center axis
-handleSketch = sketch(on = XZ) {
+// Draw a profile for the handle, then revolve around the center axis.
+handlePlane = offsetPlane(XZ, offset = 0in)
+handleSketch = sketch(on = handlePlane) {
+  axisOffsetGuide = line(start = [var 0in, var 0in], end = [var 0.01in, var 0in], construction = true)
   line1 = line(start = [var 0.01in, var 0in], end = [var 0.57in, var 0in])
+  coincident([axisOffsetGuide.start, ORIGIN])
+  coincident([axisOffsetGuide.end, line1.start])
   arc2 = arc(start = [var 0.57in, var 0in], end = [var 0.62in, var 0.05in], center = [var 0.57in, var 0.05in])
   coincident([line1.end, arc2.start])
   arc3 = arc(start = [var 0.62in, var 0.05in], end = [var 0.38in, var 7.94in], center = [var -127.87in, var 0.05in])
@@ -169,11 +496,25 @@ handleSketch = sketch(on = XZ) {
   coincident([arc4.start, line5.start])
   line6 = line(start = [var 0.01in, var 12.8in], end = [var 0.01in, var 0in])
   coincident([line5.end, line6.start])
-  horizontal(arc2)
+  heightGuide = line(start = [var 0.01in, var 0in], end = [var 0.01in, var 12.8in], construction = true)
+  coincident([heightGuide.start, line1.start])
+  coincident([heightGuide.end, line5.end])
+  horizontal(axisOffsetGuide)
+  horizontal(line1)
+  vertical(heightGuide)
+  tangent([line1, arc2])
   tangent([arc2, arc3])
+  tangent([arc3, arc4])
+  radius(arc2) == 0.05in
   radius(arc3) == 128.49in
-  horizontal(line6)
+  horizontal(line5)
+  vertical(line6)
+  distance([axisOffsetGuide.start, axisOffsetGuide.end]) == 0.01in
+  distance([heightGuide.start, heightGuide.end]) == 12.8in
+  distance([line1.start, line1.end]) == 0.56in
 }
-region007 = region(segments = [handleSketch.line1, handleSketch.arc2])
-handle = revolve(region007, angle = 360deg, axis = Y)
+handleRegion = region(segments = [handleSketch.line1])
+handle = revolve(handleRegion, angle = 360deg, axis = Y)
   |> appearance(color = "#f14f04")
+// hide(handleRegion)
+hide(handleSketch)

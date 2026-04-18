@@ -5,15 +5,12 @@
 @settings(defaultLengthUnit = mm)
 
 // Define parameters
-origin2D = [0, 0]
 thickness = 100
 wallThickness = 10
+scaleFactor = 1.2
 
 // create a sketch for the body of the gingerbread man
-sketch = startSketchOn(XY)
-
-// create the body
-sketch001 = sketch(on = sketch) {
+bodyHalf = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
   arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
   coincident([line1.end, arc2.end])
@@ -33,11 +30,18 @@ sketch001 = sketch(on = sketch) {
   coincident([arc8.start, line9.start])
   arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
   coincident([line9.end, arc10.end])
-  line11 = line(start = [var 0mm, var 549mm], end = [var 0mm, var 0mm])
-  coincident([arc10.start, line11.start])
   vertical(line4)
   vertical(line9)
 }
-region001 = region(segments = [sketch001.line1, sketch001.arc2])
-cutter = extrude(region001, length = thickness)
+
+bodyProfile = bodyHalf
+  |> mirror2d(axis = Y)
+  |> scale(x = scaleFactor, y = scaleFactor, z = 1)
+
+bodyRegion = region(point = [0mm, 260mm], sketch = bodyProfile)
+
+// create the body
+cutter = extrude(bodyRegion, length = thickness)
   |> shell(thickness = wallThickness, faces = [START, END])
+
+hide([bodyHalf, bodyProfile])
