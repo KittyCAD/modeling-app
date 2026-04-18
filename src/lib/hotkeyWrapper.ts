@@ -16,12 +16,17 @@ export default function useHotkeyWrapper(
   hotkey: string[],
   callback: () => void,
   kclManager?: KclManager,
-  additionalOptions?: Options
+  additionalOptions?: Options & {
+    registerToCodeMirror?: boolean
+  }
 ) {
   const defaultOptions = { preventDefault: true }
   const options = { ...defaultOptions, ...additionalOptions }
   useHotkeys(hotkey, callback, options)
   useEffect(() => {
+    if (options.registerToCodeMirror === false) {
+      return
+    }
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)
       kclManager?.registerHotkey(keybinding, callback)

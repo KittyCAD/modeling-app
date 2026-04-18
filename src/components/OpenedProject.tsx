@@ -210,6 +210,27 @@ export function OpenedProject() {
     kclManager
   )
 
+  useHotkeyWrapper(
+    ['alt + shift + f'],
+    () => {
+      void kclManager.format()
+    },
+    kclManager,
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: true,
+      // Skip registration to codemirror, this shortcut won't work in CodeMirror because it types a character
+      registerToCodeMirror: false,
+    }
+  )
+  useHotkeyWrapper(
+    ['ctrl + shift + c'],
+    () => {
+      void kclManager.convertToVariable()
+    },
+    kclManager
+  )
+
   useEngineConnectionSubscriptions()
 
   useEffect(() => {
