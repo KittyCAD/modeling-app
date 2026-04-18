@@ -17,6 +17,13 @@ Supported input type pairs (unordered):
 - `Circle` / `Circle`
 - `Circle` / `CircularArc`
 - `CircularArc` / `CircularArc`
+- `controlPointSpline` / `Line`
+- `controlPointSpline` / `Circle`
+- `controlPointSpline` / `CircularArc`
+
+For `controlPointSpline`, tangent is solved against the spline itself, not just the
+first or last control-polygon edge. The solver introduces a hidden spline parameter
+and finds the tangent point along the curve.
 
 ### Arguments
 

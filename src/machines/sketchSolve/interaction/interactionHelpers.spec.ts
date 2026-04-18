@@ -5,6 +5,7 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
   createCircleApiObject,
+  createControlPointSplineApiObject,
   createLineApiObject,
   createMockSceneInfra,
   createPointApiObject,
@@ -146,6 +147,49 @@ describe('findClosestApiObjects', () => {
 
     expect(result[0]?.apiObject.id).toBe(4)
     expect(result[1]?.apiObject.id).toBe(3)
+  })
+
+  it('includes control point spline segments when the mouse is near the curve', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })
+    const spline = createControlPointSplineApiObject({
+      id: 4,
+      controls: [1, 2, 3],
+    })
+
+    const result = findClosestApiObjects(
+      [10, 9],
+      createObjectsArray([p1, p2, p3, spline]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(4)
+  })
+
+  it('prefers an owned control-polygon edge over the spline when both are under the cursor', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20, owner: 10 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const edge = createLineApiObject({
+      id: 11,
+      start: 1,
+      end: 2,
+      owner: 10,
+    })
+
+    const result = findClosestApiObjects(
+      [5, 10],
+      createObjectsArray([p1, p2, p3, edge, spline]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(11)
+    expect(result[1]?.apiObject.id).toBe(10)
   })
 
   it('prefers the higher id for coincident point candidates', () => {

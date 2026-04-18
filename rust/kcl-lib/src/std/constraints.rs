@@ -3,6 +3,7 @@ use ezpz::Constraint as SolverConstraint;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumCircularArc;
+use ezpz::datatypes::inputs::DatumControlPointSpline;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
@@ -41,6 +42,7 @@ use crate::front::CircleCtor;
 use crate::front::Coincident;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Constraint;
+use crate::front::ControlPointSplineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::EqualRadius;
 #[cfg(feature = "artifact-graph")]
@@ -880,6 +882,170 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
+pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let points: Vec<KclValue> = args.get_kw_arg(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::point2d()), ArrayLen::Minimum(3)),
+        exec_state,
+    )?;
+    let construction_opt = args.get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?;
+    let construction = construction_opt.unwrap_or(false);
+
+    if points.len() < 3 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "controlPointSpline requires at least 3 control points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let degree = usize::min(3, points.len() - 1) as u32;
+    let mut ctor_points = Vec::with_capacity(points.len());
+    let mut control_values = Vec::with_capacity(points.len());
+    let mut controls = Vec::with_capacity(points.len());
+    let mut control_object_ids = Vec::with_capacity(points.len());
+    let mut control_polygon_edge_object_ids = Vec::with_capacity(points.len().saturating_sub(1));
+
+    for point in points {
+        let KclValue::HomArray { value, .. } = point else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "each control point must be a 2D point".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let [x_value, y_value]: [KclValue; 2] = value.try_into().map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                "each control point must be a 2D point".to_owned(),
+                vec![args.source_range],
+            ))
+        })?;
+        let Some(x) = x_value.as_unsolved_expr() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "control point x must be a number or sketch var".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let Some(y) = y_value.as_unsolved_expr() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "control point y must be a number or sketch var".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        ctor_points.push(Point2d {
+            x: x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        });
+        control_values.push([x_value, y_value]);
+        controls.push([x, y]);
+        control_object_ids.push(exec_state.next_object_id());
+    }
+    for _ in 0..controls.len().saturating_sub(1) {
+        control_polygon_edge_object_ids.push(exec_state.next_object_id());
+    }
+
+    let spline_object_id = exec_state.next_object_id();
+    let ctor = ControlPointSplineCtor {
+        points: ctor_points,
+        construction: construction_opt,
+    };
+    let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
+        object_id: spline_object_id,
+        kind: UnsolvedSegmentKind::ControlPointSpline {
+            controls,
+            ctor: Box::new(ctor),
+            control_object_ids: control_object_ids.clone(),
+            control_polygon_edge_object_ids: control_polygon_edge_object_ids.clone(),
+            degree,
+            construction,
+        },
+        tag: None,
+        node_path: args.node_path.clone(),
+        meta: vec![args.source_range.into()],
+    };
+
+    #[cfg(feature = "artifact-graph")]
+    let optional_constraints = {
+        let placeholder_control_ids = control_object_ids
+            .iter()
+            .map(|control_object_id| {
+                exec_state.add_placeholder_scene_object(*control_object_id, args.source_range, args.node_path.clone())
+            })
+            .collect::<Vec<_>>();
+        control_polygon_edge_object_ids.iter().for_each(|edge_object_id| {
+            exec_state.add_placeholder_scene_object(*edge_object_id, args.source_range, args.node_path.clone());
+        });
+        let spline_object_id =
+            exec_state.add_placeholder_scene_object(spline_object_id, args.source_range, args.node_path.clone());
+
+        let mut optional_constraints = Vec::new();
+        for (index, [x_value, y_value]) in control_values.iter().enumerate() {
+            let control_object_id = placeholder_control_ids[index];
+            if !(exec_state.segment_ids_edited_contains(&control_object_id)
+                || exec_state.segment_ids_edited_contains(&spline_object_id))
+            {
+                continue;
+            }
+
+            if let Some(x_var) = x_value.as_sketch_var() {
+                let x_initial_value = x_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(SolverConstraint::Fixed(
+                    x_var.id.to_constraint_id(args.source_range)?,
+                    x_initial_value.n,
+                ));
+            }
+
+            if let Some(y_var) = y_value.as_sketch_var() {
+                let y_initial_value = y_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(SolverConstraint::Fixed(
+                    y_var.id.to_constraint_id(args.source_range)?,
+                    y_initial_value.n,
+                ));
+            }
+        }
+        optional_constraints
+    };
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "controlPointSpline() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    sketch_state.needed_by_engine.push(segment.clone());
+
+    #[cfg(feature = "artifact-graph")]
+    sketch_state.solver_optional_constraints.extend(optional_constraints);
+
+    let meta = segment.meta.clone();
+    let abstract_segment = AbstractSegment {
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
+        meta,
+    };
+    Ok(KclValue::Segment {
+        value: Box::new(abstract_segment),
+    })
+}
+
 pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "points",
@@ -1237,6 +1403,106 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 }
                 // Point-Circle or Circle-Point case: constrain point-to-center distance
                 // to equal the circle radius.
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::ControlPointSpline { controls, degree, .. },
+                )
+                | (
+                    UnsolvedSegmentKind::ControlPointSpline { controls, degree, .. },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) =
+                        (&point_pos[0], &point_pos[1])
+                    else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-controlPointSpline coincident constraint"
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+
+                    let mut spline_controls = Vec::with_capacity(controls.len());
+                    for control in controls {
+                        let (UnsolvedExpr::Unknown(control_x), UnsolvedExpr::Unknown(control_y)) =
+                            (&control[0], &control[1])
+                        else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "controlPointSpline coordinates must be sketch variables for point-controlPointSpline coincident constraint".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        };
+                        spline_controls.push([*control_x, *control_y]);
+                    }
+
+                    let sketch_var_ty = solver_numeric_type(exec_state);
+                    let sketch_vars = {
+                        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "coincident() can only be used inside a sketch block".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        };
+                        sketch_state.sketch_vars.clone()
+                    };
+                    let point_position = [
+                        sketch_var_initial_value(&sketch_vars, *point_x, exec_state, range)?,
+                        sketch_var_initial_value(&sketch_vars, *point_y, exec_state, range)?,
+                    ];
+                    let control_positions = spline_controls
+                        .iter()
+                        .map(|control| {
+                            Ok([
+                                sketch_var_initial_value(&sketch_vars, control[0], exec_state, range)?,
+                                sketch_var_initial_value(&sketch_vars, control[1], exec_state, range)?,
+                            ])
+                        })
+                        .collect::<Result<Vec<_>, KclError>>()?;
+                    let spline_degree = *degree as usize;
+                    let parameter_initial_value = estimate_spline_parameter_guess(
+                        &control_positions,
+                        spline_degree,
+                        |point, _tangent, _parameter| {
+                            libm::hypot(point[0] - point_position[0], point[1] - point_position[1])
+                        },
+                    );
+
+                    let point = DatumPoint::new_xy(point_x.to_constraint_id(range)?, point_y.to_constraint_id(range)?);
+                    let spline = datum_control_point_spline(&spline_controls, spline_degree, range)?;
+
+                    #[cfg(feature = "artifact-graph")]
+                    let constraint_id = exec_state.next_object_id();
+                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "coincident() can only be used inside a sketch block".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    let parameter_id = sketch_state.next_sketch_var_id();
+                    sketch_state.sketch_vars.push(KclValue::SketchVar {
+                        value: Box::new(crate::execution::SketchVar {
+                            id: parameter_id,
+                            initial_value: parameter_initial_value,
+                            ty: sketch_var_ty,
+                            meta: vec![],
+                        }),
+                    });
+                    let parameter = DatumDistance::new(parameter_id.to_constraint_id(range)?);
+                    let constraint = SolverConstraint::PointSplineCoincident(spline, point, parameter);
+                    sketch_state.solver_constraints.push(constraint);
+                    #[cfg(feature = "artifact-graph")]
+                    {
+                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                            segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
+                        });
+                        sketch_state.sketch_constraints.push(constraint_id);
+                        track_constraint(constraint_id, constraint, exec_state, &args);
+                    }
+                    Ok(KclValue::none())
+                }
                 (
                     UnsolvedSegmentKind::Point {
                         position: point_pos, ..
@@ -2371,6 +2637,167 @@ fn radius_guess(
     Ok(libm::hypot(dx, dy))
 }
 
+fn datum_control_point_spline(
+    controls: &[[SketchVarId; 2]],
+    degree: usize,
+    range: crate::SourceRange,
+) -> Result<DatumControlPointSpline, KclError> {
+    let controls = controls
+        .iter()
+        .map(|control| datum_point(*control, range))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(DatumControlPointSpline {
+        controls: controls.into_boxed_slice(),
+        degree,
+    })
+}
+
+fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
+    let order = degree + 1;
+    let knot_count = control_count + order;
+    let interior_count = knot_count.saturating_sub(2 * order);
+    let mut knots = vec![0.0; knot_count];
+
+    for (index, knot) in knots.iter_mut().enumerate() {
+        *knot = if index < order {
+            0.0
+        } else if index >= knot_count - order {
+            1.0
+        } else {
+            (index - degree) as f64 / (interior_count + 1) as f64
+        };
+    }
+
+    knots
+}
+
+fn find_knot_span(parameter: f64, degree: usize, knots: &[f64]) -> usize {
+    let point_count = knots.len() - degree - 1;
+    let last_span = point_count - 1;
+    if parameter >= knots[last_span + 1] {
+        return last_span;
+    }
+    if parameter <= knots[degree] {
+        return degree;
+    }
+
+    let mut low = degree;
+    let mut high = last_span + 1;
+    let mut mid = (low + high) / 2;
+    while parameter < knots[mid] || parameter >= knots[mid + 1] {
+        if parameter < knots[mid] {
+            high = mid;
+        } else {
+            low = mid;
+        }
+        mid = (low + high) / 2;
+    }
+
+    mid
+}
+
+fn de_boor_point(controls: &[[f64; 2]], degree: usize, knots: &[f64], parameter: f64) -> [f64; 2] {
+    let span = find_knot_span(parameter, degree, knots);
+    let mut d = (0..=degree)
+        .map(|offset| controls[span - degree + offset])
+        .collect::<Vec<_>>();
+
+    for r in 1..=degree {
+        for j in (r..=degree).rev() {
+            let knot_index = span - degree + j;
+            let denominator = knots[knot_index + degree - r + 1] - knots[knot_index];
+            let alpha = if denominator.abs() <= f64::EPSILON {
+                0.0
+            } else {
+                (parameter - knots[knot_index]) / denominator
+            };
+            d[j] = [
+                ((1.0 - alpha) * d[j - 1][0]) + (alpha * d[j][0]),
+                ((1.0 - alpha) * d[j - 1][1]) + (alpha * d[j][1]),
+            ];
+        }
+    }
+
+    d[degree]
+}
+
+fn sample_spline_point(controls: &[[f64; 2]], degree: usize, parameter: f64) -> [f64; 2] {
+    if controls.len() <= 1 {
+        return controls.first().copied().unwrap_or([0.0, 0.0]);
+    }
+
+    let effective_degree = degree.clamp(1, controls.len() - 1);
+    if effective_degree == 1 {
+        let scaled = parameter.clamp(0.0, 1.0) * (controls.len() - 1) as f64;
+        let index = scaled.floor() as usize;
+        let clamped_index = index.min(controls.len() - 2);
+        let local_t = scaled - clamped_index as f64;
+        let start = controls[clamped_index];
+        let end = controls[clamped_index + 1];
+        return [
+            ((1.0 - local_t) * start[0]) + (local_t * end[0]),
+            ((1.0 - local_t) * start[1]) + (local_t * end[1]),
+        ];
+    }
+
+    let knots = build_open_uniform_knot_vector(controls.len(), effective_degree);
+    de_boor_point(controls, effective_degree, &knots, parameter.clamp(0.0, 1.0))
+}
+
+fn sample_spline_tangent(controls: &[[f64; 2]], degree: usize, parameter: f64) -> [f64; 2] {
+    let epsilon = 1e-3;
+    let u0 = (parameter - epsilon).clamp(0.0, 1.0);
+    let u1 = (parameter + epsilon).clamp(0.0, 1.0);
+    let p0 = sample_spline_point(controls, degree, u0);
+    let p1 = sample_spline_point(controls, degree, u1);
+    [p1[0] - p0[0], p1[1] - p0[1]]
+}
+
+fn vector_length(vector: [f64; 2]) -> f64 {
+    libm::hypot(vector[0], vector[1])
+}
+
+fn normalize_vector(vector: [f64; 2]) -> Option<[f64; 2]> {
+    let length = vector_length(vector);
+    if length <= f64::EPSILON {
+        return None;
+    }
+    Some([vector[0] / length, vector[1] / length])
+}
+
+fn point_line_distance(point: [f64; 2], line_start: [f64; 2], line_end: [f64; 2]) -> f64 {
+    let dx = line_end[0] - line_start[0];
+    let dy = line_end[1] - line_start[1];
+    let denominator = libm::hypot(dx, dy);
+    if denominator <= f64::EPSILON {
+        return libm::hypot(point[0] - line_start[0], point[1] - line_start[1]);
+    }
+    ((dx * (line_start[1] - point[1])) - (dy * (line_start[0] - point[0]))).abs() / denominator
+}
+
+fn estimate_spline_parameter_guess(
+    controls: &[[f64; 2]],
+    degree: usize,
+    mut score: impl FnMut([f64; 2], [f64; 2], f64) -> f64,
+) -> f64 {
+    let sample_count = 96usize;
+    let mut best_parameter = 0.5;
+    let mut best_score = f64::INFINITY;
+
+    for sample_index in 0..=sample_count {
+        let parameter = sample_index as f64 / sample_count as f64;
+        let point = sample_spline_point(controls, degree, parameter);
+        let tangent = sample_spline_tangent(controls, degree, parameter);
+        let candidate_score = score(point, tangent, parameter);
+        if candidate_score < best_score {
+            best_score = candidate_score;
+            best_parameter = parameter;
+        }
+    }
+
+    best_parameter
+}
+
 pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     #[derive(Debug, Clone, Copy)]
     struct RadiusInputVars {
@@ -2562,10 +2989,17 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         end: Option<[SketchVarId; 2]>,
     }
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
+    struct ConstrainableSplineVars {
+        controls: Vec<[SketchVarId; 2]>,
+        degree: usize,
+    }
+
+    #[derive(Debug, Clone)]
     enum TangentInput {
         Line(ConstrainableLineVars),
         Circular(ConstrainableCircularVars),
+        Spline(ConstrainableSplineVars),
     }
 
     fn extract_tangent_input(
@@ -2652,8 +3086,27 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     unsolved.object_id,
                 ))
             }
+            UnsolvedSegmentKind::ControlPointSpline { controls, degree, .. } => {
+                let mut spline_controls = Vec::with_capacity(controls.len());
+                for control in controls {
+                    let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (&control[0], &control[1]) else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "controlPointSpline coordinates must be sketch vars for tangent()".to_owned(),
+                            vec![range],
+                        )));
+                    };
+                    spline_controls.push([*x, *y]);
+                }
+                Ok((
+                    TangentInput::Spline(ConstrainableSplineVars {
+                        controls: spline_controls,
+                        degree: *degree as usize,
+                    }),
+                    unsolved.object_id,
+                ))
+            }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                "tangent() supports only line, arc, and circle segments".to_owned(),
+                "tangent() supports only line, arc, circle, and controlPointSpline segments".to_owned(),
                 vec![range],
             ))),
         }
@@ -2716,6 +3169,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     enum TangentCase {
         LineCircular(ConstrainableLineVars, ConstrainableCircularVars),
         CircularCircular(ConstrainableCircularVars, ConstrainableCircularVars),
+        SplineLine(ConstrainableSplineVars, ConstrainableLineVars),
+        SplineCircular(ConstrainableSplineVars, ConstrainableCircularVars),
     }
     let tangent_case = match (input0, input1) {
         (TangentInput::Line(line), TangentInput::Circular(circular))
@@ -2723,9 +3178,21 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         (TangentInput::Circular(circular0), TangentInput::Circular(circular1)) => {
             TangentCase::CircularCircular(circular0, circular1)
         }
+        (TangentInput::Spline(spline), TangentInput::Line(line))
+        | (TangentInput::Line(line), TangentInput::Spline(spline)) => TangentCase::SplineLine(spline, line),
+        (TangentInput::Spline(spline), TangentInput::Circular(circular))
+        | (TangentInput::Circular(circular), TangentInput::Spline(spline)) => {
+            TangentCase::SplineCircular(spline, circular)
+        }
         (TangentInput::Line(_), TangentInput::Line(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "tangent() does not support Line/Line. Tangency requires at least one circular segment.".to_owned(),
+                vec![range],
+            )));
+        }
+        (TangentInput::Spline(_), TangentInput::Spline(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "tangent() for two controlPointSplines is not supported yet. Select explicit spline edges or use a follow-up constraint.".to_owned(),
                 vec![range],
             )));
         }
@@ -2863,6 +3330,120 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             sketch_state
                 .solver_constraints
                 .push(SolverConstraint::CircleTangentToCircle(circle0, circle1));
+        }
+        TangentCase::SplineLine(spline, line) => {
+            let line_p0 = datum_point(line.start, range)?;
+            let line_p1 = datum_point(line.end, range)?;
+            let solver_line = DatumLineSegment::new(line_p0, line_p1);
+            let line_start = point_initial_position(&sketch_vars, line.start, exec_state, range)?;
+            let line_end = point_initial_position(&sketch_vars, line.end, exec_state, range)?;
+            let line_direction = normalize_vector([line_end[0] - line_start[0], line_end[1] - line_start[1]]);
+            let spline_positions = spline
+                .controls
+                .iter()
+                .map(|control| point_initial_position(&sketch_vars, *control, exec_state, range))
+                .collect::<Result<Vec<_>, _>>()?;
+            let parameter_initial_value =
+                estimate_spline_parameter_guess(&spline_positions, spline.degree, |point, tangent, _parameter| {
+                    let distance_score = point_line_distance(point, line_start, line_end);
+                    let tangent_score = match (normalize_vector(tangent), line_direction) {
+                        (Some(tangent_direction), Some(line_direction)) => {
+                            (tangent_direction[0] * line_direction[1] - tangent_direction[1] * line_direction[0]).abs()
+                        }
+                        _ => 1.0,
+                    };
+                    distance_score + tangent_score
+                });
+            let solver_spline = datum_control_point_spline(&spline.controls, spline.degree, range)?;
+
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "tangent() can only be used inside a sketch block".to_owned(),
+                    vec![range],
+                )));
+            };
+            let parameter_id = sketch_state.next_sketch_var_id();
+            sketch_state.sketch_vars.push(KclValue::SketchVar {
+                value: Box::new(crate::execution::SketchVar {
+                    id: parameter_id,
+                    initial_value: parameter_initial_value,
+                    ty: sketch_var_ty,
+                    meta: vec![],
+                }),
+            });
+            let parameter = DatumDistance::new(parameter_id.to_constraint_id(range)?);
+            sketch_state
+                .solver_constraints
+                .push(SolverConstraint::SplineLineTangent(
+                    solver_spline,
+                    solver_line,
+                    parameter,
+                ));
+        }
+        TangentCase::SplineCircular(spline, circular) => {
+            let center = datum_point(circular.center, range)?;
+            let circular_start = datum_point(circular.start, range)?;
+            let circular_end = circular.end.map(|end| datum_point(end, range)).transpose()?;
+            let radius_initial_value = radius_guess(&sketch_vars, circular.center, circular.start, exec_state, range)?;
+            let center_position = point_initial_position(&sketch_vars, circular.center, exec_state, range)?;
+            let spline_positions = spline
+                .controls
+                .iter()
+                .map(|control| point_initial_position(&sketch_vars, *control, exec_state, range))
+                .collect::<Result<Vec<_>, _>>()?;
+            let parameter_initial_value =
+                estimate_spline_parameter_guess(&spline_positions, spline.degree, |point, tangent, _parameter| {
+                    let radial = [point[0] - center_position[0], point[1] - center_position[1]];
+                    let radial_distance = vector_length(radial);
+                    let radial_distance_score = (radial_distance - radius_initial_value).abs();
+                    let tangent_score = match (normalize_vector(tangent), normalize_vector(radial)) {
+                        (Some(tangent_direction), Some(radial_direction)) => {
+                            (tangent_direction[0] * radial_direction[0] + tangent_direction[1] * radial_direction[1])
+                                .abs()
+                        }
+                        _ => 1.0,
+                    };
+                    radial_distance_score + tangent_score
+                });
+            let solver_spline = datum_control_point_spline(&spline.controls, spline.degree, range)?;
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "tangent() can only be used inside a sketch block".to_owned(),
+                    vec![range],
+                )));
+            };
+            let radius_id = sketch_state.next_sketch_var_id();
+            sketch_state.sketch_vars.push(KclValue::SketchVar {
+                value: Box::new(crate::execution::SketchVar {
+                    id: radius_id,
+                    initial_value: radius_initial_value,
+                    ty: sketch_var_ty,
+                    meta: vec![],
+                }),
+            });
+            let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
+            let circle = DatumCircle { center, radius };
+            let parameter_id = sketch_state.next_sketch_var_id();
+            sketch_state.sketch_vars.push(KclValue::SketchVar {
+                value: Box::new(crate::execution::SketchVar {
+                    id: parameter_id,
+                    initial_value: parameter_initial_value,
+                    ty: sketch_var_ty,
+                    meta: vec![],
+                }),
+            });
+            let parameter = DatumDistance::new(parameter_id.to_constraint_id(range)?);
+            sketch_state
+                .solver_constraints
+                .push(SolverConstraint::DistanceVar(circular_start, center, radius));
+            if let Some(circular_end) = circular_end {
+                sketch_state
+                    .solver_constraints
+                    .push(SolverConstraint::DistanceVar(circular_end, center, radius));
+            }
+            sketch_state
+                .solver_constraints
+                .push(SolverConstraint::SplineCircleTangent(solver_spline, circle, parameter));
         }
     }
 

@@ -1,4 +1,4 @@
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject, SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
@@ -30,7 +30,10 @@ import {
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 import { hasProperty, isArray } from '@src/lib/utils'
 // Import and re-export pure utility functions
-import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  getSegmentColor,
+  LIGHT_CONSTRAINED_COLOR,
+} from '@src/machines/sketchSolve/segmentsUtils'
 import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
@@ -39,6 +42,7 @@ import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
+import { sampleControlPointSplinePoints } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.
@@ -137,14 +141,19 @@ function getMaterialUniforms(
 export const SEGMENT_TYPE_POINT = 'POINT'
 export const SEGMENT_TYPE_LINE = 'LINE'
 export const SEGMENT_TYPE_ARC = 'ARC'
+export const SEGMENT_TYPE_CONTROL_POINT_SPLINE = 'CONTROL_POINT_SPLINE'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
+export const CONTROL_POINT_SPLINE_BODY = 'CONTROL_POINT_SPLINE_BODY'
+export const CONTROL_POINT_SPLINE_POLYGON = 'CONTROL_POINT_SPLINE_POLYGON'
 export const POINT_SEGMENT_RADIUS = 3
 const HOVERED_POINT_SEGMENT_SCALE = 1.5
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
+const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN = 24
 
 interface CreateSegmentArgs {
+  apiObject: ApiObject
   input: SegmentCtor
   id: number
   isConstruction: boolean
@@ -158,6 +167,7 @@ export type SegmentRenderState = {
 }
 
 interface UpdateSegmentArgs {
+  apiObject: ApiObject
   input: SegmentCtor
   theme: Themes
   scale: number
@@ -445,19 +455,28 @@ class LineSegment implements SketchEntityUtils {
     const startY = input.start.y.value
     const endX = input.end.x.value
     const endY = input.end.y.value
+    const isOwnedControlPolygonEdge =
+      args.apiObject.kind.type === 'Segment' &&
+      args.apiObject.kind.segment.type === 'Line' &&
+      args.apiObject.kind.segment.owner != null
     const segmentGroup = new Group()
     const geometry = new LineGeometry()
     geometry.setPositions([startX, startY, 0, endX, endY, 0])
     // Construction geometry uses dashed pattern
     // LineMaterial uses screen-space units (pixels) when worldUnits is false
     const material = new LineMaterial({
-      color: KCL_DEFAULT_COLOR,
-      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      color: isOwnedControlPolygonEdge ? 0x8a8a8a : KCL_DEFAULT_COLOR,
+      linewidth:
+        (isOwnedControlPolygonEdge
+          ? Math.max(1, SEGMENT_WIDTH_PX * 0.65)
+          : SEGMENT_WIDTH_PX) * window.devicePixelRatio,
       dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
       dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
       gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
       resolution: new Vector2(window.innerWidth, window.innerHeight),
+      transparent: isOwnedControlPolygonEdge,
+      opacity: isOwnedControlPolygonEdge ? 0.45 : 1,
     })
 
     // For construction geometry, inject custom screen-space dash shader
@@ -475,6 +494,7 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
+      controlPolygonEdge: isOwnedControlPolygonEdge,
     }
 
     segmentGroup.add(mesh)
@@ -515,6 +535,10 @@ class LineSegment implements SketchEntityUtils {
     geometry.computeBoundingSphere()
 
     const freedom = args.freedom
+    const isOwnedControlPolygonEdge =
+      args.apiObject.kind.type === 'Segment' &&
+      args.apiObject.kind.segment.type === 'Line' &&
+      args.apiObject.kind.segment.owner != null
 
     if (straightSegmentBody.material instanceof LineMaterial) {
       const previousIsConstruction =
@@ -582,17 +606,36 @@ class LineSegment implements SketchEntityUtils {
           window.innerHeight
         )
       }
+      straightSegmentBody.material.linewidth =
+        (isOwnedControlPolygonEdge
+          ? Math.max(1, SEGMENT_WIDTH_PX * 0.65)
+          : SEGMENT_WIDTH_PX) * window.devicePixelRatio
+      straightSegmentBody.material.transparent = isOwnedControlPolygonEdge
+      straightSegmentBody.material.opacity =
+        isOwnedControlPolygonEdge && !state.selected && !state.hovered
+          ? 0.45
+          : 1
     }
 
-    this.updateLineColors(
-      straightSegmentBody,
-      state.selected,
-      state.hovered,
-      state.draft,
-      theme,
-      args.hasSolveErrors,
-      freedom
-    )
+    if (
+      isOwnedControlPolygonEdge &&
+      !state.selected &&
+      !state.hovered &&
+      !state.draft &&
+      !args.hasSolveErrors
+    ) {
+      straightSegmentBody.material.color.set(0x8a8a8a)
+    } else {
+      this.updateLineColors(
+        straightSegmentBody,
+        state.selected,
+        state.hovered,
+        state.draft,
+        theme,
+        args.hasSolveErrors,
+        freedom
+      )
+    }
   }
 }
 
@@ -1114,6 +1157,129 @@ class CircleSegment implements SketchEntityUtils {
   }
 }
 
+class ControlPointSplineSegment implements SketchEntityUtils {
+  init = (args: CreateSegmentArgs) => {
+    if (args.input.type !== 'ControlPointSpline') {
+      return new Error('Invalid input type for ControlPointSplineSegment')
+    }
+
+    const segmentGroup = new Group()
+    segmentGroup.name = args.id.toString()
+    segmentGroup.userData = {
+      type: SEGMENT_TYPE_CONTROL_POINT_SPLINE,
+    }
+
+    const body = new Line2(
+      new LineGeometry(),
+      new LineMaterial({
+        color: KCL_DEFAULT_COLOR,
+        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+        dashed: args.isConstruction,
+        dashSize: 8,
+        gapSize: 6,
+        worldUnits: false,
+        resolution: new Vector2(window.innerWidth, window.innerHeight),
+      })
+    )
+    body.userData.type = CONTROL_POINT_SPLINE_BODY
+    body.userData.hitObjects = 'auto'
+    body.name = CONTROL_POINT_SPLINE_BODY
+
+    const polygon = new Line2(
+      new LineGeometry(),
+      new LineMaterial({
+        color: LIGHT_CONSTRAINED_COLOR,
+        linewidth:
+          Math.max(1, SEGMENT_WIDTH_PX * 0.65) * window.devicePixelRatio,
+        dashed: args.isConstruction,
+        dashSize: 6,
+        gapSize: 6,
+        worldUnits: false,
+        resolution: new Vector2(window.innerWidth, window.innerHeight),
+        transparent: true,
+        opacity: 0.45,
+      })
+    )
+    polygon.userData.type = CONTROL_POINT_SPLINE_POLYGON
+    polygon.name = CONTROL_POINT_SPLINE_POLYGON
+
+    segmentGroup.add(body)
+    segmentGroup.add(polygon)
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    if (args.input.type !== 'ControlPointSpline') {
+      return new Error('Invalid input type for ControlPointSplineSegment')
+    }
+
+    const numericPoints = args.input.points.map((point) => {
+      if (!(hasNumericValue(point.x) && hasNumericValue(point.y))) {
+        return null
+      }
+      return [point.x.value, point.y.value] as const
+    })
+
+    if (numericPoints.some((point) => point === null)) {
+      return new Error('Invalid position values for ControlPointSplineSegment')
+    }
+
+    const points = numericPoints as Array<readonly [number, number]>
+    const curveBody = args.group.children.find(
+      (child) => child.userData.type === CONTROL_POINT_SPLINE_BODY
+    )
+    const polygonBody = args.group.children.find(
+      (child) => child.userData.type === CONTROL_POINT_SPLINE_POLYGON
+    )
+    if (!(curveBody instanceof Line2) || !(polygonBody instanceof Line2)) {
+      console.error('Missing control point spline meshes')
+      return
+    }
+
+    const sampledPoints = sampleControlPointSplinePoints(
+      points.map(([x, y]) => [x, y]),
+      Math.min(3, points.length - 1),
+      CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN
+    )
+
+    curveBody.geometry.setPositions(
+      sampledPoints.flatMap(([x, y]) => [x, y, 0])
+    )
+    curveBody.geometry.computeBoundingSphere()
+    polygonBody.geometry.setPositions(points.flatMap(([x, y]) => [x, y, 0]))
+    polygonBody.geometry.computeBoundingSphere()
+
+    const curveMaterial = curveBody.material
+    if (curveMaterial instanceof LineMaterial) {
+      curveMaterial.dashed = args.state.construction
+      curveMaterial.worldUnits = false
+      curveMaterial.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+      curveMaterial.resolution.set(window.innerWidth, window.innerHeight)
+    }
+
+    const polygonMaterial = polygonBody.material
+    if (polygonMaterial instanceof LineMaterial) {
+      polygonMaterial.dashed = args.state.construction
+      polygonMaterial.worldUnits = false
+      polygonMaterial.linewidth =
+        Math.max(1, SEGMENT_WIDTH_PX * 0.65) * window.devicePixelRatio
+      polygonMaterial.resolution.set(window.innerWidth, window.innerHeight)
+      polygonMaterial.opacity =
+        args.state.hovered || args.state.selected ? 0.7 : 0.45
+      polygonMaterial.color.set(0x8a8a8a)
+    }
+
+    updateLineMaterial(curveBody.material, {
+      isSelected: args.state.selected,
+      isHovered: args.state.hovered,
+      isDraft: args.state.draft,
+      theme: args.theme,
+      hasSolveErrors: args.hasSolveErrors,
+      freedom: args.freedom,
+    })
+  }
+}
+
 function updateLineMaterial(
   material: LineMaterial,
   {
@@ -1224,5 +1390,6 @@ export const segmentUtilsMap = {
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
   CircleSegment: new CircleSegment(),
+  ControlPointSplineSegment: new ControlPointSplineSegment(),
   Constraint: new ConstraintBuilder(),
 }

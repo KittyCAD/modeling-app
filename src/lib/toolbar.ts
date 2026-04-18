@@ -17,6 +17,7 @@ import {
   getSelectedFixedConstraintInput,
   getSelectedTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName =
@@ -125,8 +126,30 @@ const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
-  return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => ({
+  return useMemo<Record<ToolbarModeName, ToolbarMode>>(() => {
+    const splineToolbarItem: ToolbarItem = {
+      id: 'spline',
+      onClick: ({ modelingSend, isActive }) =>
+        isActive
+          ? modelingSend({
+              type: 'unequip tool',
+            })
+          : modelingSend({
+              type: 'equip tool',
+              data: { tool: 'splineTool' },
+            }),
+      icon: 'spline',
+      status: 'experimental',
+      title: 'Spline',
+      hotkey: 'S',
+      description: 'Draw a control-point spline.',
+      links: [],
+      isActive: (state) =>
+        state.matches('sketchSolveMode') &&
+        state.context.sketchSolveToolName === 'splineTool',
+    }
+
+    return {
       onlyCancel: {
         check: (state) => !state.matches('Sketch no face'),
         items: [
@@ -1516,6 +1539,7 @@ export const useToolbarConfig = () => {
               state.matches('sketchSolveMode') &&
               state.context.sketchSolveToolName === 'pointTool',
           },
+          ...(IS_STAGING_OR_DEBUG ? [splineToolbarItem] : []),
           {
             id: 'circle-center',
             onClick: ({ modelingSend, isActive }) =>
@@ -1909,9 +1933,8 @@ export const useToolbarConfig = () => {
           },
         ],
       },
-    }),
-    [commands]
-  )
+    }
+  }, [commands])
 }
 
 /**

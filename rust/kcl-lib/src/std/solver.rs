@@ -40,6 +40,95 @@ use crate::std::utils::untyped_point_to_mm;
 use crate::std_utils::untyped_point_to_unit;
 
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
+const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
+
+fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
+    let span_count = control_count.saturating_sub(degree);
+    let mut knots = vec![0.0; degree + 1];
+    if span_count > 1 {
+        for value in 1..span_count {
+            knots.push(value as f64);
+        }
+    }
+    knots.extend(std::iter::repeat_n(span_count as f64, degree + 1));
+    knots
+}
+
+fn find_knot_span(parameter: f64, degree: usize, knots: &[f64], control_count: usize) -> usize {
+    let n = control_count - 1;
+    if parameter >= knots[n + 1] {
+        return n;
+    }
+    if parameter <= knots[degree] {
+        return degree;
+    }
+
+    let mut low = degree;
+    let mut high = n + 1;
+    let mut mid = (low + high) / 2;
+    while parameter < knots[mid] || parameter >= knots[mid + 1] {
+        if parameter < knots[mid] {
+            high = mid;
+        } else {
+            low = mid;
+        }
+        mid = (low + high) / 2;
+    }
+    mid
+}
+
+fn de_boor_point(parameter: f64, degree: usize, knots: &[f64], controls: &[[f64; 2]]) -> [f64; 2] {
+    let span = find_knot_span(parameter, degree, knots, controls.len());
+    let mut points = (0..=degree).map(|j| controls[span - degree + j]).collect::<Vec<_>>();
+
+    for r in 1..=degree {
+        for j in (r..=degree).rev() {
+            let knot_index = span - degree + j;
+            let denominator = knots[knot_index + degree + 1 - r] - knots[knot_index];
+            let alpha = if denominator.abs() <= f64::EPSILON {
+                0.0
+            } else {
+                (parameter - knots[knot_index]) / denominator
+            };
+            points[j] = [
+                (1.0 - alpha) * points[j - 1][0] + alpha * points[j][0],
+                (1.0 - alpha) * points[j - 1][1] + alpha * points[j][1],
+            ];
+        }
+    }
+
+    points[degree]
+}
+
+fn sample_control_point_spline_points(controls: &[[f64; 2]], degree: usize) -> Vec<[f64; 2]> {
+    let knots = build_open_uniform_knot_vector(controls.len(), degree);
+    let span_count = controls.len().saturating_sub(degree);
+    let mut samples = Vec::with_capacity(span_count * CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN + 1);
+    samples.push(controls[0]);
+
+    for span_index in 0..span_count {
+        let start = span_index as f64;
+        let end = (span_index + 1) as f64;
+        let is_last_span = span_index + 1 == span_count;
+        let max_step = if is_last_span {
+            CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN
+        } else {
+            CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN - 1
+        };
+
+        for step in 1..=max_step {
+            let t = step as f64 / CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN as f64;
+            let parameter = if is_last_span && step == CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN {
+                end
+            } else {
+                start + t * (end - start)
+            };
+            samples.push(de_boor_point(parameter, degree, &knots, controls));
+        }
+    }
+
+    samples
+}
 
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
@@ -75,6 +164,12 @@ pub(crate) async fn create_segments_in_engine(
             SegmentKind::Line { start, .. } => start.clone(),
             SegmentKind::Arc { start, .. } => start.clone(),
             SegmentKind::Circle { start, .. } => start.clone(),
+            SegmentKind::ControlPointSpline { controls, .. } => controls.first().cloned().ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "Control point spline is missing control points".to_owned(),
+                    vec![sketch_block_range],
+                ))
+            })?,
         };
 
         // Get the source range of the segment from its metadata, falling back to the sketch block's.
@@ -103,6 +198,23 @@ pub(crate) async fn create_segments_in_engine(
                     }
                 }
                 SegmentKind::Circle { .. } => forward_start.clone(),
+                SegmentKind::ControlPointSpline { controls, .. } => {
+                    let reverse_start = controls.last().cloned().ok_or_else(|| {
+                        KclError::new_internal(KclErrorDetails::new(
+                            "Control point spline is missing control points".to_owned(),
+                            vec![range],
+                        ))
+                    })?;
+                    let reverse_start_mm = point_to_mm(reverse_start.clone());
+                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        forward_start.clone()
+                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        traversal = SegmentTraversal::Reverse;
+                        reverse_start
+                    } else {
+                        forward_start.clone()
+                    }
+                }
                 SegmentKind::Point { .. } => unreachable!("points are skipped earlier"),
             };
             let entry_point_mm = point_to_mm(entry_point.clone());
@@ -331,6 +443,52 @@ pub(crate) async fn create_segments_in_engine(
 
                 outer_sketch = Some(new_sketch);
             }
+            SegmentKind::ControlPointSpline { controls, degree, .. } => {
+                let common_unit = controls
+                    .first()
+                    .and_then(|point| point[0].ty.as_length())
+                    .unwrap_or(UnitLength::Millimeters);
+                let mut untyped_controls = controls
+                    .iter()
+                    .map(|control| {
+                        let (point, point_ty) = untype_point(control.clone());
+                        let Some(point_unit) = point_ty.as_length() else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Control point spline points must have length units".to_owned(),
+                                vec![range],
+                            )));
+                        };
+                        Ok(untyped_point_to_unit(point, point_unit, common_unit))
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+
+                if traversal == SegmentTraversal::Reverse {
+                    untyped_controls.reverse();
+                }
+
+                let sampled_points = sample_control_point_spline_points(&untyped_controls, *degree as usize);
+                let mut sampled_iter = sampled_points.into_iter();
+                let _ = sampled_iter.next();
+
+                let mut next_tag = tag.clone();
+                let mut sketch_acc = sketch.clone();
+                for sampled_point in sampled_iter {
+                    let to = [
+                        TyF64::new(sampled_point[0], common_unit.into()),
+                        TyF64::new(sampled_point[1], common_unit.into()),
+                    ];
+                    sketch_acc = straight_line(
+                        exec_state.next_uuid(),
+                        StraightLineParams::absolute(to, sketch_acc, next_tag.take()),
+                        !exec_state.sketch_mode(),
+                        exec_state,
+                        ctx,
+                        range,
+                    )
+                    .await?;
+                }
+                outer_sketch = Some(sketch_acc);
+            }
         }
     }
 
@@ -342,4 +500,65 @@ pub(crate) async fn create_segments_in_engine(
     }
 
     Ok(outer_sketch)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN;
+    use super::build_open_uniform_knot_vector;
+    use super::sample_control_point_spline_points;
+
+    fn assert_point_approx_eq(actual: [f64; 2], expected: [f64; 2]) {
+        assert!(
+            (actual[0] - expected[0]).abs() <= 1e-9 && (actual[1] - expected[1]).abs() <= 1e-9,
+            "expected point {expected:?}, got {actual:?}"
+        );
+    }
+
+    #[test]
+    fn open_uniform_knots_match_degree_policy() {
+        assert_eq!(build_open_uniform_knot_vector(3, 2), vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(
+            build_open_uniform_knot_vector(5, 3),
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0]
+        );
+    }
+
+    #[test]
+    fn sampled_control_point_spline_preserves_endpoints() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
+        let sampled = sample_control_point_spline_points(&controls, 3);
+
+        assert!(!sampled.is_empty(), "expected sampled spline points");
+        assert_point_approx_eq(sampled[0], controls[0]);
+        assert_point_approx_eq(sampled[sampled.len() - 1], controls[controls.len() - 1]);
+    }
+
+    #[test]
+    fn sampled_control_point_spline_uses_expected_points_per_span() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0], [40.0, 0.0]];
+        let degree = 3;
+        let span_count = controls.len() - degree;
+        let sampled = sample_control_point_spline_points(&controls, degree);
+        let expected_count = span_count * (CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN - 1) + 2;
+
+        assert_eq!(
+            sampled.len(),
+            expected_count,
+            "unexpected sampled point count for temporary polyline lowering"
+        );
+    }
+
+    #[test]
+    fn reversing_controls_reverses_sampled_path() {
+        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
+        let forward = sample_control_point_spline_points(&controls, 3);
+        let reversed_controls = controls.into_iter().rev().collect::<Vec<_>>();
+        let reversed = sample_control_point_spline_points(&reversed_controls, 3);
+
+        assert_eq!(forward.len(), reversed.len(), "expected matching sample counts");
+        for (forward_point, reversed_point) in forward.iter().zip(reversed.iter().rev()) {
+            assert_point_approx_eq(*forward_point, *reversed_point);
+        }
+    }
 }
