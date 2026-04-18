@@ -6,6 +6,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { copyFileShareLink } from '@src/lib/links'
+import { useSignals } from '@preact/signals-react/runtime'
 import { memo, type RefObject, useCallback, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -59,6 +60,7 @@ function SharePopoverContent({
   open: boolean
   platform: ReturnType<typeof usePlatform>
 }) {
+  useSignals()
   const app = useApp()
   const { auth, billing } = app
   const { kclManager } = useSingletons()
@@ -93,7 +95,7 @@ function SharePopoverContent({
     <>
       <Popover.Button
         ref={shareButtonRef}
-        disabled={billingLoading}
+        disabled={billingLoading || shareDisabled}
         className="relative inline-flex min-w-max items-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 py-0 pl-0.5 pr-1.5 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70"
         data-testid="share-button"
       >

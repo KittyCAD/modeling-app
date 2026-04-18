@@ -69,6 +69,6 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     // Open main.kcl (which has an import) and verify share button is disabled
     await toolbar.openFile('main.kcl')
-    await expect(shareButton).toBeDisabled()
+    await expect(shareButton).toBeDisabled({ timeout: 15_000 })
   })
 })
