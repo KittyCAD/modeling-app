@@ -221,6 +221,17 @@ export function OpenedProject() {
       enableOnFormTags: true,
     }
   )
+  useHotkeyWrapper(
+    ['ctrl + shift + c'],
+    () => {
+      void kclManager.convertToVariable()
+    },
+    kclManager,
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: true,
+    }
+  )
 
   useEngineConnectionSubscriptions()
 
