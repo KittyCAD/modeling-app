@@ -127,6 +127,16 @@ type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
   a === null ? undefined : a
 
+function compactRecord<T extends Record<string, unknown>>(
+  value: T
+): Partial<T> | undefined {
+  const compacted = Object.fromEntries(
+    Object.entries(value).filter(([, entry]) => entry !== undefined)
+  ) as Partial<T>
+
+  return Object.keys(compacted).length > 0 ? compacted : undefined
+}
+
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
@@ -137,50 +147,95 @@ export function configurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
-      onboardingStatus: configuration?.settings?.app?.onboarding_status,
+      theme: configuration?.settings?.app?.appearance?.theme
+        ? appThemeToTheme(configuration?.settings?.app?.appearance?.theme)
+        : undefined,
+      onboardingStatus: toUndefinedIfNull(
+        configuration?.settings?.app?.onboarding_status
+      ),
       streamIdleMode: toUndefinedIfNull(
         configuration?.settings?.app?.stream_idle_mode
       ),
-      allowOrbitInSketchMode:
-        configuration?.settings?.app?.allow_orbit_in_sketch_mode,
-      projectDirectory: configuration?.settings?.project?.directory,
-      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
-      machineApi: configuration?.settings?.app?.machine_api,
+      allowOrbitInSketchMode: toUndefinedIfNull(
+        configuration?.settings?.app?.allow_orbit_in_sketch_mode
+      ),
+      projectDirectory: toUndefinedIfNull(
+        configuration?.settings?.project?.directory
+      ),
+      showDebugPanel: toUndefinedIfNull(
+        configuration?.settings?.app?.show_debug_panel
+      ),
+      machineApi: toUndefinedIfNull(configuration?.settings?.app?.machine_api),
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
-      cameraProjection: configuration?.settings?.modeling?.camera_projection,
-      cameraOrbit: configuration?.settings?.modeling?.camera_orbit,
-      mouseControls: mouseControlsToCameraSystem(
-        configuration?.settings?.modeling?.mouse_controls
+      defaultUnit: toUndefinedIfNull(
+        configuration?.settings?.modeling?.base_unit
       ),
-      gizmoType: configuration?.settings?.modeling?.gizmo_type,
-      enableTouchControls:
-        configuration?.settings?.modeling?.enable_touch_controls,
-      useSketchSolveMode:
-        configuration?.settings?.modeling?.use_sketch_solve_mode,
-      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      backfaceColor: configuration?.settings?.modeling?.backface_color,
-      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
-      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
-      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
-      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
-      minorGridsPerMajor:
-        configuration?.settings?.modeling?.minor_grids_per_major,
-      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
+      cameraProjection: toUndefinedIfNull(
+        configuration?.settings?.modeling?.camera_projection
+      ),
+      cameraOrbit: toUndefinedIfNull(
+        configuration?.settings?.modeling?.camera_orbit
+      ),
+      mouseControls: configuration?.settings?.modeling?.mouse_controls
+        ? mouseControlsToCameraSystem(
+            configuration?.settings?.modeling?.mouse_controls
+          )
+        : undefined,
+      gizmoType: toUndefinedIfNull(
+        configuration?.settings?.modeling?.gizmo_type
+      ),
+      enableTouchControls: toUndefinedIfNull(
+        configuration?.settings?.modeling?.enable_touch_controls
+      ),
+      useSketchSolveMode: toUndefinedIfNull(
+        configuration?.settings?.modeling?.use_sketch_solve_mode
+      ),
+      highlightEdges: toUndefinedIfNull(
+        configuration?.settings?.modeling?.highlight_edges
+      ),
+      enableSSAO: toUndefinedIfNull(
+        configuration?.settings?.modeling?.enable_ssao
+      ),
+      backfaceColor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.backface_color
+      ),
+      showScaleGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.show_scale_grid
+      ),
+      fixedSizeGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.fixed_size_grid
+      ),
+      snapToGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snap_to_grid
+      ),
+      majorGridSpacing: toUndefinedIfNull(
+        configuration?.settings?.modeling?.major_grid_spacing
+      ),
+      minorGridsPerMajor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.minor_grids_per_major
+      ),
+      snapsPerMinor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snaps_per_minor
+      ),
     },
     textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+      textWrapping: toUndefinedIfNull(
+        configuration?.settings?.text_editor?.text_wrapping
+      ),
+      blinkingCursor: toUndefinedIfNull(
+        configuration?.settings?.text_editor?.blinking_cursor
+      ),
     },
     projects: {
-      defaultProjectName:
-        configuration?.settings?.project?.default_project_name,
+      defaultProjectName: toUndefinedIfNull(
+        configuration?.settings?.project?.default_project_name
+      ),
     },
     commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+      includeSettings: toUndefinedIfNull(
+        configuration?.settings?.command_bar?.include_settings
+      ),
     },
   }
 }
@@ -188,50 +243,84 @@ export function configurationToSettingsPayload(
 export function settingsPayloadToConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>
 ): DeepPartial<Configuration> {
+  const appearance = compactRecord({
+    theme: toUndefinedIfNull(configuration?.app?.theme),
+  })
+
+  const app = compactRecord({
+    appearance,
+    onboarding_status: toUndefinedIfNull(configuration?.app?.onboardingStatus),
+    stream_idle_mode: toUndefinedIfNull(configuration?.app?.streamIdleMode),
+    allow_orbit_in_sketch_mode: toUndefinedIfNull(
+      configuration?.app?.allowOrbitInSketchMode
+    ),
+    show_debug_panel: toUndefinedIfNull(configuration?.app?.showDebugPanel),
+    machine_api: toUndefinedIfNull(configuration?.app?.machineApi),
+  })
+
+  const modeling = compactRecord({
+    base_unit: toUndefinedIfNull(configuration?.modeling?.defaultUnit),
+    camera_projection: toUndefinedIfNull(
+      configuration?.modeling?.cameraProjection
+    ),
+    camera_orbit: toUndefinedIfNull(configuration?.modeling?.cameraOrbit),
+    mouse_controls:
+      configuration?.modeling?.mouseControls !== null &&
+      configuration?.modeling?.mouseControls !== undefined
+        ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
+        : undefined,
+    gizmo_type: toUndefinedIfNull(configuration?.modeling?.gizmoType),
+    enable_touch_controls: toUndefinedIfNull(
+      configuration?.modeling?.enableTouchControls
+    ),
+    use_sketch_solve_mode: toUndefinedIfNull(
+      configuration?.modeling?.useSketchSolveMode
+    ),
+    highlight_edges: toUndefinedIfNull(configuration?.modeling?.highlightEdges),
+    enable_ssao: toUndefinedIfNull(configuration?.modeling?.enableSSAO),
+    backface_color: toUndefinedIfNull(configuration?.modeling?.backfaceColor),
+    show_scale_grid: toUndefinedIfNull(configuration?.modeling?.showScaleGrid),
+    fixed_size_grid: toUndefinedIfNull(configuration?.modeling?.fixedSizeGrid),
+    snap_to_grid: toUndefinedIfNull(configuration?.modeling?.snapToGrid),
+    major_grid_spacing: toUndefinedIfNull(
+      configuration?.modeling?.majorGridSpacing
+    ),
+    minor_grids_per_major: toUndefinedIfNull(
+      configuration?.modeling?.minorGridsPerMajor
+    ),
+    snaps_per_minor: toUndefinedIfNull(configuration?.modeling?.snapsPerMinor),
+  })
+
+  const textEditor = compactRecord({
+    text_wrapping: toUndefinedIfNull(configuration?.textEditor?.textWrapping),
+    blinking_cursor: toUndefinedIfNull(
+      configuration?.textEditor?.blinkingCursor
+    ),
+  })
+
+  const project = compactRecord({
+    directory: toUndefinedIfNull(configuration?.app?.projectDirectory),
+    default_project_name: toUndefinedIfNull(
+      configuration?.projects?.defaultProjectName
+    ),
+  })
+
+  const commandBar = compactRecord({
+    include_settings: toUndefinedIfNull(
+      configuration?.commandBar?.includeSettings
+    ),
+  })
+
+  const settings = compactRecord({
+    app,
+    modeling,
+    text_editor: textEditor,
+    project,
+    command_bar: commandBar,
+  })
+
   return {
-    settings: {
-      app: {
-        appearance: {
-          theme: configuration?.app?.theme,
-        },
-        onboarding_status: configuration?.app?.onboardingStatus,
-        stream_idle_mode: configuration?.app?.streamIdleMode,
-        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
-        show_debug_panel: configuration?.app?.showDebugPanel,
-        machine_api: configuration?.app?.machineApi,
-      },
-      modeling: {
-        base_unit: configuration?.modeling?.defaultUnit,
-        camera_projection: configuration?.modeling?.cameraProjection,
-        camera_orbit: configuration?.modeling?.cameraOrbit,
-        mouse_controls: configuration?.modeling?.mouseControls
-          ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
-          : undefined,
-        gizmo_type: configuration?.modeling?.gizmoType,
-        enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        use_sketch_solve_mode: configuration?.modeling?.useSketchSolveMode,
-        highlight_edges: configuration?.modeling?.highlightEdges,
-        enable_ssao: configuration?.modeling?.enableSSAO,
-        backface_color: configuration?.modeling?.backfaceColor,
-        show_scale_grid: configuration?.modeling?.showScaleGrid,
-        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
-        snap_to_grid: configuration?.modeling?.snapToGrid,
-        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
-        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
-        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
-      },
-      text_editor: {
-        text_wrapping: configuration?.textEditor?.textWrapping,
-        blinking_cursor: configuration?.textEditor?.blinkingCursor,
-      },
-      project: {
-        directory: configuration?.app?.projectDirectory,
-        default_project_name: configuration?.projects?.defaultProjectName,
-      },
-      command_bar: {
-        include_settings: configuration?.commandBar?.includeSettings,
-      },
-    },
+    ...(settings ? { settings } : {}),
   }
 }
 
@@ -330,38 +419,52 @@ export function projectConfigurationToSettingsPayload(
 export function settingsPayloadToProjectConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>
 ): DeepPartial<ProjectConfiguration> {
+  const namedViews = deepPartialNamedViewsToNamedViews(
+    configuration?.app?.namedViews
+  )
+
+  const meta = compactRecord({
+    id: configuration?.meta?.id,
+  })
+
+  const app = compactRecord({
+    onboarding_status: configuration?.app?.onboardingStatus,
+    allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
+    show_debug_panel: configuration?.app?.showDebugPanel,
+    zookeeper_mode: configuration?.app?.zookeeperMode,
+    named_views: Object.keys(namedViews).length > 0 ? namedViews : undefined,
+  })
+
+  const modeling = compactRecord({
+    base_unit: configuration?.modeling?.defaultUnit,
+    highlight_edges: configuration?.modeling?.highlightEdges,
+    enable_ssao: configuration?.modeling?.enableSSAO,
+    fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
+    snap_to_grid: configuration?.modeling?.snapToGrid,
+    major_grid_spacing: configuration?.modeling?.majorGridSpacing,
+    minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
+    snaps_per_minor: configuration?.modeling?.snapsPerMinor,
+  })
+
+  const textEditor = compactRecord({
+    text_wrapping: configuration?.textEditor?.textWrapping,
+    blinking_cursor: configuration?.textEditor?.blinkingCursor,
+  })
+
+  const commandBar = compactRecord({
+    include_settings: configuration?.commandBar?.includeSettings,
+  })
+
+  const settings = compactRecord({
+    meta,
+    app,
+    modeling,
+    text_editor: textEditor,
+    command_bar: commandBar,
+  })
+
   return {
-    settings: {
-      meta: {
-        id: configuration?.meta?.id,
-      },
-      app: {
-        onboarding_status: configuration?.app?.onboardingStatus,
-        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
-        show_debug_panel: configuration?.app?.showDebugPanel,
-        zookeeper_mode: configuration?.app?.zookeeperMode,
-        named_views: deepPartialNamedViewsToNamedViews(
-          configuration?.app?.namedViews
-        ),
-      },
-      modeling: {
-        base_unit: configuration?.modeling?.defaultUnit,
-        highlight_edges: configuration?.modeling?.highlightEdges,
-        enable_ssao: configuration?.modeling?.enableSSAO,
-        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
-        snap_to_grid: configuration?.modeling?.snapToGrid,
-        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
-        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
-        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
-      },
-      text_editor: {
-        text_wrapping: configuration?.textEditor?.textWrapping,
-        blinking_cursor: configuration?.textEditor?.blinkingCursor,
-      },
-      command_bar: {
-        include_settings: configuration?.commandBar?.includeSettings,
-      },
-    },
+    ...(settings ? { settings } : {}),
   }
 }
 
