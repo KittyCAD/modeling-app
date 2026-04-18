@@ -214,23 +214,17 @@ export function OpenedProject() {
     ['alt + shift + f'],
     () => {
       void kclManager.format()
+      return true
     },
-    kclManager,
-    {
-      enableOnContentEditable: true,
-      enableOnFormTags: true,
-    }
+    kclManager
   )
   useHotkeyWrapper(
     ['ctrl + shift + c'],
     () => {
       void kclManager.convertToVariable()
+      return true
     },
-    kclManager,
-    {
-      enableOnContentEditable: true,
-      enableOnFormTags: true,
-    }
+    kclManager
   )
 
   useEngineConnectionSubscriptions()
