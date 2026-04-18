@@ -48,10 +48,10 @@ dodecahedron/
 double-hook/
 enclosure/
 engine-valve/
-# exhaust-manifold/
-# field-monitor-stand/
-# flange/
-# flat-bladed-impeller/
+exhaust-manifold/
+field-monitor-stand/
+flange/
+flat-bladed-impeller/
 # french-press/
 fun-stacker-toy/
 # gallows-bracket/
@@ -74,17 +74,17 @@ hex-nut/
 hex-nut-with-chamfer/
 # holder-rod-angle/
 i-beam/
-# inner-thread/
+inner-thread/
 # keyboard/
 # kitt/
 lattice-cubic/
 lego/
-# linear-shelf-system/
+linear-shelf-system/
 # liquid-impeller/
 m4-hex-socket-countersunk-head-screw/
 m4-insert/
 # makeup-mirror/
-# modular-shelf-grid/
+modular-shelf-grid/
 # mug/
 multi-axis-robot/
 parametric-shelf-unit/
