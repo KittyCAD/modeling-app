@@ -7,14 +7,10 @@ import {
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { Location } from 'react-router-dom'
 
-export const defaultGlobalStatusBarItems = ({
-  location,
-  filePath,
-}: {
+export const defaultGlobalStatusBarItems = (_props: {
   location: Location
   filePath?: string
 }): StatusBarItemType[] => [
@@ -36,30 +32,6 @@ export const defaultGlobalStatusBarItems = ({
   {
     id: 'environment',
     component: EnvironmentStatusBarItem,
-  },
-  {
-    id: 'telemetry',
-    element: 'link',
-    icon: 'stopwatch',
-    href: location.pathname.includes(PATHS.FILE)
-      ? filePath + PATHS.TELEMETRY + '?tab=project'
-      : PATHS.HOME + PATHS.TELEMETRY,
-    'data-testid': 'telemetry-link',
-    label: 'Telemetry',
-    hideLabel: true,
-    toolTip: {
-      children: 'Telemetry',
-    },
-  },
-  {
-    id: 'settings',
-    element: 'link',
-    icon: 'settings',
-    href: location.pathname.includes(PATHS.FILE)
-      ? location.pathname + PATHS.SETTINGS + '?tab=project'
-      : PATHS.HOME + PATHS.SETTINGS,
-    'data-testid': 'settings-link',
-    label: 'Settings',
   },
 ]
 

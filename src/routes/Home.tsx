@@ -62,6 +62,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { statusBarGlobalItemsFacet } from '@src/facets'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -71,7 +72,8 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { auth, billing, commands, settings, systemIOActor, extensions } =
+    useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
@@ -409,6 +411,7 @@ const Home = () => {
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+          ...extensions.host.signal(statusBarGlobalItemsFacet).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />
