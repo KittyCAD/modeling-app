@@ -113,7 +113,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.15.4
         with:
           cache: rust
           components: rust-src
@@ -228,7 +228,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.15.4
         with:
           cache: rust
           components: rust-src
