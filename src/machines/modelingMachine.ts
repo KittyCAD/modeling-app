@@ -1858,7 +1858,7 @@ export const modelingMachine = setup({
               : [],
             otherSelections,
           }
-          const { engineEvents } = handleSelectionBatch({
+          const { engineEvents, codeMirrorSelection } = handleSelectionBatch({
             selections,
             artifactGraph: kclManager.artifactGraph,
             code: kclManager.code,
@@ -1869,6 +1869,12 @@ export const modelingMachine = setup({
               wasmInstance,
             },
           })
+
+          if (codeMirrorSelection) {
+            kclManager.editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          }
 
           engineEvents?.forEach((event) => {
             engineCommandManager.sendSceneCommand(event).catch(reportRejection)

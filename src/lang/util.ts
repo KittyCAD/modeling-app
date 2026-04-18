@@ -11,7 +11,7 @@ import type {
   PathToNode,
 } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { isArray, isOverlap } from '@src/lib/utils'
+import { dedupeBy, isArray, isOverlap } from '@src/lib/utils'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
@@ -50,6 +50,10 @@ export function topLevelRange(start: number, end: number): SourceRange {
  */
 export function isTopLevelModule(range: SourceRange): boolean {
   return range[2] === 0
+}
+
+export function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
+  return dedupeBy(sourceRanges, (range) => range.join(':'))
 }
 
 /**

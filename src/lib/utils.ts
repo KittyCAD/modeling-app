@@ -102,6 +102,25 @@ export function isNonNullable<T>(val: T): val is NonNullable<T> {
   return val !== null && val !== undefined
 }
 
+/**
+ * Deduplicate items in an array using the given function to extract the key
+ * from an item.
+ */
+export function dedupeBy<T>(
+  array: Array<T>,
+  keyFn: (item: T) => string
+): Array<T> {
+  const seen = new Set<string>()
+  return array.filter((item) => {
+    const key = keyFn(item)
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
