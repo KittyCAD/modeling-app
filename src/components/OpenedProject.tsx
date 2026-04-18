@@ -10,6 +10,7 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import { PublishButton } from '@src/components/PublishButton'
 import { ShareButton } from '@src/components/ShareButton'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
@@ -213,7 +214,7 @@ export function OpenedProject() {
   useHotkeyWrapper(
     ['mod + s'],
     () => {
-      toast.success('Your work is auto-saved in real-time')
+      toast.success('Your work is auto-saved in real-time.')
     },
     kclManager
   )
@@ -380,6 +381,7 @@ export function OpenedProject() {
               <>
                 <CommandBarOpenButton />
                 <ShareButton />
+                <PublishButton project={project?.projectIORefSignal.value} />
               </>
             )}
           </AppHeader>

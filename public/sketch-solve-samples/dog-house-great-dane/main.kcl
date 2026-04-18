@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import submodules; each defines geometry at top level. Importing assembles the scene.
 import "frame.kcl" as frame
@@ -13,4 +13,3 @@ import "back-frame.kcl" as backFrame
 import "left-wall.kcl" as leftWall
 import "right-wall.kcl" as rightWall
 import "floor.kcl" as floor
-

@@ -144,8 +144,6 @@ deleteFace(cubeSolid, faceIndices = [0, 1])
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 boxProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])

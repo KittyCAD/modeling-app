@@ -1,37 +1,41 @@
 import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
+  addModuleImport,
+  insertVariableAndOffsetPathToNode,
+} from '@src/lang/modifyAst'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import {
+  type PathToNode,
+  type VariableDeclarator,
   changeDefaultUnits,
   isPathToNode,
   pathToNodeFromRustNodePath,
-  type PathToNode,
-  type VariableDeclarator,
+  recast,
 } from '@src/lang/wasm'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
 import { copyFileShareLink } from '@src/lib/links'
+import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { Project } from '@src/lib/project'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import fsZds from '@src/lib/fs-zds'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 interface KclCommandConfig {
@@ -101,7 +105,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               shouldExecute: true,
               shouldResetCamera: true,
             })
-            toast.success(`Updated per-file units to ${data.unit}`)
+            toast.success(`Updated per-file units to ${data.unit}.`)
           }
         } else {
           toast.error(
@@ -171,7 +175,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 }
 
                 toast.success(
-                  `Updated file experimental features level to ${data.level}`
+                  `Updated file experimental features level to ${data.level}.`
                 )
               })
               .catch(reportRejection)
@@ -325,7 +329,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           defaultValue: '5',
         },
       },
-      onSubmit: (data) => {
+      onSubmit: async (data) => {
         if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
@@ -334,15 +338,43 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (!('variableName' in value)) {
           return new Error('variable name is required')
         }
-        const newAst = insertNamedConstant({
-          node: commandProps.kclManager.ast,
-          newExpression: value,
+        if (
+          !('insertIndex' in value) ||
+          typeof value.insertIndex !== 'number'
+        ) {
+          return new Error('insert index is required')
+        }
+        if (!('valueText' in value) || typeof value.valueText !== 'string') {
+          return new Error('value text is required')
+        }
+        if (!('variableDeclarationAst' in value)) {
+          return new Error('variable declaration is required')
+        }
+
+        const freshAst = await commandProps.kclManager.safeParse(
+          commandProps.kclManager.code,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!freshAst) {
+          return new Error('Current code could not be parsed')
+        }
+
+        const modifiedAst = structuredClone(freshAst)
+        insertVariableAndOffsetPathToNode(value, modifiedAst)
+
+        const newCode = recast(
+          modifiedAst,
+          await commandProps.kclManager.wasmInstancePromise
+        )
+        if (err(newCode)) {
+          return new Error(`Failed to create parameter: ${newCode.message}`)
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
         })
-        updateModelingState(
-          newAst,
-          EXECUTION_TYPE_REAL,
-          commandProps.kclManager
-        ).catch(reportRejection)
       },
     },
     {

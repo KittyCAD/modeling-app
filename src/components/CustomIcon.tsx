@@ -7,7 +7,10 @@ import {
 export const FUNCTION_ICON_PATH =
   'M9.99998 16.8453L9.31892 16.4521L9.0555 16.8971C8.97062 17.0405 8.87053 17.1695 8.75847 17.2832L9.99998 18L16.9282 14V6L14.0326 4.32824C14.0825 4.56025 14.0917 4.80486 14.0536 5.05265L13.9911 5.45895L15.9282 6.57735V13.4227L9.99998 16.8453ZM4.07178 6.57735L9.99382 3.15826L9.99525 3.15467L11.0151 2.58608L9.99998 2L3.07178 6V14L5.20458 15.2314C5.2906 14.9153 5.45497 14.6152 5.70024 14.3628L4.07178 13.4227V6.57735ZM12.1154 3.455C11.9554 3.425 11.7904 3.42 11.6204 3.44C11.1504 3.52 10.7504 3.76 10.4204 4.16C10.0904 4.53 9.83039 5.14 9.64039 5.99L9.35539 7.52C9.35539 7.53 9.10039 7.535 8.59039 7.535C8.08039 7.535 7.81039 7.545 7.78039 7.565C7.74039 7.585 7.69539 7.705 7.64539 7.925C7.59539 8.145 7.59039 8.28 7.63039 8.33L7.69039 8.375H8.44039C8.94039 8.375 9.19039 8.38 9.19039 8.39L8.35039 12.86C7.99039 14.69 7.77039 15.705 7.69039 15.905C7.59039 16.135 7.47039 16.285 7.33039 16.355H7.31539L7.22539 16.37C7.09539 16.37 7.03039 16.36 7.03039 16.34C7.04039 16.33 7.06039 16.315 7.09039 16.295C7.23039 16.205 7.35039 16.07 7.45039 15.89C7.64039 15.49 7.61539 15.18 7.37539 14.96C7.11539 14.72 6.78539 14.695 6.38539 14.885C6.29539 14.935 6.20539 15 6.11539 15.08C6.03539 15.17 5.97039 15.26 5.92039 15.35C5.84039 15.51 5.80039 15.695 5.80039 15.905C5.80039 16.215 5.90539 16.48 6.11539 16.7C6.23539 16.8 6.33039 16.865 6.40039 16.895C6.65039 17.025 6.91539 17.085 7.19539 17.075C7.35539 17.065 7.53039 17.015 7.72039 16.925C7.92039 16.815 8.10539 16.67 8.27539 16.49C8.81539 15.94 9.24539 14.97 9.56539 13.58C9.66539 13.19 9.90039 11.995 10.2704 9.995L10.5854 8.375H11.4704L12.3704 8.36L12.4154 8.315C12.4454 8.285 12.4854 8.175 12.5354 7.985L12.5954 7.685L12.5804 7.64C12.5304 7.57 12.2004 7.535 11.5904 7.535C11.0204 7.535 10.7354 7.525 10.7354 7.505C10.7354 7.495 10.8004 7.165 10.9304 6.515C11.1204 5.485 11.2504 4.825 11.3204 4.535C11.3404 4.445 11.3804 4.37 11.4404 4.31C11.4904 4.24 11.5454 4.195 11.6054 4.175C11.6554 4.145 11.7254 4.13 11.8154 4.13L11.9504 4.16C11.9504 4.18 11.9304 4.195 11.8904 4.205C11.7504 4.305 11.6354 4.44 11.5454 4.61C11.3554 5.01 11.3804 5.32 11.6204 5.54C11.8804 5.78 12.2104 5.805 12.6104 5.615C12.7004 5.565 12.7904 5.5 12.8804 5.42C12.9604 5.33 13.0254 5.24 13.0754 5.15C13.1554 4.99 13.1954 4.805 13.1954 4.595C13.1954 4.415 13.1554 4.245 13.0754 4.085C12.8954 3.725 12.5754 3.515 12.1154 3.455Z'
 
-function createConstraintIcon(name: ConstraintIconName) {
+function createConstraintIcon(
+  name: ConstraintIconName,
+  ariaLabel: string = name
+) {
   const pathData = constraintIconPaths[name]
 
   return (
@@ -15,7 +18,7 @@ function createConstraintIcon(name: ConstraintIconName) {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label={name}
+      aria-label={ariaLabel}
     >
       <path d={pathData} fill="currentColor" />
     </svg>
@@ -574,7 +577,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  coincident: createConstraintIcon('coincident'),
+  coincident: createConstraintIcon('Coincident'),
   concentric: (
     <svg
       viewBox="0 0 20 20"
@@ -712,7 +715,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  equal: createConstraintIcon('equal'),
+  equal: createConstraintIcon('LinesEqualLength'),
   exclamationMark: (
     <svg
       viewBox="0 0 20 20"
@@ -1069,7 +1072,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  horizontal: createConstraintIcon('horizontal'),
+  horizontal: createConstraintIcon('Horizontal'),
   horizontalDash: (
     <svg
       viewBox="0 0 20 20"
@@ -1085,21 +1088,9 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  horizontalDimension: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="horizontal dimension"
-      transform="translate(-10, 5) rotate(45 10 10)"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
-        fill="currentColor"
-      />
-    </svg>
+  horizontalDimension: createConstraintIcon(
+    'HorizontalDistance',
+    'horizontal dimension'
   ),
   horizontalVertical: (
     <svg
@@ -1178,6 +1169,19 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M13.8189 4.34932L4.21895 13.9493L3.51184 13.2422L13.1118 3.64221L13.8189 4.34932ZM7.17419 15.6636L6.48848 16.3493L5.78137 15.6422L6.46709 14.9564L7.17419 15.6636ZM9.57419 13.2636L8.20276 14.635L7.49566 13.9279L8.86709 12.5564L9.57419 13.2636ZM12.0932 13.0433C12.3807 12.8662 12.6223 12.6217 12.796 12.3319L15.8739 15.4098L15.1668 16.1169L12.0932 13.0433ZM14.3742 8.46355L13.0028 9.83498L12.2957 9.12787L13.6671 7.75644L14.3742 8.46355ZM16.0885 6.74927L15.4028 7.43498L14.6957 6.72787L15.3814 6.04216L16.0885 6.74927ZM10.9933 12.754C11.8217 12.754 12.4933 12.0825 12.4933 11.254C12.4933 10.4256 11.8217 9.75404 10.9933 9.75404C10.1649 9.75404 9.49329 10.4256 9.49329 11.254C9.49329 12.0825 10.1649 12.754 10.9933 12.754Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  joinSurfaces: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="join surfaces"
+    >
+      <path
+        d="M9.22461 2.35938L13.2246 4.36816L13.5 4.50684V13.1162L13.2344 13.2568L6.73438 16.7002L6 17.0898V7.89746L6.26855 7.75781L8.45996 6.61523L8.5 2.80176L8.50781 2L9.22461 2.35938ZM7 8.50391V15.4268L12.5 12.5137V5.63965L7 8.50391Z"
         fill="currentColor"
       />
     </svg>
@@ -1521,7 +1525,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  parallel: createConstraintIcon('parallel'),
+  parallel: createConstraintIcon('Parallel'),
   patternCircular2d: (
     <svg
       viewBox="0 0 20 20"
@@ -1594,7 +1598,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  perpendicular: createConstraintIcon('perpendicular'),
+  perpendicular: createConstraintIcon('Perpendicular'),
   person: (
     <svg
       viewBox="0 0 20 20"
@@ -1806,6 +1810,16 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  share: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.64645 3.85355L10 3.5L10.3536 3.85355L13.8536 7.35355L13.1464 8.06066L10.5 5.41421L10.5 13.2071H9.5L9.5 5.41421L6.85355 8.06066L6.14645 7.35355L9.64645 3.85355ZM4 9.49711H4.99988V14.1638H5V15.4971H15V10.4971H14.9999V9.49711H15H16V10.4971V15.4971V16.4971H15H5H4V15.4971V10.4971V9.49711Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   shell: (
     <svg
       viewBox="0 0 20 20"
@@ -1924,7 +1938,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  tangent: createConstraintIcon('tangent'),
+  tangent: createConstraintIcon('Tangent'),
   text: (
     <svg
       viewBox="0 0 20 20"
@@ -1982,22 +1996,10 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  vertical: createConstraintIcon('vertical'),
-  verticalDimension: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="vertical dimension"
-      transform="translate(5, -10) rotate(-45 10 10)"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
-        fill="currentColor"
-      />
-    </svg>
+  vertical: createConstraintIcon('Vertical'),
+  verticalDimension: createConstraintIcon(
+    'VerticalDistance',
+    'vertical dimension'
   ),
   xAbsolute: (
     <svg

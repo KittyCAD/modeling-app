@@ -2,7 +2,7 @@
 // A sphere is a primitive shape defined by its diameter.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 diameter = 10
@@ -21,5 +21,4 @@ profile = sketch(on = sketch) {
 
 region001 = region(segments = [profile.line1, profile.arc2])
 // revolve the profile to create the sphere
-wedge = revolve(region001, axis = X, angle = 360.0)
-
+sphere = revolve(region001, axis = X, angle = 360.0)

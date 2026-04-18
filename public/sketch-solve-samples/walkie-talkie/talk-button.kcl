@@ -1,7 +1,7 @@
 // Walkie talkie talk button
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import width, thickness, talkButtonSideLength, talkButtonHeight from "parameters.kcl"
@@ -36,4 +36,3 @@ extrude(region001, length = talkButtonHeight)
        ],
      )
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)
-

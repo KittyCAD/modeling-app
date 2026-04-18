@@ -2,7 +2,7 @@
 // Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
 // Categories: Automotive, Aerospace
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters
 bladeCount = 12 // number of blades
@@ -28,9 +28,12 @@ leadRect = sketch(on = leadSketch) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
   coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
   horizontal(line1)
   vertical(line2)
   horizontal(line3)
+  distance([line4.start, line4.end]) == bladeChord
+  distance([line3.start, line3.end]) == bladeThickness
 }
 
 // tip rectangle (trailing edge, rotated by sweepDeg)
@@ -44,9 +47,12 @@ trailRect = sketch(on = trailSketch) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
   coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
   horizontal(line1)
   vertical(line2)
   horizontal(line3)
+  distance([line2.start, line2.end]) == bladeChord
+  distance([line3.start, line3.end]) == bladeThickness
 }
 
 // loft one curved blade
@@ -72,7 +78,8 @@ blades = patternCircular3d(
 // back-plate disk
 diskSketch = startSketchOn(XY)
 diskCircle = sketch(on = diskSketch) {
-  circle1 = circle(start = [var 75mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 112.5mm, var 0mm], center = [var -37.5mm, var 0mm])
+  diameter(circle1) == od
 }
 region001 = region(segments = [diskCircle.circle1])
 backPlate = extrude(region001, length = -baseThick)
@@ -80,7 +87,8 @@ backPlate = extrude(region001, length = -baseThick)
 // hub solid
 hubSketch = startSketchOn(backPlate, face = END)
 hubCircle = sketch(on = hubSketch) {
-  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 30mm, var 0mm], center = [var -10mm, var 0mm])
+  diameter(circle1) == hubOd
 }
 region002 = region(segments = [hubCircle.circle1])
 hub = extrude(region002, length = hubHeight)
@@ -88,11 +96,11 @@ hub = extrude(region002, length = hubHeight)
 // bore hole
 boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
 boreCircle = sketch(on = boreSketch) {
-  circle1 = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 22.5mm, var 0mm], center = [var -7.5mm, var 0mm])
+  diameter(circle1) == boreDia
 }
 region003 = region(segments = [boreCircle.circle1])
 bore = extrude(region003, length = baseThick * 2 + hubHeight + 5)
 
 // final impeller
 impeller = subtract(hub, tools = [bore])
-

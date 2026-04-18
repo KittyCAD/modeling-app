@@ -66,4 +66,3 @@ railTslot(railHeight, length = frameWidth)
 // Generate a pair of rails along the Y direction
 railTslot(railHeight, length = frameLength - (2 * railHeight))
   |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [-1, 0, 0])
-

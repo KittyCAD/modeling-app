@@ -3,7 +3,7 @@
 // Categories: Computer Hardware
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define the dimensions
 // Width fits standard 19” rack, height is 1U, depth is variable
@@ -199,4 +199,3 @@ holeShapes = startProfile(
   |> patternLinear2d(instances = 3, distance = holeVerticalDistance, axis = [0, 1])
   |> patternLinear2d(instances = 2, distance = faceplateWidth + supportWidth, axis = [1, 0])
 holeVoid = extrude(holeShapes, length = -supportThickness)
-

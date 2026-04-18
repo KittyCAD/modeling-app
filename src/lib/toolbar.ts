@@ -13,17 +13,50 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  getSelectedEqualLengthConstraintInput,
   getSelectedFixedConstraintInput,
   getSelectedTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
+export type ToolbarModeName =
+  | 'modeling'
+  | 'sketching'
+  | 'sketchSolve'
+  | 'onlyCancel'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
   items: (ToolbarItem | ToolbarDropdown | 'break')[]
 }
+
+// Load bearing logic for determining the items in the toolbar
+// Based on the state of the modeling machine determine what toolbar should be rendered
+export const modelingMachineStateToToolbarModeName = (
+  state: StateFrom<typeof modelingMachine>
+): ToolbarModeName => {
+  let toolbarConfigurationName: ToolbarModeName = 'modeling'
+  if (state.matches('Sketch no face')) {
+    toolbarConfigurationName = 'onlyCancel'
+  } else if (
+    state.matches('sketchSolveMode') ||
+    state.matches('animating to sketch solve mode')
+  ) {
+    // Gotcha: match on the animating state otherwise you see a different toolbar
+    toolbarConfigurationName = 'sketchSolve'
+  } else if (state.matches('Sketch')) {
+    toolbarConfigurationName = 'sketching'
+  }
+  return toolbarConfigurationName
+}
+
+export const isSketchToolbarTransitioning = (
+  state: StateFrom<typeof modelingMachine>
+): boolean =>
+  state.matches('animating to plane') ||
+  state.matches('animating to existing sketch') ||
+  state.matches('animating to sketch solve mode') ||
+  state.matches('animating to existing sketch solve')
 
 export type ToolbarDropdown = {
   id: string
@@ -36,6 +69,7 @@ export interface ToolbarItemCallbackProps {
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
   isActive: boolean
+  keepSelection: boolean
 }
 
 export type ToolbarItem = {
@@ -87,10 +121,36 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
+const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
+
 export const useToolbarConfig = () => {
   const { commands } = useApp()
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
+      onlyCancel: {
+        check: (state) => !state.matches('Sketch no face'),
+        items: [
+          {
+            id: 'sketch-exit',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Cancel',
+              }),
+            disableHotkey: (state) =>
+              !(
+                state.matches({ Sketch: 'SketchIdle' }) ||
+                state.matches('Sketch no face')
+              ),
+            icon: 'arrowShortLeft',
+            status: 'available',
+            title: 'Cancel Sketch',
+            showTitle: true,
+            hotkey: 'Esc',
+            description: 'Cancel the current sketch.',
+            links: [],
+          },
+        ],
+      },
       modeling: {
         check: (state) =>
           !(
@@ -458,13 +518,23 @@ export const useToolbarConfig = () => {
                 ],
               },
               {
-                id: 'join',
-                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
-                onClick: () => {},
-                status: 'unavailable',
-                title: 'Join',
-                description: 'Join surfaces together',
-                links: [],
+                id: 'join-surfaces',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Join Surfaces', groupId: 'modeling' },
+                  }),
+                status: 'available',
+                title: 'Join Surfaces',
+                description: 'Join surfaces together.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-surface-joinSurfaces'
+                    ),
+                  },
+                ],
               },
               {
                 id: 'delete-face',
@@ -504,7 +574,7 @@ export const useToolbarConfig = () => {
                 hotkey: 'O',
                 icon: 'plane',
                 status: 'available',
-                title: 'Offset plane',
+                title: 'Offset Plane',
                 description: 'Create a plane parallel to an existing plane.',
                 links: [
                   {
@@ -520,7 +590,7 @@ export const useToolbarConfig = () => {
                 onClick: () =>
                   console.error('Plane through points not yet implemented'),
                 status: 'unavailable',
-                title: '3-point plane',
+                title: '3-Point Plane',
                 description: 'Create a plane from three points.',
                 links: [],
               },
@@ -559,7 +629,7 @@ export const useToolbarConfig = () => {
             status: 'available',
             disabled: () => !isDesktop(),
             title: 'Insert',
-            description: 'Insert from a file in the current project directory',
+            description: 'Insert from a file in the current project directory.',
             links: [
               {
                 label: 'API docs',
@@ -840,10 +910,10 @@ export const useToolbarConfig = () => {
               ),
             icon: 'arrowShortLeft',
             status: 'available',
-            title: 'Exit sketch',
+            title: 'Exit Sketch',
             showTitle: true,
             hotkey: 'Esc',
-            description: 'Exit the current sketch',
+            description: 'Exit the current sketch.',
             links: [],
           },
           'break',
@@ -865,7 +935,7 @@ export const useToolbarConfig = () => {
             title: 'Line',
             hotkey: (state) =>
               state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
-            description: 'Start drawing straight lines',
+            description: 'Start drawing straight lines.',
             links: [],
             isActive: (state) => state.matches({ Sketch: 'Line tool' }),
           },
@@ -887,13 +957,13 @@ export const useToolbarConfig = () => {
                   }),
                 icon: 'arc',
                 status: 'available',
-                title: 'Three-point Arc',
+                title: 'Three-Point Arc',
                 hotkey: (state) =>
                   state.matches({ Sketch: 'Arc three point tool' })
                     ? ['Esc', 'T']
                     : 'T',
                 showTitle: false,
-                description: 'Draw a circular arc defined by three points',
+                description: 'Draw a circular arc defined by three points.',
                 links: [
                   {
                     label: 'GitHub issue',
@@ -948,7 +1018,7 @@ export const useToolbarConfig = () => {
                     ? ['Esc', 'A']
                     : 'A',
                 description:
-                  'Start drawing an arc tangent to the current segment',
+                  'Start drawing an arc tangent to the current segment.',
                 links: [],
                 isActive: (state) =>
                   state.matches({ Sketch: 'Tangential arc to' }),
@@ -972,13 +1042,13 @@ export const useToolbarConfig = () => {
                   }),
                 icon: 'circle',
                 status: 'available',
-                title: 'Center circle',
+                title: 'Center Circle',
                 disabled: (state) => state.matches('Sketch no face'),
                 isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
                 hotkey: (state) =>
                   state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
                 showTitle: false,
-                description: 'Start drawing a circle from its center',
+                description: 'Start drawing a circle from its center.',
                 links: [],
               },
               {
@@ -996,7 +1066,7 @@ export const useToolbarConfig = () => {
                   }),
                 icon: 'circle',
                 status: 'available',
-                title: '3-point circle',
+                title: '3-Point Circle',
                 isActive: (state) =>
                   state.matches({ Sketch: 'Circle three point tool' }),
                 hotkey: (state) =>
@@ -1004,7 +1074,7 @@ export const useToolbarConfig = () => {
                     ? ['Alt+C', 'Esc']
                     : 'Alt+C',
                 showTitle: false,
-                description: 'Draw a circle defined by three points',
+                description: 'Draw a circle defined by three points.',
                 links: [],
               },
             ],
@@ -1026,12 +1096,12 @@ export const useToolbarConfig = () => {
                 icon: 'rectangle',
                 status: 'available',
                 disabled: (state) => state.matches('Sketch no face'),
-                title: 'Corner rectangle',
+                title: 'Corner Rectangle',
                 hotkey: (state) =>
                   state.matches({ Sketch: 'Rectangle tool' })
                     ? ['Esc', 'R']
                     : 'R',
-                description: 'Start drawing a rectangle',
+                description: 'Start drawing a rectangle.',
                 links: [],
                 isActive: (state) =>
                   state.matches({ Sketch: 'Rectangle tool' }),
@@ -1052,8 +1122,8 @@ export const useToolbarConfig = () => {
                 icon: 'rectangle',
                 status: 'available',
                 disabled: (state) => state.matches('Sketch no face'),
-                title: 'Center rectangle',
-                description: 'Start drawing a rectangle from its center',
+                title: 'Center Rectangle',
+                description: 'Start drawing a rectangle from its center.',
                 links: [],
                 hotkey: (state) =>
                   state.matches({ Sketch: 'Center Rectangle tool' })
@@ -1071,7 +1141,7 @@ export const useToolbarConfig = () => {
             status: 'kcl-only',
             title: 'Polygon',
             showTitle: false,
-            description: 'Draw a polygon with a specified number of sides',
+            description: 'Draw a polygon with a specified number of sides.',
             links: [
               {
                 label: 'KCL docs',
@@ -1089,7 +1159,7 @@ export const useToolbarConfig = () => {
             status: 'kcl-only',
             title: 'Mirror',
             showTitle: false,
-            description: 'Mirror sketch entities about a line or axis',
+            description: 'Mirror sketch entities about a line or axis.',
             links: [
               {
                 label: 'KCL docs',
@@ -1132,7 +1202,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Length',
                 showTitle: false,
-                description: 'Constrain the length of a straight segment',
+                description: 'Constrain the length of a straight segment.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1147,7 +1218,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Angle',
                 showTitle: false,
-                description: 'Constrain the angle between two segments',
+                description: 'Constrain the angle between two segments.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1163,7 +1235,8 @@ export const useToolbarConfig = () => {
                 title: 'Vertical',
                 showTitle: false,
                 description:
-                  'Constrain a straight segment to be vertical relative to the sketch',
+                  'Constrain a straight segment to be vertical relative to the sketch.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1179,7 +1252,8 @@ export const useToolbarConfig = () => {
                 title: 'Horizontal',
                 showTitle: false,
                 description:
-                  'Constrain a straight segment to be horizontal relative to the sketch',
+                  'Constrain a straight segment to be horizontal relative to the sketch.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1194,7 +1268,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Parallel',
                 showTitle: false,
-                description: 'Constrain two segments to be parallel',
+                description: 'Constrain two segments to be parallel.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1207,10 +1282,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain equal length' }),
                 status: 'available',
-                title: 'Equal length',
+                title: 'Equal',
                 showTitle: false,
                 description:
-                  'Constrain two or more segments to have equal length',
+                  'Constrain two or more segments to have equal length.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1223,10 +1299,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain horizontal distance' }),
                 status: 'available',
-                title: 'Horizontal distance',
+                title: 'Horizontal Distance',
                 showTitle: false,
                 description:
-                  'Constrain the horizontal distance between two points',
+                  'Constrain the horizontal distance between two points.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1239,10 +1316,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain vertical distance' }),
                 status: 'available',
-                title: 'Vertical distance',
+                title: 'Vertical Distance',
                 showTitle: false,
                 description:
-                  'Constrain the vertical distance between two points',
+                  'Constrain the vertical distance between two points.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1257,7 +1335,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Absolute X',
                 showTitle: false,
-                description: 'Constrain the x-coordinate of a point',
+                description: 'Constrain the x-coordinate of a point.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1272,7 +1351,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Absolute Y',
                 showTitle: false,
-                description: 'Constrain the y-coordinate of a point',
+                description: 'Constrain the y-coordinate of a point.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1285,10 +1365,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain perpendicular distance' }),
                 status: 'available',
-                title: 'Perpendicular distance',
+                title: 'Perpendicular Distance',
                 showTitle: false,
                 description:
-                  'Constrain the perpendicular distance between two segments',
+                  'Constrain the perpendicular distance between two segments.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1301,10 +1382,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain horizontally align' }),
                 status: 'available',
-                title: 'Horizontally align',
+                title: 'Horizontally Align',
                 showTitle: false,
                 description:
-                  'Align the ends of two or more segments horizontally',
+                  'Align the ends of two or more segments horizontally.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1317,10 +1399,11 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain vertically align' }),
                 status: 'available',
-                title: 'Vertically align',
+                title: 'Vertically Align',
                 showTitle: false,
                 description:
-                  'Align the ends of two or more segments vertically',
+                  'Align the ends of two or more segments vertically.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1335,7 +1418,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Snap to X',
                 showTitle: false,
-                description: 'Snap a point to an x-coordinate',
+                description: 'Snap a point to an x-coordinate.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1350,7 +1434,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Snap to Y',
                 showTitle: false,
-                description: 'Snap a point to a y-coordinate',
+                description: 'Snap a point to a y-coordinate.',
+                extraNote: constraintsExtraNote,
                 links: [],
               },
               {
@@ -1363,9 +1448,9 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend }) =>
                   modelingSend({ type: 'Constrain remove constraints' }),
                 status: 'available',
-                title: 'Remove constraints',
+                title: 'Remove Constraints',
                 showTitle: false,
-                description: 'Remove all constraints from the segment',
+                description: 'Remove all constraints from the segment.',
                 links: [],
               },
             ],
@@ -1383,9 +1468,9 @@ export const useToolbarConfig = () => {
               }),
             icon: 'arrowShortLeft',
             status: 'available',
-            title: 'Exit sketch',
+            title: 'Exit Sketch',
             showTitle: true,
-            description: 'Exit the current sketch',
+            description: 'Exit the current sketch.',
             links: [],
           },
           'break',
@@ -1404,7 +1489,7 @@ export const useToolbarConfig = () => {
             status: 'available',
             title: 'Line',
             hotkey: 'L',
-            description: 'Start drawing straight lines',
+            description: 'Start drawing straight lines.',
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
@@ -1424,8 +1509,8 @@ export const useToolbarConfig = () => {
             icon: 'oneDot',
             status: 'available',
             title: 'Point',
-            hotkey: 'P',
-            description: 'Start drawing straight points',
+            hotkey: '.',
+            description: 'Start drawing straight points.',
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
@@ -1444,8 +1529,9 @@ export const useToolbarConfig = () => {
                   }),
             icon: 'circle',
             status: 'available',
-            title: 'Center circle',
-            description: 'Draw a circle from a center point and radius',
+            title: 'Center Circle',
+            hotkey: 'C',
+            description: 'Draw a circle from a center point and radius.',
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
@@ -1469,7 +1555,7 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Center Arc',
                 hotkey: 'A',
-                description: 'Draw an arc by center and two endpoints',
+                description: 'Draw an arc by center and two endpoints.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1489,7 +1575,8 @@ export const useToolbarConfig = () => {
                 icon: 'arc',
                 status: 'available',
                 title: '3-Point Arc',
-                description: 'Draw an arc from start, end, and a third point',
+                hotkey: 'Alt+A',
+                description: 'Draw an arc from start, end, and a third point.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1510,7 +1597,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Tangential Arc',
                 hotkey: 'Shift+A',
-                description: 'Draw an arc tangent to an existing line endpoint',
+                description:
+                  'Draw an arc tangent to an existing line endpoint.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1530,9 +1618,9 @@ export const useToolbarConfig = () => {
             icon: 'trimTool',
             status: 'experimental',
             title: 'Trim',
-            hotkey: 'T',
+            hotkey: 'M',
             description:
-              'Draw a trimming line through parts of segments to be removed',
+              'Draw a trimming line through parts of segments to be removed.',
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
@@ -1555,8 +1643,8 @@ export const useToolbarConfig = () => {
                 icon: 'rectangle',
                 status: 'available',
                 title: 'Corner Rectangle',
-                hotkey: 'Shift+R',
-                description: 'Start drawing a rectangle',
+                hotkey: 'R',
+                description: 'Start drawing a rectangle.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1576,8 +1664,8 @@ export const useToolbarConfig = () => {
                 icon: 'rectangleCenter',
                 status: 'available',
                 title: 'Center Rectangle',
-                hotkey: 'Alt+R',
-                description: 'Start drawing a rectangle from its center',
+                hotkey: 'Shift+R',
+                description: 'Start drawing a rectangle from its center.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1597,7 +1685,8 @@ export const useToolbarConfig = () => {
                 icon: 'rectangleAngled',
                 status: 'available',
                 title: 'Angled Rectangle',
-                description: 'Draw a rotated rectangle with three clicks',
+                hotkey: 'Alt+R',
+                description: 'Draw a rotated rectangle with three clicks.',
                 links: [],
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
@@ -1608,23 +1697,26 @@ export const useToolbarConfig = () => {
           'break',
           {
             id: 'coincident',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'coincident',
+                keepSelection,
               }),
             icon: 'coincident',
             status: 'available',
             title: 'Coincident',
-            hotkey: 'C',
-            description: 'Constrain points or curves to be coincident',
+            hotkey: 'X',
+            description: 'Constrain points or curves to be coincident.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Tangent',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Tangent',
+                keepSelection,
               }),
             icon: 'tangent',
             status: 'available',
@@ -1635,87 +1727,106 @@ export const useToolbarConfig = () => {
                 ? 'Select a line and an arc, or two arcs, to add a tangent constraint.'
                 : undefined,
             title: 'Tangent',
-            hotkey: 'Shift+T',
+            hotkey: 'T',
             description:
               'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Parallel',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Parallel',
+                keepSelection,
               }),
             icon: 'parallel',
             status: 'available',
             title: 'Parallel',
-            hotkey: 'Shift+P',
-            description: 'Constrain lines or curves to be parallel',
+            hotkey: 'B',
+            description: 'Constrain lines or curves to be parallel.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Perpendicular',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Perpendicular',
+                keepSelection,
               }),
             icon: 'perpendicular',
             status: 'available',
             title: 'Perpendicular',
-            hotkey: 'R',
-            description: 'Constrain lines or curves to be perpendicular',
+            hotkey: 'Shift+B',
+            description: 'Constrain lines or curves to be perpendicular.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'equalLength',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
-                type: 'LinesEqualLength',
+                type: 'EqualLength',
+                keepSelection,
               }),
             icon: 'equal',
             status: 'available',
-            title: 'Equal Length',
+            disabled: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedEqualLengthConstraintInput(state) === null
+                ? 'Select two or more lines, or two or more arcs and circles, to add an equal constraint.'
+                : undefined,
+            title: 'Equal',
             hotkey: 'E',
-            description: 'Constrain lines to have equal length',
+            description:
+              'Constrain lines to have equal length, or arcs and circles to have equal radius.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'vertical',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Vertical',
+                keepSelection,
               }),
             icon: 'vertical',
             status: 'available',
             title: 'Vertical',
             hotkey: 'V',
-            description: 'Constrain lines to be vertical',
+            description: 'Constrain lines to be vertical.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Horizontal',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Horizontal',
+                keepSelection,
               }),
             icon: 'horizontal',
             status: 'available',
             title: 'Horizontal',
             hotkey: 'H',
-            description: 'Constrain lines to be horizontal',
+            description: 'Constrain lines to be horizontal.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Fixed',
-            onClick: ({ modelingSend }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Fixed',
+                keepSelection,
               }),
             icon: 'fix',
             status: 'available',
@@ -1728,50 +1839,57 @@ export const useToolbarConfig = () => {
             title: 'Fixed',
             hotkey: 'F',
             description:
-              'Lock selected points to their current x and y positions',
+              'Lock selected points to their current x and y positions.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'Dimension',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'Dimension',
+                keepSelection,
               }),
             icon: 'dimension',
             status: 'available',
             title: 'Dimension',
             hotkey: 'D',
             description:
-              'Constrain distance between points, length of lines, or radius of arcs',
+              'Constrain distance between points, length of lines, or radius of arcs.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'HorizontalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'HorizontalDistance',
+                keepSelection,
               }),
             icon: 'horizontalDimension',
             status: 'available',
             title: 'Horizontal Distance',
-            hotkey: 'Shift+D',
-            description: 'Constrain horizontal distance between two points',
+            hotkey: 'Alt+D',
+            description: 'Constrain horizontal distance between two points.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
           {
             id: 'VerticalDistance',
-            onClick: ({ modelingSend, isActive }) =>
+            onClick: ({ modelingSend, keepSelection }) =>
               modelingSend({
                 type: 'VerticalDistance',
+                keepSelection,
               }),
             icon: 'verticalDimension',
             status: 'available',
             title: 'Vertical Distance',
-            hotkey: 'Shift+V',
-            description: 'Constrain vertical distance between two points',
+            hotkey: 'Shift+D',
+            description: 'Constrain vertical distance between two points.',
+            extraNote: constraintsExtraNote,
             links: [],
             isActive: (state) => false,
           },
@@ -1784,25 +1902,10 @@ export const useToolbarConfig = () => {
             icon: 'construction',
             status: 'available',
             title: 'Construction',
-            description: 'Toggle construction geometry on selected segments',
+            hotkey: 'Q',
+            description: 'Toggle construction geometry on selected segments.',
             links: [],
             isActive: (state) => false,
-          },
-          {
-            id: 'show-constraints',
-            onClick: ({ modelingSend }) =>
-              modelingSend({
-                type: 'toggle non-visual constraints',
-              }),
-            icon: 'eyeOpen',
-            status: 'available',
-            title: 'Show constraints',
-            description:
-              'Toggle visibility for sketch constraints that do not have their own UI yet.',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.showNonVisualConstraints,
           },
         ],
       },

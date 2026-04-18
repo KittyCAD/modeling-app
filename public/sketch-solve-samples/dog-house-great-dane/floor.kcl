@@ -2,7 +2,7 @@
 // Floor slats and base layout for the dog house.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import and define parameters
 import * from "dimensions.kcl"
@@ -34,4 +34,3 @@ floorSlats = patternLinear3d(
   distance = floorSlatActualPitch,
   instances = floorSlatCount,
 ) // Fill along Y with uniform pitch
-

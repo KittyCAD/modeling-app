@@ -8,7 +8,7 @@
 /// Given a list like `[a, b, c]`, and a function like `f`, returns
 /// `[f(a), f(b), f(c)]`
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// r = 10 // radius
 /// fn drawCircle(@id) {
 ///   return startSketchOn(XY)
@@ -24,7 +24,7 @@
 /// )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// r = 10 // radius
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
@@ -46,7 +46,7 @@ export fn map(
 /// Take a starting value. Then, for each element of an array, calculate the next value,
 /// using the previous value and the element.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// // This function adds two numbers.
 /// fn add(@a, accum) { return a + accum }
 ///
@@ -69,7 +69,7 @@ export fn map(
 /// assert(sum([1, 2, 3]), isEqualTo = 6, tolerance = 0.1, error = "1 + 2 + 3 summed is 6")
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// // This example works just like the previous example above, but it uses
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
@@ -81,7 +81,7 @@ export fn map(
 /// assert(sum, isEqualTo = 6, tolerance = 0.1, error = "1 + 2 + 3 summed is 6")
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Declare a function that sketches a decagon.
 /// fn decagon(@radius) {
 ///   // Each side of the decagon is turned this many radians from the previous angle.
@@ -139,7 +139,7 @@ export fn reduce(
 ///
 /// Returns a new array with the element appended.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr = [1, 2, 3]
 /// new_arr = push(arr, item = 4)
 /// assert(new_arr[3], isEqualTo = 4, tolerance = 0.1, error = "4 was added to the end of the array")
@@ -156,7 +156,7 @@ export fn push(
 ///
 /// Returns a new array with the last element removed.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr = [1, 2, 3, 4]
 /// new_arr = pop(arr)
 /// assert(new_arr[0], isEqualTo = 1, tolerance = 0.00001, error = "1 is the first element of the array")
@@ -173,7 +173,7 @@ export fn pop(
 ///
 /// Returns a new array with the all the elements of the first array followed by all the elements of the second array.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr1 = [10, 20, 30]
 /// arr2 = [40, 50, 60]
 /// newArr = concat(arr1, items = arr2)
@@ -186,7 +186,7 @@ export fn pop(
 /// assert(count(newArr), isEqualTo = 6, tolerance = 0.00001)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// // Concatenating an empty array has no effect.
 /// newArr = concat([10, 20, 30], items = [])
 /// assert(newArr[0], isEqualTo = 10, tolerance = 0.00001)
@@ -214,14 +214,14 @@ export fn concat(
 /// It is an error to omit both `start` and `end`. Arrays are immutable, so
 /// there's no need to copy the whole array.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// s = slice([1, 2, 3, 4, 5], start = 1, end = 3)
 /// assert(s[0], isEqualTo = 2)
 /// assert(s[1], isEqualTo = 3)
 /// assert(count(s), isEqualTo = 2)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// s = slice([1, 2, 3, 4, 5], end = -2)
 /// assert(s[0], isEqualTo = 1)
 /// assert(s[1], isEqualTo = 2)
@@ -229,7 +229,7 @@ export fn concat(
 /// assert(count(s), isEqualTo = 3)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// s = slice([1, 2, 3, 4, 5], start = -2)
 /// assert(s[0], isEqualTo = 4)
 /// assert(s[1], isEqualTo = 5)
@@ -250,7 +250,7 @@ export fn slice(
 /// Returns a new array where any nested arrays are expanded into the top-level
 /// array. This only flattens one level deep.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr = [1, [2, 3], 4]
 /// flat = flatten(arr)
 /// assert(flat[0], isEqualTo = 1)
@@ -259,7 +259,7 @@ export fn slice(
 /// assert(flat[3], isEqualTo = 4)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr = [[1, 2], [3, [4]]]
 /// flat = flatten(arr)
 /// // Only one level of flattening occurs.
@@ -275,7 +275,7 @@ export fn flatten(
 ): [any] {}
 
 /// Find the number of elements in an array.
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// arr1 = [10, 20, 30]
 /// assert(count(arr1), isEqualTo = 3)
 /// ```

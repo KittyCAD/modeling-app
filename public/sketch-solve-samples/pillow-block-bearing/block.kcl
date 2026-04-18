@@ -2,7 +2,7 @@
 // The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Import Parameters
 import * from "parameters.kcl"
@@ -56,4 +56,3 @@ fn counterbore(@holePosition) {
 
 // Place a counterbored hole at each bolt hole position
 map(holePositions, f = counterbore)
-

@@ -1,0 +1,118 @@
+// Primary Propeller Nose Cone
+// Streamlines airflow over the hub and reduces drag at the propeller center.
+// Categories: Aerospace
+
+noseConeProfileSketch = sketch(on = YZ) {
+  // Main perimeter segments
+  axisDropLine = line(start = [var 0mm, var 0mm], end = [var 0mm, var -30mm])
+  upperTaperLine = line(start = [var 0mm, var -30mm], end = [var 49mm, var -58mm])
+  shoulderFlatLine = line(start = [var 49mm, var -58mm], end = [var 70mm, var -58mm])
+  shoulderDropLine = line(start = [var 70mm, var -58mm], end = [var 70mm, var -82mm])
+  baseRadiusReferenceLine = line(start = [var -180mm, var 0mm], end = [var 0mm, var 0mm])
+
+  // Nose curvature segments
+  tipCornerArc = arc(start = [var 54mm, var -98mm], end = [var 70mm, var -82mm], center = [var 54mm, var -82mm])
+  noseOuterArc = arc(start = [var -180mm, var 0mm], end = [var 54mm, var -98mm], center = [var 54mm, var 230.37mm])
+
+  // Construction helpers
+  tipOffsetHorizontal = line(start = [var 70mm, var -82mm], end = [var 54mm, var -82mm], construction = true)
+  tipOffsetVertical = line(start = [var 54mm, var -82mm], end = [var 54mm, var -98mm], construction = true)
+  outerArcCenterLine = line(start = [var 54mm, var -82mm], end = [var 54mm, var 230.37mm], construction = true)
+
+  // Connectivity
+  coincident([axisDropLine.end, upperTaperLine.start])
+  coincident([
+    upperTaperLine.end,
+    shoulderFlatLine.start
+  ])
+  coincident([
+    shoulderFlatLine.end,
+    shoulderDropLine.start
+  ])
+  coincident([
+    axisDropLine.start,
+    baseRadiusReferenceLine.end
+  ])
+  coincident([baseRadiusReferenceLine.end, ORIGIN])
+
+  coincident([
+    tipOffsetHorizontal.start,
+    shoulderDropLine.end
+  ])
+  coincident([
+    tipOffsetHorizontal.end,
+    tipOffsetVertical.start
+  ])
+  coincident([
+    tipCornerArc.center,
+    tipOffsetHorizontal.end
+  ])
+  coincident([tipCornerArc.end, shoulderDropLine.end])
+  coincident([
+    tipCornerArc.start,
+    tipOffsetVertical.end
+  ])
+
+  coincident([
+    noseOuterArc.start,
+    baseRadiusReferenceLine.start
+  ])
+  coincident([
+    noseOuterArc.end,
+    tipOffsetVertical.end
+  ])
+  coincident([
+    outerArcCenterLine.start,
+    tipCornerArc.center
+  ])
+  coincident([
+    outerArcCenterLine.end,
+    noseOuterArc.center
+  ])
+
+  // Orientation constraints
+  vertical(axisDropLine)
+  horizontal(shoulderFlatLine)
+  vertical(shoulderDropLine)
+  horizontal(baseRadiusReferenceLine)
+  horizontal(tipOffsetHorizontal)
+  vertical(tipOffsetVertical)
+  vertical(outerArcCenterLine)
+
+  // Driving dimensions
+  distance([
+  baseRadiusReferenceLine.start,
+  baseRadiusReferenceLine.end
+]) == 180
+  verticalDistance([axisDropLine.end, axisDropLine.start]) == 30
+  verticalDistance([
+  shoulderDropLine.start,
+  baseRadiusReferenceLine.end
+]) == 58
+  horizontalDistance([
+  baseRadiusReferenceLine.end,
+  shoulderDropLine.start
+]) == 70
+
+  horizontalDistance([
+  tipOffsetHorizontal.end,
+  tipOffsetHorizontal.start
+]) == 16
+  equalLength([tipOffsetVertical, tipOffsetHorizontal])
+  verticalDistance([
+  tipOffsetVertical.end,
+  baseRadiusReferenceLine.end
+]) == 98
+  horizontalDistance([
+  shoulderFlatLine.start,
+  shoulderFlatLine.end
+]) == 21
+}
+
+noseConeProfileRegion = region(segments = [
+  noseConeProfileSketch.axisDropLine,
+  noseConeProfileSketch.upperTaperLine
+])
+hide(noseConeProfileSketch)
+noseConeBody = revolve(noseConeProfileRegion, axis = X)
+  |> appearance(color = "#e88811", metalness = 10, roughness = 80)

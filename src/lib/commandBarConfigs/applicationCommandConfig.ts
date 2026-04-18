@@ -7,11 +7,12 @@ import {
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import {
   getStringAfterLastSeparator,
+  getEXTNoPeriod,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
@@ -43,7 +44,9 @@ function onSubmitKCLSampleCreation({
   isProjectNew: boolean
 }) {
   if (!kclSample) {
-    toast.error('The command could not be submitted, unable to find Zoo sample')
+    toast.error(
+      'The command could not be submitted, unable to find Zoo sample.'
+    )
     return
   }
   const pathParts = webSafePathSplit(sample)
@@ -161,7 +164,7 @@ export function createApplicationCommands({
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
           if (!kclSample || kclSample.files.length === 0) {
-            toast.error("Couldn't find KCL sample")
+            toast.error("Couldn't find KCL sample.")
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
@@ -184,24 +187,59 @@ export function createApplicationCommands({
           const fileNameWithExtension =
             getStringAfterLastSeparator(selectedFilePath)
           const fr = new FileReader()
+          const extension = getEXTNoPeriod(selectedFilePath)
+          const isKCL = extension === 'kcl'
           fr.addEventListener('load', () => {
-            app.systemIOActor.send({
-              type: SystemIOMachineEvents.importFileFromURL,
-              data: {
-                requestedProjectName: uniqueNameIfNeeded,
-                requestedFileNameWithExtension: fileNameWithExtension,
-                requestedCode:
-                  typeof fr.result === 'string'
-                    ? fr.result
-                    : '// Tried importing a binary',
-              },
-            })
+            if (isKCL) {
+              if (typeof fr.result !== 'string') {
+                toast.error(error)
+                return
+              }
+
+              app.systemIOActor.send({
+                type: SystemIOMachineEvents.importFileFromURL,
+                data: {
+                  requestedProjectName: uniqueNameIfNeeded,
+                  requestedFileNameWithExtension: fileNameWithExtension,
+                  requestedCode: fr.result,
+                },
+              })
+            } else {
+              if (!(fr.result instanceof ArrayBuffer)) {
+                toast.error(error)
+                return
+              }
+
+              const projectDirectoryPath =
+                app.systemIOActor.getSnapshot().context.projectDirectoryPath
+              const fileData = new Uint8Array(fr.result)
+
+              getNextFileName({
+                entryName: fileNameWithExtension,
+                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
+                wasmInstance,
+              })
+                .then(({ path }) => {
+                  return fsZds.writeFile(path, fileData)
+                })
+                .then(() => {
+                  app.systemIOActor.send({
+                    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                  })
+                })
+                .catch(() => toast.error(error))
+            }
           })
           fsZds
             .readFile(selectedFilePath)
             .then((content) => {
               const blob = new Blob([new Uint8Array(content)])
-              fr.readAsText(blob)
+              // Read all KCL as text, but anything else is a blob.
+              if (isKCL) {
+                fr.readAsText(blob)
+              } else {
+                fr.readAsArrayBuffer(blob)
+              }
             })
             .catch(() => toast.error(error))
         } else {
@@ -348,7 +386,7 @@ export function createApplicationCommands({
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
-            'The command could not be submitted, unable to find Zoo sample'
+            'The command could not be submitted, unable to find Zoo sample.'
           )
           return
         }
@@ -407,10 +445,6 @@ export function createApplicationCommands({
     icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       if (data) {
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
@@ -451,10 +485,6 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationKittycadWebSocketUrl(
@@ -499,10 +529,6 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationMlephantWebSocketUrl(
@@ -553,7 +579,7 @@ export function createApplicationCommands({
         // it is often used in conjunction with other commands and actions
         // that occur on app load, and we don't want to spam the user.
       } else {
-        toast.error(`No layout found with ID "${data?.layoutId}"`)
+        toast.error(`No layout found with ID "${data?.layoutId}".`)
       }
     },
     args: {
@@ -577,22 +603,15 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop()
-    ? [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-        switchEnvironmentsCommand,
-        overrideEngineCommand,
-        overrideZookeeperCommand,
-      ]
-    : [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-      ]
+  return [
+    addKCLFileToProject,
+    resetLayoutCommand,
+    setLayoutCommand,
+    createASampleDesktopOnly,
+    switchEnvironmentsCommand,
+    overrideEngineCommand,
+    overrideZookeeperCommand,
+  ]
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(

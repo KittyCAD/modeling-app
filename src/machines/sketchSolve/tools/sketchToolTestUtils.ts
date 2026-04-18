@@ -6,6 +6,7 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { Themes } from '@src/lib/theme'
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
@@ -40,7 +41,7 @@ export function createSceneGraphDelta(
     new_objects: newObjectIds,
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
       operations: [],
       artifactGraph: { map: {}, itemCount: 0 },
@@ -57,10 +58,12 @@ export function createPointApiObject({
   id,
   x = 0,
   y = 0,
+  owner = null,
 }: {
   id: number
   x?: number
   y?: number
+  owner?: number | null
 }): ApiObject {
   return {
     id,
@@ -73,7 +76,7 @@ export function createPointApiObject({
           y: { value: y, units: 'Mm' },
         },
         ctor: null,
-        owner: null,
+        owner,
         freedom: 'Free',
         constraints: [],
       },
@@ -81,7 +84,7 @@ export function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -123,7 +126,7 @@ export function createLineApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -172,7 +175,7 @@ export function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -215,7 +218,7 @@ export function createCircleApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -228,6 +231,7 @@ export function createMockSceneInfra(): SceneInfra {
   return {
     setCallbacks: vi.fn(),
     getClientSceneScaleFactor: vi.fn(() => 1),
+    theme: Themes.Light,
     scene: {
       getObjectByName: vi.fn(() => null),
     },
@@ -238,6 +242,7 @@ export function createMockRustContext(): RustContext {
   return {
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
+    chainSegment: vi.fn(),
     editSegments: vi.fn(),
     deleteObjects: vi.fn(),
     settingsActor: {

@@ -2,133 +2,234 @@
 // Part consists of a 70 mm diameter retainer plate with a cylindrical lower mount body below it, and a eye-end mount (or hole) at the bottom. Above the retainer plate, there is a cylindrical damper body with a hole through its length that allows a piston shaft to pass through it when included in the coilover assembly.
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Import parameters
-import retainerPlateDia, retainerPlateLength, baseSeatingDia, baseSeatingLength, lowerMountDia, damperBodyLength, lowerMountLength, eyeEndMountOuterDia, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, damperBodyDia, pistonShaftHoleDia, lengthBelowRetainerPlate, lowerMountOverallLength, pointOffset from "parameters.kcl"
+import * from "parameters.kcl"
+
 
 // Retainer Plate
-retainerPlateSketch = startSketchOn(XY)
-retainerPlateProfile = sketch(on = retainerPlateSketch) {
+retainerPlateProfile = sketch(on = XY) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 35mm, var 0mm], construction = true)
   circle1 = circle(start = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, [retainerPlateRadius, 0mm]])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region001 = region(segments = [retainerPlateProfile.circle1])
 retainerPlateExtrude = extrude(region001, length = retainerPlateLength, tagStart = $capStart001)
   |> chamfer(
-       length = 3.7,
+       length = retainerPlateChamfer,
        tags = [
-         getCommonEdge(faces = [seg01, capStart001])
+         getCommonEdge(faces = [region001.tags.circle1, capStart001])
        ],
      )
 
-// Base seating just below the retainer plate
-baseSeatingSketch = startSketchOn(retainerPlateExtrude, face = START)
-baseSeatingProfile = sketch(on = baseSeatingSketch) {
+hide(retainerPlateProfile)
+
+baseSeatingPlane = planeOf(retainerPlateExtrude, face = START)
+baseSeatingProfile = sketch(on = baseSeatingPlane) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 27.5mm, var 0mm], construction = true)
   circle1 = circle(start = [var 27.5mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, [baseSeatingRadius, 0mm]])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region002 = region(segments = [baseSeatingProfile.circle1])
 baseSeatingExtrude = extrude(region002, length = baseSeatingLength)
 
+hide(baseSeatingProfile)
+
 // Lower Mount
-lowerMountSketch = startSketchOn(baseSeatingExtrude, face = END)
-lowerMountProfile = sketch(on = lowerMountSketch) {
+lowerMountPlane = planeOf(baseSeatingExtrude, face = END)
+lowerMountProfile = sketch(on = lowerMountPlane) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 19mm, var 0mm], construction = true)
   circle1 = circle(start = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, [lowerMountRadius, 0mm]])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region003 = region(segments = [lowerMountProfile.circle1])
 lowerMountExtrude = extrude(region003, length = lowerMountLength, tagEnd = $capEnd001)
   |> chamfer(
-       length = 3,
+       length = lowerMountChamfer,
        tags = [
-         getCommonEdge(faces = [seg02, capEnd001])
+         getCommonEdge(faces = [region003.tags.circle1, capEnd001])
        ],
      )
+
+hide(lowerMountProfile)
 
 // Eye End for Lower Mount
-eyeEndSketch = startSketchOn(lowerMountExtrude, face = END)
-eyeEndProfile = sketch(on = eyeEndSketch) {
+eyeEndPlane = planeOf(lowerMountExtrude, face = END)
+eyeEndProfile = sketch(on = eyeEndPlane) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 12.5mm, var 0mm], construction = true)
   circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, [eyeEndMountRadius, 0mm]])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region004 = region(segments = [eyeEndProfile.circle1])
-eyeEndExtrude = extrude(region004, length = eyeEndMountLength, tagEnd = $capEnd002)
+eyeEndExtrude = extrude(
+       region004,
+       length = eyeEndMountLength,
+       tagStart = $capStart002,
+       tagEnd = $capEnd002,
+     )
   |> fillet(
-       radius = eyeEndMountOuterDia / 2 - 0.01,
+       radius = eyeEndTipFillet,
        tags = [
-         getCommonEdge(faces = [seg04, capEnd002])
+         getCommonEdge(faces = [region004.tags.circle1, capEnd002])
        ],
      )
   |> fillet(
-       radius = 3,
+       radius = eyeEndRootFillet,
        tags = [
-         getCommonEdge(faces = [capEnd001, seg04])
+         getCommonEdge(faces = [region004.tags.circle1, capStart002])
        ],
      )
+
+hide(eyeEndProfile)
 
 // Eye End Outer Profile for Lower Mount
-eyeEndOuterSketch = startSketchOn(YZ)
-
-eyeEndOuterProfile = sketch(on = eyeEndOuterSketch) {
+eyeEndOuterProfile = sketch(on = YZ) {
   line1 = line(start = [var 31.35mm, var -114.5mm], end = [var 11.35mm, var -114.5mm])
   arc2 = arc(start = [var 11.35mm, var -114.5mm], end = [var 6.35mm, var -119.5mm], center = [var 11.35mm, var -119.5mm])
-  coincident([line1.end, arc2.start])
   line3 = line(start = [var 6.35mm, var -119.5mm], end = [var 6.35mm, var -141.5mm])
-  coincident([arc2.end, line3.start])
   line4 = line(start = [var 6.35mm, var -141.5mm], end = [var -6.35mm, var -141.5mm])
-  coincident([line3.end, line4.start])
   line5 = line(start = [var -6.35mm, var -141.5mm], end = [var -6.35mm, var -119.5mm])
-  coincident([line4.end, line5.start])
   arc6 = arc(start = [var -6.35mm, var -119.5mm], end = [var -11.35mm, var -114.5mm], center = [var -11.35mm, var -119.5mm])
-  coincident([line5.end, arc6.start])
   line7 = line(start = [var -11.35mm, var -114.5mm], end = [var -31.35mm, var -114.5mm])
-  coincident([arc6.end, line7.start])
   line8 = line(start = [var -31.35mm, var -114.5mm], end = [var -31.35mm, var -144.5mm])
-  coincident([line7.end, line8.start])
   line9 = line(start = [var -31.35mm, var -144.5mm], end = [var 31.35mm, var -144.5mm])
-  coincident([line8.end, line9.start])
   line10 = line(start = [var 31.35mm, var -144.5mm], end = [var 31.35mm, var -114.5mm])
+
+  coincident([line1.end, arc2.start])
+  coincident([arc2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, arc6.start])
+  coincident([arc6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line9.start])
   coincident([line9.end, line10.start])
+  coincident([line10.end, line1.start])
+
   horizontal(line1)
-  tangent([line1, arc2])
-  radius(arc2) == 5mm
   vertical(line3)
   horizontal(line4)
   vertical(line5)
-  tangent([line5, arc6])
-  radius(arc6) == 5mm
   horizontal(line7)
   vertical(line8)
   horizontal(line9)
+  vertical(line10)
+
+  tangent([line1, arc2])
+  tangent([arc2, line3])
+  tangent([line5, arc6])
+  tangent([arc6, line7])
+
+  radius(arc2) == eyeEndShoulderRadius
+  radius(arc6) == eyeEndShoulderRadius
+
+  horizontalDistance([arc2.center, line1.end]) == 0mm
+  verticalDistance([arc2.center, line3.start]) == 0mm
+  horizontalDistance([arc6.center, line7.start]) == 0mm
+  verticalDistance([arc6.center, line5.end]) == 0mm
+
+  horizontalDistance([ORIGIN, line1.start]) == eyeEndOuterHalfWidth
+  verticalDistance([ORIGIN, line1.start]) == eyeEndCutTop
+
+  distance([line1.start, line1.end]) == eyeEndOuterHalfWidth - eyeEndShoulderHalfWidth
+  equalLength([line1, line7])
+  distance([line3.start, line3.end]) == eyeEndSlotTop - eyeEndSlotBottom
+  equalLength([line3, line5])
+  distance([line4.start, line4.end]) == eyeEndSlotHalfWidth * 2
+  distance([line8.start, line8.end]) == eyeEndCutTop - eyeEndCutBottom
+  equalLength([line8, line10])
+  distance([line9.start, line9.end]) == eyeEndOuterHalfWidth * 2
 }
 
-region005 = region(segments = [
-  eyeEndOuterProfile.line1,
-  eyeEndOuterProfile.arc2
-])
-eyeEndOuterExtrude = extrude(region005, length = 30, symmetric = true)
+region005 = region(segments = [eyeEndOuterProfile.line1])
+eyeEndOuterExtrude = extrude(region005, length = eyeEndCutThickness, symmetric = true)
 lowerMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
 
+hide(eyeEndOuterProfile)
+
 // Eye End Hole for Lower Mount
-eyeEndHolePlane = offsetPlane(XZ, offset = 15)
-eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
-eyeEndHoleProfile = sketch(on = eyeEndHoleSketch) {
-  circle1 = circle(start = [var 6.25mm, var -127mm], center = [var 0mm, var -127mm])
+eyeEndHoleCenterZ = -(baseSeatingLength + lowerMountLength + eyeEndMountLength) + eyeEndMountRadius
+eyeEndHolePlane = offsetPlane(XZ, offset = eyeEndCutThickness / 2)
+eyeEndHoleProfile = sketch(on = eyeEndHolePlane) {
+  circle1 = circle(start = [var 6mm, var -127mm], center = [var 0mm, var -126mm])
+  radiusGuide = line(start = [var 1mm, var -128mm], end = [var 7mm, var -128mm], construction = true)
+
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+  horizontal(radiusGuide)
+
+  horizontalDistance([ORIGIN, circle1.center]) == 0mm
+  verticalDistance([ORIGIN, circle1.center]) == eyeEndHoleCenterZ
+  horizontalDistance([radiusGuide.start, radiusGuide.end]) == eyeEndMountRadius / 2
 }
+
 region006 = region(segments = [eyeEndHoleProfile.circle1])
-eyeEndHoleExtrude = extrude(region006, length = -40)
+eyeEndHoleExtrude = extrude(region006, length = -40mm, method = NEW)
 lowerMountSolid = subtract([lowerMount], tools = [eyeEndHoleExtrude])
 
-// Damper body above the retainer plate
-damperBodySketch = startSketchOn(XY)
-damperBodyProfile = sketch(on = damperBodySketch) {
+hide(eyeEndHoleProfile)
+
+damperBodyProfile = sketch(on = XY) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 19mm, var 0mm], construction = true)
   circle1 = circle(start = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([anchor.end, [lowerMountRadius, 0mm]])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region007 = region(segments = [damperBodyProfile.circle1])
 damperBodyExtrude = extrude(region007, length = damperBodyLength)
 
+hide(damperBodyProfile)
+
 // Hole for the piston shaft in the damper body
-pistonShaftSketch = startSketchOn(damperBodyExtrude, face = END)
-pistonShaftProfile = sketch(on = pistonShaftSketch) {
+pistonShaftPlane = planeOf(damperBodyExtrude, face = END)
+pistonShaftProfile = sketch(on = pistonShaftPlane) {
+  anchor = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm], construction = true)
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([anchor.start, ORIGIN])
+  coincident([
+    anchor.end,
+    [pistonShaftHoleRadius, 0mm]
+  ])
+  horizontal(anchor)
+
+  coincident([circle1.center, anchor.start])
+  coincident([circle1.start, anchor.end])
 }
 region008 = region(segments = [pistonShaftProfile.circle1])
-pistonShaftHole = extrude(region008, length = -damperBodyLength)
+pistonShaftHoleCutter = extrude(region008, length = -damperBodyLength, method = NEW)
+damperBodySolid = subtract([damperBodyExtrude], tools = [pistonShaftHoleCutter])
 
+hide(pistonShaftProfile)
+
+buildCoiloverBottom = union([lowerMountSolid, damperBodySolid])

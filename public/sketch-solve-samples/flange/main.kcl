@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 mountingHoleDia = .625
@@ -58,4 +58,3 @@ sketch004 = sketch(on = startSketchOn(topExtrusion, face = END)) {
 }
 region004 = region(segments = [sketch004.circle1])
 pipeHole = extrude(region004, length = -(topTotalThickness + baseThickness + bottomThickness))
-

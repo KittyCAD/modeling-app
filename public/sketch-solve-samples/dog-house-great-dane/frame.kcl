@@ -1,7 +1,7 @@
 // Dog House (Great Dane) - Base Frame
 // Base plate layout for the dog house frame.
 
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
@@ -31,4 +31,3 @@ backBottomPlate = twoByFourX(
   minZ = floorZ,
   lengthX = frameWidth - (2 * studDepth),
 )
-

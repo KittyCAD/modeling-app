@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Sketch the side profile of the hammer head
 sketch001 = sketch(on = XZ) {
@@ -177,4 +177,3 @@ handleSketch = sketch(on = XZ) {
 region007 = region(segments = [handleSketch.line1, handleSketch.arc2])
 handle = revolve(region007, angle = 360deg, axis = Y)
   |> appearance(color = "#f14f04")
-

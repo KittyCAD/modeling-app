@@ -2,7 +2,7 @@
 // Left wall studs, slats, and side door placement.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import and define parameters
 import * from "dimensions.kcl"
@@ -100,4 +100,3 @@ sideDoorLeft = map(
       |> translate(x = sideDoorX, y = sideDoorY, z = 0)
   },
 )
-

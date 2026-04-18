@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 vBlockLength = 1 + 1 / 4
@@ -84,4 +84,3 @@ sideHoleProfile = circle(sideHoleSketch, center = [-sideHoleDistance / 2, sideHo
        axis = [1, 0],
      )
 sideHoles = extrude(sideHoleProfile, length = -vBlockWidth)
-

@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 wallThickness = 0.125
@@ -236,4 +236,3 @@ sketch015 = sketch(on = customPlane3) {
 }
 region008 = region(segments = [sketch015.line1, sketch015.line2])
 sketch008 = extrude(region008, length = -wallThickness)
-

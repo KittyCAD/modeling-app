@@ -2,7 +2,7 @@
 // The plastic case for the front of the walkie talkie
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters and Zoo logo
 import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
@@ -61,4 +61,3 @@ case = sketch(on = XZ) {
 region001 = region(segments = [case.line1, case.line2])
 extrude(region001, length = -0.0625)
   |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)
-

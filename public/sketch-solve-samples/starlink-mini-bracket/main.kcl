@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 cutoutEdgeLength = 2
@@ -138,4 +138,3 @@ sketch006 = extrude(region006, length = -((barrelD - holeD) / 2 - .003))
        instances = nRidges,
        rotateDuplicates = true,
      )
-

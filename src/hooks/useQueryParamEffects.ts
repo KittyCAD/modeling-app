@@ -16,6 +16,7 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
+import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
@@ -57,7 +58,14 @@ export function useQueryParamEffects(kclManager: KclManager) {
    */
   useEffect(() => {
     if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
-      const argDefaultValues = buildCreateFileCommandArgs(searchParams)
+      const webProjectName = !isDesktop()
+        ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
+          DEFAULT_WEB_PROJECT_NAME)
+        : undefined
+      const argDefaultValues = buildCreateFileCommandArgs(
+        searchParams,
+        webProjectName
+      )
       commands.send({
         type: 'Find and select command',
         data: {
@@ -118,10 +126,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
       commandData.name === 'add-kcl-file-to-project' &&
       commandData.argDefaultValues?.projectName
     ) {
-      const projectName = commandData.argDefaultValues.projectName
+      const projectNameArg = String(commandData.argDefaultValues.projectName)
+      const projectFolderName = fsZds.basename(projectNameArg)
+
       const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
-        (folders ?? []).some((f) => f.name === projectName)
+        (folders ?? []).some((f) => f.name === projectFolderName)
+
+      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
+        sendCommand()
+        return
+      }
 
       const subscription = systemIO.subscribe((snapshot) => {
         if (foldersIncludeProject(snapshot.context.folders)) {
@@ -161,7 +176,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
   }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 
-function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
+function buildCreateFileCommandArgs(
+  searchParams: URLSearchParams,
+  webProjectName?: string
+) {
   const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
     code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
     name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
@@ -171,6 +189,9 @@ function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
     name: PROJECT_ENTRYPOINT,
     code: params.code || '',
     method: isDesktop() ? undefined : 'existingProject',
+  }
+  if (!isDesktop()) {
+    argDefaultValues.projectName = webProjectName ?? DEFAULT_WEB_PROJECT_NAME
   }
 
   return argDefaultValues
