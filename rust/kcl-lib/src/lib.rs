@@ -251,6 +251,7 @@ lazy_static::lazy_static! {
     pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
         let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
         relevant_extensions.push("kcl".to_string());
+        relevant_extensions.push("md".to_string());
         relevant_extensions
     };
 }
