@@ -471,6 +471,81 @@ surface001 = deleteFace(extrude001, faces = capEnd001)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call with region wall and cap expressions', async () => {
+      const sketchBlockExtrude = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -3.08mm, var 1.16mm], end = [var 3.41mm, var 1.16mm])
+  line2 = line(start = [var 3.41mm, var 1.16mm], end = [var 3.41mm, var 5.78mm])
+  line3 = line(start = [var 3.41mm, var 5.78mm], end = [var -3.08mm, var 5.78mm])
+  line4 = line(start = [var -3.08mm, var 5.78mm], end = [var -3.08mm, var 1.16mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -1.88mm, var -2.07mm], end = [var 3.23mm, var 9.92mm])
+}
+region001 = region(point = [-0.46mm, 4.77mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchBlockExtrude,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const wall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall') return false
+        const regionSeg = artifactGraph.get(artifact.segId)
+        if (
+          !regionSeg ||
+          regionSeg.type !== 'segment' ||
+          !regionSeg.originalSegId
+        ) {
+          return false
+        }
+        const originalSeg = artifactGraph.get(regionSeg.originalSegId)
+        if (!originalSeg || originalSeg.type !== 'segment') {
+          return false
+        }
+        const originalPath = artifactGraph.get(originalSeg.pathId)
+        if (!originalPath || originalPath.type !== 'path') {
+          return false
+        }
+        return originalPath.segIds.indexOf(originalSeg.id) === 1
+      })
+      const cap = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+      )
+      if (!wall || !cap) {
+        throw new Error('Could not find expected wall/cap selections')
+      }
+
+      const faces = createSelectionFromArtifacts([wall, cap], artifactGraph)
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)`
+      )
+      expect(newCode).toContain(
+        `surface001 = deleteFace(extrude001, faces = [region001.tags.line2, capEnd001])`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on the bracket without resolving to holes', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
@@ -537,6 +612,84 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
       expect(newCode).toContain(`${shell}
 face001 = faceId(extrude001, index = 6)
 surface001 = deleteFace(extrude001, faces = [rectangleSegmentA001, face001])`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a deleteFace call for loft start cap', async () => {
+      const code = `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-17.5, 0])
+  |> yLine(length = 7.5, tag = $seg03)
+  |> xLine(length = 5, tag = $seg01)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+plane001 = offsetPlane(YZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-17.29, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 4.79)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft002 = loft([profile001, profile002])
+
+surface001 = deleteFace(loft002, faces = seg02)
+surface002 = deleteFace(loft002, faces = seg03)
+`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const capStart = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap' && artifact.subType === 'start'
+      )
+      if (!capStart) {
+        throw new Error('Could not find expected loft start cap selection')
+      }
+
+      const capStartSelection = createSelectionFromArtifacts(
+        [capStart],
+        artifactGraph
+      )
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: capStartSelection,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-17.5, 0])
+  |> yLine(length = 7.5, tag = $seg03)
+  |> xLine(length = 5, tag = $seg01)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+plane001 = offsetPlane(YZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-17.29, 0])
+  |> yLine(length = 7.5)
+  |> xLine(length = 4.79)
+  |> yLine(length = -7.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft002 = loft([profile001, profile002], tagStart = $capStart001)
+
+surface001 = deleteFace(loft002, faces = seg02)
+surface002 = deleteFace(loft002, faces = seg03)
+surface003 = deleteFace(loft002, faces = capStart001)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })

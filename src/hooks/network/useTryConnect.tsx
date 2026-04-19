@@ -291,7 +291,7 @@ async function tryConnecting({
           attempt().catch(reportRejection)
           if (toastId) {
             toast.error(
-              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}.`,
               {
                 duration: Number.POSITIVE_INFINITY,
                 id: toastId,
@@ -299,7 +299,7 @@ async function tryConnecting({
             )
           } else {
             toastId = toast.error(
-              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}.`,
               {
                 duration: Number.POSITIVE_INFINITY,
               }

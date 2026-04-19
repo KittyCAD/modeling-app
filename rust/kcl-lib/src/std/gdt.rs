@@ -1,24 +1,32 @@
 use kcl_error::SourceRange;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{
-        AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
-        MbdSymbol, Point2d as KPoint2d,
-    },
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
+use kittycad_modeling_cmds::shared::AnnotationLineEnd;
+use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
+use kittycad_modeling_cmds::shared::AnnotationOptions;
+use kittycad_modeling_cmds::shared::AnnotationType;
+use kittycad_modeling_cmds::shared::MbdSymbol;
+use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::{
-    ExecState, KclError,
-    errors::KclErrorDetails,
-    exec::KclValue,
-    execution::{
-        ControlFlowKind, GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    parsing::ast::types as ast,
-    std::{Args, args::TyF64, sketch::ensure_sketch_plane_in_engine},
-};
+use crate::ExecState;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::ControlFlowKind;
+use crate::execution::GdtAnnotation;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Plane;
+use crate::execution::StatementKind;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types as ast;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::ensure_sketch_plane_in_engine;
 
 /// Bundle of common GD&T annotation style arguments.
 #[derive(Debug, Clone)]
@@ -86,7 +94,14 @@ async fn inner_datum(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, &args.ctx, args.source_range).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
@@ -192,7 +207,14 @@ async fn inner_flatness(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, &args.ctx, args.source_range).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;

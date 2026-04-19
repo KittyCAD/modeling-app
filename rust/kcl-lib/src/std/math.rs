@@ -2,15 +2,17 @@
 
 use anyhow::Result;
 
-use crate::{
-    CompilationError,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, KclValue, annotations,
-        types::{ArrayLen, NumericType, RuntimeType},
-    },
-    std::args::{Args, TyF64},
-};
+use crate::CompilationIssue;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::NumericType;
+use crate::execution::types::RuntimeType;
+use crate::std::args::Args;
+use crate::std::args::TyF64;
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
@@ -20,14 +22,14 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_d = d.n != 0.0;
     if !valid_d {
         exec_state.warn(
-            CompilationError::err(args.source_range, "Divisor cannot be 0".to_string()),
+            CompilationIssue::err(args.source_range, "Divisor cannot be 0".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
 
     let (n, d, ty) = NumericType::combine_mod(n, d);
     if ty == NumericType::Unknown {
-        exec_state.err(CompilationError::err(
+        exec_state.err(CompilationIssue::err(
             args.source_range,
             "Calling `rem` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`"
         ));
@@ -118,7 +120,7 @@ pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
     if ty == NumericType::Unknown {
-        exec_state.warn(CompilationError::err(
+        exec_state.warn(CompilationIssue::err(
             args.source_range,
             "Calling `min` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
         ), annotations::WARN_UNKNOWN_UNITS);
@@ -143,7 +145,7 @@ pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
     if ty == NumericType::Unknown {
-        exec_state.warn(CompilationError::err(
+        exec_state.warn(CompilationIssue::err(
             args.source_range,
             "Calling `max` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
         ), annotations::WARN_UNKNOWN_UNITS);
@@ -166,7 +168,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let exp_is_int = exp.n.fract() == 0.0;
     if input.n < 0.0 && !exp_is_int {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!(
                     "Exponent must be an integer when input is negative, but it was {}",
@@ -179,7 +181,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_input = !(input.n == 0.0 && exp.n < 0.0);
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, "Input cannot be 0 when exp < 0".to_string()),
+            CompilationIssue::err(args.source_range, "Input cannot be 0 when exp < 0".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -194,7 +196,7 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("The argument must be between -1 and 1, but it was {}", input.n),
             ),
@@ -212,7 +214,7 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("The argument must be between -1 and 1, but it was {}", input.n),
             ),
@@ -253,21 +255,21 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
+            CompilationIssue::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
     let valid_base = base.n > 0.0;
     if !valid_base {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Base must be > 0, but it was {}", base.n)),
+            CompilationIssue::err(args.source_range, format!("Base must be > 0, but it was {}", base.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
     let base_not_1 = base.n != 1.0;
     if !base_not_1 {
         exec_state.warn(
-            CompilationError::err(args.source_range, "Base cannot be 1".to_string()),
+            CompilationIssue::err(args.source_range, "Base cannot be 1".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -282,7 +284,7 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
+            CompilationIssue::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -297,7 +299,7 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
+            CompilationIssue::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -312,7 +314,7 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
+            CompilationIssue::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -338,7 +340,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let valid_hypotenuse = hypotenuse > 0.0;
     if !valid_hypotenuse {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
             ),
@@ -349,7 +351,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("The argument must be between -1 and 1, but it was {}", ratio),
             ),
@@ -372,7 +374,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let valid_hypotenuse = hypotenuse > 0.0;
     if !valid_hypotenuse {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
             ),
@@ -383,7 +385,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
         exec_state.warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 args.source_range,
                 format!("The argument must be between -1 and 1, but it was {}", ratio),
             ),

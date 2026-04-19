@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 sideLength = 50
@@ -169,4 +169,3 @@ nest(
   yPos = 0.5,
   nestSize = size07,
 )
-

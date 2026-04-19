@@ -10,7 +10,7 @@
 /// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
 /// with type `any`, then it can accept any value.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// fn acceptAnything(@input: any) {
 ///   return true
 /// }
@@ -60,7 +60,7 @@ export type bool
 ///
 /// Strings may be delimited using either single or double quotes.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// "hello,"
 /// 'world!'
 /// ```
@@ -74,7 +74,7 @@ export type string
 /// The syntax for declaring a tag is `$myTag`. You would use it in the following
 /// way:
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// startSketchOn(XZ)
 ///   |> startProfile(at = origin)
 ///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
@@ -99,7 +99,7 @@ export type string
 ///
 /// However if the code was written like this:
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -129,7 +129,7 @@ export type string
 /// Tags are accessible through the sketch group they are declared in.
 /// For example the following code works.
 ///
-/// ```norun,inline
+/// ```norun,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -207,7 +207,7 @@ export type fn
 /// e.g., `-XY`.
 /// - you can define an entirely custom plane, e.g.,
 ///
-/// ```kcl,inline,norun
+/// ```kcl,inline,norun,sketchSyntaxAgnostic
 /// myXY = {
 ///   origin = { x = 0, y = 0, z = 0 },
 ///   xAxis = { x = 1, y = 0, z = 0 },
@@ -221,7 +221,9 @@ export type fn
 @(impl = std_rust)
 export type Plane
 
-/// A segment of a path in a sketch. It may be a line, arc, or other segment type.
+/// A segment in a sketch created in a sketch block. It may be a line, arc, point, or other segment type.
+///
+/// See the [sketch2 module](/docs/kcl-std/modules/std-sketch2) for functions that create segments and the [region function](/docs/kcl-std/functions/std-sketch2-region) for examples using segments to create a region that can be extruded.
 @(impl = std_rust_constrainable, experimental = true)
 export type Segment
 
@@ -229,7 +231,7 @@ export type Segment
 ///
 /// When you define a sketch to a variable like:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// mySketch = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
@@ -246,7 +248,7 @@ export type Segment
 /// If you would like to encapsulate the commands to create the sketch any time you call it,
 /// you can use a function.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// fn createSketch() {
 ///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
@@ -273,7 +275,7 @@ export type Sketch
 ///
 /// When you define a solid to a variable like:
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// myPart = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
@@ -291,7 +293,7 @@ export type Sketch
 /// If you would like to encapsulate the commands to create the solid any time you call it,
 /// you can use a function.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// fn createPart() {
 ///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
@@ -319,7 +321,9 @@ export type Solid
 @(impl = std_rust)
 export type Face
 
-/// A helix; created by the `helix` function.
+/// A helix.
+///
+/// A helix can be created by the [`helix` function](/docs/kcl-std/functions/std-helix).
 @(impl = std_rust)
 export type Helix
 
@@ -344,14 +348,44 @@ export type Point2d = [number(Length); 2]
 export type Point3d = [number(Length); 3]
 
 /// An abstract and infinite line in 2d space.
+///
+/// The `X`, `Y`, and `Z` axes are defined in the standard library. You can define custom axes by using an object with origin and direction properties.
+///
+/// The 2D version of the X axis could be defined like:
+///
+/// ```kcl,inline,sketchSyntaxAgnostic
+/// xAxis2d = {
+///   origin = [0, 0],
+///   direction = [1, 0],
+/// }
+/// ```
+///
+/// The number components of the origin and direction must be usable as lengths.
+/// 
+/// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis2d
 
 /// An abstract and infinite line in 3d space.
+///
+/// The `X`, `Y`, and `Z` axes are defined in the standard library. You can define custom axes by using an object with origin and direction properties.
+///
+/// The 3D X axis is defined similar to the following:
+///
+/// ```kcl,inline,sketchSyntaxAgnostic
+/// xAxis = {
+///   origin = [0, 0, 0],
+///   direction = [1, 0, 0],
+/// }
+/// ```
+///
+/// The number components of the origin and direction must be usable as lengths.
+/// 
+/// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis3d
 
-/// A GD&T annotation.
+/// A GD&T annotation created by one of the [`gdt` functions](/docs/kcl-std/modules/std-gdt).
 @(impl = std_rust, experimental = true)
 export type GdtAnnotation
 

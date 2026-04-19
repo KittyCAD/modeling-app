@@ -39,7 +39,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import { stripQuotes } from '@src/lib/utils'
+import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
@@ -1015,57 +1015,16 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   // 2. Prepare labeled arguments
-  // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (
-    operation.labeledArgs.path?.value.type !== 'Sketch' &&
-    operation.labeledArgs.path?.value.type !== 'Helix'
-  ) {
+  if (!operation.labeledArgs.path) {
     return { reason: "Couldn't retrieve path argument" }
   }
 
-  const trajectoryPathArtifact = getArtifactOfTypes(
-    {
-      key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path', 'helix'],
-    },
+  const path = retrieveSelectionsFromOpArg(
+    operation.labeledArgs.path,
     artifactGraph
   )
-
-  if (
-    err(trajectoryPathArtifact) ||
-    (trajectoryPathArtifact.type !== 'path' &&
-      trajectoryPathArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory path artifact" }
-  }
-
-  const trajectoryArtifact =
-    trajectoryPathArtifact.type === 'path'
-      ? getArtifactOfTypes(
-          {
-            key: trajectoryPathArtifact.segIds[0],
-            types: ['segment'],
-          },
-          artifactGraph
-        )
-      : trajectoryPathArtifact
-
-  if (
-    err(trajectoryArtifact) ||
-    (trajectoryArtifact.type !== 'segment' &&
-      trajectoryArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory artifact" }
-  }
-
-  const path = {
-    graphSelections: [
-      {
-        artifact: trajectoryArtifact,
-        codeRef: trajectoryArtifact.codeRef,
-      },
-    ],
-    otherSelections: [],
+  if (err(path)) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   // optional arguments
@@ -1983,6 +1942,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Mirror 2D',
     icon: 'mirror',
   },
+  region: {
+    label: 'Region',
+    // TODO: add a region icon
+    icon: 'oneDot',
+    // TODO: add a prepareToEdit function
+    // prepareToEdit: prepareToEditRegion,
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
@@ -2019,6 +1985,14 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Angle Constraint',
     icon: 'angle',
   },
+  arc: {
+    label: 'Arc',
+    icon: 'arc',
+  },
+  circle: {
+    label: 'Circle',
+    icon: 'circle',
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
@@ -2047,6 +2021,18 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Horizontal Constraint',
     icon: 'horizontal',
   },
+  horizontalDistance: {
+    label: 'Horizontal Distance Constraint',
+    icon: 'horizontalDimension',
+  },
+  verticalDistance: {
+    label: 'Vertical Distance Constraint',
+    icon: 'verticalDimension',
+  },
+  line: {
+    label: 'Line',
+    icon: 'line',
+  },
   midpoint: {
     label: 'Midpoint Constraint',
     icon: 'midpoint',
@@ -2062,6 +2048,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  point: {
+    label: 'Point',
+    icon: 'oneDot',
   },
   radius: {
     label: 'Radius Constraint',
@@ -2089,6 +2079,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'hole::holes': {
     label: 'Holes',
     icon: 'hole',
+  },
+  joinSurfaces: {
+    label: 'Join Surfaces',
+    icon: 'joinSurfaces',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   sketchSolve: {
     label: 'Solve Sketch',
@@ -2177,7 +2173,37 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
-type NestedOpList = (Operation | Operation[])[]
+export type NestedOpList = (Operation | Operation[])[]
+
+export function getSketchBlockOperationKey(op: Operation): string | null {
+  if (!('nodePath' in op)) {
+    return null
+  }
+  // TODO: This probably misses the sketch block if it's empty.
+  const sketchBlockIndex = op.nodePath.steps.findIndex(
+    (step) => step.type === 'SketchBlockBody'
+  )
+  if (sketchBlockIndex >= 0) {
+    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
+  }
+
+  if (op.type === 'SketchSolve') {
+    return JSON.stringify(op.nodePath.steps)
+  }
+
+  return null
+}
+
+export function isSketchBlockOperationGroup(items: Operation[]): boolean {
+  if (items.length === 0) {
+    return false
+  }
+  const firstKey = getSketchBlockOperationKey(items[0])
+  if (!firstKey) {
+    return false
+  }
+  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
+}
 
 /**
  * Given an operations list, group streaks of provided types
@@ -2227,6 +2253,53 @@ export function groupOperationTypeStreaks(
   // Flush any remaining streak
   flushStreak()
 
+  return result
+}
+
+/**
+ * Given a list that may already contain grouped operation streaks, group
+ * contiguous operations that belong to the same sketch block.
+ */
+export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
+  const result: NestedOpList = []
+  let currentSketchKey: string | null = null
+  let currentSketchOps: Operation[] = []
+
+  const flushSketchOps = () => {
+    if (currentSketchOps.length === 0) {
+      return
+    }
+    result.push([...currentSketchOps])
+    currentSketchOps = []
+    currentSketchKey = null
+  }
+
+  for (const item of opList) {
+    if (isArray(item)) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    const sketchKey = getSketchBlockOperationKey(item)
+    if (!sketchKey) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    if (currentSketchKey === null || currentSketchKey === sketchKey) {
+      currentSketchKey = sketchKey
+      currentSketchOps.push(item)
+      continue
+    }
+
+    flushSketchOps()
+    currentSketchKey = sketchKey
+    currentSketchOps.push(item)
+  }
+
+  flushSketchOps()
   return result
 }
 
@@ -2285,13 +2358,13 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
     case 'TagDeclarator':
       return op.name
     case 'SketchVar':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'String':
       return op.value
     case 'Bool':
       return String(op.value)
     case 'Number':
-      return op.value.toPrecision(5)
+      return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     default:
       return op.type
   }
@@ -2312,14 +2385,6 @@ export function getOperationVariableName(
 
   // Handle GDT operations - they don't have variable names as they're standalone statements
   if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
-    return undefined
-  }
-
-  // Handle inner sketch block variables
-  if (
-    op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlock')
-  ) {
     return undefined
   }
 

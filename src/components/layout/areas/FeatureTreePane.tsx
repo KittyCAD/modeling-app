@@ -7,33 +7,30 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  findOperationArtifact,
-  findOperationPlaneArtifact,
-  isOffsetPlane,
-} from '@src/lang/queryAst'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
-  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  getSketchBlockOperationKey,
+  groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
+  isSketchBlockOperationGroup,
   stdLibMap,
   onUnhide,
 } from '@src/lib/operations'
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -52,6 +49,7 @@ import { Disclosure } from '@headlessui/react'
 import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
+  resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
@@ -169,9 +167,10 @@ export const FeatureTreePaneContents = memo(() => {
     kclManager.lastSuccessfulCode || kclManager.codeSignal.value
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupOperationTypeStreaks(
-    filterOperations(unfilteredOperationList),
-    ['VariableDeclaration']
+  const operationList = groupSketchBlockOperations(
+    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
+      'VariableDeclaration',
+    ])
   )
 
   function goToError() {
@@ -220,11 +219,37 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             )}
             {operationList.map((opOrList) => {
-              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${
-                'name' in opOrList ? opOrList.name : 'anonymous'
-              }-${
-                'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
-              }`
+              const key = (() => {
+                if (!isArray(opOrList)) {
+                  return `${opOrList.type}-${
+                    'name' in opOrList ? opOrList.name : 'anonymous'
+                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
+                }
+                const first = opOrList[0]
+                const last = opOrList[opOrList.length - 1]
+                return `group-${
+                  first?.type ?? 'unknown'
+                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+                }`
+              })()
+
+              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+                const sketchGroupKey =
+                  getSketchBlockOperationKey(opOrList[0]) ?? key
+                return (
+                  <SketchBlockOperationGroup
+                    key={sketchGroupKey}
+                    items={opOrList}
+                    code={operationsCode}
+                    sketchNoFace={sketchNoFace}
+                    systemDeps={systemDeps}
+                    modelingActor={modelingActor}
+                    engineCommandManager={engineCommandManager}
+                    onSelect={selectOperation}
+                  />
+                )
+              }
 
               return isArray(opOrList) ? (
                 <OperationItemGroup
@@ -256,6 +281,88 @@ export const FeatureTreePaneContents = memo(() => {
     </div>
   )
 })
+
+function SketchBlockOperationGroup({
+  items,
+  code,
+  sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
+}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  if (items.length === 0) {
+    return null
+  }
+
+  const parentItem =
+    items.find((item) => item.type === 'SketchSolve') ?? items[0]
+  const childItems = items.filter((item) => item !== parentItem)
+
+  if (childItems.length === 0) {
+    return (
+      <OperationItem
+        item={parentItem}
+        code={code}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+      />
+    )
+  }
+
+  return (
+    <Disclosure>
+      <div className="flex items-start gap-1">
+        <Disclosure.Button
+          data-testid="sketchblock-group-caret"
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <OperationItem
+            item={parentItem}
+            code={code}
+            sketchNoFace={sketchNoFace}
+            systemDeps={systemDeps}
+            modelingActor={modelingActor}
+            engineCommandManager={engineCommandManager}
+            onSelect={onSelect}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel>
+        <div className="border-l b-4 ml-6">
+          {childItems.map((item) => {
+            const key = `${item.type}-${
+              'name' in item ? item.name : 'anonymous'
+            }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
+            return (
+              <OperationItem
+                key={key}
+                item={item}
+                code={code}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
+                size="sm"
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -302,6 +409,7 @@ function OperationItemGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
+                size="sm"
               />
             )
           })}
@@ -336,6 +444,7 @@ const OperationItemWrapper = memo(
     customSuffix,
     className,
     Tooltip,
+    size = 'default',
     ...props
   }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
@@ -346,11 +455,13 @@ const OperationItemWrapper = memo(
     onContextMenu?: (e: MouseEvent) => void
     Tooltip?: ReactNode
     isSelected?: boolean
+    size?: 'default' | 'sm'
   } & OpValueProps) => {
     return (
       <RowItemWithIconMenuAndToggle
         {...props}
         icon={icon}
+        size={size}
         LabelSecondary={
           <>
             {variableName && valueDetail ? (
@@ -418,6 +529,7 @@ interface OperationProps {
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
+  size?: 'default' | 'sm'
 }
 /**
  * A button with an icon, name, and context menu
@@ -431,10 +543,13 @@ const OperationItem = ({
   systemDeps,
   modelingActor,
   engineCommandManager,
+  size,
 }: OperationProps) => {
   useSignals()
   const { layout } = useApp()
   const { kclManager, commandBarActor } = systemDeps
+  const useSketchSolveMode =
+    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -476,7 +591,11 @@ const OperationItem = ({
             item,
             kclManager.artifactGraph
           )
-          const result = await selectOffsetSketchPlane(artifact, systemDeps)
+          const result = await selectSketchPlane(
+            artifact?.id,
+            useSketchSolveMode,
+            kclManager
+          )
           if (err(result)) {
             console.error(result)
           }
@@ -490,7 +609,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
+    [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -604,7 +723,7 @@ const OperationItem = ({
         targetSourceRange: item.sourceRange,
         systemDeps,
       }).catch((e) => {
-        toast.error(e)
+        toast.error(isErr(e) ? e.message : JSON.stringify(e))
       })
     }
   }
@@ -621,7 +740,7 @@ const OperationItem = ({
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
       }
     }
   }
@@ -822,13 +941,11 @@ const OperationItem = ({
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
-  const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.artifactGraph
-      ? findOperationArtifact(item, kclManager.artifactGraph)
-      : undefined
-  const hideOperation = operationArtifact
-    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
-    : undefined
+  const visibilityState = resolveFeatureTreeVisibility({
+    item,
+    operations: kclManager.operations ?? [],
+    artifactGraph: kclManager.artifactGraph,
+  })
 
   return (
     <OperationItemWrapper
@@ -863,34 +980,35 @@ const OperationItem = ({
       isSelected={isSelected}
       errors={errors}
       disabled={!enabled}
+      size={size}
       visibilityToggle={
-        item.type === 'StdLibCall' && item.name === 'helix'
+        visibilityState.canToggleVisibility
           ? {
-              visible: hideOperation === undefined,
+              visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
                 selectOperation()
                   .then(() => {
-                    if (hideOperation === undefined) {
+                    if (visibilityState.hideOperation === undefined) {
                       onHide({
                         ast: kclManager.ast,
                         artifactGraph: kclManager.artifactGraph,
                         modelingActor,
                       })
-                    } else if (operationArtifact !== undefined) {
+                    } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
-                        hideOperation,
-                        targetArtifact: operationArtifact,
+                        hideOperation: visibilityState.hideOperation,
+                        targetArtifact: visibilityState.targetArtifact,
                         kclManager,
                       })
                         .then((result) => {
                           if (err(result)) {
                             toast.error(
-                              result.message || 'Error while unhiding'
+                              result.message || 'Error while unhiding.'
                             )
                           }
                         })
                         .catch((e) => {
-                          toast.error(e.message || 'Error while unhiding')
+                          toast.error(e.message || 'Error while unhiding.')
                         })
                     }
                   })
@@ -913,8 +1031,7 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       if (sketchNoFace) {
         void selectSketchPlane(
           planeId,
-          modelingState.context.store.useSketchSolveMode?.current ||
-            modelingState.context.forceSketchSolveMode,
+          modelingState.context.store.useSketchSolveMode?.current,
           kclManager
         )
       } else {
@@ -938,11 +1055,7 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [
-      sketchNoFace,
-      modelingState.context.store.useSketchSolveMode,
-      modelingState.context.forceSketchSolveMode,
-    ]
+    [sketchNoFace, modelingState.context.store.useSketchSolveMode]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -954,17 +1067,11 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
 
       void selectSketchPlane(
         planeId,
-        modelingState.context.store.useSketchSolveMode?.current ||
-          modelingState.context.forceSketchSolveMode,
+        modelingState.context.store.useSketchSolveMode?.current,
         kclManager
       )
     },
-    [
-      modelingState.context.store.useSketchSolveMode,
-      modelingState.context.forceSketchSolveMode,
-      sceneInfra,
-      kclManager,
-    ]
+    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

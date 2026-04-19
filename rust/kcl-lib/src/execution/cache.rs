@@ -2,20 +2,27 @@
 
 use std::sync::Arc;
 
-use itertools::{EitherOrBoth, Itertools};
+use indexmap::IndexMap;
+use itertools::EitherOrBoth;
+use itertools::Itertools;
 use tokio::sync::RwLock;
 
-use crate::{
-    ExecOutcome, ExecutorContext,
-    execution::{
-        EnvironmentRef, ExecutorSettings, annotations,
-        memory::Stack,
-        state::{self as exec_state, ModuleInfoMap},
-    },
-    front::Object,
-    parsing::ast::types::{Annotation, Node, Program},
-    walk::Node as WalkNode,
-};
+use crate::ExecOutcome;
+use crate::ExecutorContext;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecutorSettings;
+use crate::execution::annotations;
+use crate::execution::memory::Stack;
+use crate::execution::state::ModuleInfoMap;
+use crate::execution::state::{self as exec_state};
+use crate::front::Object;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
+use crate::modules::ModuleSource;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node as WalkNode;
 
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
@@ -118,7 +125,7 @@ impl GlobalState {
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
-            errors: self.exec_state.errors,
+            issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
@@ -142,9 +149,26 @@ pub(crate) struct SketchModeState {
     pub stack: Stack,
     /// The module info map.
     pub module_infos: ModuleInfoMap,
+    /// Map from source file path to module ID.
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
+    /// Map from module ID to source file contents.
+    pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// The scene objects.
     #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub scene_objects: Vec<Object>,
+}
+
+#[cfg(test)]
+impl SketchModeState {
+    pub(crate) fn new_for_tests() -> Self {
+        Self {
+            stack: Stack::new_for_tests(),
+            module_infos: ModuleInfoMap::default(),
+            path_to_source_id: Default::default(),
+            id_to_source: Default::default(),
+            scene_objects: Vec::new(),
+        }
+    }
 }
 
 /// The result of a cache check.
@@ -360,7 +384,9 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::execution::{ExecTestResults, parse_execute, parse_execute_with_project_dir};
+    use crate::execution::ExecTestResults;
+    use crate::execution::parse_execute;
+    use crate::execution::parse_execute_with_project_dir;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {

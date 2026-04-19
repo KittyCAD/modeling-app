@@ -1,34 +1,36 @@
 import type { ApiObject, Number } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import {
-  CanvasTexture,
-  Group,
-  Mesh,
-  Sprite,
-  SpriteMaterial,
-  type Vector3,
-  Color,
-} from 'three'
+  DISTANCE_CONSTRAINT_ARROW,
+  DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_LABEL,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+import type { Coords2d } from '@src/lang/util'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   CONSTRAINT_TYPE,
   isConstraintWithSource,
+  isSpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
   SpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
-  DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_ARROW,
-  DISTANCE_CONSTRAINT_LABEL,
-  DISTANCE_CONSTRAINT_HIT_AREA,
-} from '@src/clientSideScene/sceneConstants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+  CanvasTexture,
+  Color,
+  Group,
+  Mesh,
+  Sprite,
+  SpriteMaterial,
+  Vector3,
+  type Vector3 as Vector3Type,
+} from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -37,12 +39,12 @@ const FUNCTION_ICON_GAP = 4 // gap between icon and text
 
 const LABEL_CANVAS_PADDING = 4 // horizontal padding on each side
 export const LABEL_CANVAS_HEIGHT = 32
-export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
-const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
 const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
 export const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
+const COLLAPSED_DIMENSION_MARKER_HALF_LENGTH_PX = 6
+const COLLAPSED_DIMENSION_LABEL_OFFSET_PX = 18
 
 const debug_label_canvas = false
 
@@ -67,15 +69,21 @@ export function createDimensionLine(
   const materials = resources.materials
 
   const lineGeom1 = new LineGeometry()
-  lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
   const line1 = new Line2(lineGeom1, materials.default.line)
   line1.userData.type = DISTANCE_CONSTRAINT_BODY
+  line1.userData.hitObjects = 'auto'
+  line1.userData.segmentStart = new Vector3()
+  line1.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line1, [0, 0, 0, 100, 100, 0])
   group.add(line1)
 
   const lineGeom2 = new LineGeometry()
-  lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
   const line2 = new Line2(lineGeom2, materials.default.line)
   line2.userData.type = DISTANCE_CONSTRAINT_BODY
+  line2.userData.hitObjects = 'auto'
+  line2.userData.segmentStart = new Vector3()
+  line2.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line2, [0, 0, 0, 100, 100, 0])
   group.add(line2)
 
   // Arrow tip is at origin, so position directly at start/end
@@ -100,29 +108,12 @@ export function createDimensionLine(
   label.userData.type = DISTANCE_CONSTRAINT_LABEL
   group.add(label)
 
-  // Hit areas for click detection (invisible but raycasted)
-
-  const line1HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-  group.add(line1HitArea)
-
-  const line2HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-  group.add(line2HitArea)
-
-  const labelHitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
-  group.add(labelHitArea)
-
   return group
 }
 
 export function updateDimensionLine(
-  start: Vector3,
-  end: Vector3,
+  start: Vector3Type,
+  end: Vector3Type,
   group: Group,
   obj: ApiObject,
   scale: number,
@@ -132,7 +123,8 @@ export function updateDimensionLine(
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
   const lineCenter = start.clone().lerp(end, 0.5)
-  const dir = end.clone().sub(start).normalize()
+  const collapsedAxis = getCollapsedZeroDistanceAxis(obj, distance)
+  const dir = collapsedAxis ?? end.clone().sub(start).normalize()
   const labelCenter = isDiameter
     ? lineCenter.clone().add(
         dir
@@ -140,33 +132,42 @@ export function updateDimensionLine(
           .set(-dir.y, dir.x, 0)
           .multiplyScalar(DIAMETER_LABEL_OFFSET_PX * scale)
       )
-    : lineCenter
+    : collapsedAxis
+      ? lineCenter
+          .clone()
+          .add(
+            new Vector3(-collapsedAxis.y, collapsedAxis.x, 0).multiplyScalar(
+              COLLAPSED_DIMENSION_LABEL_OFFSET_PX * scale
+            )
+          )
+      : lineCenter
 
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = group.children.find(isSpriteLabel)
   if (label) {
     // Need to update label position even if it's not shown because it's used to
     // place the input box when double clicking on it.
     label.position.copy(labelCenter)
   }
 
-  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
+  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX && !collapsedAxis) {
     group.visible = false
     return
   }
 
   group.visible = true
-  const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+  const showLabel =
+    collapsedAxis !== null ||
+    dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
   let labelTextWidthPx = 0
+  if (label) {
+    delete label.userData.hitObjects
+  }
 
   // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
   for (const child of group.children) {
     const isLabelVisual =
       child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
-      child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
-      (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
+      child.userData.type === DISTANCE_CONSTRAINT_ARROW
 
     child.visible = isLabelVisual ? showLabel : true
   }
@@ -175,6 +176,9 @@ export function updateDimensionLine(
     const theme = getResolvedTheme(sceneInfra.theme)
     const constraintColor = CONSTRAINT_COLOR[theme]
     labelTextWidthPx = updateLabel(group, obj, constraintColor, distance, scale)
+    if (label) {
+      updateLabelHitObjects(label)
+    }
   }
 
   // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
@@ -197,7 +201,26 @@ export function updateDimensionLine(
   const line1 = lines[0] as Line2
   const line2 = lines[1] as Line2
 
-  line1.geometry.setPositions([
+  const arrows = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
+  ) as Mesh[]
+  const arrow1 = arrows[0]
+  const arrow2 = arrows[1]
+
+  if (collapsedAxis) {
+    updateCollapsedDimensionLine(
+      lineCenter,
+      collapsedAxis,
+      line1,
+      line2,
+      arrow1,
+      arrow2,
+      scale
+    )
+    return
+  }
+
+  updateConstraintLinePositions(line1, [
     lineStart.x,
     lineStart.y,
     0,
@@ -205,16 +228,17 @@ export function updateDimensionLine(
     gapStart.y,
     0,
   ])
-  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, lineEnd.x, lineEnd.y, 0])
+  updateConstraintLinePositions(line2, [
+    gapEnd.x,
+    gapEnd.y,
+    0,
+    lineEnd.x,
+    lineEnd.y,
+    0,
+  ])
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO
-  const arrows = group.children.filter(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
-  ) as Mesh[]
-  const arrow1 = arrows[0]
-  const arrow2 = arrows[1]
-
   // Arrow tip is at origin, so position directly at start/end
   arrow1.position.copy(start)
   arrow1.rotation.z = angle + Math.PI / 2
@@ -223,48 +247,88 @@ export function updateDimensionLine(
   arrow2.position.copy(end)
   arrow2.rotation.z = angle - Math.PI / 2
   arrow2.scale.setScalar(scale)
-
-  // Update hit areas for lines
-  const hitAreas = group.children.filter(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
-  ) as Mesh[]
-
-  // Update main constraint body hit areas
-  const bodyHitAreas = hitAreas.filter(
-    (hitArea) => hitArea.userData.subtype === DISTANCE_CONSTRAINT_BODY
-  )
-  if (bodyHitAreas[0]) {
-    updateLineHitArea(
-      bodyHitAreas[0],
-      lineStart,
-      gapStart,
-      HIT_AREA_WIDTH_PX * scale
-    )
-  }
-  if (bodyHitAreas[1]) {
-    updateLineHitArea(
-      bodyHitAreas[1],
-      gapEnd,
-      lineEnd,
-      HIT_AREA_WIDTH_PX * scale
-    )
-  }
 }
 
-// Helper to update a line hit area
-export function updateLineHitArea(
-  hitArea: Mesh,
-  p1: Vector3,
-  p2: Vector3,
-  hitWidth: number
-) {
-  const length = p1.distanceTo(p2)
-  const midpoint = p1.clone().add(p2).multiplyScalar(0.5)
-  const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
+function getCollapsedZeroDistanceAxis(
+  obj: ApiObject,
+  distance: Number
+): Vector3 | null {
+  if (distance.value !== 0 || obj.kind.type !== 'Constraint') {
+    return null
+  }
 
-  hitArea.position.copy(midpoint)
-  hitArea.rotation.z = angle
-  hitArea.scale.set(length, hitWidth, 1)
+  if (obj.kind.constraint.type === 'Distance') {
+    return new Vector3(0, 1, 0)
+  }
+
+  if (obj.kind.constraint.type === 'HorizontalDistance') {
+    return new Vector3(1, 0, 0)
+  }
+
+  if (obj.kind.constraint.type === 'VerticalDistance') {
+    return new Vector3(0, 1, 0)
+  }
+
+  return null
+}
+
+function updateCollapsedDimensionLine(
+  center: Vector3Type,
+  axis: Vector3Type,
+  line1: Line2,
+  line2: Line2,
+  arrow1: Mesh,
+  arrow2: Mesh,
+  scale: number
+) {
+  const markerDir = new Vector3(-axis.y, axis.x, 0)
+  const markerHalfLength = COLLAPSED_DIMENSION_MARKER_HALF_LENGTH_PX * scale
+  const markerStart = center
+    .clone()
+    .sub(markerDir.clone().multiplyScalar(markerHalfLength))
+  const markerEnd = center
+    .clone()
+    .add(markerDir.clone().multiplyScalar(markerHalfLength))
+
+  updateConstraintLinePositions(line1, [
+    markerStart.x,
+    markerStart.y,
+    0,
+    markerEnd.x,
+    markerEnd.y,
+    0,
+  ])
+  line2.visible = false
+
+  const angle = Math.atan2(axis.y, axis.x)
+  arrow1.position.copy(center)
+  arrow1.rotation.z = angle - Math.PI / 2
+  arrow1.scale.setScalar(scale)
+
+  arrow2.position.copy(center)
+  arrow2.rotation.z = angle + Math.PI / 2
+  arrow2.scale.setScalar(scale)
+}
+
+export function updateConstraintLinePositions(
+  line: Line2,
+  positions: number[]
+) {
+  const segmentStart =
+    line.userData.segmentStart instanceof Vector3
+      ? line.userData.segmentStart
+      : new Vector3()
+  const segmentEnd =
+    line.userData.segmentEnd instanceof Vector3
+      ? line.userData.segmentEnd
+      : new Vector3()
+  segmentStart.set(positions[0] ?? 0, positions[1] ?? 0, positions[2] ?? 0)
+  segmentEnd.set(positions[3] ?? 0, positions[4] ?? 0, positions[5] ?? 0)
+  line.userData.segmentStart = segmentStart
+  line.userData.segmentEnd = segmentEnd
+  line.geometry.setPositions(positions)
+  line.geometry.computeBoundingSphere()
+  line.computeLineDistances()
 }
 
 export function updateLabel(
@@ -274,9 +338,7 @@ export function updateLabel(
   apiNumber: Number,
   scale: number
 ) {
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = group.children.find(isSpriteLabel)
   if (label?.material.map) {
     const canvas = label.material.map.source.data
 
@@ -364,26 +426,55 @@ export function updateLabel(
       1
     )
 
-    // Update label hit area to match canvas size
-    const labelHitAreas = group.children.filter(
-      (child) =>
-        child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-    )
-    const labelHitArea = labelHitAreas[0] as Mesh
-    if (labelHitArea) {
-      labelHitArea.position.copy(label.position)
-      labelHitArea.scale.set(
-        canvas.width * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
-        canvas.height * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
-        1
-      )
-    }
-
     return (label.userData.textWidthPx ?? 0) * LABEL_SCALE + 8
   }
 
   return 0
+}
+
+export function getLabelHitObjects(label: SpriteLabel): Array<{
+  type: 'line'
+  line: [Coords2d, Coords2d]
+}> {
+  const minX = label.position.x - label.scale.x / 2
+  const maxX = label.position.x + label.scale.x / 2
+  const minY = label.position.y - label.scale.y / 2
+  const maxY = label.position.y + label.scale.y / 2
+
+  return [
+    {
+      type: 'line',
+      line: [
+        [minX, minY],
+        [maxX, minY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [maxX, minY],
+        [maxX, maxY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [maxX, maxY],
+        [minX, maxY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [minX, maxY],
+        [minX, minY],
+      ],
+    },
+  ]
+}
+
+export function updateLabelHitObjects(label: SpriteLabel) {
+  label.userData.hitObjects = getLabelHitObjects(label)
 }
 
 function formatNumber(apiNumber: Number) {

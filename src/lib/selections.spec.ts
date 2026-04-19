@@ -1,4 +1,4 @@
-import { expect, describe, test } from 'vitest'
+import { expect, describe, test, vi } from 'vitest'
 
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -10,7 +10,9 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionTypeDisplayText,
 } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1405,5 +1407,109 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+describe('getSelectionTypeDisplayText', () => {
+  test('coalesces face-like selections under face', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        { artifact: { type: 'wall' } as Artifact, codeRef },
+        { artifact: { type: 'cap' } as Artifact, codeRef },
+        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+      ],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'entity-1',
+          primitiveIndex: 0,
+          primitiveType: 'face',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '4 faces'
+    )
+  })
+
+  test('does not coalesce region selections under profile', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+      otherSelections: [
+        {
+          type: 'engineRegion',
+          id: 'region-1',
+          point: { x: 0, y: 0 },
+          sketchId: 'sketch-1',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '1 region, 1 profile'
+    )
+  })
+
+  test('treats path artifacts with region subtype as region selections', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        {
+          artifact: { type: 'path', subType: 'region' } as Artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '1 region'
+    )
+  })
+
+  test('coalesces edge-like selections under edge', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        { artifact: { type: 'segment' } as Artifact, codeRef },
+        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
+        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+      ],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'entity-2',
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '4 edges'
+    )
+  })
+})
+
+describe('selectSketchPlane', () => {
+  test('routes offset plane ids into sketch solve when sketch solve mode is enabled', async () => {
+    const modelingSend = vi.fn()
+    const getFaceDetails = vi.fn()
+
+    await selectSketchPlane('plane001', true, {
+      artifactGraph: new Map(),
+      rustContext: { defaultPlanes: null },
+      sceneEntitiesManager: { getFaceDetails },
+      sceneInfra: { modelingSend },
+    } as any)
+
+    expect(modelingSend).toHaveBeenCalledWith({
+      type: 'Select sketch solve plane',
+      data: 'plane001',
+    })
+    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })

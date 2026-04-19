@@ -1,7 +1,7 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
-  isArcSegment,
+  isArcLikeSegment,
   isDiameterConstraint,
   isPointSegment,
   isRadiusConstraint,
@@ -37,7 +37,7 @@ export class RadiusConstraintBuilder {
     hoveredId: number | null
   ) {
     const arc = objects[obj.kind.constraint.arc]
-    if (isArcSegment(arc)) {
+    if (isArcLikeSegment(arc)) {
       const centerObject = objects[arc.kind.segment.center]
       const startObject = objects[arc.kind.segment.start]
 

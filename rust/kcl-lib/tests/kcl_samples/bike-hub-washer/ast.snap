@@ -51,7 +51,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "radius_inner",
+            "name": "radiusInner",
             "start": 0,
             "type": "Identifier"
           },
@@ -88,7 +88,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "ring_width",
+            "name": "ringWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -125,7 +125,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "ring_height",
+            "name": "ringHeight",
             "start": 0,
             "type": "Identifier"
           },
@@ -162,7 +162,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "top_height",
+            "name": "topHeight",
             "start": 0,
             "type": "Identifier"
           },
@@ -199,7 +199,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "top_rim_width",
+            "name": "topRimWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -236,7 +236,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "top_inset",
+            "name": "topInset",
             "start": 0,
             "type": "Identifier"
           },
@@ -273,7 +273,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bottom_inner_rim_width",
+            "name": "bottomInnerRimWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -310,7 +310,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bottom_outer_rim_width",
+            "name": "bottomOuterRimWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -347,7 +347,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bottom_edge",
+            "name": "bottomEdge",
             "start": 0,
             "type": "Identifier"
           },
@@ -384,7 +384,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bottom_height",
+            "name": "bottomHeight",
             "start": 0,
             "type": "Identifier"
           },
@@ -421,7 +421,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bottom_extrusion_width",
+            "name": "bottomExtrusionWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -458,7 +458,7 @@ description: Result of parsing bike-hub-washer.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "inside_ring_width",
+            "name": "insideRingWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -510,7 +510,7 @@ description: Result of parsing bike-hub-washer.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "ring_width",
+                  "name": "ringWidth",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -559,7 +559,7 @@ description: Result of parsing bike-hub-washer.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "bottom_inner_rim_width",
+                  "name": "bottomInnerRimWidth",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -579,7 +579,7 @@ description: Result of parsing bike-hub-washer.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "bottom_outer_rim_width",
+                  "name": "bottomOuterRimWidth",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -603,7 +603,7 @@ description: Result of parsing bike-hub-washer.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "bottom_extrusion_width",
+                "name": "bottomExtrusionWidth",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -884,7 +884,7 @@ description: Result of parsing bike-hub-washer.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "bottom_inner_rim_width",
+                        "name": "bottomInnerRimWidth",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -942,7 +942,7 @@ description: Result of parsing bike-hub-washer.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "bottom_height",
+                          "name": "bottomHeight",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1007,7 +1007,7 @@ description: Result of parsing bike-hub-washer.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "bottom_extrusion_width",
+                        "name": "bottomExtrusionWidth",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -1064,7 +1064,7 @@ description: Result of parsing bike-hub-washer.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "bottom_height",
+                        "name": "bottomHeight",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -1124,7 +1124,7 @@ description: Result of parsing bike-hub-washer.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "bottom_outer_rim_width",
+                          "name": "bottomOuterRimWidth",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1200,7 +1200,7 @@ description: Result of parsing bike-hub-washer.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "bottom_edge",
+                        "name": "bottomEdge",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -1342,7 +1342,7 @@ description: Result of parsing bike-hub-washer.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "ring_height",
+                            "name": "ringHeight",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -1407,7 +1407,7 @@ description: Result of parsing bike-hub-washer.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "top_rim_width",
+                          "name": "topRimWidth",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1473,7 +1473,7 @@ description: Result of parsing bike-hub-washer.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "top_inset",
+                          "name": "topInset",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1550,115 +1550,6 @@ description: Result of parsing bike-hub-washer.kcl
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "xLine",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "yLine",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "length",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "inside_ring_width",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
                     }
                   }
                 ],
@@ -2156,6 +2047,18 @@ description: Result of parsing bike-hub-washer.kcl
           }
         ],
         "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
           {
             "commentStart": 0,
             "end": 0,

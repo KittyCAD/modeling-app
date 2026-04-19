@@ -3,7 +3,7 @@
 // Categories: Aerospace
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 plateThickness = 0.08
@@ -19,7 +19,7 @@ boltPitchCircleDiameter = 2.5
 
 // 2D cross-sectional profile of the part that will later be revolved
 antennaCrossSectionSketch = startSketchOn(YZ)
-antennaCrossSectionProfile = sketch(on = YZ) {
+antennaCrossSectionProfile = sketch(on = antennaCrossSectionSketch) {
   line1 = line(start = [var 1.5in, var 0in], end = [var 1.5in, var 0.08in])
   line2 = line(start = [var 1.5in, var 0.08in], end = [var 0.32in, var 0.08in])
   coincident([line1.end, line2.start])
@@ -100,4 +100,3 @@ countersink([-r * 0.5, r * 0.8660254]) // 120 °
 countersink([-r, 0]) // 180 °
 countersink([-r * 0.5, -r * 0.8660254]) // 240 °
 countersink([r * 0.5, -r * 0.8660254]) // 300 °
-

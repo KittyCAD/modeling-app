@@ -13,4 +13,4 @@ tool = startProfile(startSketchOn(XY), at = [0, -4.75])
   |> extrude(length = 90)
 
 twoParts = subtract(cylinder, tools = tool)
-surface001 = deleteFace(twoParts, faces = [faceId(twoParts, index = 1)])
+surface001 = deleteFace(twoParts, faces = [faceId(twoParts, index = 2)])

@@ -1,7 +1,7 @@
 // Dog House (Great Dane) - Door
 // Door panel and hardware placement for the dog house.
 
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
@@ -146,4 +146,3 @@ crateDoorParts = concat(
 )
 
 crateDoorParts
-

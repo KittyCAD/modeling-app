@@ -11,4 +11,3 @@ export mountingHoleSize = 4.5
 export bendRadius = 15
 export sheetThickness = 2.125
 export heatSinkDepth = 55
-

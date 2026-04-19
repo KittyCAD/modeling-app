@@ -5,7 +5,6 @@ import {
 } from '@codemirror/autocomplete'
 import {
   defaultKeymap,
-  history,
   historyKeymap,
   indentWithTab,
 } from '@codemirror/commands'
@@ -42,7 +41,11 @@ import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { localHistoryTarget } from '@src/editor/HistoryView'
 import { operationsExtension } from '@src/editor/plugins/operations'
+import { executionEffectsExtension } from '@src/editor/plugins/execution'
+import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { writeEffectsExtension } from '@src/editor/plugins/write'
+import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
+import { createHistoryExtension } from '@src/editor/historyConfig'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -53,6 +56,9 @@ export const kclAutocompleteCompartment = new Compartment()
 
 export function baseEditorExtensions() {
   const extensions: Extension = [
+    executionEffectsExtension(),
+    // Toggled on while in sketch mode
+    sketchSceneGraphCompartment.of([]),
     writeEffectsExtension(),
     // These two extensions are empty to begin with, then reconfigured when the LSP becomes available
     kclLspCompartment.of([]),
@@ -64,7 +70,7 @@ export function baseEditorExtensions() {
       })
     ),
     lineHighlightField,
-    historyCompartment.of(history()),
+    historyCompartment.of(createHistoryExtension()),
     localHistoryTarget.of([]),
     kclAstExtension(),
     operationsExtension(),
@@ -95,6 +101,7 @@ export function baseEditorExtensions() {
     themeCompartment.of(Prec.highest([])),
     rectangularSelection(),
     dropCursor(),
+    blurOnEscape,
     interact({
       rules: [
         // a rule for a number dragger

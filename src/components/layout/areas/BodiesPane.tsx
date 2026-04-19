@@ -64,7 +64,7 @@ function BodiesList({
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
-        {bodies.entries().map(([id, props], i) => (
+        {Array.from(bodies.entries()).map(([id, props], i) => (
           <BodyItem key={id || i} {...props} />
         ))}
       </ul>
@@ -122,11 +122,11 @@ function BodyItem({
                 })
                   .then((result) => {
                     if (err(result)) {
-                      toast.error(result.message || 'Error while unhiding')
+                      toast.error(result.message || 'Error while unhiding.')
                     }
                   })
                   .catch((e) => {
-                    toast.error(e.message || 'Error while unhiding')
+                    toast.error(e.message || 'Error while unhiding.')
                   })
               }
             }}

@@ -1,33 +1,50 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{
-    shared::BodyType,
-    units::{UnitAngle, UnitLength},
-};
+use kcmc::shared::BodyType;
+use kcmc::units::UnitAngle;
+use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
+use crate::CompilationIssue;
+use crate::MetaSettings;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ExecState;
+use crate::execution::Extrudable;
+use crate::execution::ExtrudeSurface;
+use crate::execution::Helix;
+use crate::execution::KclObjectFields;
+use crate::execution::KclValue;
+use crate::execution::Metadata;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Segment;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
-use crate::{
-    CompilationError, MetaSettings, ModuleId, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane,
-        PlaneInfo, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
-        kcl_value::FunctionSource,
-        types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
-    },
-    front::Number,
-    parsing::ast::types::TagNode,
-    std::{
-        CircularDirection,
-        shapes::{PolygonType, SketchOrSurface},
-        sketch::FaceTag,
-        sweep::SweepPath,
-    },
-};
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::NumericSuffixTypeConvertError;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::execution::types::UnitType;
+use crate::front::Number;
+use crate::parsing::ast::types::TagNode;
+use crate::std::CircularDirection;
+use crate::std::edge::check_tag_not_ambiguous;
+use crate::std::shapes::PolygonType;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::FaceTag;
+use crate::std::sweep::SweepPath;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
@@ -71,7 +88,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -89,7 +106,7 @@ impl TyF64 {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -424,6 +441,9 @@ impl Args {
                 vec![self.source_range],
             )));
         }
+
+        // Check for ambiguous region-mapped tags (1:N).
+        check_tag_not_ambiguous(tag, self)?;
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
@@ -924,6 +944,7 @@ impl_from_kcl_for_vec!(crate::execution::EdgeCut);
 impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
+impl_from_kcl_for_vec!(Segment);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
@@ -992,19 +1013,24 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
             KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
+                let mut sketches = vec![];
                 let mut helices = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Sketch { value } => sketches.push((**value).clone()),
                         KclValue::Helix { value } => helices.push((**value).clone()),
                         _ => return None,
                     }
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
+                } else if !sketches.is_empty() {
+                    Some(Self::SketchSet(sketches))
                 } else {
                     Some(Self::HelixSet(helices))
                 }
@@ -1068,7 +1094,10 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).or_else(|| case2(arg).map(Self::Edge))
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 
@@ -1081,7 +1110,10 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).or_else(|| case2(arg).map(Self::Edge))
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 
@@ -1290,10 +1322,12 @@ impl<'a> FromKclValue<'a> for SweepPath {
         let case1 = Sketch::from_kcl_val;
         let case2 = <Vec<Sketch>>::from_kcl_val;
         let case3 = Helix::from_kcl_val;
+        let case4 = <Vec<Segment>>::from_kcl_val;
         case1(arg)
             .map(Self::Sketch)
             .or_else(|| case2(arg).map(|arg0: Vec<Sketch>| Self::Sketch(arg0[0].clone())))
             .or_else(|| case3(arg).map(|arg0: Helix| Self::Helix(Box::new(arg0))))
+            .or_else(|| case4(arg).map(Self::Segments))
     }
 }
 impl<'a> FromKclValue<'a> for String {

@@ -1,20 +1,36 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use crate::{
-    CompilationError, NodePath, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, Solid, StatementKind,
-        TagEngineInfo, TagIdentifier, annotations,
-        cad_op::{Group, OpArg, OpKclValue, Operation},
-        control_continue,
-        kcl_value::{FunctionBody, FunctionSource, NamedParam},
-        memory,
-        types::RuntimeType,
-    },
-    parsing::ast::types::{CallExpressionKw, Node, Type},
-};
+use crate::CompilationIssue;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BodyType;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Geometry;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::Metadata;
+use crate::execution::Solid;
+use crate::execution::StatementKind;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
+use crate::execution::cad_op::Group;
+use crate::execution::cad_op::OpArg;
+use crate::execution::cad_op::OpKclValue;
+use crate::execution::cad_op::Operation;
+use crate::execution::control_continue;
+use crate::execution::kcl_value::FunctionBody;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::NamedParam;
+use crate::execution::memory;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Type;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -27,6 +43,7 @@ pub struct Args<Status: ArgsStatus = Desugared> {
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub source_range: SourceRange,
+    pub node_path: Option<NodePath>,
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
@@ -55,6 +72,7 @@ impl Args<Sugary> {
         labeled: IndexMap<String, Arg>,
         unlabeled: Vec<(Option<String>, Arg)>,
         source_range: SourceRange,
+        node_path: Option<NodePath>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
         fn_name: Option<String>,
@@ -64,6 +82,7 @@ impl Args<Sugary> {
             labeled,
             unlabeled,
             source_range,
+            node_path,
             ctx,
             pipe_value: exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
             _status: std::marker::PhantomData,
@@ -84,12 +103,18 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
+    pub fn new_no_args(
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+        ctx: ExecutorContext,
+        fn_name: Option<String>,
+    ) -> Args {
         Args {
             fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
+            node_path,
             ctx,
             pipe_value: None,
             _status: std::marker::PhantomData,
@@ -188,6 +213,7 @@ impl Node<CallExpressionKw> {
             fn_args,
             unlabeled,
             callsite,
+            self.node_path.clone(),
             exec_state,
             ctx.clone(),
             Some(fn_name.name.name.clone()),
@@ -250,7 +276,7 @@ impl FunctionSource {
     ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
-                CompilationError::err(
+                CompilationIssue::err(
                     callsite,
                     format!(
                         "{} is deprecated, see the docs for a recommended replacement",
@@ -510,6 +536,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         };
 
                         let mut info = info.clone();
+                        info.id = v.get_id();
                         info.surface = Some(v.clone());
                         info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
@@ -634,6 +661,7 @@ fn type_check_params_kw(
     let fn_name = fn_name.or(args.fn_name.as_deref());
     let mut result = Args::new_no_args(
         args.source_range,
+        args.node_path.clone(),
         args.ctx,
         fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
     );
@@ -685,7 +713,7 @@ fn type_check_params_kw(
                 result.unlabeled = vec![(None, pipe)];
             } else if let Some(arg) = args.labeled.swap_remove(name) {
                 // Mistakenly labelled
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call. You might try removing the `{name} = `",
@@ -731,7 +759,7 @@ fn type_check_params_kw(
             // Try to un-spread args into an array
             if let Some(Type::Array { len, .. }) = ty {
                 if len.satisfied(args.unlabeled.len(), false).is_none() {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         args.source_range,
                         format!(
                             "{} expects an array input argument with {} elements",
@@ -782,7 +810,7 @@ fn type_check_params_kw(
         };
 
         let mut errors = args.unlabeled.iter().map(|(_, arg)| {
-            CompilationError::err(
+            CompilationIssue::err(
                 arg.source_range,
                 format!("This argument needs a label, but it doesn't have one{suggestion}"),
             )
@@ -835,7 +863,7 @@ fn type_check_params_kw(
                 }
             }
             None => {
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "`{label}` is not an argument of {}",
@@ -939,10 +967,16 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
-    use crate::{
-        execution::{ContextType, EnvironmentRef, memory::Stack, parse_execute, types::NumericType},
-        parsing::ast::types::{DefaultParamVal, FunctionExpression, Identifier, Parameter, Program},
-    };
+    use crate::execution::ContextType;
+    use crate::execution::EnvironmentRef;
+    use crate::execution::memory::Stack;
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::parsing::ast::types::DefaultParamVal;
+    use crate::parsing::ast::types::FunctionExpression;
+    use crate::parsing::ast::types::Identifier;
+    use crate::parsing::ast::types::Parameter;
+    use crate::parsing::ast::types::Program;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -1079,6 +1113,7 @@ mod test {
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),
+                node_path: None,
                 ctx: exec_ctxt,
                 pipe_value: None,
                 _status: std::marker::PhantomData,

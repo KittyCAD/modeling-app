@@ -1,6 +1,6 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Intersection, Object3D } from 'three'
-import type { Group } from 'three'
+import { Object3D } from 'three'
+import type { Group, Intersection } from 'three'
 import {
   AmbientLight,
   Color,
@@ -34,7 +34,7 @@ import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
-import { getAngle, getLength } from '@src/lib/utils'
+import { baseUnitToMm, getAngle, getLength } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
@@ -42,7 +42,6 @@ import type {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { signal } from '@preact/signals-core'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -106,16 +105,18 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
+  private cameraDirty = false // used for onBeforeRender
+  private onBeforeRender: (() => void) | null = null // Used by sketch solve currently to update segments to keep their size fixed in screen space
   lastMouseState: MouseState = { type: 'idle' }
 
   public readonly baseUnitChange = new Signal()
-  public readonly scaleFactor = signal<number>(1)
 
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
+  onMouseDownSelection: (() => boolean) | undefined
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
@@ -128,8 +129,9 @@ export class SceneInfra {
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
-    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
-    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
+    onMouseDownSelection?: () => boolean // used by sketch-solve only
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
     onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
     onAreaSelect?: (arg: OnAreaSelectCallbackArgs) => Voidish
     onAreaSelectEnd?: (arg: OnAreaSelectCallbackArgs) => Voidish
@@ -139,6 +141,9 @@ export class SceneInfra {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
+    if ('onMouseDownSelection' in callbacks) {
+      this.onMouseDownSelection = callbacks.onMouseDownSelection
+    }
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.onAreaSelectStartCallback =
@@ -151,9 +156,9 @@ export class SceneInfra {
   }
 
   set baseUnit(unit: BaseUnit) {
-    const newBaseUnitMultiplier = baseUnitTomm(unit)
+    const newBaseUnitMultiplier = baseUnitToMm(unit)
     if (newBaseUnitMultiplier !== this._baseUnitMultiplier) {
-      this._baseUnitMultiplier = baseUnitTomm(unit)
+      this._baseUnitMultiplier = baseUnitToMm(unit)
       this.scene.scale.set(
         this._baseUnitMultiplier,
         this._baseUnitMultiplier,
@@ -197,6 +202,7 @@ export class SceneInfra {
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
+      onMouseDownSelection: undefined,
       onMouseEnter: () => {},
       onMouseLeave: () => {},
       onAreaSelectStart: () => {},
@@ -307,7 +313,7 @@ export class SceneInfra {
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: Object3D
+    object: Object3D // just a dummy Object3D in case of sketch solve, should be deleted when sketch 1 gets deprecated
     hasBeenDragged: boolean
   } | null = null
   areaSelect: {
@@ -401,10 +407,16 @@ export class SceneInfra {
     ]
     this.renderer.setSize(canvasResolution[0], canvasResolution[1], false)
     this.labelRenderer.setSize(cssSize[0], cssSize[1])
+    this.cameraDirty = true
   }
 
   onCameraChange = () => {
-    this.scaleFactor.value = this.getClientSceneScaleFactor()
+    this.cameraDirty = true
+  }
+
+  setOnBeforeRender(callback: (() => void) | null) {
+    this.onBeforeRender = callback
+    this.cameraDirty = callback !== null
   }
 
   animate = () => {
@@ -418,15 +430,27 @@ export class SceneInfra {
         const currentTime = performance.now()
         if (currentTime - this.lastFrameTime > 1000 / 30) {
           // Limit to 30fps while paused
-          this.renderer.render(this.scene, this.camControls.camera)
-          this.labelRenderer.render(this.scene, this.camControls.camera)
+          this.renderFrame()
           this.lastFrameTime = currentTime
         }
       } else {
-        this.renderer.render(this.scene, this.camControls.camera)
-        this.labelRenderer.render(this.scene, this.camControls.camera)
+        this.renderFrame()
       }
     }
+  }
+
+  private renderFrame() {
+    this.runOnBeforeRenderIfNeeded()
+    this.renderer.render(this.scene, this.camControls.camera)
+    this.labelRenderer.render(this.scene, this.camControls.camera)
+  }
+
+  private runOnBeforeRenderIfNeeded() {
+    if (!this.cameraDirty || !this.onBeforeRender) {
+      return
+    }
+    this.cameraDirty = false
+    this.onBeforeRender()
   }
 
   stop = () => {
@@ -773,16 +797,28 @@ export class SceneInfra {
 
     const mouseDownVector = this.currentMouseVector.clone()
 
-    const intersect = this.raycastRing()[0]
-    if (intersect) {
-      const intersectParent = intersect?.object?.parent as Group
-      this.selected = intersectParent.isGroup
+    if (this.onMouseDownSelection) {
+      // function is defined -> we're in new sketch-solve mode
+      this.selected = this.onMouseDownSelection()
         ? {
             mouseDownVector,
-            object: intersect.object,
+            object: new Object3D(), // just a dummy, delete this property if sketch 1 is deprecated
             hasBeenDragged: false,
           }
         : null
+    } else {
+      // sketch-v1, this can be deleted if old sketch mode gets deprecated
+      const intersect = this.raycastRing()[0]
+      if (intersect) {
+        const intersectParent = intersect?.object?.parent as Group
+        this.selected = intersectParent.isGroup
+          ? {
+              mouseDownVector,
+              object: intersect.object,
+              hasBeenDragged: false,
+            }
+          : null
+      }
     }
 
     // If nothing was selected, initialize area select
@@ -959,21 +995,4 @@ export class SceneInfra {
 function isAxisObject(object: Object3D | undefined): boolean {
   if (!object) return false
   return object.name === X_AXIS || object.name === Y_AXIS
-}
-
-function baseUnitTomm(baseUnit: BaseUnit) {
-  switch (baseUnit) {
-    case 'mm':
-      return 1
-    case 'cm':
-      return 10
-    case 'm':
-      return 1000
-    case 'in':
-      return 25.4
-    case 'ft':
-      return 304.8
-    case 'yd':
-      return 914.4
-  }
 }

@@ -5,6 +5,7 @@ import type {
 import type { Coords2d } from '@src/lang/util'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 
 /**
  * Creates the onAreaSelectEnd callback for trim operations.
@@ -29,6 +30,7 @@ export function createOnAreaSelectEndCallback({
       new_objects: number[]
       invalidates_ids: boolean
     }
+    checkpointId?: number | null
   }) => void
 }): (points: Coords2d[]) => Promise<void> {
   return async (points: Coords2d[]) => {
@@ -62,9 +64,11 @@ export function createOnAreaSelectEndCallback({
       onNewSketchOutcome({
         sourceDelta: result.kclSource,
         sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId: result.checkpointId ?? null,
       })
     } catch (error) {
       console.error('[TRIM] Exception in onAreaSelectEnd:', error)
+      toastSketchSolveError(error)
     }
   }
 }

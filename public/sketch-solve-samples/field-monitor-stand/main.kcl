@@ -3,7 +3,7 @@
 // Categories: Computer Hardware
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 plateLength = 121
@@ -25,7 +25,7 @@ angle = 110deg
 
 // Model the base extrusion of the part
 baseSketch = startSketchOn(YZ)
-bodyProfile = sketch(on = YZ) {
+bodyProfile = sketch(on = baseSketch) {
   line1 = line(start = [var -60mm, var 0mm], end = [var 0mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var -41.38mm, var 113.7mm])
   coincident([line1.end, line2.start])
@@ -41,7 +41,7 @@ bodyProfile = sketch(on = YZ) {
 }
 
 // Model a supporting gusset on the interior
-gussetProfile = sketch(on = YZ) {
+gussetProfile = sketch(on = baseSketch) {
   line1 = line(start = [var -4.28mm, var 3mm], end = [var -19.28mm, var 3mm])
   line2 = line(start = [var -19.28mm, var 3mm], end = [var -19.28mm, var 44.21mm])
   coincident([line1.end, line2.start])
@@ -112,4 +112,3 @@ fillet(
   ],
   radius = 5,
 )
-

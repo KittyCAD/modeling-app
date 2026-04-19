@@ -1,0 +1,486 @@
+// Gridfinity Bins With A Stacking Lip
+// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins
+// Categories: Maker
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
+
+binLength = 41.5
+binHeight = 7.0
+binBaseLength = 2.95
+binTol = 0.25
+binThk = 1.2
+cornerRadius = 3.75
+firstStep = 0.8
+secondStep = 1.8
+thirdStep = 2.15
+magOuterDiam = 6.5
+magOffset = 4.8
+magDepth = 2.4
+lipRadius = 0.5
+lipStep1 = 1.4
+lipStep2 = 1.2
+lipStep3 = 0.7
+lipStep4 = 1.8
+lipStep5 = 1.9
+
+countBinWidth = 2
+countBinLength = 3
+countBinHeight = 1
+
+height = firstStep + secondStep + thirdStep
+lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
+totalWidth = (binLength + 2 * binTol) * countBinWidth
+totalLength = (binLength + 2 * binTol) * countBinLength
+baseFaceStartX = binBaseLength + binTol
+baseFaceMidX = binTol + thirdStep
+baseFaceTopY = firstStep + secondStep
+baseFaceHeight = height
+binTopRightX = totalWidth - cornerRadius
+binTopOuterX = totalWidth
+binTopTopY = totalLength
+binTopInnerY = totalLength - cornerRadius
+
+baseFacePlane = offsetPlane(YZ, offset = cornerRadius + binTol)
+baseFaceSketch = sketch(on = baseFacePlane) {
+  baseOffset = line(start = [var 0mm, var 0mm], end = [var 3.2mm, var 0mm], construction = true)
+  coincident([baseOffset.start, ORIGIN])
+  line1 = line(start = [var 3.2mm, var 0mm], end = [var 3.2mm, var 4.75mm])
+  coincident([baseOffset.end, line1.start])
+  line2 = line(start = [var 3.2mm, var 4.75mm], end = [var 0.25mm, var 4.75mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.25mm, var 4.75mm], end = [var 2.4mm, var 2.6mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.4mm, var 2.6mm], end = [var 2.4mm, var 0.8mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.4mm, var 0.8mm], end = [var 3.2mm, var 0mm])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+  midBaseGuide = line(start = [var 0mm, var 0mm], end = [var 2.4mm, var 0mm], construction = true)
+  coincident([midBaseGuide.start, baseOffset.start])
+  midTopGuide = line(start = [var 2.4mm, var 0mm], end = [var 2.4mm, var 2.6mm], construction = true)
+  coincident([midTopGuide.start, midBaseGuide.end])
+  coincident([midTopGuide.end, line4.start])
+  horizontal(baseOffset)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line4)
+  horizontal(midBaseGuide)
+  vertical(midTopGuide)
+  distance([baseOffset.start, baseOffset.end]) == binBaseLength + binTol
+  distance([line1.start, line1.end]) == height
+  distance([line2.end, line2.start]) == binBaseLength
+  distance([midBaseGuide.start, midBaseGuide.end]) == binTol + thirdStep
+  distance([midTopGuide.start, midTopGuide.end]) == firstStep + secondStep
+  distance([line4.start, line4.end]) == secondStep
+}
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
+singleSide = extrude(baseFaceRegion, length = binLength - (cornerRadius * 2))
+
+sides = patternCircular3d(
+  singleSide,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2,
+    (binLength + 2 * binTol) / 2,
+    0
+  ],
+  instances = 4,
+  rotateDuplicates = true,
+)
+
+axis000 = {
+  direction = [0.0, 1.0],
+  origin = [
+    cornerRadius + binTol,
+    cornerRadius + binTol
+  ]
+}
+
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
+singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
+hide(baseFaceSketch)
+
+corners = patternCircular3d(
+  singleCorner,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2,
+    (binLength + 2 * binTol) / 2,
+    0
+  ],
+  instances = 4,
+  rotateDuplicates = true,
+)
+
+singleBinFillSketch = sketch(on = XY) {
+  line1 = line(start = [var 4.0mm, var 3.2mm], end = [var 38.0mm, var 3.2mm])
+  arc2 = arc(start = [var 38.0mm, var 3.2mm], end = [var 38.8mm, var 4.0mm], center = [var 38.0mm, var 4.0mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 38.8mm, var 4.0mm], end = [var 38.8mm, var 38.0mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 38.8mm, var 38.0mm], end = [var 38.0mm, var 38.8mm], center = [var 38.0mm, var 38.0mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 38.0mm, var 38.8mm], end = [var 4.0mm, var 38.8mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var 4.0mm, var 38.8mm], end = [var 3.2mm, var 38.0mm], center = [var 4.0mm, var 38.0mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 3.2mm, var 38.0mm], end = [var 3.2mm, var 4.0mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var 3.2mm, var 4.0mm], end = [var 4.0mm, var 3.2mm], center = [var 4.0mm, var 4.0mm])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 4.0mm, var 0mm], construction = true)
+  coincident([guide1.start, ORIGIN])
+  guide2 = line(start = [var 4.0mm, var 0mm], end = [var 4.0mm, var 3.2mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line1.start])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == firstStep
+  radius(arc4) == firstStep
+  radius(arc6) == firstStep
+  radius(arc8) == firstStep
+  distance([guide1.start, guide1.end]) == 4.0mm
+  distance([guide2.start, guide2.end]) == 3.2mm
+  distance([line1.start, line1.end]) == 34.0mm
+  distance([line3.start, line3.end]) == 34.0mm
+}
+singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
+singleBinFill = extrude(singleBinFillRegion, length = height)
+hide(singleBinFillSketch)
+magPocketPlane = planeOf(singleBinFill, face = START)
+magPocketSketch = circle(
+       magPocketPlane,
+       center = [
+         -magOffset - binBaseLength - binTol,
+         magOffset + binBaseLength + binTol
+       ],
+       radius = magOuterDiam / 2,
+     )
+  |> patternCircular2d(
+       arcDegrees = 360deg,
+       center = [
+         (-binLength + 2 * binTol) / 2,
+         (binLength + 2 * binTol) / 2
+       ],
+       instances = 4,
+       rotateDuplicates = true,
+     )
+magPocketCutters = extrude(magPocketSketch, length = -magDepth)
+hide(magPocketSketch)
+singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
+
+binSides = patternLinear3d(
+       sides,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
+       distance = binLength + binTol * 2,
+     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
+
+binCorners = patternLinear3d(
+       corners,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
+       distance = binLength + binTol * 2,
+     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
+
+binFill = patternLinear3d(
+       singleBinFillWithPockets,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
+       distance = binLength + binTol * 2,
+     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
+
+binTopPlane = offsetPlane(XY, offset = height)
+binTopSketch = sketch(on = binTopPlane) {
+  line1 = line(start = [var 3.75mm, var 0mm], end = [var 80.25mm, var 0mm])
+  arc2 = arc(start = [var 80.25mm, var 0mm], end = [var 84.0mm, var 3.75mm], center = [var 80.25mm, var 3.75mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 84.0mm, var 3.75mm], end = [var 84.0mm, var 122.25mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 84.0mm, var 122.25mm], end = [var 80.25mm, var 126.0mm], center = [var 80.25mm, var 122.25mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 80.25mm, var 126.0mm], end = [var 3.75mm, var 126.0mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var 3.75mm, var 126.0mm], end = [var 0mm, var 122.25mm], center = [var 3.75mm, var 122.25mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 0mm, var 122.25mm], end = [var 0mm, var 3.75mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var 0mm, var 3.75mm], end = [var 3.75mm, var 0mm], center = [var 3.75mm, var 3.75mm])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 3.75mm, var 0mm], construction = true)
+  coincident([guide1.start, ORIGIN])
+  coincident([guide1.end, line1.start])
+  guide2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3.75mm], construction = true)
+  coincident([guide2.start, ORIGIN])
+  coincident([guide2.end, line7.end])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == cornerRadius
+  radius(arc4) == cornerRadius
+  radius(arc6) == cornerRadius
+  radius(arc8) == cornerRadius
+  distance([guide1.start, guide1.end]) == cornerRadius
+  distance([line1.start, line1.end]) == totalWidth - (2 * cornerRadius)
+  distance([line3.start, line3.end]) == totalLength - (2 * cornerRadius)
+  distance([guide2.start, guide2.end]) == cornerRadius
+}
+binTopRegion = region(segments = [binTopSketch.line1])
+binTop = extrude(binTopRegion, length = binHeight * countBinHeight)
+  |> shell(faces = [END], thickness = binThk)
+hide(binTopSketch)
+
+plane000 = {
+  origin = [
+    cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+plane001 = {
+  origin = [
+    0.0,
+    countBinLength * (binLength + 2 * binTol) - cornerRadius,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+plane002 = {
+  origin = [
+    countBinWidth * (binLength + 2 * binTol) - cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+lipLengthSketch = sketch(on = plane000) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+  arc1 = arc(start = [var 0.85mm, var 6.15mm], end = [var 0.04mm, var 5.79mm], center = [var 0.52mm, var 5.8mm])
+  coincident([arc1.start, line3.start])
+  coincident([arc1.end, line1.end])
+  tangent([line1, arc1])
+}
+lipLengthRegion = region(segments = [lipLengthSketch.line1])
+lipSingleLength = extrude(lipLengthRegion, length = binLength * countBinWidth - (2 * cornerRadius) + 2 * binTol * countBinWidth)
+
+lipWidthSketch = sketch(on = plane001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+  arc1 = arc(start = [var 0.85mm, var 6.15mm], end = [var 0.03mm, var 5.8mm], center = [var 0.49mm, var 5.85mm])
+  coincident([arc1.start, line3.start])
+  coincident([arc1.end, line1.end])
+  tangent([line1, arc1])
+}
+lipWidthRegion = region(segments = [lipWidthSketch.line1])
+lipSingleWidth = extrude(lipWidthRegion, length = binLength * countBinLength - (2 * cornerRadius) + 2 * binTol * countBinLength)
+hide(lipWidthSketch)
+
+lipLengths = patternCircular3d(
+  lipSingleLength,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2 * countBinWidth,
+    (binLength + 2 * binTol) / 2 * countBinLength,
+    0
+  ],
+  instances = 2,
+  rotateDuplicates = true,
+)
+
+lipWidths = patternCircular3d(
+  lipSingleWidth,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2 * countBinWidth,
+    (binLength + 2 * binTol) / 2 * countBinLength,
+    0
+  ],
+  instances = 2,
+  rotateDuplicates = true,
+)
+
+axis001 = {
+  direction = [0.0, 1.0],
+  origin = [cornerRadius, cornerRadius]
+}
+
+lipLengthCornerRegion = region(segments = [lipLengthSketch.line1])
+lipSingleLengthCorner = revolve(lipLengthCornerRegion, angle = -90deg, axis = axis001)
+hide(lipLengthSketch)
+
+lipWidthCornerSketch = sketch(on = plane002) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  arc2 = arc(start = [var 0mm, var 5.792893mm], end = [var 0.853553mm, var 6.146446mm], center = [var 0.5mm, var 5.792893mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  radius(arc2) == lipRadius
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+}
+lipWidthCornerRegion = region(segments = [lipWidthCornerSketch.line1])
+lipSingleWidthCorner = revolve(lipWidthCornerRegion, angle = 90deg, axis = axis001)
+hide(lipWidthCornerSketch)
+
+lipCorners000 = patternCircular3d(
+  lipSingleLengthCorner,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2 * countBinWidth,
+    (binLength + 2 * binTol) / 2 * countBinLength,
+    0
+  ],
+  instances = 2,
+  rotateDuplicates = true,
+)
+
+lipCorners001 = patternCircular3d(
+  lipSingleWidthCorner,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [
+    (binLength + 2 * binTol) / 2 * countBinWidth,
+    (binLength + 2 * binTol) / 2 * countBinLength,
+    0
+  ],
+  instances = 2,
+  rotateDuplicates = true,
+)

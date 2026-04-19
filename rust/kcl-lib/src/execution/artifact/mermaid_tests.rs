@@ -75,6 +75,12 @@ impl Artifact {
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => {
                 let mut ids = vec![a.plane_id];
+                if let Some(sketch_block_id) = a.sketch_block_id {
+                    ids.push(sketch_block_id);
+                }
+                if let Some(origin_path_id) = a.origin_path_id {
+                    ids.push(origin_path_id);
+                }
                 if let Some(inner_path_id) = a.inner_path_id {
                     ids.push(inner_path_id);
                 }
@@ -83,7 +89,13 @@ impl Artifact {
                 }
                 ids
             }
-            Artifact::Segment(a) => vec![a.path_id],
+            Artifact::Segment(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(original_id) = a.original_seg_id {
+                    ids.push(original_id);
+                }
+                ids
+            }
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::PrimitiveFace(a) => vec![a.solid_id],
             Artifact::PrimitiveEdge(a) => vec![a.solid_id],
@@ -124,7 +136,8 @@ impl Artifact {
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
                 // Note: Don't include these since they're parents: plane_id,
-                // inner_path_id, outer_path_id.
+                // sketch_block_id, origin_path_id, inner_path_id,
+                // outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -141,7 +154,8 @@ impl Artifact {
                 ids
             }
             Artifact::Segment(a) => {
-                // Note: Don't include these since they're parents: path_id.
+                // Note: Don't include these since they're parents: path_id,
+                // original_seg_id.
                 let mut ids = Vec::new();
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
@@ -173,9 +187,13 @@ impl Artifact {
                 // Note: Don't include these since they're parents: plane_id.
                 Vec::new()
             }
-            Artifact::SketchBlock { .. } => {
-                // Note: Don't include these since they're parents: plane_id (if present).
-                Vec::new()
+            Artifact::SketchBlock(a) => {
+                // Note: Don't include these since they're parents: plane_id.
+                let mut ids = Vec::new();
+                if let Some(path_id) = a.path_id {
+                    ids.push(path_id);
+                }
+                ids
             }
             Artifact::SketchBlockConstraint { .. } => {
                 // Note: Constraints don't have artifact graph parents.
@@ -385,9 +403,14 @@ impl ArtifactGraph {
                 node_path_display(output, prefix, None, &plane.code_ref)?;
             }
             Artifact::Path(path) => {
+                let path_sub_type = if path.sub_type == PathSubType::Region {
+                    " Region"
+                } else {
+                    ""
+                };
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}<br>Consumed: {:?}\"]",
+                    "{prefix}{id}[\"Path{path_sub_type}<br>{:?}<br>Consumed: {:?}\"]",
                     code_ref_display(&path.code_ref),
                     path.consumed
                 )?;
@@ -712,6 +735,76 @@ fn surface_blend_creates_blend_sweep_artifact() {
 }
 
 #[test]
+fn create_region_creates_region_path_sub_type() {
+    let origin_path_id = ArtifactId::new(Uuid::new_v4());
+    let origin_plane_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        origin_path_id,
+        Artifact::Path(Path {
+            id: origin_path_id,
+            sub_type: PathSubType::Sketch,
+            plane_id: origin_plane_id,
+            seg_ids: Vec::new(),
+            consumed: false,
+            sweep_id: None,
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: source_code_ref,
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::CreateRegion::builder()
+            .object_id(Uuid::from(origin_path_id))
+            .segment(Uuid::new_v4())
+            .intersection_segment(Uuid::new_v4())
+            .intersection_index(-1)
+            .curve_clockwise(false)
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Path(region_path) = &updated[0] else {
+        panic!("Expected CreateRegion to create a path artifact, got: {updated:?}");
+    };
+    assert_eq!(region_path.id, ArtifactId::new(cmd_id));
+    assert_eq!(region_path.sub_type, PathSubType::Region);
+    assert_eq!(region_path.plane_id, origin_plane_id);
+    // A region path isn't created from a sketch block directly.
+    assert_eq!(region_path.sketch_block_id, None);
+    // It links back to the origin sketch path.
+    assert_eq!(region_path.origin_path_id, Some(origin_path_id));
+}
+
+#[test]
 fn primitive_edge_does_not_replace_existing_segment_artifact() {
     let shared_id = ArtifactId::new(Uuid::new_v4());
     let path_id = ArtifactId::new(Uuid::new_v4());
@@ -723,6 +816,7 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
         Artifact::Segment(Segment {
             id: shared_id,
             path_id,
+            original_seg_id: None,
             surface_id: None,
             edge_ids: Vec::new(),
             edge_cut_id: None,

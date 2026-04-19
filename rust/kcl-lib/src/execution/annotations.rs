@@ -2,14 +2,22 @@
 
 use std::str::FromStr;
 
-use kittycad_modeling_cmds::coord::{KITTYCAD, OPENGL, System, VULKAN};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::coord::KITTYCAD;
+use kittycad_modeling_cmds::coord::OPENGL;
+use kittycad_modeling_cmds::coord::System;
+use kittycad_modeling_cmds::coord::VULKAN;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    KclError, SourceRange,
-    errors::{KclErrorDetails, Severity},
-    parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
-};
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::ObjectProperty;
 
 /// Annotations which should cause re-execution if they change.
 pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
@@ -22,6 +30,7 @@ pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
+pub(crate) const DOC_CATEGORY: &str = "doc_category";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
 pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
 
@@ -313,6 +322,11 @@ pub(super) fn get_fn_attrs(
                 continue;
             }
 
+            // doc_category is handled by the docs generator, not execution.
+            if &*p.key.name == DOC_CATEGORY {
+                continue;
+            }
+
             if &*p.key.name == EXPERIMENTAL
                 && let Some(b) = p.value.literal_bool()
             {
@@ -335,7 +349,7 @@ pub(super) fn get_fn_attrs(
 
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, found `{}`",
+                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {DOC_CATEGORY}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, found `{}`",
                     &*p.key.name,
                 ),
                 vec![source_range],

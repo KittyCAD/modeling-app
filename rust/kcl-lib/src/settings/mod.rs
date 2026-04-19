@@ -9,7 +9,8 @@ mod generate_settings_docs;
 mod tests {
     use kittycad_modeling_cmds::units::UnitLength;
 
-    use super::types::{Configuration, ModelingSettings};
+    use super::types::Configuration;
+    use super::types::ModelingSettings;
 
     #[test]
     fn default_unit_length_is_millimeters() {

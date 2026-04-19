@@ -1,0 +1,94 @@
+// Propeller
+// A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward
+// Categories: Aerospace
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+bladeCount = 2
+bladeDiameter = 86
+hubDiameter = 8
+hubThickness = 4
+holeDiameter = .25
+twistAngle = 45
+
+// Model the central hub of the propeller
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 101.6in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+hub = extrude(
+       region001,
+       length = hubThickness,
+       symmetric = true,
+       tagEnd = $capEnd001,
+       tagStart = $capStart001,
+     )
+  |> fillet(
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg01, capStart001])
+       ],
+       radius = hubThickness / 6,
+     )
+
+// Bore a central hole from the hub. Chamfer the interior edges
+sketch002 = sketch(on = startSketchOn(hub, face = END)) {
+  circle1 = circle(start = [var 25.4in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+hubBore = extrude(region002, length = -hubThickness)
+  |> chamfer(
+       tags = [
+         getCommonEdge(faces = [capEnd001, seg02])
+       ],
+       length = hubThickness / 10,
+     )
+
+// Sketch the design space of each propeller blade, and revolve around the neutral axis
+sketch003 = sketch(on = YZ) {
+  arc1 = arc(start = [var 3.05in, var 2.56in], end = [var 4.45in, var 2.18in], center = [var 4.15in, var 3.88in])
+  arc2 = arc(start = [var 37.53in, var 5.05in], end = [var 4.45in, var 2.18in], center = [var 37.22in, var -183.66in])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var 43in, var 0.01in], end = [var 37.53in, var 5.05in], center = [var 37.52in, var -0.45in])
+  coincident([arc2.start, arc3.end])
+  line4 = line(start = [var 43in, var 0.01in], end = [var 43in, var 0in])
+  coincident([arc3.start, line4.start])
+  line5 = line(start = [var 43in, var 0in], end = [var 3.05in, var 0in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 3.05in, var 0in], end = [var 3.05in, var 2.56in])
+  coincident([line5.end, line6.start])
+  radius(arc2) == 188.71in
+  vertical(line5)
+  horizontal(line6)
+}
+region003 = region(segments = [sketch003.arc1, sketch003.arc2])
+bladeRevolve = revolve(region003, axis = X)
+  // Subtract out a mounting face to the center hub
+  |> subtract(tools =   startSketchOn(XY)
+    |> circle(diameter = hubDiameter)
+    |> extrude(length = hubThickness * 5, symmetric = true))
+
+// Sketch the cross-section of the blade. Extrude with a twist down the length of the blade
+sketch004 = sketch(on = -XZ) {
+  arc1 = arc(start = [var 8.6in, var 0in], end = [var 8.56in, var 0.05in], center = [var 8.55in, var 0in])
+  arc2 = arc(start = [var 8.56in, var 0.05in], end = [var -8.56in, var 0.05in], center = [var 0in, var -69.63in])
+  coincident([arc1.end, arc2.start])
+  arc3 = arc(start = [var -8.56in, var 0.05in], end = [var -8.6in, var 0in], center = [var -8.55in, var 0in])
+  coincident([arc2.end, arc3.start])
+  line4 = line(start = [var -8.6in, var 0in], end = [var 8.6in, var 0in])
+  coincident([arc3.end, line4.start])
+  radius(arc2) == 70.21in
+  tangent([arc2, arc3])
+}
+region004 = region(segments = [sketch004.arc1, sketch004.arc2])
+bladeTwist = extrude(region004, twistAngle, length = bladeDiameter / 1.9)
+
+// Model the blades by intersecting the outer profile to the twisted section. Pattern about the shaft axis
+blades = intersect([bladeRevolve, bladeTwist])
+  |> patternCircular3d(instances = bladeCount, axis = Z, center = [0, 0, 0])
+
+// Apply wood appearance to the entire propeller model
+[hub, blades]
+  |> appearance(color = "#8b5a2b")

@@ -10,9 +10,11 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
+  formatSettingsLabel,
   getChangedSettingsAtLevel,
   getAllCurrentSettings,
   hiddenOnPlatform,
+  mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   settingsPayloadToProjectConfiguration,
   setSettingsAtLevel,
@@ -213,5 +215,65 @@ describe('project settings serialization regression', () => {
     expect(settings.app.showDebugPanel.user).toBe(true)
     expect(settings.app.showDebugPanel.project).toBe(false)
     expect(settings.app.showDebugPanel.current).toBe(false)
+  })
+
+  it('preserves cloud metadata when project settings are reserialized', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const existingProjectConfiguration: DeepPartial<ProjectConfiguration> = {
+      settings: {
+        meta: {
+          id: 'e8f5178c-5227-4567-bb5a-f52b3caef5ea',
+        },
+      },
+      cloud: {
+        'dev.zoo.dev': {
+          project_id: 'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3',
+        },
+      },
+    }
+
+    const changedProjectSettings = settingsPayloadToProjectConfiguration({
+      app: {
+        showDebugPanel: true,
+      },
+    })
+
+    const mergedProjectConfiguration = mergeProjectConfiguration(
+      existingProjectConfiguration,
+      changedProjectSettings
+    )
+    const serializedToml = serializeProjectConfiguration(
+      mergedProjectConfiguration,
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).toContain('show_debug_panel = true')
+    expect(serializedToml).toContain(
+      '[cloud."dev.zoo.dev"]\nproject_id = "e9632dae-19ca-49ea-bcc1-ee8e34ff9de3"'
+    )
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      serializedToml,
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    expect(parsedProjectConfiguration.cloud?.['dev.zoo.dev']?.project_id).toBe(
+      'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3'
+    )
+  })
+})
+
+describe('formatSettingsLabel', () => {
+  it('capitalizes known initialisms', () => {
+    expect(formatSettingsLabel('machineApi')).toBe('machine API')
+    expect(formatSettingsLabel('siteUrl')).toBe('site URL')
+    expect(formatSettingsLabel('projectId')).toBe('project ID')
+    expect(formatSettingsLabel('showUi')).toBe('show UI')
   })
 })

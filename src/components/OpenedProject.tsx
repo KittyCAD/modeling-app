@@ -10,6 +10,7 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import { PublishButton } from '@src/components/PublishButton'
 import { ShareButton } from '@src/components/ShareButton'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
@@ -41,6 +42,7 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   TutorialRequestToast,
+  useApplyRememberedOnboardingWorkflow,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
@@ -52,7 +54,6 @@ import {
 } from '@src/lib/layout'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
-import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions,
@@ -166,6 +167,11 @@ export function OpenedProject() {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const authToken = auth.useToken()
+  const onboardingStatus =
+    settingsValues.app.onboardingStatus.current ||
+    settingsValues.app.onboardingStatus.default
+
+  useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -199,7 +205,7 @@ export function OpenedProject() {
   useHotkeyWrapper(
     ['mod + s'],
     () => {
-      toast.success('Your work is auto-saved in real-time')
+      toast.success('Your work is auto-saved in real-time.')
     },
     kclManager
   )
@@ -226,9 +232,6 @@ export function OpenedProject() {
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
-    const onboardingStatus =
-      settingsValues.app.onboardingStatus.current ||
-      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !window.electron &&
       authToken && // we're logged in,
@@ -242,7 +245,6 @@ export function OpenedProject() {
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,
@@ -370,6 +372,7 @@ export function OpenedProject() {
               <>
                 <CommandBarOpenButton />
                 <ShareButton />
+                <PublishButton project={project?.projectIORefSignal.value} />
               </>
             )}
           </AppHeader>

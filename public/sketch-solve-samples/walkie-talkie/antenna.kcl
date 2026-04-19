@@ -1,0 +1,38 @@
+// Walkie Talkie Antenna
+// Antenna for the walkie talkie assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, antennaTopHeight from "parameters.kcl"
+
+// Create the antenna base sketch
+antennaBaseSketch = sketch(on = XY) {
+  line1 = line(start = [var -0.25in, var 0.13in], end = [var 0.25in, var 0.13in])
+  line2 = line(start = [var 0.25in, var 0.13in], end = [var 0.25in, var -0.13in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.25in, var -0.13in], end = [var -0.25in, var -0.13in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.25in, var -0.13in], end = [var -0.25in, var 0.13in])
+  coincident([line3.end, line4.start])
+}
+
+// Create the antenna top sketch
+loftPlane = offsetPlane(XY, offset = antennaLength)
+antennaTopSketch = sketch(on = loftPlane) {
+  line1 = line(start = [var -0.13in, var 0.06in], end = [var 0.13in, var 0.06in])
+  line2 = line(start = [var 0.13in, var 0.06in], end = [var 0.13in, var -0.06in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.13in, var -0.06in], end = [var -0.13in, var -0.06in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.13in, var -0.06in], end = [var -0.13in, var 0.06in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+
+// Create the antenna using a loft
+loft([antennaBaseSketch, antennaTopSketch])
+  |> appearance(color = "#000000")

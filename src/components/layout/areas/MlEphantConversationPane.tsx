@@ -11,6 +11,7 @@ import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -132,6 +133,7 @@ export const MlEphantConversationPane = (props: {
       refParentSend: props.mlEphantManagerActor.send,
       conversationId:
         props.mlEphantManagerActor.getSnapshot().context.conversationId,
+      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
     })
   }
 
@@ -243,6 +245,7 @@ export const MlEphantConversationPane = (props: {
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
+        sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       })
       sub.unsubscribe()
     })
@@ -278,6 +281,7 @@ export const MlEphantConversationPane = (props: {
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId,
+        sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       })
     }
   }
@@ -318,6 +322,28 @@ export const MlEphantConversationPane = (props: {
           }) || mlEphantManagerActorSnapshot.value === S.Await) === false
 
         const { context } = mlEphantManagerActorSnapshot
+
+        if (
+          mlEphantManagerActorSnapshot.matches(
+            MlEphantManagerStates.WaitForContinueCheck
+          ) &&
+          props.theProject !== undefined
+        ) {
+          let project: Project = props.theProject
+
+          void collectProjectFiles({
+            selectedFileContents: props.kclManager.code,
+            fileNames: props.kclManager.execState.filenames,
+            projectContext: project,
+          }).then((projectFiles) => {
+            props.mlEphantManagerActor.send({
+              type: MlEphantManagerStates.ContinueCheck,
+              projectName: project.name,
+              projectFiles,
+            })
+          })
+          return
+        }
 
         if (isProcessing) {
           return
@@ -369,6 +395,11 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      welcomeMessage={
+        // Replace this local component with a remote-authored content source
+        // later. `MlEphantConversation` already handles placement and ordering.
+        <MlEphantConversationWelcome />
+      }
       onProcess={(
         request: string,
         mode: MlCopilotMode,

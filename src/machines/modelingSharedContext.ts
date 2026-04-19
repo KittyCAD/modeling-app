@@ -9,7 +9,7 @@ import type {
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
 
-const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
@@ -29,7 +29,7 @@ const dummyInitSketchGraphDelta = Object.freeze({
   new_objects: [],
   invalidates_ids: false,
   exec_outcome: {
-    errors: [],
+    issues: [],
     variables: {},
     operations: [],
     artifactGraph: { map: {}, itemCount: 0 },
@@ -40,8 +40,8 @@ const dummyInitSketchGraphDelta = Object.freeze({
 
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {
@@ -82,8 +82,8 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {

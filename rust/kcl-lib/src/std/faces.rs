@@ -3,11 +3,15 @@
 use uuid::Uuid;
 
 use super::sketch::FaceTag;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, Face, KclValue, Segment, Solid, types::RuntimeType},
-    std::Args,
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::Face;
+use crate::execution::KclValue;
+use crate::execution::Segment;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
 
 const SEGMENT_MUST_HAVE_TAG_ERROR: &str =
     "Face specifier must have a tag. For sketch block segments, assign the segment to a variable.";
@@ -84,13 +88,15 @@ pub(super) async fn make_face(
     let object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
+        use crate::front::SourceRef;
+
         let face_object = crate::front::Object {
             id: object_id,
             kind: crate::front::ObjectKind::Face(crate::front::Face { id: object_id }),
             label: Default::default(),
             comments: Default::default(),
             artifact_id: extrude_plane_id.into(),
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(face_object, args.source_range);
     }

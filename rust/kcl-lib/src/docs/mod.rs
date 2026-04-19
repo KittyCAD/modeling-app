@@ -8,7 +8,8 @@ pub mod kcl_doc;
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::docs::kcl_doc::{self, DocData};
+    use crate::docs::kcl_doc::DocData;
+    use crate::docs::kcl_doc::{self};
 
     #[test]
     fn get_autocomplete_snippet_line() {
@@ -287,7 +288,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch | Face | TaggedFace; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,

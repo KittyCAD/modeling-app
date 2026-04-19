@@ -1,6 +1,7 @@
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { topLevelRange } from '@src/lang/util'
 import {
+  clamp,
   getInVariableCase,
   hexToRgba,
   hasDigitsLeftOfDecimal,
@@ -12,6 +13,7 @@ import {
   roundOffWithUnits,
   simulateOnMouseDragMatch,
   stripQuotes,
+  mmToBaseUnit,
 } from '@src/lib/utils'
 import { expect, describe, it, test } from 'vitest'
 
@@ -23,6 +25,8 @@ describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 1))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 0))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-2, -1), false)
+  testBothOrders(topLevelRange(0, 10), topLevelRange(3, 6))
+  testBothOrders(topLevelRange(0, 10), topLevelRange(0, 10))
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {
@@ -44,6 +48,48 @@ describe('testing roundOff', () => {
   })
   it('rounds up ok', () => {
     expect(roundOff(1.273456789, 1)).toBe(1.3)
+  })
+})
+
+describe('convertFromMm', () => {
+  it('returns values unchanged for mm base unit (with decimal-place rounding)', () => {
+    expect(mmToBaseUnit(1.23456789, 7, 'mm')).toBe(1.2345679)
+  })
+
+  it('converts millimeters to inches correctly', () => {
+    expect(mmToBaseUnit(25.4, 7, 'in')).toBe(1)
+    expect(mmToBaseUnit(-46.73446592950462, 7, 'in')).toBe(-1.8399396)
+  })
+
+  it('converts millimeters to feet correctly', () => {
+    expect(mmToBaseUnit(304.8, 7, 'ft')).toBe(1)
+  })
+
+  it('normalizes negative zero to zero', () => {
+    expect(mmToBaseUnit(-1e-9, 7, 'mm')).toBe(0)
+  })
+
+  it('rounds to the provided number of decimal places', () => {
+    expect(mmToBaseUnit(12.345, 2, 'mm')).toBe(12.35)
+  })
+
+  it('guards against invalid decimal-place values', () => {
+    expect(mmToBaseUnit(12.345, Number.NaN, 'mm')).toBe(12)
+    expect(mmToBaseUnit(12.345, -4, 'mm')).toBe(12)
+  })
+})
+
+describe('clamp', () => {
+  it('returns the input when it is within range', () => {
+    expect(clamp(5, 0, 10)).toBe(5)
+  })
+
+  it('clamps values below the minimum', () => {
+    expect(clamp(-1, 0, 10)).toBe(0)
+  })
+
+  it('clamps values above the maximum', () => {
+    expect(clamp(11, 0, 10)).toBe(10)
   })
 })
 

@@ -6,7 +6,6 @@ import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -33,7 +32,7 @@ export type EnginePrimitiveSelection = {
 }
 
 export interface EngineRegionSelection {
-  type: 'region'
+  type: 'engineRegion'
   id: string
   point: Point2d
   sketchId: ArtifactId
@@ -239,8 +238,10 @@ export type ModelingMachineInput = {
   store?: Store
 }
 export type ModelingMachineInternalContext = {
-  currentMode: ToolbarModeName
   currentTool: SketchTool
+  // This is duplicated state from sketch-solve for now,
+  // long term plan is to have sketchSolve machine a sibling of modelingMachine
+  showNonVisualConstraints: boolean
   toastId: string | null
   selection: string[]
   selectionRanges: Selections
@@ -263,7 +264,6 @@ export type ModelingMachineInternalContext = {
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
-  forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext

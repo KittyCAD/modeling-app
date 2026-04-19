@@ -1,23 +1,31 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{CutStrategy, CutTypeV2},
-};
-use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::CutStrategy;
+use kcmc::shared::CutTypeV2;
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::RuntimeType,
-    },
-    parsing::ast::types::TagNode,
-    std::{Args, fillet::EdgeReference},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ChamferSurface;
+use crate::execution::EdgeCut;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::csg::CsgAlgorithm;
+use crate::std::fillet::EdgeReference;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
@@ -28,13 +36,27 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     // TODO: custom profiles not ready yet
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
+    let value = inner_chamfer(
+        solid,
+        length,
+        tags,
+        second_length,
+        angle,
+        None,
+        tag,
+        csg_algorithm,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -47,6 +69,7 @@ async fn inner_chamfer(
     angle: Option<TyF64>,
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
+    csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -110,44 +133,43 @@ async fn inner_chamfer(
 
     let mut solid = solid.clone();
     for edge_tag in tags {
-        let edge_id = match edge_tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
-        };
+        let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
+        for edge_id in edge_ids {
+            let id = exec_state.next_uuid();
+            exec_state
+                .batch_end_cmd(
+                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                    ModelingCmd::from(
+                        mcmd::Solid3dCutEdges::builder()
+                            .use_legacy(csg_algorithm.is_legacy())
+                            .edge_ids(vec![edge_id])
+                            .extra_face_ids(vec![])
+                            .strategy(strategy)
+                            .object_id(solid.id)
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            .cut_type(cut_type)
+                            .build(),
+                    ),
+                )
+                .await?;
 
-        let id = exec_state.next_uuid();
-        exec_state
-            .batch_end_cmd(
-                ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(
-                    mcmd::Solid3dCutEdges::builder()
-                        .edge_ids(vec![edge_id])
-                        .extra_face_ids(vec![])
-                        .strategy(strategy)
-                        .object_id(solid.id)
-                        .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
-                        .cut_type(cut_type)
-                        .build(),
-                ),
-            )
-            .await?;
+            solid.edge_cuts.push(EdgeCut::Chamfer {
+                id,
+                edge_id,
+                length: length.clone(),
+                tag: Box::new(tag.clone()),
+            });
 
-        solid.edge_cuts.push(EdgeCut::Chamfer {
-            id,
-            edge_id,
-            length: length.clone(),
-            tag: Box::new(tag.clone()),
-        });
-
-        if let Some(ref tag) = tag {
-            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                face_id: id,
-                tag: Some(tag.clone()),
-                geo_meta: GeoMeta {
-                    id,
-                    metadata: args.source_range.into(),
-                },
-            }));
+            if let Some(ref tag) = tag {
+                solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                    face_id: id,
+                    tag: Some(tag.clone()),
+                    geo_meta: GeoMeta {
+                        id,
+                        metadata: args.source_range.into(),
+                    },
+                }));
+            }
         }
     }
 

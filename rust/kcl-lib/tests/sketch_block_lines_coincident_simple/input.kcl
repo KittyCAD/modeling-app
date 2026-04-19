@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   // Coincident: line end and point.
   l1 = line(start = [1mm, 2mm], end = [var 10mm, var 11mm])
@@ -13,8 +11,7 @@ s = sketch(on = XY) {
   l3 = line(start = [var 20mm, var 21mm], end = [23mm, 24mm])
   l4 = line(start = [30mm, 31mm], end = [var 32mm, var 33mm])
   coincident([l3.start, l4.end])
-  l3.start.at[0] == 40mm
-  l3.start.at[1] == 41mm
+  fixed([l3.start, [40mm, 41mm]])
 }
 
 assert(s.l1.start.at[0], isEqualTo = 1mm)

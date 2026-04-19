@@ -1,35 +1,54 @@
-use std::{
-    f64::consts::TAU,
-    ops::{Add, AddAssign, Mul, Sub, SubAssign},
-};
+use std::f64::consts::TAU;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Mul;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{
-    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
-};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::{self as kcmc};
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    engine::{DEFAULT_PLANE_INFO, PlaneName},
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
-        normalize_to_solver_distance_unit,
-        types::{NumericType, adjust_length},
-    },
-    front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
-    parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{
-        Args,
-        args::TyF64,
-        sketch::{FaceTag, PlaneData},
-    },
-};
+use crate::NodePath;
+use crate::engine::DEFAULT_PLANE_INFO;
+use crate::engine::PlaneName;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::ArtifactId;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Metadata;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::normalize_to_solver_distance_unit;
+use crate::execution::types::NumericType;
+use crate::execution::types::adjust_length;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Freedom;
+use crate::front::LineCtor;
+use crate::front::ObjectId;
+use crate::front::PointCtor;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::FaceTag;
+use crate::std::sketch::PlaneData;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -173,11 +192,8 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
-    // TODO: Sketches should be groups of profiles that relate to a plane,
-    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
-    // are not hideable.
-    // SketchSet(Vec<Sketch>),
 }
 
 impl From<HideableGeometry> for crate::execution::KclValue {
@@ -196,6 +212,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
                         ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::SketchSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::sketch(),
                     }
                 }
             }
@@ -227,6 +258,7 @@ impl HideableGeometry {
                 Ok(vec![id])
             }
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
@@ -784,6 +816,10 @@ pub struct Sketch {
     /// If the sketch is a clone of another sketch.
     #[serde(skip)]
     pub clone: Option<uuid::Uuid>,
+    /// Synthetic pen-jump paths inserted to replay disconnected segment selections.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub synthetic_jump_path_ids: Vec<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
@@ -1750,21 +1786,21 @@ impl Path {
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
-    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+    pub fn get_base_mut(&mut self) -> &mut BasePath {
         match self {
-            Path::ToPoint { base } => Some(base),
-            Path::Horizontal { base, .. } => Some(base),
-            Path::AngledLineTo { base, .. } => Some(base),
-            Path::Base { base } => Some(base),
-            Path::TangentialArcTo { base, .. } => Some(base),
-            Path::TangentialArc { base, .. } => Some(base),
-            Path::Circle { base, .. } => Some(base),
-            Path::CircleThreePoint { base, .. } => Some(base),
-            Path::Arc { base, .. } => Some(base),
-            Path::ArcThreePoint { base, .. } => Some(base),
-            Path::Ellipse { base, .. } => Some(base),
-            Path::Conic { base, .. } => Some(base),
-            Path::Bezier { base, .. } => Some(base),
+            Path::ToPoint { base } => base,
+            Path::Horizontal { base, .. } => base,
+            Path::AngledLineTo { base, .. } => base,
+            Path::Base { base } => base,
+            Path::TangentialArcTo { base, .. } => base,
+            Path::TangentialArc { base, .. } => base,
+            Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
+            Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
+            Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 
@@ -2036,6 +2072,13 @@ pub struct ConstrainablePoint2d {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
+pub enum ConstrainablePoint2dOrOrigin {
+    Point(ConstrainablePoint2d),
+    Origin,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
     pub vars: [crate::front::Point2d<SketchVarId>; 2],
@@ -2052,6 +2095,8 @@ pub struct UnsolvedSegment {
     pub kind: UnsolvedSegmentKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2082,6 +2127,27 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    Circle {
+        start: UnsolvedPoint2dExpr,
+        center: UnsolvedPoint2dExpr,
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        construction: bool,
+    },
+}
+
+impl UnsolvedSegmentKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point { .. } => "a Point",
+            Self::Line { .. } => "a Line",
+            Self::Arc { .. } => "an Arc",
+            Self::Circle { .. } => "a Circle",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2100,6 +2166,8 @@ pub struct Segment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]
+    pub node_path: Option<NodePath>,
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2109,6 +2177,7 @@ impl Segment {
             SegmentKind::Point { .. } => true,
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
+            SegmentKind::Circle { construction, .. } => *construction,
         }
     }
 }
@@ -2151,6 +2220,18 @@ pub enum SegmentKind {
         center_freedom: Option<Freedom>,
         construction: bool,
     },
+    Circle {
+        start: [TyF64; 2],
+        center: [TyF64; 2],
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
+        construction: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2186,7 +2267,7 @@ pub enum SketchConstraintKind {
         line1: ConstrainableLine2d,
     },
     Distance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
@@ -2195,10 +2276,10 @@ pub enum SketchConstraintKind {
         points: [ConstrainablePoint2d; 2],
     },
     HorizontalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
     VerticalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
     },
 }
 

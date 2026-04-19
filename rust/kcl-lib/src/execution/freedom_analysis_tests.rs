@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
-use crate::{
-    ExecutorContext, ExecutorSettings,
-    engine::conn_mock::EngineConnection,
-    execution::{ContextType, MockConfig},
-    front::{Freedom, ObjectKind},
-    frontend::api::ObjectId,
-};
+use crate::ExecutorContext;
+use crate::ExecutorSettings;
+use crate::engine::conn_mock::EngineConnection;
+use crate::execution::ContextType;
+use crate::execution::MockConfig;
+use crate::front::Freedom;
+use crate::front::ObjectKind;
+use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
@@ -35,7 +36,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         }
     }
     // Sort by object ID for consistent ordering
-    point_freedoms.sort_by_key(|(id, _)| id.0);
+    point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
     point_freedoms
 }
@@ -178,8 +179,6 @@ async fn test_freedom_analysis_with_zero_constraints() {
     // This test verifies the fix for the bug where segments with no constraints
     // incorrectly showed as Fixed (white) instead of Free (blue).
     let kcl = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
   line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
   line2 = line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])

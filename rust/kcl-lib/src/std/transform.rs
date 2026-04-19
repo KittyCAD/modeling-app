@@ -1,22 +1,26 @@
 //! Standard library transforms.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared,
-    shared::{OriginType, Point3d},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared;
+use kcmc::shared::OriginType;
+use kcmc::shared::Point3d;
 use kittycad_modeling_cmds as kcmc;
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, HideableGeometry, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
-        types::{PrimitiveType, RuntimeType},
-    },
-    std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::HideableGeometry;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::SolidOrSketchOrImportedGeometry;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis3dOrPoint3d;
 
 fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::TransformBy<T> {
     shared::TransformBy::builder()
@@ -460,11 +464,12 @@ async fn inner_rotate(
     Ok(objects)
 }
 
-/// Hide solids, sketches, or imported objects.
+/// Hide solids, sketches, helices, or imported objects.
 pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::helices(),
             RuntimeType::imported(),
@@ -769,6 +774,17 @@ sweepSketch = startSketchOn(XY)
 )
 
 hide(helixPath)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_sketch_block() {
+        let ast = r#"sketch001 = sketch(on = XY) {
+  circle001 = circle(start = [var 1.16mm, var 4.24mm], center = [var -1.81mm, var -0.5mm])
+}
+
+hide(sketch001)
 "#;
         parse_execute(ast).await.unwrap();
     }

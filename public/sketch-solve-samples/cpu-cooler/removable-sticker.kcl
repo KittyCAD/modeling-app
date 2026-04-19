@@ -2,7 +2,7 @@
 // Protective sticker to be removed before adhering the heat sink to the CPU
 
 // Set units
-@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm)
 
 // Create a simple body to represent the removable warning sticker. Brightly color the sticker so that the user will not forget to remove it before installing the device
 sketch001 = sketch(on = -XY) {
@@ -26,4 +26,3 @@ removableSticker = extrude(region001, length = .3)
          getNextAdjacentEdge(rectangleSegmentD001)
        ],
      )
-

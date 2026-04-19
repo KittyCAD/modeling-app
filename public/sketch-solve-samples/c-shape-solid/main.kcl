@@ -1,0 +1,59 @@
+// C-Shape Solid (Abstract Geometry Demo)
+// This is a simplified geometry study that demonstrates how to create a "C" shape by subtracting a rectangular wedge from a circular ring. This base logic is foundational to models like split washers and other circular parts with a gap.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm)
+
+// Primary dimensions
+cRingOuterDiameter = 20
+cRingInnerDiameter = 10
+cRingThickness = 2
+splitGapWidth = 2
+
+cRingSketch = sketch(on = XY) {
+  // Profile entities
+  innerArc = arc(start = [var 8.43mm, var 1.51mm], end = [var 6.02mm, var -3.5mm], center = [var 0mm, var 0mm])
+  topBridge = line(start = [var 3.85mm, var 2.04mm], end = [var 13.07mm, var 2.21mm])
+  outerArc = arc(start = [var 10.93mm, var 2.04mm], end = [var 11.09mm, var -0.8mm], center = [var 0mm, var 0mm])
+  bottomBridge = line(start = [var 6.12mm, var -1.85mm], end = [var 12.97mm, var -1.28mm])
+
+  // Construction entities
+  centerline = line(start = [var 0.03mm, var 0mm], end = [var 5.92mm, var 0mm], construction = true)
+  lowerRadialRef = line(start = [var 6.13mm, var -1.86mm], end = [var 5.92mm, var 0mm], construction = true)
+  upperRadialRef = line(start = [var 6.1mm, var 1.94mm], end = [var 5.92mm, var 0mm], construction = true)
+
+  // Anchor and connectivity
+  coincident([innerArc.center, ORIGIN])
+  coincident([outerArc.center, innerArc.center])
+  coincident([topBridge.start, innerArc.start])
+  coincident([topBridge.end, outerArc.start])
+  coincident([bottomBridge.start, innerArc.end])
+  coincident([bottomBridge.end, outerArc.end])
+  coincident([centerline.start, innerArc.center])
+  coincident([
+    lowerRadialRef.start,
+    bottomBridge.start
+  ])
+  coincident([lowerRadialRef.end, centerline.end])
+  coincident([upperRadialRef.start, innerArc.start])
+  coincident([upperRadialRef.end, lowerRadialRef.end])
+  
+  // Symmetry
+  equalLength([upperRadialRef, lowerRadialRef])
+  
+  // Orientation
+  horizontal(topBridge)
+  horizontal(bottomBridge)
+  horizontal(centerline)
+  vertical(lowerRadialRef)
+  vertical(upperRadialRef)
+
+  // Driving dimensions
+  verticalDistance([outerArc.end, outerArc.start]) == splitGapWidth
+  distance([centerline.start, upperRadialRef.start]) == cRingInnerDiameter / 2
+  distance([centerline.start, outerArc.end]) == cRingOuterDiameter / 2
+}
+
+cRingRegion = region(segments = [cRingSketch.topBridge])
+hide(cRingSketch)
+cRingSolid = extrude(cRingRegion, length = cRingThickness)

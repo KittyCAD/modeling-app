@@ -10,7 +10,7 @@
 // All dimensions and counts are parametric, enabling rapid iteration
 // for uses such as built-ins, modular wall storage, or retail shelving.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 columnCount = 5 // number of shelf modules in horizontal direction (X axis)
 rowCount = 3 // number of shelf modules in vertical direction (Z axis)
@@ -55,7 +55,7 @@ sidePanels = extrude(sidePanelProfile, length = unitHeight)
 // --- Shelf Boards ---
 // Two shelves: one at the bottom, one at the top of each module.
 firstShelfSketch = startSketchOn(basePlane)
-firstShelfProfile = sketch(on = XY) {
+firstShelfProfile = sketch(on = firstShelfSketch) {
   line1 = line(start = [var -0.18m, var 0m], end = [var -0.18m, var -0.4m])
   line2 = line(start = [var -0.18m, var -0.4m], end = [var 0.18m, var -0.4m])
   coincident([line1.end, line2.start])
@@ -98,4 +98,3 @@ modularShelfArray = patternLinear3d(
        distance = unitHeight,
        axis = [0, 0, 1],
      )
-

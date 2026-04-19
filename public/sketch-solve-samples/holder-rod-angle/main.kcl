@@ -1,0 +1,215 @@
+// Holder for (shower) rod at a ~45° angle
+// This is used to mount a rod to a 45° angled ceiling
+// Categories: Construction
+
+@settings(defaultLengthUnit = cm)
+
+depth = 1
+
+length_1 = 4
+length = 3
+circle_center = length_1 / 2
+
+hole_radius = 2.25 / 2 // correct size
+
+
+holde_depth = 0.9
+
+radius001 = 0.25
+
+angle = atan(108 / 103)
+
+angled_bracket_sketch = sketch(on = XY) {
+  line1 = line(start = [var 0cm, var 0cm], end = [var 0cm, var 4cm])
+  line2 = line(start = [var 0cm, var 4cm], end = [var 4.19cm, var 0cm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4.19cm, var 0cm], end = [var 0cm, var 0cm])
+  coincident([line2.end, line3.start])
+  vertical(line2)
+}
+region001 = region(segments = [
+  angled_bracket_sketch.line1,
+  angled_bracket_sketch.line2
+])
+angled_bracket = extrude(
+       region001,
+       length = length_1,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(
+       radius = radius001,
+       tags = [
+         getCommonEdge(faces = [seg03, capStart001]),
+         getCommonEdge(faces = [seg03, capEnd001]),
+         getCommonEdge(faces = [seg01, capStart001]),
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg03, seg01])
+       ],
+     )
+
+/* holder_sketch = startSketchOn(YZ)
+  |> startProfile(at = [
+       (length_1 - length) / 2,
+       (length_1 - length) / 2
+     ])
+  |> yLine(length = length, tag = $h_seg02)
+  |> xLine(length = length, tag = $h_seg03)
+  |> yLine(length = -length, tag = $h_seg04)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $h_seg05)
+  |> close()
+holder = extrude(
+       holder_sketch,
+       length = -depth,
+       tagStart = $h_capStart001,
+       tagEnd = $h_capEnd002,
+     )
+  |> fillet(
+       radius = radius001,
+       tags = [
+         getCommonEdge(faces = [h_seg02, h_capStart001]),
+         getCommonEdge(faces = [h_seg03, h_capStart001]),
+         getCommonEdge(faces = [h_seg04, h_capStart001]),
+         getCommonEdge(faces = [h_seg05, h_capStart001]),
+         // outside
+         getCommonEdge(faces = [h_seg02, h_seg03]),
+         getCommonEdge(faces = [h_seg03, h_seg04]),
+         getCommonEdge(faces = [h_seg04, h_seg05]),
+         getCommonEdge(faces = [h_seg05, h_seg02])
+       ],
+     ) */
+
+hole_angled_bracket_sketch = startSketchOn(-YZ, face = seg01)
+hole_angled_bracket_profile = sketch(on = hole_angled_bracket_sketch) {
+  circle1 = circle(start = [var -0.88cm, var 2cm], center = [var -2cm, var 2cm])
+}
+region002 = region(segments = [hole_angled_bracket_profile.circle1])
+hole_angled_bracket = extrude(region002, length = -holde_depth)
+
+// hole_holder_sketch = startSketchOn(-YZ, face = seg01)  |> circle(center = [-circle_center, circle_center], radius = hole_radius)
+// hold_holder = extrude(hole_holder_sketch, length = 4)
+
+// subtract is broken right now
+subtractedPart1 = subtract([angled_bracket], tools = [hole_angled_bracket])
+// subtractedPart2 = subtract([holder], tools = [hold_holder])
+
+
+long_length = length_1 / cos(angle)
+
+a = cos(angle) * length_1
+
+padding = 0.8
+
+plate_sketch = startSketchOn(subtractedPart1, face = seg02)
+plate = sketch(on = plate_sketch) {
+  line1 = line(start = [var 0cm, var -0.8cm], end = [var 3.56cm, var -0.8cm])
+  line2 = line(start = [var 3.56cm, var -0.8cm], end = [var 3.56cm, var 4.8cm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3.56cm, var 4.8cm], end = [var -3.84cm, var 4.8cm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -3.84cm, var 4.8cm], end = [var -3.84cm, var -0.8cm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -3.84cm, var -0.8cm], end = [var 0cm, var -0.8cm])
+  coincident([line4.end, line5.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+// hole_inset = 0.6
+hole_inset = 0.55
+
+hole_x = a + padding
+
+screw_hole = 0.45 / 2
+
+outerEdge = 0.5
+
+plate_thickness = 0.25
+screw_champfer = (0.86 - 0.45) / 2
+
+region003 = region(segments = [plate.line1, plate.line2])
+extrude001 = extrude(
+       region003,
+       length = plate_thickness,
+       tagStart = $capStart002,
+       tagEnd = $capEnd002,
+     )
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg04, seg05])])
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg06, seg04])])
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg07, seg06])])
+  |> fillet(
+       radius = outerEdge,
+       tags = [
+         getCommonEdge(faces = [p_seg03, seg07])
+       ],
+     )
+hole_1 = sketch(on = startSketchOn(extrude001, face = START)) {
+  circle1 = circle(start = [var 3.51cm, var -0.25cm], center = [var 3.29cm, var -0.25cm])
+}
+
+hole_2 = sketch(on = startSketchOn(extrude001, face = START)) {
+  circle1 = circle(start = [var -2.79cm, var 4.25cm], center = [var -3.01cm, var 4.25cm])
+}
+
+hole_3 = sketch(on = startSketchOn(extrude001, face = START)) {
+  circle1 = circle(start = [var -2.79cm, var -0.25cm], center = [var -3.01cm, var -0.25cm])
+}
+
+hole_4 = sketch(on = startSketchOn(extrude001, face = START)) {
+  circle1 = circle(start = [var 3.51cm, var 4.25cm], center = [var 3.29cm, var 4.25cm])
+}
+
+region004 = region(segments = [hole_1.circle1])
+/* hole = startSketchOn(extrude001, face = END)
+  |> circle(
+       center = [
+         1,1
+       ],
+       radius = screw_hole,
+       tag = $seg09,
+     ) */
+
+// mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)
+
+/* mounting_hole = extrude(hole, length = -0.2) |>  chamfer(
+       length = 0.1,
+       tags = [
+         getCommonEdge(faces = [capEnd002, seg09])
+       ],
+     ) */
+mounting_hole1 = extrude(region004, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg12])
+       ],
+     )
+
+region005 = region(segments = [hole_2.circle1])
+mounting_hole2 = extrude(region005, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg11])
+       ],
+     )
+
+region006 = region(segments = [hole_3.circle1])
+mounting_hole3 = extrude(region006, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg10])
+       ],
+     )
+
+region007 = region(segments = [hole_4.circle1])
+mounting_hole4 = extrude(region007, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg08])
+       ],
+     )

@@ -2,7 +2,7 @@
 // Back frame plates and slats for the dog house.
 
 // Define units
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Import parameters
 import * from "dimensions.kcl"
@@ -43,4 +43,3 @@ backSlats = patternLinear3d(
   distance = backSlatActualPitch,
   instances = backSlatCount,
 ) // Distribute slats across the back opening along X
-

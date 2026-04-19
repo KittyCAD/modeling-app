@@ -35,7 +35,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             rust:
@@ -44,12 +44,12 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v16
+        uses: dawidd6/action-download-artifact@v20
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           name: wasm-bundle
-          workflow: build-and-store-wasm.yml
+          workflow: build-wasm.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
@@ -80,7 +80,7 @@ jobs:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
 
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
