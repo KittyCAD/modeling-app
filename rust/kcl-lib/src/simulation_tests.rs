@@ -1,9 +1,12 @@
+use std::any::Any;
 use std::panic::AssertUnwindSafe;
 use std::panic::catch_unwind;
 use std::path::Path;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ExecState;
@@ -76,10 +79,30 @@ impl ExecState {
         main_ref: EnvironmentRef,
         ctx: &ExecutorContext,
         project_directory: &Path,
-    ) -> (ExecOutcome, IndexMap<String, ModuleArtifactState>) {
+    ) -> (
+        ExecOutcome,
+        IndexMap<String, ModuleArtifactState>,
+        Option<IndexMap<Uuid, WebSocketResponse>>,
+    ) {
         let module_state = self.to_module_state(project_directory);
-        let outcome = self.into_exec_outcome(main_ref, ctx).await;
-        (outcome, module_state)
+        cfg_select! {
+            feature = "snapshot-engine-responses" => {
+                let (outcome, responses) = {
+                    let mut exec_state = self;
+                    let responses = Some(exec_state.take_root_module_responses());
+                    let outcome = exec_state.into_exec_outcome(main_ref, ctx).await;
+                    (outcome, responses)
+                };
+            }
+            _ => {
+                let (outcome, responses) = {
+                    let responses = None;
+                    let outcome = self.into_exec_outcome(main_ref, ctx).await;
+                    (outcome, responses)
+                };
+            }
+        }
+        (outcome, module_state, responses)
     }
 
     #[cfg(not(feature = "artifact-graph"))]
@@ -153,16 +176,20 @@ where
         // Sorting maps makes them easier to diff.
         settings.set_sort_maps(true);
     }
-    // Replace UUIDs with the string "[uuid]", because otherwise the tests would constantly
-    // be changing the UUID. This is a stopgap measure until we make the engine more deterministic.
-    settings.add_filter(
-        r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
-        "[uuid]",
-    );
-    settings.add_filter(
-        r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
-        "face_id_[uuid]",
-    );
+    #[cfg(not(feature = "snapshot-engine-responses"))]
+    {
+        // Replace UUIDs with the string "[uuid]", because otherwise the tests
+        // would constantly be changing the UUID. This is a stopgap measure
+        // until we make the engine more deterministic.
+        settings.add_filter(
+            r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
+            "[uuid]",
+        );
+        settings.add_filter(
+            r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
+            "face_id_[uuid]",
+        );
+    }
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);
 }
@@ -326,16 +353,15 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             // TODO: Remove this filter once the transpiler is complete and all tests are updated
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
-            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
+            let (outcome, module_state, responses) =
+                exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
-            assert_common_snapshots(test, outcome.variables);
+            let snapshot_results = assert_common_snapshots(test, outcome.variables, responses);
 
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
-
-            ok_snap.unwrap();
 
             let lint_snap_path = test.output_dir.join("lints.snap");
             if lint_findings.is_empty() {
@@ -351,6 +377,11 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             } else {
                 assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
             }
+
+            for result in snapshot_results {
+                result.unwrap();
+            }
+            ok_snap.unwrap();
         }
         Err(e) => {
             let ok_path = test.output_dir.join("execution_success.snap");
@@ -381,7 +412,15 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
-                    assert_common_snapshots(test, error.variables);
+                    let responses = cfg_select! {
+                        feature = "snapshot-engine-responses" => {
+                            e.responses
+                        }
+                        _ => {
+                            None
+                        }
+                    };
+                    let snapshot_results = assert_common_snapshots(test, error.variables, responses);
 
                     #[cfg(feature = "artifact-graph")]
                     {
@@ -390,6 +429,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                             .map(|e| e.to_module_state(&test.input_dir))
                             .unwrap_or_default();
                         assert_artifact_snapshots(test, module_state, error.artifact_graph);
+                    }
+
+                    for result in snapshot_results {
+                        result.unwrap();
                     }
                     err_result.unwrap();
                 }
@@ -406,7 +449,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
-fn assert_common_snapshots(test: &Test, variables: IndexMap<String, KclValue>) {
+fn assert_common_snapshots(
+    test: &Test,
+    variables: IndexMap<String, KclValue>,
+    #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
+        IndexMap<Uuid, WebSocketResponse>,
+    >,
+) -> Vec<Result<(), Box<dyn Any + Send>>> {
     let mem_result = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Variables in memory after executing", || {
             insta::assert_json_snapshot!("program_memory", variables, {
@@ -414,7 +463,24 @@ fn assert_common_snapshots(test: &Test, variables: IndexMap<String, KclValue>) {
             })
         })
     }));
-    mem_result.unwrap();
+    #[cfg(feature = "snapshot-engine-responses")]
+    let responses_result_option = responses.map(|responses| {
+        catch_unwind(AssertUnwindSafe(|| {
+            assert_snapshot(test, "Root module engine responses", || {
+                insta::assert_json_snapshot!("root_module_engine_responses", responses)
+            })
+        }))
+    });
+    let results = vec![mem_result];
+    #[cfg(feature = "snapshot-engine-responses")]
+    {
+        if let Some(responses_result) = responses_result_option {
+            let mut results = results;
+            results.push(responses_result);
+            return results;
+        }
+    }
+    results
 }
 
 /// Assert snapshots for artifacts that should happen both when KCL execution
