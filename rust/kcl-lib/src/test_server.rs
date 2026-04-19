@@ -134,14 +134,12 @@ async fn do_execute_and_snapshot(
     let mut exec_state = ExecState::new(ctx);
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
-        cfg_select! {
-            all(feature = "artifact-graph", feature = "snapshot-engine-responses") => {
-                Some(exec_state.take_root_module_responses())
-            }
-            _ => {
-                None
-            }
+        #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+        {
+            Some(exec_state.take_root_module_responses())
         }
+        #[cfg(not(all(feature = "artifact-graph", feature = "snapshot-engine-responses")))]
+        None
     } else {
         None
     };
