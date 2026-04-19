@@ -2848,21 +2848,20 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
-        let [seg0_ast, seg1_ast] = match coincident.segments.as_slice() {
-            [seg0, seg1] => [
-                self.coincident_segment_to_ast(seg0, new_ast)?,
-                self.coincident_segment_to_ast(seg1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Coincident constraint must have exactly 2 inputs, got {}",
-                    coincident.segments.len()
-                )));
-            }
-        };
+        let segment_asts = coincident
+            .segments
+            .iter()
+            .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
+            .collect::<Result<Vec<_>, _>>()?;
+        if segment_asts.len() < 2 {
+            return Err(KclError::refactor(format!(
+                "Coincident constraint must have at least 2 inputs, got {}",
+                segment_asts.len()
+            )));
+        }
 
         // Create the coincident() call using shared helper.
-        let coincident_ast = create_coincident_ast(seg0_ast, seg1_ast);
+        let coincident_ast = create_coincident_ast(segment_asts);
 
         // Add the line to the AST of the sketch block.
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -5286,11 +5285,14 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
 
 // Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
 
-/// Create an AST node for coincident([expr1, expr2])
-pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::Expr {
-    // Create array [expr1, expr2]
+/// Create an AST node for coincident([expr1, expr2, ...])
+pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) -> ast::Expr {
+    let elements = exprs.into_iter().collect::<Vec<_>>();
+    debug_assert!(elements.len() >= 2, "Coincident AST should have at least 2 inputs");
+
+    // Create array [expr1, expr2, ...]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
-        elements: vec![expr1, expr2],
+        elements,
         digest: None,
         non_code_meta: Default::default(),
     })));
@@ -7440,6 +7442,122 @@ sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_three_points_coincident() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let segments = sketch
+            .segments
+            .iter()
+            .take(3)
+            .copied()
+            .map(Into::into)
+            .collect::<Vec<ConstraintSegment>>();
+
+        let constraint = Constraint::Coincident(Coincident {
+            segments: segments.clone(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point3 = point(at = [var 5, var 6])
+  coincident([point1, point2, point3])
+}
+"
+        );
+
+        let constraint_object = scene_delta
+            .new_graph
+            .objects
+            .iter()
+            .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+            .unwrap();
+
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected a constraint object");
+        };
+
+        assert_eq!(constraint, &Constraint::Coincident(Coincident { segments }));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_source_with_three_point_coincident_tracks_all_segments() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point3 = point(at = [var 5, var 6])
+  coincident([point1, point2, point3])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+
+        let constraint_object = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+            .unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected a constraint object");
+        };
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let expected_segments = sketch
+            .segments
+            .iter()
+            .take(3)
+            .copied()
+            .map(Into::into)
+            .collect::<Vec<ConstraintSegment>>();
+
+        assert_eq!(
+            constraint,
+            &Constraint::Coincident(Coincident {
+                segments: expected_segments,
+            })
+        );
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

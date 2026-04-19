@@ -1365,6 +1365,22 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await applyConstraintStep({
+      label: 'coincident 3 points',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+        await clickPoint('11')
+      },
+      apply: async () => {
+        await page.getByTestId('coincident').click()
+      },
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+        expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
+      },
+    })
+
+    await applyConstraintStep({
       label: 'tangent',
       select: async () => {
         await clickMidpoint('11', '12')

@@ -690,7 +690,7 @@ fn create_circle_ast_from_coords(
 fn create_coincident_ast_from_segments(previous_segment: &TranspilerSegment, segment: &TranspilerSegment) -> ast::Expr {
     let previous_exit = transpiler_segment_connection_expr(previous_segment, SegmentConnectionSide::Exit);
     let current_entry = transpiler_segment_connection_expr(segment, SegmentConnectionSide::Entry);
-    create_coincident_ast(previous_exit, current_entry)
+    create_coincident_ast([previous_exit, current_entry])
 }
 
 /// Create an AST node for horizontal(line)

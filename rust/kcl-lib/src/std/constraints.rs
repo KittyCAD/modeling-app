@@ -885,10 +885,13 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         "points",
         &RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![RuntimeType::segment(), RuntimeType::point2d()])),
-            ArrayLen::Known(2),
+            ArrayLen::Minimum(2),
         ),
         exec_state,
     )?;
+    if points.len() > 2 {
+        return coincident_points(points, exec_state, args);
+    }
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -1635,6 +1638,187 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 ))),
             }
         }
+    }
+}
+
+fn coincident_points(
+    point_values: Vec<KclValue>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
+    if point_values.len() < 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "coincident() point list must contain at least two points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    // For every point return either a fixed point or a variable point
+    let points = point_values
+        .iter()
+        .map(|point| extract_multi_coincident_point(point, args.source_range))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_segments = points.iter().map(|point| point.constraint_segment).collect::<Vec<_>>();
+
+    let mut variable_points = Vec::new();
+    let mut fixed_points = Vec::new();
+    for point in points {
+        match point.point {
+            PointToAlign::Variable { x, y } => variable_points.push([x, y]),
+            PointToAlign::Fixed { x, y } => fixed_points.push([x, y]),
+        }
+    }
+
+    let mut solver_constraints = Vec::with_capacity(point_values.len().saturating_sub(1) * 2);
+    if let Some(anchor_fixed) = fixed_points.first().cloned() {
+        // A fixed point becomes the shared target location for every variable point.
+        if fixed_points
+            .iter()
+            .skip(1)
+            .any(|point| !fixed_points_match(point, &anchor_fixed))
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "coincident() with more than two inputs can include at most one fixed point location".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+
+        let anchor_x = ty_f64_to_kcl_value(anchor_fixed[0].clone(), args.source_range);
+        let anchor_y = ty_f64_to_kcl_value(anchor_fixed[1].clone(), args.source_range);
+        for point in variable_points {
+            let (constraint_x, constraint_y) =
+                coincident_constraints_fixed(point[0], point[1], &anchor_x, &anchor_y, exec_state, &args)?;
+            solver_constraints.push(constraint_x);
+            solver_constraints.push(constraint_y);
+        }
+    } else {
+        // With only variable points, anchor everything to the first point.
+        let mut points = variable_points.into_iter();
+        let first_point = points.next().ok_or_else(|| {
+            KclError::new_semantic(KclErrorDetails::new(
+                "coincident() point list must contain at least two points".to_owned(),
+                vec![args.source_range],
+            ))
+        })?;
+        let anchor = datum_point(first_point, args.source_range)?;
+        for point in points {
+            let solver_point = datum_point(point, args.source_range)?;
+            solver_constraints.push(SolverConstraint::PointsCoincident(anchor, solver_point));
+        }
+    }
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "coincident() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    sketch_state.solver_constraints.extend(solver_constraints);
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        // Keep one artifact-graph coincident constraint even though the solver sees multiple relations.
+        let constraint_id = exec_state.next_object_id();
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            debug_assert!(false, "Constraint created outside a sketch block");
+            return Ok(KclValue::none());
+        };
+        sketch_state.sketch_constraints.push(constraint_id);
+        let constraint = Constraint::Coincident(Coincident {
+            segments: constraint_segments,
+        });
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
+}
+
+fn extract_multi_coincident_point(
+    input: &KclValue,
+    source_range: crate::SourceRange,
+) -> Result<CoincidentPointInput, KclError> {
+    // Normalize each multi-input item into either a fixed point or solver-backed point vars.
+    match input {
+        KclValue::Segment { value: segment } => {
+            let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "coincident() with more than two inputs only supports unsolved points or ORIGIN".to_owned(),
+                    vec![source_range],
+                )));
+            };
+            let UnsolvedSegmentKind::Point { position, .. } = &unsolved.kind else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "coincident() with more than two inputs only supports points or ORIGIN, but one item is {}",
+                        unsolved.kind.human_friendly_kind_with_article()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            match (&position[0], &position[1]) {
+                (UnsolvedExpr::Known(x), UnsolvedExpr::Known(y)) => Ok(CoincidentPointInput {
+                    point: PointToAlign::Fixed {
+                        x: x.to_owned(),
+                        y: y.to_owned(),
+                    },
+                    #[cfg(feature = "artifact-graph")]
+                    constraint_segment: unsolved.object_id.into(),
+                }),
+                (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(CoincidentPointInput {
+                    point: PointToAlign::Variable { x: *x, y: *y },
+                    #[cfg(feature = "artifact-graph")]
+                    constraint_segment: unsolved.object_id.into(),
+                }),
+                // Mixed points not supported
+                (UnsolvedExpr::Known(..), UnsolvedExpr::Unknown(..))
+                | (UnsolvedExpr::Unknown(..), UnsolvedExpr::Known(..)) => Err(KclError::new_semantic(
+                    KclErrorDetails::new(
+                        "coincident() with more than two inputs requires each point to be fully fixed or fully variable"
+                            .to_owned(),
+                        vec![source_range],
+                    ),
+                )),
+            }
+        }
+        point if point2d_is_origin(point) => {
+            let Some([x, y]) = <[TyF64; 2]>::from_kcl_val(point) else {
+                debug_assert!(false, "Origin literal should coerce to Point2d");
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "Origin literal could not be converted to a point".to_owned(),
+                    vec![source_range],
+                )));
+            };
+            Ok(CoincidentPointInput {
+                point: PointToAlign::Fixed { x, y },
+                #[cfg(feature = "artifact-graph")]
+                constraint_segment: ConstraintSegment::ORIGIN,
+            })
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "coincident() with more than two inputs only supports points and ORIGIN".to_owned(),
+            vec![source_range],
+        ))),
+    }
+}
+
+#[derive(Debug, Clone)]
+struct CoincidentPointInput {
+    point: PointToAlign,
+    #[cfg(feature = "artifact-graph")]
+    constraint_segment: ConstraintSegment,
+}
+
+fn fixed_points_match(a: &[TyF64; 2], b: &[TyF64; 2]) -> bool {
+    a[0].to_mm() == b[0].to_mm() && a[1].to_mm() == b[1].to_mm()
+}
+
+fn ty_f64_to_kcl_value(value: TyF64, source_range: crate::SourceRange) -> KclValue {
+    KclValue::Number {
+        value: value.n,
+        ty: value.ty,
+        meta: vec![source_range.into()],
     }
 }
 
