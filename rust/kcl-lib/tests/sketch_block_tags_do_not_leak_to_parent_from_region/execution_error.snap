@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_tags_do_not_leak_to_parent_from_region.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `line1` is not defined
+    ╭─[11:5]
+ 10 │ // This should be an error because you need `square.line1`.
+ 11 │ x = line1
+    ·     ──┬──
+    ·       ╰── tests/sketch_block_tags_do_not_leak_to_parent_from_region/input.kcl
+    ╰────

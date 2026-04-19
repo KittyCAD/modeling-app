@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_tags_do_not_leak_to_parent_from_extrude.kcl
+---
+width = 1
+square = sketch(on = XY) {
+  line1 = line(start = [width / 2, -width / 2], end = [width / 2, width / 2])
+  line2 = line(start = [width / 2, width / 2], end = [-width / 2, width / 2])
+  line3 = line(start = [-width / 2, width / 2], end = [-width / 2, -width / 2])
+  line4 = line(start = [-width / 2, -width / 2], end = [width / 2, -width / 2])
+}
+regionCube = region(point = [0.4975mm, 0mm], sketch = square)
+extrudeCube = extrude(regionCube, length = width)
+
+// This should be an error because you need `square.line1`.
+x = line1

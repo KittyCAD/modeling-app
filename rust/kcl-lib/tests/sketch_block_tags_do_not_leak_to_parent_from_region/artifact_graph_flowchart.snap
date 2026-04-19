@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart sketch_block_tags_do_not_leak_to_parent_from_region.kcl
+extension: md
+snapshot_kind: binary
+---

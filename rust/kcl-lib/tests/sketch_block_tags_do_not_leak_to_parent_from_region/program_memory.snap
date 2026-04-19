@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing sketch_block_region_from_point2d_in_triangle.kcl
+description: Variables in memory after executing sketch_block_tags_do_not_leak_to_parent_from_region.kcl
 ---
 {
   "__sketch_1_on": {
@@ -35,7 +35,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
       }
     }
   },
-  "r": {
+  "regionCube": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -47,20 +47,20 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            -0.20674594013619027,
-            -0.06852748084846844
+            0.5,
+            -0.5
           ],
           "tag": {
-            "commentStart": 24,
-            "end": 29,
+            "commentStart": 39,
+            "end": 44,
             "moduleId": 0,
-            "start": 24,
+            "start": 39,
             "type": "TagDeclarator",
             "value": "line1"
           },
           "to": [
-            3.3967460225035606,
-            -0.06852748084842362
+            0.5,
+            0.5
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -71,20 +71,20 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            3.3967460225035606,
-            -0.06852748084842362
+            0.5,
+            0.5
           ],
           "tag": {
-            "commentStart": 96,
-            "end": 101,
+            "commentStart": 117,
+            "end": 122,
             "moduleId": 0,
-            "start": 96,
+            "start": 117,
             "type": "TagDeclarator",
             "value": "line2"
           },
           "to": [
-            1.5950000411833656,
-            4.787054952178176
+            -0.5,
+            0.5
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -95,20 +95,44 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            1.5950000411833656,
-            4.787054952178176
+            -0.5,
+            0.5
           ],
           "tag": {
-            "commentStart": 213,
-            "end": 218,
+            "commentStart": 195,
+            "end": 200,
             "moduleId": 0,
-            "start": 213,
+            "start": 195,
             "type": "TagDeclarator",
             "value": "line3"
           },
           "to": [
-            -0.2067459401361986,
-            -0.06852748084851323
+            -0.5,
+            -0.5
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.5,
+            -0.5
+          ],
+          "tag": {
+            "commentStart": 275,
+            "end": 280,
+            "moduleId": 0,
+            "start": 275,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            0.5,
+            -0.5
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -147,12 +171,12 @@ description: Variables in memory after executing sketch_block_region_from_point2
       },
       "start": {
         "from": [
-          -0.20674594013619027,
-          -0.06852748084846844
+          0.5,
+          -0.5
         ],
         "to": [
-          -0.20674594013619027,
-          -0.06852748084846844
+          0.5,
+          -0.5
         ],
         "units": "mm",
         "tag": null,
@@ -173,6 +197,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
         "line3": {
           "type": "TagIdentifier",
           "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
         }
       },
       "artifactId": "[uuid]",
@@ -180,7 +208,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
       "units": "mm"
     }
   },
-  "s": {
+  "square": {
     "type": "Object",
     "value": {
       "line1": {
@@ -195,70 +223,70 @@ description: Variables in memory after executing sketch_block_region_from_point2
                   "line": {
                     "start": [
                       {
-                        "n": -0.20674594013619027,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": -0.06852748084846844,
+                        "n": -0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "end": [
                       {
-                        "n": 3.3967460225035606,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": -0.06852748084842362,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "ctor": {
                       "start": {
                         "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
                         }
                       },
                       "end": {
                         "x": {
-                          "type": "Var",
-                          "value": 3.88,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         }
                       }
                     },
                     "start_object_id": 2,
                     "end_object_id": 3,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -315,70 +343,70 @@ description: Variables in memory after executing sketch_block_region_from_point2
                   "line": {
                     "start": [
                       {
-                        "n": 3.3967460225035526,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": -0.06852748084837883,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "end": [
                       {
-                        "n": 1.5950000411833656,
+                        "n": -0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": 4.787054952178176,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "ctor": {
                       "start": {
                         "x": {
-                          "type": "Var",
-                          "value": 3.88,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         }
                       },
                       "end": {
                         "x": {
-                          "type": "Var",
-                          "value": 0.92,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": 4.67,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         }
                       }
                     },
                     "start_object_id": 5,
                     "end_object_id": 6,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -430,75 +458,75 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
+                "objectId": 10,
                 "kind": {
                   "line": {
                     "start": [
                       {
-                        "n": 1.5950000411833656,
+                        "n": -0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": 4.78705495217822,
+                        "n": 0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "end": [
                       {
-                        "n": -0.2067459401361986,
+                        "n": -0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       },
                       {
-                        "n": -0.06852748084851323,
+                        "n": -0.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
                         }
                       }
                     ],
                     "ctor": {
                       "start": {
                         "x": {
-                          "type": "Var",
-                          "value": 0.92,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": 4.67,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
                         }
                       },
                       "end": {
                         "x": {
-                          "type": "Var",
-                          "value": -0.03,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
                         },
                         "y": {
-                          "type": "Var",
-                          "value": -0.04,
-                          "units": "Mm"
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
                         }
                       }
                     },
-                    "start_object_id": 9,
-                    "end_object_id": 10,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
+                    "start_object_id": 8,
+                    "end_object_id": 9,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -543,6 +571,126 @@ description: Variables in memory after executing sketch_block_region_from_point2
           }
         }
       },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 13,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
+                        }
+                      },
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.5,
+                        "ty": {
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
+                        }
+                      },
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "type": "Default",
+                          "len": "mm",
+                          "angle": "degrees"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.5,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -0.5,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
       "meta": {
         "type": "Object",
         "value": {
@@ -558,20 +706,20 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    -0.20674594013619027,
-                    -0.06852748084846844
+                    0.5,
+                    -0.5
                   ],
                   "tag": {
-                    "commentStart": 24,
-                    "end": 29,
+                    "commentStart": 39,
+                    "end": 44,
                     "moduleId": 0,
-                    "start": 24,
+                    "start": 39,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
                   "to": [
-                    3.3967460225035606,
-                    -0.06852748084842362
+                    0.5,
+                    0.5
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -582,20 +730,20 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    3.3967460225035606,
-                    -0.06852748084842362
+                    0.5,
+                    0.5
                   ],
                   "tag": {
-                    "commentStart": 96,
-                    "end": 101,
+                    "commentStart": 117,
+                    "end": 122,
                     "moduleId": 0,
-                    "start": 96,
+                    "start": 117,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
                   "to": [
-                    1.5950000411833656,
-                    4.787054952178176
+                    -0.5,
+                    0.5
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -606,20 +754,44 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    1.5950000411833656,
-                    4.787054952178176
+                    -0.5,
+                    0.5
                   ],
                   "tag": {
-                    "commentStart": 213,
-                    "end": 218,
+                    "commentStart": 195,
+                    "end": 200,
                     "moduleId": 0,
-                    "start": 213,
+                    "start": 195,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
                   "to": [
-                    -0.2067459401361986,
-                    -0.06852748084851323
+                    -0.5,
+                    -0.5
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.5,
+                    -0.5
+                  ],
+                  "tag": {
+                    "commentStart": 275,
+                    "end": 280,
+                    "moduleId": 0,
+                    "start": 275,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    0.5,
+                    -0.5
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -658,12 +830,12 @@ description: Variables in memory after executing sketch_block_region_from_point2
               },
               "start": {
                 "from": [
-                  -0.20674594013619027,
-                  -0.06852748084846844
+                  0.5,
+                  -0.5
                 ],
                 "to": [
-                  -0.20674594013619027,
-                  -0.06852748084846844
+                  0.5,
+                  -0.5
                 ],
                 "units": "mm",
                 "tag": null,
@@ -684,6 +856,10 @@ description: Variables in memory after executing sketch_block_region_from_point2
                 "line3": {
                   "type": "TagIdentifier",
                   "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
                 }
               },
               "artifactId": "[uuid]",
@@ -697,5 +873,14 @@ description: Variables in memory after executing sketch_block_region_from_point2
       }
     },
     "constrainable": false
+  },
+  "width": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
   }
 }
