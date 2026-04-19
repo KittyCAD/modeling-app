@@ -85,23 +85,19 @@ impl ExecState {
         Option<IndexMap<Uuid, WebSocketResponse>>,
     ) {
         let module_state = self.to_module_state(project_directory);
-        cfg_select! {
-            feature = "snapshot-engine-responses" => {
-                let (outcome, responses) = {
-                    let mut exec_state = self;
-                    let responses = Some(exec_state.take_root_module_responses());
-                    let outcome = exec_state.into_exec_outcome(main_ref, ctx).await;
-                    (outcome, responses)
-                };
-            }
-            _ => {
-                let (outcome, responses) = {
-                    let responses = None;
-                    let outcome = self.into_exec_outcome(main_ref, ctx).await;
-                    (outcome, responses)
-                };
-            }
-        }
+        #[cfg(feature = "snapshot-engine-responses")]
+        let (outcome, responses) = {
+            let mut exec_state = self;
+            let responses = Some(exec_state.take_root_module_responses());
+            let outcome = exec_state.into_exec_outcome(main_ref, ctx).await;
+            (outcome, responses)
+        };
+        #[cfg(not(feature = "snapshot-engine-responses"))]
+        let (outcome, responses) = {
+            let responses = None;
+            let outcome = self.into_exec_outcome(main_ref, ctx).await;
+            (outcome, responses)
+        };
         (outcome, module_state, responses)
     }
 
@@ -412,13 +408,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
-                    let responses = cfg_select! {
-                        feature = "snapshot-engine-responses" => {
+                    let responses = {
+                        #[cfg(feature = "snapshot-engine-responses")]
+                        {
                             e.responses
                         }
-                        _ => {
-                            None
-                        }
+                        #[cfg(not(feature = "snapshot-engine-responses"))]
+                        None
                     };
                     let snapshot_results = assert_common_snapshots(test, error.variables, responses);
 
