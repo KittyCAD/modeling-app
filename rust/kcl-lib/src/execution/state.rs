@@ -109,7 +109,8 @@ pub(super) struct ArtifactState {}
 
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Serialize)]
+#[cfg_attr(not(feature = "snapshot-engine-responses"), derive(PartialEq))]
 pub struct ModuleArtifactState {
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
@@ -119,6 +120,9 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
+    /// Incoming engine commands.
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -133,6 +137,25 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
+}
+
+// It's error-prone to implmenent this manually. New fields are likely to be
+// forgotten. So we only use this implementation when the feature is enabled.
+#[cfg(feature = "snapshot-engine-responses")]
+impl PartialEq for ModuleArtifactState {
+    fn eq(&self, other: &Self) -> bool {
+        self.artifacts == other.artifacts
+            && self.unprocessed_commands == other.unprocessed_commands
+            && self.commands == other.commands
+            // WebSocketResponse type doesn't implement `PartialEq`.
+            // && self.responses == other.responses
+            && self.operations == other.operations
+            && self.object_id_generator == other.object_id_generator
+            && self.scene_objects == other.scene_objects
+            && self.source_range_to_object == other.source_range_to_object
+            && self.artifact_id_to_scene_object == other.artifact_id_to_scene_object
+            && self.var_solutions == other.var_solutions
+    }
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -312,6 +335,13 @@ impl ExecState {
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
+    }
+
+    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    pub(crate) fn take_root_module_responses(
+        &mut self,
+    ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
+        std::mem::take(&mut self.global.root_module_artifacts.responses)
     }
 
     pub(crate) fn stack(&self) -> &Stack {
@@ -668,6 +698,12 @@ impl ExecState {
             &programs,
             &self.global.module_infos,
         );
+
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            // Store engine responses for debugging.
+            self.global.root_module_artifacts.responses.extend(new_responses);
+        }
 
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;

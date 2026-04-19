@@ -75,6 +75,10 @@ overwrite-sim-test test_name:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::{{ test_name }}::kcl_test_execute
     [ {{ test_name }} != "kcl_samples" ] || ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::{{ test_name }}::test_after_engine
 
+# Run execution part of sim test, with additional snapshot of engine responses.
+debug-sim-test test_name:
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }},snapshot-engine-responses --no-quiet -- simulation_tests::{{ test_name }}::kcl_test_execute
+
 # Regenerate all the simulation test output.
 redo-sim-tests:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests

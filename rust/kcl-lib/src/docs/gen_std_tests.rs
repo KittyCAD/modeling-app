@@ -768,7 +768,7 @@ async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState>
     let result = ctx
         .run(program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state));
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state, None));
     // Always close, even when there's an error.
     ctx.close().await;
     result.map(|_| ())
