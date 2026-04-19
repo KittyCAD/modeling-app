@@ -195,7 +195,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // Exit sketch
-      await page.keyboard.press('Escape')
+      await page.keyboard.press('Meta+Escape')
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()

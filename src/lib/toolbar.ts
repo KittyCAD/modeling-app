@@ -1470,6 +1470,7 @@ export const useToolbarConfig = () => {
             status: 'available',
             title: 'Exit Sketch',
             showTitle: true,
+            hotkey: 'Meta+Esc',
             description: 'Exit the current sketch.',
             links: [],
           },
