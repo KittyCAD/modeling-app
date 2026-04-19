@@ -12,7 +12,6 @@ Install [asdf](https://asdf-vm.com/) to manage system dependencies for this proj
 asdf plugin add just
 asdf plugin add nodejs
 asdf plugin add python
-echo "legacy_version_file = true" > ~/.asdfrc  # enable .nvmrc support
 asdf install
 ```
 
