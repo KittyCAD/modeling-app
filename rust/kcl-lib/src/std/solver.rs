@@ -8,6 +8,7 @@ use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::shared::Angle as KAngle;
 use kittycad_modeling_cmds::shared::PathSegment;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::shared::Point4d as KPoint4d;
 use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
@@ -40,94 +41,46 @@ use crate::std::utils::untyped_point_to_mm;
 use crate::std_utils::untyped_point_to_unit;
 
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
-const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
-fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
-    let span_count = control_count.saturating_sub(degree);
-    let mut knots = vec![0.0; degree + 1];
-    if span_count > 1 {
-        for value in 1..span_count {
-            knots.push(value as f64);
-        }
-    }
-    knots.extend(std::iter::repeat_n(span_count as f64, degree + 1));
-    knots
-}
-
-fn find_knot_span(parameter: f64, degree: usize, knots: &[f64], control_count: usize) -> usize {
-    let n = control_count - 1;
-    if parameter >= knots[n + 1] {
-        return n;
-    }
-    if parameter <= knots[degree] {
-        return degree;
-    }
-
-    let mut low = degree;
-    let mut high = n + 1;
-    let mut mid = (low + high) / 2;
-    while parameter < knots[mid] || parameter >= knots[mid + 1] {
-        if parameter < knots[mid] {
-            high = mid;
-        } else {
-            low = mid;
-        }
-        mid = (low + high) / 2;
-    }
-    mid
-}
-
-fn de_boor_point(parameter: f64, degree: usize, knots: &[f64], controls: &[[f64; 2]]) -> [f64; 2] {
-    let span = find_knot_span(parameter, degree, knots, controls.len());
-    let mut points = (0..=degree).map(|j| controls[span - degree + j]).collect::<Vec<_>>();
-
-    for r in 1..=degree {
-        for j in (r..=degree).rev() {
-            let knot_index = span - degree + j;
-            let denominator = knots[knot_index + degree + 1 - r] - knots[knot_index];
-            let alpha = if denominator.abs() <= f64::EPSILON {
-                0.0
-            } else {
-                (parameter - knots[knot_index]) / denominator
+fn spline_controls_to_units(
+    controls: &[[TyF64; 2]],
+    units: UnitLength,
+    range: SourceRange,
+) -> Result<Vec<[f64; 2]>, KclError> {
+    controls
+        .iter()
+        .map(|control| {
+            let (point, point_ty) = untype_point(control.clone());
+            let Some(point_unit) = point_ty.as_length() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Control point spline points must have length units".to_owned(),
+                    vec![range],
+                )));
             };
-            points[j] = [
-                (1.0 - alpha) * points[j - 1][0] + alpha * points[j][0],
-                (1.0 - alpha) * points[j - 1][1] + alpha * points[j][1],
-            ];
-        }
-    }
-
-    points[degree]
+            Ok(untyped_point_to_unit(point, point_unit, units))
+        })
+        .collect()
 }
 
-fn sample_control_point_spline_points(controls: &[[f64; 2]], degree: usize) -> Vec<[f64; 2]> {
-    let knots = build_open_uniform_knot_vector(controls.len(), degree);
-    let span_count = controls.len().saturating_sub(degree);
-    let mut samples = Vec::with_capacity(span_count * CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN + 1);
-    samples.push(controls[0]);
+fn spline_controls_to_engine_points(controls: &[[f64; 2]], units: UnitLength) -> Vec<KPoint4d<LengthUnit>> {
+    controls
+        .iter()
+        .skip(1)
+        .map(|control| {
+            let point_mm = untyped_point_to_mm(*control, units);
+            KPoint4d {
+                x: LengthUnit(point_mm[0]),
+                y: LengthUnit(point_mm[1]),
+                z: LengthUnit(0.0),
+                w: LengthUnit(1.0),
+            }
+        })
+        .collect()
+}
 
-    for span_index in 0..span_count {
-        let start = span_index as f64;
-        let end = (span_index + 1) as f64;
-        let is_last_span = span_index + 1 == span_count;
-        let max_step = if is_last_span {
-            CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN
-        } else {
-            CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN - 1
-        };
-
-        for step in 1..=max_step {
-            let t = step as f64 / CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN as f64;
-            let parameter = if is_last_span && step == CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN {
-                end
-            } else {
-                start + t * (end - start)
-            };
-            samples.push(de_boor_point(parameter, degree, &knots, controls));
-        }
-    }
-
-    samples
+fn closes_path(end: [f64; 2], start: [f64; 2]) -> bool {
+    (end[0] - start[0]).abs() <= SOLVER_CONVERGENCE_TOLERANCE
+        && (end[1] - start[1]).abs() <= SOLVER_CONVERGENCE_TOLERANCE
 }
 
 /// Create the Sketch and send to the engine. Return will be None if there are
@@ -444,50 +397,62 @@ pub(crate) async fn create_segments_in_engine(
                 outer_sketch = Some(new_sketch);
             }
             SegmentKind::ControlPointSpline { controls, degree, .. } => {
-                let common_unit = controls
-                    .first()
-                    .and_then(|point| point[0].ty.as_length())
-                    .unwrap_or(UnitLength::Millimeters);
-                let mut untyped_controls = controls
-                    .iter()
-                    .map(|control| {
-                        let (point, point_ty) = untype_point(control.clone());
-                        let Some(point_unit) = point_ty.as_length() else {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Control point spline points must have length units".to_owned(),
-                                vec![range],
-                            )));
-                        };
-                        Ok(untyped_point_to_unit(point, point_unit, common_unit))
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-
+                let mut curve_controls = spline_controls_to_units(controls, sketch.units, range)?;
                 if traversal == SegmentTraversal::Reverse {
-                    untyped_controls.reverse();
+                    curve_controls.reverse();
                 }
 
-                let sampled_points = sample_control_point_spline_points(&untyped_controls, *degree as usize);
-                let mut sampled_iter = sampled_points.into_iter();
-                let _ = sampled_iter.next();
-
-                let mut next_tag = tag.clone();
-                let mut sketch_acc = sketch.clone();
-                for sampled_point in sampled_iter {
-                    let to = [
-                        TyF64::new(sampled_point[0], common_unit.into()),
-                        TyF64::new(sampled_point[1], common_unit.into()),
-                    ];
-                    sketch_acc = straight_line(
-                        exec_state.next_uuid(),
-                        StraightLineParams::absolute(to, sketch_acc, next_tag.take()),
-                        !exec_state.sketch_mode(),
-                        exec_state,
-                        ctx,
-                        range,
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::with_id(exec_state, ctx, range, segment.id),
+                        ModelingCmd::from(
+                            mcmd::ExtendPath::builder()
+                                .path(sketch.id.into())
+                                .segment(PathSegment::Curve {
+                                    degree: *degree,
+                                    rational: false,
+                                    points: spline_controls_to_engine_points(&curve_controls, sketch.units),
+                                    relative: false,
+                                })
+                                .build(),
+                        ),
                     )
                     .await?;
+
+                let from = sketch.current_pen_position()?;
+                let to = *curve_controls.last().ok_or_else(|| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        "Control point spline is missing control points".to_owned(),
+                        vec![range],
+                    ))
+                })?;
+                let loops_back_to_start = closes_path(to, sketch.start.from);
+
+                let current_path = Path::ControlPointSpline {
+                    base: BasePath {
+                        from: from.ignore_units(),
+                        to,
+                        tag: tag.clone(),
+                        units: sketch.units,
+                        geo_meta: GeoMeta {
+                            id: segment.id,
+                            metadata: range.into(),
+                        },
+                    },
+                    controls: curve_controls,
+                    degree: *degree,
+                };
+
+                let mut new_sketch = sketch.clone();
+                if let Some(tag) = &tag {
+                    new_sketch.add_tag(tag, &current_path, exec_state, None);
                 }
-                outer_sketch = Some(sketch_acc);
+                if loops_back_to_start {
+                    new_sketch.is_closed = crate::execution::ProfileClosed::Implicitly;
+                }
+
+                new_sketch.paths.push(current_path);
+                outer_sketch = Some(new_sketch);
             }
         }
     }
@@ -504,61 +469,110 @@ pub(crate) async fn create_segments_in_engine(
 
 #[cfg(test)]
 mod tests {
-    use super::CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN;
-    use super::build_open_uniform_knot_vector;
-    use super::sample_control_point_spline_points;
+    use indexmap::IndexMap;
+    use kcl_error::SourceRange;
 
-    fn assert_point_approx_eq(actual: [f64; 2], expected: [f64; 2]) {
-        assert!(
-            (actual[0] - expected[0]).abs() <= 1e-9 && (actual[1] - expected[1]).abs() <= 1e-9,
-            "expected point {expected:?}, got {actual:?}"
-        );
-    }
+    use super::create_segments_in_engine;
+    use super::spline_controls_to_engine_points;
+    use crate::ExecState;
+    use crate::ExecutorContext;
+    use crate::execution::Path;
+    use crate::execution::Plane;
+    use crate::execution::Segment;
+    use crate::execution::SegmentKind;
+    use crate::execution::SketchSurface;
+    use crate::front::ControlPointSplineCtor;
+    use crate::front::ObjectId;
+    use crate::std::args::TyF64;
+    use crate::std::sketch::PlaneData;
+    use kittycad_modeling_cmds::units::UnitLength;
 
     #[test]
-    fn open_uniform_knots_match_degree_policy() {
-        assert_eq!(build_open_uniform_knot_vector(3, 2), vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+    fn spline_curve_points_skip_entry_control() {
+        let controls = vec![[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
+        let curve_points = spline_controls_to_engine_points(&controls, UnitLength::Millimeters);
+
+        assert_eq!(curve_points.len(), controls.len() - 1);
+        assert_eq!(curve_points[0].x.0, 10.0);
+        assert_eq!(curve_points[curve_points.len() - 1].x.0, 30.0);
+        assert!(curve_points.iter().all(|point| point.w.0 == 1.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn control_point_spline_lowering_uses_exact_curve_path() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let sketch_id = exec_state.next_uuid();
+        let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, &mut exec_state).unwrap();
+        let sketch_surface = SketchSurface::Plane(Box::new(plane));
+        let mut segments = vec![Segment {
+            id: exec_state.next_uuid(),
+            object_id: ObjectId(100),
+            kind: SegmentKind::ControlPointSpline {
+                controls: vec![
+                    [
+                        TyF64::new(0.0, UnitLength::Millimeters.into()),
+                        TyF64::new(0.0, UnitLength::Millimeters.into()),
+                    ],
+                    [
+                        TyF64::new(12.0, UnitLength::Millimeters.into()),
+                        TyF64::new(22.0, UnitLength::Millimeters.into()),
+                    ],
+                    [
+                        TyF64::new(28.0, UnitLength::Millimeters.into()),
+                        TyF64::new(22.0, UnitLength::Millimeters.into()),
+                    ],
+                    [
+                        TyF64::new(40.0, UnitLength::Millimeters.into()),
+                        TyF64::new(0.0, UnitLength::Millimeters.into()),
+                    ],
+                ],
+                ctor: Box::new(ControlPointSplineCtor {
+                    points: Vec::new(),
+                    construction: None,
+                }),
+                control_object_ids: vec![ObjectId(101), ObjectId(102), ObjectId(103), ObjectId(104)],
+                control_polygon_edge_object_ids: vec![ObjectId(105), ObjectId(106), ObjectId(107)],
+                control_freedoms: Vec::new(),
+                degree: 3,
+                construction: false,
+            },
+            surface: sketch_surface.clone(),
+            sketch_id,
+            sketch: None,
+            tag: None,
+            node_path: None,
+            meta: vec![],
+        }];
+
+        let sketch = create_segments_in_engine(
+            &sketch_surface,
+            sketch_id,
+            &mut segments,
+            &IndexMap::new(),
+            &ctx,
+            &mut exec_state,
+            SourceRange::default(),
+        )
+        .await
+        .unwrap()
+        .expect("expected sketch output");
+
         assert_eq!(
-            build_open_uniform_knot_vector(5, 3),
-            vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0]
+            sketch.paths.len(),
+            1,
+            "expected one exact path, not sampled line segments"
         );
-    }
-
-    #[test]
-    fn sampled_control_point_spline_preserves_endpoints() {
-        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
-        let sampled = sample_control_point_spline_points(&controls, 3);
-
-        assert!(!sampled.is_empty(), "expected sampled spline points");
-        assert_point_approx_eq(sampled[0], controls[0]);
-        assert_point_approx_eq(sampled[sampled.len() - 1], controls[controls.len() - 1]);
-    }
-
-    #[test]
-    fn sampled_control_point_spline_uses_expected_points_per_span() {
-        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0], [40.0, 0.0]];
-        let degree = 3;
-        let span_count = controls.len() - degree;
-        let sampled = sample_control_point_spline_points(&controls, degree);
-        let expected_count = span_count * (CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN - 1) + 2;
-
-        assert_eq!(
-            sampled.len(),
-            expected_count,
-            "unexpected sampled point count for temporary polyline lowering"
-        );
-    }
-
-    #[test]
-    fn reversing_controls_reverses_sampled_path() {
-        let controls = [[0.0, 0.0], [10.0, 20.0], [20.0, 0.0], [30.0, 10.0]];
-        let forward = sample_control_point_spline_points(&controls, 3);
-        let reversed_controls = controls.into_iter().rev().collect::<Vec<_>>();
-        let reversed = sample_control_point_spline_points(&reversed_controls, 3);
-
-        assert_eq!(forward.len(), reversed.len(), "expected matching sample counts");
-        for (forward_point, reversed_point) in forward.iter().zip(reversed.iter().rev()) {
-            assert_point_approx_eq(*forward_point, *reversed_point);
+        match &sketch.paths[0] {
+            Path::ControlPointSpline { controls, degree, .. } => {
+                assert_eq!(*degree, 3);
+                assert_eq!(controls.len(), 4);
+                assert_eq!(controls[0], [0.0, 0.0]);
+                assert_eq!(controls[3], [40.0, 0.0]);
+            }
+            other => panic!("expected exact control point spline path, got {other:?}"),
         }
+
+        ctx.close().await;
     }
 }
