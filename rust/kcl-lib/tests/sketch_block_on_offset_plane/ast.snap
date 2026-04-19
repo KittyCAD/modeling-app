@@ -280,16 +280,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -458,16 +449,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -633,16 +615,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -808,16 +781,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -858,16 +822,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -919,16 +874,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -980,16 +926,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1041,16 +978,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1102,16 +1030,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1245,16 +1164,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1388,16 +1298,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1531,16 +1432,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1674,16 +1566,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1763,16 +1646,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "sketch2",
-                        "start": 0,
-                        "type": "Identifier"
-                      }
-                    ],
+                    "path": [],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1854,58 +1728,6 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": "settings",
-          "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -1922,18 +1744,7 @@ description: Result of parsing sketch_block_on_offset_plane.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

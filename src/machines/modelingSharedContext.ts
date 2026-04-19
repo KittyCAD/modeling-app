@@ -1,5 +1,3 @@
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -8,8 +6,10 @@ import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { MachineManager } from '@src/lib/MachineManager'
 
-const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
@@ -29,7 +29,7 @@ const dummyInitSketchGraphDelta = Object.freeze({
   new_objects: [],
   invalidates_ids: false,
   exec_outcome: {
-    errors: [],
+    issues: [],
     variables: {},
     operations: [],
     artifactGraph: { map: {}, itemCount: 0 },
@@ -40,8 +40,8 @@ const dummyInitSketchGraphDelta = Object.freeze({
 
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {
@@ -75,23 +75,16 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
 
 export function generateModelingMachineDefaultContext(systemDeps: {
   kclManager: KclManager
-  sceneInfra: SceneInfra
   rustContext: RustContext
   wasmInstance: ModuleType
-  sceneEntitiesManager: SceneEntities
   engineCommandManager: ConnectionManager
+  commandBarActor: CommandBarActorType
+  machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
-    machineManager: {
-      machines: [],
-      machineApiIp: null,
-      currentMachine: null,
-      setCurrentMachine: () => {},
-      noMachinesReason: () => undefined,
-    },
     selection: [],
     selectionRanges: {
       graphSelections: [],

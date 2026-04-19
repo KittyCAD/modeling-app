@@ -7,7 +7,10 @@ layout: manual
 
 KCL types. This module contains fundamental types like `number`, `string`, `Solid`, and `Sketch`. 
 
-Types can (optionally) be used to describe a function's arguments and returned value. They are checked when a program runs and can help avoid errors. They are also useful to help document what a function does. 
+Types can (optionally) be used to describe a function's arguments and returned value. They are checked
+when a program runs and can help avoid errors. They are also useful to help document what a function
+does.
+
 
 
 
@@ -15,6 +18,7 @@ Types can (optionally) be used to describe a function's arguments and returned v
 
 * [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d)
 * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)
+* [`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge)
 * [`Edge`](/docs/kcl-std/types/std-types-Edge)
 * [`Face`](/docs/kcl-std/types/std-types-Face)
 * [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation)

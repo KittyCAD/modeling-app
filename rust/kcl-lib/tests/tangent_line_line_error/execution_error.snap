@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing tangent_line_line_error.kcl
+---
+KCL Semantic error
+
+  × semantic: tangent() does not support Line/Line. Tangency requires at least
+  │ one circular segment.
+   ╭─[4:3]
+ 3 │   l1 = line(start = [var 0mm, var 2mm], end = [var 10mm, var 2mm])
+ 4 │   tangent([l0, l1])
+   ·   ────────┬────────┬
+   ·           ╰── tests/tangent_line_line_error/input.kcl
+   ·           ╰── tests/tangent_line_line_error/input.kcl
+ 5 │ }
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: tangent() does not support Line/Line. Tangency requires at
+        │ least one circular segment.
+         ╭─[4:3]
+       3 │   l1 = line(start = [var 0mm, var 2mm], end = [var 10mm, var 2mm])
+       4 │   tangent([l0, l1])
+         ·   ────────┬────────
+         ·           ╰── tests/tangent_line_line_error/input.kcl
+       5 │ }
+         ╰────

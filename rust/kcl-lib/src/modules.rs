@@ -2,16 +2,22 @@ use std::fmt;
 
 use anyhow::Result;
 pub use kcl_error::ModuleId;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
-    fs::{FileManager, FileSystem},
-    parsing::ast::types::{ImportPath, Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::EnvironmentRef;
+use crate::execution::ModuleArtifactState;
+use crate::execution::PreImportedGeometry;
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileManager;
+use crate::fs::FileSystem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ModuleLoader {
@@ -83,7 +89,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "runtime" => Some(include_str!("../std/runtime.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
-        "sketch2" => Some(include_str!("../std/sketch2.kcl")),
+        "solver" => Some(include_str!("../std/solver.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),

@@ -9,15 +9,11 @@ import {
   EngineConnectionEvents,
   isHighlightSetEntity_type,
 } from '@src/network/utils'
-import type RustContext from '@src/lib/rustContext'
-import type { DeepPartial } from '@src/lib/types'
-import type { Configuration } from '@src/lang/wasm'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { uuidv4 } from '@src/lib/utils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Connection } from '@src/network/connection'
 import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
 
@@ -44,30 +40,24 @@ export const createOnEngineOffline = ({
 }
 
 export const createOnEngineConnectionOpened = ({
-  rustContext,
   settings,
-  jsAppSettings,
-  path,
   sendSceneCommand,
+  setDefaultSystemProperties,
   setTheme,
   listenToDarkModeMatcher,
   camControlsCameraChange,
-  sceneInfra,
   connection,
   setStreamIsReady,
 }: {
-  rustContext: RustContext
   settings: SettingsViaQueryString
-  jsAppSettings: DeepPartial<Configuration>
-  path: string
   sendSceneCommand: (
     command: EngineCommand,
     forceWebsocket?: boolean
   ) => Promise<WebSocketResponse | [WebSocketResponse] | null>
+  setDefaultSystemProperties: (backfaceColor: string) => Promise<void>
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
-  sceneInfra: SceneInfra
   connection: Connection
   setStreamIsReady: (isStreamReady: boolean) => void
 }) => {
@@ -140,17 +130,10 @@ export const createOnEngineConnectionOpened = ({
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
-      message: 'default_backface_set_color',
+      message: 'default_system_properties_set',
     })
 
-    await sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_default_system_properties',
-        backface_color: settings.backfaceColor,
-      },
-    })
+    await setDefaultSystemProperties(settings.backfaceColor)
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',

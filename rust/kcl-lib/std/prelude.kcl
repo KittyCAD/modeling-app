@@ -19,8 +19,7 @@ export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
-@(experimental = true)
-export import "std::sketch2"
+export import "std::solver"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
@@ -90,9 +89,15 @@ export SOLID = "solid": string
 /// enclose any space.
 export SURFACE = "surface": string
 
+/// Counterclockwise circular direction, currently used by `region()`.
+export CCW = "ccw": string
+
+/// Clockwise circular direction, currently used by `region()`.
+export CW = "cw": string
+
 /// Create a helix.
 ///
-/// ```no3d
+/// ```kcl,no3d,legacySketch
 /// // Create a helix around the Z axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -109,7 +114,7 @@ export SURFACE = "surface": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```no3d
+/// ```kcl,no3d,legacySketch
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])
@@ -130,7 +135,7 @@ export SURFACE = "surface": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```no3d
+/// ```kcl,no3d,legacySketch
 /// // Create a helix around a custom axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -150,7 +155,7 @@ export SURFACE = "surface": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```no3d
+/// ```kcl,no3d,legacySketch
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)
@@ -163,6 +168,28 @@ export SURFACE = "surface": string
 ///     revolutions = 16,
 ///     cylinder = part001,
 ///  )
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrate building a helix where the central axis is a line defined in a sketch block.
+/// // First, here's the sketch block with a line:
+/// sketch002 = sketch(on = XZ) {
+///   line1 = line(start = [var -0.82mm, var 3.4mm], end = [var -1.58mm, var -5.24mm])
+/// }
+///
+/// // Create a helix around the line in the sketch above.
+/// helixPath = helix(
+///   angleStart = 0,
+///   ccw = true,
+///   revolutions = 5,
+///   length = 10,
+///   radius = 5,
+///   axis = sketch002.line1,
+/// )
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(XZ)
+///   |> circle(center = [5, 0], radius = 0.5)
+///   |> sweep(path = helixPath)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn helix(
@@ -178,7 +205,7 @@ export fn helix(
   /// Axis to use for the helix.
   /// The center of the helix's base will be at this axis's origin point.
   @(includeInSnippet = true)
-  axis?: Axis3d | Edge,
+  axis?: Axis3d | Edge | Segment,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
   @(includeInSnippet = true)
   length?: number(Length),
@@ -191,7 +218,7 @@ export fn helix(
 /// For example, if you offset the `XZ` plane by 10, the new plane will be parallel to the `XZ`
 /// plane and 10 units away from it.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// // Loft a square and a circle on the `XY` plane using offset.
 /// squareSketch = startSketchOn(XY)
 ///     |> startProfile(at = [-100, 200])
@@ -207,7 +234,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// // Loft a square and a circle on the `XZ` plane using offset.
 /// squareSketch = startSketchOn(XZ)
 ///     |> startProfile(at = [-100, 200])
@@ -223,7 +250,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// // Loft a square and a circle on the `YZ` plane using offset.
 /// squareSketch = startSketchOn(YZ)
 ///     |> startProfile(at = [-100, 200])
@@ -239,7 +266,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// squareSketch = startSketchOn(-XZ)
 ///     |> startProfile(at = [-100, 200])
@@ -255,7 +282,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// // A circle on the XY plane
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -287,7 +314,7 @@ export fn offsetPlane(
 /// Really only use this function if YOU ARE SURE you need it. In most cases you
 /// do not need clone and using a pattern with `instance = 2` is more appropriate.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -311,7 +338,7 @@ export fn offsetPlane(
 /// extrude(clonedSketch, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Clone a basic solid and move it.
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -328,7 +355,7 @@ export fn offsetPlane(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Translate and rotate a cloned sketch to create a loft.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -345,7 +372,7 @@ export fn offsetPlane(
 /// loft([sketch001, sketch002])
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Translate a cloned solid. Fillet only the clone.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -358,7 +385,7 @@ export fn offsetPlane(
 ///
 /// sketch002 = clone(sketch001)
 /// |> translate(x = 0, y = 0, z = 20)
-/// 
+///
 /// fillet(
 /// sketch002,
 /// radius = 2,
@@ -366,7 +393,7 @@ export fn offsetPlane(
 /// )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // You can reuse the tags from the original geometry with the cloned geometry.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -389,7 +416,7 @@ export fn offsetPlane(
 ///   |> extrude(length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // You can also use the tags from the original geometry to fillet the cloned geometry.
 ///
 /// width = 20
@@ -421,7 +448,7 @@ export fn offsetPlane(
 ///   |> translate(x = 0, y = 50, z = 0)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Create a spring by sweeping around a helix path from a cloned sketch.
 ///
 /// // Create a helix around the Z axis.
@@ -444,7 +471,7 @@ export fn offsetPlane(
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // A donut shape from a cloned sketch.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
@@ -457,7 +484,7 @@ export fn offsetPlane(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Sketch on the end of a revolved face by tagging the end face.
 /// // This shows the cloned geometry will have the same tags as the original geometry.
 ///
@@ -488,7 +515,7 @@ export fn offsetPlane(
 /// // example003 = extrude(exampleSketch002, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// // Clone an imported model.
 ///
 /// import "tests/inputs/cube.sldprt" as cube
@@ -505,15 +532,77 @@ export fn offsetPlane(
 ///        roughness = 50
 ///    )
 /// ```
+///
+/// ```kcl,legacySketch
+/// // Clone an array of sketches and solids
+/// exampleSketch = startSketchOn(XY)
+///  |> startProfile(at = [0, 0])
+///  |> line(end = [10, 0])
+///  |> line(end = [0, 10])
+///  |> line(end = [-10, 0])
+///  |> close()
+///
+/// exampleSolid = startSketchOn(XY)
+///   |> startProfile(at = [-15, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///   |> extrude(length = 5)
+///
+///
+/// inputArray = [ exampleSketch, exampleSolid]
+/// outputArray = clone(inputArray)
+///
+/// outputArray[0]
+/// |> translate(xyz = [10, 10, 10])
+/// |> extrude(length = 5)
+///
+/// clonedSolid = outputArray[1]
+/// |> translate(xyz = [-10, -10, -10])
+///
+/// ```
+///
+/// // Clone an array that includes an imported geometry, solid and sketch.
+/// ```kcl,legacySketch
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// geom = cube
+/// |> translate(xyz = [1000, 50 , 50])
+///
+/// // Clone a basic sketch and move it and extrude it.
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// exampleSolid = startSketchOn(XY)
+///   |> startProfile(at = [-15, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///   |> extrude(length = 5)
+///
+///
+/// inputArray = [ exampleSketch, exampleSolid, geom ]
+/// outputArray = clone(inputArray)
+///
+/// outputArray[0]
+/// |> translate(xyz = [10, 10, 10])
+/// |> extrude(length = 5)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
-  @geometry: Sketch | Solid | ImportedGeometry,
-): Sketch | Solid | ImportedGeometry {}
+  @geometries: [Sketch | Solid | ImportedGeometry; 1+],
+): [Sketch | Solid | ImportedGeometry; 1+] {}
 
 /// Asserts that a value is the boolean value true.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// kclIsFun = true
 /// assertIs(kclIsFun)
 /// ```
@@ -528,11 +617,12 @@ export fn assertIs(
 /// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
 /// If you provide multiple conditions, they will all be checked and all must be met.
 ///
-/// ```kcl,norun
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// n = 10
 /// assert(n, isEqualTo = 10)
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
 /// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
+/// assert(PI, isNotEqualTo = 3, tolerance = 0.0001, error = "PI should not be exactly 3")
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn assert(
@@ -546,11 +636,68 @@ export fn assert(
   isGreaterThanOrEqual?: number,
   /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
   isLessThanOrEqual?: number,
-  /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
+  /// Comparison argument. If given, checks the `actual` value is equal to this.
   @(includeInSnippet = true)
   isEqualTo?: number,
-  /// If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places.
+  /// Comparison argument. If given, checks the `actual` value is not equal to this.
+  isNotEqualTo?: number,
+  /// If `isEqualTo` or `isNotEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places.
   tolerance?: number,
   /// If the value was false, the program will terminate with this error message
   error?: string,
 ) {}
+
+
+/// Given a face index, find its ID.
+/// In general, you should prefer tagging faces to using this function. Use this function if
+/// you can't tag a face. For example, if the face comes from imported geometry in a .STEP file,
+/// or if it's from an operation that doesn't yet support tagging the faces it creates, like `subtract`.
+/// ```kcl,legacySketch
+/// // Cylinder
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 4.09, tag = $seg01)
+///   |> extrude(length = 5)
+///
+/// // Delete the face at index 2
+/// // (the top face)
+/// deleteFace(cylinder, faces = [faceId(cylinder, index = 2)])
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn faceId(
+  /// The solid whose faces we're trying to find
+  @body: Solid,
+  /// Face to identify.
+  /// The index is a stable ordering of faces, used when you can't get the
+  /// usual ID of a face.
+  index: number(Count),
+): TaggedFace {}
+
+/// Given an edge index, find its ID.
+/// In general, you should prefer tagging edges to using this function. Use this function if
+/// you can't tag an edge. For example, if the edge comes from imported geometry in a .STEP file,
+/// or if it's from an operation that doesn't yet support tagging the edges it creates, like `subtract`.
+/// ```kcl,legacySketch
+/// // Cylinder
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 4.09, tag = $seg01)
+///   |> extrude(length = 5)
+///   // Fillet the edge at index 2, i.e. the top edge.
+///   |> fillet(radius = 1, tags = [edgeId(index = 2)])
+/// ```
+/// ```kcl,legacySketch
+/// startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///   |> fillet(radius = 0.5, tags = [edgeId(closestTo = [5, 0, 2])])
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn edgeId(
+  /// The solid whose edges we're trying to find
+  @body: Solid,
+  /// Edge to identify.
+  /// The index is a stable ordering of edges, used when you can't get the
+  /// usual ID of an edge.
+  index?: number(Count),
+  /// Query the edge closest to this point. Uses absolute global coordinates.
+  closestTo?: Point3d,
+): Edge {}

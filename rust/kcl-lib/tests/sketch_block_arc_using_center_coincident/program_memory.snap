@@ -3,6 +3,38 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_arc_using_center_coincident.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "s": {
     "type": "Object",
     "value": {
@@ -12,6 +44,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -115,6 +148,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "center_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
                 }
               }
             }
@@ -127,6 +196,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -198,6 +268,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineX"
                 }
               }
             }
@@ -210,6 +316,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -281,11 +388,239 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineY"
                 }
               }
             }
           }
         }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.00000000013634182671751205,
+                    -0.00000000013637167332270698
+                  ],
+                  "from": [
+                    0.9999999998637178,
+                    0.000000000000024657673419120412
+                  ],
+                  "radius": 0.999999999727376,
+                  "tag": {
+                    "commentStart": 65,
+                    "end": 69,
+                    "moduleId": 0,
+                    "start": 65,
+                    "type": "TagDeclarator",
+                    "value": "arc1"
+                  },
+                  "to": [
+                    -0.00000000000008276136810444463,
+                    0.9999999995910043
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.00000000000008276136810444463,
+                    0.9999999995910043
+                  ],
+                  "tag": null,
+                  "to": [
+                    -0.00000000013657336853705663,
+                    0.000000000000040336985211834335
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.00000000013657336853705663,
+                    0.000000000000040336985211834335
+                  ],
+                  "tag": {
+                    "commentStart": 357,
+                    "end": 362,
+                    "moduleId": 0,
+                    "start": 357,
+                    "type": "TagDeclarator",
+                    "value": "lineX"
+                  },
+                  "to": [
+                    1.000000000000136,
+                    0.000000000000025988806365319692
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    1.000000000000136,
+                    0.000000000000025988806365319692
+                  ],
+                  "tag": null,
+                  "to": [
+                    -0.00000000000007966494277597656,
+                    0.00000000013655007845307036
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.00000000000007966494277597656,
+                    0.00000000013655007845307036
+                  ],
+                  "tag": {
+                    "commentStart": 430,
+                    "end": 435,
+                    "moduleId": 0,
+                    "start": 430,
+                    "type": "TagDeclarator",
+                    "value": "lineY"
+                  },
+                  "to": [
+                    -0.00000000000008132374639772339,
+                    1.0000000004097453
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  0.9999999998637178,
+                  0.000000000000024657673419120412
+                ],
+                "to": [
+                  0.9999999998637178,
+                  0.000000000000024657673419120412
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "arc1": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                },
+                "lineX": {
+                  "type": "TagIdentifier",
+                  "value": "lineX"
+                },
+                "lineY": {
+                  "type": "TagIdentifier",
+                  "value": "lineY"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
       },
       "p0": {
         "type": "Segment",
@@ -293,6 +628,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 6,
                 "kind": {
                   "point": {
@@ -330,6 +666,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p0"
                 }
               }
             }
@@ -342,6 +714,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 18,
                 "kind": {
                   "point": {
@@ -379,6 +752,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p1"
                 }
               }
             }

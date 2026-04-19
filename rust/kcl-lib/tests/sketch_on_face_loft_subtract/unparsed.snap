@@ -1,0 +1,74 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_on_face_loft_subtract.kcl
+---
+towerSketch = sketch(on = XY) {
+  line1 = line(start = [var 0.29mm, var 0.59mm], end = [var 3.21mm, var 0.59mm])
+  line2 = line(start = [var 3.21mm, var 0.59mm], end = [var 3.21mm, var 3.49mm])
+  line3 = line(start = [var 3.21mm, var 3.49mm], end = [var 0.29mm, var 3.49mm])
+  line4 = line(start = [var 0.29mm, var 3.49mm], end = [var 0.29mm, var 0.59mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+region001 = region(point = [1.75mm, 0.5925mm], sketch = towerSketch)
+towerBody = extrude(region001, length = 5)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [var -5.74mm, var -2.89mm], end = [var 6.33mm, var -2.89mm])
+  line2 = line(start = [var 6.33mm, var -2.89mm], end = [var 6.33mm, var 5.16mm])
+  line3 = line(start = [var 6.33mm, var 5.16mm], end = [var -5.74mm, var 5.16mm])
+  line4 = line(start = [var -5.74mm, var 5.16mm], end = [var -5.74mm, var -2.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+region004 = region(point = [0.295mm, -2.8875mm], sketch = baseSketch)
+baseSolid = extrude(region004, length = 0.5, tagEnd = $theEnd)
+
+baseTopFace = faceOf(baseSolid, face = theEnd)
+pyramidBaseSketch = sketch(on = baseTopFace) {
+  line1 = line(start = [var -3.9mm, var -1.53mm], end = [var 5.52mm, var -1.53mm])
+  line2 = line(start = [var 5.52mm, var -1.53mm], end = [var 5.52mm, var 4.62mm])
+  line3 = line(start = [var 5.52mm, var 4.62mm], end = [var -3.9mm, var 4.62mm])
+  line4 = line(start = [var -3.9mm, var 4.62mm], end = [var -3.9mm, var -1.53mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+pyramidTopPlane = offsetPlane(XY, offset = 2)
+pyramidTopSketch = sketch(on = pyramidTopPlane) {
+  line1 = line(start = [var -2.7mm, var -0.17mm], end = [var 4mm, var -0.17mm])
+  line2 = line(start = [var 4mm, var -0.17mm], end = [var 4mm, var 4.04mm])
+  line3 = line(start = [var 4mm, var 4.04mm], end = [var -2.7mm, var 4.04mm])
+  line4 = line(start = [var -2.7mm, var 4.04mm], end = [var -2.7mm, var -0.17mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+region002 = region(point = [0.81mm, -1.5275mm], sketch = pyramidBaseSketch)
+region003 = region(point = [0.65mm, -0.1675mm], sketch = pyramidTopSketch)
+pyramidLoft = loft([region002, region003])
+
+solid001 = subtract(pyramidLoft, tools = towerBody)

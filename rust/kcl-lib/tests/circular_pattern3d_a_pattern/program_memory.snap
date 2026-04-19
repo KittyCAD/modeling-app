@@ -40,6 +40,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -209,6 +210,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -375,6 +377,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -541,6 +544,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -707,6 +711,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -873,6 +878,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1039,6 +1045,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1205,6 +1212,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1376,6 +1384,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1542,6 +1551,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1708,6 +1718,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1874,6 +1885,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2040,6 +2052,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2206,6 +2219,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2372,6 +2386,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2538,6 +2553,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2704,6 +2720,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2870,6 +2887,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3036,6 +3054,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3202,6 +3221,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3368,6 +3388,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3534,6 +3555,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3700,6 +3722,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3866,6 +3889,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4032,6 +4056,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4198,6 +4223,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4364,6 +4390,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4530,6 +4557,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4696,6 +4724,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4862,6 +4891,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5028,6 +5058,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5194,6 +5225,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5360,6 +5392,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5526,6 +5559,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5692,6 +5726,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5858,6 +5893,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6024,6 +6060,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6190,6 +6227,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6356,6 +6394,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6522,6 +6561,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6688,6 +6728,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6854,6 +6895,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7020,6 +7062,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7186,6 +7229,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7352,6 +7396,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7518,6 +7563,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7684,6 +7730,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7850,6 +7897,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8016,6 +8064,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8182,6 +8231,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8348,6 +8398,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8514,6 +8565,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8680,6 +8732,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8846,6 +8899,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9012,6 +9066,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9178,6 +9233,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9344,6 +9400,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9510,6 +9567,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9676,6 +9734,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9842,6 +9901,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10008,6 +10068,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10174,6 +10235,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10340,6 +10402,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10506,6 +10569,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10672,6 +10736,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10838,6 +10903,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11004,6 +11070,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11170,6 +11237,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11336,6 +11404,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11502,6 +11571,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11668,6 +11738,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11834,6 +11905,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12000,6 +12072,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12166,6 +12239,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12332,6 +12406,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12498,6 +12573,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12664,6 +12740,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12830,6 +12907,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12996,6 +13074,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13162,6 +13241,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13328,6 +13408,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13494,6 +13575,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13660,6 +13742,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13826,6 +13909,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13992,6 +14076,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14158,6 +14243,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14324,6 +14410,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14490,6 +14577,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14656,6 +14744,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14822,6 +14911,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14988,6 +15078,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15154,6 +15245,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15320,6 +15412,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15486,6 +15579,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15652,6 +15746,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15818,6 +15913,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15984,6 +16080,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16150,6 +16247,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16316,6 +16414,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16482,6 +16581,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16648,6 +16748,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16814,6 +16915,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16980,6 +17082,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17146,6 +17249,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17312,6 +17416,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17478,6 +17583,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17644,6 +17750,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17810,6 +17917,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17976,6 +18084,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18142,6 +18251,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18308,6 +18418,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18474,6 +18585,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18640,6 +18752,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18806,6 +18919,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18972,6 +19086,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19138,6 +19253,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19304,6 +19420,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19470,6 +19587,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19636,6 +19754,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19802,6 +19921,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -19968,6 +20088,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20134,6 +20255,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20300,6 +20422,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20466,6 +20589,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20632,6 +20756,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20798,6 +20923,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -20964,6 +21090,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21130,6 +21257,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21296,6 +21424,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21462,6 +21591,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21628,6 +21758,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21794,6 +21925,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -21960,6 +22092,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22126,6 +22259,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22292,6 +22426,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22458,6 +22593,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22624,6 +22760,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22790,6 +22927,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -22956,6 +23094,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23122,6 +23261,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23288,6 +23428,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23454,6 +23595,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23620,6 +23762,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23786,6 +23929,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -23952,6 +24096,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24118,6 +24263,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24284,6 +24430,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24450,6 +24597,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24616,6 +24764,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24782,6 +24931,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -24948,6 +25098,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25114,6 +25265,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25280,6 +25432,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25446,6 +25599,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25612,6 +25766,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25778,6 +25933,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -25944,6 +26100,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26110,6 +26267,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26276,6 +26434,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26442,6 +26601,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26608,6 +26768,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26774,6 +26935,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -26940,6 +27102,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27106,6 +27269,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27272,6 +27436,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27438,6 +27603,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27604,6 +27770,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27770,6 +27937,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -27936,6 +28104,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28102,6 +28271,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28268,6 +28438,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28434,6 +28605,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28600,6 +28772,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28766,6 +28939,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -28932,6 +29106,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29098,6 +29273,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29264,6 +29440,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29430,6 +29607,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29596,6 +29774,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29762,6 +29941,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -29928,6 +30108,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30094,6 +30275,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30260,6 +30442,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30426,6 +30609,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30592,6 +30776,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30758,6 +30943,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -30924,6 +31110,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31090,6 +31277,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31256,6 +31444,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31422,6 +31611,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31588,6 +31778,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31754,6 +31945,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -31920,6 +32112,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32086,6 +32279,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32252,6 +32446,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32418,6 +32613,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32584,6 +32780,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32750,6 +32947,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -32916,6 +33114,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33082,6 +33281,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33248,6 +33448,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33414,6 +33615,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33580,6 +33782,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33746,6 +33949,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -33912,6 +34116,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34078,6 +34283,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34244,6 +34450,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34410,6 +34617,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34576,6 +34784,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34742,6 +34951,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -34908,6 +35118,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35074,6 +35285,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35240,6 +35452,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35406,6 +35619,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35572,6 +35786,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35738,6 +35953,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -35904,6 +36120,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36070,6 +36287,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36236,6 +36454,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36402,6 +36621,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36568,6 +36788,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36734,6 +36955,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -36900,6 +37122,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37066,6 +37289,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37232,6 +37456,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37398,6 +37623,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37564,6 +37790,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37730,6 +37957,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -37896,6 +38124,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38062,6 +38291,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38228,6 +38458,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38394,6 +38625,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38560,6 +38792,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38726,6 +38959,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -38892,6 +39126,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39058,6 +39293,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39224,6 +39460,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39390,6 +39627,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39556,6 +39794,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39722,6 +39961,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -39888,6 +40128,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40054,6 +40295,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40220,6 +40462,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40386,6 +40629,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40552,6 +40796,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40718,6 +40963,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -40884,6 +41130,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41050,6 +41297,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41216,6 +41464,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41382,6 +41631,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41548,6 +41798,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41714,6 +41965,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -41880,6 +42132,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42046,6 +42299,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42212,6 +42466,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42378,6 +42633,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42544,6 +42800,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42710,6 +42967,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -42876,6 +43134,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43042,6 +43301,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43208,6 +43468,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43374,6 +43635,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43540,6 +43802,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43706,6 +43969,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -43872,6 +44136,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44038,6 +44303,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44204,6 +44470,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44370,6 +44637,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44536,6 +44804,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44702,6 +44971,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -44868,6 +45138,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45034,6 +45305,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45200,6 +45472,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45366,6 +45639,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45532,6 +45806,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45698,6 +45973,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -45864,6 +46140,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46030,6 +46307,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46196,6 +46474,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46362,6 +46641,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46528,6 +46808,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46694,6 +46975,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -46860,6 +47142,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47026,6 +47309,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47192,6 +47476,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47358,6 +47643,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47524,6 +47810,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47690,6 +47977,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -47856,6 +48144,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48022,6 +48311,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48188,6 +48478,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48354,6 +48645,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48520,6 +48812,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48686,6 +48979,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -48852,6 +49146,7 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

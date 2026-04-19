@@ -38,7 +38,7 @@ baseSketch = startSketchOn(caliperPlane)
   |> extrude(length = caliperThickness * 5 / 6, symmetric = true)
 
   // Cut the rotor opening from the caliper
-  |> subtract(tools = sketch003)
+  |> subtract(tools = sketch003, tolerance)
 
   // Add a bright appearance to the caliper
   |> appearance(color = "#ce0909")
@@ -139,20 +139,20 @@ fn oLogo(surface, origin, fontSize, depth) {
 
 // Create each letter using the letter functions
 z = zLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [-1.57, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,
 )
 
 o = oLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [-0.545, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,
 )
 oo = oLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [0.585, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,

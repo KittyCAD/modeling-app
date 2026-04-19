@@ -3,6 +3,7 @@ import type { AsyncFn } from '@src/lib/types'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 
 export const uuidv4 = v4
 
@@ -113,13 +114,17 @@ export function getLength(a: [number, number], b: [number, number]): number {
   return Math.sqrt(x * x + y * y)
 }
 
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
 /**
- * Calculates the angle in degrees between two points in a 2D space.
+ * Calculates the angle in degrees between two vectors in 2D.
  * The angle is normalized to the range [-180, 180].
  *
- * @param a The first point as a tuple [x, y].
- * @param b The second point as a tuple [x, y].
- * @returns The normalized angle in degrees between point a and point b.
+ * @param a The first vector as a tuple [x, y].
+ * @param b The second vector as a tuple [x, y].
+ * @returns The normalized angle in degrees between vectors a and b.
  */
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
@@ -376,6 +381,44 @@ export function simulateOnMouseDragMatch(text: string) {
 export function roundOff(num: number, precision: number = 2): number {
   const x = Math.pow(10, precision)
   return Math.round(num * x) / x
+}
+
+export function baseUnitToMm(baseUnit: BaseUnit): number {
+  switch (baseUnit) {
+    case 'mm':
+      return 1
+    case 'cm':
+      return 10
+    case 'm':
+      return 1000
+    case 'in':
+      return 25.4
+    case 'ft':
+      return 304.8
+    case 'yd':
+      return 914.4
+  }
+
+  const _exhaustiveCheck: never = baseUnit
+  console.error(`Unsupported base unit: ${String(_exhaustiveCheck)}`)
+  return Number.NaN
+}
+
+export function mmToBaseUnit(
+  value: number,
+  decimalPlaces: number,
+  baseUnit: BaseUnit
+): number {
+  const mmPerBaseUnit = baseUnitToMm(baseUnit)
+  const valueInBaseUnit = value / mmPerBaseUnit
+
+  // Prepare input for toFixed
+  let digits = Math.trunc(decimalPlaces)
+  if (!Number.isFinite(digits) || digits < 0) digits = 0
+  if (digits > 100) digits = 100
+
+  const roundedValue = Number(valueInBaseUnit.toFixed(digits))
+  return Object.is(roundedValue, -0) ? 0 : roundedValue
 }
 
 export function roundOffWithUnits(
@@ -734,4 +777,31 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
     !isArray(value) &&
     Object.getPrototypeOf(value) === Object.prototype
   )
+}
+
+export function hexToRgba(hex: string): RgbaColor | null {
+  const normalized = hex.replace('#', '').trim()
+  const expanded =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((char) => char + char)
+          .join('')
+      : normalized
+
+  if (!/^[0-9a-fA-F]{6}$/.test(expanded)) {
+    return null
+  }
+
+  const raw = parseInt(expanded, 16)
+  const r = (raw >> 16) & 0xff
+  const g = (raw >> 8) & 0xff
+  const b = raw & 0xff
+
+  return {
+    r: r / 255,
+    g: g / 255,
+    b: b / 255,
+    a: 1,
+  }
 }

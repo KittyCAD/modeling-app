@@ -23,6 +23,7 @@ description: Variables in memory after executing import_whole_simple.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

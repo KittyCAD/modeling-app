@@ -19,7 +19,8 @@ import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
-import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
@@ -34,7 +35,7 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -181,9 +182,12 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
+  const { settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const errors = kclManager.errorsSignal.value
-  const settings = useSettings()
-  const applicationProjectDirectory = settings.app.projectDirectory.current
+  const settingsValues = settings.useSettings()
+  const applicationProjectDirectory =
+    settingsValues.app.projectDirectory.current
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -290,7 +294,7 @@ export const ProjectExplorer = ({
     systemIOActor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
-  }, [refreshExplorerPressed])
+  }, [refreshExplorerPressed, systemIOActor])
 
   useEffect(() => {
     if (collapsePressed <= 0) {
@@ -321,6 +325,7 @@ export const ProjectExplorer = ({
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
       if (readOnly || !window.electron) return
+      const electron = window.electron
 
       const supportedFiles: { file: File; relativePath: string }[] = []
       const unsupportedFiles: string[] = []
@@ -397,26 +402,30 @@ export const ProjectExplorer = ({
 
         for (const { file, relativePath } of supportedFiles) {
           try {
+            const destinationDirPath = relativePath
+              ? joinOSPaths(targetPath, relativePath)
+              : targetPath
+
             // Create parent directories if needed
-            if (relativePath) {
-              const fullDirPath = joinOSPaths(targetPath, relativePath)
-              if (!createdDirs.has(fullDirPath)) {
-                await window.electron.mkdir(fullDirPath, { recursive: true })
-                createdDirs.add(fullDirPath)
-              }
+            if (relativePath && !createdDirs.has(destinationDirPath)) {
+              await electron.mkdir(destinationDirPath, { recursive: true })
+              createdDirs.add(destinationDirPath)
             }
 
+            const { path: destinationPath } = await getNextFileName({
+              entryName: file.name,
+              baseDir: destinationDirPath,
+              wasmInstance,
+            })
+
             const arrayBuffer = await file.arrayBuffer()
-            const destinationPath = relativePath
-              ? joinOSPaths(targetPath, relativePath, file.name)
-              : joinOSPaths(targetPath, file.name)
-            await window.electron.writeFile(
+            await electron.writeFile(
               destinationPath,
               new Uint8Array(arrayBuffer)
             )
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
-            toast.error(`Failed to import ${file.name}`)
+            toast.error(`Failed to import ${file.name}.`)
           }
         }
 
@@ -433,11 +442,11 @@ export const ProjectExplorer = ({
         })
 
         toast.success(
-          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}`
+          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
         )
       }
     },
-    [readOnly, project.path, wasmInstance]
+    [readOnly, project.path, wasmInstance, systemIOActor]
   )
 
   const handleDragOverTarget = useCallback(
@@ -647,7 +656,7 @@ export const ProjectExplorer = ({
                   },
                 })
               } else {
-                toast.error('Failed to copy and paste the result is null')
+                toast.error('Failed to copy and paste the result is null.')
               }
             }
 
@@ -700,7 +709,7 @@ export const ProjectExplorer = ({
                   })
                 )
               } else {
-                toast.error('Failed to copy and paste the result is null')
+                toast.error('Failed to copy and paste the result is null.')
               }
             }
           },
@@ -751,11 +760,11 @@ export const ProjectExplorer = ({
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
                   )
-                  const oldPath = window.electron?.path.join(
+                  const oldPath = fsZds.join(
                     absolutePathToParentDirectory,
                     name
                   )
-                  const newPath = window.electron?.path.join(
+                  const newPath = fsZds.join(
                     absolutePathToParentDirectory,
                     requestedName
                   )

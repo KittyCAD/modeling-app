@@ -27,6 +27,11 @@ base_unit = "in"
 
 ## Available Settings
 
+### cloud
+
+
+
+
 ### settings
 
 
@@ -71,6 +76,13 @@ Whether to show the debug panel, which lets you see various states of the app to
 ##### stream_idle_mode
 
 When the user is idle, and this is true, the stream will be torn down.
+
+
+**Default:** None
+
+##### zookeeper_mode
+
+Zookeeper reasoning mode. Uses the app default if not set.
 
 
 **Default:** None

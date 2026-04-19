@@ -1,16 +1,9 @@
 import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
-import * as fsp from 'fs/promises'
 
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
-import {
-  executorInputPath,
-  getUtils,
-  runningOnWindows,
-  testsInputPath,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -80,23 +73,22 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
    * "parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
-  test('Desktop: should create new file by default, creates a second file with automatic unique name', async ({
+  test('should create new file by default, creates a second file with automatic unique name', async ({
     editor,
-    context,
     page,
     scene,
     cmdBar,
     toolbar,
+    folderSetupFn,
+    fs,
   }) => {
-    if (runningOnWindows()) {
-    }
-
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {
-        encoding: 'utf-8',
-      })
+      await fs.mkdir(bracketDir, { recursive: true })
+      await fs.writeFile(
+        join(bracketDir, 'main.kcl'),
+        new TextEncoder().encode(bracket)
+      )
     })
     const u = await getUtils(page)
 
@@ -181,102 +173,20 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(projectMenuButton).toContainText('main.kcl')
     })
   })
+})
 
-  const externalModelCases = [
-    {
-      modelName: 'cylinder.kcl',
-      deconflictedModelName: 'cylinder-1.kcl',
-      modelPath: executorInputPath('cylinder.kcl'),
-    },
-    {
-      modelName: 'cube.step',
-      deconflictedModelName: 'cube-1.step',
-      modelPath: testsInputPath('cube.step'),
-    },
-  ]
-  externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
-    test(`Load external models from local drive - ${modelName}`, async ({
-      page,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+test.describe('Query parameter command', { tag: '@web' }, () => {
+  test('should add sample to demo project', async ({
+    page,
+    toolbar,
+    editor,
+  }) => {
+    const sampleTitle = 'Socket Head Cap Screw'
+    const sampleSlug = 'socket-head-cap-screw'
+    const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
+    await page.goto(page.url() + queryString)
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-      const modelFileContent = await fsp.readFile(modelPath, 'utf-8')
-      const { editorTextMatches } = await getUtils(page, test)
-
-      async function loadExternalFileThroughCommandBar(tronApp: ElectronZoo) {
-        await toolbar.loadButton.click()
-        await cmdBar.selectOption({ name: 'Local Drive' }).click()
-        await cmdBar.expectState({
-          commandName: 'Add file to project',
-          currentArgKey: 'pathOpen file',
-          currentArgValue: '',
-          headerArguments: {
-            Method: 'Existing project',
-            Path: '',
-            Source: 'local',
-            ProjectName: 'testDefault',
-          },
-          highlightedHeaderArg: 'path',
-          stage: 'arguments',
-        })
-
-        // Mock the file picker selection
-        const handleFile = tronApp.electron.evaluate(
-          async ({ dialog }, filePaths) => {
-            dialog.showOpenDialog = () =>
-              Promise.resolve({ canceled: false, filePaths })
-          },
-          [modelPath]
-        )
-        await page.getByTestId('cmd-bar-arg-file-button').click()
-        await handleFile
-
-        await cmdBar.expectState({
-          commandName: 'Add file to project',
-          currentArgKey: 'pathOpen file',
-          currentArgValue: '',
-          headerArguments: {
-            Method: 'Existing project',
-            Path: '',
-            Source: 'local',
-            ProjectName: 'testDefault',
-          },
-          highlightedHeaderArg: 'path',
-          stage: 'arguments',
-        })
-        await cmdBar.progressCmdBar()
-      }
-
-      await test.step('Load the external model from local drive', async () => {
-        await loadExternalFileThroughCommandBar(tronApp)
-        // TODO: I think the files pane should auto open?
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([modelName, 'main.kcl'])
-        if (modelName.endsWith('.kcl')) {
-          await editorTextMatches(modelFileContent)
-        }
-      })
-
-      await test.step('Load the same external model, except deconflicted name', async () => {
-        await loadExternalFileThroughCommandBar(tronApp)
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([
-          deconflictedModelName,
-          modelName,
-          'main.kcl',
-        ])
-        if (modelName.endsWith('.kcl')) {
-          await editorTextMatches(modelFileContent)
-        }
-      })
-    })
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await editor.expectEditor.toContain(sampleTitle)
   })
 })

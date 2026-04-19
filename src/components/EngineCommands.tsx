@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 
 import type { CommandLog } from '@src/lang/std/commandLog'
-import { engineCommandManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
+  const { kclManager } = useSingletons()
+  const engineCommandManager = kclManager.engineCommandManager
   const [engineCommands, setEngineCommands] = useState<CommandLog[]>(
     engineCommandManager.commandLogs
   )
 
   useEffect(() => {
-    engineCommandManager.registerCommandLogCallback((commands) =>
+    engineCommandManager.registerCommandLogCallback((commands: CommandLog[]) =>
       setEngineCommands(commands)
     )
-  }, [])
+  }, [engineCommandManager])
 
   return [engineCommands, () => engineCommandManager.clearCommandLogs()]
 }
 
 export const EngineCommands = () => {
+  const { kclManager } = useSingletons()
+  const engineCommandManager = kclManager.engineCommandManager
   const [engineCommands, clearEngineCommands] = useEngineCommands()
   const [containsFilter, setContainsFilter] = useState('')
   const [customCmd, setCustomCmd] = useState('')

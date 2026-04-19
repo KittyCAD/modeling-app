@@ -4,9 +4,12 @@ pub mod project;
 
 use anyhow::Result;
 use kittycad_modeling_cmds::units::UnitLength;
-use parse_display::{Display, FromStr};
+use parse_display::Display;
+use parse_display::FromStr;
 use schemars::JsonSchema;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
 use validator::Validate;
 
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
@@ -90,6 +93,9 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// Whether to enable Machine API discovery and printing controls on desktop.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub machine_api: bool,
 }
 
 /// Default to true.
@@ -219,15 +225,21 @@ pub struct ModelingSettings {
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_touch_controls: DefaultTrue,
-    /// Toggle new sketch mode implementation
+    /// Default to the experimental solver-based sketch mode for all new sketches.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub use_new_sketch_mode: bool,
+    pub use_sketch_solve_mode: bool,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// The default color to use for surface backfaces.
+    #[serde(
+        default = "default_backface_color",
+        skip_serializing_if = "is_default_backface_color"
+    )]
+    pub backface_color: String,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -254,6 +266,15 @@ fn default_length_unit_millimeters() -> UnitLength {
     UnitLength::Millimeters
 }
 
+// Also defined at src/lib/constants.ts#L333-L335
+fn default_backface_color() -> String {
+    "#00D5FF".to_string()
+}
+
+fn is_default_backface_color(color: &String) -> bool {
+    *color == default_backface_color()
+}
+
 impl Default for ModelingSettings {
     fn default() -> Self {
         Self {
@@ -263,9 +284,10 @@ impl Default for ModelingSettings {
             mouse_controls: Default::default(),
             gizmo_type: Default::default(),
             enable_touch_controls: Default::default(),
-            use_new_sketch_mode: Default::default(),
+            use_sketch_solve_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
+            backface_color: default_backface_color(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),
@@ -508,38 +530,6 @@ pub enum OnboardingStatus {
     #[serde(rename = "/desktop/conclusion")]
     #[display("/desktop/conclusion")]
     DesktopConclusion,
-
-    // Browser Routes
-    #[serde(rename = "/browser")]
-    #[display("/browser")]
-    BrowserWelcome,
-    #[serde(rename = "/browser/scene")]
-    #[display("/browser/scene")]
-    BrowserScene,
-    #[serde(rename = "/browser/toolbar")]
-    #[display("/browser/toolbar")]
-    BrowserToolbar,
-    #[serde(rename = "/browser/text-to-cad")]
-    #[display("/browser/text-to-cad")]
-    BrowserTextToCadWelcome,
-    #[serde(rename = "/browser/text-to-cad-prompt")]
-    #[display("/browser/text-to-cad-prompt")]
-    BrowserTextToCadPrompt,
-    #[serde(rename = "/browser/feature-tree-pane")]
-    #[display("/browser/feature-tree-pane")]
-    BrowserFeatureTreePane,
-    #[serde(rename = "/browser/prompt-to-edit")]
-    #[display("/browser/prompt-to-edit")]
-    BrowserPromptToEditWelcome,
-    #[serde(rename = "/browser/prompt-to-edit-prompt")]
-    #[display("/browser/prompt-to-edit-prompt")]
-    BrowserPromptToEditPrompt,
-    #[serde(rename = "/browser/prompt-to-edit-result")]
-    #[display("/browser/prompt-to-edit-result")]
-    BrowserPromptToEditResult,
-    #[serde(rename = "/browser/conclusion")]
-    #[display("/browser/conclusion")]
-    BrowserConclusion,
 }
 
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {
@@ -550,11 +540,21 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use super::{
-        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
-        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
-        TextEditorSettings, UnitLength,
-    };
+    use super::AppSettings;
+    use super::AppTheme;
+    use super::AppearanceSettings;
+    use super::CameraProjectionType;
+    use super::CommandBarSettings;
+    use super::Configuration;
+    use super::ModelingSettings;
+    use super::MouseControlType;
+    use super::OnboardingStatus;
+    use super::ProjectNameTemplate;
+    use super::ProjectSettings;
+    use super::Settings;
+    use super::TextEditorSettings;
+    use super::UnitLength;
+    use super::default_backface_color;
 
     #[test]
     fn test_settings_empty_file_parses() {
@@ -562,6 +562,7 @@ mod tests {
 
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -569,6 +570,7 @@ mod tests {
 
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
     }
 
     #[test]
@@ -644,5 +646,20 @@ enable_ssao = false
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    fn test_settings_backface_color_roundtrip() {
+        let settings_file = r##"[settings.modeling]
+backface_color = "#112233"
+"##;
+
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(parsed.settings.modeling.backface_color, "#112233");
+
+        let serialized = toml::to_string(&parsed).unwrap();
+        let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
+        assert_eq!(reparsed, parsed);
+        assert!(serialized.contains("backface_color = \"#112233\""));
     }
 }

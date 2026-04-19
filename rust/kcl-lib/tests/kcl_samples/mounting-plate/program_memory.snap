@@ -159,6 +159,7 @@ description: Variables in memory after executing mounting-plate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

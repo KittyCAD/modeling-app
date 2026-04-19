@@ -1,19 +1,45 @@
 //! Edge helper functions.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::{Args, sketch::FaceTag},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
+use crate::std::sketch::FaceTag;
+
+/// Check that a tag does not map to multiple edges (ambiguous region mapping).
+pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
+    let all_infos = tag.get_all_cur_info();
+    if all_infos.len() > 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Tag `{}` is ambiguous: it maps to {} edges in the region. Use a more specific reference.",
+                tag.value,
+                all_infos.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+    Ok(())
+}
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -31,6 +57,7 @@ async fn inner_get_opposite_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -38,7 +65,7 @@ async fn inner_get_opposite_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.sketch;
+    let sketch_id = tagged_path.geometry.id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -81,6 +108,7 @@ async fn inner_get_next_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -88,7 +116,7 @@ async fn inner_get_next_adjacent_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.sketch;
+    let sketch_id = tagged_path.geometry.id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -137,6 +165,7 @@ async fn inner_get_previous_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -144,7 +173,7 @@ async fn inner_get_previous_adjacent_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.sketch;
+    let sketch_id = tagged_path.geometry.id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -217,6 +246,8 @@ async fn inner_get_common_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&face1, &args)?;
+    check_tag_not_ambiguous(&face2, &args)?;
     let id = exec_state.next_uuid();
     if args.ctx.no_engine_commands().await {
         return Ok(id);
@@ -228,7 +259,7 @@ async fn inner_get_common_edge(
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
     let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
-    if first_tagged_path.sketch != second_tagged_path.sketch {
+    if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
         return Err(KclError::new_type(KclErrorDetails::new(
             "getCommonEdge requires the faces to be in the same original sketch".to_string(),
             vec![args.source_range],
@@ -254,7 +285,7 @@ async fn inner_get_common_edge(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dGetCommonEdge::builder()
-                    .object_id(first_tagged_path.sketch)
+                    .object_id(first_tagged_path.geometry.id())
                     .face_ids([first_face_id, second_face_id])
                     .build(),
             ),
@@ -278,5 +309,66 @@ async fn inner_get_common_edge(
             ),
             vec![args.source_range],
         ))
+    })
+}
+
+pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let face = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let edge = args.get_kw_arg("edge", &RuntimeType::edge(), exec_state)?;
+    let lower_bound = args.get_kw_arg_opt("lowerBound", &RuntimeType::num_any(), exec_state)?;
+    let upper_bound = args.get_kw_arg_opt("upperBound", &RuntimeType::num_any(), exec_state)?;
+
+    let bounded_edge = inner_get_bounded_edge(face, edge, lower_bound, upper_bound, exec_state, args.clone()).await?;
+    Ok(KclValue::BoundedEdge {
+        value: bounded_edge,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+pub async fn inner_get_bounded_edge(
+    face: Solid,
+    edge: EdgeReference,
+    lower_bound: Option<TyF64>,
+    upper_bound: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<BoundedEdge, KclError> {
+    let lower_bound = if let Some(lower_bound) = lower_bound {
+        let val = lower_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Invalid value: lowerBound must be between 0.0 and 1.0, provided {}",
+                    val
+                ),
+                vec![args.source_range],
+            )));
+        }
+        val
+    } else {
+        0.0_f32
+    };
+
+    let upper_bound = if let Some(upper_bound) = upper_bound {
+        let val = upper_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Invalid value: upperBound must be between 0.0 and 1.0, provided {}",
+                    val
+                ),
+                vec![args.source_range],
+            )));
+        }
+        val
+    } else {
+        1.0_f32
+    };
+
+    Ok(BoundedEdge {
+        face_id: face.id,
+        edge_id: edge.get_engine_id(exec_state, &args)?,
+        lower_bound,
+        upper_bound,
     })
 }

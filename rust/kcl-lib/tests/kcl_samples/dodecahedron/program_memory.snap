@@ -64,6 +64,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -230,6 +231,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -396,6 +398,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -562,6 +565,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -728,6 +732,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -894,6 +899,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1060,6 +1066,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1226,6 +1233,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1392,6 +1400,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1558,6 +1567,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1724,6 +1734,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1890,6 +1901,7 @@ description: Variables in memory after executing dodecahedron.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

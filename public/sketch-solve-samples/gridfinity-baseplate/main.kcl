@@ -1,0 +1,121 @@
+// Gridfinity Baseplate
+// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
+// Categories: Maker
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
+
+binLength = 42.0
+cornerRadius = 4.0
+firstStep = 0.7
+secondStep = 1.8
+thirdStep = 2.15
+
+countBinWidth = 2
+countBinLength = 3
+
+height = firstStep + secondStep + thirdStep
+
+baseFacePlane = offsetPlane(YZ, offset = cornerRadius)
+baseFaceSketch = sketch(on = baseFacePlane) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.65mm])
+  line2 = line(start = [var 0mm, var 4.65mm], end = [var 2.15mm, var 2.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(
+    start = [var 2.15mm, var 2.5mm],
+    end = [var 2.15mm, var 0.7mm],
+  )
+  coincident([line2.end, line3.start])
+  line4 = line(
+    start = [var 2.15mm, var 0.7mm],
+    end = [var 2.85mm, var 0mm],
+  )
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.85mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.15mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide1.start, line1.start])
+  guide2 = line(
+    start = [var 2.15mm, var 0mm],
+    end = [var 2.15mm, var 2.5mm],
+    construction = true,
+  )
+  coincident([guide1.end, guide2.start])
+  coincident([guide2.end, line2.end])
+  guide3 = line(
+    start = [var 0mm, var 0mm],
+    end = [var 2.85mm, var 0mm],
+    construction = true,
+  )
+  coincident([guide3.start, line1.start])
+  coincident([guide3.end, line4.end])
+  guide4 = line(
+    start = [var 2.15mm, var 0mm],
+    end = [var 2.15mm, var 0.7mm],
+    construction = true,
+  )
+  coincident([guide4.start, guide1.end])
+  coincident([guide4.end, line3.end])
+  vertical(line1)
+  vertical(line3)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == height
+  distance([guide1.start, guide1.end]) == thirdStep
+  distance([guide2.start, guide2.end]) == firstStep + secondStep
+  distance([guide3.start, guide3.end]) == thirdStep + firstStep
+  distance([guide4.start, guide4.end]) == firstStep
+}
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
+singleSide = extrude(baseFaceRegion, length = binLength - (cornerRadius * 2))
+
+sides = patternCircular3d(
+  singleSide,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [binLength / 2, binLength / 2, 0],
+  instances = 4,
+  rotateDuplicates = true,
+)
+
+axis000 = {
+  direction = [0.0, 1.0],
+  origin = [cornerRadius, cornerRadius]
+}
+
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
+singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
+hide(baseFaceSketch)
+
+corners = patternCircular3d(
+  singleCorner,
+  arcDegrees = 360deg,
+  axis = [0, 0, 1],
+  center = [binLength / 2, binLength / 2, 0],
+  instances = 4,
+  rotateDuplicates = true,
+)
+
+basePlateSides = patternLinear3d(
+       sides,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
+       distance = binLength,
+     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
+
+basePlateCorners = patternLinear3d(
+       corners,
+       axis = [1.0, 0.0, 0.0],
+       instances = countBinWidth,
+       distance = binLength,
+     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)

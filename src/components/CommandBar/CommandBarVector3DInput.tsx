@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import {
-  commandBarActor,
-  rustContext,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -14,6 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { isKclCommandValue } from '@src/lib/commandUtils'
+import type { KclManager } from '@src/lang/KclManager'
 
 function CoordinateInput({
   label,
@@ -80,6 +76,7 @@ function CommandBarVector3DInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector3d'
@@ -87,9 +84,11 @@ function CommandBarVector3DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
+  executingEditor: KclManager
 }) {
+  const { commands } = useApp()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)
     ? argumentValue
@@ -138,7 +137,7 @@ function CommandBarVector3DInput({
   const xCalculation = useCalculateKclExpression({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext,
+    rustContext: kclManager.rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
@@ -148,7 +147,7 @@ function CommandBarVector3DInput({
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext,
+    rustContext: kclManager.rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
@@ -158,7 +157,7 @@ function CommandBarVector3DInput({
   const zCalculation = useCalculateKclExpression({
     value: z,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext,
+    rustContext: kclManager.rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
@@ -171,7 +170,7 @@ function CommandBarVector3DInput({
   const zInputRef = useRef<HTMLInputElement>(null)
 
   // Close the command bar
-  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {
@@ -201,13 +200,13 @@ function CommandBarVector3DInput({
 
     // 1. Check if calculations are still running
     if (!canSubmit) {
-      toast.error('Please wait for calculations to complete')
+      toast.error('Please wait for calculations to complete.')
       return
     }
 
     // 2. Validate that all coordinate values are not empty
     if (!x.trim() || !y.trim() || !z.trim()) {
-      toast.error('Please enter values for all coordinates (X, Y, Z)')
+      toast.error('Please enter values for all coordinates (X, Y, Z).')
       return
     }
 
@@ -217,7 +216,7 @@ function CommandBarVector3DInput({
       yCalculation.calcResult === 'NAN' ||
       zCalculation.calcResult === 'NAN'
     ) {
-      toast.error('Invalid coordinate values - please check your input')
+      toast.error('Invalid coordinate values - please check your input.')
       return
     }
 
@@ -227,7 +226,7 @@ function CommandBarVector3DInput({
       !yCalculation.valueNode ||
       !zCalculation.valueNode
     ) {
-      toast.error('Unable to parse coordinate expressions')
+      toast.error('Unable to parse coordinate expressions.')
       return
     }
 
@@ -235,10 +234,12 @@ function CommandBarVector3DInput({
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
     // Calculate the KCL expression
-    stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
+    stringToKclExpression(vectorExpression, kclManager.rustContext, {
+      allowArrays: true,
+    })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
-          toast.error('Unable to create valid vector expression')
+          toast.error('Unable to create valid vector expression.')
           console.error('Invalid vector expression:', vectorExpression)
           return
         }
@@ -246,7 +247,7 @@ function CommandBarVector3DInput({
         onSubmit(result)
       })
       .catch((error) => {
-        toast.error('Failed to calculate vector expression')
+        toast.error('Failed to calculate vector expression.')
         console.error('Error calculating vector expression:', error)
       })
   }
@@ -256,7 +257,7 @@ function CommandBarVector3DInput({
     nextInputRef?: React.RefObject<HTMLInputElement | null>
   ) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      commandBarActor.send({ type: 'Close' })
+      commands.send({ type: 'Close' })
     }
     if (e.key === 'Backspace' && e.metaKey) {
       stepBack()

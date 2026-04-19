@@ -1,29 +1,39 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
-use anyhow::{Result, anyhow};
-use futures::{SinkExt, StreamExt};
+use anyhow::Result;
+use anyhow::anyhow;
+use futures::SinkExt;
+use futures::StreamExt;
 use indexmap::IndexMap;
-use kcmc::{
-    ModelingCmd,
-    websocket::{
-        BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
-        SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
-    },
-};
+use kcmc::ModelingCmd;
+use kcmc::websocket::BatchResponse;
+use kcmc::websocket::FailureWebSocketResponse;
+use kcmc::websocket::ModelingCmdReq;
+use kcmc::websocket::ModelingSessionData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::SuccessWebSocketResponse;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{RwLock, mpsc, oneshot};
+use tokio::sync::RwLock;
+use tokio::sync::mpsc;
+use tokio::sync::oneshot;
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    engine::{AsyncTasks, EngineManager, EngineStats},
-    errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator},
-};
+use crate::SourceRange;
+use crate::engine::AsyncTasks;
+use crate::engine::EngineManager;
+use crate::engine::EngineStats;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::DefaultPlanes;
+use crate::execution::IdGenerator;
+use crate::log::logln;
 
 #[derive(Debug, PartialEq)]
 enum SocketHealth {
@@ -309,6 +319,7 @@ impl EngineConnection {
                             }) => {
                                 let mut sd = session_data2.write().await;
                                 sd.replace(session.clone());
+                                logln!("API Call ID: {}", session.api_call_id);
                             }
                             WebSocketResponse::Failure(FailureWebSocketResponse {
                                 success: _,
@@ -510,7 +521,7 @@ impl EngineManager for EngineConnection {
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine_hangup(KclErrorDetails::new(
                         "Modeling command failed: websocket closed early".to_string(),
                         vec![source_range],
                     )));

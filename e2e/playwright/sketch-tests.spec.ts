@@ -197,7 +197,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
       await toolbar.startSketchBtn.click()
       await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
+        page.getByRole('button', { name: 'Cancel Sketch' })
       ).toBeVisible()
 
       await expect(page.getByText('select a plane or face')).toBeVisible()
@@ -244,7 +244,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await test.step('Click Start Sketch button again', async () => {
         await toolbar.startSketchBtn.click()
         await expect(
-          page.getByRole('button', { name: 'Exit Sketch' })
+          page.getByRole('button', { name: 'Cancel Sketch' })
         ).toBeVisible()
       })
 
@@ -316,8 +316,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
   )
   test(
     'Can edit a sketch that has been extruded in the same pipe',
-    { tag: '@web' },
-    async ({ page, editor, toolbar, scene, cmdBar }) => {
+    { tag: '@desktop' },
+    async ({ page, homePage, editor, toolbar, scene, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -331,8 +331,9 @@ sketch001 = startSketchOn(XZ)
         )
       })
 
-      await toolbar.waitForFeatureTreeToBeBuilt()
+      await homePage.goToModelingScene()
       await scene.settled(cmdBar)
+      await toolbar.waitForFeatureTreeToBeBuilt()
 
       await editor.closePane()
       await toolbar.editSketch()
@@ -672,9 +673,9 @@ sketch001 = startSketchOn(XZ)
         format: 'ratio',
       })
       await toolbar.startSketchBtn.click()
-      await page.waitForTimeout(20_000) // Wait for unavoidable animation
+      await page.waitForTimeout(1_000) // Wait for unavoidable animation
       await clickCenter()
-      await page.waitForTimeout(1000) // Wait for unavoidable animation
+      await page.waitForTimeout(1_000) // Wait for unavoidable animation
 
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
@@ -2050,11 +2051,11 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
 
   // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
   test('Feature tree shows correct sketch count per file', async ({
-    context,
     homePage,
     scene,
     toolbar,
     page,
+    folderSetupFn,
   }) => {
     const u = await getUtils(page)
 
@@ -2078,7 +2079,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
   |> line(end = [85.33, 234.01])
   |> line(enfd = [-137.23, -54.55])`
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([

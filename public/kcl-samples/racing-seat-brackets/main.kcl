@@ -1,0 +1,124 @@
+// Race Car Seat Brackets
+// Two of these modular brackets are used to mount a race car seat
+// Categories: Automotive
+
+// Define units
+@settings(defaultLengthUnit = mm)
+
+// Bracket Parameters
+bracketSpacing = 11.75in
+bendRad = 7
+thickness = 6.035
+
+// Hole Spacing Parameters
+holeDiameter = 0.375in
+xPitch = 25
+yPitch = 20
+xOffset = 100 // distance from part centerline to first column of holes
+yOffset = 50 // distance from reference horizontal datum
+yCount = 4
+
+// Calculate angled line angles
+angleA = atan(2 * yPitch / xPitch)
+
+// Draw bracket profiles
+bracketExtrusion = startSketchOn(XZ)
+  |> startProfile(at = [0, yOffset + 5 * yPitch])
+  |> yLine(endAbsolute = yOffset - yPitch, tag = $seg07)
+  |> tangentialArc(angle = -20deg, radius = bendRad + thickness, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), lengthY = segEndY(seg07) - bendRad - thickness, tag = $seg06)
+  |> tangentialArc(angle = -70deg, radius = bendRad + thickness, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = -yOffset - (4 * yPitch), tag = $seg05)
+  |> yLine(length = thickness)
+  |> xLine(length = segLen(seg05))
+  |> tangentialArc(angle = 70deg, radius = bendRad, tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg03), length = segLen(seg06))
+  |> tangentialArc(angle = 20deg, radius = bendRad, tag = $seg04)
+  |> angledLine(angle = tangentToEnd(seg04), length = segLen(seg07))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 2 * xOffset + 8 * xPitch, symmetric = true)
+
+// Perimeter trim the lower flange
+lowerFlange = startSketchOn(XY)
+  |> startProfile(at = [-yOffset - (5 * yPitch), 0])
+  |> yLine(length = -xOffset - (5 * xPitch))
+  |> xLine(endAbsolute = -yOffset / 2)
+  |> yLine(length = xPitch * 0.99)
+  |> xLine(endAbsolute = segStartX(seg05) - (yPitch * 3 / 2))
+  |> tangentialArc(radius = xPitch, angle = -90deg, tag = $seg16)
+  |> angledLine(angle = tangentToEnd(seg16), length = yPitch * 4.5)
+  |> tangentialArc(radius = xPitch, angle = -angleA, tag = $seg17)
+  |> angledLine(angle = tangentToEnd(seg17), length = 1)
+  |> tangentialArc(radius = xPitch, angle = angleA, tag = $seg18)
+  |> angledLine(angle = tangentToEnd(seg18), endAbsoluteY = 0)
+  |> mirror2d(axis = X)
+  |> extrude(length = thickness * 2)
+
+// Perimeter trim the upper flange
+upperFlange = startSketchOn(-YZ)
+  |> startProfile(at = [0, yOffset + 6 * yPitch])
+  |> xLine(length = -xOffset - (5 * xPitch))
+  |> yLine(endAbsolute = yOffset)
+  |> xLine(length = xPitch * 0.99)
+  |> yLine(endAbsolute = yOffset + yPitch)
+  |> tangentialArc(radius = xPitch, angle = -90deg + angleA, tag = $seg11)
+  |> angledLine(angle = tangentToEnd(seg11), lengthY = 1.9 * yPitch)
+  |> tangentialArc(radius = xPitch, angle = -angleA, tag = $seg12)
+  |> angledLine(angle = tangentToEnd(seg12), length = xPitch * 2)
+  |> tangentialArc(radius = xPitch, angle = -angleA, tag = $seg13)
+  |> angledLine(angle = tangentToEnd(seg13), lengthX = xOffset / 4)
+  |> tangentialArc(radius = xPitch, angle = angleA, tag = $seg14)
+  |> angledLine(angle = tangentToEnd(seg14), endAbsoluteX = 0)
+  |> mirror2d(axis = Y)
+  |> extrude(length = thickness * 2, method = NEW)
+
+// Subtract the trims from the base bracket
+bracket = subtract(bracketExtrusion, tools = [lowerFlange, upperFlange])
+
+// upper flange hole pattern
+upperFlangeHoleSketch = startSketchOn(bracket, face = seg07)
+ufOuter = circle(upperFlangeHoleSketch, center = [xOffset + 3 * xPitch, yOffset], diameter = holeDiameter)
+  |> patternCircular2d(instances = 2, center = [0, profileStartY()])
+  |> patternLinear2d(instances = 2, distance = yPitch, axis = Y)
+ufInner = circle(upperFlangeHoleSketch, center = [xOffset + 2 * xPitch, yOffset], diameter = holeDiameter)
+  |> patternCircular2d(instances = 2, center = [0, profileStartY()])
+  |> patternLinear2d(instances = yCount, distance = yPitch, axis = Y)
+ufSlot = startProfile(upperFlangeHoleSketch, at = [xOffset, yOffset - (holeDiameter / 2)])
+  |> xLine(length = xPitch, tag = $seg161)
+  |> tangentialArc(diameter = holeDiameter, angle = 180deg, tag = $seg151)
+  |> angledLine(angle = tangentToEnd(seg151), length = segLen(seg161))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternCircular2d(instances = 2, center = [0, yOffset])
+  |> patternLinear2d(instances = yCount, distance = yPitch, axis = Y)
+upperFlangeHoles = extrude([ufOuter, ufInner, ufSlot], length = -2 * thickness)
+
+// Lower flange hole and slot pattern
+sketch006 = startSketchOn(bracket, face = seg05)
+profile008 = startProfile(
+       sketch006,
+       at = [
+         xOffset + 6,
+         -segStartX(seg05) + yPitch
+       ],
+     )
+  |> yLine(length = yPitch / 2, tag = $seg09)
+  |> tangentialArc(angle = 180deg, diameter = 12, tag = $seg08)
+  |> yLine(length = -segLen(seg09))
+  |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> patternLinear2d(instances = 5, distance = xPitch * 3 / 4, axis = X)
+  |> patternCircular2d(
+       instances = 2,
+       center = [
+         0,
+         -segStartX(seg05) + yPitch + yPitch / 4
+       ],
+     )
+  |> extrude(length = -2 * thickness)
+
+// Create a second instance of the bracket and space them appropriately
+[bracket]
+  |> translate(x = bracketSpacing / 2)
+  |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)

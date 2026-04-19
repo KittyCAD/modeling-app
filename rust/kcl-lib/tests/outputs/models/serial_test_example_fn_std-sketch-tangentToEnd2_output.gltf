@@ -12,7 +12,7 @@
         -0
       ],
       "max": [
-        0.019999999552965164,
+        0.009999999776482582,
         0,
         0.009999999776482582
       ]
@@ -31,13 +31,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.019999999552965164,
+        0.009999999776482582,
         0,
         -0
       ],
       "max": [
         0.019999999552965164,
-        0.009999999776482582,
+        0,
         0.009999999776482582
       ]
     },
@@ -55,8 +55,8 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        0.019999999552965164,
         0,
-        0.009999999776482582,
         -0
       ],
       "max": [
@@ -80,11 +80,11 @@
       "type": "VEC3",
       "min": [
         0,
-        0,
+        0.009999999776482582,
         -0
       ],
       "max": [
-        0,
+        0.019999999552965164,
         0.009999999776482582,
         0.009999999776482582
       ]
@@ -108,9 +108,9 @@
         -0
       ],
       "max": [
-        0.019999999552965164,
+        0,
         0.009999999776482582,
-        -0
+        0.009999999776482582
       ]
     },
     {
@@ -123,7 +123,31 @@
     {
       "bufferView": 5,
       "byteOffset": 0,
-      "count": 6,
+      "count": 9,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        0,
+        0,
+        -0
+      ],
+      "max": [
+        0.019999999552965164,
+        0.009999999776482582,
+        -0
+      ]
+    },
+    {
+      "bufferView": 5,
+      "byteOffset": 12,
+      "count": 9,
+      "componentType": 5126,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "byteOffset": 0,
+      "count": 9,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
@@ -138,9 +162,9 @@
       ]
     },
     {
-      "bufferView": 5,
+      "bufferView": 6,
       "byteOffset": 12,
-      "count": 6,
+      "count": 9,
       "componentType": 5126,
       "type": "VEC3"
     }
@@ -151,8 +175,8 @@
   },
   "buffers": [
     {
-      "byteLength": 864,
-      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK1yM8AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AACAPwAAAAAAAAAACtejPAAAAAAAAACAAACAPwAAAAAAAAAACtejPArXIzwK1yM8AACAPwAAAAAAAAAACtejPArXIzwK1yM8AACAPwAAAAAAAAAACtejPAAAAAAAAACAAACAPwAAAAAAAAAACtejPArXIzwAAACAAACAPwAAAAAAAAAACtejPArXIzwK1yM8AAAAAAAAgD8AAAAACtejPArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AAAAAAAAgD8AAAAACtejPArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AACAvwAAAAAAAAAAAAAAAArXIzwAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAK1yM8AACAvwAAAAAAAAAAAAAAAAAAAAAK1yM8AACAvwAAAAAAAAAAAAAAAArXIzwAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAArXIzwAAACAAAAAgAAAAIAAAIC/CtejPArXIzwAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/CtejPArXIzwAAACAAAAAgAAAAIAAAIC/CtejPAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAArXIzwK1yM8AAAAAAAAAAAAAIA/AAAAAAAAAAAK1yM8AAAAAAAAAAAAAIA/CtejPArXIzwK1yM8AAAAAAAAAAAAAIA/CtejPArXIzwK1yM8AAAAAAAAAAAAAIA/AAAAAAAAAAAK1yM8AAAAAAAAAAAAAIA/CtejPAAAAAAK1yM8AAAAAAAAAAAAAIA/"
+      "byteLength": 1152,
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK1yM8AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK1yM8AAAAAAAAgL8AAAAACtcjPAAAAAAK1yM8AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK1yM8AAAAAAAAgL8AAAAACtcjPAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AAAAAAAAgL8AAAAACtcjPAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAAAACAAAAAAAAAgL8AAAAACtejPAAAAAAK1yM8AACAPwAAAAAAAAAACtejPAAAAAAAAACAAACAPwAAAAAAAAAACtejPArXIzwK1yM8AACAPwAAAAAAAAAACtejPArXIzwK1yM8AACAPwAAAAAAAAAACtejPAAAAAAAAACAAACAPwAAAAAAAAAACtejPArXIzwAAACAAACAPwAAAAAAAAAACtejPArXIzwK1yM8AAAAAAAAgD8AAAAACtejPArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AAAAAAAAgD8AAAAACtejPArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwAAACAAAAAAAAAgD8AAAAAAAAAAArXIzwK1yM8AACAvwAAAAAAAAAAAAAAAArXIzwAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAK1yM8AACAvwAAAAAAAAAAAAAAAAAAAAAK1yM8AACAvwAAAAAAAAAAAAAAAArXIzwAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAArXIzwAAACAAAAAgAAAAIAAAIC/CtejPArXIzwAAACAAAAAgAAAAIAAAIC/CtcjPAAAAAAAAACAAAAAgAAAAIAAAIC/CtcjPAAAAAAAAACAAAAAgAAAAIAAAIC/CtejPArXIzwAAACAAAAAgAAAAIAAAIC/CtejPAAAAAAAAACAAAAAgAAAAIAAAIC/CtcjPAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAArXIzwAAACAAAAAgAAAAIAAAIC/AAAAAArXIzwK1yM8AAAAAAAAAAAAAIA/CtcjPAAAAAAK1yM8AAAAAAAAAAAAAIA/CtejPArXIzwK1yM8AAAAAAAAAAAAAIA/CtcjPAAAAAAK1yM8AAAAAAAAAAAAAIA/CtejPAAAAAAK1yM8AAAAAAAAAAAAAIA/CtejPArXIzwK1yM8AAAAAAAAAAAAAIA/CtcjPAAAAAAK1yM8AAAAAAAAAAAAAIA/AAAAAArXIzwK1yM8AAAAAAAAAAAAAIA/AAAAAAAAAAAK1yM8AAAAAAAAAAAAAIA/"
     }
   ],
   "bufferViews": [
@@ -193,8 +217,15 @@
     },
     {
       "buffer": 0,
-      "byteLength": 144,
+      "byteLength": 216,
       "byteOffset": 720,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 216,
+      "byteOffset": 936,
       "byteStride": 24,
       "target": 34962
     }
@@ -243,6 +274,10 @@
             ],
             [
               5,
+              1
+            ],
+            [
+              6,
               1
             ]
           ]
@@ -300,7 +335,7 @@
         {
           "surface": [
             4,
-            -1
+            1
           ],
           "loops": [
             [
@@ -312,11 +347,23 @@
         {
           "surface": [
             5,
-            1
+            -1
           ],
           "loops": [
             [
               5,
+              1
+            ]
+          ]
+        },
+        {
+          "surface": [
+            6,
+            1
+          ],
+          "loops": [
+            [
+              6,
               1
             ]
           ]
@@ -331,7 +378,7 @@
             ],
             [
               1,
-              1
+              -1
             ],
             [
               2,
@@ -351,7 +398,7 @@
             ],
             [
               5,
-              1
+              -1
             ],
             [
               6,
@@ -359,7 +406,7 @@
             ],
             [
               1,
-              -1
+              1
             ]
           ]
         },
@@ -371,7 +418,7 @@
             ],
             [
               8,
-              1
+              -1
             ],
             [
               9,
@@ -379,7 +426,7 @@
             ],
             [
               5,
-              -1
+              1
             ]
           ]
         },
@@ -390,21 +437,45 @@
               1
             ],
             [
-              3,
-              1
-            ],
-            [
               11,
               -1
             ],
             [
-              8,
+              12,
               -1
+            ],
+            [
+              8,
+              1
             ]
           ]
         },
         {
           "edges": [
+            [
+              13,
+              1
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              14,
+              -1
+            ],
+            [
+              11,
+              1
+            ]
+          ]
+        },
+        {
+          "edges": [
+            [
+              13,
+              -1
+            ],
             [
               10,
               -1
@@ -438,7 +509,11 @@
               1
             ],
             [
-              11,
+              12,
+              1
+            ],
+            [
+              14,
               1
             ]
           ]
@@ -454,7 +529,7 @@
           "end": 1,
           "t": [
             0,
-            0.02
+            0.01
           ]
         },
         {
@@ -462,8 +537,8 @@
             1,
             1
           ],
-          "start": 1,
-          "end": 2,
+          "start": 2,
+          "end": 1,
           "t": [
             0,
             0.01
@@ -478,7 +553,7 @@
           "end": 2,
           "t": [
             0,
-            0.02
+            0.01
           ]
         },
         {
@@ -510,8 +585,8 @@
             5,
             1
           ],
-          "start": 4,
-          "end": 5,
+          "start": 5,
+          "end": 4,
           "t": [
             0,
             0.01
@@ -538,7 +613,7 @@
           "end": 6,
           "t": [
             0,
-            0.02
+            0.01
           ]
         },
         {
@@ -546,8 +621,8 @@
             8,
             1
           ],
-          "start": 6,
-          "end": 7,
+          "start": 7,
+          "end": 6,
           "t": [
             0,
             0.01
@@ -562,7 +637,7 @@
           "end": 7,
           "t": [
             0,
-            0.02
+            0.01
           ]
         },
         {
@@ -571,6 +646,42 @@
             1
           ],
           "start": 6,
+          "end": 8,
+          "t": [
+            0,
+            0.02
+          ]
+        },
+        {
+          "curve": [
+            11,
+            1
+          ],
+          "start": 9,
+          "end": 8,
+          "t": [
+            0,
+            0.01
+          ]
+        },
+        {
+          "curve": [
+            12,
+            1
+          ],
+          "start": 7,
+          "end": 9,
+          "t": [
+            0,
+            0.02
+          ]
+        },
+        {
+          "curve": [
+            13,
+            1
+          ],
+          "start": 8,
           "end": 0,
           "t": [
             0,
@@ -579,10 +690,10 @@
         },
         {
           "curve": [
-            11,
+            14,
             1
           ],
-          "start": 7,
+          "start": 9,
           "end": 3,
           "t": [
             0,
@@ -597,17 +708,27 @@
           -0
         ],
         [
+          0.01,
+          0,
+          -0
+        ],
+        [
+          0.01,
+          0,
+          0.01
+        ],
+        [
+          0,
+          0,
+          0.01
+        ],
+        [
           0.02,
           0,
           -0
         ],
         [
           0.02,
-          0,
-          0.01
-        ],
-        [
-          0,
           0,
           0.01
         ],
@@ -647,7 +768,27 @@
               1
             ],
             "origin": [
-              0.01,
+              0.005,
+              0,
+              0.005
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              -0,
+              0,
+              1
+            ],
+            "origin": [
+              0.015,
               0,
               0.005
             ]
@@ -774,14 +915,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.02,
+              0.01,
               0,
-              -0
+              0.01
             ],
             "direction": [
               0,
               0,
-              1
+              -1
             ]
           }
         },
@@ -819,6 +960,51 @@
           "type": "line",
           "line": {
             "origin": [
+              0.01,
+              0,
+              -0
+            ],
+            "direction": [
+              1,
+              0,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.02,
+              0,
+              0.01
+            ],
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.01,
+              0,
+              0.01
+            ],
+            "direction": [
+              1,
+              0,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
               0.02,
               0,
               -0
@@ -836,12 +1022,12 @@
             "origin": [
               0.02,
               0.01,
-              -0
+              0.01
             ],
             "direction": [
               0,
               0,
-              1
+              -1
             ]
           }
         },
@@ -881,12 +1067,12 @@
             "origin": [
               0,
               0.01,
-              -0
+              0.01
             ],
             "direction": [
               0,
               0,
-              1
+              -1
             ]
           }
         },
@@ -1004,6 +1190,13 @@
           "attributes": {
             "POSITION": 10,
             "NORMAL": 11
+          },
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 12,
+            "NORMAL": 13
           },
           "material": 0
         }

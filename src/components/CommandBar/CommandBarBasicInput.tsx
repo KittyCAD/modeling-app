@@ -3,11 +3,7 @@ import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import { MarkdownText } from '@src/components/MarkdownText'
 
@@ -27,12 +23,13 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const { wasmPromise, commands } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as string | undefined
-  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,
@@ -111,7 +108,7 @@ function CommandBarBasicInput({
       {arg.description && (
         <MarkdownText
           text={arg.description}
-          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
         />
       )}
     </form>

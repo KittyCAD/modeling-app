@@ -411,7 +411,6 @@ description: Artifact commands bench-for-kids.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -773,7 +772,6 @@ description: Artifact commands bench-for-kids.kcl
                 "z": 315.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -801,7 +799,6 @@ description: Artifact commands bench-for-kids.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1064,7 +1061,6 @@ description: Artifact commands bench-for-kids.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1090,7 +1086,6 @@ description: Artifact commands bench-for-kids.kcl
                 "z": 330.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

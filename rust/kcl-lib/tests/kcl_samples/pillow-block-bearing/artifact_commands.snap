@@ -773,7 +773,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "r": 0.07058824,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1097,7 +1097,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "r": 0.9411765,
           "g": 0.9411765,
           "b": 0.9411765,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1489,7 +1489,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "r": 0.11764706,
           "g": 0.38431373,
           "b": 0.92156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

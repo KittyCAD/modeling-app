@@ -7,13 +7,13 @@
 // Import parameters
 import * from "parameters.kcl"
 
-// Sketch a profile for the center bell, then rotate
+// Sketch and revolve the rotor bell geometry
 sketchDiscBell = startSketchOn(-XY)
   |> startProfile(at = [rotorBore / 2, 0])
   |> yLine(length = -tBell)
-  |> xLine(endAbsolute = (lugSpacing + rotorBore) / 2)
+  |> xLine(length = lugSpacing - rotorBore + tBell)
   |> angledLine(angle = rDraftAngle, lengthY = hBellAboveDiscFace, tag = $seg08)
-  |> tangentialArc(angle = -90 - rDraftAngle, diameter = wUndercut, tag = $seg06)
+  |> tangentialArc(angle = -90deg - rDraftAngle, diameter = wUndercut, tag = $seg06)
   |> angledLine(angle = tangentToEnd(seg06) + turns::HALF_TURN, length = tDiscHalf, tag = $seg07)
   |> xLine(length = -1 * (tBell + wUndercut), tag = $seg04)
   |> angledLine(angle = segAng(seg08) + 180deg, endAbsoluteY = profileStartY())
@@ -21,14 +21,14 @@ sketchDiscBell = startSketchOn(-XY)
   |> close()
   |> revolve(axis = Y)
 
-// Drill lug holes
-sketchLugs = startSketchOn(sketchDiscBell, face = seg09)
+// Remove lug holes from the bell face
+lugHoles = startSketchOn(sketchDiscBell, face = seg09)
   |> circle(center = [-lugSpacing / 2, 0], diameter = lugThreadDiameter)
   |> patternCircular2d(instances = lugCount, center = [0, 0], arcDegrees = 360deg)
   |> extrude(length = -tBell * 2)
 
-// Create vents
-sketchVent = startSketchOn(sketchDiscBell, face = seg04)
+// Model the vents within the brake rotor discs
+ventPad = startSketchOn(sketchDiscBell, face = seg04)
   |> startProfile(at = [rVentFillet, rotorDiameter / 2])
   |> xLine(length = wVent - (2 * rVentFillet))
   |> tangentialArc(angle = -90deg, radius = rVentFillet)
@@ -39,9 +39,7 @@ sketchVent = startSketchOn(sketchDiscBell, face = seg04)
   |> yLine(length = segLen(seg10))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-ventPad = extrude(sketchVent, length = tVent, method = NEW)
-
-// Pattern vents around the perimeter of the rotor
+  |> extrude(length = tVent, method = NEW)
 ventSet = patternCircular3d(
   ventPad,
   instances = nVentBosses,
@@ -49,50 +47,46 @@ ventSet = patternCircular3d(
   center = [0, 0, 0],
 )
 
-// Sketch a drilled hole pattern on the rotor discs
-fn drillHole(@t) {
-  rInner = rotorDiameter / 2 - hFrictionSurface
-  rOuter = rotorDiameter / 2
+// Drill a hole pattern on each friction disc
+rInner = rotorDiameter / 2 - (hFrictionSurface / 1.2)
+rOuter = rotorDiameter / 2
 
-  aStart = aBase
-  aEnd = aBase - aSweep
+// Adjusted base angle
+aBaseAdj = aBase + 180deg / nVentBosses
 
-  rCurrent = rInner + t * (rOuter - rInner)
-  aCurrent = aStart + t * (aEnd - aStart)
+// Three ring points (t = 0.2, 0.5, 0.8) using adjusted base
+r1 = rInner + 0.2 * (rOuter - rInner)
+a1 = aBaseAdj - (0.2 * aSweep)
+x1 = r1 * cos(a1)
+y1 = r1 * sin(a1)
 
-  xCenter = rCurrent * cos(aCurrent)
-  yCenter = rCurrent * sin(aCurrent)
+r2 = rInner + 0.5 * (rOuter - rInner)
+a2 = aBaseAdj - (0.5 * aSweep)
+x2 = r2 * cos(a2)
+y2 = r2 * sin(a2)
 
-  return { x = xCenter, y = yCenter }
-}
+r3 = rInner + 0.8 * (rOuter - rInner)
+a3 = aBaseAdj - (0.8 * aSweep)
+x3 = r3 * cos(a3)
+y3 = r3 * sin(a3)
 
-// Use a function to create each rotor disc
-fn createDiscHalf(@face) {
-  sketchFace = startSketchOn(ventPad, face)
-    |> circle(radius = rotorDiameter / 2)
-    |> subtract2d(tool = circle(radius = rotorDiameter / 2 - hFrictionSurface))
+// Inboard disc half (sketch on START face of ventPad)
+faceIn = startSketchOn(ventPad, face = START)
+ringIn = circle(faceIn, radius = rotorDiameter / 2)
+  |> subtract2d(tool = circle(faceIn, radius = segEndX(seg07)))
+h1In = circle(faceIn, center = [x1, y1], radius = dDrillDia / 2)
+h2In = circle(faceIn, center = [x2, y2], radius = dDrillDia / 2)
+h3In = circle(faceIn, center = [x3, y3], radius = dDrillDia / 2)
+holesIn = patternCircular2d(
+  [h1In, h2In, h3In],
+  instances = nArcs,
+  center = [0, 0],
+  arcDegrees = 360deg,
+)
+profileIn = subtract2d(ringIn, tool = holesIn)
+discInboard = extrude(profileIn, length = tDiscHalf, method = NEW)
 
-  // Create three circles at t = 0.2, 0.5, and 0.8 directly on this sketch
-  c1 = drillHole(0.2)
-  c2 = drillHole(0.5)
-  c3 = drillHole(0.8)
-
-  hole1 = circle(sketchFace, center = [c1.x, c1.y], radius = dDrillDia / 2)
-  hole2 = circle(sketchFace, center = [c2.x, c2.y], radius = dDrillDia / 2)
-  hole3 = circle(sketchFace, center = [c3.x, c3.y], radius = dDrillDia / 2)
-
-  holes = patternCircular2d([hole1, hole2, hole3], instances = nArcs, center = [0, 0])
-
-  profileDrilled = subtract2d(sketchFace, tool = holes)
-
-  discHalf = extrude(profileDrilled, length = tDiscHalf, method = NEW)
-  return discHalf
-}
-
-// Create inboard half
-discInboard = createDiscHalf(START)
-
-// Create outboard half
+// Outboard disc half created by linear pattern along Y gap
 discOutboard = patternLinear3d(
   discInboard,
   axis = [0, 1, 0],
@@ -100,6 +94,7 @@ discOutboard = patternLinear3d(
   instances = 2,
 )
 
+// Add appearance
 rotor = appearance(
   [sketchDiscBell, ventSet, discOutboard],
   color = "#f0d77a",

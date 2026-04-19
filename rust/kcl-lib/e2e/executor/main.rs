@@ -1,9 +1,12 @@
 mod cache;
 
-use kcl_lib::{
-    BacktraceItem, ExecError, ModuleId, SourceRange,
-    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
-};
+use kcl_lib::BacktraceItem;
+use kcl_lib::ExecError;
+use kcl_lib::ModuleId;
+use kcl_lib::SourceRange;
+use kcl_lib::test_server::execute_and_export_step;
+use kcl_lib::test_server::execute_and_snapshot;
+use kcl_lib::test_server::execute_and_snapshot_no_auth;
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
@@ -750,8 +753,8 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> subtract2d(tool = polygon(numSides = 3, radius = .5))
-  |> subtract2d(tool = polygon(numSides = 3, center = [2, 8], radius= .5))
+  |> subtract2d(tool = polygon(center = [2, 8], radius = .5), numSides = 3)
+  |> subtract2d(tool = polygon(center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 
@@ -762,7 +765,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     };
     assert_eq!(
         err.error.message(),
-        "The `polygon` function requires a keyword argument `center`"
+        "The `polygon` function requires a keyword argument `numSides`"
     );
 }
 
@@ -1236,7 +1239,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "face requires a value with type `TaggedFace`, but found a value with type `string`."
+        "face requires a value with type `TaggedFace` or a value with type `Segment` (`TaggedFace | Segment`), but found a value with type `string`."
     );
 }
 

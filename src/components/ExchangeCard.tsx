@@ -43,10 +43,10 @@ export const ButtonCopy = (props: IButtonCopyProps) => (
       }
       navigator.clipboard.writeText(props.content).then(
         () => {
-          toast.success('Copied response to clipboard')
+          toast.success('Copied response to clipboard.')
         },
         () => {
-          toast.error('Failed to copy response to clipboard')
+          toast.error('Failed to copy response to clipboard.')
         }
       )
     }}
@@ -263,6 +263,8 @@ export const Delta = (props: { children: ReactNode }) => {
 type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
+  isLastResponse: boolean
+  onClickClearChat: () => void
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -308,21 +310,30 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     ) : null
   }, [props.deltasAggregated])
 
-  return (
-    <ChatBubble
-      side={'left'}
-      wfull={true}
-      userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
-      dataTestId="ml-response-chat-bubble"
-      placeholderTestId="ml-response-chat-bubble-thinking"
-      className="py-4"
-    >
-      {[
-        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
-        deltasAggregatedMarkdown,
-      ].filter((x: ReactNode) => x !== null)}
-    </ChatBubble>
-  )
+  const children = [
+    itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+    deltasAggregatedMarkdown,
+  ].filter((x: ReactNode) => x !== null)
+
+  return hasVisibleChildren(children) || props.isLastResponse ? (
+    <>
+      <ChatBubble
+        side={'left'}
+        wfull={true}
+        userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+        dataTestId="ml-response-chat-bubble"
+        placeholderTestId="ml-response-chat-bubble-thinking"
+        className="py-4"
+      >
+        {children}
+      </ChatBubble>
+      <ResponseCardToolBar
+        responses={props.items}
+        isLastResponse={props.isLastResponse}
+        onClickClearChat={props.onClickClearChat}
+      />
+    </>
+  ) : null
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
@@ -415,21 +426,20 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               )}
             </button>
           </div>
-          <ExchangeCardStatus
-            maybeError={maybeError}
-            responses={props.responses}
-            onlyShowImmediateThought={true}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
+          {props.isLastResponse && (
+            <ExchangeCardStatus
+              maybeError={maybeError}
+              responses={props.responses}
+              onlyShowImmediateThought={true}
+              startedAt={startedAt}
+              updatedAt={updatedAt}
+            />
+          )}
         </div>
       )}
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
-      />
-      <ResponseCardToolBar
-        responses={props.responses}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
       />

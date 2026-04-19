@@ -1,43 +1,109 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::BTreeMap};
+use std::cell::RefCell;
+use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
-use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
-    dispatch,
-    error::{ErrMode, StrContext, StrContextValue},
-    prelude::*,
-    stream::Stream,
-    token::{any, none_of, one_of, take_till},
-};
+use winnow::combinator::alt;
+use winnow::combinator::delimited;
+use winnow::combinator::opt;
+use winnow::combinator::peek;
+use winnow::combinator::preceded;
+use winnow::combinator::repeat;
+use winnow::combinator::repeat_till;
+use winnow::combinator::separated;
+use winnow::combinator::separated_pair;
+use winnow::combinator::terminated;
+use winnow::dispatch;
+use winnow::error::ErrMode;
+use winnow::error::StrContext;
+use winnow::error::StrContextValue;
+use winnow::prelude::*;
+use winnow::stream::Stream;
+use winnow::token::any;
+use winnow::token::none_of;
+use winnow::token::one_of;
+use winnow::token::take_till;
 
-use super::{
-    DeprecationKind,
-    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
-    token::{NumericSuffix, RESERVED_WORDS},
-};
-use crate::{
-    IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
-    errors::{CompilationError, Severity, Tag},
-    execution::{annotations, types::ArrayLen},
-    parsing::{
-        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, Block,
-            BodyItem, BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, SketchBlock, SketchVar, TagDeclarator,
-            Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator,
-            VariableKind,
-        },
-        math::BinaryExpressionToken,
-        token::{Token, TokenSlice, TokenType},
-    },
-};
+use super::DeprecationKind;
+use super::ast::types::AscribedExpression;
+use super::ast::types::ImportPath;
+use super::ast::types::LabelledExpression;
+use super::token::NumericSuffix;
+use super::token::RESERVED_WORDS;
+use crate::IMPORT_FILE_EXTENSIONS;
+use crate::MetaSettings;
+use crate::SourceRange;
+use crate::TypedPath;
+use crate::errors::CompilationIssue;
+use crate::errors::Severity;
+use crate::errors::Tag;
+use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::{self};
+use crate::execution::types::ArrayLen;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Block;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::BoxNode;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ExpressionStatement;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::FunctionType;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportItem;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeList;
+use crate::parsing::ast::types::NonCodeMeta;
+use crate::parsing::ast::types::NonCodeNode;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::ObjectProperty;
+use crate::parsing::ast::types::Parameter;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::PipeSubstitution;
+use crate::parsing::ast::types::PrimitiveType;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
+use crate::parsing::ast::types::Shebang;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::fill_node_paths;
+use crate::parsing::math::BinaryExpressionToken;
+use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
+use crate::parsing::token::Token;
+use crate::parsing::token::TokenSlice;
+use crate::parsing::token::TokenType;
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -48,6 +114,13 @@ const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
 const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
+/// Syntactic paren/brace/bracket nesting limit for the token scan.
+const MAX_NESTING_DEPTH: u16 = 512;
+/// Nesting limit for recursive parser calls. This is lower than
+/// `MAX_NESTING_DEPTH` because parser combinators can use much more stack
+/// space.
+const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
+const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
@@ -55,15 +128,33 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
-    let result = match program.parse(i) {
-        Ok(result) => Some(result),
+    // Check token nesting before parsing to fail fast on pathological inputs
+    // that could cause stack overflows.
+    if let Some(err) = ParseContext::check_max_nesting(&i) {
+        ParseContext::err(err);
+        let ctxt = ParseContext::take();
+        return (None, ctxt.errors).into();
+    }
+
+    let ast = match program.parse(i) {
+        Ok(ast) => Some(ast),
         Err(e) => {
             ParseContext::err(error_from_winnow_error(e));
             None
         }
     };
+    #[cfg(feature = "artifact-graph")]
+    let ast = {
+        let mut ast = ast;
+        if let Some(ast) = &mut ast {
+            // Fill in NodePath on every AST node. We do this in the parser so
+            // that an AST never exists without NodePaths.
+            fill_node_paths(ast);
+        }
+        ast
+    };
     let ctxt = ParseContext::take();
-    (result, ctxt.errors).into()
+    (ast, ctxt.errors).into()
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -78,9 +169,32 @@ enum CodeKind {
 /// When returned from parsing contains the errors and warnings from the current parse.
 #[derive(Debug, Clone, Default)]
 struct ParseContext {
-    pub errors: Vec<CompilationError>,
+    pub errors: Vec<CompilationIssue>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Tracks current recursive parser depth so we can reject pathological input
+    // before it risks stack overflows.
+    nesting_depth: u16,
+}
+
+#[derive(Debug)]
+struct NestingGuard {
+    should_decrement: bool,
+}
+
+impl Drop for NestingGuard {
+    fn drop(&mut self) {
+        if !self.should_decrement {
+            return;
+        }
+        // Don't panic in a drop if we're already panicking.
+        if ParseContext::exit_nesting().is_err() && !std::thread::panicking() {
+            debug_assert!(
+                false,
+                "ParseContext should always be present when a NestingGuard is active"
+            );
+        }
+    }
 }
 
 impl ParseContext {
@@ -89,6 +203,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            nesting_depth: 0,
         }
     }
 
@@ -102,6 +217,68 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn enter_nesting(source_range: SourceRange) -> ModalResult<NestingGuard> {
+        CTXT.with_borrow_mut(|ctxt| {
+            // Some parser unit tests call individual parser functions directly
+            // (without `run_parser`), so we skip depth accounting if no context exists.
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Ok(NestingGuard {
+                    should_decrement: false,
+                });
+            };
+
+            // `nesting_depth` counts active recursive parser frames. This limit is
+            // lower than MAX_NESTING_DEPTH because parser combinators can use much
+            // more stack per frame than simple delimiter nesting.
+            if ctxt.nesting_depth >= MAX_RECURSIVE_PARSER_DEPTH {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
+                ));
+            }
+            ctxt.nesting_depth += 1;
+            Ok(NestingGuard { should_decrement: true })
+        })
+    }
+
+    /// Normally, you should use a `NestingGuard`, so you shouldn't need to call
+    /// this directly.
+    ///
+    /// Returns an error if there is no `ParseContext` in thread-local storage.
+    fn exit_nesting() -> Result<(), ()> {
+        CTXT.with_borrow_mut(|ctxt| {
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Err(());
+            };
+            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
+            Ok(())
+        })
+    }
+
+    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationIssue> {
+        let mut depth = 0;
+        for token in tokens.iter() {
+            if token.token_type != TokenType::Brace {
+                continue;
+            }
+            match token.value.as_str() {
+                "(" | "[" | "{" => {
+                    depth += 1;
+                    if depth > MAX_NESTING_DEPTH {
+                        return Some(CompilationIssue::fatal(
+                            token.as_source_range(),
+                            MAX_NESTING_DEPTH_MESSAGE,
+                        ));
+                    }
+                }
+                ")" | "]" | "}" => {
+                    depth = depth.saturating_sub(1);
+                }
+                _ => {}
+            }
+        }
+        None
     }
 
     fn handle_attribute(attr: &Node<Annotation>) {
@@ -121,7 +298,7 @@ impl ParseContext {
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
-    fn err(err: CompilationError) {
+    fn err(err: CompilationIssue) {
         CTXT.with_borrow_mut(|ctxt| {
             // Avoid duplicating errors. This is possible since the parser can try one path, find
             // a warning, then backtrack and decide not to take that path and try another. This can
@@ -142,7 +319,7 @@ impl ParseContext {
     }
 
     /// Add a warning to the current `ParseContext`, panics if there is none.
-    fn warn(mut e: CompilationError) {
+    fn warn(mut e: CompilationIssue) {
         e.severity = Severity::Warning;
         Self::err(e);
     }
@@ -153,7 +330,7 @@ impl ParseContext {
             let Some(severity) = ctxt.settings.experimental_features.severity() else {
                 return;
             };
-            let error = CompilationError {
+            let error = CompilationIssue {
                 source_range,
                 message: format!("Use of {feature} is experimental and may change or be removed."),
                 suggestion: None,
@@ -193,12 +370,12 @@ impl ParseContext {
 #[derive(Debug, Clone)]
 pub(crate) struct ContextError<C = StrContext> {
     pub context: Vec<C>,
-    pub cause: Option<CompilationError>,
+    pub cause: Option<CompilationIssue>,
 }
 
-fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> CompilationError {
+fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> CompilationIssue {
     let Some(last_token) = err.input().last() else {
-        return CompilationError::fatal(Default::default(), "file is empty");
+        return CompilationIssue::fatal(Default::default(), "file is empty");
     };
 
     let (input, offset, err) = (err.input(), err.offset(), err.clone().into_inner());
@@ -210,7 +387,7 @@ fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, Contex
     // See docs on `offset`.
     if offset >= input.len() {
         let context = err.context.first();
-        return CompilationError::fatal(
+        return CompilationIssue::fatal(
             last_token.as_source_range(),
             match context {
                 Some(what) => format!("Unexpected end of file. The compiler {what}"),
@@ -222,14 +399,14 @@ fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, Contex
     let bad_token = input.token(offset);
     // TODO: Add the Winnow parser context to the error.
     // See https://github.com/KittyCAD/modeling-app/issues/784
-    CompilationError::fatal(
+    CompilationIssue::fatal(
         bad_token.as_source_range(),
         format!("Unexpected token: {}", bad_token.value),
     )
 }
 
-impl<C> From<CompilationError> for ContextError<C> {
-    fn from(e: CompilationError) -> Self {
+impl<C> From<CompilationIssue> for ContextError<C> {
+    fn from(e: CompilationIssue) -> Self {
         Self {
             context: Default::default(),
             cause: Some(e),
@@ -277,10 +454,10 @@ where
     }
 }
 
-impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
+impl<C, I> winnow::error::FromExternalError<I, CompilationIssue> for ContextError<C> {
     /// Like [`ParserError::from_input`] but also include an external error.
     #[inline]
-    fn from_external_error(_input: &I, e: CompilationError) -> Self {
+    fn from_external_error(_input: &I, e: CompilationIssue) -> Self {
         let mut err = Self::default();
         {
             err.cause = Some(e);
@@ -360,7 +537,7 @@ fn outer_annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
 
 fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
-    let name = opt(binding_name).parse_next(i)?;
+    let name = opt(nameable_identifier).parse_next(i)?;
     let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
@@ -369,20 +546,23 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         let properties: Vec<_> = separated(
             0..,
             separated_pair(
-                terminated(identifier, opt(whitespace)),
+                terminated(nameable_identifier, opt(whitespace)),
                 terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
                 expression,
             )
             .map(|(key, value)| {
-                Node::new_node(
-                    key.start,
-                    value.end(),
-                    key.module_id,
+                let start = key.start;
+                let end = value.end();
+                let module_id = key.module_id;
+                Node::new(
                     ObjectProperty {
                         key,
                         value,
                         digest: None,
                     },
+                    start,
+                    end,
+                    module_id,
                 )
             }),
             comma_sep,
@@ -398,7 +578,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
 
     if name.is_none() && properties.is_none() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
+            CompilationIssue::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
         ));
     }
 
@@ -456,6 +636,7 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<N
 }
 
 fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let head = expression_but_not_pipe.parse_next(i)?;
     let head_checkpoint = i.checkpoint();
 
@@ -533,7 +714,7 @@ fn bool_value(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
             TokenType::Keyword if token.value == "false" => Ok((false, token)),
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "invalid boolean literal",
             )),
@@ -584,17 +765,17 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value: f64 = token.numeric_value().ok_or_else(|| {
-                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
+                    CompilationIssue::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 let suffix = token.numeric_suffix();
                 if let NumericSuffix::Unknown = suffix {
-                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                    ParseContext::warn(CompilationIssue::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
                 }
 
                 Ok((value, suffix, token))
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid number literal")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid number literal")),
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
@@ -631,7 +812,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
                 let s = token.value[1..token.value.len() - 1].to_string();
                 Ok((LiteralValue::from(s), token))
             }
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "invalid string literal",
             )),
@@ -652,7 +833,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
 
     if let Some(suggestion) = super::deprecation(result.value.string_value().unwrap(), DeprecationKind::String) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!(
                     "Using `\"{}\"` is deprecated, prefer using `{}`.",
@@ -682,12 +863,12 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value: f64 = token.numeric_value().ok_or_else(|| {
-                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
+                    CompilationIssue::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 let suffix = token.numeric_suffix();
                 if let NumericSuffix::Unknown = suffix {
-                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                    ParseContext::warn(CompilationIssue::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
                 }
 
                 Ok((
@@ -698,7 +879,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
                     token,
                 ))
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid literal")),
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
@@ -723,6 +904,11 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
             "sketch var",
             SourceRange::new(var_token.start, end, var_token.module_id),
         );
+    } else if literal.is_none() {
+        ParseContext::experimental(
+            "sketch var without initial value",
+            SourceRange::new(var_token.start, end, var_token.module_id),
+        );
     }
 
     Ok(Node::new(
@@ -740,7 +926,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
     any.try_map(|token: Token| {
         if !matches!(token.token_type, TokenType::Operator) {
-            return Err(CompilationError::fatal(
+            return Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("unexpected token, should be an operator but was {}", token.token_type),
             ));
@@ -762,7 +948,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
             "&" => BinaryOperator::And,
             "||" => {
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         token.as_source_range(),
                         "`||` is not an operator, did you mean to use `|`?",
                     )
@@ -772,7 +958,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
             }
             "&&" => {
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         token.as_source_range(),
                         "`&&` is not an operator, did you mean to use `&`?",
                     )
@@ -781,7 +967,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
                 BinaryOperator::And
             }
             _ => {
-                return Err(CompilationError::fatal(
+                return Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not a binary operator", token.value.as_str()),
                 ));
@@ -795,6 +981,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
 
 /// Parse a KCL operand that can be used with an operator.
 fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
@@ -807,9 +994,9 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
                 | Expr::LabelledExpression(..)
-                | Expr::SketchBlock(_) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::SketchBlock(_) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
-                    return Err(CompilationError::fatal(
+                    return Err(CompilationIssue::fatal(
                         source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
@@ -818,7 +1005,7 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                     ));
                 }
                 Expr::TagDeclarator(_) => {
-                    return Err(CompilationError::fatal(
+                    return Err(CompilationIssue::fatal(
                         source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
@@ -852,7 +1039,7 @@ impl TokenType {
             if token.token_type == self {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!(
                         "expected {self} but found {} which is a {}",
@@ -874,7 +1061,7 @@ fn whitespace(i: &mut TokenSlice) -> ModalResult<Vec<Token>> {
             if token.token_type == TokenType::Whitespace {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!(
                         "expected whitespace, found '{}' which is {}",
@@ -902,7 +1089,7 @@ fn shebang(i: &mut TokenSlice) -> ModalResult<Node<Shebang>> {
 
     if tokens.is_empty() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(tok.as_source_range(), "expected a shebang value after #!").into(),
+            CompilationIssue::fatal(tok.as_source_range(), "expected a shebang value after #!").into(),
         ));
     }
 
@@ -988,7 +1175,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
-            err.cause = Some(CompilationError::fatal(
+            err.cause = Some(CompilationIssue::fatal(
                 SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
                 "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
             ));
@@ -1024,7 +1211,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
             let end_range = maybe_closing_bracket.unwrap().1.as_source_range();
             let e = ContextError {
                 context: vec![],
-                cause: Some(CompilationError::fatal(
+                cause: Some(CompilationIssue::fatal(
                     SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between elements.",
                 )),
@@ -1093,15 +1280,18 @@ fn array_end_start(i: &mut TokenSlice) -> ModalResult<Node<ArrayRangeExpression>
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    Ok(Node::new_node(
-        key.start,
-        key.end,
-        key.module_id,
+    let start = key.start;
+    let end = key.end;
+    let module_id = key.module_id;
+    Ok(Node::new(
         ObjectProperty {
             value: Expr::Name(Box::new(key.clone().into())),
             key,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -1122,9 +1312,12 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         .parse_next(i)
     {
         Ok(expr) => expr,
-        Err(_) => {
+        Err(err) => {
+            if matches!(err, ErrMode::Cut(_)) {
+                return Err(err);
+            }
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     SourceRange::from(sep),
                     "This property has a label, but no value. Put some value after the equals sign",
                 )
@@ -1138,27 +1331,30 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
         ErrMode::Cut(ContextError {
             context: Default::default(),
-            cause: Some(CompilationError::err(
+            cause: Some(CompilationIssue::err(
                 comp_err.source_range,
                 KEYWORD_EXPECTING_IDENTIFIER,
             )),
         })
     })?;
 
-    let result = Node::new_node(
-        key.start,
-        expr.end(),
-        key.module_id,
+    let start = key.start;
+    let end = expr.end();
+    let module_id = key.module_id;
+    let result = Node::new(
         ObjectProperty {
             key,
             value: expr,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     );
 
     if sep.token_type == TokenType::Colon {
         ParseContext::err(
-            CompilationError::err(
+            CompilationIssue::err(
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
             )
@@ -1237,7 +1433,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
         if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
-            err.cause = Some(CompilationError::fatal(
+            err.cause = Some(CompilationIssue::fatal(
                 SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
                 "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
             ));
@@ -1273,7 +1469,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
 
             let e = ContextError {
                 context: vec![],
-                cause: Some(CompilationError::fatal(
+                cause: Some(CompilationIssue::fatal(
                     SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between properties.",
                 )),
@@ -1326,7 +1522,7 @@ fn pipe_sub(i: &mut TokenSlice) -> ModalResult<Node<PipeSubstitution>> {
                 token.module_id,
             ))
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "expected a pipe substitution symbol (%) but found {}",
@@ -1345,7 +1541,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'else'", token.value.as_str()),
                 ))
@@ -1359,7 +1555,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token.start)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'if'", token.value.as_str()),
                 ))
@@ -1396,7 +1592,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'if'", token.value.as_str()),
                 ))
@@ -1444,7 +1640,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token.start)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not 'else'", token.value.as_str()),
                 ))
@@ -1453,7 +1649,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .context(expected("the 'else' keyword"))
         .parse_next(i);
     let Ok(else_) = else_ else {
-        ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
+        ParseContext::err(CompilationIssue::err(if_.as_source_range(), MISSING_ELSE));
         return if_with_no_else(cond, then_val, else_ifs);
     };
     let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
@@ -1461,24 +1657,24 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 
     // Parse the else clause
     if open_brace(i).is_err() {
-        ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
+        ParseContext::err(CompilationIssue::err(else_range, ELSE_STRUCTURE));
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
     let Ok(final_else) = program.parse_next(i).map(Box::new) else {
-        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     };
     ignore_whitespace(i);
 
     if final_else.body.is_empty() {
-        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     }
     if !final_else.ends_with_expr() {
-        ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
+        ParseContext::err(CompilationIssue::err(else_range, ELSE_MUST_END_IN_EXPR));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
     }
@@ -1507,7 +1703,7 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     // Make the function expression aware of its name.
     result.name = name;
     if fn_tok.is_none() {
-        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+        let err = CompilationIssue::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
@@ -1519,6 +1715,8 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 //     return x
 // }
 fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
+
     fn return_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -1963,7 +2161,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
                     if !body.is_empty() {
-                        ParseContext::warn(CompilationError::err(
+                        ParseContext::warn(CompilationIssue::err(
                             attr.as_source_range(),
                             "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
                         ));
@@ -2005,13 +2203,13 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
 
     if !pending_attrs.is_empty() {
         for a in pending_attrs {
-            ParseContext::err(CompilationError::err(
+            ParseContext::err(CompilationIssue::err(
                 a.as_source_range(),
                 "Attribute is not attached to any item",
             ));
         }
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 SourceRange::new(start.0, end, start.1),
                 "Block contains un-attached attributes",
             )
@@ -2070,7 +2268,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not the 'import' keyword", token.value.as_str()),
                 ))
@@ -2105,7 +2303,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
                 if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
                     Ok(())
                 } else {
-                    Err(CompilationError::fatal(
+                    Err(CompilationIssue::fatal(
                         token.as_source_range(),
                         format!("{} is not the 'from' keyword", token.value.as_str()),
                     ))
@@ -2128,7 +2326,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     } = selector
         && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
-            identifier.context(expected("an identifier to alias the import")),
+            binding_name.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
     {
@@ -2148,7 +2346,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
 
     if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 SourceRange::new(start, end, module_id),
                 "individual items can only be imported from KCL files",
             )
@@ -2169,43 +2367,64 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     ))
 }
 
+/// Same as `char::is_ascii_digit`, but accepts an owned `char` instead of a
+/// shared reference.
+fn is_char_ascii_digit(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
+fn is_stdlib_import_path(path_str: &str) -> bool {
+    path_str.starts_with("std") && !path_str.ends_with(".kcl")
+}
+
+fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
+    path_str.split("::").map(str::to_owned).collect()
+}
+
+/// Given an import path, is it a safe identifier? We support Unicode
+/// identifiers.
+fn is_path_safe_identifier(path_str: &str) -> bool {
+    if is_stdlib_import_path(path_str) {
+        // stdlib case
+        let segments = to_stdlib_identifier_segments(path_str);
+        // The rest of the segments will be checked elsewhere to give a better
+        // error message.
+        let Some(name) = segments.last() else {
+            return false;
+        };
+        return !name.starts_with('_')
+            && !name.starts_with(is_char_ascii_digit)
+            && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+    }
+    // Non-stdlib case
+    let typed_path = TypedPath::new(path_str);
+    let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
+        return false;
+    };
+    !name.starts_with('_')
+        && !name.starts_with(is_char_ascii_digit)
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
 fn validate_path_string(path_string: String, var_name: bool, path_range: SourceRange) -> ModalResult<ImportPath> {
     if path_string.is_empty() {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path cannot be empty").into(),
+            CompilationIssue::fatal(path_range, "import path cannot be empty").into(),
         ));
     }
 
-    if var_name
-        && (path_string.starts_with("_")
-            || path_string.contains('-')
-            || path_string.chars().filter(|c| *c == '.').count() > 1)
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
-        ));
-    }
+    let is_kcl_path = path_string.ends_with(".kcl");
 
-    let path = if path_string.ends_with(".kcl") {
-        if path_string
-            .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    path_range,
-                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
-                )
-                .into(),
-            ));
-        }
-
+    // Check these conditions first so that the error messages are more helpful.
+    // Users should be told about the file location restrictions before the
+    // details of aliasing the identifier.
+    if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
                 )
@@ -2213,10 +2432,15 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        // Make sure they are not using an absolute path.
-        if path_string.starts_with('/') || path_string.starts_with('\\') {
+        // Make sure they are not using an absolute path. We normalize all paths
+        // to Unix elsewhere, but here, we also check for Windows paths to make
+        // the error more helpful.
+        if path_string.starts_with('/')
+            || path_string.starts_with('\\')
+            || typed_path::TypedPath::derive(&path_string).is_absolute()
+        {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
                 )
@@ -2228,23 +2452,32 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             && !(path_string.ends_with("/main.kcl") || path_string.ends_with("\\main.kcl"))
         {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(path_range, "import path to a subdirectory must only refer to main.kcl.")
+                CompilationIssue::fatal(path_range, "import path to a subdirectory must only refer to main.kcl.")
                     .into(),
             ));
         }
+    }
 
+    // This check applies to all file types.
+    if var_name && !is_path_safe_identifier(&path_string) {
+        return Err(ErrMode::Cut(
+            CompilationIssue::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
+        ));
+    }
+
+    let path = if is_kcl_path {
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std") {
+    } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
-        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+        let segments: Vec<String> = to_stdlib_identifier_segments(&path_string);
 
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(path_range, "invalid path in import statement.").into(),
+                    CompilationIssue::fatal(path_range, "invalid path in import statement.").into(),
                 ));
             }
         }
@@ -2252,7 +2485,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         // For now we only support importing from singly-nested modules inside std.
         if segments.len() > 2 {
             return Err(ErrMode::Cut(
-                CompilationError::fatal(
+                CompilationIssue::fatal(
                     path_range,
                     format!("Invalid import path for import from std: {path_string}."),
                 )
@@ -2264,7 +2497,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     } else if path_string.contains('.') {
         let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
         if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
-            ParseContext::warn(CompilationError::err(
+            ParseContext::warn(CompilationIssue::err(
                 path_range,
                 format!(
                     "unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}",
@@ -2277,7 +2510,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
     } else {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(
+            CompilationIssue::fatal(
                 path_range,
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
@@ -2296,7 +2529,7 @@ fn import_item(i: &mut TokenSlice) -> ModalResult<Node<ImportItem>> {
     let module_id = name.module_id;
     let alias = opt(preceded(
         (whitespace, import_as_keyword, whitespace),
-        identifier.context(expected("an identifier to alias the import")),
+        binding_name.context(expected("an identifier to alias the import")),
     ))
     .parse_next(i)?;
     let end = if let Some(ref alias) = alias {
@@ -2321,7 +2554,7 @@ fn import_as_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("{} is not the 'as' keyword", token.value.as_str()),
             ))
@@ -2338,7 +2571,7 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
                 Ok(token)
             } else {
-                Err(CompilationError::fatal(
+                Err(CompilationIssue::fatal(
                     token.as_source_range(),
                     format!("{} is not a return keyword", token.value.as_str()),
                 ))
@@ -2350,22 +2583,88 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(Node::new_node(
-        ret.start,
-        argument.end(),
-        ret.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         ReturnStatement { argument, digest: None },
+        ret.start,
+        end,
+        ret.module_id,
     ))
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
+    fn is_binary_operator_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Operator, "/")
+                | (TokenType::Operator, "*")
+                | (TokenType::Operator, "%")
+                | (TokenType::Operator, "^")
+                | (TokenType::Operator, "==")
+                | (TokenType::Operator, "!=")
+                | (TokenType::Operator, ">")
+                | (TokenType::Operator, ">=")
+                | (TokenType::Operator, "<")
+                | (TokenType::Operator, "<=")
+                | (TokenType::Operator, "|")
+                | (TokenType::Operator, "&")
+                | (TokenType::Operator, "||")
+                | (TokenType::Operator, "&&")
+        )
+    }
+
+    fn can_start_operand_token(token: &Token) -> bool {
+        matches!(
+            (token.token_type, token.value.as_str()),
+            (TokenType::Word, _)
+                | (TokenType::String, _)
+                | (TokenType::Number, _)
+                | (TokenType::Bang, _)
+                | (TokenType::DoubleColon, _)
+                | (TokenType::Brace, "(")
+                | (TokenType::Brace, "[")
+                | (TokenType::Brace, "{")
+                | (TokenType::Operator, "+")
+                | (TokenType::Operator, "-")
+                | (TokenType::Keyword, "if")
+                | (TokenType::Keyword, "true")
+                | (TokenType::Keyword, "false")
+                | (TokenType::Keyword, "var")
+        )
+    }
+
+    fn has_binary_operator_after_optional_ascription(i: &mut TokenSlice) -> bool {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+
+        if peek(colon).parse_next(i).is_ok() && (colon, opt(whitespace), type_).parse_next(i).is_err() {
+            i.reset(&checkpoint);
+            return false;
+        }
+
+        let _ = opt(whitespace).parse_next(i);
+        let has_binary_operator = i.next_token().filter(is_binary_operator_token).is_some_and(|_| {
+            let _ = opt(whitespace).parse_next(i);
+            i.peek_token().as_ref().is_some_and(can_start_operand_token)
+        });
+        i.reset(&checkpoint);
+        has_binary_operator
+    }
+
+    let start = i.checkpoint();
     let mut expr = alt((
-        binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
     .parse_next(i)?;
+
+    if has_binary_operator_after_optional_ascription(i) {
+        i.reset(&start);
+        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+    }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
@@ -2381,7 +2680,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = preceded(
         (whitespace, import_as_keyword, whitespace),
-        identifier.context(expected("an identifier")),
+        binding_name.context(expected("an identifier")),
     )
     .parse_next(i)?;
 
@@ -2428,6 +2727,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
         if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -2524,7 +2824,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             if let Some(t) = eq {
                 ParseContext::warn(
-                    CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
+                    CompilationIssue::err(t.as_source_range(), "Unnecessary `=` in function declaration")
                         .with_suggestion("Remove `=`", "", None, Tag::Unnecessary),
                 );
             }
@@ -2542,7 +2842,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                     if matches!(val, Expr::FunctionExpression(_)) {
                         let fn_end = val.start();
                         ParseContext::warn(
-                            CompilationError::err(
+                            CompilationIssue::err(
                                 SourceRange::new(start, fn_end, id.module_id),
                                 "Define a function with `fn name()` instead of assigning the function to a variable",
                             )
@@ -2562,7 +2862,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             if let Some((_, tok)) = decl_token {
                 let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
                 ParseContext::err(
-                    CompilationError::err(
+                    CompilationIssue::err(
                         tok.as_source_range(),
                         format!(
                             "Using `{}` to declare constants is deprecated; no keyword is required",
@@ -2584,20 +2884,21 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
     let end = val.end();
     let module_id = id.module_id;
+    let declaration_start = id.start;
     Ok(Node::boxed(
         start,
         end,
         module_id,
         VariableDeclaration {
-            declaration: Node::new_node(
-                id.start,
-                end,
-                module_id,
+            declaration: Node::new(
                 VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
                 },
+                declaration_start,
+                end,
+                module_id,
             ),
             visibility,
             kind,
@@ -2627,7 +2928,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
                 t.module_id,
             )
         }),
-        identifier,
+        binding_name,
     ))
     .parse_next(i)?;
     let mut end = name.end;
@@ -2678,7 +2979,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 }
 
 impl TryFrom<Token> for Node<Identifier> {
-    type Error = CompilationError;
+    type Error = CompilationIssue;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
@@ -2692,7 +2993,7 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.module_id,
             ))
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "Cannot assign a variable to a reserved keyword: {}",
@@ -2725,7 +3026,7 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         } else {
             "Names with a leading underscore"
         };
-        ParseContext::err(CompilationError::err(
+        ParseContext::err(CompilationIssue::err(
             SourceRange::new(result.start, result.end, result.module_id),
             format!("{desc} cannot be referred to, only declared."),
         ));
@@ -2763,7 +3064,7 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
 
     if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!("Using `{result}` is deprecated, prefer using `{suggestion}`."),
             )
@@ -2780,11 +3081,17 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
-    type Error = CompilationError;
+    type Error = CompilationIssue;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         match token.token_type {
             TokenType::Word => {
+                if !is_safe_sketch_block_binding_name(&token.value) {
+                    ParseContext::err(CompilationIssue::err(
+                        SourceRange::new(token.start - 1, token.end, token.module_id),
+                        format!("Cannot use a reserved name for a tag: {}", token.value.as_str()),
+                    ));
+                }
                 Ok(Node::new(
                     TagDeclarator {
                         // We subtract 1 from the start because the tag starts with a `$`.
@@ -2796,7 +3103,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                     token.module_id,
                 ))
             }
-            TokenType::Number => Err(CompilationError::fatal(
+            TokenType::Number => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "Tag names must not start with a number. Tag starts with `{}`",
@@ -2805,17 +3112,17 @@ impl TryFrom<Token> for Node<TagDeclarator> {
             )),
 
             // e.g. `line(%, $)` or `line(%, $ , 5)`
-            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
+            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 "Tag names must not be empty".to_string(),
             )),
 
-            TokenType::Type => Err(CompilationError::fatal(
+            TokenType::Type => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             )),
 
-            _ => Err(CompilationError::fatal(
+            _ => Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
@@ -2851,31 +3158,33 @@ fn require_whitespace(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
             TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
-            TokenType::Operator => Err(CompilationError::fatal(
+            TokenType::Operator => Err(CompilationIssue::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             )),
             TokenType::Bang => Ok((UnaryOperator::Not, token)),
-            other => Err(CompilationError::fatal(  token.as_source_range(), format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) )),
+            other => Err(CompilationIssue::fatal(  token.as_source_range(), format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) )),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     ignore_whitespace(i);
     let argument = operand.parse_next(i)?;
-    Ok(Node::new_node(
-        op_token.start,
-        argument.end(),
-        op_token.module_id,
+    let end = argument.end();
+    Ok(Node::new(
         UnaryExpression {
             operator,
             argument,
             digest: None,
         },
+        op_token.start,
+        end,
+        op_token.module_id,
     ))
 }
 
@@ -2948,14 +3257,17 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(Node::new_node(
-        val.start(),
-        val.end(),
-        val.module_id(),
+    let start = val.start();
+    let end = val.end();
+    let module_id = val.module_id();
+    Ok(Node::new(
         ExpressionStatement {
             expression: val,
             digest: None,
         },
+        start,
+        end,
+        module_id,
     ))
 }
 
@@ -3041,7 +3353,7 @@ fn end_inclusive_range(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::DoublePeriod) {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!(
                     "expected a '..' (double period) found {} which is {}",
@@ -3060,7 +3372,7 @@ fn end_exclusive_range(i: &mut TokenSlice) -> ModalResult<Token> {
         if matches!(token.token_type, TokenType::DoublePeriodLessThan) {
             Ok(token)
         } else {
-            Err(CompilationError::fatal(
+            Err(CompilationIssue::fatal(
                 token.as_source_range(),
                 format!("expected a '..<' but found {}", token.value.as_str()),
             ))
@@ -3112,7 +3424,7 @@ fn ty(i: &mut TokenSlice) -> ModalResult<Token> {
 fn any_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword => Ok(token),
-        _ => Err(CompilationError::fatal(
+        _ => Err(CompilationIssue::fatal(
             token.as_source_range(),
             "expected some reserved keyword".to_owned(),
         )),
@@ -3123,7 +3435,7 @@ fn any_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
 fn keyword(i: &mut TokenSlice, expected: &str) -> ModalResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == expected => Ok(token),
-        _ => Err(CompilationError::fatal(
+        _ => Err(CompilationIssue::fatal(
             token.as_source_range(),
             format!("expected '{expected}', found {}", token.value.as_str(),),
         )),
@@ -3168,6 +3480,7 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
             if tys.len() == 1
@@ -3268,11 +3581,14 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             }),
         // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let result = Node::new_node(
-                ident.start,
-                ident.end,
-                ident.module_id,
+            let start = ident.start;
+            let end = ident.end;
+            let module_id = ident.module_id;
+            let result = Node::new(
                 PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
+                start,
+                end,
+                module_id,
             );
 
             if *result == PrimitiveType::None {
@@ -3299,7 +3615,7 @@ fn array_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         any.try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let value = token.uint_value().ok_or_else(|| {
-                    CompilationError::fatal(
+                    CompilationIssue::fatal(
                         token.as_source_range(),
                         format!("Expected unsigned integer literal, found: {}", token.value),
                     )
@@ -3307,7 +3623,7 @@ fn array_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
 
                 Ok(value as usize)
             }
-            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid array length")),
+            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid array length")),
         }),
         opt(plus),
     ))
@@ -3389,7 +3705,7 @@ fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
             (false, None) => None,
             (false, Some(lit)) => {
                 let msg = "You're trying to set a default value for an argument, but only optional arguments can have default values, and this argument is mandatory. Try putting a ? after the argument name, to make the argument optional.";
-                let e = CompilationError::fatal((&lit).into(), msg);
+                let e = CompilationIssue::fatal((&lit).into(), msg);
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
@@ -3423,11 +3739,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
                 }
+                let mut experimental = false;
                 if let Some(attr) = attr {
+                    if let Some(property) = attr.property(EXPERIMENTAL)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        experimental = value;
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
+                    experimental,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -3437,12 +3760,12 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
             },
         )
         .collect::<Result<_, _>>()
-        .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+        .map_err(|e: CompilationIssue| ErrMode::Backtrack(ContextError::from(e)))?;
 
     // Make sure the only unlabeled parameter is the first one.
     if let Some(param) = params.iter().skip(1).find(|param| !param.labeled) {
         let source_range = SourceRange::from(param);
-        return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+        return Err(ErrMode::Cut(ContextError::from(CompilationIssue::fatal(
             source_range,
             "Only the first parameter can be declared unlabeled",
         ))));
@@ -3455,14 +3778,14 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
     Ok(params)
 }
 
-fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError> {
+fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationIssue> {
     let mut found_optional = false;
     for p in params {
         if p.optional() {
             found_optional = true;
         }
         if !p.optional() && found_optional {
-            let e = CompilationError::fatal(
+            let e = CompilationIssue::fatal(
                 (&p.identifier).into(),
                 "mandatory parameters must be declared before optional parameters",
             );
@@ -3472,11 +3795,32 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
     Ok(())
 }
 
+fn is_safe_sketch_block_binding_name(name: &str) -> bool {
+    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
+}
+
+fn is_safe_binding_name_anywhere(name: &str) -> bool {
+    !name.starts_with("__kcl")
+}
+
+fn is_safe_binding_name(name: &str) -> bool {
+    is_safe_binding_name_anywhere(name) && is_safe_sketch_block_binding_name(name)
+}
+
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
-    identifier
+    let ident = identifier
         .context(expected("an identifier, which will be the name of some value"))
-        .parse_next(i)
+        .parse_next(i)?;
+
+    if !is_safe_binding_name(&ident.name) {
+        ParseContext::err(CompilationIssue::err(
+            SourceRange::new(ident.start, ident.end, ident.module_id),
+            format!("`{}` is a reserved name and cannot be defined.", &ident.name),
+        ));
+    }
+
+    Ok(ident)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
@@ -3505,6 +3849,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             start,
             end: _,
             module_id,
+            node_path: _,
             pre_comments,
             comment_start,
             outer_attrs,
@@ -3517,28 +3862,17 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     digest: _,
                 },
         } = fn_call;
-        ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         if let Some(unlabeled) = unlabeled {
-            ParseContext::err(CompilationError::err(
+            ParseContext::err(CompilationIssue::err(
                 unlabeled.into(),
                 "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
-            ));
-        }
-        let on_arg = arguments
-            .iter()
-            .find(|arg| arg.label.as_ref().map(|l| l.name == "on").unwrap_or(false));
-        if let Some(on_arg) = on_arg
-            && !matches!(&on_arg.arg, Expr::Name(_))
-        {
-            ParseContext::err(CompilationError::err(
-                SourceRange::from(&on_arg.arg),
-                "The `on` argument to a sketch block must be a variable name or identifier. If you need a more complex expression, assign it to a variable first.",
             ));
         }
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
             end,
             module_id,
+            node_path: None,
             outer_attrs,
             pre_comments,
             comment_start,
@@ -3574,10 +3908,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
-            let result = Node::new_node(
-                fn_name.start,
-                end,
-                fn_name.module_id,
+            let start = fn_name.start;
+            let module_id = fn_name.module_id;
+            let result = Node::new(
                 CallExpressionKw {
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
@@ -3585,6 +3918,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     digest: None,
                     non_code_meta: Default::default(),
                 },
+                start,
+                end,
+                module_id,
             );
             return Ok(result);
         }
@@ -3624,7 +3960,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 ArgPlace::LabeledArg((x, bad_token_source_range)) => {
                     if let Some(bad_token_source_range) = bad_token_source_range {
                         return Err(ErrMode::Cut(
-                            CompilationError::fatal(
+                            CompilationIssue::fatal(
                                 bad_token_source_range,
                                 "Missing comma between arguments, try adding a comma in",
                             )
@@ -3635,7 +3971,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::Keyword(kw) => {
                     return Err(ErrMode::Cut(
-                        CompilationError::fatal(
+                        CompilationIssue::fatal(
                             SourceRange::from(kw.clone()),
                             format!(
                                 "`{}` is not the name of an argument (it's a reserved keyword)",
@@ -3649,7 +3985,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
                     if followed_by_equals {
                         return Err(ErrMode::Cut(
-                            CompilationError::fatal(
+                            CompilationIssue::fatal(
                                 SourceRange::from(arg),
                                 "This argument has a label, but no value. Put some value after the equals sign",
                             )
@@ -3670,7 +4006,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         Err(e) => {
             if let Some(tok) = i.next_token() {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(
+                    CompilationIssue::fatal(
                         SourceRange::from(&tok),
                         format!("There was an unexpected `{}`. Try removing it.", tok.value),
                     )
@@ -3693,7 +4029,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         let msg = format!(
             "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
         );
-        ParseContext::err(CompilationError::err(
+        ParseContext::err(CompilationIssue::err(
             SourceRange::new(fn_name.start, end, fn_name.module_id),
             msg,
         ));
@@ -3702,10 +4038,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    let result = Node::new_node(
-        fn_name.start,
-        end,
-        fn_name.module_id,
+    let start = fn_name.start;
+    let module_id = fn_name.module_id;
+    let result = Node::new(
         CallExpressionKw {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
@@ -3713,12 +4048,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             digest: None,
             non_code_meta,
         },
+        start,
+        end,
+        module_id,
     );
 
     let callee_str = result.callee.name.name.to_string();
     if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
         ParseContext::warn(
-            CompilationError::err(
+            CompilationIssue::err(
                 result.as_source_range(),
                 format!("Calling `{callee_str}` is deprecated, prefer using `{suggestion}`."),
             )
@@ -3736,14 +4074,18 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        ModuleId,
-        parsing::ast::types::{BodyItem, Expr, VariableKind},
-    };
+    use crate::ModuleId;
+    use crate::NodePath;
+    use crate::NodePathStep;
+    use crate::parsing::ast::types::BodyItem;
+    use crate::parsing::ast::types::Expr;
+    use crate::parsing::ast::types::VariableKind;
 
     fn in_ctx<R, F: FnOnce() -> R>(f: F) -> R {
         ParseContext::init();
@@ -3795,6 +4137,34 @@ e
     }
 
     #[test]
+    fn reserved_sketch_block_words() {
+        for word in crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS.iter().sorted() {
+            let code = format!(
+                "sketch() {{
+  {word} = 5
+}}"
+            );
+            let result = crate::parsing::top_level_parse(code.as_str());
+            assert!(
+                !result.is_ok(),
+                "Expected a parse error for reserved sketch block word `{word}`, but got none",
+            );
+        }
+    }
+
+    #[test]
+    fn double_underscore_prefix_in_sketch_block() {
+        let code = "sketch() {
+  __foo = 5
+}";
+        let result = crate::parsing::top_level_parse(code);
+        assert!(
+            !result.is_ok(),
+            "Expected a parse error for double underscore prefix, but got none",
+        );
+    }
+
+    #[test]
     fn reserved_words() {
         // Since these are stored in a set, we sort to make the tests
         // deterministic.
@@ -3808,7 +4178,7 @@ e
     fn parse_names() {
         for (test, expected_len) in [("someVar", 0), ("::foo", 0), ("foo::bar::baz", 2)] {
             let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            match name.parse(tokens.as_slice()) {
+            match in_ctx(|| name.parse(tokens.as_slice())) {
                 Ok(n) => assert_eq!(n.path.len(), expected_len, "Could not parse name from `{test}`: {n:?}"),
                 Err(e) => panic!("Could not parse name from `{test}`: {e:?}"),
             }
@@ -3820,7 +4190,7 @@ e
         let tokens = crate::parsing::token::lex("fn firstPrime(", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let last = tokens.last().unwrap().as_source_range();
-        let err: CompilationError = error_from_winnow_error(program.parse(tokens).unwrap_err());
+        let err: CompilationIssue = error_from_winnow_error(in_ctx(|| program.parse(tokens)).unwrap_err());
         assert_eq!(err.source_range, last);
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -3831,21 +4201,21 @@ e
     fn kw_call_as_operand() {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        operand.parse(tokens).unwrap();
+        in_ctx(|| operand.parse(tokens)).unwrap();
     }
 
     #[test]
     fn parse_binary_operator_on_array() {
         let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        binary_expression.parse(tokens).unwrap();
+        in_ctx(|| binary_expression.parse(tokens)).unwrap();
     }
 
     #[test]
     fn expression_in_array_index() {
         let tokens = crate::parsing::token::lex("arr[x + 1]", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
+        let Expr::MemberExpression(expr) = in_ctx(|| expression.parse(tokens)).unwrap() else {
             panic!();
         };
         let Expr::BinaryExpression(be) = expr.inner.property else {
@@ -3858,14 +4228,14 @@ e
     fn parse_binary_operator_on_object() {
         let tokens = crate::parsing::token::lex("{ a = 1 } + 2", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        binary_expression.parse(tokens).unwrap();
+        in_ctx(|| binary_expression.parse(tokens)).unwrap();
     }
 
     #[test]
     fn parse_call_array_operator() {
         let tokens = crate::parsing::token::lex("f([0] + 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        fn_call_kw.parse(tokens).unwrap();
+        in_ctx(|| fn_call_kw.parse(tokens)).unwrap();
     }
 
     #[test]
@@ -3933,6 +4303,29 @@ e
     }
 
     #[test]
+    fn parse_sketch_var_without_initial_value_is_experimental() {
+        let tokens = crate::parsing::token::lex(
+            "sketch(on = XY) {
+  x = var
+}
+",
+            ModuleId::default(),
+        )
+        .unwrap();
+        let tokens = tokens.as_slice();
+        let result = run_parser(tokens);
+        let errors = result.unwrap_errs().collect::<Vec<_>>();
+        let Some(error) = errors.iter().find(|error| {
+            error
+                .message
+                .contains("sketch var without initial value is experimental")
+        }) else {
+            panic!("Expected error not found; Actual errors: {errors:#?}",)
+        };
+        assert_eq!(error.severity, Severity::Error);
+    }
+
+    #[test]
     fn parse_sketch_block_sketch_var() {
         let tokens = crate::parsing::token::lex(
             "sketch() {
@@ -3959,7 +4352,7 @@ e
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
-        let err: CompilationError = error_from_winnow_error(program.parse(tokens.as_slice()).unwrap_err());
+        let err: CompilationIssue = error_from_winnow_error(in_ctx(|| program.parse(tokens.as_slice())).unwrap_err());
         assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
@@ -3968,7 +4361,7 @@ e
     fn parse_binary_expressions() {
         for (i, test_program) in ["1 + 2 + 3"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-            let _actual = match binary_expression.parse_next(&mut tokens.as_slice()) {
+            let _actual = match in_ctx(|| binary_expression.parse_next(&mut tokens.as_slice())) {
                 Ok(x) => x,
                 Err(e) => panic!("Failed test {i}, could not parse binary expressions from \"{test_program}\": {e:?}"),
             };
@@ -3978,7 +4371,7 @@ e
     #[test]
     fn test_vardec_no_keyword() {
         let tokens = crate::parsing::token::lex("x = 4", ModuleId::default()).unwrap();
-        let vardec = declaration(&mut tokens.as_slice()).unwrap();
+        let vardec = in_ctx(|| declaration(&mut tokens.as_slice())).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
         let vardec = &vardec.declaration;
         assert_eq!(vardec.id.name, "x");
@@ -3991,7 +4384,7 @@ e
     #[test]
     fn test_negative_operands() {
         let tokens = crate::parsing::token::lex("-leg2", ModuleId::default()).unwrap();
-        let _s = operand.parse_next(&mut tokens.as_slice()).unwrap();
+        let _s = in_ctx(|| operand.parse_next(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -4005,7 +4398,7 @@ e
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.body[0].get_comments();
         let comment0 = expr.body.body[1].get_comments();
@@ -4022,7 +4415,7 @@ e
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -4035,7 +4428,7 @@ comment */
 mySk1 = startSketchOn(XY)
   |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let program = program.parse(tokens.as_slice()).unwrap();
+        let program = in_ctx(|| program.parse(tokens.as_slice())).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
@@ -4053,7 +4446,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_comment_in_pipe() {
         let tokens = crate::parsing::token::lex(r#"x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
-        let mut body = program.parse(tokens.as_slice()).unwrap().inner.body;
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
@@ -4080,7 +4473,7 @@ mySk1 = startSketchOn(XY)
             return sg
           }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let _expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -4091,7 +4484,7 @@ mySk1 = startSketchOn(XY)
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         assert_eq!(
             expr.body.non_code_meta.start_nodes,
             vec![Node::new(
@@ -4114,7 +4507,7 @@ mySk1 = startSketchOn(XY)
         |> d(%)"#;
 
         let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-        let (body, non_code_meta) = match expression.parse_next(&mut tokens.as_slice()).unwrap() {
+        let (body, non_code_meta) = match in_ctx(|| expression.parse_next(&mut tokens.as_slice())).unwrap() {
             Expr::PipeExpression(e) => (e.inner.body, e.inner.non_code_meta),
             _ => panic!(),
         };
@@ -4145,7 +4538,7 @@ mySk1 = startSketchOn(XY)
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
         let Block {
             items, non_code_meta, ..
-        } = function_body.parse(tokens.as_slice()).unwrap().inner;
+        } = in_ctx(|| function_body.parse(tokens.as_slice())).unwrap().inner;
         assert_eq!(items[0].get_comments(), vec!["// this is a comment".to_owned()],);
 
         assert_eq!(
@@ -4185,7 +4578,7 @@ mySk1 = startSketchOn(XY)
   return 1"#;
 
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let actual = program.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| program.parse(tokens.as_slice())).unwrap();
         assert_eq!(actual.non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
@@ -4200,7 +4593,7 @@ mySk1 = startSketchOn(XY)
     fn test_bracketed_binary_expression() {
         let input = "(2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-        let actual = match binary_expr_in_parens.parse(tokens.as_slice()) {
+        let actual = match in_ctx(|| binary_expr_in_parens.parse(tokens.as_slice())) {
             Ok(x) => x,
             Err(e) => panic!("{e:?}"),
         };
@@ -4215,7 +4608,7 @@ mySk1 = startSketchOn(XY)
             "sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))",
         ] {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let _actual = match expression.parse(tokens.as_slice()) {
+            let _actual = match in_ctx(|| expression.parse(tokens.as_slice())) {
                 Ok(x) => x,
                 Err(e) => panic!("{e:?}"),
             };
@@ -4223,11 +4616,74 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn test_deeply_nested_parenthesized_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_unary_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x", "-".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[{input}, 0]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements_nested_second() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[0, {input}]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_object_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "{a=".repeat(depth), "}".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_call_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "f(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_comments() {
+        // One above the limit to ensure we validate the boundary correctly.
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[/*c*/".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
     fn test_arithmetic() {
         let input = "1 * (2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let actual = binary_expression.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(rhs) = actual.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -4262,7 +4718,7 @@ mySk1 = startSketchOn(XY)
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-            let actual = match declaration.parse(tokens.as_slice()) {
+            let actual = match in_ctx(|| declaration.parse(tokens.as_slice())) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -4280,7 +4736,7 @@ mySk1 = startSketchOn(XY)
     fn test_function_call() {
         for (i, test_input) in ["x = f(1)", "x = f( 1 )"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-            let _actual = match declaration.parse(tokens.as_slice()) {
+            let _actual = match in_ctx(|| declaration.parse(tokens.as_slice())) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -4292,7 +4748,7 @@ mySk1 = startSketchOn(XY)
         let input = "1 * ((2 - 3) / 4)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let outer = binary_expression.parse(tokens.as_slice()).unwrap();
+        let outer = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
         assert_eq!(outer.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(middle) = outer.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -4310,7 +4766,7 @@ mySk1 = startSketchOn(XY)
         let tests = ["1 - 2", "1- 2", "1 -2", "1-2"];
         for test in tests {
             let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            let actual = binary_expression.parse(tokens.as_slice()).unwrap();
+            let actual = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
             assert_eq!(actual.operator, BinaryOperator::Sub);
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
@@ -4343,7 +4799,7 @@ mySk1 = startSketchOn(XY)
         spanning a few lines */
         |> z(%)"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let non_code_meta = match expression.parse(tokens.as_slice()).unwrap() {
+        let non_code_meta = match in_ctx(|| expression.parse(tokens.as_slice())).unwrap() {
             Expr::PipeExpression(e) => e.non_code_meta.clone(),
             _ => panic!(),
         };
@@ -4374,7 +4830,7 @@ mySk1 = startSketchOn(XY)
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-            let actual = expression.parse(tokens.as_slice());
+            let actual = in_ctx(|| expression.parse(tokens.as_slice()));
             assert!(actual.is_ok(), "could not parse test {i}, '{test_program}'");
 
             match actual.unwrap() {
@@ -4543,7 +4999,7 @@ mySk1 = startSketchOn(XY)
             let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
             let mut slice = tokens.as_slice();
             for (index, expected_node) in expected.into_iter().enumerate() {
-                let actual = non_code_node.parse_next(&mut slice);
+                let actual = in_ctx(|| non_code_node.parse_next(&mut slice));
                 assert!(actual.is_ok(), "could not parse test {i}.{index}: {actual:#?}");
                 let actual = actual.unwrap();
                 assert_eq!(actual, expected_node, "failed test {i}.{index}");
@@ -4556,7 +5012,9 @@ mySk1 = startSketchOn(XY)
         let test_fn = "(let) => { return 1 }";
         let module_id = ModuleId::from_usize(2);
         let tokens = crate::parsing::token::lex(test_fn, module_id).unwrap();
-        let err = function_decl.parse(tokens.as_slice()).unwrap_err().into_inner();
+        let err = in_ctx(|| function_decl.parse(tokens.as_slice()))
+            .unwrap_err()
+            .into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
@@ -4569,7 +5027,7 @@ mySk1 = startSketchOn(XY)
            // a comment
              ""#;
         let tokens = crate::parsing::token::lex(string_literal, ModuleId::default()).unwrap();
-        let parsed_literal = literal.parse(tokens.as_slice()).unwrap();
+        let parsed_literal = in_ctx(|| literal.parse(tokens.as_slice())).unwrap();
         assert_eq!(
             parsed_literal.value,
             "
@@ -4588,7 +5046,7 @@ mySk1 = startSketchOn(XY)
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let tokens = &mut tokens.as_slice();
-        let _actual = expression.parse_next(tokens).unwrap();
+        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
         assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
     }
 
@@ -4603,7 +5061,7 @@ mySk1 = startSketchOn(XY)
     fn test_cube() {
         let test_program = include_str!("../../e2e/executor/inputs/cube.kcl");
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        match program.parse(tokens.as_slice()) {
+        match in_ctx(|| program.parse(tokens.as_slice())) {
             Ok(_) => {}
             Err(e) => {
                 panic!("{e:#?}");
@@ -4638,7 +5096,7 @@ mySk1 = startSketchOn(XY)
         ];
         for (i, (input, expected)) in tests.into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let actual = parameters.parse(tokens.as_slice());
+            let actual = in_ctx(|| parameters.parse(tokens.as_slice()));
             assert!(actual.is_ok(), "could not parse test {i}");
             let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.inner.name).collect();
             assert_eq!(actual_ids, expected);
@@ -4652,7 +5110,7 @@ mySk1 = startSketchOn(XY)
         }";
 
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-        let actual = function_decl.parse(tokens.as_slice());
+        let actual = in_ctx(|| function_decl.parse(tokens.as_slice()));
         assert!(actual.is_ok(), "could not parse test function");
     }
 
@@ -4669,8 +5127,22 @@ mySk1 = startSketchOn(XY)
             };
 
             // Run the second parser, check it matches the first parser.
-            let actual = declaration.parse(tokens.as_slice()).unwrap();
-            assert_eq!(expected, actual);
+            let actual = in_ctx(|| declaration.parse(tokens.as_slice())).unwrap();
+            // Note: node_paths won't match since the narrow parse function
+            // won't add that.
+            assert_eq!(expected.as_source_range(), actual.as_source_range());
+            assert_eq!(expected.inner.declaration.inner.id, actual.inner.declaration.id);
+            assert_eq!(
+                expected.inner.declaration.inner.id.as_source_range(),
+                actual.inner.declaration.id.as_source_range()
+            );
+            match (&expected.inner.declaration.inner.init, &actual.inner.declaration.init) {
+                (Expr::Literal(expected), Expr::Literal(actual)) => {
+                    assert_eq!(expected.value, actual.value);
+                    assert_eq!(expected.as_source_range(), actual.as_source_range());
+                }
+                (left, right) => panic!("Unexpected expressions: left={left:#?}, right={right:#?}"),
+            }
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
@@ -4689,13 +5161,19 @@ mySk1 = startSketchOn(XY)
     fn test_math_parse() {
         let module_id = ModuleId::default();
         let actual = crate::parsing::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
-        let expr = Node::boxed(
+        let expr = Node::boxed_with_node_path(
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![
+                    NodePathStep::ProgramBodyItem { index: 0 },
+                    NodePathStep::ExpressionStatementExpr,
+                ],
+            },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::new(
+                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -4707,8 +5185,15 @@ mySk1 = startSketchOn(XY)
                     0,
                     1,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryLeft,
+                        ],
+                    },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::new(
+                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -4717,11 +5202,18 @@ mySk1 = startSketchOn(XY)
                     4,
                     7,
                     module_id,
+                    NodePath {
+                        steps: vec![
+                            NodePathStep::ProgramBodyItem { index: 0 },
+                            NodePathStep::ExpressionStatementExpr,
+                            NodePathStep::BinaryRight,
+                        ],
+                    },
                 ))),
                 digest: None,
             },
         );
-        let expected = vec![BodyItem::ExpressionStatement(Node::new(
+        let expected = vec![BodyItem::ExpressionStatement(Node::with_node_path(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
                 digest: None,
@@ -4729,6 +5221,9 @@ mySk1 = startSketchOn(XY)
             0,
             7,
             module_id,
+            NodePath {
+                steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+            },
         ))];
         assert_eq!(expected, actual);
     }
@@ -4740,14 +5235,20 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::parse_str(code, module_id).unwrap();
         let expected_result = Node::new(
             Program {
-                body: vec![BodyItem::ExpressionStatement(Node::new(
+                body: vec![BodyItem::ExpressionStatement(Node::with_node_path(
                     ExpressionStatement {
-                        expression: Expr::BinaryExpression(Node::boxed(
+                        expression: Expr::BinaryExpression(Node::boxed_with_node_path(
                             0,
                             4,
                             module_id,
+                            NodePath {
+                                steps: vec![
+                                    NodePathStep::ProgramBodyItem { index: 0 },
+                                    NodePathStep::ExpressionStatementExpr,
+                                ],
+                            },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::new(
+                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -4759,9 +5260,16 @@ mySk1 = startSketchOn(XY)
                                     0,
                                     1,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryLeft,
+                                        ],
+                                    },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::new(
+                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,
@@ -4773,6 +5281,13 @@ mySk1 = startSketchOn(XY)
                                     3,
                                     4,
                                     module_id,
+                                    NodePath {
+                                        steps: vec![
+                                            NodePathStep::ProgramBodyItem { index: 0 },
+                                            NodePathStep::ExpressionStatementExpr,
+                                            NodePathStep::BinaryRight,
+                                        ],
+                                    },
                                 ))),
                                 digest: None,
                             },
@@ -4782,6 +5297,9 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
+                    NodePath {
+                        steps: vec![NodePathStep::ProgramBodyItem { index: 0 }],
+                    },
                 ))],
                 shebang: None,
                 non_code_meta: NonCodeMeta::default(),
@@ -4804,7 +5322,7 @@ mySk1 = startSketchOn(XY)
     }
 
     #[track_caller]
-    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationIssue>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
@@ -4812,7 +5330,7 @@ mySk1 = startSketchOn(XY)
     }
 
     #[track_caller]
-    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationIssue>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(
@@ -4845,7 +5363,11 @@ mySk1 = startSketchOn(XY)
     #[track_caller]
     fn assert_err_contains(p: &str, expected: &str) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs().next().unwrap().message;
+        let err = &result
+            .unwrap_errs()
+            .next()
+            .expect("Expected an error but found none")
+            .message;
         assert!(err.contains(expected), "actual='{err}'");
     }
 
@@ -4992,6 +5514,12 @@ secondExtrude = startSketchOn(XY)
     }
 
     #[test]
+    fn test_parse_ascription_in_binop() {
+        crate::parsing::top_level_parse("foo = tan(0): number(rad) - 4deg").unwrap();
+        crate::parsing::top_level_parse("foo = tan(0): rad - 4deg").unwrap();
+    }
+
+    #[test]
     fn test_parse_parens_unicode() {
         let result = crate::parsing::top_level_parse("(ޜ");
         let details = result.0.unwrap().1.pop().unwrap();
@@ -5058,6 +5586,7 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5071,6 +5600,7 @@ e
             ),
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5085,6 +5615,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5095,6 +5626,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5110,6 +5642,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5120,6 +5653,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5208,7 +5742,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
             [17, 30],
         );
         assert_err(
@@ -5238,19 +5772,58 @@ e
         assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
         assert_err(
             r#"import "_foo.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 17],
         );
         assert_err(
             r#"import "foo-bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_with_alias() {
+        let code = r#"import "my file.kcl" as myFile"#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_without_alias() {
+        assert_err_contains(
+            r#"import "my file.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
+        );
+    }
+
+    #[test]
+    fn import_kcl_starting_with_name_starting_with_number_without_alias() {
+        assert_err_contains(
+            r#"import "0th.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
+        );
+    }
+
+    #[test]
+    fn test_module_name() {
+        #[track_caller]
+        fn assert_mod_name(stmt: &str, name: &str) {
+            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
+            let stmt = in_ctx(|| import_stmt(&mut tokens.as_slice())).unwrap();
+            assert_eq!(stmt.module_name().unwrap(), name);
+        }
+
+        assert_mod_name("import 'foo.kcl'", "foo");
+        assert_mod_name("import 'foo.kcl' as bar", "bar");
+        assert_mod_name("import 'main.kcl'", "main");
+        assert_mod_name("import 'foo/main.kcl'", "foo");
+        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
     }
 
     #[test]
@@ -5340,7 +5913,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1, 2, 3]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5352,7 +5925,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[allow(unused)]
@@ -5365,7 +5938,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5377,7 +5950,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5385,7 +5958,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1/* comment*/]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5397,7 +5970,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = object(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| object(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5405,7 +5978,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"{x=1/* comment*/}"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = object(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| object(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5417,7 +5990,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = if_expr(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| if_expr(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5427,7 +6000,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = else_if(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| else_if(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5441,7 +6014,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = if_expr(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| if_expr(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5459,7 +6032,7 @@ thing(false)
     fn test_mul_if() {
         let some_program_string = r#"10 * if true { 1 } else { 0}"#;
         let tokens = crate::parsing::token::lex(some_program_string, ModuleId::default()).unwrap();
-        super::binary_expression_tokens.parse(tokens.as_slice()).unwrap();
+        in_ctx(|| super::binary_expression_tokens.parse(tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5534,7 +6107,7 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
         for input in ["val = foo(x, y = z)", "val = foo(y = z)"] {
             let module_id = ModuleId::default();
             let tokens = crate::parsing::token::lex(input, module_id).unwrap();
-            super::program.parse(tokens.as_slice()).unwrap();
+            in_ctx(|| super::program.parse(tokens.as_slice())).unwrap();
         }
     }
 
@@ -5680,7 +6253,7 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
         let some_program_string = "myFunction().field";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
-        let actual = expression.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| expression.parse(tokens.as_slice())).unwrap();
         let Expr::MemberExpression(_expr) = actual else {
             panic!("expected member expression")
         };
@@ -5812,7 +6385,7 @@ bar = 1
         let some_program_string = r#"!true"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
-        let actual = match unary_expression.parse(tokens.as_slice()) {
+        let actual = match in_ctx(|| unary_expression.parse(tokens.as_slice())) {
             // Use tokens.as_slice() for parsing
             Ok(x) => x,
             Err(e) => panic!("{e:?}"),
@@ -5898,7 +6471,7 @@ bar = 1
     fn test_sensible_error_when_missing_rhs_of_kw_arg() {
         for (i, program) in ["f(x, y=)"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let err = in_ctx(|| fn_call_kw.parse(tokens.as_slice())).unwrap_err();
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
                 cause.message, "This argument has a label, but no value. Put some value after the equals sign",
@@ -5935,7 +6508,7 @@ bar = 1
     fn test_sensible_error_when_using_keyword_as_arg_label() {
         for (i, program) in ["pow(2, fn = 8)"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = match fn_call_kw.parse(tokens.as_slice()) {
+            let err = match in_ctx(|| fn_call_kw.parse(tokens.as_slice())) {
                 Err(e) => e,
                 Ok(_ast) => {
                     panic!("Expected this to error but it didn't");
@@ -5958,7 +6531,7 @@ bar = 1
     fn test_sensible_error_when_missing_rhs_of_obj_property() {
         for (i, program) in ["{x = 1, y =}"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = object.parse(tokens.as_slice()).unwrap_err();
+            let err = in_ctx(|| object.parse(tokens.as_slice())).unwrap_err();
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
                 cause.message, "This property has a label, but no value. Put some value after the equals sign",
@@ -5995,6 +6568,18 @@ bar = 1
     }
 
     #[test]
+    fn test_cannot_declare_vars_with_special_kcl_prefix() {
+        let program_source = "__kcl = 2";
+        let expected_src_start = program_source.find("_").unwrap();
+        let expected_src_end = expected_src_start + "__kcl".len();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert!(cause.err.message.contains("reserved name"));
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+        assert_eq!(cause.err.source_range.end(), expected_src_end);
+    }
+
+    #[test]
     fn test_sensible_error_when_using_keyword_as_object_key() {
         let source = r#"material = {
   type = "Steel 45"
@@ -6007,7 +6592,7 @@ bar = 1
     }
 
     struct MustFail {
-        err: CompilationError,
+        err: CompilationIssue,
         was_fatal: bool,
     }
 

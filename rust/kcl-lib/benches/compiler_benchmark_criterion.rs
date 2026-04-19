@@ -1,6 +1,8 @@
 use std::hint::black_box;
 
-use criterion::{Criterion, criterion_group, criterion_main};
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
 
 pub fn bench_parse(c: &mut Criterion) {
     for (name, file) in [
@@ -11,6 +13,7 @@ pub fn bench_parse(c: &mut Criterion) {
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("koch snowflake", LSYSTEM_KOCH_SNOWFLAKE_PROGRAM),
         ("nested function calls", NESTED_FN_CALLS),
+        ("big_sketch_block", BIG_SKETCH_BLOCK),
     ] {
         c.bench_function(&format!("parse_{name}"), move |b| {
             b.iter(move || {
@@ -96,3 +99,4 @@ const NESTED_FN_CALLS: &str = "extrude(
   )
  )
 )";
+const BIG_SKETCH_BLOCK: &str = include_str!("../tests/inputs/lots_of_segments.kcl");

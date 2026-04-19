@@ -11,19 +11,18 @@ import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { ConnectionManager } from '@src/network/connectionManager'
-import RustContext from '@src/lib/rustContext'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { KclManager } from '@src/lang/KclManager'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { MachineManager } from '@src/lib/MachineManager'
+import { signal } from '@preact/signals-core'
+import { ConnectionManager } from '@src/network/connectionManager'
+import RustContext from '@src/lib/rustContext'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -62,42 +61,40 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
 export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
-  const engineCommandManager = new ConnectionManager()
+  const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: instancePromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: instancePromise,
+      machineManager,
+    },
   }).start()
   const settingsActor = createActor(settingsMachine, {
-    input: { commandBarActor, ...createSettings() },
+    input: {
+      commandBarActor,
+      ...createSettings(),
+      wasmInstancePromise: instancePromise,
+    },
+  })
+  const engineCommandManager = new ConnectionManager({
+    settingsActor,
   })
   const rustContext = new RustContext(
-    engineCommandManager,
     instancePromise,
+    engineCommandManager,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
-    rustContext,
-    sceneInfra,
-  })
-  engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
-  engineCommandManager.rustContext = rustContext
-
-  const sceneEntitiesManager = new SceneEntities(
+  const kclManager = new KclManager('some-file', '', {
+    wasmInstancePromise: instancePromise,
+    settings: settingsActor,
+    commandBar: commandBarActor,
     engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
-  sceneEntitiesManager.commandBarActor = commandBarActor
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
+    rustContext,
+    projectPath: signal('some-project'),
+  })
 
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
-
-  await new Promise((resolve) => {
-    engineCommandManager
+  await new Promise((resolve, reject) => {
+    kclManager.engineCommandManager
       .start({
         token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
@@ -105,22 +102,30 @@ export async function buildTheWorldAndConnectToEngine() {
         setStreamIsReady: () => {
           console.log('no op for a unit test')
         },
-        callbackOnUnitTestingConnection: () => {
-          resolve(true)
-          console.log('unit test connected!')
+        callbackOnUnitTestingConnection: (message: string) => {
+          if (message === 'auth_token_invalid') {
+            const reason =
+              'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
+            reject(reason)
+          }
+
+          if (message === 'auth success') {
+            resolve(true)
+            console.log('unit test connected!')
+          }
         },
+        rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
   })
   return {
     instance: await instancePromise,
-    engineCommandManager,
-    rustContext,
-    sceneInfra,
+    engineCommandManager: kclManager.engineCommandManager,
+    rustContext: kclManager.rustContext,
     kclManager,
-    sceneEntitiesManager,
     commandBarActor,
     settingsActor,
+    machineManager,
   }
 }
 
@@ -128,7 +133,7 @@ export async function buildTheWorldAndConnectToEngine() {
  * Loads the WASM wrapper module. Left sync
  * because some systems in our app await the Promise anyway.
  */
-async function loadWasm() {
+export async function loadWasm() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   return instancePromise
@@ -151,47 +156,49 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const instancePromise = mockWasm
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
-  const engineCommandManager = new ConnectionManager()
+  const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: instancePromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: instancePromise,
+      machineManager,
+    },
   }).start()
   const settingsActor = createActor(settingsMachine, {
-    input: { commandBarActor, ...createSettings() },
+    input: {
+      commandBarActor,
+      ...createSettings(),
+      wasmInstancePromise: instancePromise,
+    },
+  })
+  const engineCommandManager = new ConnectionManager({
+    settingsActor,
   })
   const rustContext = new RustContext(
-    engineCommandManager,
     instancePromise,
+    engineCommandManager,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
-    rustContext,
-    sceneInfra,
-  })
-  engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
-  engineCommandManager.rustContext = rustContext
-  const sceneEntitiesManager = new SceneEntities(
+  const kclManager = new KclManager('some-file', '', {
+    wasmInstancePromise: instancePromise,
+    settings: settingsActor,
+    commandBar: commandBarActor,
     engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
+    rustContext,
+    projectPath: signal('some-project'),
+  })
 
   settingsActor.start()
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
 
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
-    engineCommandManager,
-    rustContext,
-    sceneInfra,
+    engineCommandManager: kclManager.engineCommandManager,
+    rustContext: kclManager.rustContext,
+    sceneInfra: kclManager.sceneInfra,
     kclManager,
-    sceneEntitiesManager,
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
     commandBarActor,
     settingsActor,
+    machineManager,
   }
 }

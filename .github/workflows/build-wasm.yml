@@ -10,24 +10,16 @@ permissions:
   contents: read
 
 jobs:
-  npm-build-wasm:
+  build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
-
-      - name: Track setup
-        run: .github/ci-cd-scripts/track-step.sh
-        env:
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: integration
-          CI_STEP: setup
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -45,21 +37,26 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v12
+        uses: dawidd6/action-download-artifact@v20
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           name: wasm-bundle
-          workflow: build-and-store-wasm.yml
+          workflow: build-wasm.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
       - name: Build Wasm condition
         id: wasm
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
+          RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
         run: |
-          set -euox pipefail
-          # Build Wasm if there are Rust changes or downloading from the cache failed
-          if [[ ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build Wasm with Rust changes, cache misses, or for stacked PRs
+          if [[ "${RUST_CHANGES}" == 'true' || \
+                "${DOWNLOAD_OUTCOME}" == 'failure' || \
+                ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -78,7 +75,7 @@ jobs:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -107,13 +104,13 @@ jobs:
           ls -R rust/kcl-wasm-lib/pkg
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-ts-rs-bindings
           path: |

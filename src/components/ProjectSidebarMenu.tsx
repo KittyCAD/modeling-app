@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useContext, useMemo } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Fragment, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -9,21 +9,24 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { useLspContext } from '@src/components/LspProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { FileEntry, Project } from '@src/lib/project'
+
+import fsZds from '@src/lib/fs-zds'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
 }
 
 const ProjectSidebarMenu = ({
@@ -38,7 +41,7 @@ const ProjectSidebarMenu = ({
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
-      <div className="relative group/home cursor-pointer">
+      <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
         {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
       </div>
@@ -64,12 +67,25 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  return isDesktop() ? (
+  if (!window.electron) {
+    return (
+      <div
+        data-testid="app-logo"
+        className="relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+      >
+        <Logo data-onboarding-id="app-logo" className={logoClassName} />
+        <span className="sr-only">{APP_NAME}</span>
+      </div>
+    )
+  }
+
+  return (
     <Link
       data-testid="app-logo"
       onClick={() => {
@@ -82,16 +98,8 @@ function AppLogoLink({
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
-  ) : (
-    <div className={wrapperClassName} data-testid="app-logo">
-      <Logo data-onboarding-id="app-logo" className={logoClassName} />
-      <span className="sr-only">{APP_NAME}</span>
-    </div>
   )
 }
-
-const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state.context.commands
 
 function ProjectMenuPopover({
   project,
@@ -100,20 +108,22 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { machineManager, commands, settings } = useApp()
+  const { kclManager } = useSingletons()
+  const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
-  const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const machineManager = useContext(MachineManagerContext)
-  const commands = useSelector(commandBarActor, commandsSelector)
+  const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
+    state.context.commands
+  const commandList = useSelector(commands.actor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
-  const insertCommandInfo = { name: 'Insert', groupId: 'code' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
-      commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
+      commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
     )
   const machineCount = machineManager.machines.length
 
@@ -129,48 +139,46 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isDesktop() ? '' : '⬆'
-              },`}</kbd>
+              <kbd className="hotkey">
+                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
+              </kbd>
             </>
           ),
           onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_PROJECT
-              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            const targetPath =
+              filePath !== undefined
+                ? filePath + PATHS.SETTINGS_PROJECT
+                : PATHS.HOME + PATHS.SETTINGS_PROJECT
             void navigate(targetPath)
           },
         },
         'break',
         {
-          id: 'insert',
+          id: 'importFile',
           Element: 'button',
           children: (
             <>
-              <span>Insert from project file</span>
-              {!findCommand(insertCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Awaiting engine connection
-                </Tooltip>
-              )}
+              <span className="flex-1">Add file to project</span>
+              <kbd className="hotkey">
+                {hotkeyDisplay('mod+alt+l', platform)}
+              </kbd>
             </>
           ),
-          disabled: !findCommand(insertCommandInfo),
           onClick: () =>
-            commandBarActor.send({
-              type: 'Find and select command',
-              data: insertCommandInfo,
-            }),
+            sendAddFileToProjectCommandForCurrentProject(
+              settings.actor,
+              commands.actor
+            ),
         },
         {
           id: 'export',
           Element: 'button',
           children: (
             <>
-              <span>Export current part</span>
+              <span className="flex-1">Export current part</span>
+              <kbd className="hotkey">
+                {hotkeyDisplay('ctrl+shift+e', platform)}
+              </kbd>
               {!findCommand(exportCommandInfo) && (
                 <Tooltip
                   position="right"
@@ -183,7 +191,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(exportCommandInfo),
           onClick: () =>
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
@@ -191,7 +199,7 @@ function ProjectMenuPopover({
         {
           id: 'make',
           Element: 'button',
-          className: !isDesktop() ? 'hidden' : '',
+          className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
               <span>Make current part</span>
@@ -207,7 +215,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: makeCommandInfo,
             })
@@ -233,9 +241,10 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      commandBarActor.send,
-      engineCommandManager,
+      commands.send,
+      kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]
@@ -245,10 +254,9 @@ function ProjectMenuPopover({
   const breadCrumb = {
     projectName: project?.name || '',
     sep: '/',
-    filename:
-      window.electron && file?.name
-        ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
-        : APP_NAME,
+    filename: file?.name
+      ? file.name.slice(file.name.lastIndexOf(fsZds.sep) + 1)
+      : APP_NAME,
   }
   const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
 
@@ -262,7 +270,7 @@ function ProjectMenuPopover({
           className="flex items-baseline py-0.5 text-sm gap-1"
           title={breadCrumbTooltip}
         >
-          {isDesktop() && project?.name && (
+          {project?.name && (
             <>
               <span
                 className="hidden whitespace-nowrap md:block max-w-80 truncate"

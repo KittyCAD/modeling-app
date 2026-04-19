@@ -61,6 +61,7 @@ description: Variables in memory after executing angled_line.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

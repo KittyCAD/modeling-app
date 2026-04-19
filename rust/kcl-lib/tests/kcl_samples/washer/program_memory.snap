@@ -21,24 +21,6 @@ description: Variables in memory after executing washer.kcl
       "angle": "degrees"
     }
   },
-  "thicknessMax": {
-    "type": "Number",
-    "value": 0.038,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "thicknessMin": {
-    "type": "Number",
-    "value": 0.024,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
   "thicknessNom": {
     "type": "Number",
     "value": 0.032,
@@ -71,6 +53,7 @@ description: Variables in memory after executing washer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

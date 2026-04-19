@@ -5,22 +5,51 @@ use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::{
-    CompilationError, KclError, ModuleId, SourceRange,
-    errors::KclErrorDetails,
-    execution::{
-        AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier,
-        UnsolvedExpr,
-        annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
-        TagNode, Type,
-    },
-    std::{StdFnProps, args::TyF64},
-};
+use crate::CompilationIssue;
+use crate::KclError;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::AbstractSegment;
+use crate::execution::BoundedEdge;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecState;
+use crate::execution::Face;
+use crate::execution::GdtAnnotation;
+use crate::execution::Geometry;
+use crate::execution::GeometryWithImportedGeometry;
+use crate::execution::Helix;
+use crate::execution::ImportedGeometry;
+use crate::execution::Metadata;
+use crate::execution::Plane;
+use crate::execution::Segment;
+use crate::execution::SegmentRepr;
+use crate::execution::Sketch;
+use crate::execution::SketchConstraint;
+use crate::execution::SketchVar;
+use crate::execution::SketchVarId;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::UnsolvedExpr;
+use crate::execution::annotations::FnAttrs;
+use crate::execution::annotations::SETTINGS;
+use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
+use crate::execution::annotations::{self};
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::KclNone;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TagNode;
+use crate::parsing::ast::types::Type;
+use crate::std::StdFnProps;
+use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -85,6 +114,10 @@ pub enum KclValue {
     Face {
         value: Box<Face>,
     },
+    BoundedEdge {
+        value: BoundedEdge,
+        meta: Vec<Metadata>,
+    },
     Segment {
         value: Box<AbstractSegment>,
     },
@@ -133,9 +166,16 @@ where
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct NamedParam {
+    pub experimental: bool,
+    pub default_value: Option<DefaultParamVal>,
+    pub ty: Option<Type>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct FunctionSource {
     pub input_arg: Option<(String, Option<Type>)>,
-    pub named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    pub named_args: IndexMap<String, NamedParam>,
     pub return_type: Option<Node<Type>>,
     pub deprecated: bool,
     pub experimental: bool,
@@ -193,13 +233,8 @@ impl FunctionSource {
         }
     }
 
-    #[allow(clippy::type_complexity)]
-    fn args_from_ast(
-        ast: &FunctionExpression,
-    ) -> (
-        Option<(String, Option<Type>)>,
-        IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
-    ) {
+    #[expect(clippy::type_complexity)]
+    fn args_from_ast(ast: &FunctionExpression) -> (Option<(String, Option<Type>)>, IndexMap<String, NamedParam>) {
         let mut input_arg = None;
         let mut named_args = IndexMap::new();
         for p in &ast.params {
@@ -213,7 +248,11 @@ impl FunctionSource {
 
             named_args.insert(
                 p.identifier.name.clone(),
-                (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
+                NamedParam {
+                    experimental: p.experimental,
+                    default_value: p.default_value.clone(),
+                    ty: p.param_type.as_ref().map(|t| t.inner.clone()),
+                },
             );
         }
 
@@ -312,6 +351,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
+            KclValue::BoundedEdge { meta, .. } => to_vec_sr(&meta),
         }
     }
 }
@@ -346,6 +386,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
             KclValue::Type { meta, .. } => to_vec_sr(meta),
+            KclValue::BoundedEdge { meta, .. } => to_vec_sr(meta),
         }
     }
 }
@@ -383,6 +424,7 @@ impl KclValue {
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
+            KclValue::BoundedEdge { meta, .. } => meta.clone(),
         }
     }
 
@@ -419,6 +461,7 @@ impl KclValue {
             | KclValue::Function { .. }
             | KclValue::Module { .. }
             | KclValue::Type { .. }
+            | KclValue::BoundedEdge { .. }
             | KclValue::KclNone { .. } => false,
         }
     }
@@ -456,6 +499,7 @@ impl KclValue {
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
             KclValue::KclNone { .. } => "none".to_owned(),
+            KclValue::BoundedEdge { .. } => "a bounded edge".to_owned(),
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 if value.is_empty() {
                     "an empty array".to_owned()
@@ -510,7 +554,7 @@ impl KclValue {
                     && *len != UnitLength::Millimeters
                 {
                     exec_state.warn(
-                        CompilationError::err(
+                        CompilationIssue::err(
                             literal.as_source_range(),
                             "Project-wide units are deprecated. Prefer to use per-file default units.",
                         )
@@ -816,6 +860,28 @@ impl KclValue {
         }
     }
 
+    /// A solved segment.
+    pub fn as_segment(&self) -> Option<&Segment> {
+        match self {
+            KclValue::Segment { value, .. } => match &value.repr {
+                SegmentRepr::Solved { segment } => Some(segment),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    /// A solved segment.
+    pub fn into_segment(self) -> Option<Segment> {
+        match self {
+            KclValue::Segment { value, .. } => match value.repr {
+                SegmentRepr::Solved { segment } => Some(*segment),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
         match self {
             KclValue::TagIdentifier(value) => Some(value),
@@ -919,6 +985,7 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
+            | KclValue::BoundedEdge { .. }
             | KclValue::Type { .. } => None,
         }
     }
@@ -939,6 +1006,25 @@ impl From<GeometryWithImportedGeometry> for KclValue {
             GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
             GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
             GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
+        }
+    }
+}
+
+impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
+    fn from(mut values: Vec<GeometryWithImportedGeometry>) -> Self {
+        if values.len() == 1
+            && let Some(v) = values.pop()
+        {
+            KclValue::from(v)
+        } else {
+            KclValue::HomArray {
+                value: values.into_iter().map(KclValue::from).collect(),
+                ty: RuntimeType::Union(vec![
+                    RuntimeType::Primitive(PrimitiveType::Sketch),
+                    RuntimeType::Primitive(PrimitiveType::Solid),
+                    RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+                ]),
+            }
         }
     }
 }

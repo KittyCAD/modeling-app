@@ -1,0 +1,63 @@
+import { beforeAll, describe, expect, it } from 'vitest'
+import { App } from '@src/lib/app'
+import { File } from '@src/lang/KclManager'
+import type { Project } from '@src/lib/project'
+import { loadWasm } from '@src/unitTestUtils'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+const mockProject: Project = {
+  name: 'test',
+  default_file: 'main.kcl',
+  directory_count: 0,
+  kcl_file_count: 1,
+  metadata: {
+    accessed: null,
+    created: null,
+    modified: null,
+    permission: null,
+    size: 100,
+    type: null,
+  },
+  path: '/some-dir/test',
+  readWriteAccess: true,
+  children: [
+    {
+      name: 'main.kcl',
+      path: '/some-dir/test/main.kcl',
+      children: [],
+    },
+  ],
+}
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
+describe('project system', () => {
+  it('can open, close project', async () => {
+    // Stub out File read and write implementations
+    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.write = () => Promise.resolve()
+
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    const project = await app.openProject(mockProject)
+
+    expect(app.project).toBeDefined()
+    expect(app.project?.executingPath).toBeNull()
+    expect(app.project?.executingFileEntry.value.name).toEqual('')
+
+    await project.openEditor(mockProject.children![0].path)
+    expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+    expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+
+    app.closeProject()
+
+    expect(app.project).toBeUndefined()
+  })
+})

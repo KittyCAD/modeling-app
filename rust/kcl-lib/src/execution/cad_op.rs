@@ -1,8 +1,14 @@
 use indexmap::IndexMap;
 use serde::Serialize;
 
-use super::{ArtifactId, KclValue, types::NumericType};
-use crate::{ModuleId, NodePath, SourceRange, front::ObjectId, parsing::ast::types::ItemVisibility};
+use super::ArtifactId;
+use super::KclValue;
+use super::types::NumericType;
+use crate::ModuleId;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::front::ObjectId;
+use crate::parsing::ast::types::ItemVisibility;
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -218,6 +224,9 @@ pub enum OpKclValue {
     Sketch {
         value: Box<OpSketch>,
     },
+    Segment {
+        artifact_id: ArtifactId,
+    },
     Solid {
         value: Box<OpSolid>,
     },
@@ -231,6 +240,7 @@ pub enum OpKclValue {
     Module {},
     Type {},
     KclNone {},
+    BoundedEdge {},
 }
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
@@ -300,13 +310,9 @@ impl From<&KclValue> for OpKclValue {
                     // Arguments to constraint functions will be unsolved.
                     Self::KclNone {}
                 }
-                crate::execution::geometry::SegmentRepr::Solved { .. } => {
-                    debug_assert!(
-                        false,
-                        "Solved segment not sent to the engine cannot be represented in operations"
-                    );
-                    Self::KclNone {}
-                }
+                crate::execution::geometry::SegmentRepr::Solved { segment, .. } => Self::Segment {
+                    artifact_id: ArtifactId::new(segment.id),
+                },
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(OpSketch {
@@ -330,6 +336,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
+            KclValue::BoundedEdge { .. } => Self::BoundedEdge {},
         }
     }
 }

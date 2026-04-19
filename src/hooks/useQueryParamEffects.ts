@@ -15,10 +15,10 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { findKclSample } from '@src/lib/kclSamples'
 import type { FileLinkParams } from '@src/lib/links'
-import { webSafePathSplit } from '@src/lib/paths'
-import { commandBarActor, useAuthState } from '@src/lib/singletons'
+import fsZds from '@src/lib/fs-zds'
+import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
+import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -37,7 +37,9 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects(kclManager: KclManager) {
-  const authState = useAuthState()
+  const app = useApp()
+  const { auth, commands } = app
+  const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
@@ -55,13 +57,16 @@ export function useQueryParamEffects(kclManager: KclManager) {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (
-      shouldInvokeCreateFile &&
-      authState.matches('loggedIn') &&
-      isDesktop()
-    ) {
-      const argDefaultValues = buildCreateFileCommandArgs(searchParams)
-      commandBarActor.send({
+    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
+      const webProjectName = !isDesktop()
+        ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
+          DEFAULT_WEB_PROJECT_NAME)
+        : undefined
+      const argDefaultValues = buildCreateFileCommandArgs(
+        searchParams,
+        webProjectName
+      )
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -86,80 +91,63 @@ export function useQueryParamEffects(kclManager: KclManager) {
   useEffect(() => {
     if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) return
 
-    const commandData = buildGenericCommandArgs(searchParams)
-    if (!commandData) return
+    const rawCommandData = buildGenericCommandArgs(searchParams)
+    if (!rawCommandData) return
+    const commandData = rawCommandData
 
-    // Process regular commands
-    if (commandData.name !== 'add-kcl-file-to-project' || isDesktop()) {
-      commandBarActor.send({
+    // Web-only: prefill command data to automatically add to the demo project
+    if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
+      if (commandData.argDefaultValues?.projectName === 'browser') {
+        const currentProjectName =
+          app.settings.actor.getSnapshot().context.currentProject?.name
+        commandData.argDefaultValues.projectName =
+          currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
+      }
+      if (commandData.argDefaultValues?.projectName) {
+        commandData.argDefaultValues.method = 'existingProject'
+      }
+    }
+
+    // Helper function to send the command exactly once
+    let sent = false
+    function sendCommand() {
+      if (sent) return
+      sent = true
+      commands.send({
         type: 'Find and select command',
         data: commandData,
       })
       cleanupQueryParams()
-      return
     }
 
-    // From here we're only handling 'add-kcl-file-to-project' on web
+    // Web-only: wait for folders to load before sending the command
+    if (
+      !isDesktop() &&
+      commandData.name === 'add-kcl-file-to-project' &&
+      commandData.argDefaultValues?.projectName
+    ) {
+      const projectNameArg = String(commandData.argDefaultValues.projectName)
+      const projectFolderName = fsZds.basename(projectNameArg)
 
-    // Get the sample path from command arguments
-    const samplePath = commandData.argDefaultValues?.sample
-    if (!samplePath) {
-      console.error('No sample path found in command arguments')
-      cleanupQueryParams()
-      return
-    }
+      const systemIO = app.systemIOActor
+      const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
+        (folders ?? []).some((f) => f.name === projectFolderName)
 
-    // Find the KCL sample details
-    const kclSample = findKclSample(samplePath)
-    if (!kclSample) {
-      console.error('KCL sample not found for path:', samplePath)
-      cleanupQueryParams()
-      return
-    } else if (kclSample.files.length > 1) {
-      console.error(
-        'KCL sample has multiple files, only the first one will be used'
-      )
-      cleanupQueryParams()
-      return
-    }
+      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
+        sendCommand()
+        return
+      }
 
-    // Get the first part of the path (project directory)
-    const pathParts = webSafePathSplit(samplePath)
-    const projectPathPart = pathParts[0]
-
-    // Get the first file from the sample
-    const firstFile = kclSample.files[0]
-    if (!firstFile) {
-      console.error('No files found in KCL sample')
-      cleanupQueryParams()
-      return
-    }
-
-    // Build the URL to the sample file
-    const sampleCodeUrl = `/kcl-samples/${encodeURIComponent(
-      projectPathPart
-    )}/${encodeURIComponent(firstFile)}`
-
-    // Fetch the sample code and show the toast
-    fetch(sampleCodeUrl)
-      .then((response) => {
-        if (!response.ok) {
-          return Promise.reject(
-            new Error(
-              `Failed to fetch sample: ${response.status} ${response.statusText}`
-            )
-          )
+      const subscription = systemIO.subscribe((snapshot) => {
+        if (foldersIncludeProject(snapshot.context.folders)) {
+          subscription.unsubscribe()
+          sendCommand()
         }
-        return response.text()
       })
-      .then((code) => {
-        kclManager.goIntoTemporaryWorkspaceModeWithCode(code)
-      })
-      .catch((error) => {
-        console.error('Error loading KCL sample:', error)
-      })
+      return () => subscription.unsubscribe()
+    }
 
-    cleanupQueryParams()
+    sendCommand()
 
     // Helper function to clean up query parameters
     function cleanupQueryParams() {
@@ -188,7 +176,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
   }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 
-function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
+function buildCreateFileCommandArgs(
+  searchParams: URLSearchParams,
+  webProjectName?: string
+) {
   const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
     code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
     name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
@@ -198,6 +189,9 @@ function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
     name: PROJECT_ENTRYPOINT,
     code: params.code || '',
     method: isDesktop() ? undefined : 'existingProject',
+  }
+  if (!isDesktop()) {
+    argDefaultValues.projectName = webProjectName ?? DEFAULT_WEB_PROJECT_NAME
   }
 
   return argDefaultValues

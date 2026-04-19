@@ -1,0 +1,151 @@
+// Snowman (stylized)
+// Three stacked spheres with simple facial features and a top hat standing on a small platform
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Parameters
+rBottom = 40
+rMiddle = 28
+rHead = 20
+buttonR = 3
+eyeR = 3
+noseR = 3
+noseLen = 18
+hatBrimR = 26
+hatBrimThk = 2
+hatTopR = 18
+hatTopH = 30
+
+// Arms (stick) parameters
+armLen = rMiddle * 1.6
+armR = 2.5
+armEmbed = 4
+armZOffset = rMiddle * 0.15
+
+// Base parameters (for printing)
+baseThk = 4
+baseMargin = 3 // extra beyond arm reach or body footprint
+baseColor = "#bdbdbd"
+
+// Robust sphere via revolve, following KCL sphere example
+fn sphereByRevolve(@r) {
+  d = r * 2
+  sketch = startSketchOn(XY)
+  profile = startProfile(sketch, at = [-r, 0])
+    |> xLine(length = d)
+    |> arc(angleStart = 0deg, angleEnd = 180deg, radius = r)
+    |> close()
+  return revolve(profile, axis = X, angle = 360deg)
+}
+
+// Stack positions along Z so spheres just touch
+zBottomC = rBottom
+zMiddleC = 2 * rBottom + rMiddle
+zHeadC = 2 * rBottom + 2 * rMiddle + rHead
+
+// Bodies (pure spheres)
+bottom = sphereByRevolve(rBottom)
+  |> translate(z = zBottomC)
+  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
+
+middle = sphereByRevolve(rMiddle)
+  |> translate(z = zMiddleC)
+  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
+
+head = sphereByRevolve(rHead)
+  |> translate(z = zHeadC)
+  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
+
+// Buttons on middle (three small spheres along +X/front)
+btnSpacing = rMiddle * 0.6
+btnX = rMiddle * 0.92
+btn1 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC + btnSpacing)
+btn2 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC)
+btn3 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC - btnSpacing)
+buttons = [btn1, btn2, btn3]
+  |> appearance(color = "#000000", roughness = 50, metalness = 0)
+
+// Eyes on head (two small spheres)
+eyeX = rHead * 0.95
+eyeYOffset = rHead * 0.35
+eyeZ = zHeadC + rHead * 0.15
+eyeL = sphereByRevolve(eyeR)
+  |> translate(x = eyeX, y = -eyeYOffset, z = eyeZ)
+eyeRht = sphereByRevolve(eyeR)
+  |> translate(x = eyeX, y = eyeYOffset, z = eyeZ)
+eyes = [eyeL, eyeRht]
+  |> appearance(color = "#000000", roughness = 50, metalness = 0)
+
+// Nose (simple revolve approximating a carrot)
+noseSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = noseLen)
+  |> yLine(length = -0.01)
+  |> tangentialArc(angle = -85deg, radius = .5, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), lengthX = noseLen * 0.9)
+  |> tangentialArc(endAbsolute = [0, -0.5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+nose = revolve(noseSketch, axis = X)
+  |> translate(x = rHead * 0.98, y = 0, z = zHeadC)
+  |> appearance(color = "#ff7f00", roughness = 40, metalness = 0)
+
+// Hat: brim (thin disk) + crown (short cylinder) merged into one solid
+hatBrimPlane = offsetPlane(XY, offset = zHeadC + rHead)
+hatBrim = startSketchOn(hatBrimPlane)
+  |> circle(center = [0, 0], radius = hatBrimR)
+  |> extrude(length = hatBrimThk)
+
+hat = startSketchOn(hatBrim, face = END)
+  |> circle(center = [0, 0], radius = hatTopR)
+  |> extrude(length = hatTopH)
+  |> appearance(color = "#111111", metalness = 10, roughness = 40)
+
+// Stick arms (thin cylinders), kept horizontal for robustness
+// Right arm: build along +Y using -XZ (normal is +Y)
+armSketchR = startSketchOn(-XZ)
+armCircleR = circle(armSketchR, center = [0, 0], radius = armR)
+rightArm = extrude(armCircleR, length = armLen)
+  |> translate(
+       x = 0,
+       y = rMiddle - armEmbed,
+       z = zMiddleC + armZOffset,
+       global = true,
+     )
+  |> appearance(color = "#6b4f2a", roughness = 60, metalness = 0)
+
+// Left arm: build along -Y using XZ (normal is -Y)
+armSketchL = startSketchOn(XZ)
+armCircleL = circle(armSketchL, center = [0, 0], radius = armR)
+leftArm = extrude(armCircleL, length = armLen)
+  |> translate(
+       x = 0,
+       y = -(rMiddle - armEmbed),
+       z = zMiddleC + armZOffset,
+       global = true,
+     )
+  |> appearance(color = "#6b4f2a", roughness = 60, metalness = 0)
+
+// Small print base: diameter covers max of arm span and body footprint; extrude DOWN so top is clearly visible
+armReachY = rMiddle - armEmbed + armLen
+baseR = max([rBottom, armReachY]) + baseMargin
+baseDisk = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = baseR)
+  |> extrude(length = -baseThk)
+  |> appearance(color = baseColor, roughness = 70, metalness = 0)
+
+bottomWithBase = union([bottom, baseDisk])
+  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
+
+// Collect parts into a flat array
+parts0 = concat([bottomWithBase, middle, head], items = buttons)
+parts1 = concat(parts0, items = eyes)
+snowmanParts = concat(parts1, items = [nose, hat])
+limbs = [rightArm, leftArm]
+
+concat(snowmanParts, items = limbs)
+  |> rotate(axis = Z, angle = -90deg, global = true)

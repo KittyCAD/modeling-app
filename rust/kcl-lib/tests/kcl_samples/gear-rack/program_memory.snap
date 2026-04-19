@@ -40,6 +40,7 @@ description: Variables in memory after executing gear-rack.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -211,6 +212,7 @@ description: Variables in memory after executing gear-rack.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -418,6 +420,7 @@ description: Variables in memory after executing gear-rack.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -615,6 +618,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -897,6 +901,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1179,6 +1184,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1461,6 +1467,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1743,6 +1750,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2025,6 +2033,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2307,6 +2316,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2589,6 +2599,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2871,6 +2882,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3153,6 +3165,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3435,6 +3448,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3717,6 +3731,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3999,6 +4014,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4281,6 +4297,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4563,6 +4580,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4845,6 +4863,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5127,6 +5146,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5409,6 +5429,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5691,6 +5712,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5973,6 +5995,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6255,6 +6278,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6537,6 +6561,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6819,6 +6844,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7101,6 +7127,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7383,6 +7410,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7665,6 +7693,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7947,6 +7976,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8229,6 +8259,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8511,6 +8542,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8793,6 +8825,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9075,6 +9108,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9357,6 +9391,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9639,6 +9674,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9921,6 +9957,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10203,6 +10240,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10485,6 +10523,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10767,6 +10806,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11049,6 +11089,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11331,6 +11372,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11613,6 +11655,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11895,6 +11938,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12177,6 +12221,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12459,6 +12504,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12741,6 +12787,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13023,6 +13070,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13305,6 +13353,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13587,6 +13636,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13869,6 +13919,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14151,6 +14202,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14433,6 +14485,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14715,6 +14768,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14997,6 +15051,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15279,6 +15334,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15561,6 +15617,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15843,6 +15900,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16125,6 +16183,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16407,6 +16466,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16689,6 +16749,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16971,6 +17032,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17253,6 +17315,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17535,6 +17598,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -17817,6 +17881,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18099,6 +18164,7 @@ description: Variables in memory after executing gear-rack.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

@@ -813,6 +813,7 @@ description: Variables in memory after executing i_shape.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

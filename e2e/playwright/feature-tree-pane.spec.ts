@@ -2,6 +2,7 @@ import { join } from 'path'
 import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
@@ -64,17 +65,35 @@ const FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE = `export fn cylinder(d, l) {
 test = cylinder(d = 2, l = 10)
 `
 
+const FEATURE_TREE_VISIBILITY_CODE = `myParameter001 = 12
+// Hide a helix, leave its cylinder
+cylinder = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 2mm)
+
+helix001 = helix(revolutions = 16, angleStart = 0, cylinder)
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [2.96, 1.99])
+  |> line(end = [0.92, -3.09])
+  |> line(end = [-2.36, -0.96])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch002 = startSketchOn(YZ)
+extrude001 = extrude(profile001, length = 5)
+hidden001 = hide([cylinder, extrude001])
+`
+
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   test('User can go to definition and go to function definition', async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
     page,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(
@@ -163,15 +182,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test('Set appearance menu works on function-created bodies', async ({
-    context,
     homePage,
     scene,
     toolbar,
     cmdBar,
     page,
     editor,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sampleDir = join(dir, 'test-sample')
       await fsp.mkdir(sampleDir, { recursive: true })
       await fsp.writeFile(
@@ -248,6 +267,93 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
   })
 
+  test('User can hide and unhide bodies and helix from panes', async ({
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    page,
+    fs,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
+      const sampleDir = join(dir, 'test-sample')
+      await fs.mkdir(sampleDir, { recursive: true })
+      await fs.writeFile(
+        join(sampleDir, 'main.kcl'),
+        new TextEncoder().encode(FEATURE_TREE_VISIBILITY_CODE)
+      )
+    })
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.Debug)
+      await toolbar.openFeatureTreePane()
+    })
+
+    const bodiesPane = page.locator('#bodies-list-pane')
+
+    await test.step('Verify both bodies are hidden', async () => {
+      const bodyToggles = bodiesPane.getByTestId(
+        'feature-tree-visibility-toggle'
+      )
+      await expect(bodyToggles).toHaveCount(2)
+      for (let i = 0; i < 2; i++) {
+        await expect(
+          bodyToggles.nth(i).locator('svg[aria-label="eye crossed out"]')
+        ).toBeVisible()
+      }
+    })
+
+    await test.step('Unhide cylinder from the bodies pane', async () => {
+      const bodyToggles = bodiesPane.getByTestId(
+        'feature-tree-visibility-toggle'
+      )
+      await bodyToggles.first().click()
+    })
+
+    await test.step('Verify extrude001 is still hidden via KCL', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*\[\s*extrude001\s*\]\s*\)/)
+    })
+
+    await test.step('Hide helix001 from the Feature Tree', async () => {
+      const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
+      const helixRow = helixButton.locator('..')
+      await helixRow.hover()
+      await helixRow.getByTestId('feature-tree-visibility-toggle').click()
+    })
+
+    await test.step('Verify helix001 is hidden via KCL', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*(?:\[\s*)?helix001/)
+    })
+
+    await test.step('Hide cylinder again from the bodies pane', async () => {
+      const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
+      const bodyToggle = bodyRow
+        .locator('..')
+        .getByTestId('feature-tree-visibility-toggle')
+      await bodyRow.hover()
+      await bodyToggle.click()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Verify cylinder is hidden via standalone hide(cylinder)', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*cylinder\s*\)/)
+    })
+  })
+
   test(`User can edit sketch (but not on offset plane yet) from the feature tree`, async ({
     context,
     homePage,
@@ -320,13 +426,13 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
   test(`User can edit an extrude operation from the feature tree`, async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
     page,
+    folderSetupFn,
   }) => {
     const initialInput = '23'
     const initialCode = `sketch001 = startSketchOn(XZ)
@@ -339,7 +445,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
             renamedExtrude = extrude(sketch001, length = ${newParameterName})`
     const editedParameterValue = '23 * 2'
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
@@ -455,12 +561,12 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
     const testCode = (value: string) =>
       `p1 = offsetPlane(XY, offset = ${value})`
@@ -468,7 +574,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
     const expectedCode = testCode(newInput)
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
@@ -530,13 +636,13 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
-    context,
     page,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
     const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
@@ -545,7 +651,7 @@ profile002 = startProfile(sketch001, at = [0, 7.25])
   |> xLine(length = 13.3)
 profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProject = join(dir, 'test-sample')
       await fsp.mkdir(testProject, { recursive: true })
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')

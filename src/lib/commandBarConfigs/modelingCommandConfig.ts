@@ -1,4 +1,9 @@
-import type { EntityType, OutputFormat3d } from '@kittycad/lib'
+import type {
+  AxisDirectionPair,
+  EntityType,
+  OutputFormat3d,
+  UnitLength,
+} from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -14,6 +19,7 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_DEFAULT_TRANSFORM,
   KCL_DEFAULT_ORIGIN,
   KCL_DEFAULT_ORIGIN_2D,
@@ -31,10 +37,13 @@ import {
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
   type KclPreludeExtrudeMethod,
+  KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_LEADER_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
   ModelingMachineContext,
@@ -50,7 +59,12 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addHole,
+  addOffsetPlane,
+  addShell,
+} from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSplit,
@@ -69,7 +83,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import {
   addFlatnessGdt,
   addDatumGdt,
@@ -77,12 +91,32 @@ import {
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
+type ExportOptionalArg = 'up' | 'scale'
+
+const exportOptionalArgSupportByType: Partial<
+  Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
+> = {
+  gltf: {
+    up: false,
+    scale: false,
+  },
+}
+
+function isExportOptionalArgSupported(
+  exportType: unknown,
+  arg: ExportOptionalArg
+): boolean {
+  if (typeof exportType !== 'string') return true
+  const supportByArg =
+    exportOptionalArgSupportByType[exportType as OutputTypeKey]
+  return supportByArg?.[arg] ?? true
+}
 
 export const EXTRUSION_RESULTS = [
   'new',
@@ -134,6 +168,8 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    up?: AxisDirectionPair['axis']
+    scale?: UnitLength
   }
   Make: {
     machine: components['schemas']['MachineInfoResponse']
@@ -155,6 +191,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     // @pierremtb: I don't even think it should be in KCL
     method?: KclPreludeExtrudeMethod
+    hideSeams?: boolean
     bodyType?: KclPreludeBodyType
   }
   Sweep: {
@@ -168,6 +205,7 @@ export type ModelingCommandSchema = {
     relativeTo?: SweepRelativeTo
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Loft: {
     // Enables editing workflow
@@ -291,6 +329,7 @@ export type ModelingCommandSchema = {
     color: string
     metalness?: KclCommandValue
     roughness?: KclCommandValue
+    opacity?: KclCommandValue
   }
   Translate: {
     nodeToEdit?: PathToNode
@@ -347,6 +386,7 @@ export type ModelingCommandSchema = {
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
+    leaderScale?: KclCommandValue
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
@@ -356,6 +396,7 @@ export type ModelingCommandSchema = {
     name: string
     framePosition?: KclCommandValue
     framePlane?: string
+    leaderScale?: KclCommandValue
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
@@ -372,9 +413,21 @@ export type ModelingCommandSchema = {
   'Flip Surface': {
     surface: Selections
   }
+  'Delete Face': {
+    faces: Selections
+  }
   'Boolean Split': {
+    nodeToEdit?: PathToNode
     targets: Selections
-    merge: boolean
+    tools?: Selections
+    merge?: boolean
+    keepTools?: boolean
+  }
+  Blend: {
+    edges: Selections
+  }
+  'Join Surfaces': {
+    selection: Selections
   }
 }
 
@@ -503,6 +556,72 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
         },
       },
+      up: {
+        inputType: 'options',
+        displayName: 'Up',
+        required: false,
+        prepopulate: true,
+        hidden: (commandContext) =>
+          !isExportOptionalArgSupported(
+            commandContext.argumentsToSubmit.type,
+            'up'
+          ),
+        defaultValue: 'z',
+        options: (commandContext) => {
+          const currentUp =
+            (commandContext.argumentsToSubmit.up as
+              | AxisDirectionPair['axis']
+              | undefined) ?? 'z'
+          return [
+            { name: 'Z+', isCurrent: currentUp === 'z', value: 'z' },
+            { name: 'Y+', isCurrent: currentUp === 'y', value: 'y' },
+          ]
+        },
+        valueSummary: (value) =>
+          value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
+      },
+      scale: {
+        inputType: 'options',
+        displayName: 'Scale',
+        required: false,
+        prepopulate: true,
+        hidden: (commandContext) =>
+          !isExportOptionalArgSupported(
+            commandContext.argumentsToSubmit.type,
+            'scale'
+          ),
+        defaultValue: (commandContext) => {
+          const machineContext =
+            commandContext.selectedCommand?.machineActor?.getSnapshot()
+              .context as ModelingMachineContext | undefined
+          return (
+            machineContext?.store.defaultUnit?.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT
+          )
+        },
+        options: (commandContext, machineContext) => {
+          const submittedScale = commandContext.argumentsToSubmit.scale
+          const resolvedSubmittedScale =
+            typeof submittedScale === 'function'
+              ? (
+                  submittedScale as (
+                    context: typeof commandContext
+                  ) => UnitLength
+                )(commandContext)
+              : (submittedScale as UnitLength | undefined)
+
+          const currentScale =
+            resolvedSubmittedScale ??
+            machineContext?.store.defaultUnit?.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT
+
+          return baseUnitsUnion.map((unit) => ({
+            name: baseUnitLabels[unit],
+            value: unit,
+            isCurrent: unit === currentScale,
+          }))
+        },
+      },
     },
   },
   Make: {
@@ -594,7 +713,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: [
+          'solid2d',
+          'segment',
+          'cap',
+          'wall',
+          'pathRegion',
+          'engineRegion',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -652,6 +778,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           value,
         })),
       },
+      hideSeams: {
+        inputType: 'boolean',
+        required: false,
+      },
       bodyType: {
         inputType: 'options',
         required: false,
@@ -677,6 +807,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -693,17 +824,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['path', 'helix'],
-        selectionFilter: ['object'],
+        selectionTypes: ['segment', 'path', 'helix'],
+        clearSelectionFirst: true,
         required: true,
-        multiple: false,
+        multiple: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
@@ -726,6 +857,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'tagDeclarator',
         required: false,
       },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
+      },
     },
   },
   Loft: {
@@ -745,6 +881,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -761,13 +898,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-        description: `
-          Note: Only closed paths are allowed for now. Selection of open paths via segments for surface modeling is coming soon.
-        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
@@ -813,6 +947,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -829,7 +964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1118,7 +1253,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tools: {
         ...objectsTypesAndFilters,
-        inputType: 'selection',
+        inputType: 'selectionMixed',
         clearSelectionFirst: true,
         multiple: true,
         required: true,
@@ -1231,18 +1366,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       targets: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tools: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        clearSelectionFirst: true,
+        multiple: true,
+        required: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       merge: {
         inputType: 'boolean',
-        required: true,
-        defaultValue: true,
-        hidden: true, // TODO: revisit once KCL supports false
-        skip: true,
+        required: false,
+      },
+      keepTools: {
+        inputType: 'boolean',
+        required: false,
       },
     },
   },
@@ -1432,7 +1580,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -1483,7 +1636,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -1649,6 +1807,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: false,
       },
+      opacity: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Translate: {
@@ -1809,22 +1971,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       x: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       y: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       z: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       factor: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       global: {
@@ -2102,6 +2264,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         required: false,
       },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
       fontPointSize: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
@@ -2177,6 +2344,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         required: false,
       },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
       fontPointSize: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
@@ -2226,6 +2398,122 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Join Surfaces': {
+    description: 'Join selected surfaces into one polysurface.',
+    icon: 'joinSurfaces',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addJoinSurfaces({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Join Surfaces']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      selection: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+    },
+  },
+  'Delete Face': {
+    description: 'Delete a face from a body, leaving an open surface.',
+    icon: 'deleteFace',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDeleteFace({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete Face']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
+        multiple: true,
+        required: true,
+      },
+    },
+  },
+  Blend: {
+    description: 'Blend two selected surface edges into a new surface.',
+    icon: 'blend',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addBlend({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Blend']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      edges: {
+        inputType: 'selection',
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
+        multiple: true,
+        required: true,
+        description: 'Note: Only straight edges are supported now.',
+      },
+    },
+  },
 }
 
-modelingMachineCommandConfig // TODO: update with satisfies?
+// TODO: update modelingMachineCommandConfig with satisfies?

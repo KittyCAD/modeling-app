@@ -7,7 +7,9 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
-const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+const hasWindow = typeof window !== 'undefined'
+const isTestEnv =
+  hasWindow && window.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export function getAppVersion({
   isTestEnvironment,
@@ -25,8 +27,11 @@ export function getAppVersion({
   }
 
   if (isDesktop) {
-    // @ts-ignore
-    return window.electron.packageJson.version
+    if (hasWindow && window.electron) {
+      // @ts-ignore
+      return window.electron.packageJson.version
+    }
+    return '0.0.0'
   }
 
   // Web based runtimes
@@ -44,9 +49,10 @@ export const APP_VERSION = getAppVersion({
   isDesktop: isDesktop(),
 })
 
-export const PACKAGE_NAME = window.electron
-  ? window.electron.packageJson.name
-  : 'zoo-modeling-app'
+export const PACKAGE_NAME =
+  hasWindow && window.electron
+    ? window.electron.packageJson.name
+    : 'zoo-modeling-app'
 
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 

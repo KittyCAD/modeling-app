@@ -5,15 +5,16 @@
 /// A subcommand for building and packaging a release.
 pub mod build;
 
-use std::{
-    env,
-    path::{Path, PathBuf},
-};
+use std::env;
+use std::path::Path;
+use std::path::PathBuf;
 
-use anyhow::{bail, Result};
+use anyhow::Result;
+use anyhow::bail;
 use clap::Parser;
 use slog::Drain;
-use tracing_subscriber::{prelude::*, Layer};
+use tracing_subscriber::Layer;
+use tracing_subscriber::prelude::*;
 use xshell::Shell;
 
 lazy_static::lazy_static! {

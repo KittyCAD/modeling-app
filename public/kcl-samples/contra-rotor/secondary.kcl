@@ -1,0 +1,37 @@
+// Secondary Shaft Module
+// Offset shaft with gear placements
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Revolve the secondary shaft
+secondaryShaft = startSketchOn(offsetPlane(YZ, offset = 392))
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 426.83)
+  |> yLine(length = -40)
+  |> angledLine(angle = 45deg, length = -10)
+  |> xLine(endAbsolute = 50)
+  |> yLine(endAbsolute = profileStartY() - 80)
+  |> xLine(length = -400)
+  |> yLine(length = 30)
+  |> xLine(length = -80)
+  |> angledLine(angle = -45deg, length = -6)
+  |> yLine(endAbsolute = profileStartY())
+  |> xLine(endAbsolute = profileStartX())
+  |> close()
+  |> revolve(axis = {
+       direction = [1, 0],
+       origin = [392, 0]
+     })
+
+// Build and position the gears for the secondary shaft
+helicalGear(nTeeth = 16, helixAngle = -25deg, bore = 160)
+  |> translate(x = 392)
+  |> rotate(pitch = 3)
+
+helicalGear(nTeeth = 14, helixAngle = -25deg, bore = 160)
+  |> translate(y = -200, x = 392)

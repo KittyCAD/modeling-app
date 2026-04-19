@@ -1,4 +1,5 @@
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use std::sync::RwLock;
 
 use anyhow::Result;
 use tower_lsp::LanguageServer;
@@ -7,10 +8,14 @@ use tower_lsp::LanguageServer;
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let kcl_std = crate::docs::kcl_doc::walk_prelude();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&kcl_std)?;
+    let sketch_block_stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib_for_sketch_block(&kcl_std)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&kcl_std);
+    let sketch_block_stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib_for_sketch_block(&kcl_std);
     let stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib(&kcl_std);
+    let sketch_block_stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib_for_sketch_block(&kcl_std);
+    let kcl_keywords = crate::lsp::kcl::get_keywords();
 
-    let zoo_client = crate::engine::new_zoo_client(None, None)?;
+    let zoo_client = crate::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
 
     let executor_ctx = if execute {
         Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
@@ -27,8 +32,11 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         fs: Arc::new(crate::fs::FileManager::new()),
         workspace_folders: Default::default(),
         stdlib_completions,
+        sketch_block_stdlib_completions,
         stdlib_signatures,
+        sketch_block_stdlib_signatures,
         stdlib_args,
+        sketch_block_stdlib_args,
         token_map: Default::default(),
         ast_map: Default::default(),
         code_map: Default::default(),
@@ -36,10 +44,10 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
-        can_send_telemetry: true,
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),
+        kcl_keywords,
     })
     .custom_method("kcl/updateCanExecute", crate::lsp::kcl::Backend::update_can_execute)
     .finish();

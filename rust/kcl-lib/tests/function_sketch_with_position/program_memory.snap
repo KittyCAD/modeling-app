@@ -44,6 +44,7 @@ description: Variables in memory after executing function_sketch_with_position.k
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

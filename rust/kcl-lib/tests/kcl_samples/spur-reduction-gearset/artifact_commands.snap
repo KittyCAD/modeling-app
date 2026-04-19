@@ -665,7 +665,6 @@ description: Artifact commands spur-reduction-gearset.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -693,7 +692,6 @@ description: Artifact commands spur-reduction-gearset.kcl
                 "z": 3.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

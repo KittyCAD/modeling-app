@@ -1,7 +1,8 @@
 //! Wasm interface for our LSP servers.
 
 use futures::stream::TryStreamExt;
-use tower_lsp::{LspService, Server};
+use tower_lsp::LspService;
+use tower_lsp::Server;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -44,33 +45,28 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
         fs,
     } = config;
 
-    let executor_ctx = None;
+    // Create an executor context for code actions (like transpilation)
+    // We use a mock engine since we don't have a live engine connection in the LSP worker.
+    // This is sufficient for transpilation which only needs to execute code to get ExecOutcome.
+    let executor_ctx =
+        match kcl_lib::ExecutorContext::new_mock_for_lsp(fs.clone(), kcl_lib::ExecutorSettings::default()) {
+            Ok(ctx) => {
+                web_sys::console::log_1(&"Created mock executor context for LSP code actions".into());
+                Some(ctx)
+            }
+            Err(e) => {
+                web_sys::console::warn_1(&format!("Failed to create executor context for LSP: {}", e).into());
+                None
+            }
+        };
 
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    // Check if we can send telemetry for this user.
-    let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
-        Ok(privacy_settings) => privacy_settings.can_train_on_data,
-        Err(err) => {
-            // In the case of dev we don't always have a sub set, but prod we should.
-            if err
-                .to_string()
-                .contains("The Design Studio subscription type is missing.")
-            {
-                true
-            } else {
-                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
-                false
-            }
-        }
-    };
-
-    let (service, socket) = LspService::build(|client| {
-        kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client, can_send_telemetry).unwrap()
-    })
-    .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
-    .finish();
+    let (service, socket) =
+        LspService::build(|client| kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client).unwrap())
+            .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
+            .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
     let input = input

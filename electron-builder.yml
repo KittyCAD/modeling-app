@@ -5,18 +5,18 @@ directories:
 files:
   - .vite/**
   - "!node_modules/win-ca/pem/**"
+  - "!node_modules/*esbuild/**"
+  - "!node_modules/@napi-rs/**"
 mac:
   category: public.app-category.developer-tools
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  artifactName: "${productName}-${version}-universal-${os}.${ext}"
   target:
     - target: dmg
       arch:
-        - x64
-        - arm64
+        - universal
     - target: zip
       arch:
-        - x64
-        - arm64
+        - universal
   notarize: true
   fileAssociations:
     - ext: kcl
@@ -26,7 +26,7 @@ mac:
       role: Editor
       rank: Owner
 win:
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  artifactName: "${productName}-${version}-universal-${os}.${ext}"
   target:
     - target: nsis
       arch:
@@ -45,6 +45,7 @@ nsis:
   allowElevation: true
   installerIcon: "assets/icon.ico"
   include: "./scripts/installer.nsh"
+  buildUniversalInstaller: true
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:

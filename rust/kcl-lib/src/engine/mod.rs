@@ -9,38 +9,42 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{
-    collections::HashMap,
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
-};
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    ok_response::OkModelingCmdResponse,
-    shared::Color,
-    websocket::{
-        BatchResponse, ModelingBatch, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
-        WebSocketResponse,
-    },
-};
-use kittycad_modeling_cmds::{self as kcmc, units::UnitLength};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::Color;
+use kcmc::websocket::BatchResponse;
+use kcmc::websocket::ModelingBatch;
+use kcmc::websocket::ModelingCmdReq;
+use kcmc::websocket::ModelingSessionData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::{self as kcmc};
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use web_time::Instant;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::DefaultPlanes;
+use crate::execution::IdGenerator;
+use crate::execution::PlaneInfo;
+use crate::execution::Point3d;
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
@@ -653,32 +657,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.7,
-                    g: 0.28,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.28,
-                    b: 0.7,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),

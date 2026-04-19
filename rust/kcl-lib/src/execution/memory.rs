@@ -202,32 +202,31 @@
 //! must be safe if the env is in either state, so even if the transition happens at the same time
 //! as the storage modification, it is ok.
 
-use std::{
-    cell::UnsafeCell,
-    fmt,
-    pin::Pin,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-    },
-};
+use std::cell::UnsafeCell;
+use std::fmt;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::KclValue,
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::KclValue;
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
 /// Low-budget namespacing for types and modules.
 pub(crate) const TYPE_PREFIX: &str = "__ty_";
 pub(crate) const MODULE_PREFIX: &str = "__mod_";
+pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
@@ -909,7 +908,7 @@ pub(crate) struct MemoryStats {
     lock_waits: AtomicUsize,
 }
 
-// Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutatation
+// Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutation
 // of stored values.
 mod env {
     use std::marker::PhantomPinned;
@@ -1105,7 +1104,8 @@ mod env {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{kcl_value::FunctionSource, types::NumericType};
+    use crate::execution::kcl_value::FunctionSource;
+    use crate::execution::types::NumericType;
 
     fn sr() -> SourceRange {
         SourceRange::default()

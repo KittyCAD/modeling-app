@@ -1,24 +1,33 @@
 //! Standard library plane helpers.
 
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Color};
-use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, units::UnitLength, websocket::OkWebSocketResponseData,
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Color;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use super::{
-    args::TyF64,
-    sketch::{FaceTag, PlaneData},
-};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneInfo, PlaneKind, types::RuntimeType},
-    std::Args,
-};
+use super::args::TyF64;
+use super::sketch::PlaneData;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::PlaneKind;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::faces::FaceSpecifier;
 
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    let face = args.get_kw_arg("face", &RuntimeType::tagged_face(), exec_state)?;
+    let face = args.get_kw_arg("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
 
     inner_plane_of(solid, face, exec_state, &args)
         .await
@@ -28,7 +37,7 @@ pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 
 pub(crate) async fn inner_plane_of(
     solid: crate::execution::Solid,
-    face: FaceTag,
+    face: FaceSpecifier,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
@@ -37,7 +46,7 @@ pub(crate) async fn inner_plane_of(
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
-        exec_state.err(crate::CompilationError {
+        exec_state.err(crate::CompilationIssue {
             source_range: args.source_range,
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
             suggestion: None,
@@ -92,7 +101,7 @@ pub(crate) async fn inner_plane_of(
         .await?;
 
     // Query the engine to learn what plane, if any, this face is on.
-    let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
+    let face_id = face.face_id(&solid, exec_state, args, true).await?;
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar::builder().object_id(face_id).build());
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
@@ -159,6 +168,7 @@ pub(crate) async fn inner_plane_of(
     #[cfg(feature = "artifact-graph")]
     {
         use crate::execution::ArtifactId;
+        use crate::front::SourceRef;
 
         let plane_object = crate::front::Object {
             id: plane_object_id,
@@ -166,7 +176,7 @@ pub(crate) async fn inner_plane_of(
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::new(plane_id),
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }
@@ -229,25 +239,22 @@ async fn make_offset_plane_in_engine(
     let plane_object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
+        use crate::front::SourceRef;
+
         let plane_object = crate::front::Object {
             id: plane_object_id,
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
             label: Default::default(),
             comments: Default::default(),
             artifact_id: plane.artifact_id,
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }
 
     // Create new default planes.
     let default_size = 100.0;
-    let color = Color {
-        r: 0.6,
-        g: 0.6,
-        b: 0.6,
-        a: 0.3,
-    };
+    let color = Color::from_rgba(0.6, 0.6, 0.6, 0.3);
 
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane.id);
     exec_state
@@ -285,7 +292,8 @@ async fn make_offset_plane_in_engine(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::{PlaneInfo, Point3d};
+    use crate::execution::PlaneInfo;
+    use crate::execution::Point3d;
 
     #[test]
     fn fixes_left_handed_plane() {

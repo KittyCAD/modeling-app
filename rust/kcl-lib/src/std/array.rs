@@ -1,15 +1,17 @@
 use indexmap::IndexMap;
 
-use crate::{
-    ExecutorContext, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ControlFlowKind, ExecState,
-        fn_call::{Arg, Args},
-        kcl_value::{FunctionSource, KclValue},
-        types::RuntimeType,
-    },
-};
+use crate::ExecutorContext;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ControlFlowKind;
+use crate::execution::ExecState;
+use crate::execution::fn_call::Arg;
+use crate::execution::fn_call::Args;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::KclValue;
+use crate::execution::types::RuntimeType;
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -30,7 +32,15 @@ async fn inner_map(
 ) -> Result<Vec<KclValue>, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(elem, &f, args.source_range, exec_state, &args.ctx).await?;
+        let new_elem = call_map_closure(
+            elem,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         new_array.push(new_elem);
     }
     Ok(new_array)
@@ -40,6 +50,7 @@ async fn call_map_closure(
     input: KclValue,
     map_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -47,6 +58,7 @@ async fn call_map_closure(
         Default::default(),
         vec![(None, Arg::new(input, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("map closure".to_owned()),
@@ -90,7 +102,16 @@ async fn inner_reduce(
 ) -> Result<KclValue, KclError> {
     let mut reduced = initial;
     for elem in array {
-        reduced = call_reduce_closure(elem, reduced, &f, args.source_range, exec_state, &args.ctx).await?;
+        reduced = call_reduce_closure(
+            elem,
+            reduced,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
     }
 
     Ok(reduced)
@@ -101,6 +122,7 @@ async fn call_reduce_closure(
     accum: KclValue,
     reduce_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -111,6 +133,7 @@ async fn call_reduce_closure(
         labeled,
         vec![(None, Arg::new(elem, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("reduce closure".to_owned()),
@@ -211,4 +234,103 @@ fn inner_concat(
         RuntimeType::any()
     };
     KclValue::HomArray { value: new, ty }
+}
+
+pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let start: Option<i64> = args.get_kw_arg_opt("start", &RuntimeType::count(), exec_state)?;
+    let end: Option<i64> = args.get_kw_arg_opt("end", &RuntimeType::count(), exec_state)?;
+
+    if start.is_none() && end.is_none() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Either `start` or `end` must be provided".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let Ok(len) = i64::try_from(array.len()) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Array length {} exceeds maximum supported length", array.len()),
+            vec![args.source_range],
+        )));
+    };
+    let mut computed_start = start.unwrap_or(0);
+    let mut computed_end = end.unwrap_or(len);
+
+    // Negative indices count from the end.
+    if computed_start < 0 {
+        computed_start += len;
+    }
+    if computed_end < 0 {
+        computed_end += len;
+    }
+
+    fn empty_slice(ty: RuntimeType) -> KclValue {
+        KclValue::HomArray { value: Vec::new(), ty }
+    }
+
+    if computed_start < 0 {
+        computed_start = 0;
+    }
+    if computed_start >= len {
+        return Ok(empty_slice(ty));
+    }
+    if computed_end > len {
+        computed_end = len;
+    }
+    if computed_end < 0 {
+        return Ok(empty_slice(ty));
+    }
+
+    if computed_start >= computed_end {
+        return Ok(empty_slice(ty));
+    }
+
+    let Some(sliced) = array.get(computed_start as usize..computed_end as usize) else {
+        let message = "Failed to compute array slice".to_owned();
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message,
+            vec![args.source_range],
+        )));
+    };
+    Ok(KclValue::HomArray {
+        value: sliced.to_vec(),
+        ty,
+    })
+}
+
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
+
+    let (array, original_ty) = match array_value {
+        KclValue::HomArray { value, ty, .. } => (value, ty),
+        KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+        _ => (vec![array_value], RuntimeType::any()),
+    };
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
+        }
+    }
+
+    let ty = infer_flattened_type(original_ty, &flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
+/// Infer the type of a flattened array based on the original type and the
+/// types of the flattened values. Currently, we preserve the original type only
+/// if all flattened values have the same type as the original element type.
+/// Otherwise, we fall back to `any`.
+fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> RuntimeType {
+    for value in values {
+        if !value.has_type(&original_ty) {
+            return RuntimeType::any();
+        };
+    }
+
+    original_ty
 }

@@ -157,24 +157,25 @@ jobs:
         if: matrix.target == 'arm-unknown-linux-gnueabihf'
         run: sudo apt-get install gcc-arm-linux-gnueabihf
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          # npm will symlink which will cause issues w tarballing later
-          yarn install
+          npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+          npx vsce package --no-dependencies -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
       - name: Package Extension (nightly)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
+          npx vsce package --no-dependencies -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
@@ -184,14 +185,14 @@ jobs:
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix
+          npx vsce package --no-dependencies -o ../build/kcl-language-server-no-server.vsix
       - name: Package Extension (no server, nightly)
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix --pre-release
+          npx vsce package --no-dependencies -o ../build/kcl-language-server-no-server.vsix --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.target }}
           path: ./rust/build
@@ -217,8 +218,7 @@ jobs:
             lld \
             musl-dev \
             nodejs \
-            npm \
-            yarn
+            npm
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -235,26 +235,27 @@ jobs:
           rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          # npm will symlink which will cause issues w tarballing later
-          yarn install
+          npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
+          npx vsce package --no-dependencies -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
+          npx vsce package --no-dependencies -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: release-x86_64-unknown-linux-musl
           path: ./rust/build
@@ -278,36 +279,36 @@ jobs:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - run: 'echo "HEAD_SHA: $HEAD_SHA"'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-aarch64-apple-darwin
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-x86_64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-x86_64-unknown-linux-musl
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-aarch64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-arm-unknown-linux-gnueabihf
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-x86_64-pc-windows-msvc
           path: rust/build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v8
           #with:
           #name: release-i686-pc-windows-msvc
           #path:
           #build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v8
           #with:
           #name: release-aarch64-pc-windows-msvc
           #path: rust/build

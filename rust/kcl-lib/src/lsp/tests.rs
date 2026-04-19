@@ -1,23 +1,23 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use pretty_assertions::assert_eq;
-use tower_lsp::{
-    LanguageServer,
-    lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
-        SemanticTokenType, TextEdit, WorkspaceEdit,
-    },
-};
+use tower_lsp::LanguageServer;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkspaceEdit;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{
-        LspSuggestion,
-        test_util::{copilot_lsp_server, kcl_lsp_server},
-    },
-    parsing::ast::types::{Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::LspSuggestion;
+use crate::lsp::test_util::copilot_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
@@ -560,84 +560,6 @@ async fn test_updating_copilot_lsp_files() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_kcl_lsp_create_zip() {
-    let server = kcl_lsp_server(false).await.unwrap();
-
-    assert_eq!(server.code_map.len(), 0);
-
-    // Get the path to the current file.
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
-    let string_path = format!("file://{}", path.display());
-
-    // Run workspace folders change.
-    server
-        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
-            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
-                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
-                    uri: string_path.as_str().try_into().unwrap(),
-                    name: "my-project".to_string(),
-                }],
-                removed: vec![],
-            },
-        })
-        .await;
-
-    // Get the workspace folders.
-    assert_eq!(server.workspace_folders.len(), 1);
-    assert_eq!(
-        server.workspace_folders.get("my-project").unwrap().clone(),
-        tower_lsp::lsp_types::WorkspaceFolder {
-            uri: string_path.as_str().try_into().unwrap(),
-            name: "my-project".to_string()
-        }
-    );
-
-    assert_eq!(server.code_map.len(), 11);
-
-    // Run open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: "test".to_string(),
-            },
-        })
-        .await;
-
-    // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
-    assert_eq!(
-        server.code_map.get("file:///test.kcl").unwrap().clone(),
-        "test".as_bytes()
-    );
-
-    // Create a zip.
-    let bytes = server.create_zip().await.unwrap();
-    // Write the bytes to a tmp file.
-    let tmp_dir = std::env::temp_dir();
-    let filename = format!("test-{}.zip", chrono::Utc::now().timestamp());
-    let tmp_file = tmp_dir.join(filename);
-    std::fs::write(&tmp_file, bytes).unwrap();
-
-    // Try to unzip the file.
-    let mut archive = zip::ZipArchive::new(std::fs::File::open(&tmp_file).unwrap()).unwrap();
-
-    // Check the files in the zip.
-    let mut files = BTreeMap::new();
-    for i in 0..archive.len() {
-        let file = archive.by_index(i).unwrap();
-        files.insert(file.name().to_string(), file.size());
-    }
-
-    assert_eq!(files.len(), 12);
-    let util_path = format!("{string_path}/util.rs").replace("file://", "");
-    assert!(files.contains_key(&util_path));
-    assert_eq!(files.get("/test.kcl"), Some(&4));
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -650,7 +572,7 @@ async fn test_kcl_lsp_completions() {
                 version: 1,
                 // Blank lines to check that we get completions even in an AST newline thing.
                 text: r#"
-                
+
 thing= 1
 st"#
                 .to_string(),
@@ -679,6 +601,47 @@ st"#
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
         assert!(completions.iter().any(|c| c.label == "@settings"));
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_kw_import() {
+    let server = kcl_lsp_server(false).await.unwrap();
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"impo"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 3 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 1);
+        assert!(completions.iter().any(|c| c.label == "import"));
     } else {
         panic!("Expected array of completions");
     }
@@ -764,9 +727,124 @@ async fn test_arg_label_completions() {
         .map(|cmp| cmp.label)
         .collect();
 
-    assert!(twist_completions.contains("twistAngle"));
-    assert!(twist_completions.contains("twistAngleStep"));
-    assert!(twist_completions.contains("twistCenter"));
+    assert!(
+        twist_completions.contains("twistAngle"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistAngleStep"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistCenter"),
+        "actual: {twist_completions:?}"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sketch_block_completion_unqualifies_sketch2_function() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"profile = sketch(on = XY) {
+  co
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 3, character: 4 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Unexpected response from LSP");
+    };
+
+    let coincident = completions
+        .into_iter()
+        .find(|completion| completion.label == "coincident")
+        .expect("missing coincident completion");
+
+    let insert_text = coincident.insert_text.expect("missing coincident insert text");
+    assert!(
+        insert_text.starts_with("coincident("),
+        "actual insert_text: {insert_text:?}"
+    );
+    assert!(
+        !insert_text.starts_with("solver::"),
+        "actual insert_text: {insert_text:?}"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sketch_block_completion_prefers_sketch2_shadowed_function() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"@settings(experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  li
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 3, character: 4 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Unexpected response from LSP");
+    };
+
+    let line = completions
+        .into_iter()
+        .find(|completion| completion.label == "line")
+        .expect("missing line completion");
+
+    let insert_text = line.insert_text.expect("missing line insert text");
+    assert!(
+        insert_text.starts_with("line(start = "),
+        "actual insert_text: {insert_text:?}"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -976,9 +1054,12 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("startSketchOn"));
-            assert!(value.contains(": Plane | Face"));
-            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+            assert!(value.contains("startSketchOn"), "actual: {value:?}");
+            assert!(value.contains(": Plane | Face"), "actual: {value:?}");
+            assert!(
+                value.contains("Start a new 2-dimensional sketch on a specific"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -999,7 +1080,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1020,7 +1101,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1041,7 +1122,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1065,8 +1146,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -1783,7 +1867,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5"#
@@ -1817,7 +1901,7 @@ sphereDia = 0.5"#
                 .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
                 .unwrap()
         );
-        assert_eq!(semantic_tokens.data[1].length, 232);
+        assert_eq!(semantic_tokens.data[1].length, 231);
         assert_eq!(semantic_tokens.data[1].delta_start, 0);
         assert_eq!(semantic_tokens.data[1].delta_line, 1);
         assert_eq!(
@@ -2010,7 +2094,7 @@ async fn test_kcl_lsp_formatting_extra_parens() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
@@ -2530,7 +2614,7 @@ async fn test_copilot_lsp_completions() {
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  
+
   |> close()
   |> extrude(length = 10)
 "#
@@ -3952,7 +4036,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -3973,7 +4057,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -3994,7 +4078,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4018,8 +4102,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }

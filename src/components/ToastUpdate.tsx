@@ -2,6 +2,7 @@ import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { platform } from '@src/lib/utils'
 import { IS_STAGING_OR_DEBUG, getReleaseUrl } from '@src/routes/utils'
 import { MarkdownText } from '@src/components/MarkdownText'
 
@@ -19,10 +20,45 @@ export function ToastUpdate({
   const containsBreakingChanges = releaseNotes
     ?.toLocaleLowerCase()
     .includes('breaking')
+  const dismissButton = (
+    <ActionButton
+      key="dismiss"
+      Element="button"
+      iconStart={{
+        icon: 'close',
+        iconClassName: 'bg-destroy-80 text-6',
+      }}
+      data-negative-button="dismiss"
+      name="dismiss"
+      onClick={() => {
+        toast.dismiss()
+        onDismiss()
+      }}
+    >
+      Not right now
+    </ActionButton>
+  )
+  const restartButton = (
+    <ActionButton
+      key="restart"
+      Element="button"
+      iconStart={{
+        icon: 'arrowShortRight',
+      }}
+      name="accept"
+      onClick={onRestart}
+    >
+      Restart to update
+    </ActionButton>
+  )
+  const orderedButtons =
+    platform() === 'windows'
+      ? [restartButton, dismissButton]
+      : [dismissButton, restartButton]
 
   return (
     <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
-      <div className="max-w-3xl min-w-[35rem] p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+      <div className="max-w-3xl min-w-[35rem] px-8 pt-8 pb-6 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <div className="my-4 flex items-baseline">
           <span
             className="px-3 py-1 text-xl rounded-full bg-primary text-chalkboard-10"
@@ -66,37 +102,15 @@ export function ToastUpdate({
             />
           </details>
         )}
-        <div className="flex justify-between items-center gap-8">
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'close',
-              iconClassName: 'bg-destroy-80 text-6',
-            }}
-            data-negative-button="dismiss"
-            name="dismiss"
-            onClick={() => {
-              toast.dismiss()
-              onDismiss()
-            }}
-          >
-            Not right now
-          </ActionButton>
+        <div className="flex flex-col gap-2">
           <p className="text-center text-2 text-xs">
             <em>
               The update will be applied when you restart the application.
             </em>
           </p>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'arrowShortRight',
-            }}
-            name="accept"
-            onClick={onRestart}
-          >
-            Restart to update
-          </ActionButton>
+          <div className="mt-6 flex justify-end items-center gap-2">
+            {orderedButtons}
+          </div>
         </div>
       </div>
     </div>

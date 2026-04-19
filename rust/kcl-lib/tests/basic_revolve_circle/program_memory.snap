@@ -19,6 +19,7 @@ description: Variables in memory after executing basic_revolve_circle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

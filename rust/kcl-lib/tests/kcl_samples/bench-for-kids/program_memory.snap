@@ -43,6 +43,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -197,6 +198,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -351,6 +353,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -505,6 +508,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -697,6 +701,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1059,6 +1064,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1213,6 +1219,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1369,6 +1376,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1523,6 +1531,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1705,6 +1714,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1988,6 +1998,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2312,6 +2323,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

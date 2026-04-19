@@ -86,6 +86,20 @@ description: Variables in memory after executing router-template-slate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": {
+            "commentStart": 974,
+            "end": 980,
+            "moduleId": 0,
+            "start": 974,
+            "type": "TagDeclarator",
+            "value": "seg02"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
@@ -126,6 +140,7 @@ description: Variables in memory after executing router-template-slate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -518,6 +533,7 @@ description: Variables in memory after executing router-template-slate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -701,6 +717,20 @@ description: Variables in memory after executing router-template-slate.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
+                "tag": {
+                  "commentStart": 974,
+                  "end": 980,
+                  "moduleId": 0,
+                  "start": 974,
+                  "type": "TagDeclarator",
+                  "value": "seg02"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
@@ -741,6 +771,7 @@ description: Variables in memory after executing router-template-slate.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1160,6 +1191,7 @@ description: Variables in memory after executing router-template-slate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1329,6 +1361,20 @@ description: Variables in memory after executing router-template-slate.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
+                "tag": {
+                  "commentStart": 974,
+                  "end": 980,
+                  "moduleId": 0,
+                  "start": 974,
+                  "type": "TagDeclarator",
+                  "value": "seg02"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
@@ -1369,6 +1415,7 @@ description: Variables in memory after executing router-template-slate.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2344,6 +2391,20 @@ description: Variables in memory after executing router-template-slate.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": {
+                "commentStart": 974,
+                "end": 980,
+                "moduleId": 0,
+                "start": 974,
+                "type": "TagDeclarator",
+                "value": "seg02"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
@@ -2384,6 +2445,7 @@ description: Variables in memory after executing router-template-slate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2926,6 +2988,20 @@ description: Variables in memory after executing router-template-slate.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
+              "tag": {
+                "commentStart": 974,
+                "end": 980,
+                "moduleId": 0,
+                "start": 974,
+                "type": "TagDeclarator",
+                "value": "seg02"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
@@ -2966,6 +3042,7 @@ description: Variables in memory after executing router-template-slate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

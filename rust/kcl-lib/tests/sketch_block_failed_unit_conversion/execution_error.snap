@@ -6,10 +6,10 @@ KCL Semantic error
 
   × semantic: sketch variable initial value must be a length coercible to the
   │ module length unit number(mm), but found a number (deg)
-   ╭─[6:13]
- 5 │   // units (millimeters).
- 6 │   len = var 1deg
+   ╭─[4:13]
+ 3 │   // units (millimeters).
+ 4 │   len = var 1deg
    ·             ──┬─
    ·               ╰── tests/sketch_block_failed_unit_conversion/input.kcl
- 7 │ }
+ 5 │ }
    ╰────

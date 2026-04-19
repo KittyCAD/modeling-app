@@ -1,8 +1,9 @@
-import decamelize from 'decamelize'
-
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
-import { useSettings } from '@src/lib/singletons'
+import {
+  formatSettingsLabel,
+  shouldHideSetting,
+} from '@src/lib/settings/settingsUtils'
+import { useApp } from '@src/lib/boot'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
@@ -13,7 +14,8 @@ export function SettingsSectionsList({
   searchParamTab,
   scrollRef,
 }: SettingsSectionsListProps) {
-  const context = useSettings()
+  const { settings } = useApp()
+  const context = settings.useSettings()
 
   const visibleCategories = Object.entries(context).filter(
     ([_, categorySettings]) =>
@@ -38,7 +40,7 @@ export function SettingsSectionsList({
           }
           className="capitalize text-left border-none px-1"
         >
-          {decamelize(category, { separator: ' ' })}
+          {formatSettingsLabel(category)}
         </button>
       ))}
       <button

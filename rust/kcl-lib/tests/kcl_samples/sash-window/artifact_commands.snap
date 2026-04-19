@@ -436,7 +436,7 @@ description: Artifact commands sash-window.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -973,7 +973,7 @@ description: Artifact commands sash-window.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -990,7 +990,7 @@ description: Artifact commands sash-window.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1012,7 +1012,6 @@ description: Artifact commands sash-window.kcl
                 "z": -227.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1039,7 +1038,6 @@ description: Artifact commands sash-window.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1295,7 +1293,6 @@ description: Artifact commands sash-window.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1322,7 +1319,6 @@ description: Artifact commands sash-window.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1583,7 +1579,6 @@ description: Artifact commands sash-window.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1610,7 +1605,6 @@ description: Artifact commands sash-window.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1638,7 +1632,6 @@ description: Artifact commands sash-window.kcl
                 "z": -0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2179,7 +2172,7 @@ description: Artifact commands sash-window.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2196,7 +2189,7 @@ description: Artifact commands sash-window.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2218,7 +2211,6 @@ description: Artifact commands sash-window.kcl
                 "z": 227.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

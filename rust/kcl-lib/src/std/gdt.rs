@@ -1,24 +1,32 @@
 use kcl_error::SourceRange;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{
-        AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
-        MbdSymbol, Point2d as KPoint2d,
-    },
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
+use kittycad_modeling_cmds::shared::AnnotationLineEnd;
+use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
+use kittycad_modeling_cmds::shared::AnnotationOptions;
+use kittycad_modeling_cmds::shared::AnnotationType;
+use kittycad_modeling_cmds::shared::MbdSymbol;
+use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::{
-    ExecState, KclError,
-    errors::KclErrorDetails,
-    exec::KclValue,
-    execution::{
-        ControlFlowKind, GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    parsing::ast::types as ast,
-    std::{Args, args::TyF64, sketch::ensure_sketch_plane_in_engine},
-};
+use crate::ExecState;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::ControlFlowKind;
+use crate::execution::GdtAnnotation;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Plane;
+use crate::execution::StatementKind;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types as ast;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::ensure_sketch_plane_in_engine;
 
 /// Bundle of common GD&T annotation style arguments.
 #[derive(Debug, Clone)]
@@ -33,6 +41,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -41,6 +50,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         name,
         frame_position,
         frame_plane,
+        leader_scale,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -54,11 +64,13 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_datum(
     face: TagIdentifier,
     name: String,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
@@ -82,47 +94,43 @@ async fn inner_datum(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let feature_control = AnnotationFeatureControl::builder()
+        .entity_id(face_id)
+        // Point to the center of the face.
+        .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+        .leader_type(AnnotationLineEnd::Dot)
+        .defined_datum(name_char)
+        .plane_id(frame_plane.id)
+        .offset(if let Some(offset) = &frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .precision(0)
+        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions {
-                        text: None,
-                        line_ends: None,
-                        line_width: None,
-                        color: None,
-                        position: None,
-                        dimension: None,
-                        feature_control: Some(AnnotationFeatureControl {
-                            entity_id: face_id,
-                            // Point to the center of the face.
-                            entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                            leader_type: AnnotationLineEnd::Dot,
-                            dimension: None,
-                            control_frame: None,
-                            defined_datum: Some(name_char),
-                            prefix: None,
-                            suffix: None,
-                            plane_id: frame_plane.id,
-                            offset: if let Some(offset) = &frame_position {
-                                KPoint2d {
-                                    x: offset[0].to_mm(),
-                                    y: offset[1].to_mm(),
-                                }
-                            } else {
-                                KPoint2d { x: 100.0, y: 100.0 }
-                            },
-                            precision: 0,
-                            font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                            font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
-                        }),
-                        feature_tag: None,
-                    })
+                    .options(AnnotationOptions::builder().feature_control(feature_control).build())
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -146,6 +154,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -155,6 +164,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         precision,
         frame_position,
         frame_plane,
+        leader_scale,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -173,6 +183,7 @@ async fn inner_flatness(
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
@@ -196,61 +207,51 @@ async fn inner_flatness(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         let meta = vec![Metadata::from(args.source_range)];
         let annotation_id = exec_state.next_uuid();
+        let feature_control = AnnotationFeatureControl::builder()
+            .entity_id(face_id)
+            // Point to the center of the face.
+            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+            .leader_type(AnnotationLineEnd::Dot)
+            .control_frame(
+                AnnotationMbdControlFrame::builder()
+                    .symbol(MbdSymbol::Flatness)
+                    .tolerance(tolerance.to_mm())
+                    .build(),
+            )
+            .plane_id(frame_plane.id)
+            .offset(if let Some(offset) = &frame_position {
+                KPoint2d {
+                    x: offset[0].to_mm(),
+                    y: offset[1].to_mm(),
+                }
+            } else {
+                KPoint2d { x: 100.0, y: 100.0 }
+            })
+            .precision(precision)
+            .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .build();
+        let options = AnnotationOptions::builder().feature_control(feature_control).build();
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
                 ModelingCmd::from(
                     mcmd::NewAnnotation::builder()
-                        .options(AnnotationOptions {
-                            text: None,
-                            line_ends: None,
-                            line_width: None,
-                            color: None,
-                            position: None,
-                            dimension: None,
-                            feature_control: Some(AnnotationFeatureControl {
-                                entity_id: face_id,
-                                // Point to the center of the face.
-                                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                                leader_type: AnnotationLineEnd::Dot,
-                                dimension: None,
-                                control_frame: Some(AnnotationMbdControlFrame {
-                                    symbol: MbdSymbol::Flatness,
-                                    diameter_symbol: None,
-                                    tolerance: tolerance.to_mm(),
-                                    modifier: None,
-                                    primary_datum: None,
-                                    secondary_datum: None,
-                                    tertiary_datum: None,
-                                }),
-                                defined_datum: None,
-                                prefix: None,
-                                suffix: None,
-                                plane_id: frame_plane.id,
-                                offset: if let Some(offset) = &frame_position {
-                                    KPoint2d {
-                                        x: offset[0].to_mm(),
-                                        y: offset[1].to_mm(),
-                                    }
-                                } else {
-                                    KPoint2d { x: 100.0, y: 100.0 }
-                                },
-                                precision,
-                                font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                                font_point_size: style
-                                    .font_point_size
-                                    .as_ref()
-                                    .map(|n| n.n.round() as u32)
-                                    .unwrap_or(36),
-                            }),
-                            feature_tag: None,
-                        })
+                        .options(options)
                         .clobber(false)
                         .annotation_type(AnnotationType::T3D)
                         .build(),

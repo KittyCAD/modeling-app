@@ -1,0 +1,102 @@
+// Aircraft telemetry antenna plate
+// Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.
+// Categories: Aerospace
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+plateThickness = 0.08
+plateDia = 3
+antennaBaseDia = 0.65
+antennaAngle = 95
+antennaHeight = 1.36
+seatingDia = 0.625
+totalHeight = 2.14
+
+boltDiameter = .196
+boltPitchCircleDiameter = 2.5
+
+// 2D cross-sectional profile of the part that will later be revolved
+antennaCrossSectionSketch = startSketchOn(YZ)
+antennaCrossSectionProfile = sketch(on = antennaCrossSectionSketch) {
+  line1 = line(start = [var 1.5in, var 0in], end = [var 1.5in, var 0.08in])
+  line2 = line(start = [var 1.5in, var 0.08in], end = [var 0.32in, var 0.08in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.32in, var 0.08in], end = [var 0.23in, var 1.18in])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var 0.23in, var 1.18in], end = [var 0.03in, var 1.36in], center = [var 0.03in, var 1.16in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 0.03in, var 1.36in], end = [var 0in, var 1.36in])
+  coincident([arc4.end, line5.start])
+  line6 = line(start = [var 0in, var 1.36in], end = [var 0in, var -0.78in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 0in, var -0.78in], end = [var 0.25in, var -0.78in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 0.25in, var -0.78in], end = [var 0.25in, var -0.73in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 0.25in, var -0.73in], end = [var 0.27in, var -0.71in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.27in, var -0.71in], end = [var 0.27in, var -0.59in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0.27in, var -0.59in], end = [var 0.25in, var -0.57in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0.25in, var -0.57in], end = [var 0.25in, var -0.44in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 0.25in, var -0.44in], end = [var 0.28in, var -0.44in])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 0.28in, var -0.44in], end = [var 0.28in, var -0.42in])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 0.28in, var -0.42in], end = [var 0.31in, var -0.42in])
+  coincident([line14.end, line15.start])
+  line16 = line(start = [var 0.31in, var -0.42in], end = [var 0.31in, var -0.25in])
+  coincident([line15.end, line16.start])
+  line17 = line(start = [var 0.31in, var -0.25in], end = [var 0.6in, var -0.25in])
+  coincident([line16.end, line17.start])
+  line18 = line(start = [var 0.6in, var -0.25in], end = [var 0.6in, var 0in])
+  coincident([line17.end, line18.start])
+  line19 = line(start = [var 0.6in, var 0in], end = [var 1.5in, var 0in])
+  coincident([line18.end, line19.start])
+  vertical(line1)
+  horizontal(line2)
+  tangent([line3, arc4])
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(line8)
+  vertical(line10)
+  vertical(line12)
+  horizontal(line13)
+  vertical(line14)
+  horizontal(line15)
+  vertical(line16)
+  horizontal(line17)
+  vertical(line18)
+}
+
+region001 = region(segments = [
+  antennaCrossSectionProfile.line1,
+  antennaCrossSectionProfile.line2
+])
+// Revolution about y-axis of earlier profile
+antennaCrossSectionRevolve = revolve(region001, angle = 360, axis = Y)
+
+// Function to create a countersunk hole
+fn countersink(@holePosition) {
+  sketch001 = startSketchOn(antennaCrossSectionRevolve, face = seg03)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+  extrude(sketch001, length = -plateThickness)
+    |> chamfer(length = 0.04, tags = [hole01])
+  return {  }
+}
+
+// PCD converted to radius for positioning the holes
+r = boltPitchCircleDiameter / 2
+
+// 6 countersunk holes using the countersink function
+countersink([r, 0]) // 0 °
+countersink([r * 0.5, r * 0.8660254]) // 60 °
+countersink([-r * 0.5, r * 0.8660254]) // 120 °
+countersink([-r, 0]) // 180 °
+countersink([-r * 0.5, -r * 0.8660254]) // 240 °
+countersink([r * 0.5, -r * 0.8660254]) // 300 °

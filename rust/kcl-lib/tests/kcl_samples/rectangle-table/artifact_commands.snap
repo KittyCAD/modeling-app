@@ -504,7 +504,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -581,7 +580,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -658,7 +656,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

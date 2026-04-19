@@ -34,7 +34,10 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+import {
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -42,8 +45,10 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 
 let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -58,9 +63,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, engineCommandManager, rustContext } =
+  const { instance, kclManager, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -1072,6 +1078,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1115,6 +1122,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1146,6 +1154,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1191,6 +1200,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1213,7 +1223,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
   it('should return the pipe substitution symbol and a variable name in a complex multi profile selection', async () => {
     const circleProfileInVar = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
-profile002 = circle(sketch001, center = [2, 2], radius = 1)
+profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
 `
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
@@ -1237,6 +1247,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1290,11 +1301,13 @@ extrude001 = extrude(profile001, length = 1)
     const lastChildLookup = true // we want to look up the child of the profile variable
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile,
       nodeToEdit,
-      lastChildLookup,
-      artifactGraph
+      {
+        lastChildLookup,
+      }
     )
     if (err(vars)) throw vars
 
@@ -1337,6 +1350,176 @@ extrude001 = extrude(profile001, length = 1)
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('path')
+  })
+
+  it('maps sketch block segment arguments to edge selections', async () => {
+    const code = `sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
+
+  it('maps sketch block a circle argument to an edge selection', async () => {
+    const code = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 4.52mm, var 3.82mm], center = [var 2.96mm, var 3.38mm])
+}
+
+revolve001 = revolve(
+sketch001.circle1,
+angle = 90,
+axis = Y,
+bodyType = SURFACE,
+)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'revolve'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Revolve operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
+
+  it('maps sketch block segment array arguments to edge selections', async () => {
+    const code = `sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+  line2 = line(start = [var 21.94mm, var -21.01mm], end = [var 8.14mm, var 14.22mm])
+}
+extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Array')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(2)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(selections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
+  it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
+    const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.31mm, var 5.27mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, ORIGIN])
+  line2 = line(start = [var 4.03mm, var 6.68mm], end = [var -3.31mm, var 5.27mm])
+  coincident([line2.end, line1.start])
+}
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 11.49mm])
+  coincident([line1.start, ORIGIN])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  arc1 = arc(start = [var 2.33mm, var 18.25mm], end = [var 0mm, var 11.49mm], center = [var 10.95mm, var 11.49mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sketch002.arc1], bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'sweep'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.path) {
+      throw new Error('Sweep operation or path argument not found')
+    }
+
+    const pathSelections = retrieveSelectionsFromOpArg(
+      op.labeledArgs.path,
+      artifactGraph
+    )
+    if (err(pathSelections)) throw pathSelections
+
+    expect(pathSelections.graphSelections).toHaveLength(2)
+    expect(pathSelections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(pathSelections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
+  it('should find the cap selection from simple extrude on face', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude(capEnd001, length = 5)
+`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      circleProfileInVar,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('cap')
   })
 
   it('should find two profile selections from multi-profile revolve op', async () => {
@@ -1405,5 +1588,37 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
+  })
+
+  it('maps a segment tag to a wall selection when a wall exists', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-4.16, -2.97])
+  |> line(end = [2.31, 8.45])
+  |> line(end = [7.53, -7.02])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+extrude002 = extrude(seg01, length = 5, hideSeams = true)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    console.log('op.unlabeledArg', op.unlabeledArg)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
   })
 })

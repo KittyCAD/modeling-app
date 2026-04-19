@@ -1,0 +1,5 @@
+sketch(on = XY) {
+  a0 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  a1 = arc(start = [var 15mm, var 0mm], end = [var 10mm, var 5mm], center = [var 10mm, var 0mm])
+  tangent([a0, a1])
+}

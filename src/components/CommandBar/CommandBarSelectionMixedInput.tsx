@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
@@ -8,12 +8,7 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import {
-  kclManager,
-  engineCommandManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -21,7 +16,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -29,15 +24,19 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
-  wasmInstance,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
-  wasmInstance: ModuleType
+  executingEditor: KclManager
 }) {
+  const { commands, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const engineCommandManager = kclManager.engineCommandManager
+  const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const inputRef = useRef<HTMLInputElement>(null)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
   const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
@@ -46,7 +45,7 @@ export default function CommandBarSelectionMixedInput({
 
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.ast, selection)
-  }, [selection])
+  }, [selection, kclManager.ast])
 
   // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {
@@ -117,7 +116,7 @@ export default function CommandBarSelectionMixedInput({
       })
       setHasClearedSelection(true)
     }
-  }, [arg.clearSelectionFirst])
+  }, [arg.clearSelectionFirst, engineCommandManager])
 
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
@@ -162,7 +161,15 @@ export default function CommandBarSelectionMixedInput({
         })
       }
     }
-  }, [arg.selectionFilter, selection, hasCoercedSelections, wasmInstance])
+  }, [
+    arg.selectionFilter,
+    selection,
+    hasCoercedSelections,
+    wasmInstance,
+    engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
+  ])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)
@@ -265,7 +272,7 @@ export default function CommandBarSelectionMixedInput({
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}

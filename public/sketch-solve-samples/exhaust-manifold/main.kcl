@@ -1,0 +1,140 @@
+// Exhaust Manifold
+// A welded exhaust header for an inline 4-cylinder engine
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define parameters
+primaryTubeDiameter = 1.625
+wallThickness = 0.080
+plateHeight = 0.125
+bendRadius = 3
+
+// Create a function to draw each primary tube with specified lengths and angles
+fn primaryTube(n, angle001, length001, length002, length003) {
+  // Create an index for the function
+  pos001 = n * 2
+
+  // Define a plane for each sweep path defined by an angle
+  sweepPlane = {
+    origin = [pos001, 0.0, 0],
+    xAxis = [sin(-angle001), cos(-angle001), 0.0],
+    yAxis = [0.0, 0.0, 1.0],
+    zAxis = [1.0, 0.0, 0.0]
+  }
+
+  // Draw a path for each sweep
+  sweepPath = startSketchOn(sweepPlane)
+    |> startProfile(at = [0, plateHeight])
+    |> line(end = [0, length001])
+    |> tangentialArc(angle = -80deg, radius = bendRadius, tag = $arc01)
+    |> angledLine(angle = tangentToEnd(arc01), length = length002)
+    |> tangentialArc(angle = 85deg, radius = bendRadius, tag = $arc02)
+    |> angledLine(angle = tangentToEnd(arc02), length = length003)
+
+  // Create the cross section of each tube and sweep them
+  sketch001 = startSketchOn(XY)
+    |> circle(center = [pos001, 0], radius = primaryTubeDiameter / 2)
+    |> subtract2d(tool = circle(center = [pos001, 0], radius = primaryTubeDiameter / 2 - wallThickness))
+  sweepProfile = sweep(sketch001, path = sweepPath)
+
+  return {  }
+}
+
+// Draw a primary tube for each cylinder with specified lengths and angles
+primaryTube(
+  n = 0,
+  angle001 = 0,
+  length001 = 3,
+  length002 = 6,
+  length003 = 5,
+)
+primaryTube(
+  n = 1,
+  angle001 = 1deg,
+  length001 = 3,
+  length002 = 6,
+  length003 = 5,
+)
+primaryTube(
+  n = 2,
+  angle001 = 24.3deg,
+  length001 = 5,
+  length002 = 5,
+  length003 = 3,
+)
+primaryTube(
+  n = 3,
+  angle001 = 25.2deg,
+  length001 = 5,
+  length002 = 5,
+  length003 = 3,
+)
+
+// Create the mounting flange for the header
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 4.3in, var -1.25in], end = [var 1.7in, var -1.25in])
+  arc2 = arc(start = [var 1.51in, var -1.18in], end = [var 1.7in, var -1.25in], center = [var 1.7in, var -0.95in])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var 1.51in, var -1.18in], end = [var 0.35in, var -1.18in], center = [var 0.93in, var -1.87in])
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(start = [var 0.16in, var -1.25in], end = [var 0.35in, var -1.18in], center = [var 0.16in, var -0.95in])
+  coincident([arc3.end, arc4.end])
+  line5 = line(start = [var 0.16in, var -1.25in], end = [var -1.24in, var -1.25in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var -1.24in, var -1.25in], end = [var -1.24in, var 1.35in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -1.24in, var 1.35in], end = [var 1.86in, var 1.35in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var 2.05in, var 1.28in], end = [var 1.86in, var 1.35in], center = [var 1.86in, var 1.05in])
+  coincident([line7.end, arc8.end])
+  arc9 = arc(start = [var 2.05in, var 1.28in], end = [var 3.98in, var 1.28in], center = [var 3.01in, var 2.43in])
+  coincident([arc8.start, arc9.start])
+  arc10 = arc(start = [var 4.17in, var 1.35in], end = [var 3.98in, var 1.28in], center = [var 4.17in, var 1.05in])
+  coincident([arc9.end, arc10.end])
+  line11 = line(start = [var 4.17in, var 1.35in], end = [var 7.27in, var 1.35in])
+  coincident([arc10.start, line11.start])
+  line12 = line(start = [var 7.27in, var 1.35in], end = [var 7.27in, var -1.25in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 7.27in, var -1.25in], end = [var 5.87in, var -1.25in])
+  coincident([line12.end, line13.start])
+  arc14 = arc(start = [var 5.68in, var -1.18in], end = [var 5.87in, var -1.25in], center = [var 5.87in, var -0.95in])
+  coincident([line13.end, arc14.end])
+  arc15 = arc(start = [var 5.68in, var -1.18in], end = [var 4.52in, var -1.18in], center = [var 5.1in, var -1.87in])
+  coincident([arc14.start, arc15.start])
+  arc16 = arc(start = [var 4.3in, var -1.25in], end = [var 4.52in, var -1.18in], center = [var 4.33in, var -0.95in])
+  coincident([arc15.end, arc16.end])
+  horizontal(arc2)
+  tangent([arc2, arc3])
+  radius(arc3) == 0.9in
+  radius(arc4) == 0.3in
+  horizontal(line6)
+  vertical(line7)
+  horizontal(arc8)
+  tangent([arc8, arc9])
+  radius(arc9) == 1.5in
+  radius(arc10) == 0.3in
+  horizontal(line12)
+  vertical(line13)
+  horizontal(arc14)
+  tangent([arc14, arc15])
+  radius(arc15) == 0.9in
+  radius(arc16) == 0.3in
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+flangeSketch = extrude(region001, length = plateHeight)
+  |> fillet(
+       radius = 1.5,
+       tags = [
+         getNextAdjacentEdge(seg04),
+         getNextAdjacentEdge(seg07)
+       ],
+     )
+  |> fillet(
+       radius = .25,
+       tags = [
+         getNextAdjacentEdge(seg03),
+         getNextAdjacentEdge(seg08)
+       ],
+     )

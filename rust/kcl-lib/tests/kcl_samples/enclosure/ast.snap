@@ -2218,7 +2218,7 @@ description: Result of parsing enclosure.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "// Create a pillar with a fasterner hole at the center"
+                    "// Create a pillar with a fastener hole at the center"
                   ],
                   "start": 0,
                   "type": "VariableDeclaration",

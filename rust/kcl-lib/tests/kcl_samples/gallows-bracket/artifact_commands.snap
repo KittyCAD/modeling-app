@@ -260,7 +260,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -286,7 +285,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1250.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -742,7 +740,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -765,6 +762,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -784,7 +782,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1185,6 +1182,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1199,6 +1197,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1213,6 +1212,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1660,7 +1660,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1683,6 +1682,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1702,7 +1702,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": -90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1728,7 +1727,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1251.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1937,6 +1935,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2384,7 +2383,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2407,6 +2405,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2614,7 +2613,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2637,6 +2635,7 @@ description: Artifact commands gallows-bracket.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2656,7 +2655,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": -90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2682,7 +2680,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 69.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2710,7 +2707,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2736,7 +2732,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1244.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2969,7 +2964,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1175.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

@@ -12,6 +12,7 @@ interface BaseActionButtonProps {
   iconStart?: ActionIconProps
   iconEnd?: ActionIconProps
   className?: string
+  htmlFor?: string
 }
 
 type ActionButtonAsButton = BaseActionButtonProps &
@@ -71,6 +72,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
         <button
           ref={ref as ForwardedRef<HTMLButtonElement>}
           className={classNames}
+          htmlFor={props.htmlFor}
           tabIndex={-1}
           {...rest}
         >

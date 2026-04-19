@@ -1,22 +1,31 @@
-use std::{fmt, str::FromStr};
+use std::fmt;
+use std::str::FromStr;
 
 use indexmap::IndexMap;
 use regex::Regex;
-use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
-    MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
-};
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::CompletionItemLabelDetails;
+use tower_lsp::lsp_types::Documentation;
+use tower_lsp::lsp_types::InsertTextFormat;
+use tower_lsp::lsp_types::MarkupContent;
+use tower_lsp::lsp_types::MarkupKind;
+use tower_lsp::lsp_types::ParameterInformation;
+use tower_lsp::lsp_types::ParameterLabel;
+use tower_lsp::lsp_types::SignatureHelp;
+use tower_lsp::lsp_types::SignatureInformation;
 
-use crate::{
-    ModuleId,
-    execution::annotations,
-    parsing::{
-        ast::types::{
-            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
-        },
-        token::NumericSuffix,
-    },
-};
+use crate::ModuleId;
+use crate::execution::annotations;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::NumericSuffix;
 
 pub fn walk_prelude() -> ModData {
     visit_module("prelude", "", WalkForNames::All).unwrap()
@@ -36,6 +45,7 @@ impl<'a> WalkForNames<'a> {
         }
     }
 
+    #[must_use]
     fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
         match self {
             WalkForNames::All => WalkForNames::Selected(names.collect()),
@@ -52,27 +62,28 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
         .parse_errs_as_err()
         .unwrap();
 
-    // TODO handle examples; use with_comments
     let mut summary = String::new();
     let mut description = None;
     for n in &parsed.non_code_meta.start_nodes {
         match &n.value {
             NonCodeValue::BlockComment { value, .. } if value.starts_with('/') => {
-                let line = value[1..].trim();
-                if line.is_empty() {
+                let rest = &value[1..];
+                if rest.trim().is_empty() {
                     match &mut description {
                         None => description = Some(String::new()),
-                        Some(d) => d.push_str("\n\n"),
+                        Some(d) => d.push('\n'),
                     }
                 } else {
+                    let line = rest.trim_end();
+                    let line = line.strip_prefix(' ').unwrap_or(line);
                     match &mut description {
                         None => {
-                            summary.push_str(line);
+                            summary.push_str(line.trim());
                             summary.push(' ');
                         }
                         Some(d) => {
                             d.push_str(line);
-                            d.push(' ');
+                            d.push('\n');
                         }
                     }
                 }
@@ -85,29 +96,13 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
     result.description = description;
 
-    'items: for n in &parsed.body {
+    for n in &parsed.body {
         if n.visibility() != ItemVisibility::Export {
             continue;
         }
         match n {
             crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
                 crate::parsing::ast::types::ImportPath::Std { path } => {
-                    // Just hide modules where the import is marked as experimental.
-                    for attr in &import.outer_attrs {
-                        if let Annotation {
-                            name: None,
-                            properties: Some(props),
-                            ..
-                        } = &attr.inner
-                        {
-                            for p in props {
-                                if p.key.name == annotations::EXPERIMENTAL {
-                                    continue 'items;
-                                }
-                            }
-                        }
-                    }
-
                     let m = match &import.selector {
                         ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
                         ImportSelector::None { .. } => {
@@ -125,7 +120,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         )?),
                     };
                     if let Some(m) = m {
-                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
+                        let key = format!("M:{}", &m.qual_name);
+                        let mut dd = DocData::Mod(m);
+                        dd.with_meta(&import.outer_attrs);
+                        result.children.insert(key, dd);
                     }
                 }
                 p => return Err(format!("Unexpected import: `{p}`")),
@@ -198,7 +196,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -228,28 +226,37 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
-    pub fn file_name(&self) -> String {
+    /// The effective documentation category, considering any `doc_category` override.
+    #[cfg(test)]
+    pub fn doc_category(&self) -> DocCategory {
         match self {
-            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
+            DocData::Fn(f) => f.properties.doc_category.unwrap_or(DocCategory::Functions),
+            DocData::Const(c) => c.properties.doc_category.unwrap_or(DocCategory::Constants),
+            DocData::Ty(t) => t.properties.doc_category.unwrap_or(DocCategory::Types),
+            DocData::Mod(_) => DocCategory::Modules,
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
+    pub fn file_name(&self) -> String {
+        format!(
+            "{}/{}",
+            self.doc_category().file_prefix(),
+            self.qual_name().replace("::", "-")
+        )
+    }
+
+    #[cfg(test)]
     pub fn example_name(&self) -> String {
-        match self {
-            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(_) => unimplemented!(),
-        }
+        format!(
+            "{}_{}",
+            self.doc_category().example_prefix(),
+            self.qual_name().replace("::", "-")
+        )
     }
 
     /// The path to the module through which the item is accessed, e.g., `std::sketch`
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn mod_name(&self) -> String {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
@@ -265,13 +272,22 @@ impl DocData {
         q[0..q.rfind("::").unwrap()].to_owned()
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn hide(&self) -> bool {
         match self {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
             DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
             DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
             DocData::Mod(_) => false,
+        }
+    }
+
+    pub fn is_experimental(&self) -> bool {
+        match self {
+            DocData::Fn(f) => f.properties.experimental,
+            DocData::Const(c) => c.properties.experimental,
+            DocData::Ty(t) => t.properties.experimental,
+            DocData::Mod(d) => d.properties.experimental,
         }
     }
 
@@ -318,7 +334,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -394,6 +410,7 @@ impl ConstData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -422,7 +439,11 @@ impl ConstData {
                 detail: self.value.clone(),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::CONSTANT),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::CONSTANT)),
             detail: Some(detail),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -451,6 +472,7 @@ impl ConstData {
 pub struct ModData {
     pub name: String,
     /// How the module is indexed, etc.
+    #[allow(dead_code)]
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
@@ -459,6 +481,7 @@ pub struct ModData {
     /// The description of the module.
     pub description: Option<String>,
     pub module_name: String,
+    pub properties: Properties,
 
     pub children: IndexMap<String, DocData>,
 }
@@ -478,10 +501,18 @@ impl ModData {
             description: None,
             children: IndexMap::new(),
             module_name,
+            properties: Properties {
+                exported: false,
+                deprecated: false,
+                experimental: false,
+                doc_hidden: false,
+                impl_kind: Default::default(),
+                doc_category: None,
+            },
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -566,6 +597,7 @@ impl FnData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -616,7 +648,11 @@ impl FnData {
                 detail: Some(self.fn_signature()),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::FUNCTION)),
             detail: Some(self.qual_name.clone()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -646,7 +682,7 @@ impl FnData {
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "split" {
-            return "split([${0:extrude001}, ${1:extrude002}], merge = ${2:true})".to_owned();
+            return "split([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract2d" {
@@ -695,6 +731,55 @@ impl FnData {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DocCategory {
+    Functions,
+    Constants,
+    Modules,
+    Types,
+}
+
+impl DocCategory {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "functions" => Some(DocCategory::Functions),
+            "consts" => Some(DocCategory::Constants),
+            "modules" => Some(DocCategory::Modules),
+            "types" => Some(DocCategory::Types),
+            _ => None,
+        }
+    }
+
+    #[cfg(test)]
+    fn file_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "functions",
+            DocCategory::Constants => "consts",
+            DocCategory::Modules => "modules",
+            DocCategory::Types => "types",
+        }
+    }
+
+    #[cfg(test)]
+    fn example_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "fn",
+            DocCategory::Constants => "const",
+            DocCategory::Modules => "module",
+            DocCategory::Types => "ty",
+        }
+    }
+
+    fn to_completion_item_kind(self) -> CompletionItemKind {
+        match self {
+            DocCategory::Functions => CompletionItemKind::FUNCTION,
+            DocCategory::Constants => CompletionItemKind::CONSTANT,
+            DocCategory::Types => CompletionItemKind::STRUCT,
+            DocCategory::Modules => CompletionItemKind::MODULE,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
@@ -703,14 +788,46 @@ pub struct Properties {
     #[allow(dead_code)]
     pub exported: bool,
     pub impl_kind: annotations::Impl,
+    pub doc_category: Option<DocCategory>,
 }
 
-#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub enum ExampleSketchSyntax {
+    SketchSyntaxAgnostic,
+    Legacy,
+    SketchSolve,
+}
+
+impl ExampleSketchSyntax {
+    fn from_attr(attr: &str) -> Option<Self> {
+        match attr {
+            "sketchSyntaxAgnostic" => Some(Self::SketchSyntaxAgnostic),
+            "legacy" | "legacySketch" | "legacySketchSyntax" | "old" | "oldSketchSyntax" => Some(Self::Legacy),
+            "sketchSolve" | "sketch_solve" | "new" | "newSketchSyntax" | "sketchSolveSyntax" => Some(Self::SketchSolve),
+            _ => None,
+        }
+    }
+
+    fn infer_from_source(source: &str) -> Self {
+        if source.contains("sketch(on =") {
+            Self::SketchSolve
+        } else if source.contains("startSketchOn") || source.contains("startProfile") {
+            Self::Legacy
+        } else {
+            Self::SketchSyntaxAgnostic
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
+    #[allow(dead_code)]
     pub norun: bool,
+    #[allow(dead_code)]
     pub no3d: bool,
     pub inline: bool,
+    pub sketch_syntax: ExampleSketchSyntax,
+    pub sketch_syntax_explicit: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -862,8 +979,12 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
-            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
+            Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
+                Some((index, format!(r#"{label}${{{index}:X}}"#)))
+            }
+            Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
+                Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
+            }
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
@@ -904,7 +1025,6 @@ impl ArgData {
 }
 
 impl ArgKind {
-    #[allow(dead_code)]
     pub fn required(self) -> bool {
         match self {
             ArgKind::Special => true,
@@ -955,6 +1075,7 @@ impl TyData {
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
@@ -964,7 +1085,6 @@ impl TyData {
         }
     }
 
-    #[allow(dead_code)]
     pub fn qual_name(&self) -> &str {
         if self.properties.impl_kind == annotations::Impl::Primitive {
             &self.name
@@ -988,7 +1108,11 @@ impl TyData {
                 detail: Some(format!("type {} = {t}", self.name)),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::STRUCT)),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -1013,7 +1137,7 @@ impl TyData {
     }
 }
 
-fn remove_md_links(s: &str) -> String {
+pub(super) fn remove_md_links(s: &str) -> String {
     let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
     re.replace_all(s, "$1").to_string()
 }
@@ -1029,6 +1153,7 @@ trait ApplyMeta {
     fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
+    fn doc_category(&mut self, doc_category: DocCategory);
 
     fn with_comments(&mut self, comments: &[String]) {
         if comments.iter().all(|s| s.is_empty()) {
@@ -1048,7 +1173,10 @@ trait ApplyMeta {
         }) {
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
-                if let Some((e, p)) = example {
+                if let Some((e, mut p)) = example {
+                    if !p.sketch_syntax_explicit {
+                        p.sketch_syntax = ExampleSketchSyntax::infer_from_source(&e);
+                    }
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
                     } else {
@@ -1060,15 +1188,31 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
+                    let mut sketch_syntax_explicit = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
-                            _ => {}
+                            other => {
+                                if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
+                                    sketch_syntax = tag;
+                                    sketch_syntax_explicit = true;
+                                }
+                            }
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
+                    example = Some((
+                        String::new(),
+                        ExampleProperties {
+                            norun,
+                            no3d,
+                            inline,
+                            sketch_syntax,
+                            sketch_syntax_explicit,
+                        },
+                    ));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -1159,6 +1303,13 @@ trait ApplyMeta {
                                 self.doc_hidden(b);
                             }
                         }
+                        annotations::DOC_CATEGORY => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(cat) = DocCategory::from_str(s)
+                            {
+                                self.doc_category(cat);
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -1192,6 +1343,10 @@ impl ApplyMeta for ConstData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for FnData {
@@ -1221,6 +1376,10 @@ impl ApplyMeta for FnData {
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for ModData {
@@ -1240,7 +1399,7 @@ impl ApplyMeta for ModData {
     }
 
     fn experimental(&mut self, experimental: bool) {
-        assert!(!experimental);
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1248,6 +1407,10 @@ impl ApplyMeta for ModData {
     }
 
     fn impl_kind(&mut self, _: annotations::Impl) {}
+
+    fn doc_category(&mut self, _: DocCategory) {
+        panic!("doc_category is not supported for modules");
+    }
 }
 
 impl ApplyMeta for TyData {
@@ -1276,6 +1439,10 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
     }
 }
 
@@ -1312,13 +1479,31 @@ impl ApplyMeta for ArgData {
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
         unreachable!();
     }
+
+    fn doc_category(&mut self, _doc_category: DocCategory) {
+        unreachable!();
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use kcl_derive_docs::{for_all_example_test, for_each_example_test};
+    use std::path::Path;
+    use std::path::PathBuf;
+
+    use kcl_derive_docs::for_all_example_test;
+    use kcl_derive_docs::for_each_example_test;
 
     use super::*;
+
+    fn stdlib_module_path(module_name: &str) -> PathBuf {
+        let file_stem = match module_name {
+            "std" | "" => "prelude",
+            other => other,
+        };
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("std")
+            .join(format!("{file_stem}.kcl"))
+    }
 
     #[test]
     fn smoke() {
@@ -1412,15 +1597,26 @@ mod test {
             );
         };
 
+        let source_path = stdlib_module_path(&d.module_name);
+        let owner_name = d.qual_name.as_str();
         for (i, eg) in d.examples.iter().enumerate() {
             if i != number {
                 continue;
             }
+            eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
+            eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
             let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
-                    panic!("Error testing example {}{i}: {}", d.name, e.error.message());
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
                 }
-                Err(other_err) => panic!("{}", other_err),
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
                 Ok(img) => img,
             };
             if eg.1.norun {

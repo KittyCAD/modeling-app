@@ -11837,7 +11837,7 @@ description: Result of parsing stylized-cybertruck.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Stylized Cybertruck",
+            "value": "Stylized Toy Cybertruck",
             "style": "line"
           }
         },
@@ -11849,7 +11849,7 @@ description: Result of parsing stylized-cybertruck.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.",
+            "value": "A simplified, parametric 3-D model of a low-poly toy cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.",
             "style": "line"
           }
         },

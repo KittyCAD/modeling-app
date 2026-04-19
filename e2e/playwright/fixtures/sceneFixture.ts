@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
@@ -153,18 +154,20 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        clickParams?.shouldDbClick
-          ? await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
-              delay: clickParams?.delay || 0,
-            })
-          : clickParams?.shouldRightClick
-            ? await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                button: 'right',
-                delay: clickParams?.delay || 0,
-              })
-            : await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                delay: clickParams?.delay || 0,
-              })
+        if (clickParams?.shouldDbClick) {
+          await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        } else if (clickParams?.shouldRightClick) {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            button: 'right',
+            delay: clickParams?.delay || 0,
+          })
+        } else {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        }
       },
       async (moveParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -398,6 +401,8 @@ export class SceneFixture {
     }
   ) => {
     const u = await getUtils(this.page)
+
+    await closeOnboardingModalIfPresent(this.page)
 
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {

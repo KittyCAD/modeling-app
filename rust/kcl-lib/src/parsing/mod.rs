@@ -1,11 +1,11 @@
-use crate::{
-    ModuleId, SourceRange,
-    errors::{CompilationError, KclError, KclErrorDetails},
-    parsing::{
-        ast::types::{Node, Program},
-        token::TokenStream,
-    },
-};
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::CompilationIssue;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
+use crate::parsing::token::TokenStream;
 
 pub(crate) mod ast;
 mod math;
@@ -78,7 +78,7 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
 /// - if there are no errors, then the Option will be Some
 /// - if the Option is None, then there will be at least one error in the ParseContext.
 #[derive(Debug, Clone)]
-pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>);
+pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
@@ -100,7 +100,7 @@ impl ParseResult {
 
     #[cfg(test)]
     #[track_caller]
-    pub fn unwrap_errs(&self) -> impl Iterator<Item = &CompilationError> {
+    pub fn unwrap_errs(&self) -> impl Iterator<Item = &CompilationIssue> {
         self.0.as_ref().unwrap().1.iter().filter(|e| e.severity.is_err())
     }
 
@@ -118,14 +118,14 @@ impl ParseResult {
     }
 }
 
-impl From<Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>> for ParseResult {
-    fn from(r: Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>) -> ParseResult {
+impl From<Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>> for ParseResult {
+    fn from(r: Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>) -> ParseResult {
         ParseResult(r)
     }
 }
 
-impl From<(Option<Node<Program>>, Vec<CompilationError>)> for ParseResult {
-    fn from(p: (Option<Node<Program>>, Vec<CompilationError>)) -> ParseResult {
+impl From<(Option<Node<Program>>, Vec<CompilationIssue>)> for ParseResult {
+    fn from(p: (Option<Node<Program>>, Vec<CompilationIssue>)) -> ParseResult {
         ParseResult(Ok(p))
     }
 }

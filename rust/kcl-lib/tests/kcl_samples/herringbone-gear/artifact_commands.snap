@@ -629,7 +629,6 @@ description: Artifact commands herringbone-gear.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

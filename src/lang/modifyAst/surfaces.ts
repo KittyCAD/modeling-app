@@ -42,14 +42,15 @@ export function addFlipSurface({
     return new Error('flipSurface surfaces must have at least one selection.')
   }
 
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     surface,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -57,6 +58,75 @@ export function addFlipSurface({
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('flipSurface', objectsExpr, [])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Adds a join call to the AST.
+ *
+ * @param ast - The AST to modify
+ * @param artifactGraph - The artifact graph for body lookups
+ * @param selection - Selected bodies to join
+ * @param nodeToEdit - Path to node to edit (for edit mode)
+ * @returns Modified AST and path to the last created node, or an Error
+ */
+export function addJoinSurfaces({
+  ast,
+  artifactGraph,
+  selection,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  selection: Selections
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // 2. Prepare unlabeled arguments
+  if (selection.graphSelections.length < 1) {
+    return new Error('join selection must have at least one selection.')
+  }
+
+  const vars = getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('joinSurfaces', objectsExpr, [])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

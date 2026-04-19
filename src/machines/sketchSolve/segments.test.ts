@@ -1,11 +1,14 @@
 import { describe, it, expect } from 'vitest'
 
 import {
+  DARK_CONSTRAINED_COLOR,
   deriveSegmentFreedom,
   getSegmentColor,
+  LIGHT_CONSTRAINED_COLOR,
 } from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
+import { Themes } from '@src/lib/theme'
 
 // Helper to create a point object
 function createPointObject(id: number, freedom: Freedom): ApiObject {
@@ -28,7 +31,7 @@ function createPointObject(id: number, freedom: Freedom): ApiObject {
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -64,7 +67,7 @@ function createLineSegmentObject(
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -106,35 +109,44 @@ function createArcSegmentObject(
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
 // Helper to create a circle segment object
-function createCircleSegmentObject(id: number, startId: number): ApiObject {
+function createCircleSegmentObject(
+  id: number,
+  startId: number,
+  centerId: number = startId
+): ApiObject {
   return {
     id,
     kind: {
       type: 'Segment',
       segment: {
         type: 'Circle',
+        center: centerId,
         start: startId,
-        radius: { value: 1, units: 'Mm' },
         ctor: {
           type: 'Circle',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
           center: {
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          radius: { type: 'Var', value: 1, units: 'Mm' },
+          construction: false,
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -144,7 +156,7 @@ describe('deriveSegmentFreedom', () => {
       id: 1,
       kind: {
         type: 'Sketch',
-        args: { on: 'XY' },
+        args: { on: { default: 'xy' } },
         plane: 0,
         segments: [],
         constraints: [],
@@ -152,7 +164,7 @@ describe('deriveSegmentFreedom', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
 
     expect(deriveSegmentFreedom(nonSegment, [])).toBeNull()
@@ -189,7 +201,7 @@ describe('deriveSegmentFreedom', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
     expect(deriveSegmentFreedom(point, [])).toBeNull()
   })
@@ -267,7 +279,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const endPoint = createPointObject(2, 'Fixed')
       const line = createLineSegmentObject(3, 1, 2)
@@ -297,7 +309,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const endPoint: ApiObject = {
         id: 2,
@@ -318,7 +330,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const line = createLineSegmentObject(3, 1, 2)
       const objects = [startPoint, endPoint, line]
@@ -386,26 +398,29 @@ describe('deriveSegmentFreedom', () => {
   })
 
   describe('Circle segments', () => {
-    it('should return Fixed when center point is Fixed', () => {
+    it('should return Fixed when start and center points are Fixed', () => {
       const centerPoint = createPointObject(1, 'Fixed')
-      const circle = createCircleSegmentObject(2, 1)
-      const objects = [centerPoint, circle]
+      const startPoint = createPointObject(2, 'Fixed')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Fixed')
     })
 
-    it('should return Free when center point is Free', () => {
-      const centerPoint = createPointObject(1, 'Free')
-      const circle = createCircleSegmentObject(2, 1)
-      const objects = [centerPoint, circle]
+    it('should return Free when either circle point is Free', () => {
+      const centerPoint = createPointObject(1, 'Fixed')
+      const startPoint = createPointObject(2, 'Free')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Free')
     })
 
-    it('should return Conflict when center point is Conflict', () => {
+    it('should return Conflict when either circle point is Conflict', () => {
       const centerPoint = createPointObject(1, 'Conflict')
-      const circle = createCircleSegmentObject(2, 1)
-      const objects = [centerPoint, circle]
+      const startPoint = createPointObject(2, 'Fixed')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Conflict')
     })
@@ -415,8 +430,8 @@ describe('deriveSegmentFreedom', () => {
 describe('getSegmentColor', () => {
   const UNCONSTRAINED_COLOR = parseInt('#3c73ff'.replace('#', ''), 16) // Brand blue
   const CONFLICT_COLOR = 0xff5e5b // Coral red
-  const TEXT_COLOR = 0xffffff // White
   const DRAFT_COLOR = 0x888888 // Grey
+  const DARK_THEME = Themes.Dark
 
   it('should return draft color when mode is draft (highest priority)', () => {
     const color = getSegmentColor({
@@ -424,6 +439,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(DRAFT_COLOR)
@@ -435,6 +451,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     // Hover color is calculated from SKETCH_SELECTION_RGB at 70% brightness
@@ -443,7 +460,7 @@ describe('getSegmentColor', () => {
     expect(color).not.toBe(DRAFT_COLOR)
     expect(color).not.toBe(SKETCH_SELECTION_COLOR)
     expect(color).not.toBe(CONFLICT_COLOR)
-    expect(color).not.toBe(TEXT_COLOR)
+    expect(color).not.toBe(DARK_CONSTRAINED_COLOR)
     expect(color).not.toBe(UNCONSTRAINED_COLOR)
   })
 
@@ -453,6 +470,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(SKETCH_SELECTION_COLOR)
@@ -464,6 +482,20 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
+      theme: DARK_THEME,
+    })
+
+    expect(color).toBe(CONFLICT_COLOR)
+  })
+
+  it('should return conflict color when the solver has outcome errors', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(CONFLICT_COLOR)
@@ -475,6 +507,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -486,9 +519,22 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
-    expect(color).toBe(TEXT_COLOR)
+    expect(color).toBe(DARK_CONSTRAINED_COLOR)
+  })
+
+  it('should return constrained color for light sketch theme', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      freedom: 'Fixed',
+      theme: Themes.Light,
+    })
+
+    expect(color).toBe(LIGHT_CONSTRAINED_COLOR)
   })
 
   it('should return unconstrained color when freedom is null (default)', () => {
@@ -497,6 +543,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: null,
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -507,6 +554,7 @@ describe('getSegmentColor', () => {
       isDraft: false,
       isHovered: false,
       isSelected: false,
+      theme: DARK_THEME,
     })
 
     expect(color).toBe(UNCONSTRAINED_COLOR)
@@ -518,6 +566,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     const color2 = getSegmentColor({
@@ -525,6 +574,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     expect(color1).toBe(DRAFT_COLOR)
@@ -537,6 +587,7 @@ describe('getSegmentColor', () => {
       isHovered: true,
       isSelected: true,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     const selectionColor = getSegmentColor({
@@ -544,10 +595,11 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     expect(hoverColor).not.toBe(selectionColor)
-    expect(hoverColor).not.toBe(TEXT_COLOR)
+    expect(hoverColor).not.toBe(DARK_CONSTRAINED_COLOR)
   })
 
   it('should prioritize selection over freedom', () => {
@@ -556,6 +608,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: true,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     const unselectedColor = getSegmentColor({
@@ -563,10 +616,24 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
     expect(unselectedColor).toBe(UNCONSTRAINED_COLOR)
+  })
+
+  it('should prioritize selection over solver errors', () => {
+    const selectedColor = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: true,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
+    })
+
+    expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
   })
 
   it('should prioritize conflict over free and fixed', () => {
@@ -575,6 +642,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
+      theme: DARK_THEME,
     })
 
     const freeColor = getSegmentColor({
@@ -582,6 +650,7 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
+      theme: DARK_THEME,
     })
 
     const fixedColor = getSegmentColor({
@@ -589,10 +658,11 @@ describe('getSegmentColor', () => {
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',
+      theme: DARK_THEME,
     })
 
     expect(conflictColor).toBe(CONFLICT_COLOR)
     expect(freeColor).toBe(UNCONSTRAINED_COLOR)
-    expect(fixedColor).toBe(TEXT_COLOR)
+    expect(fixedColor).toBe(DARK_CONSTRAINED_COLOR)
   })
 })

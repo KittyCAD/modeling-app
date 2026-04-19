@@ -1,157 +1,132 @@
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { billingActor, commandBarActor, kclManager } from '@src/lib/singletons'
-import { useSelector } from '@xstate/react'
-import { memo, useCallback, useState } from 'react'
+import { copyFileShareLink } from '@src/lib/links'
+import { memo, type RefObject, useCallback, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
+  const app = useApp()
+  const { billing } = app
   const platform = usePlatform()
 
-  const [showOptions, setShowOptions] = useState(false)
-  const [isRestrictedToOrg, setIsRestrictedToOrg] = useState(false)
-  const [password, setPassword] = useState('')
+  const billingContext = billing.useContext()
+  const billingLoading = billingContext.hasSubscription === undefined
+  const shareButtonRef = useRef<HTMLButtonElement>(null)
 
-  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const onShareClick = useCallback(() => {
+    shareButtonRef.current?.click()
+  }, [])
 
-  const allowOrgRestrict = !!billingContext.isOrg
-  const allowPassword = !!billingContext.hasSubscription
-  const hasOptions = allowOrgRestrict || allowPassword
-
-  // Prevents Organization and Pro tier users from one-click sharing,
-  // and give them a chance to set a password and restrict to org.
-  const onShareClickFreeOrUnknownRestricted = useCallback(() => {
-    if (hasOptions) {
-      setShowOptions(true)
-      return
-    }
-
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        name: 'share-file-link',
-        groupId: 'code',
-        isRestrictedToOrg: false,
-      },
-    })
-  }, [hasOptions])
-
-  const onShareClickProOrOrganization = useCallback(() => {
-    setShowOptions(false)
-
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        name: 'share-file-link',
-        groupId: 'code',
-        isRestrictedToOrg,
-        password,
-      },
-    })
-  }, [isRestrictedToOrg, password])
-
-  useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
+  useHotkeys(shareHotkey, onShareClick, {
     scopes: ['modeling'],
   })
 
-  const ast = kclManager.astSignal.value
-
-  // It doesn't make sense for the user to be able to click on this
-  // until we get what their subscription allows for.
-  const disabled =
-    ast.body.some((n) => n.type === 'ImportStatement') ||
-    billingContext.hasSubscription === undefined
-
   return (
     <Popover className="relative hidden sm:flex">
-      <Popover.Button
-        as="div"
-        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
-      >
-        <button
-          type="button"
-          onClick={onShareClickFreeOrUnknownRestricted}
-          disabled={disabled}
-          className="flex gap-1 items-center py-0 pl-0.5 pr-1.5 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid active:border-primary"
-          data-testid="share-button"
-        >
-          <CustomIcon name="link" className="w-5 h-5" />
-          <span className="flex-1">Share</span>
-          <Tooltip
-            position="bottom-right"
-            contentClassName="max-w-none flex items-center gap-4"
-          >
-            <span className="flex-1">
-              {disabled
-                ? `Share links are not currently supported for multi-file assemblies`
-                : `Share part via Zoo link`}
-            </span>
-            {!disabled && (
-              <kbd className="hotkey text-xs capitalize">
-                {hotkeyDisplay(shareHotkey, platform)}
-              </kbd>
-            )}
-          </Tooltip>
-        </button>
-      </Popover.Button>
-      {showOptions && (
-        <Popover.Panel
-          focus={true}
-          className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
-        border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
-        shadow-lg`}
-        >
-          <div className="flex flex-col px-2">
-            <div className="flex flex-row gap-1 items-center">
-              <CustomIcon name="lockClosed" className="w-6 h-6" />
-              <input
-                disabled={!allowPassword}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck="false"
-                className={`${allowPassword ? 'cursor-pointer' : 'cursor-not-allowed'} text-xs w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0`}
-                type="text"
-                placeholder="Set a password"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="org-only"
-                className="pl-1 inline-flex items-center"
-              >
-                <input
-                  disabled={!allowOrgRestrict}
-                  checked={isRestrictedToOrg}
-                  onChange={(_) => setIsRestrictedToOrg(!isRestrictedToOrg)}
-                  type="checkbox"
-                  name="org-only"
-                  className="form-checkbox"
-                />
-                <span
-                  className={`text-xs ml-2 ${allowOrgRestrict ? 'cursor-pointer' : 'cursor-not-allowed text-chalkboard-50'}`}
-                >
-                  Org. only access
-                </span>
-              </label>
-              {!allowOrgRestrict && (
-                <Tooltip>Upgrade to Organization to use this feature.</Tooltip>
-              )}
-            </div>
-            <button disabled={disabled} onClick={onShareClickProOrOrganization}>
-              Generate
-            </button>
-          </div>
-        </Popover.Panel>
-      )}
+      {(popover) => {
+        return (
+          <SharePopoverContent
+            billingLoading={billingLoading}
+            shareButtonRef={shareButtonRef}
+            close={() => popover.close()}
+            open={popover.open}
+            platform={platform}
+          />
+        )
+      }}
     </Popover>
   )
 })
+
+function SharePopoverContent({
+  billingLoading,
+  shareButtonRef,
+  close,
+  open,
+  platform,
+}: {
+  billingLoading: boolean
+  shareButtonRef: RefObject<HTMLButtonElement | null>
+  close: () => void
+  open: boolean
+  platform: ReturnType<typeof usePlatform>
+}) {
+  const app = useApp()
+  const { auth, billing } = app
+  const { kclManager } = useSingletons()
+  const token = auth.useToken()
+  const billingContext = billing.useContext()
+  const currentProject = app.projectSignal.value?.projectIORefSignal.value
+  const allowOrgRestrict = !!billingContext.isOrg
+  const allowPassword = !!billingContext.hasSubscription
+  const ast = kclManager.astSignal.value
+  const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
+
+  const onCopyShareLink = useCallback(
+    async ({
+      isRestrictedToOrg,
+      password,
+    }: {
+      isRestrictedToOrg: boolean
+      password: string
+    }) => {
+      return copyFileShareLink({
+        token,
+        code: kclManager.code,
+        name: currentProject?.name || '',
+        isRestrictedToOrg,
+        password: password || undefined,
+      })
+    },
+    [currentProject, kclManager, token]
+  )
+
+  return (
+    <>
+      <Popover.Button
+        ref={shareButtonRef}
+        disabled={billingLoading}
+        className="relative inline-flex min-w-max items-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 py-0 pl-0.5 pr-1.5 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70"
+        data-testid="share-button"
+      >
+        <CustomIcon name="link" className="h-5 w-5" />
+        <span className="flex-1">Share</span>
+        <Tooltip
+          position="bottom-right"
+          contentClassName="max-w-none flex items-center gap-4"
+          hoverOnly
+        >
+          <span className="flex-1">
+            {billingLoading
+              ? 'Loading share options'
+              : shareDisabled
+                ? `Share links are not currently supported for multi-file assemblies`
+                : `Share this project`}
+          </span>
+          {!billingLoading && (
+            <kbd className="hotkey text-xs capitalize">
+              {hotkeyDisplay(shareHotkey, platform)}
+            </kbd>
+          )}
+        </Tooltip>
+      </Popover.Button>
+      {open && (
+        <ShareDialog
+          onClose={close}
+          onCopyLink={onCopyShareLink}
+          allowOrgRestrict={allowOrgRestrict}
+          allowPassword={allowPassword}
+          shareDisabled={shareDisabled}
+        />
+      )}
+    </>
+  )
+}

@@ -15,6 +15,7 @@ assert(
   isGreaterThanOrEqual?: number,
   isLessThanOrEqual?: number,
   isEqualTo?: number,
+  isNotEqualTo?: number,
   tolerance?: number,
   error?: string,
 )
@@ -31,8 +32,9 @@ assert(
 | `isLessThan` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than this. | No |
 | `isGreaterThanOrEqual` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is greater than or equal to this. | No |
 | `isLessThanOrEqual` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
-| `isEqualTo` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
-| `tolerance` | [`number`](/docs/kcl-std/types/std-types-number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
+| `isEqualTo` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is equal to this. | No |
+| `isNotEqualTo` | [`number`](/docs/kcl-std/types/std-types-number) | Comparison argument. If given, checks the `actual` value is not equal to this. | No |
+| `tolerance` | [`number`](/docs/kcl-std/types/std-types-number) | If `isEqualTo` or `isNotEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
 | `error` | [`string`](/docs/kcl-std/types/std-types-string) | If the value was false, the program will terminate with this error message | No |
 
 
@@ -52,6 +54,12 @@ assert(
   isEqualTo = 1,
   tolerance = 0.0001,
   error = "number should be almost exactly 1",
+)
+assert(
+  PI,
+  isNotEqualTo = 3,
+  tolerance = 0.0001,
+  error = "PI should not be exactly 3",
 )
 
 ```

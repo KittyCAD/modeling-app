@@ -82,6 +82,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -463,6 +464,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -790,6 +792,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -890,6 +893,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1030,6 +1034,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1288,6 +1293,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1588,6 +1594,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1781,6 +1788,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1958,6 +1966,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2058,6 +2067,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2379,6 +2389,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

@@ -1,5 +1,5 @@
 // Tube manifold
-// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters
+// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters
 // Categories: Automotive, Aerospace
 
 // Set units
@@ -37,7 +37,7 @@ body = startSketchOn(XY)
   |> revolve(axis = X)
 
   // subtract an instance of the hollow port feature at each port location
-  |> subtract(tools =   clone(hollowPort)
+  |> subtract(tools = clone(hollowPort)
     |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0]))
 
 // Trim the bottom of the ports so that they fit against the curved main body

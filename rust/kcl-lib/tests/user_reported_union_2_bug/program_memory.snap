@@ -44,6 +44,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -275,6 +276,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -473,6 +475,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

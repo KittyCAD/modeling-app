@@ -103,7 +103,7 @@ export class ToolbarFixture {
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
-    this.featureTreePane = page.locator('#feature-tree-pane')
+    this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one
@@ -257,7 +257,21 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
-  selectSurface = async (operation: 'flip-surface') => {
+  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectSurface = async (
+    operation:
+      | 'blend-surface'
+      | 'flip-surface'
+      | 'join-surfaces'
+      | 'delete-face'
+  ) => {
     await this.page
       .getByRole('button', { name: 'caret down surface: open menu' })
       .click()
@@ -335,6 +349,18 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  /**
+   * Get a specific sketch solve group caret button from the Feature Tree pane.
+   * Index is 0-based.
+   */
+  async getFeatureTreeSketchBlockGroupCaret(index: number) {
+    await this.openFeatureTreePane()
+    await expect(this.featureTreePane).toBeVisible()
+    return this.featureTreePane
+      .getByTestId('sketchblock-group-caret')
+      .nth(index)
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {

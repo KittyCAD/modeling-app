@@ -7,11 +7,14 @@ layout: manual
 
 The KCL standard library 
 
-Contains frequently used constants, functions for interacting with the KittyCAD servers to create sketches and geometry, and utility functions. 
+Contains frequently used constants, functions for interacting with the KittyCAD servers to
+create sketches and geometry, and utility functions.
 
-The standard library is organised into modules (listed below), but most things are always available in KCL programs. 
+The standard library is organised into modules (listed below), but most things are always available
+in KCL programs.
 
-You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html). 
+You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html).
+
 
 ## Modules
 
@@ -20,8 +23,10 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`gdt::gdt`](/docs/kcl-std/modules/std-gdt)
 * [`hole::hole`](/docs/kcl-std/modules/std-hole)
 * [`math`](/docs/kcl-std/modules/std-math)
+* [`runtime`](/docs/kcl-std/modules/std-runtime)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)
+* [`solver::solver`](/docs/kcl-std/modules/std-solver)
 * [`sweep::sweep`](/docs/kcl-std/modules/std-sweep)
 * [`transform`](/docs/kcl-std/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)
@@ -31,6 +36,8 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 
 ## Functions and constants
 
+* [`CCW`](/docs/kcl-std/consts/std-CCW)
+* [`CW`](/docs/kcl-std/consts/std-CW)
 * [`END`](/docs/kcl-std/consts/std-END)
 * [`MERGE`](/docs/kcl-std/consts/std-MERGE)
 * [`NEW`](/docs/kcl-std/consts/std-NEW)
@@ -46,6 +53,8 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`assert`](/docs/kcl-std/functions/std-assert)
 * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
 * [`clone`](/docs/kcl-std/functions/std-clone)
+* [`edgeId`](/docs/kcl-std/functions/std-edgeId)
+* [`faceId`](/docs/kcl-std/functions/std-faceId)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 

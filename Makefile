@@ -38,8 +38,6 @@ bootstrap: ~/.asdfrc
 	@ echo
 	asdf install
 	npm run install:rust
-~/.asdfrc:
-	echo "legacy_version_file = true" > $@
 endif
 
 .PHONY: install
@@ -142,7 +140,9 @@ test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tes
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
+ifndef E2E_GREP
 	npm run test:e2e:kcl
+endif
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests

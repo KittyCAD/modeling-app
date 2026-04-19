@@ -1,13 +1,8 @@
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import {
-  engineCommandManager,
-  kclManager,
-  useSettings,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { sceneInfra } from '@src/lib/singletons'
 import { btnName } from '@src/lib/cameraControls'
 import { err, reportRejection } from '@src/lib/trap'
 import Loading from '@src/components/Loading'
@@ -15,8 +10,14 @@ import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sendSelectEventToEngine } from '@src/lib/selections'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import {
+  getEngineRegionSelectionFromEntity,
+  sendSelectEventToEngine,
+} from '@src/lib/selections'
+import {
+  getArtifactOfTypes,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -25,31 +26,32 @@ import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
-import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
+  sketchSolveStreamDimming?: number
 }) => {
+  const { settings, project, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const { kclManager } = useSingletons()
+  const engineCommandManager = kclManager.engineCommandManager
+  const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const projectIORef = project?.projectIORefSignal.value
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -61,26 +63,6 @@ export const ConnectionStream = (props: {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
-  const settingsEngine: SettingsViaQueryString = useMemo(
-    () => ({
-      theme: settings.app.theme.current,
-      enableSSAO: settings.modeling.enableSSAO.current,
-      highlightEdges: settings.modeling.highlightEdges.current,
-      showScaleGrid: settings.modeling.showScaleGrid.current,
-      cameraProjection: settings.modeling.cameraProjection.current,
-      cameraOrbit: settings.modeling.cameraOrbit.current,
-      backfaceColor: DEFAULT_BACKFACE_COLOR,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      settings.app.theme.current,
-      settings.modeling.enableSSAO.current,
-      settings.modeling.highlightEdges.current,
-      settings.modeling.showScaleGrid.current,
-      settings.modeling.cameraProjection.current,
-      settings.modeling.cameraOrbit.current,
-    ]
-  )
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -131,7 +113,7 @@ export const ConnectionStream = (props: {
         sendSelectEventToEngine(e, videoRef.current, {
           engineCommandManager,
         })
-          .then((result) => {
+          .then(async (result) => {
             if (!result) {
               return
             }
@@ -140,6 +122,44 @@ export const ConnectionStream = (props: {
               // No entity selected. This is benign
               return
             }
+            const artifact = kclManager.artifactGraph.get(entity_id)
+            const sketchBlockArtifact = getSketchBlockForArtifact(
+              artifact,
+              kclManager.artifactGraph
+            )
+            if (sketchBlockArtifact) {
+              sceneInfra.modelingSend({
+                type: 'Edit sketch solve',
+                data: { artifactId: sketchBlockArtifact.id },
+              })
+              return
+            }
+
+            // If the selection is an undeclared region, get the corresponding sketch
+            if (!artifact) {
+              try {
+                const regionSelection =
+                  await getEngineRegionSelectionFromEntity(
+                    entity_id,
+                    kclManager.artifactGraph,
+                    kclManager.ast,
+                    engineCommandManager,
+                    wasmInstance
+                  )
+
+                if (regionSelection && regionSelection.sketchId) {
+                  sceneInfra.modelingSend({
+                    type: 'Edit sketch solve',
+                    data: { artifactId: regionSelection.sketchId },
+                  })
+                }
+
+                return
+              } catch (e) {
+                return e
+              }
+            }
+
             const path = getArtifactOfTypes(
               {
                 key: entity_id,
@@ -178,15 +198,15 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          settingsActor: settings.actor,
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
-            if (project && project.path) {
+            if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
-                projectDirectoryWithoutEndingSlash: project.path,
+                projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }
           })
@@ -202,7 +222,8 @@ export const ConnectionStream = (props: {
       numberOfConnectionAttempts.current,
       props.authToken,
       sceneInfra.camControls.wasDragging,
-      project?.path,
+      projectIORef?.path,
+      settings,
     ]
   )
 
@@ -229,7 +250,7 @@ export const ConnectionStream = (props: {
       canvasRef,
       engineCommandManager,
     }),
-    []
+    [engineCommandManager]
   )
   useOnPageResize(onPageResizeParams)
 
@@ -252,15 +273,15 @@ export const ConnectionStream = (props: {
       isConnecting,
       numberOfConnectionAttempts,
       timeToConnect: TIME_TO_CONNECT,
-      settings: settingsEngine,
       setShowManualConnect,
       sceneInfra,
+      settingsActor: settings.actor,
     }).catch((e) => {
       console.warn(e)
       setShowManualConnect(true)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnecting, numberOfConnectionAttempts, props.authToken])
+  }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
   const onPageIdleParams = useMemo(
     () => ({
@@ -286,9 +307,9 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          settingsActor: settings.actor,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -300,7 +321,7 @@ export const ConnectionStream = (props: {
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
@@ -318,9 +339,9 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          settingsActor: settings.actor,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -328,7 +349,7 @@ export const ConnectionStream = (props: {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
   useOnVitestEngineOnline(onVitestEngineOnline)
 
@@ -345,9 +366,9 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          settingsActor: settings.actor,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -356,7 +377,7 @@ export const ConnectionStream = (props: {
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
@@ -381,9 +402,9 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          settingsActor: settings.actor,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -391,18 +412,22 @@ export const ConnectionStream = (props: {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
 
   const onOfflineToExitSketchModeParams = useMemo(
     () => ({
       callback: () => {
-        modelingSend({ type: 'Cancel' })
+        modelingSend({
+          type: modelingMachineState.matches('sketchSolveMode')
+            ? 'Exit sketch'
+            : 'Cancel',
+        })
       },
       engineCommandManager,
     }),
-    [modelingSend]
+    [modelingMachineState, modelingSend, engineCommandManager]
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
@@ -410,18 +435,18 @@ export const ConnectionStream = (props: {
   const style = useMemo(
     () => ({
       backgroundColor:
-        getResolvedTheme(settings.app.theme.current) === Themes.Light
+        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
           ? 'rgb(250, 250, 250)'
           : 'rgb(30, 30, 30)',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settings.app.theme.current]
+    [settingsValues.app.theme.current]
   )
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
-    []
+    [sceneInfra.camControls.wasDragging]
   )
 
   return (
@@ -456,8 +481,11 @@ export const ConnectionStream = (props: {
         No canvas support
       </canvas>
       <ClientSideScene
-        cameraControls={settings.modeling.mouseControls.current}
-        enableTouchControls={settings.modeling.enableTouchControls.current}
+        cameraControls={settingsValues.modeling.mouseControls.current}
+        enableTouchControls={
+          settingsValues.modeling.enableTouchControls.current
+        }
+        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
       <ViewControlContextMenu
         event="mouseup"
@@ -482,9 +510,9 @@ export const ConnectionStream = (props: {
               isConnecting,
               numberOfConnectionAttempts,
               timeToConnect: TIME_TO_CONNECT,
-              settings: settingsEngine,
               setShowManualConnect,
               sceneInfra,
+              settingsActor: settings.actor,
             }).catch((e) => {
               console.warn(e)
               setShowManualConnect(true)

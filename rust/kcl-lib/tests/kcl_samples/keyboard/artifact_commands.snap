@@ -220,7 +220,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1089,7 +1089,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1404,7 +1404,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1778,7 +1778,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2093,7 +2093,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2408,7 +2408,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2723,7 +2723,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3038,7 +3038,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3353,7 +3353,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3668,7 +3668,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4245,7 +4245,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4560,7 +4560,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4875,7 +4875,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -5481,7 +5481,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -5796,7 +5796,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6111,7 +6111,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6746,7 +6746,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -7061,7 +7061,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -7725,7 +7725,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -8040,7 +8040,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -8355,7 +8355,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.6901961,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -8990,7 +8990,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9419,7 +9419,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9650,7 +9650,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9881,7 +9881,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10112,7 +10112,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10343,7 +10343,7 @@ description: Artifact commands keyboard.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

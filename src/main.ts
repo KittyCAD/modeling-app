@@ -4,13 +4,13 @@ import path from 'path'
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
-import type { Service } from 'bonjour-service'
 import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
   BrowserWindow,
   Menu,
   app,
+  autoUpdater,
   desktopCapturer,
   dialog,
   ipcMain,
@@ -19,6 +19,7 @@ import {
   shell,
   systemPreferences,
 } from 'electron'
+import { autoUpdater as appUpdater } from 'electron-updater'
 import { Issuer } from 'openid-client'
 
 import fs from 'fs'
@@ -33,6 +34,8 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -41,20 +44,26 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
-import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { configureSystemCertificates } from '@src/systemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
-if (os.platform() === 'linux') {
+// Only applied to tests to avoid interfering with users who may be using Wayland
+if (
+  os.platform() === 'linux' &&
+  process.env.NODE_ENV === 'test' &&
+  process.env.CI === 'true'
+) {
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('ozone-platform', 'x11')
 }
 
-// If we're on Windows, pull the local system TLS CAs in
-require('win-ca')
+// Pull user and system CAs from the OS trust store into Node TLS.
+configureSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
+let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 
@@ -66,6 +75,8 @@ const scheduleMenuGC = () => {
     oldMenus = []
   }, 10000)
 }
+
+type MachineApiSignal = 'on' | 'off'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -244,7 +255,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   }
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  // newWindow.webContents.openDevTools()
 
   // Disable refresh shortcut globally for the desktop application
   newWindow.webContents.on('before-input-event', (event, input) => {
@@ -253,7 +264,9 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     }
   })
 
-  if (!process.env.HEADLESS) newWindow.show()
+  newWindow.on('ready-to-show', () => {
+    if (!process.env.HEADLESS) newWindow.show()
+  })
 
   return newWindow
 }
@@ -313,6 +326,10 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
+  if (isInstallingUpdate) {
+    return
+  }
+
   app.quit()
 })
 
@@ -322,6 +339,8 @@ app.on('window-all-closed', () => {
 app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
+
+  registerFileProtocolCsp()
 
   // Create the mainWindow
   mainWindow = createWindow()
@@ -342,10 +361,30 @@ app.resizeWindow = async (width: number, height: number) => {
 
 // @ts-ignore can't declaration merge with App
 app.testProperty = {}
+// @ts-ignore can't declaration merge with App
+app.machineApiState = 'off' as MachineApiSignal
+
+const getMachineApiState = (): MachineApiSignal =>
+  // @ts-ignore can't declaration merge with App
+  app.machineApiState
+
+const setMachineApiState = (signal: MachineApiSignal) => {
+  // @ts-ignore can't declaration merge with App
+  app.machineApiState = signal
+}
 
 ipcMain.handle('app.testProperty', (event, propertyName) => {
   // @ts-ignore can't declaration merge with App
   return app.testProperty[propertyName]
+})
+
+ipcMain.handle('machine-api.get-state', () => {
+  return getMachineApiState() === 'on'
+})
+
+ipcMain.handle('machine-api.set-state', (_event, signal: MachineApiSignal) => {
+  setMachineApiState(signal)
+  return getMachineApiState() === 'on'
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
@@ -466,30 +505,16 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
-  const timeoutAfterMs = 5000
-  return new Promise((resolve, reject) => {
-    // if it takes too long reject this promise
-    setTimeout(() => resolve(null), timeoutAfterMs)
-    const bonjourEt = new Bonjour({}, (error: Error) => {
+  if (getMachineApiState() !== 'on') {
+    return null
+  }
+
+  return discoverMachineApi({
+    createBonjour: (onError) => new Bonjour({}, onError),
+    onError: (error) => {
       console.log('An issue with Bonjour services was encountered!')
       console.error(error)
-      resolve(null)
-    })
-    bonjourEt.find(
-      { protocol: 'tcp', type: 'machine-api' },
-      (service: Service) => {
-        console.log('Found machine API!', JSON.stringify(service))
-        if (!service.addresses || service.addresses?.length === 0) {
-          console.log('No addresses found for machine API!')
-          return resolve(null)
-        }
-        const ip = service.addresses[0]
-        const port = service.port
-        // We want to return the ip address of the machine API.
-        console.log(`Machine API found at ${ip}:${port}`)
-        resolve(`${ip}:${port}`)
-      }
-    )
+    },
   })
 })
 
@@ -538,16 +563,16 @@ app.on('ready', () => {
     return
   }
 
-  const autoUpdater = getAutoUpdater()
-  // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
-  // so at the moment this isn't worth enabling
-  autoUpdater.disableDifferentialDownload = true
+  // TODO: check if we can enable this someday https://github.com/KittyCAD/modeling-app/issues/4120
+  appUpdater.disableDifferentialDownload = true
+  // Needed for the rollback process at .github/ISSUE_TEMPLATE/release.md
+  appUpdater.allowDowngrade = true
 
   // Check for updates in the background at startup and then every 15 minutes
   let backgroundCheckingForUpdates = false
   const checkForUpdatesBackground = () => {
     backgroundCheckingForUpdates = true
-    autoUpdater
+    appUpdater
       .checkForUpdates()
       .catch(reportRejection)
       .finally(() => {
@@ -559,30 +584,30 @@ app.on('ready', () => {
   setTimeout(checkForUpdatesBackground, oneSecond)
   setInterval(checkForUpdatesBackground, fifteenMinutes)
 
-  autoUpdater.on('checking-for-update', () => {
+  appUpdater.on('checking-for-update', () => {
     console.log('checking-for-update')
     if (!backgroundCheckingForUpdates) {
       mainWindow?.webContents.send('update-checking')
     }
   })
 
-  autoUpdater.on('update-not-available', (info) => {
+  appUpdater.on('update-not-available', (info) => {
     console.log('update-not-available', info)
     if (!backgroundCheckingForUpdates) {
       mainWindow?.webContents.send('update-not-available')
     }
   })
 
-  autoUpdater.on('error', (error) => {
+  appUpdater.on('error', (error) => {
     console.error('update-error', error)
     mainWindow?.webContents.send('update-error', error)
   })
 
-  autoUpdater.on('update-available', (info) => {
+  appUpdater.on('update-available', (info) => {
     console.log('update-available', info)
   })
 
-  autoUpdater.prependOnceListener('download-progress', (progress) => {
+  appUpdater.prependOnceListener('download-progress', (progress) => {
     // For now, we'll send nothing and just start a loading spinner.
     // See below for a TODO to send progress data to the renderer.
     console.log('update-download-start', {
@@ -591,13 +616,13 @@ app.on('ready', () => {
     mainWindow?.webContents.send('update-download-start', progress)
   })
 
-  autoUpdater.on('download-progress', (progress) => {
+  appUpdater.on('download-progress', (progress) => {
     // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
     // send this data to mainWindow to show a progress bar for the download.
     console.log('download-progress', progress)
   })
 
-  autoUpdater.on('update-downloaded', (info) => {
+  appUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
     mainWindow?.webContents.send('update-downloaded', {
       version: info.version,
@@ -605,11 +630,56 @@ app.on('ready', () => {
     })
   })
 
+  // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
+  const prepareMacUpdateInstall = () => {
+    const beforeQuitListeners = app.listeners('before-quit')
+    app.removeAllListeners('before-quit')
+    for (const browserWindow of BrowserWindow.getAllWindows()) {
+      browserWindow.removeAllListeners('close')
+    }
+
+    autoUpdater.once('before-quit-for-update', () => {
+      // Do any before-quit cleanup here
+      for (const listener of beforeQuitListeners) {
+        try {
+          listener.call(app, {
+            preventDefault: () => {
+              // `preventDefault` during update install causes quit+install to hang.
+            },
+          })
+        } catch (error) {
+          console.error(
+            'Failed to run before-quit listener during update install',
+            error
+          )
+        }
+      }
+
+      // Force app to exit
+      app.exit()
+    })
+  }
+
   ipcMain.handle('app.restart', () => {
-    autoUpdater.quitAndInstall()
+    if (isInstallingUpdate) {
+      return
+    }
+
+    isInstallingUpdate = true
+    if (process.platform === 'darwin') {
+      prepareMacUpdateInstall()
+    }
+
+    try {
+      appUpdater.quitAndInstall()
+    } catch (error) {
+      isInstallingUpdate = false
+      return Promise.reject(error)
+    }
   })
+
   ipcMain.handle('app.checkForUpdates', () => {
-    return autoUpdater.checkForUpdates()
+    return appUpdater.checkForUpdates()
   })
 })
 

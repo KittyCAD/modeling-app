@@ -601,7 +601,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "tool_ids": [
           "[uuid]"
         ],
-        "tolerance": 0.0000001
+        "separate_bodies": false,
+        "tolerance": 0.00000012699999999999999
       }
     },
     {
@@ -614,7 +615,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.80784315,
           "g": 0.03529412,
           "b": 0.03529412,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1582,7 +1583,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1611,7 +1611,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1808,7 +1807,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1837,7 +1835,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2034,7 +2031,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2063,7 +2059,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2260,7 +2255,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2289,7 +2283,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2486,7 +2479,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2515,7 +2507,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2678,11 +2669,11 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 95.25,
-            "y": -5.08,
+            "x": 43.18000000000001,
+            "y": 0.0,
             "z": 0.0
           },
-          "relative": false
+          "relative": true
         }
       }
     },
@@ -2762,7 +2753,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 89.64329758345207,
+            "x": 75.67329758345208,
             "y": 0.0,
             "z": 0.0
           },
@@ -3587,7 +3578,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 92.456,
+          "x": 91.01915899556963,
           "y": 0.0,
           "z": 0.0
         }
@@ -3612,7 +3603,7 @@ description: Artifact commands car-wheel-assembly.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 92.456,
+          "radius": 91.01915899556963,
           "start": {
             "unit": "degrees",
             "value": 0.0
@@ -3677,8 +3668,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.092454440297411,
-          "y": 103.87264045736022,
+          "x": 5.137302040057668,
+          "y": 112.42020858286422,
           "z": 0.0
         }
       }
@@ -3699,8 +3690,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.917454440297412,
-            "y": 103.87264045736022
+            "x": 1.9623020400576685,
+            "y": 112.42020858286422
           },
           "radius": 3.175,
           "start": {
@@ -3749,8 +3740,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 34.86169805381141,
-          "y": 118.25636706091805,
+          "x": 25.30182962557916,
+          "y": 125.48748658132557,
           "z": 0.0
         }
       }
@@ -3771,8 +3762,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 31.68669805381141,
-            "y": 118.25636706091805
+            "x": 22.12682962557916,
+            "y": 125.48748658132557
           },
           "radius": 3.175,
           "start": {
@@ -3821,8 +3812,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 60.285380138244825,
-          "y": 128.2720139621468,
+          "x": 49.53894383080738,
+          "y": 134.6506700053816,
           "z": 0.0
         }
       }
@@ -3843,8 +3834,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 57.11038013824483,
-            "y": 128.2720139621468
+            "x": 46.363943830807386,
+            "y": 134.6506700053816
           },
           "radius": 3.175,
           "start": {
@@ -4686,7 +4677,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4703,7 +4694,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4720,7 +4711,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4737,7 +4728,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4754,7 +4745,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4771,7 +4762,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4788,7 +4779,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4805,7 +4796,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4822,7 +4813,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4839,7 +4830,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4856,7 +4847,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4873,7 +4864,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4890,7 +4881,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4907,7 +4898,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4924,7 +4915,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4941,7 +4932,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4958,7 +4949,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4975,7 +4966,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -4992,7 +4983,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5009,7 +5000,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5026,7 +5017,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5043,7 +5034,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5060,7 +5051,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5077,7 +5068,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5094,7 +5085,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5111,7 +5102,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5128,7 +5119,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5145,7 +5136,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5162,7 +5153,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5179,7 +5170,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5196,7 +5187,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5213,7 +5204,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5230,7 +5221,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5247,7 +5238,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5264,7 +5255,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5281,7 +5272,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5298,7 +5289,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5315,7 +5306,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5332,7 +5323,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.9411765,
           "g": 0.84313726,
           "b": 0.47843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -5659,7 +5650,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.039215688,
           "g": 0.039215688,
           "b": 0.039215688,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.2,
@@ -5681,7 +5672,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -6238,7 +6228,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "[uuid]",
           "[uuid]"
         ],
-        "tolerance": 0.0000001
+        "separate_bodies": false,
+        "tolerance": 0.00000012699999999999999
       }
     },
     {
@@ -7260,7 +7251,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7332,7 +7322,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "[uuid]",
           "[uuid]"
         ],
-        "tolerance": 0.0000001
+        "separate_bodies": false,
+        "tolerance": 0.00000012699999999999999
       }
     },
     {
@@ -7366,7 +7357,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7383,7 +7374,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7400,7 +7391,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7417,7 +7408,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7434,7 +7425,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7451,7 +7442,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7468,7 +7459,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,
@@ -7484,7 +7475,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "make_plane",
         "origin": {
           "x": 57.15,
-          "y": -26.669999999999998,
+          "y": -16.675,
           "z": 0.0
         },
         "x_axis": {
@@ -7725,7 +7716,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,

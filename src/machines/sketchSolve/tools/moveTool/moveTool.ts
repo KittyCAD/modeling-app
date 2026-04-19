@@ -1,3 +1,4 @@
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
   ApiObject,
   ExistingSegmentCtor,
@@ -5,62 +6,141 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
-import {
-  htmlHelper,
-  SEGMENT_TYPE_LINE,
-  SEGMENT_TYPE_POINT,
-  SEGMENT_TYPE_ARC,
-  ARC_SEGMENT_BODY,
-  updateSegmentHover,
-} from '@src/machines/sketchSolve/segments'
-import {
-  type Object3D,
-  type OrthographicCamera,
-  type PerspectiveCamera,
-  Box3,
-  ExtrudeGeometry,
-  Group,
-  Vector3,
-  Mesh,
-  Vector2,
-} from 'three'
-import {
-  SKETCH_LAYER,
-  SKETCH_SOLVE_GROUP,
-} from '@src/clientSideScene/sceneUtils'
-import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import {
-  getParentGroup,
-  STRAIGHT_SEGMENT_BODY,
-} from '@src/clientSideScene/sceneConstants'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { Coords2d } from '@src/lang/util'
+import { type NumericSuffix, baseUnitToNumericSuffix } from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { isArray, roundOff } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
+import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
-  buildSegmentCtorFromObject,
+  axisConstraintIncludesOrigin,
+  getAxisConstraintPointIds,
+  getCoincidentCluster,
+  isConstraint,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  type ConstraintHoverPopup,
+  findInvisibleConstraintsForSegment,
+  isConstrainingSegment,
+  isInvisibleConstraintObject,
+} from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+import {
+  findClosestApiObjects,
+  getSketchHoverDistance,
+} from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import {
+  ORIGIN_TARGET,
+  type SketchSolveSelectionId,
   type SolveActionArgs,
+  buildSegmentCtorFromObject,
+  getObjectSelectionIds,
+  isObjectSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import {
-  AREA_SELECT_BORDER_WIDTH,
-  LINE_EXTENSION_SIZE,
-  areAllPointsContained,
-  calculateBoxBounds,
-  calculateCornerLineStyles,
-  calculateLabelPositioning,
-  calculateLabelStyles,
-  calculateSelectionBoxProperties,
-  doesLineSegmentIntersectBox,
-  doesSegmentIntersectSelectionBox,
-  extractTrianglesFromMesh,
+  type SnappingCandidate,
+  allowSnapping,
+  getConstraintForSnapTarget,
+  getObjectIdForSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
+  getSnappingCandidates,
+} from '@src/machines/sketchSolve/snapping'
+import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
+import {
+  type SelectionBoxVisualState,
+  findContainedSegments,
+  findIntersectingSegments,
   isIntersectionSelectionMode,
   project3DToScreen,
-  transformToLocalSpace,
+  removeSelectionBox,
+  updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { Group, type Object3D, Vector2, Vector3 } from 'three'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+
+type ClosestSelectionTarget = {
+  distance: number
+  selectionId: SketchSolveSelectionId
+  apiObject: ApiObject | null
+}
+
+function getClosestSelectionTarget(
+  mousePosition: Coords2d,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+): ClosestSelectionTarget | null {
+  const closestObject = findClosestApiObjects(
+    mousePosition,
+    objects,
+    sceneInfra
+  )[0]
+
+  const selectionCandidates: ClosestSelectionTarget[] = []
+  if (closestObject) {
+    selectionCandidates.push({
+      distance: closestObject.distance,
+      selectionId: closestObject.apiObject.id,
+      apiObject: closestObject.apiObject,
+    })
+  }
+
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const hoverDistance = getSketchHoverDistance(
+    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
+  )
+  const originDistance = distance2d(mousePosition, [0, 0])
+
+  if (originDistance < hoverDistance) {
+    selectionCandidates.push({
+      distance: originDistance,
+      selectionId: ORIGIN_TARGET,
+      apiObject: null,
+    })
+  }
+
+  selectionCandidates.sort((a, b) => {
+    const priorityDelta = getSelectionPriority(a) - getSelectionPriority(b)
+    if (priorityDelta !== 0) {
+      return priorityDelta
+    }
+    return a.distance - b.distance
+  })
+  return selectionCandidates[0] ?? null
+}
+
+// Priorities are similar to snapping/getSnappingCandidates:
+// - point like objects (point segment, origin) should take precedence
+// However:
+// - axes cannot be selected, but they can be snapped to
+// - only points can be snapped to, other segment types cannot (for now)
+function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
+  if (isInvisibleConstraintObject(selectionTarget.apiObject)) {
+    return 0
+  }
+  if (isPointSegment(selectionTarget.apiObject)) {
+    return 1
+  }
+  if (selectionTarget.selectionId === 'origin') {
+    return 2
+  }
+
+  return 3
+}
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -144,303 +224,206 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
+  } else if (baseCtor.type === 'Circle') {
+    const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
+    const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
+
+    return {
+      type: 'Circle',
+      center: newCenter,
+      start: newStart,
+      construction: baseCtor.construction,
+    }
   }
 
   return baseCtor
 }
 
-/**
- * Default implementation of findPointSegmentElement that queries the DOM.
- * This can be overridden in tests for better testability.
- */
-function defaultFindPointSegmentElement(segmentId: number): HTMLElement | null {
-  // Find the element with the matching segment_id
-  const allElements = document.querySelectorAll('[data-segment_id]')
-  for (const el of allElements) {
-    if (
-      el instanceof HTMLElement &&
-      el.dataset.segment_id === String(segmentId)
-    ) {
-      return el
+function getDragPointSnappingCandidate({
+  draggedEntityId,
+  selectedIds,
+  sceneGraphDelta,
+  sketchId,
+  mousePosition,
+  sceneInfra,
+}: {
+  draggedEntityId: number | null
+  selectedIds: number[]
+  sceneGraphDelta: SceneGraphDelta
+  sketchId: number
+  mousePosition: Coords2d
+  sceneInfra: SceneInfra
+}): SnappingCandidate | null {
+  if (draggedEntityId === null) {
+    return null
+  }
+  const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
+  if (!isPointSegment(draggedObject)) {
+    // snapping only works with points for now
+    return null
+  }
+
+  const selectedIdsWithoutOwner = selectedIds.filter(
+    (selectedId) => selectedId !== draggedObject.kind.segment.owner
+  )
+  if (
+    selectedIdsWithoutOwner.length >= 2 ||
+    (selectedIdsWithoutOwner.length === 1 &&
+      selectedIdsWithoutOwner[0] !== draggedEntityId)
+  ) {
+    // Drag snapping only supports a single dragged point, but allow the point's
+    // owner segment to remain selected because arc/circle point drags often keep
+    // the parent segment selected in the move tool.
+    return null
+  }
+
+  const coincidentPointIds = getCoincidentCluster(
+    draggedEntityId,
+    sceneGraphDelta.new_graph.objects
+  )
+  const excludedSegmentIds = new Set<number>()
+  for (const pointId of coincidentPointIds) {
+    const point = sceneGraphDelta.new_graph.objects[pointId]
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
+      excludedSegmentIds.add(point.kind.segment.owner)
     }
   }
-  return null
+
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    sceneGraphDelta.new_graph.objects,
+    sketchId
+  )
+  // Find the closest point to snap to which is not already in the same
+  // coincident point cluster as the dragged point.
+  const candidate =
+    getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
+      (candidate) => {
+        if (candidate.target.type === 'point') {
+          return !coincidentPointIds.includes(candidate.target.id)
+        }
+
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        return (
+          snapTargetSegmentId === null ||
+          !excludedSegmentIds.has(snapTargetSegmentId)
+        )
+      }
+    ) ?? null
+
+  return candidate
+}
+
+function hasCoincidentConstraintWithOrigin(
+  pointId: number,
+  objects: ApiObject[]
+) {
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      obj.kind.constraint.segments.includes(pointId) &&
+      obj.kind.constraint.segments.includes('ORIGIN')
+  )
+}
+
+function hasCoincidentConstraintForSnapTarget(
+  pointId: number,
+  target: SnappingCandidate['target'],
+  objects: ApiObject[]
+) {
+  const coincidentSegments = getCoincidentSegmentsForSnapTarget(pointId, target)
+  if (coincidentSegments === null) {
+    return false
+  }
+
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Coincident') &&
+      coincidentSegments.every((segment) =>
+        (obj.kind.constraint.segments as ConstraintSegment[]).includes(segment)
+      )
+  )
+}
+
+function getAxisConstraintWithOrigin(
+  pointId: number,
+  constraintType: 'Horizontal' | 'Vertical',
+  objects: ApiObject[]
+) {
+  return (
+    objects.find(
+      (obj) =>
+        isConstraint(obj, constraintType) &&
+        getAxisConstraintPointIds(obj.kind.constraint).includes(pointId) &&
+        axisConstraintIncludesOrigin(obj.kind.constraint)
+    ) ?? null
+  )
 }
 
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
- * Handles initialization of drag state and point segment visual feedback.
+ * Handles initialization of drag state.
  *
  * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
- * @param setDraggingPointElement - Setter for the currently dragging point element
- * @param getDraggingPointElement - Getter for the currently dragging point element
- * @param findPointSegmentElement - Function to find a point segment element by ID (defaults to DOM query)
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
-  setDraggingPointElement,
-  getDraggingPointElement,
-  findPointSegmentElement = defaultFindPointSegmentElement,
+  setDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
+  getHoveredId,
+  dismissConstraintHoverPopup,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  setDraggingPointElement: (element: HTMLElement | null) => void
-  getDraggingPointElement: () => HTMLElement | null
-  findPointSegmentElement?: (segmentId: number) => HTMLElement | null
+  setDraggedEntityId: (entityId: number | null) => void
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
+  getHoveredId: () => SketchSolveSelectionId | null
+  dismissConstraintHoverPopup: () => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return ({ intersectionPoint, selected }) => {
-    // reset on drag start
+  return ({ intersectionPoint }) => {
+    dismissConstraintHoverPopup()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
-
-    // Check if we're starting a drag on a point segment (CSS2DObject)
-    // sceneInfra now sets selected to the parent Group for CSS2DObjects
-    if (selected instanceof Group) {
-      const segmentId = Number(selected.name)
-      if (!Number.isNaN(segmentId)) {
-        // Check if this is a point segment by looking for the CSS2DObject
-        const hasCSS2DObject = selected.children.some(
-          (child) => child.userData?.type === 'handle'
-        )
-        if (hasCSS2DObject) {
-          setDraggingPointElement(findPointSegmentElement(segmentId))
-          // Set opacity to indicate dragging
-          const element = getDraggingPointElement()
-          if (element) {
-            const innerCircle = element.querySelector('div')
-            if (innerCircle) {
-              innerCircle.style.opacity = '0.7'
-            }
-          }
-          return
-        }
-      }
-    }
-    setDraggingPointElement(null)
+    setLastPreviewSegmentsToEdit(null)
+    const hoveredId = getHoveredId()
+    setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
 }
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
- * Restores visual feedback for point segments after dragging ends.
+ * Syncs all necessary state between the frontend and the solver.
  *
- * @param getDraggingPointElement - Getter for the currently dragging point element
- * @param setDraggingPointElement - Setter to clear the dragging point element
- * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
+ * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
-  getDraggingPointElement,
-  setDraggingPointElement,
-  findInnerCircle = (element: HTMLElement): HTMLElement | null => {
-    const found = element.querySelector('[data-point-inner-circle="true"]')
-    // querySelector returns Element | null, but we know it's an HTMLElement (a div)
-    // Use type guard to narrow to HTMLElement
-    if (found instanceof HTMLElement) {
-      return found
-    }
-    return null
-  },
+  getDraggedEntityId,
+  setDraggedEntityId,
+  onComplete,
 }: {
-  getDraggingPointElement: () => HTMLElement | null
-  setDraggingPointElement: (element: HTMLElement | null) => void
-  findInnerCircle?: (element: HTMLElement) => HTMLElement | null
+  getDraggedEntityId: () => number | null
+  setDraggedEntityId: (entityId: number | null) => void
+  onComplete: (data: {
+    draggedEntityId: number | null
+    intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+    mouseEvent: MouseEvent
+  }) => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
-    // Restore opacity for point segment if we were dragging one
-    const element = getDraggingPointElement()
-    if (element) {
-      const innerCircle = findInnerCircle(element)
-      if (innerCircle) {
-        // Restore full opacity to indicate dragging has ended
-        innerCircle.style.opacity = '1'
-      }
-    }
-    // Always clear the dragging state, even if no element was being dragged
-    // This ensures state is always clean after drag ends
-    setDraggingPointElement(null)
-  }
-}
-
-/**
- * Finds the segment ID of the entity under the cursor.
- * Handles both Group objects (from CSS2DObject parents) and regular three.js objects.
- *
- * @param selected - The selected object from the scene
- * @param getParentGroup - Function to find parent group for non-Group objects
- * @returns The segment ID if found, null otherwise
- */
-export function findEntityUnderCursorId(
-  selected: Object3D | undefined,
-  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
-): number | null {
-  if (!selected) {
-    return null
-  }
-
-  // Check if selected is already a Group with a numeric name (segment group)
-  // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
-  if (selected instanceof Group) {
-    const groupId = Number(selected.name)
-    if (!Number.isNaN(groupId)) {
-      // Check if it's a point or line segment by userData.type or by checking children
-      const isPointSegment =
-        selected.userData?.type === 'point' ||
-        selected.children.some((child) => child.userData?.type === 'handle')
-      const isLineSegment =
-        selected.userData?.type === SEGMENT_TYPE_LINE ||
-        selected.children.some(
-          (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
-        )
-      const isArcSegment =
-        selected.userData?.type === SEGMENT_TYPE_ARC ||
-        selected.children.some(
-          (child) => child.userData?.type === ARC_SEGMENT_BODY
-        )
-
-      if (isPointSegment || isLineSegment || isArcSegment) {
-        return groupId
-      }
-    }
-  }
-
-  // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
-  const groupUnderCursor = getParentGroup(selected, [
-    SEGMENT_TYPE_POINT,
-    SEGMENT_TYPE_LINE,
-    SEGMENT_TYPE_ARC,
-  ])
-  if (groupUnderCursor) {
-    const groupId = Number(groupUnderCursor.name)
-    return Number.isNaN(groupId) ? null : groupId
-  }
-
-  return null
-}
-
-/**
- * Creates the onMouseEnter callback for sketch solve hover operations.
- * Handles highlighting line segments when the mouse enters them to provide visual feedback.
- *
- * @param updateLineSegmentHover - Function to update the hover state of a line segment
- * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
- * @param setLastHoveredMesh - Function to store the currently hovered mesh
- * @returns The onMouseEnter callback function
- */
-export function createOnMouseEnterCallback({
-  updateSegmentHover,
-  getSelectedIds,
-  setLastHoveredMesh,
-  getDraftEntityIds,
-}: {
-  updateSegmentHover: (
-    mesh: Mesh,
-    isHovering: boolean,
-    selectedIds: Array<number>,
-    draftEntityIds?: Array<number>
-  ) => void
-  getSelectedIds: () => Array<number>
-  setLastHoveredMesh: (mesh: Mesh | null) => void
-  getDraftEntityIds?: () => Array<number> | undefined
-}): (arg: {
-  selected?: Object3D
-  isAreaSelectActive?: boolean
-  mouseEvent: MouseEvent
-  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
-}) => void {
-  return ({ selected, isAreaSelectActive }) => {
-    // Disable hover highlighting during area select to avoid visual conflicts
-    if (isAreaSelectActive) {
-      return
-    }
-    if (!selected) return
-
-    // Only highlight segment meshes (lines or arcs), not points or other objects
-    const mesh = selected
-    if (
-      mesh instanceof Mesh &&
-      (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-        mesh.userData?.type === ARC_SEGMENT_BODY)
-    ) {
-      const allSelectedIds = getSelectedIds()
-      const draftEntityIds = getDraftEntityIds?.()
-      // Highlight the line segment to show it's interactive
-      updateSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
-      // Store the hovered mesh so we can clear it on mouse leave
-      setLastHoveredMesh(mesh)
-    }
-  }
-}
-
-/**
- * Creates the onMouseLeave callback for sketch solve hover operations.
- * Handles clearing hover highlighting when the mouse leaves line segments.
- *
- * @param updateLineSegmentHover - Function to update the hover state of a line segment
- * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
- * @param getLastHoveredMesh - Function to get the previously hovered mesh
- * @param setLastHoveredMesh - Function to clear the stored hovered mesh
- * @returns The onMouseLeave callback function
- */
-export function createOnMouseLeaveCallback({
-  updateSegmentHover,
-  getSelectedIds,
-  getLastHoveredMesh,
-  setLastHoveredMesh,
-  getDraftEntityIds,
-}: {
-  updateSegmentHover: (
-    mesh: Mesh,
-    isHovering: boolean,
-    selectedIds: Array<number>,
-    draftEntityIds?: Array<number>
-  ) => void
-  getSelectedIds: () => Array<number>
-  getLastHoveredMesh: () => Mesh | null
-  setLastHoveredMesh: (mesh: Mesh | null) => void
-  getDraftEntityIds?: () => Array<number> | undefined
-}): (arg: {
-  selected?: Object3D
-  isAreaSelectActive?: boolean
-  mouseEvent: MouseEvent
-  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
-}) => void {
-  return ({ selected, isAreaSelectActive }) => {
-    // Disable hover highlighting during area select to avoid visual conflicts
-    if (isAreaSelectActive) {
-      return
-    }
-
-    // Clear hover state for the previously hovered mesh
-    const hoveredMesh = getLastHoveredMesh()
-    if (hoveredMesh) {
-      const allSelectedIds = getSelectedIds()
-      const draftEntityIds = getDraftEntityIds?.()
-      // Remove hover highlighting from the previously hovered segment
-      updateSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
-      setLastHoveredMesh(null)
-    }
-
-    // Also handle if selected is provided (for safety, in case the mesh wasn't tracked)
-    if (selected) {
-      const mesh = selected
-      if (
-        mesh instanceof Mesh &&
-        (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          mesh.userData?.type === ARC_SEGMENT_BODY)
-      ) {
-        const allSelectedIds = getSelectedIds()
-        const draftEntityIds = getDraftEntityIds?.()
-        // Ensure hover is cleared even if the mesh wasn't in our tracking
-        updateSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
-      }
+  return async ({ intersectionPoint, mouseEvent }) => {
+    const draggedEntityId = getDraggedEntityId()
+    try {
+      await onComplete({ draggedEntityId, intersectionPoint, mouseEvent })
+    } finally {
+      setDraggedEntityId(null)
     }
   }
 }
@@ -449,49 +432,234 @@ export function createOnMouseLeaveCallback({
  * Creates the onClick callback for sketch solve click operations.
  * Handles selecting segments when clicked and clearing selection when clicking on empty space.
  *
- * @param getParentGroup - Function to find parent group for non-Group objects
  * @param onUpdateSelectedIds - Function to update the selected IDs in the state machine
  * @returns The onClick callback function
  */
 export function createOnClickCallback({
-  getParentGroup,
+  getApiObjects,
+  sceneInfra,
   onUpdateSelectedIds,
+  onEditConstraint,
 }: {
-  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
+  getApiObjects: () => ApiObject[]
+  sceneInfra: SceneInfra
   onUpdateSelectedIds: (data: {
-    selectedIds: Array<number>
+    selectedIds: Array<SketchSolveSelectionId>
     duringAreaSelectIds: Array<number>
+    replaceExistingSelection?: boolean
   }) => void
+  onEditConstraint: (constraintId: number) => void
 }): (arg: {
   selected?: Object3D
   mouseEvent: MouseEvent
   intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected }) => {
-    // Find the segment group under the cursor using the same logic as drag operations
-    const entityUnderCursorId = findEntityUnderCursorId(
-      selected,
-      getParentGroup
-    )
+  return async ({ mouseEvent, intersectionPoint }) => {
+    let closestSelection: ClosestSelectionTarget | null = null
+    let mousePosition: Coords2d | undefined
 
-    if (entityUnderCursorId !== null) {
-      // Segment found - select it and clear any area selection
+    if (intersectionPoint) {
+      mousePosition = [
+        intersectionPoint.twoD.x,
+        intersectionPoint.twoD.y,
+      ] as Coords2d
+
+      closestSelection = getClosestSelectionTarget(
+        mousePosition,
+        getApiObjects(),
+        sceneInfra
+      )
+    }
+
+    const selectedApiObject = closestSelection?.apiObject ?? undefined
+
+    if (
+      mouseEvent.detail === 2 &&
+      isConstraint(selectedApiObject) &&
+      !isInvisibleConstraintObject(selectedApiObject)
+    ) {
+      // Double clicking on Constraint
+      onEditConstraint(selectedApiObject.id)
+    } else {
+      const shouldReplaceSelection = isConstraint(selectedApiObject)
+      if (
+        mousePosition &&
+        selectedApiObject &&
+        isInvisibleConstraintObject(selectedApiObject)
+      ) {
+        pinSelectedInvisibleConstraintPopup(
+          selectedApiObject.id,
+          mousePosition,
+          getApiObjects(),
+          sceneInfra
+        )
+      }
       onUpdateSelectedIds({
-        selectedIds: [entityUnderCursorId],
+        selectedIds: closestSelection ? [closestSelection.selectionId] : [],
         duringAreaSelectIds: [],
+        ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
       })
+    }
+  }
+}
+
+type ScreenRectHitObject = {
+  type: 'screenRect'
+  center: [number, number, number]
+  sizePx: [number, number]
+}
+
+function isScreenRectHitObject(
+  hitObject: unknown
+): hitObject is ScreenRectHitObject {
+  return (
+    typeof hitObject === 'object' &&
+    hitObject !== null &&
+    'type' in hitObject &&
+    hitObject.type === 'screenRect' &&
+    'center' in hitObject &&
+    isArray(hitObject.center) &&
+    hitObject.center.length === 3
+  )
+}
+
+function pinSelectedInvisibleConstraintPopup(
+  constraintId: number,
+  mousePosition: Coords2d,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+) {
+  const camera = sceneInfra.camControls?.camera
+  const rendererElement = sceneInfra.renderer?.domElement
+  if (!camera || !rendererElement) {
+    return
+  }
+
+  const constraintGroup = sceneInfra.scene.getObjectByName(String(constraintId))
+  if (!(constraintGroup instanceof Group) || !constraintGroup.visible) {
+    return
+  }
+
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const viewportSize = new Vector2(
+    rendererElement.clientWidth,
+    rendererElement.clientHeight
+  )
+  const mouseScreenPosition = localToScreen(
+    [mousePosition[0], mousePosition[1], 0],
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+  const closestPopup = findClosestConstraintHoverPopup(
+    constraintGroup,
+    mouseScreenPosition,
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+
+  if (closestPopup) {
+    const relatedConstraintIds = findInvisibleConstraintsForSegment(
+      objects[closestPopup.segmentId],
+      objects
+    )
+    relatedConstraintIds.forEach((relatedConstraintId) => {
+      const relatedConstraintGroup = sceneInfra.scene.getObjectByName(
+        String(relatedConstraintId)
+      )
+      if (!(relatedConstraintGroup instanceof Group)) {
+        return
+      }
+
+      relatedConstraintGroup.userData.selectedInvisibleConstraintPopup = {
+        ownerConstraintId: constraintId,
+        segmentId: closestPopup.segmentId,
+        position: closestPopup.position,
+      }
+    })
+  }
+}
+
+function findClosestConstraintHoverPopup(
+  constraintGroup: Group,
+  mouseScreenPosition: Vector2,
+  camera: Parameters<typeof project3DToScreen>[1],
+  viewportSize: Vector2,
+  sketchSolveGroup: Group | null
+): ConstraintHoverPopup | null {
+  let closestPopup: ConstraintHoverPopup | null = null
+  let closestDistance = Number.POSITIVE_INFINITY
+
+  constraintGroup.traverse((child) => {
+    const hitObjects = child.userData.hitObjects
+    const popup = child.userData.constraintHoverPopup
+    if (!isArray(hitObjects) || !isConstraintHoverPopup(popup)) {
       return
     }
 
-    // No segment found - clicked on blank space, clear selection
-    // sceneInfra should have detected CSS2DObjects in onMouseDown, so if we get here
-    // with no group, it means we clicked on nothing
-    onUpdateSelectedIds({
-      selectedIds: [],
-      duringAreaSelectIds: [],
+    hitObjects.forEach((hitObject) => {
+      if (!isScreenRectHitObject(hitObject)) {
+        return
+      }
+
+      const hitScreenPosition = localToScreen(
+        hitObject.center,
+        camera,
+        viewportSize,
+        sketchSolveGroup
+      )
+      const distance = mouseScreenPosition.distanceTo(hitScreenPosition)
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closestPopup = popup
+      }
     })
+  })
+
+  return closestPopup
+}
+
+function localToScreen(
+  point: [number, number, number],
+  camera: Parameters<typeof project3DToScreen>[1],
+  viewportSize: Vector2,
+  sketchSolveGroup: Group | null
+) {
+  const worldPoint = new Vector3(point[0], point[1], point[2])
+  if (sketchSolveGroup) {
+    sketchSolveGroup.localToWorld(worldPoint)
   }
+
+  return project3DToScreen(worldPoint, camera, viewportSize)
+}
+
+const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
+
+type ConstraintHoverPopupEntry = {
+  popup: ConstraintHoverPopup
+  hideTimeoutId: ReturnType<typeof setTimeout> | null
+}
+
+function areSameConstraintHoverPopups(
+  popups: ConstraintHoverPopup[],
+  previousPopups: ConstraintHoverPopup[]
+) {
+  return (
+    popups.length === previousPopups.length &&
+    popups.every((popup, index) => {
+      const previousPopup = previousPopups[index]
+      return (
+        popup.segmentId === previousPopup?.segmentId &&
+        popup.position[0] === previousPopup?.position?.[0] &&
+        popup.position[1] === previousPopup?.position?.[1]
+      )
+    })
+  )
 }
 
 /**
@@ -502,6 +670,7 @@ export function createOnClickCallback({
  * @param setIsSolveInProgress - Setter to mark solve as in progress/complete
  * @param getLastSuccessfulDragFromPoint - Getter for the last successful drag start point
  * @param setLastSuccessfulDragFromPoint - Setter to update the last successful drag start point
+ * @param getDraggedEntityId - Getter for the entity captured at drag start
  * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome)
  * @param editSegments - Function to edit segments via Rust context
  * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
@@ -513,16 +682,24 @@ export function createOnDragCallback({
   setIsSolveInProgress,
   getLastSuccessfulDragFromPoint,
   setLastSuccessfulDragFromPoint,
+  getDraggedEntityId,
+  setLastPreviewSegmentsToEdit,
   getContextData,
   editSegments,
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
+  sceneInfra,
+  onUpdateDragSnapping,
 }: {
   getIsSolveInProgress: () => boolean
   setIsSolveInProgress: (value: boolean) => void
   getLastSuccessfulDragFromPoint: () => Vector2
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  getDraggedEntityId: () => number | null
+  setLastPreviewSegmentsToEdit: (
+    segmentsToEdit: Array<ExistingSegmentCtor> | null
+  ) => void
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -543,16 +720,19 @@ export function createOnDragCallback({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
+    suppressExecOutcomeIssues?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
+  sceneInfra: SceneInfra
+  onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected, intersectionPoint }) => {
+  return async ({ intersectionPoint, mouseEvent }) => {
     // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
       return
@@ -563,38 +743,53 @@ export function createOnDragCallback({
     const sceneGraphDelta = contextData.sketchExecOutcome?.sceneGraphDelta
 
     if (!sceneGraphDelta) {
+      onUpdateDragSnapping(null)
       return
     }
 
-    // Find the entity under cursor to determine what's being dragged
-    const entityUnderCursorId = findEntityUnderCursorId(
-      selected,
-      getParentGroup
-    )
+    const entityUnderCursorId = getDraggedEntityId()
+    const coincidentClusterPointIds =
+      entityUnderCursorId !== null
+        ? getCoincidentCluster(
+            entityUnderCursorId,
+            sceneGraphDelta.new_graph.objects
+          )
+        : []
 
     // If no entity under cursor and no selectedIds, nothing to do
-    if (!entityUnderCursorId && selectedIds.length === 0) {
+    if (entityUnderCursorId === null && selectedIds.length === 0) {
+      onUpdateDragSnapping(null)
       return
     }
 
     setIsSolveInProgress(true)
     try {
       const twoD = intersectionPoint.twoD
+      const snappingCandidate = !allowSnapping(mouseEvent)
+        ? null
+        : getDragPointSnappingCandidate({
+            draggedEntityId: entityUnderCursorId,
+            selectedIds,
+            sceneGraphDelta,
+            sketchId: contextData.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            sceneInfra,
+          })
+      onUpdateDragSnapping(snappingCandidate)
+
       // Calculate drag vector from last successful drag point to current position
       const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
-      // Collect all IDs to edit (entity under cursor + selectedIds)
+      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
-      if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
-        idsToEdit.add(entityUnderCursorId)
-      }
+      coincidentClusterPointIds.forEach((id) => {
+        idsToEdit.add(id)
+      })
       selectedIds.forEach((id) => {
-        if (!Number.isNaN(id)) {
-          idsToEdit.add(id)
-        }
+        idsToEdit.add(id)
       })
 
       // Build ctors for each segment with drag applied
@@ -628,9 +823,12 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
+        setLastPreviewSegmentsToEdit(null)
         setIsSolveInProgress(false)
         return
       }
+
+      setLastPreviewSegmentsToEdit(segmentsToEdit)
 
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
@@ -643,6 +841,7 @@ export function createOnDragCallback({
         settings
       ).catch((err) => {
         console.error('failed to edit segment', err)
+        toastSketchSolveError(err)
         return null
       })
 
@@ -652,7 +851,11 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
-        onNewSketchOutcome({ ...result, writeToDisk: false })
+        onNewSketchOutcome({
+          ...result,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        })
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
@@ -677,13 +880,20 @@ export function setUpOnDragAndSelectionClickCallbacks({
   // Closure-scoped mutex to prevent concurrent async editSegment operations.
   // Not in XState context since it's purely an implementation detail for race condition prevention.
   const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
-  const [getLastHoveredMesh, setLastHoveredMesh] = createGetSet<Mesh | null>(
-    null
-  )
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
-  const [getDraggingPointElement, setDraggingPointElement] =
-    createGetSet<HTMLElement | null>(null)
+  const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
+    null
+  )
+  const [getLastPreviewSegmentsToEdit, setLastPreviewSegmentsToEdit] =
+    createGetSet<Array<ExistingSegmentCtor> | null>(null)
+  const constraintHoverPopupState: {
+    lastHoveredTargetId: number | null
+    entries: ConstraintHoverPopupEntry[]
+  } = {
+    lastHoveredTargetId: null,
+    entries: [],
+  }
 
   // Selection box visual element
   const [getSelectionBoxObject, setSelectionBoxObject] =
@@ -699,719 +909,428 @@ export function setUpOnDragAndSelectionClickCallbacks({
   )
   const [getHorizontalLine, setHorizontalLine] =
     createGetSet<HTMLElement | null>(null)
+  const selectionBoxState: SelectionBoxVisualState = {
+    getSelectionBoxObject,
+    setSelectionBoxObject,
+    getSelectionBoxGroup,
+    setSelectionBoxGroup,
+    getLabelsWrapper,
+    setLabelsWrapper,
+    getBoxDiv,
+    setBoxDiv,
+    getVerticalLine,
+    setVerticalLine,
+    getHorizontalLine,
+    setHorizontalLine,
+  }
 
-  /**
-   * Mutation function: Creates selection box DOM elements
-   * Creates the initial HTML structure for the selection box visual
-   */
-  function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
-    boxDiv: HTMLElement
-    verticalLine: HTMLElement
-    horizontalLine: HTMLElement
-    labelsWrapper: HTMLElement
-  } {
-    const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
-    const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
-            <div
-              ${{ key: 'id', value: 'selection-box' }}
-              class = "border-bg-3 bg-black/5 dark:bg-white/10"
-              style="
-                position: absolute;
-                pointer-events: none;
-                border-width: ${borderWidthPx};
-                border-style: ${borderStyle};
-                transform: translate(-50%, -50%);
-                box-sizing: border-box;
-              "
-            >
-              <div
-                ${{ key: 'id', value: 'vertical-line' }}
-                class="bg-3"
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  width: ${borderWidthPx};
-                "
-              ></div>
-              <div
-                ${{ key: 'id', value: 'horizontal-line' }}
-                class="bg-3"
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  height: ${borderWidthPx};
-                "
-              ></div>
-              <div
-                ${{ key: 'id', value: 'labels-wrapper' }}
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  white-space: nowrap;
-                  display: flex;
-                  gap: 0px;
-                  align-items: center;
-                "
-              >
-                <div
-                  ${{ key: 'id', value: 'intersects-label' }}
-                  class="text-3 dark:text-3"
-                  style="
-                    font-size: 11px;
-                    user-select: none;
-                    width: 100px;
-                    padding: 6px;
-                    margin: 0px;
-                    text-align: right;
-                  "
-                >Intersects</div>
-                <div
-                  ${{ key: 'id', value: 'contains-label' }}
-                  class="text-3 dark:text-3"
-                  style="
-                    font-size: 11px;
-                    user-select: none;
-                    width: 100px;
-                    padding: 6px;
-                    margin: 0px;
-                  "
-                >Within</div>
-              </div>
-            </div>
-          `
+  const clearConstraintHoverPopupTimer = (
+    entry: ConstraintHoverPopupEntry,
+    timerKey: 'hideTimeoutId'
+  ) => {
+    const timeoutId = entry[timerKey]
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+      entry[timerKey] = null
+    }
+  }
+
+  const getConstraintHoverPopups = () =>
+    constraintHoverPopupState.entries.map((entry) => entry.popup)
+
+  const getConstraintHoverPopupEntry = (segmentId: number) =>
+    constraintHoverPopupState.entries.find(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+
+  const removeConstraintHoverPopup = (segmentId: number) => {
+    const index = constraintHoverPopupState.entries.findIndex(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+    if (index === -1) {
+      return false
+    }
+
+    const [entry] = constraintHoverPopupState.entries.splice(index, 1)
+    if (entry) {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    }
+
+    return true
+  }
+
+  const getConstraintHoverPopupEventData = () => {
+    const snapshot = self.getSnapshot()
+    const popups = getConstraintHoverPopups()
+    const shouldIncludeConstraintHoverPopup =
+      popups.length > 0 || snapshot.context.constraintHoverPopups.length > 0
+
+    if (!shouldIncludeConstraintHoverPopup) {
+      return {}
+    }
 
     return {
-      boxDiv,
-      verticalLine,
-      horizontalLine,
-      labelsWrapper,
+      constraintHoverPopups: popups,
     }
   }
 
-  /**
-   * Mutation function: Updates selection box position in 3D space
-   * Positions the CSS2DObject at the calculated local space position
-   */
-  function updateSelectionBoxPosition(
-    selectionBoxObject: CSS2DObject,
-    localCenter: Vector3
-  ): void {
-    selectionBoxObject.position.copy(localCenter)
-  }
-
-  /**
-   * Mutation function: Updates selection box size and border style
-   * Sets the box dimensions and border appearance
-   */
-  function updateSelectionBoxSizeAndBorder(
-    boxDiv: HTMLElement,
-    widthPx: number,
-    heightPx: number,
-    borderStyle: 'dashed' | 'solid'
-  ): void {
-    boxDiv.style.width = `${widthPx}px`
-    boxDiv.style.height = `${heightPx}px`
-    boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
-    boxDiv.style.borderStyle = borderStyle
-  }
-
-  /**
-   * Mutation function: Updates label styles based on selection mode
-   * Applies opacity and font weight to show which mode is active
-   */
-  function updateLabelStyles(
-    labelsWrapper: HTMLElement,
-    labelStyles: {
-      intersectsLabel: { opacity: string; fontWeight: string }
-      containsLabel: { opacity: string; fontWeight: string }
-    }
-  ): void {
-    const intersectsLabel = labelsWrapper.children[0] as HTMLElement
-    const containsLabel = labelsWrapper.children[1] as HTMLElement
-
-    if (intersectsLabel && containsLabel) {
-      intersectsLabel.style.opacity = labelStyles.intersectsLabel.opacity
-      intersectsLabel.style.fontWeight = labelStyles.intersectsLabel.fontWeight
-      containsLabel.style.opacity = labelStyles.containsLabel.opacity
-      containsLabel.style.fontWeight = labelStyles.containsLabel.fontWeight
-    }
-  }
-
-  /**
-   * Mutation function: Updates label position
-   * Positions labels at the drag start point relative to box center
-   */
-  function updateLabelPosition(
-    labelsWrapper: HTMLElement,
-    startX: number,
-    finalOffsetY: number
-  ): void {
-    labelsWrapper.style.left = `calc(50% + ${startX}px)`
-    labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
-    labelsWrapper.style.transform = 'translate(-50%, -50%)'
-  }
-
-  /**
-   * Mutation function: Updates corner line positions and styles
-   * Positions and sizes the vertical and horizontal corner lines
-   */
-  function updateCornerLinePositions(
-    verticalLine: HTMLElement,
-    horizontalLine: HTMLElement,
-    cornerLineStyles: {
-      verticalLine: {
-        height: string
-        bottom?: string
-        top?: string
-        left?: string
-        right?: string
-      }
-      horizontalLine: {
-        width: string
-        left?: string
-        right?: string
-        top?: string
-        bottom?: string
-      }
-    }
-  ): void {
-    // Reset vertical line positions
-    verticalLine.style.top = ''
-    verticalLine.style.right = ''
-    verticalLine.style.bottom = ''
-    verticalLine.style.left = ''
-
-    verticalLine.style.height = cornerLineStyles.verticalLine.height
-    if (cornerLineStyles.verticalLine.bottom !== undefined) {
-      verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
-    }
-    if (cornerLineStyles.verticalLine.top !== undefined) {
-      verticalLine.style.top = cornerLineStyles.verticalLine.top
-    }
-    if (cornerLineStyles.verticalLine.left !== undefined) {
-      verticalLine.style.left = cornerLineStyles.verticalLine.left
-    }
-    if (cornerLineStyles.verticalLine.right !== undefined) {
-      verticalLine.style.right = cornerLineStyles.verticalLine.right
-    }
-
-    // Reset horizontal line positions
-    horizontalLine.style.top = ''
-    horizontalLine.style.right = ''
-    horizontalLine.style.bottom = ''
-    horizontalLine.style.left = ''
-
-    horizontalLine.style.width = cornerLineStyles.horizontalLine.width
-    if (cornerLineStyles.horizontalLine.left !== undefined) {
-      horizontalLine.style.left = cornerLineStyles.horizontalLine.left
-    }
-    if (cornerLineStyles.horizontalLine.right !== undefined) {
-      horizontalLine.style.right = cornerLineStyles.horizontalLine.right
-    }
-    if (cornerLineStyles.horizontalLine.top !== undefined) {
-      horizontalLine.style.top = cornerLineStyles.horizontalLine.top
-    }
-    if (cornerLineStyles.horizontalLine.bottom !== undefined) {
-      horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
-    }
-  }
-
-  /**
-   * Helper function to create or update the selection box visual
-   * Uses 3D coordinates and projects to screen space for accurate sizing
-   */
-  function updateSelectionBox(
-    startPoint3D: Vector3,
-    currentPoint3D: Vector3
-  ): void {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
-    )
-
-    // Calculate all properties using pure functions
-    const properties = calculateSelectionBoxProperties(
-      startPoint3D,
-      currentPoint3D,
-      camera,
-      viewportSize
-    )
-
-    const sketchSceneObject =
-      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    const sketchSceneGroup =
-      sketchSceneObject instanceof Group ? sketchSceneObject : null
-
-    if (!getSelectionBoxGroup()) {
-      // Create the selection box group and CSS2DObject
-      const newSelectionBoxGroup = new Group()
-      newSelectionBoxGroup.name = 'selectionBox'
-      newSelectionBoxGroup.userData.type = 'selectionBox'
-      setSelectionBoxGroup(newSelectionBoxGroup)
-
-      // Create DOM elements using mutation function
-      const elements = createSelectionBoxElements(properties.borderStyle)
-      setBoxDiv(elements.boxDiv)
-      setVerticalLine(elements.verticalLine)
-      setHorizontalLine(elements.horizontalLine)
-      setLabelsWrapper(elements.labelsWrapper)
-
-      const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
-      newSelectionBoxObject.userData.type = 'selectionBox'
-      setSelectionBoxObject(newSelectionBoxObject)
-      getSelectionBoxGroup()?.add(newSelectionBoxObject)
-
-      // Add to sketch solve group (will inherit its rotation)
-      if (sketchSceneGroup) {
-        sketchSceneGroup.add(getSelectionBoxGroup()!)
-        getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
-        newSelectionBoxObject.layers.set(SKETCH_LAYER)
-      }
-    }
-
-    const currentSelectionBoxObject = getSelectionBoxObject()
-    if (
-      currentSelectionBoxObject &&
-      currentSelectionBoxObject.element instanceof HTMLElement
-    ) {
-      // Calculate local space position using pure function
-      const localCenter = transformToLocalSpace(
-        properties.center3D,
-        sketchSceneGroup ?? null
-      )
-      updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
-
-      // Update box size and border
-      const boxDivElement = getBoxDiv()
-      if (boxDivElement) {
-        updateSelectionBoxSizeAndBorder(
-          boxDivElement,
-          properties.widthPx,
-          properties.heightPx,
-          properties.borderStyle
-        )
-      }
-
-      // Calculate label positioning using pure function
-      const labelPositioning = calculateLabelPositioning(
-        properties.startPx,
-        properties.boxMinPx,
-        properties.boxMaxPx,
-        properties.isDraggingUpward
-      )
-
-      // Update label styles using pure function
-      const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
-      const currentLabelsWrapper = getLabelsWrapper()
-      if (currentLabelsWrapper) {
-        updateLabelStyles(currentLabelsWrapper, labelStyles)
-        updateLabelPosition(
-          currentLabelsWrapper,
-          labelPositioning.startX,
-          labelPositioning.finalOffsetY
-        )
-      }
-
-      // Calculate corner line styles using pure function
-      const cornerLineStyles = calculateCornerLineStyles(
-        labelPositioning.startX,
-        labelPositioning.startY,
-        LINE_EXTENSION_SIZE,
-        AREA_SELECT_BORDER_WIDTH
-      )
-
-      // Update corner line positions
-      const currentVerticalLine = getVerticalLine()
-      const currentHorizontalLine = getHorizontalLine()
-      if (
-        currentVerticalLine &&
-        currentVerticalLine instanceof HTMLElement &&
-        currentHorizontalLine &&
-        currentHorizontalLine instanceof HTMLElement
-      ) {
-        updateCornerLinePositions(
-          currentVerticalLine,
-          currentHorizontalLine,
-          cornerLineStyles
-        )
-      }
-    }
-  }
-
-  /**
-   * Helper function to remove the selection box visual
-   */
-  function removeSelectionBox(): void {
-    const currentSelectionBoxGroup = getSelectionBoxGroup()
-    if (currentSelectionBoxGroup) {
-      currentSelectionBoxGroup.removeFromParent()
-      const currentSelectionBoxObject = getSelectionBoxObject()
-      if (currentSelectionBoxObject?.element instanceof HTMLElement) {
-        currentSelectionBoxObject.element.remove()
-      }
-      setSelectionBoxGroup(null)
-      setSelectionBoxObject(null)
-      setLabelsWrapper(null)
-    }
-  }
-
-  /**
-   * Helper function to check if a point segment (CSS2DObject) is within the selection box
-   * Returns the segment ID if it should be included, null otherwise
-   */
-  function checkPointSegmentInBox(
-    css2dObject: CSS2DObject,
-    segmentId: number,
-    objects: Array<any>,
-    camera: any,
-    renderer: any,
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
-  ): number | null {
-    // Handle point segment - check if it has an owner (line endpoint)
-    const obj = objects[segmentId]
-    if (obj?.kind?.type === 'Segment' && obj.kind.segment.type === 'Point') {
-      // Skip if point has an owner (it's a line endpoint)
-      // Maybe we can enable these selection with a key modifier in the future
-      if (
-        obj.kind.segment.owner !== null &&
-        obj.kind.segment.owner !== undefined
-      ) {
-        return null
-      }
-
-      // Get the world position of the CSS2DObject
-      css2dObject.updateMatrixWorld()
-      const worldPos = new Vector3()
-      css2dObject.getWorldPosition(worldPos)
-
-      // Project to screen space
-      const viewportSize = new Vector2(
-        renderer.domElement.clientWidth,
-        renderer.domElement.clientHeight
-      )
-      const projected = worldPos.clone().project(camera)
-      const screenPos = new Vector2(
-        ((projected.x + 1) / 2) * viewportSize.x,
-        ((1 - projected.y) / 2) * viewportSize.y
-      )
-
-      // Check if the point is within the selection box
-      if (
-        screenPos.x >= boxMinPx.x &&
-        screenPos.x <= boxMaxPx.x &&
-        screenPos.y >= boxMinPx.y &&
-        screenPos.y <= boxMaxPx.y
-      ) {
-        return segmentId
-      }
-    }
-    return null
-  }
-
-  /**
-   * Helper function to find segments (line segments and point segments) contained within the selection box
-   * Uses screen-space projection to check if segments are within the box
-   */
-  function findContainedSegments(
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
-  ): Array<number> {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-    const sketchSegments =
-      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    if (!sketchSegments) {
-      return []
-    }
-
-    // Get scene graph objects to check point ownership
-    const snapshot = self.getSnapshot()
-    const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
-    const objects = sceneGraphDelta?.new_graph.objects
-    if (!objects) {
-      return []
-    }
-
-    const containedIds: Array<number> = []
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
-    )
-
-    // Traverse all groups in the sketch solve group
-    sketchSegments.traverse((child: Object3D) => {
-      if (!(child instanceof Group)) {
-        return
-      }
-
-      const segmentId = Number(child.name)
-      if (Number.isNaN(segmentId)) {
-        return
-      }
-
-      // Check if this group has a line or arc segment mesh
-      const segmentMesh = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
-            c.userData?.type === ARC_SEGMENT_BODY)
-      )
-
-      if (segmentMesh && segmentMesh instanceof Mesh) {
-        // Handle line or arc segment (same logic for both)
-        // Get the bounding box of the mesh in world space
-        segmentMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(segmentMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // For "contains" selection, check if ALL corners are within the selection box
-        const allCornersContained = areAllPointsContained(
-          screenCorners,
-          boxMinPx,
-          boxMaxPx
-        )
-
-        if (allCornersContained) {
-          containedIds.push(segmentId)
-        }
-        return
-      }
-
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
-      )
-
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
-        const pointId = checkPointSegmentInBox(
-          css2dObject,
-          segmentId,
-          objects,
-          camera,
-          renderer,
-          boxMinPx,
-          boxMaxPx
-        )
-        if (pointId !== null) {
-          containedIds.push(pointId)
-        }
-      }
+  const sendHoveredState = (hoveredId: SketchSolveSelectionId | null) => {
+    self.send({
+      type: 'update hovered id',
+      data: {
+        hoveredId,
+        ...getConstraintHoverPopupEventData(),
+      },
     })
-
-    return containedIds
   }
 
-  /**
-   * Helper function to find segments (line segments, arc segments, and point segments) that intersect with the selection box
-   * Uses improved intersection logic: checks bounding box containment first, then polygon intersection
-   */
-  function findIntersectingSegments(
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
-  ): Array<number> {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-    const sketchSegments =
+  const getSketchSolveGroup = () => {
+    const sketchSolveGroup =
       context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    if (!sketchSegments) {
-      return []
+    return sketchSolveGroup instanceof Group ? sketchSolveGroup : null
+  }
+
+  const clearDragSnappingState = () => {
+    const sketchSolveGroup = getSketchSolveGroup()
+    if (sketchSolveGroup) {
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        snappingCandidate: null,
+      })
+    }
+  }
+
+  const updateDragSnappingState = (candidate: SnappingCandidate | null) => {
+    const sketchSolveGroup = getSketchSolveGroup()
+    if (sketchSolveGroup) {
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        snappingCandidate: candidate,
+      })
     }
 
-    // Get scene graph objects to check point ownership
-    const snapshot = self.getSnapshot()
-    const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
-    const objects = sceneGraphDelta?.new_graph.objects
-    if (!objects) {
-      return []
-    }
-
-    const intersectingIds: Array<number> = []
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
+    sendHoveredState(
+      candidate?.target?.type === ORIGIN_TARGET
+        ? ORIGIN_TARGET
+        : getObjectIdForSnapTarget(candidate?.target)
     )
+  }
 
-    // Traverse all groups in the sketch solve group
-    sketchSegments.traverse((child: Object3D) => {
-      if (!(child instanceof Group)) {
-        return
-      }
-
-      const segmentId = Number(child.name)
-      if (Number.isNaN(segmentId)) {
-        return
-      }
-
-      // Check if this group has a line or arc segment mesh
-      const segmentMesh = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
-            c.userData?.type === ARC_SEGMENT_BODY)
-      )
-
-      if (segmentMesh && segmentMesh instanceof Mesh) {
-        // If this is a `Line2` (screen-space line), intersect using its
-        // polyline segments instead of mesh triangles.
-        if (segmentMesh instanceof Line2) {
-          if (
-            doesLine2IntersectSelectionBox({
-              line: segmentMesh,
-              camera,
-              viewportSize,
-              selectionMinPx: boxMinPx,
-              selectionMaxPx: boxMaxPx,
-            })
-          ) {
-            intersectingIds.push(segmentId)
-          }
-          return
-        }
-
-        // This part is probably not running at the moment since we're only using Line2
-        // but it's kept here in case we start using other types of Meshes
-
-        // Handle line or arc segment (same logic for both)
-        // For line segments, check geometry type
-        if (segmentMesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
-          const geometry = segmentMesh.geometry
-          if (!(geometry instanceof ExtrudeGeometry)) {
-            return
-          }
-        }
-
-        // Get the bounding box of the mesh in world space
-        segmentMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(segmentMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // Compute the bounding box of the segment in screen space
-        const segmentMinPx = new Vector2(
-          Math.min(...screenCorners.map((c) => c.x)),
-          Math.min(...screenCorners.map((c) => c.y))
-        )
-        const segmentMaxPx = new Vector2(
-          Math.max(...screenCorners.map((c) => c.x)),
-          Math.max(...screenCorners.map((c) => c.y))
-        )
-
-        // Extract triangles from the mesh
-        const triangles = extractTrianglesFromMesh(
-          segmentMesh,
-          camera,
-          viewportSize
-        )
-
-        // Use improved intersection logic
-        const intersects = doesSegmentIntersectSelectionBox(
-          segmentMinPx,
-          segmentMaxPx,
-          boxMinPx,
-          boxMaxPx,
-          triangles
-        )
-
-        if (intersects) {
-          intersectingIds.push(segmentId)
-        }
-        return
-      }
-
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
-      )
-
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
-        const pointId = checkPointSegmentInBox(
-          css2dObject,
-          segmentId,
-          objects,
-          camera,
-          renderer,
-          boxMinPx,
-          boxMaxPx
-        )
-        if (pointId !== null) {
-          intersectingIds.push(pointId)
-        }
-      }
+  const clearConstraintHoverPopups = () => {
+    constraintHoverPopupState.entries.forEach((entry) => {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
     })
+    constraintHoverPopupState.entries = []
+  }
 
-    return intersectingIds
+  const hideConstraintHoverPopup = (segmentId: number) => {
+    if (removeConstraintHoverPopup(segmentId)) {
+      sendHoveredState(self.getSnapshot().context.hoveredId)
+    }
+  }
+
+  const dismissConstraintHoverPopupOnDragStart = () => {
+    const snapshot = self.getSnapshot()
+    const hadConstraintHoverPopup =
+      constraintHoverPopupState.entries.length > 0 ||
+      snapshot.context.constraintHoverPopups.length > 0
+
+    clearConstraintHoverPopups()
+    constraintHoverPopupState.lastHoveredTargetId = null
+    clearDragSnappingState()
+
+    if (hadConstraintHoverPopup) {
+      sendHoveredState(snapshot.context.hoveredId)
+    }
+  }
+
+  const startConstraintHoverPopup = (segmentId: number, position: Coords2d) => {
+    const existingIndex = constraintHoverPopupState.entries.findIndex(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+    const entry = (existingIndex === -1
+      ? null
+      : constraintHoverPopupState.entries.splice(existingIndex, 1)[0]) ?? {
+      popup: { segmentId, position },
+      hideTimeoutId: null,
+    }
+
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    entry.popup = { segmentId, position }
+    constraintHoverPopupState.entries.push(entry)
+  }
+
+  const scheduleConstraintHoverPopupHide = (
+    entry: ConstraintHoverPopupEntry
+  ) => {
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    entry.hideTimeoutId = setTimeout(() => {
+      entry.hideTimeoutId = null
+      hideConstraintHoverPopup(entry.popup.segmentId)
+    }, CONSTRAINT_HOVER_POPUP_TIMEOUT_MS)
   }
 
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
+      setDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
+      getHoveredId: () => self.getSnapshot().context.hoveredId,
+      dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
+      getDraggedEntityId,
+      setDraggedEntityId,
+      // Send the last up-to-date state from the frontend to Rust. It doesn't know
+      // about this last feedback loop yet!
+      onComplete: async ({
+        draggedEntityId,
+        intersectionPoint,
+        mouseEvent,
+      }) => {
+        try {
+          clearDragSnappingState()
+          sendHoveredState(null)
+
+          const snapshot = self.getSnapshot()
+          const currentSceneGraphDelta =
+            snapshot.context.sketchExecOutcome?.sceneGraphDelta
+          const snappingCandidate =
+            allowSnapping(mouseEvent) &&
+            currentSceneGraphDelta &&
+            intersectionPoint?.twoD
+              ? getDragPointSnappingCandidate({
+                  draggedEntityId,
+                  selectedIds: getObjectSelectionIds(
+                    snapshot.context.selectedIds
+                  ),
+                  sceneGraphDelta: currentSceneGraphDelta,
+                  sketchId: snapshot.context.sketchId,
+                  mousePosition: [
+                    intersectionPoint.twoD.x,
+                    intersectionPoint.twoD.y,
+                  ],
+                  sceneInfra: context.sceneInfra,
+                })
+              : null
+
+          const units = baseUnitToNumericSuffix(
+            context.kclManager.fileSettings.defaultLengthUnit
+          )
+          const snapConstraint =
+            snappingCandidate && draggedEntityId !== null
+              ? getConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target
+                )
+              : null
+          const settings = jsAppSettings(context.rustContext.settingsActor)
+          let result: {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
+          }
+
+          if (
+            snappingCandidate &&
+            draggedEntityId !== null &&
+            snapConstraint !== null
+          ) {
+            const [x, y] = snappingCandidate.position
+            const editResult = await context.rustContext.editSegments(
+              0,
+              context.sketchId,
+              [
+                {
+                  id: draggedEntityId,
+                  ctor: {
+                    type: 'Point',
+                    position: {
+                      x: {
+                        type: 'Var',
+                        value: roundOff(x),
+                        units,
+                      },
+                      y: {
+                        type: 'Var',
+                        value: roundOff(y),
+                        units,
+                      },
+                    },
+                  },
+                },
+              ],
+              settings
+            )
+
+            if (
+              snapConstraint.type === 'Horizontal' ||
+              snapConstraint.type === 'Vertical'
+            ) {
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              const existingSameConstraint = getAxisConstraintWithOrigin(
+                draggedEntityId,
+                snapConstraint.type,
+                objects
+              )
+              if (existingSameConstraint) {
+                // Same zero distance constraint already exists -> don't add it again
+                result = editResult
+              } else {
+                const oppositeConstraintType =
+                  snapConstraint.type === 'Horizontal'
+                    ? 'Vertical'
+                    : 'Horizontal'
+                const existingOppositeConstraint = getAxisConstraintWithOrigin(
+                  draggedEntityId,
+                  oppositeConstraintType,
+                  objects
+                )
+                if (existingOppositeConstraint) {
+                  // If there is already a 0 distance opposite constraint:
+                  // delete that and add a Coincident constraint instead.
+                  const deleteResult = await context.rustContext.deleteObjects(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    [existingOppositeConstraint.id],
+                    [],
+                    settings
+                  )
+
+                  const addResult = await context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    {
+                      type: 'Coincident',
+                      segments: [draggedEntityId, 'ORIGIN'],
+                    },
+                    settings
+                  )
+
+                  result = {
+                    kclSource: addResult.kclSource,
+                    sceneGraphDelta: {
+                      ...addResult.sceneGraphDelta,
+                      invalidates_ids:
+                        deleteResult.sceneGraphDelta.invalidates_ids ||
+                        addResult.sceneGraphDelta.invalidates_ids,
+                    },
+                  }
+                } else {
+                  result = await context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    snapConstraint,
+                    settings,
+                    true
+                  )
+                }
+              }
+            } else {
+              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
+              if (
+                hasCoincidentConstraintForSnapTarget(
+                  draggedEntityId,
+                  snappingCandidate.target,
+                  objects
+                )
+              ) {
+                result = editResult
+              } else {
+                result = await context.rustContext.addConstraint(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId,
+                  snapConstraint,
+                  settings,
+                  true
+                )
+              }
+            }
+          } else {
+            const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
+            if (lastPreviewSegmentsToEdit?.length) {
+              result = await context.rustContext.editSegments(
+                0,
+                context.sketchId,
+                lastPreviewSegmentsToEdit,
+                settings,
+                true
+              )
+            } else if (!currentSceneGraphDelta) {
+              result = await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
+              )
+            } else {
+              const objects = currentSceneGraphDelta.new_graph.objects
+              const coincidentClusterPointIds =
+                draggedEntityId !== null
+                  ? getCoincidentCluster(draggedEntityId, objects)
+                  : []
+              const idsToEdit = new Set<number>()
+              coincidentClusterPointIds.forEach((id) => {
+                idsToEdit.add(id)
+              })
+              snapshot.context.selectedIds.forEach((id) => {
+                if (isObjectSelectionId(id)) {
+                  idsToEdit.add(id)
+                }
+              })
+
+              const segmentsToEdit: ExistingSegmentCtor[] = []
+              for (const id of idsToEdit) {
+                const obj = objects[id]
+                if (!obj || obj.kind.type !== 'Segment') continue
+                const ctor = buildSegmentCtorFromObject(obj, objects)
+                if (!ctor) continue
+                segmentsToEdit.push({ id, ctor })
+              }
+
+              if (segmentsToEdit.length === 0) {
+                result = await context.rustContext.sketchExecuteMock(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId
+                )
+              } else {
+                result = await context.rustContext.editSegments(
+                  0,
+                  context.sketchId,
+                  segmentsToEdit,
+                  settings,
+                  true
+                )
+              }
+            }
+          }
+
+          // Send the event to update the sketch outcome
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              checkpointId: result.checkpointId ?? null,
+            },
+          })
+        } catch (err) {
+          console.error('error in onDragEnd sketchExecuteMock', err)
+          toastSketchSolveError(err)
+        }
+      },
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      setLastPreviewSegmentsToEdit,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
-          selectedIds: snapshot.context.selectedIds,
+          selectedIds: getObjectSelectionIds(snapshot.context.selectedIds),
           sketchId: snapshot.context.sketchId,
           sketchExecOutcome: snapshot.context.sketchExecOutcome,
         }
@@ -1429,71 +1348,153 @@ export function setUpOnDragAndSelectionClickCallbacks({
           settings
         )
       },
-      onNewSketchOutcome: (outcome) =>
+      onNewSketchOutcome: (outcome) => {
         self.send({
           type: 'update sketch outcome',
-          data: { ...outcome, writeToDisk: false },
-        }),
+          data: {
+            sourceDelta: outcome.kclSource,
+            sceneGraphDelta: outcome.sceneGraphDelta,
+            writeToDisk: false,
+            suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+          },
+        })
+      },
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>
-        await jsAppSettings(context.rustContext.settingsActor),
+        jsAppSettings(context.rustContext.settingsActor),
+      sceneInfra: context.sceneInfra,
+      onUpdateDragSnapping: updateDragSnappingState,
     }),
+    onMouseDownSelection: () => {
+      const snapshot = self.getSnapshot()
+      const hoveredId = snapshot.context.hoveredId
+      if (!isObjectSelectionId(hoveredId)) {
+        // Only api objects can be dragged, ORIGIN cannot be.
+        return false
+      }
+
+      const objects =
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+        []
+      // If it's a point which is already coincident with ORIGIN -> don't allow dragging
+      return !(
+        isPointSegment(objects[hoveredId]) &&
+        hasCoincidentConstraintWithOrigin(hoveredId, objects)
+      )
+    },
     onClick: createOnClickCallback({
-      getParentGroup,
+      getApiObjects: () => {
+        const snapshot = self.getSnapshot()
+        return getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
+      },
+      sceneInfra: context.sceneInfra,
       onUpdateSelectedIds: (data: {
-        selectedIds: Array<number>
+        selectedIds: Array<SketchSolveSelectionId>
         duringAreaSelectIds: Array<number>
+        replaceExistingSelection?: boolean
       }) => self.send({ type: 'update selected ids', data }),
-    }),
-    onMouseEnter: createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds: () => {
-        const snapshot = self.getSnapshot()
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        return Array.from(
-          new Set([
-            ...snapshot.context.selectedIds,
-            ...snapshot.context.duringAreaSelectIds,
-          ])
-        )
-      },
-      setLastHoveredMesh,
-      getDraftEntityIds: () => {
-        const snapshot = self.getSnapshot()
-        return snapshot.context.draftEntities
-          ? [...snapshot.context.draftEntities.segmentIds]
-          : undefined
+      onEditConstraint: (constraintId: number) => {
+        self.send({
+          type: 'start editing constraint',
+          data: { constraintId },
+        })
       },
     }),
-    onMouseLeave: createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds: () => {
-        const snapshot = self.getSnapshot()
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        return Array.from(
-          new Set([
-            ...snapshot.context.selectedIds,
-            ...snapshot.context.duringAreaSelectIds,
-          ])
-        )
-      },
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      getDraftEntityIds: () => {
-        const snapshot = self.getSnapshot()
-        return snapshot.context.draftEntities
-          ? [...snapshot.context.draftEntities.segmentIds]
-          : undefined
-      },
-    }),
-    onAreaSelectStart: ({ startPoint }) => {
+    onMove: ({ intersectionPoint }: OnMoveCallbackArgs) => {
+      if (context.sceneInfra.isAreaSelectActive) {
+        return
+      }
+
+      const snapshot = self.getSnapshot()
+      const mousePosition = [
+        intersectionPoint.twoD.x,
+        intersectionPoint.twoD.y,
+      ] as Coords2d
+
+      const apiObjects = getCurrentSketchObjectsById(
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+          [],
+        snapshot.context.sketchId
+      )
+      const hoveredTarget = getClosestSelectionTarget(
+        mousePosition,
+        apiObjects,
+        context.sceneInfra
+      )
+      const hoveredApiObject = hoveredTarget?.apiObject ?? null
+      const hoveredId = hoveredTarget?.selectionId ?? null
+      const lastHoveredId = snapshot.context.hoveredId
+      const constraintHoverPopupSegmentId =
+        hoveredApiObject !== null && !isConstraint(hoveredApiObject)
+          ? hoveredApiObject.id
+          : null
+      const previousConstraintHoverPopups =
+        snapshot.context.constraintHoverPopups
+
+      if (
+        constraintHoverPopupSegmentId !==
+          constraintHoverPopupState.lastHoveredTargetId &&
+        constraintHoverPopupSegmentId !== null &&
+        // If this segment already has a visible popup, keep that popup pinned where it is.
+        !getConstraintHoverPopupEntry(constraintHoverPopupSegmentId) &&
+        !snapshot.context.showNonVisualConstraints &&
+        findInvisibleConstraintsForSegment(hoveredApiObject, apiObjects)
+          .length > 0
+      ) {
+        startConstraintHoverPopup(constraintHoverPopupSegmentId, mousePosition)
+      }
+      constraintHoverPopupState.lastHoveredTargetId =
+        constraintHoverPopupSegmentId
+
+      constraintHoverPopupState.entries.forEach((entry) => {
+        const isHoveringSourceSegment =
+          constraintHoverPopupSegmentId === entry.popup.segmentId
+        const isHoveringConstraintHoverPopup =
+          isInvisibleConstraintObject(hoveredApiObject) &&
+          isConstrainingSegment(
+            hoveredApiObject,
+            apiObjects[entry.popup.segmentId],
+            apiObjects
+          )
+
+        if (isHoveringSourceSegment || isHoveringConstraintHoverPopup) {
+          clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+        } else if (entry.hideTimeoutId === null) {
+          scheduleConstraintHoverPopupHide(entry)
+        }
+      })
+
+      const currentConstraintHoverPopups = getConstraintHoverPopups()
+      const constraintHoverPopupsChanged = !areSameConstraintHoverPopups(
+        currentConstraintHoverPopups,
+        previousConstraintHoverPopups
+      )
+
+      if (hoveredId !== lastHoveredId || constraintHoverPopupsChanged) {
+        sendHoveredState(hoveredId)
+      }
+    },
+    onAreaSelectStart: ({ startPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
       const scaledStartPoint = startPoint.threeD
         .clone()
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
       // Area select started - create the selection box visual and clear any previous area select
       if (startPoint.threeD) {
-        updateSelectionBox(scaledStartPoint, scaledStartPoint)
+        updateSelectionBox({
+          startPoint3D: scaledStartPoint,
+          currentPoint3D: scaledStartPoint,
+          sceneInfra: context.sceneInfra,
+          selectionBoxState,
+        })
         // Clear any previous duringAreaSelectIds
         self.send({
           type: 'update selected ids',
@@ -1501,7 +1502,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       }
     },
-    onAreaSelect: ({ startPoint, currentPoint }) => {
+    onAreaSelect: ({ startPoint, currentPoint, mouseEvent }) => {
+      if (mouseEvent && (mouseEvent.buttons & 1) === 0) {
+        return
+      }
+
+      const startCoords: Coords2d = [startPoint.twoD.x, startPoint.twoD.y]
+      const currentCoords: Coords2d = [currentPoint.twoD.x, currentPoint.twoD.y]
       const scaledStartPoint = startPoint.threeD
         .clone()
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
@@ -1510,7 +1517,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
       // Update selection box visual during drag
       if (scaledStartPoint && scaledCurrentPoint) {
-        updateSelectionBox(scaledStartPoint, scaledCurrentPoint)
+        updateSelectionBox({
+          startPoint3D: scaledStartPoint,
+          currentPoint3D: scaledCurrentPoint,
+          sceneInfra: context.sceneInfra,
+          selectionBoxState,
+        })
+
+        const snapshot = self.getSnapshot()
+        const apiObjects = getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
 
         // Calculate selection box bounds in screen space for contains check
         const camera = context.sceneInfra.camControls.camera
@@ -1531,40 +1550,34 @@ export function setUpOnDragAndSelectionClickCallbacks({
           viewportSize
         )
 
-        const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
-          startPx,
-          currentPx
-        )
-
         // Determine selection mode based on drag direction
         const isIntersectionBox = isIntersectionSelectionMode(
           startPx,
           currentPx
         )
-        if (isIntersectionBox) {
-          // Intersection box: find segments that intersect with the selection box
-          const intersectingIds = findIntersectingSegments(boxMinPx, boxMaxPx)
+        const duringAreaSelectIds = isIntersectionBox
+          ? findIntersectingSegments(apiObjects, startCoords, currentCoords)
+          : findContainedSegments(apiObjects, startCoords, currentCoords)
 
-          // Update duringAreaSelectIds (temporary selection during drag)
-          self.send({
-            type: 'update selected ids',
-            data: { duringAreaSelectIds: intersectingIds },
-          })
-        } else {
-          // Contains box: find segments fully contained within the selection box
-          const containedIds = findContainedSegments(boxMinPx, boxMaxPx)
-
-          // Update duringAreaSelectIds (temporary selection during drag)
-          self.send({
-            type: 'update selected ids',
-            data: { duringAreaSelectIds: containedIds },
-          })
-        }
+        // Update duringAreaSelectIds (temporary selection during drag)
+        self.send({
+          type: 'update selected ids',
+          data: { duringAreaSelectIds },
+        })
       }
     },
-    onAreaSelectEnd: () => {
+    onAreaSelectEnd: ({ mouseEvent }) => {
       // Remove selection box visual
-      removeSelectionBox()
+      removeSelectionBox(selectionBoxState)
+
+      // Ignore non-primary button drags so right-click pan doesn't modify selection.
+      if (mouseEvent && mouseEvent.button !== 0) {
+        self.send({
+          type: 'update selected ids',
+          data: { duringAreaSelectIds: [] },
+        })
+        return
+      }
 
       // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
       const snapshot = self.getSnapshot()
@@ -1588,60 +1601,4 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }
     },
   })
-}
-
-function doesLine2IntersectSelectionBox({
-  line,
-  camera,
-  viewportSize,
-  selectionMinPx,
-  selectionMaxPx,
-}: {
-  line: Line2
-  camera: OrthographicCamera | PerspectiveCamera
-  viewportSize: Vector2
-  selectionMinPx: Vector2
-  selectionMaxPx: Vector2
-}): boolean {
-  const instanceStart = line.geometry.getAttribute?.('instanceStart')
-  const instanceEnd = line.geometry.getAttribute?.('instanceEnd')
-  if (!instanceStart || !instanceEnd) {
-    return false
-  }
-
-  const segmentCount = Math.min(instanceStart.count, instanceEnd.count)
-  if (segmentCount <= 0) {
-    return false
-  }
-
-  // Small padding to roughly match the old extruded-mesh hit area.
-  const paddingPx = 1
-  const min = new Vector2(
-    selectionMinPx.x - paddingPx,
-    selectionMinPx.y - paddingPx
-  )
-  const max = new Vector2(
-    selectionMaxPx.x + paddingPx,
-    selectionMaxPx.y + paddingPx
-  )
-
-  const v0 = new Vector3()
-  const v1 = new Vector3()
-
-  for (let i = 0; i < segmentCount; i++) {
-    v0.set(instanceStart.getX(i), instanceStart.getY(i), instanceStart.getZ(i))
-    v1.set(instanceEnd.getX(i), instanceEnd.getY(i), instanceEnd.getZ(i))
-
-    v0.applyMatrix4(line.matrixWorld)
-    v1.applyMatrix4(line.matrixWorld)
-
-    const p0 = project3DToScreen(v0, camera, viewportSize)
-    const p1 = project3DToScreen(v1, camera, viewportSize)
-
-    if (doesLineSegmentIntersectBox(p0, p1, min, max)) {
-      return true
-    }
-  }
-
-  return false
 }

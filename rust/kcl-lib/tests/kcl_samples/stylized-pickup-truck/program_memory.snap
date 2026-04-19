@@ -40,6 +40,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -342,10 +343,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4987,
-            "end": 4993,
+            "commentStart": 4995,
+            "end": 5001,
             "moduleId": 0,
-            "start": 4987,
+            "start": 4995,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -367,6 +368,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -397,10 +399,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 4987,
-              "end": 4993,
+              "commentStart": 4995,
+              "end": 5001,
               "moduleId": 0,
-              "start": 4987,
+              "start": 4995,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -602,10 +604,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 4987,
-            "end": 4993,
+            "commentStart": 4995,
+            "end": 5001,
             "moduleId": 0,
-            "start": 4987,
+            "start": 4995,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -755,6 +757,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1117,6 +1120,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1297,6 +1301,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1511,6 +1516,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1702,6 +1708,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1794,6 +1801,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2215,6 +2223,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2438,6 +2447,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2638,6 +2648,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2957,6 +2968,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3094,6 +3106,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3641,6 +3654,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3748,10 +3762,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 4987,
-                  "end": 4993,
+                  "commentStart": 4995,
+                  "end": 5001,
                   "moduleId": 0,
-                  "start": 4987,
+                  "start": 4995,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3773,6 +3787,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3803,10 +3818,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 4987,
-                    "end": 4993,
+                    "commentStart": 4995,
+                    "end": 5001,
                     "moduleId": 0,
-                    "start": 4987,
+                    "start": 4995,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -4070,10 +4085,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4987,
-                "end": 4993,
+                "commentStart": 4995,
+                "end": 5001,
                 "moduleId": 0,
-                "start": 4987,
+                "start": 4995,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -4095,6 +4110,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4125,10 +4141,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.15
                 ],
                 "tag": {
-                  "commentStart": 4987,
-                  "end": 4993,
+                  "commentStart": 4995,
+                  "end": 5001,
                   "moduleId": 0,
-                  "start": 4987,
+                  "start": 4995,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -4295,10 +4311,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4987,
-              "end": 4993,
+              "commentStart": 4995,
+              "end": 5001,
               "moduleId": 0,
-              "start": 4987,
+              "start": 4995,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -4320,6 +4336,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -4350,10 +4367,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.15
               ],
               "tag": {
-                "commentStart": 4987,
-                "end": 4993,
+                "commentStart": 4995,
+                "end": 5001,
                 "moduleId": 0,
-                "start": 4987,
+                "start": 4995,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -4512,6 +4529,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4637,6 +4655,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4749,6 +4768,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4874,6 +4894,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4986,6 +5007,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5111,6 +5133,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5223,6 +5246,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5348,6 +5372,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

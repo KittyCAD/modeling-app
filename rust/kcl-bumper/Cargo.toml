@@ -1,10 +1,9 @@
 
 [package]
 name = "kcl-bumper"
-version = "0.1.121"
-edition = "2021"
+version = "0.1.143"
+edition = "2024"
 repository = "https://github.com/KittyCAD/modeling-api"
-rust-version = "1.76"
 description = "Bumps versions in Cargo.toml"
 publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -17,9 +16,9 @@ bench = false
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
-semver = "1.0.27"
+semver = "1.0.28"
 serde = { workspace = true }
-toml_edit = "0.24.0"
+toml_edit = "0.25.8"
 
 [lints]
 workspace = true

@@ -256,23 +256,18 @@ test.describe(
         await openSettingsExpectLocator(page, '#projectDirectory')
       })
       await test.step('Modeling.View.Orthographic view', async () => {
-        await page.waitForTimeout(250)
-        // wait for previous toast to disappear
-        await page.waitForTimeout(10000)
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
-          'Set camera projection to "orthographic" as a user default'
+          'Set camera projection to "orthographic" as a user default.'
         const toast = page.locator('[data-rht-toaster]')
         // Let the previous toast clear
         await expect(toast).toHaveText(textToCheck)
       })
       await test.step('Modeling.View.Perspective view', async () => {
         await page.waitForTimeout(250)
-        // wait for previous toast to disappear
-        await page.waitForTimeout(10000)
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
-          'Set camera projection to "perspective" as a user default'
+          'Set camera projection to "perspective" as a user default.'
         const toast = page.locator('[data-rht-toaster]')
         await expect(toast).toHaveText(textToCheck)
       })

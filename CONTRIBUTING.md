@@ -1,6 +1,6 @@
 # Contributing Guide
 
-## Quick start: Build the desktop app locally
+## Building the app
 
 This section applies to all potential contributors, internal and external to the Zoo team.
 
@@ -37,6 +37,12 @@ npm install
 This project uses a lot of Rust compiled to [Wasm](https://webassembly.org/) within it using wasm-pack:
 
 ```
+# macOS/Linux
+npm run install:rust
+npm run install:wasm-pack:cargo
+
+# Windows
+npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
@@ -72,7 +78,7 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
-## Environment variables and hot reload
+## Developing locally
 
 This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
 
@@ -99,6 +105,10 @@ This will start the application and hot-reload on changes.
 Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesn't work for you.
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
+
+## Adding KCL samples
+
+Follow the instructions [here](public/kcl-samples/README.md).
 
 ## Writing tests
 

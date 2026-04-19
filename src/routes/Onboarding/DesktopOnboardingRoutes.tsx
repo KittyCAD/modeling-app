@@ -14,8 +14,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -28,12 +26,9 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import {
-  type RouteObject,
-  useRouteLoaderData,
-  useSearchParams,
-} from 'react-router-dom'
+import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { useApp } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -64,8 +59,9 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function Welcome() {
+  const app = useApp()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -76,8 +72,7 @@ function Welcome() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -85,7 +80,7 @@ function Welcome() {
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [systemIOActor, app.project?.name])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -105,6 +100,7 @@ function Welcome() {
 }
 
 function Scene() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -125,7 +121,7 @@ function Scene() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -182,7 +178,7 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          month. Upgrade to a paid plan for additional usage. Pro and Team plans
           come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
@@ -236,6 +232,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'fan-housing.kcl'
@@ -259,7 +256,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -369,6 +366,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the text-to-cad button if it's present
@@ -388,7 +386,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -410,6 +408,7 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
+  const { commands } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
@@ -428,11 +427,11 @@ function PromptToEditPrompt() {
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(
-    isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    isModelingCmdGroupReady(commands.actor.getSnapshot())
   )
   useOnModelingCmdGroupReadyOnce(() => {
     setIsReady(true)
-    commandBarActor.send({
+    commands.send({
       type: 'Find and select command',
       data: {
         groupId: 'modeling',
@@ -481,6 +480,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -512,7 +512,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">

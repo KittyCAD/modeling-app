@@ -71,6 +71,10 @@ impl TypedPath {
         }
     }
 
+    pub fn is_absolute(&self) -> bool {
+        self.0.is_absolute()
+    }
+
     pub fn join(&self, path: &str) -> Self {
         #[cfg(target_arch = "wasm32")]
         {
@@ -190,24 +194,24 @@ impl ts_rs::TS for TypedPath {
     type WithoutGenerics = Self;
     type OptionInnerType = Self;
 
-    fn name() -> String {
+    fn name(_: &ts_rs::Config) -> String {
         "string".to_string()
     }
 
-    fn decl() -> String {
-        std::path::PathBuf::decl()
+    fn decl(config: &ts_rs::Config) -> String {
+        std::path::PathBuf::decl(config)
     }
 
-    fn decl_concrete() -> String {
-        std::path::PathBuf::decl_concrete()
+    fn decl_concrete(config: &ts_rs::Config) -> String {
+        std::path::PathBuf::decl_concrete(config)
     }
 
-    fn inline() -> String {
-        std::path::PathBuf::inline()
+    fn inline(config: &ts_rs::Config) -> String {
+        std::path::PathBuf::inline(config)
     }
 
-    fn inline_flattened() -> String {
-        std::path::PathBuf::inline_flattened()
+    fn inline_flattened(config: &ts_rs::Config) -> String {
+        std::path::PathBuf::inline_flattened(config)
     }
 
     fn output_path() -> Option<std::path::PathBuf> {

@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing dog-house-great-dane.kcl
+---
+{
+  "__mod_backFrame": {
+    "type": "Module",
+    "value": 7
+  },
+  "__mod_floor": {
+    "type": "Module",
+    "value": 13
+  },
+  "__mod_frame": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_frontWall": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_leftWall": {
+    "type": "Module",
+    "value": 8
+  },
+  "__mod_rightWall": {
+    "type": "Module",
+    "value": 12
+  },
+  "__mod_roof": {
+    "type": "Module",
+    "value": 6
+  }
+}

@@ -1,18 +1,23 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_lib::{
-    exec::{DefaultPlanes, IdGenerator},
-    AsyncTasks, EngineStats, KclError,
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    id::ModelingCmdId,
-    ok_response::OkModelingCmdResponse,
-    shared::PathSegment::{self, *},
-    websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
-};
+use kcl_lib::AsyncTasks;
+use kcl_lib::EngineStats;
+use kcl_lib::KclError;
+use kcl_lib::exec::DefaultPlanes;
+use kcl_lib::exec::IdGenerator;
+use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::PathSegment::*;
+use kittycad_modeling_cmds::shared::PathSegment::{self};
+use kittycad_modeling_cmds::websocket::ModelingBatch;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::WebSocketRequest;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -263,9 +268,8 @@ impl EngineConnection {
             }) => {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
-                this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_face_edge_ids: vec![],
-                });
+                this_response =
+                    OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern::default());
 
                 let mut base_code: String = format!(
                     r#"

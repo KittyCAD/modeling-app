@@ -1,18 +1,25 @@
 //! Standard library helices.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle};
-use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kittycad_modeling_cmds::shared::Point3d;
+use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, Helix as HelixValue, KclValue, ModelingCmdMeta, Solid,
-        types::{PrimitiveType, RuntimeType},
-    },
-    std::{Args, axis_or_reference::Axis3dOrEdgeReference},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::Helix as HelixValue;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::axis_or_reference::Axis3dOrEdgeReference;
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -25,6 +32,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;

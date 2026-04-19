@@ -1,62 +1,128 @@
 //! Functions for the `kcl` lsp server.
 #![allow(dead_code)]
 
-use std::{
-    collections::HashMap,
-    io::Write,
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
+use std::cell::Cell;
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
-use sha2::Digest;
 use tokio::sync::RwLock;
-use tower_lsp::{
-    Client, LanguageServer,
-    jsonrpc::Result as RpcResult,
-    lsp_types::{
-        CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
-        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
-        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
-        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
-        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
-        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
-        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
-        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
-        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
-        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
-        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
-        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
-        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
-        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
-    },
-};
+use tower_lsp::Client;
+use tower_lsp::LanguageServer;
+use tower_lsp::jsonrpc::Result as RpcResult;
+use tower_lsp::lsp_types::CodeAction;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOptions;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::CodeActionParams;
+use tower_lsp::lsp_types::CodeActionProviderCapability;
+use tower_lsp::lsp_types::CodeActionResponse;
+use tower_lsp::lsp_types::ColorInformation;
+use tower_lsp::lsp_types::ColorPresentation;
+use tower_lsp::lsp_types::ColorPresentationParams;
+use tower_lsp::lsp_types::ColorProviderCapability;
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::CompletionOptions;
+use tower_lsp::lsp_types::CompletionParams;
+use tower_lsp::lsp_types::CompletionResponse;
+use tower_lsp::lsp_types::CreateFilesParams;
+use tower_lsp::lsp_types::DeleteFilesParams;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticOptions;
+use tower_lsp::lsp_types::DiagnosticServerCapabilities;
+use tower_lsp::lsp_types::DiagnosticSeverity;
+use tower_lsp::lsp_types::DidChangeConfigurationParams;
+use tower_lsp::lsp_types::DidChangeTextDocumentParams;
+use tower_lsp::lsp_types::DidChangeWatchedFilesParams;
+use tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams;
+use tower_lsp::lsp_types::DidCloseTextDocumentParams;
+use tower_lsp::lsp_types::DidOpenTextDocumentParams;
+use tower_lsp::lsp_types::DidSaveTextDocumentParams;
+use tower_lsp::lsp_types::DocumentColorParams;
+use tower_lsp::lsp_types::DocumentDiagnosticParams;
+use tower_lsp::lsp_types::DocumentDiagnosticReport;
+use tower_lsp::lsp_types::DocumentDiagnosticReportResult;
+use tower_lsp::lsp_types::DocumentFilter;
+use tower_lsp::lsp_types::DocumentFormattingParams;
+use tower_lsp::lsp_types::DocumentSymbol;
+use tower_lsp::lsp_types::DocumentSymbolParams;
+use tower_lsp::lsp_types::DocumentSymbolResponse;
+use tower_lsp::lsp_types::Documentation;
+use tower_lsp::lsp_types::FoldingRange;
+use tower_lsp::lsp_types::FoldingRangeParams;
+use tower_lsp::lsp_types::FoldingRangeProviderCapability;
+use tower_lsp::lsp_types::FullDocumentDiagnosticReport;
+use tower_lsp::lsp_types::Hover as LspHover;
+use tower_lsp::lsp_types::HoverContents;
+use tower_lsp::lsp_types::HoverParams;
+use tower_lsp::lsp_types::HoverProviderCapability;
+use tower_lsp::lsp_types::InitializeParams;
+use tower_lsp::lsp_types::InitializeResult;
+use tower_lsp::lsp_types::InitializedParams;
+use tower_lsp::lsp_types::InlayHint;
+use tower_lsp::lsp_types::InlayHintParams;
+use tower_lsp::lsp_types::InsertTextFormat;
+use tower_lsp::lsp_types::MarkupContent;
+use tower_lsp::lsp_types::MarkupKind;
+use tower_lsp::lsp_types::MessageType;
+use tower_lsp::lsp_types::OneOf;
+use tower_lsp::lsp_types::Position;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::RelatedFullDocumentDiagnosticReport;
+use tower_lsp::lsp_types::RenameFilesParams;
+use tower_lsp::lsp_types::RenameParams;
+use tower_lsp::lsp_types::SemanticToken;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::SemanticTokens;
+use tower_lsp::lsp_types::SemanticTokensFullOptions;
+use tower_lsp::lsp_types::SemanticTokensLegend;
+use tower_lsp::lsp_types::SemanticTokensOptions;
+use tower_lsp::lsp_types::SemanticTokensParams;
+use tower_lsp::lsp_types::SemanticTokensRegistrationOptions;
+use tower_lsp::lsp_types::SemanticTokensResult;
+use tower_lsp::lsp_types::SemanticTokensServerCapabilities;
+use tower_lsp::lsp_types::ServerCapabilities;
+use tower_lsp::lsp_types::SignatureHelp;
+use tower_lsp::lsp_types::SignatureHelpOptions;
+use tower_lsp::lsp_types::SignatureHelpParams;
+use tower_lsp::lsp_types::StaticRegistrationOptions;
+use tower_lsp::lsp_types::TextDocumentItem;
+use tower_lsp::lsp_types::TextDocumentPositionParams;
+use tower_lsp::lsp_types::TextDocumentRegistrationOptions;
+use tower_lsp::lsp_types::TextDocumentSyncCapability;
+use tower_lsp::lsp_types::TextDocumentSyncKind;
+use tower_lsp::lsp_types::TextDocumentSyncOptions;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkDoneProgressOptions;
+use tower_lsp::lsp_types::WorkspaceEdit;
+use tower_lsp::lsp_types::WorkspaceFolder;
+use tower_lsp::lsp_types::WorkspaceFoldersServerCapabilities;
+use tower_lsp::lsp_types::WorkspaceServerCapabilities;
 
-use crate::{
-    ModuleId, Program, SourceRange,
-    docs::kcl_doc::{ArgData, ModData},
-    exec::KclValue,
-    execution::cache,
-    lsp::{
-        LspSuggestion, ToLspRange,
-        backend::Backend as _,
-        kcl::hover::{Hover, HoverOpts},
-        util::IntoDiagnostic,
-    },
-    parsing::{
-        PIPE_OPERATOR,
-        ast::types::{Expr, Node, VariableKind},
-        token::TokenStream,
-    },
-};
+use crate::ModuleId;
+use crate::Program;
+use crate::SourceRange;
+use crate::docs::kcl_doc::ArgData;
+use crate::docs::kcl_doc::ModData;
+use crate::exec::KclValue;
+use crate::execution::cache;
+use crate::lsp::LspSuggestion;
+use crate::lsp::ToLspRange;
+use crate::lsp::backend::Backend as _;
+use crate::lsp::kcl::hover::Hover;
+use crate::lsp::kcl::hover::HoverOpts;
+use crate::lsp::util::IntoDiagnostic;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::RESERVED_WORDS;
+use crate::parsing::token::TokenStream;
 
 pub mod custom_notifications;
 mod hover;
@@ -106,10 +172,19 @@ pub struct Backend {
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
+    /// The stdlib completions inside a sketch block, where `solver::*`
+    /// shadows the regular sketch stdlib.
+    pub sketch_block_stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
+    /// The stdlib signatures inside a sketch block.
+    pub sketch_block_stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
     pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
+    /// KwArg docs inside a sketch block.
+    pub sketch_block_stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
+    /// KCL keywords
+    pub kcl_keywords: HashMap<String, CompletionItem>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -124,8 +199,6 @@ pub struct Backend {
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
-    /// If we can send telemetry for this user.
-    pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
     pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
@@ -141,15 +214,8 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(fs),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(fs), zoo_client)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -157,15 +223,8 @@ impl Backend {
         client: Client,
         executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::with_file_manager(
-            client,
-            executor_ctx,
-            crate::fs::FileManager::new(),
-            zoo_client,
-            can_send_telemetry,
-        )
+        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(), zoo_client)
     }
 
     fn with_file_manager(
@@ -173,21 +232,28 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
-        can_send_telemetry: bool,
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
+        let sketch_block_stdlib_completions =
+            get_completions_from_stdlib_for_sketch_block(&kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
+        let sketch_block_stdlib_signatures = get_signatures_from_stdlib_for_sketch_block(&kcl_std);
         let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
+        let sketch_block_stdlib_args = get_arg_maps_from_stdlib_for_sketch_block(&kcl_std);
+        let kcl_keywords = get_keywords();
 
         Ok(Self {
             client,
             fs: Arc::new(fs),
             stdlib_completions,
+            sketch_block_stdlib_completions,
             stdlib_signatures,
+            sketch_block_stdlib_signatures,
             stdlib_args,
+            sketch_block_stdlib_args,
+            kcl_keywords,
             zoo_client,
-            can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
             executor_ctx: Arc::new(RwLock::new(executor_ctx)),
             workspace_folders: Default::default(),
@@ -201,6 +267,58 @@ impl Backend {
         })
     }
 
+    fn is_in_sketch_block(ast: &crate::Program, position: usize) -> bool {
+        let in_sketch_block = Cell::new(false);
+        let _ = crate::walk::walk(&ast.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch_block) = node
+                && SourceRange::from(&sketch_block.body).contains(position)
+            {
+                in_sketch_block.set(true);
+                return Ok::<bool, anyhow::Error>(false);
+            }
+
+            Ok::<bool, anyhow::Error>(true)
+        });
+
+        in_sketch_block.get()
+    }
+
+    fn stdlib_completions_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, CompletionItem> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_completions
+        } else {
+            &self.stdlib_completions
+        }
+    }
+
+    fn stdlib_signatures_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, SignatureHelp> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_signatures
+        } else {
+            &self.stdlib_signatures
+        }
+    }
+
+    fn stdlib_args_for_position<'a>(
+        &'a self,
+        ast: &crate::Program,
+        position: usize,
+    ) -> &'a HashMap<String, HashMap<String, LspArgData>> {
+        if Self::is_in_sketch_block(ast, position) {
+            &self.sketch_block_stdlib_args
+        } else {
+            &self.stdlib_args
+        }
+    }
+
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
@@ -208,11 +326,11 @@ impl Backend {
 
     fn try_arg_completions(
         &self,
-        ast: &Node<crate::parsing::ast::types::Program>,
+        program: &crate::Program,
         position: usize,
         current_code: &str,
     ) -> Option<impl Iterator<Item = CompletionItem>> {
-        let curr_expr = ast.get_expr_for_position(position)?;
+        let curr_expr = program.ast.get_expr_for_position(position)?;
         let hover =
             curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
 
@@ -234,7 +352,8 @@ impl Backend {
             } => Some(callee_name),
             Hover::Type { .. } => None,
         };
-        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+        let stdlib_args = self.stdlib_args_for_position(program, position);
+        let callee_args = maybe_callee.and_then(|fn_name| stdlib_args.get(&fn_name))?;
 
         let arg_label_completions = callee_args
             .iter()
@@ -438,7 +557,10 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            let discovered_findings = ast.lint_all().into_iter().flatten().collect::<Vec<_>>();
+            let mut discovered_findings: Vec<_> = ast.lint_all().into_iter().flatten().collect();
+            // Filter out Z0005 (old sketch syntax) from LSP diagnostics
+            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            discovered_findings.retain(|finding| finding.finding.code != "Z0005");
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 
@@ -764,7 +886,16 @@ impl Backend {
             return Ok(());
         }
 
-        match executor_ctx.run_with_caching(ast.clone()).await {
+        // Use run_mock for mock contexts, run_with_caching for live contexts
+        let result = if executor_ctx.is_mock() {
+            executor_ctx
+                .run_mock(ast, &crate::execution::MockConfig::default())
+                .await
+        } else {
+            executor_ctx.run_with_caching(ast.clone()).await
+        };
+
+        match result {
             Err(err) => {
                 self.add_to_diagnostics(params, &[err], false).await;
 
@@ -802,88 +933,6 @@ impl Backend {
             }
         }
         modifier
-    }
-
-    pub async fn create_zip(&self) -> Result<Vec<u8>> {
-        // Collect all the file data we know.
-        let mut buf = vec![];
-        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for code in self.code_map.iter() {
-            let entry = code.key();
-            let value = code.value();
-            let file_name = entry.replace("file://", "").to_string();
-
-            let options = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-            zip.start_file(file_name, options)?;
-            zip.write_all(value)?;
-        }
-        // Apply the changes you've made.
-        // Dropping the `ZipWriter` will have the same effect, but may silently fail
-        zip.finish()?;
-
-        Ok(buf)
-    }
-
-    pub async fn send_telemetry(&self) -> Result<()> {
-        // Get information about the user.
-        let user = self
-            .zoo_client
-            .users()
-            .get_self()
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        // Hash the user's id.
-        // Create a SHA-256 object
-        let mut hasher = sha2::Sha256::new();
-        // Write input message
-        hasher.update(user.id);
-        // Read hash digest and consume hasher
-        let result = hasher.finalize();
-        // Get the hash as a string.
-        let user_id_hash = format!("{result:x}");
-
-        // Get the workspace folders.
-        // The key of the workspace folder is the project name.
-        let workspace_folders = self.workspace_folders().await;
-        let project_names: Vec<&str> = workspace_folders.iter().map(|v| v.name.as_str()).collect::<Vec<_>>();
-        // Get the first name.
-        let project_name = project_names
-            .first()
-            .ok_or_else(|| anyhow::anyhow!("no project names"))?
-            .to_string();
-
-        // Send the telemetry data.
-        self.zoo_client
-            .meta()
-            .create_event(
-                vec![kittycad::types::multipart::Attachment {
-                    // Clean the URI part.
-                    name: "attachment".to_string(),
-                    filepath: Some("attachment.zip".into()),
-                    content_type: Some("application/x-zip".to_string()),
-                    data: self.create_zip().await?,
-                }],
-                &kittycad::types::Event {
-                    // This gets generated server side so leave empty for now.
-                    attachment_uri: None,
-                    created_at: chrono::Utc::now(),
-                    event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
-                    last_compiled_at: Some(chrono::Utc::now()),
-                    // We do not have project descriptions yet.
-                    project_description: None,
-                    project_name,
-                    // The UUID for the Design Studio.
-                    // We can unwrap here because we know it will not panic.
-                    source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
-                    type_: kittycad::types::Type::ModelingAppEvent,
-                    user_id: user_id_hash,
-                },
-            )
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-
-        Ok(())
     }
 
     pub async fn update_can_execute(
@@ -1057,31 +1106,6 @@ impl LanguageServer for Backend {
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
         self.do_did_close(params).await;
-
-        // Inject telemetry if we can train on the user's code.
-        // Return early if we cannot.
-        if !self.can_send_telemetry {
-            return;
-        }
-
-        // In wasm this needs to be spawn_local since fucking reqwests doesn't implement Send for wasm.
-        #[cfg(target_arch = "wasm32")]
-        {
-            let be = self.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                if let Err(err) = be.send_telemetry().await {
-                    be.client
-                        .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
-                        .await;
-                }
-            });
-        }
-        #[cfg(not(target_arch = "wasm32"))]
-        if let Err(err) = self.send_telemetry().await {
-            self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
-                .await;
-        }
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<LspHover>> {
@@ -1107,6 +1131,8 @@ impl LanguageServer for Backend {
         else {
             return Ok(None);
         };
+        let stdlib_completions = self.stdlib_completions_for_position(&ast, pos);
+        let stdlib_args = self.stdlib_args_for_position(&ast, pos);
 
         match hover {
             Hover::Function { name, range } => {
@@ -1125,7 +1151,7 @@ impl LanguageServer for Backend {
                     result
                 } else {
                     // Get the docs for this function.
-                    let Some(completion) = self.stdlib_completions.get(&name) else {
+                    let Some(completion) = stdlib_completions.get(&name) else {
                         return Ok(None);
                     };
                     let Some(docs) = &completion.documentation else {
@@ -1166,7 +1192,7 @@ impl LanguageServer for Backend {
                 }))
             }
             Hover::Type { name, range } => {
-                let Some(completion) = self.stdlib_completions.get(&name) else {
+                let Some(completion) = stdlib_completions.get(&name) else {
                     return Ok(None);
                 };
                 let Some(docs) = &completion.documentation else {
@@ -1200,7 +1226,7 @@ impl LanguageServer for Backend {
             } => {
                 // TODO handle user-defined functions too
 
-                let Some(arg_map) = self.stdlib_args.get(&callee_name) else {
+                let Some(arg_map) = stdlib_args.get(&callee_name) else {
                     return Ok(None);
                 };
 
@@ -1314,13 +1340,13 @@ impl LanguageServer for Backend {
             }
         }
 
-        completions.extend(self.stdlib_completions.values().cloned());
-
         // Add more to the completions if we have more.
         let Some(ast) = self
             .ast_map
             .get(params.text_document_position.text_document.uri.as_ref())
         else {
+            completions.extend(self.stdlib_completions.values().cloned());
+            completions.extend(self.kcl_keywords.values().cloned());
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
@@ -1330,10 +1356,13 @@ impl LanguageServer for Backend {
             return Ok(None);
         }
 
+        completions.extend(self.stdlib_completions_for_position(&ast, position).values().cloned());
+        completions.extend(self.kcl_keywords.values().cloned());
+
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast, position, current_code) {
             completions.extend(arg_label_completions);
         }
 
@@ -1388,6 +1417,12 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        let ast = self.ast_map.get(&filename);
+        let stdlib_signatures = ast
+            .as_ref()
+            .map(|ast| self.stdlib_signatures_for_position(ast, pos))
+            .unwrap_or(&self.stdlib_signatures);
+
         // Get the character at the position.
         let Some(ch) = current_code.chars().nth(pos) else {
             return Ok(None);
@@ -1417,7 +1452,7 @@ impl LanguageServer for Backend {
                 let last_word = current_code[..p2].split_whitespace().last()?;
 
                 // Get the function name.
-                return self.stdlib_signatures.get(last_word);
+                return stdlib_signatures.get(last_word);
             } else if ch == ',' {
                 // If we have a comma, then get the string in front of
                 // the closest ( and try to get the signature.
@@ -1427,7 +1462,7 @@ impl LanguageServer for Backend {
                 // Get the string in front of the (.
                 let last_word = current_code[..last_paren].split_whitespace().last()?;
                 // Get the function name.
-                return self.stdlib_signatures.get(last_word);
+                return stdlib_signatures.get(last_word);
             }
 
             None
@@ -1451,8 +1486,7 @@ impl LanguageServer for Backend {
             }
         }
 
-        // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename) else {
+        let Some(ast) = ast else {
             return Ok(None);
         };
 
@@ -1469,7 +1503,7 @@ impl LanguageServer for Backend {
         match hover {
             Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
-                let Some(signature) = self.stdlib_signatures.get(&name) else {
+                let Some(signature) = stdlib_signatures.get(&name) else {
                     return Ok(None);
                 };
 
@@ -1480,7 +1514,7 @@ impl LanguageServer for Backend {
                 parameter_index,
                 range: _,
             } => {
-                let Some(signature) = self.stdlib_signatures.get(&name) else {
+                let Some(signature) = stdlib_signatures.get(&name) else {
                     return Ok(None);
                 };
 
@@ -1612,11 +1646,36 @@ impl LanguageServer for Backend {
     }
 
     async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
-        let actions = params
-            .context
-            .diagnostics
+        // Get the actual diagnostics from our map to ensure we have the full diagnostic info
+        let filename = params.text_document.uri.to_string();
+        let stored_diagnostics = self
+            .diagnostics_map
+            .get(&filename)
+            .map(|d| d.clone())
+            .unwrap_or_default();
+
+        // Use stored diagnostics if available, otherwise fall back to params.context.diagnostics
+        let diagnostics_to_check: Vec<_> = if stored_diagnostics.is_empty() {
+            params.context.diagnostics.clone()
+        } else {
+            // Match params.context.diagnostics with stored diagnostics by range
+            params
+                .context
+                .diagnostics
+                .iter()
+                .filter_map(|param_diag| {
+                    stored_diagnostics
+                        .iter()
+                        .find(|stored_diag| stored_diag.range == param_diag.range)
+                        .cloned()
+                })
+                .collect()
+        };
+
+        let actions = diagnostics_to_check
             .into_iter()
             .filter_map(|diagnostic| {
+                // Handle regular suggestions (like camelCase)
                 let (suggestion, range) = diagnostic
                     .data
                     .as_ref()
@@ -1699,13 +1758,73 @@ impl LanguageServer for Backend {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum StdlibCompletionContext {
+    Default,
+    SketchBlock,
+}
+
+fn is_sketch2_doc(doc: &crate::docs::kcl_doc::DocData) -> bool {
+    doc.qual_name().starts_with("std::solver::")
+}
+
+fn strip_sketch2_prefix(value: &str) -> String {
+    value.strip_prefix("solver::").unwrap_or(value).to_owned()
+}
+
+fn rewrite_completion_for_sketch_block(mut completion: CompletionItem) -> CompletionItem {
+    completion.label = strip_sketch2_prefix(&completion.label);
+    completion.insert_text = completion.insert_text.map(|text| strip_sketch2_prefix(&text));
+    completion
+}
+
+fn rewrite_signature_for_sketch_block(mut signature: SignatureHelp) -> SignatureHelp {
+    for info in &mut signature.signatures {
+        info.label = strip_sketch2_prefix(&info.label);
+    }
+    signature
+}
+
+fn should_skip_stdlib_doc(
+    doc: &crate::docs::kcl_doc::DocData,
+    has_existing: bool,
+    context: StdlibCompletionContext,
+) -> bool {
+    if !has_existing {
+        return false;
+    }
+
+    match context {
+        StdlibCompletionContext::Default => doc.is_experimental() || is_sketch2_doc(doc),
+        StdlibCompletionContext::SketchBlock => doc.is_experimental() && !is_sketch2_doc(doc),
+    }
+}
+
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
+    get_completions_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_completions_from_stdlib_for_sketch_block(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
+    get_completions_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_completions_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
 
     for d in kcl_std.all_docs() {
-        if let Some(ci) = d.to_completion_item() {
-            completions.insert(d.name().to_owned(), ci);
+        if let Some(mut ci) = d.to_completion_item() {
+            let name = d.name();
+            if should_skip_stdlib_doc(d, completions.contains_key(name), context) {
+                continue;
+            }
+            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                ci = rewrite_completion_for_sketch_block(ci);
+            }
+            completions.insert(name.to_owned(), ci);
         }
     }
 
@@ -1719,15 +1838,64 @@ pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, 
 
 /// Get signatures from our stdlib.
 pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+    get_signatures_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_signatures_from_stdlib_for_sketch_block(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+    get_signatures_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_signatures_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
 
     for d in kcl_std.all_docs() {
-        if let Some(sig) = d.to_signature_help() {
-            signatures.insert(d.name().to_owned(), sig);
+        if let Some(mut sig) = d.to_signature_help() {
+            let name = d.name();
+            if should_skip_stdlib_doc(d, signatures.contains_key(name), context) {
+                continue;
+            }
+            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                sig = rewrite_signature_for_sketch_block(sig);
+            }
+            signatures.insert(name.to_owned(), sig);
         }
     }
 
     signatures
+}
+
+/// Get KCL keywords
+pub fn get_keywords() -> HashMap<String, CompletionItem> {
+    RESERVED_WORDS
+        .keys()
+        .map(|k| (k.to_string(), keyword_to_completion(k.to_string())))
+        .collect()
+}
+
+fn keyword_to_completion(kw: String) -> CompletionItem {
+    CompletionItem {
+        label: kw,
+        label_details: None,
+        kind: Some(CompletionItemKind::KEYWORD),
+        detail: None,
+        documentation: None,
+        deprecated: Some(false),
+        preselect: None,
+        sort_text: None,
+        filter_text: None,
+        insert_text: None,
+        insert_text_format: None,
+        insert_text_mode: None,
+        text_edit: None,
+        additional_text_edits: None,
+        command: None,
+        commit_characters: None,
+        data: None,
+        tags: None,
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -1738,6 +1906,17 @@ pub struct LspArgData {
 
 /// Get signatures from our stdlib.
 pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
+    get_arg_maps_from_stdlib_in_context(kcl_std, StdlibCompletionContext::Default)
+}
+
+pub fn get_arg_maps_from_stdlib_for_sketch_block(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
+    get_arg_maps_from_stdlib_in_context(kcl_std, StdlibCompletionContext::SketchBlock)
+}
+
+fn get_arg_maps_from_stdlib_in_context(
+    kcl_std: &ModData,
+    context: StdlibCompletionContext,
+) -> HashMap<String, HashMap<String, LspArgData>> {
     let mut result = HashMap::new();
 
     for d in kcl_std.all_docs() {
@@ -1763,6 +1942,9 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
             })
             .collect();
         if !arg_map.is_empty() {
+            if should_skip_stdlib_doc(d, result.contains_key(&f.name), context) {
+                continue;
+            }
             result.insert(f.name.clone(), arg_map);
         }
     }

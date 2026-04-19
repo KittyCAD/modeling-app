@@ -1,0 +1,168 @@
+// Race Car Seat Brackets
+// Two of these modular brackets are used to mount a race car seat
+// Categories: Automotive
+
+// Define units
+@settings(defaultLengthUnit = mm)
+
+// Bracket Parameters
+bracketSpacing = 11.75in
+bendRad = 7
+thickness = 6.035
+
+// Hole Spacing Parameters
+holeDiameter = 0.375in
+xPitch = 25
+yPitch = 20
+xOffset = 100 // distance from part centerline to first column of holes
+yOffset = 50 // distance from reference horizontal datum
+yCount = 4
+
+// Calculate angled line angles
+angleA = atan(2 * yPitch / xPitch)
+
+// Draw bracket profiles
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 150mm], end = [var 0mm, var 30mm])
+  arc2 = arc(start = [var -0.79mm, var 25.54mm], end = [var 0mm, var 30mm], center = [var -13.04mm, var 30mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -0.79mm, var 25.54mm], end = [var -6.96mm, var 8.58mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -19.21mm, var 0mm], end = [var -6.96mm, var 8.58mm], center = [var -19.21mm, var 13.04mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -19.21mm, var 0mm], end = [var -130mm, var 0mm])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var -130mm, var 0mm], end = [var -130mm, var 6.04mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -130mm, var 6.04mm], end = [var -19.21mm, var 6.04mm])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var -19.21mm, var 6.04mm], end = [var -12.63mm, var 10.64mm], center = [var -19.21mm, var 13.04mm])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var -12.63mm, var 10.64mm], end = [var -6.46mm, var 27.61mm])
+  coincident([arc8.end, line9.start])
+  arc10 = arc(start = [var -6.46mm, var 27.61mm], end = [var -6.04mm, var 30mm], center = [var -13.04mm, var 30mm])
+  coincident([line9.end, arc10.start])
+  line11 = line(start = [var -6.04mm, var 30mm], end = [var -6.04mm, var 150mm])
+  coincident([arc10.end, line11.start])
+  line12 = line(start = [var -6.04mm, var 150mm], end = [var 0mm, var 150mm])
+  coincident([line11.end, line12.start])
+  vertical(arc2)
+  vertical(line7)
+  horizontal(arc8)
+  equalLength([arc10, line3])
+  equalLength([line12, line1])
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+bracketExtrusion = extrude(region001, length = 2 * xOffset + 8 * xPitch, symmetric = true)
+
+// Perimeter trim the lower flange
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -150mm, var 0mm], end = [var -150mm, var -225mm])
+  line2 = line(start = [var -150mm, var -225mm], end = [var -25mm, var -225mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -25mm, var -225mm], end = [var -25mm, var -200.25mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -25mm, var -200.25mm], end = [var -49.21mm, var -200.25mm])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var -74.21mm, var -175.25mm], end = [var -49.21mm, var -200.25mm], center = [var -49.21mm, var -175.25mm])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var -74.21mm, var -175.25mm], end = [var -74.21mm, var -85.25mm])
+  coincident([arc5.start, line6.start])
+  arc7 = arc(start = [var -62.46mm, var -64.05mm], end = [var -74.21mm, var -85.25mm], center = [var -49.21mm, var -85.25mm])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var -62.46mm, var -64.05mm], end = [var -61.61mm, var -63.52mm])
+  coincident([arc7.start, line8.start])
+  arc9 = arc(start = [var -61.61mm, var -63.52mm], end = [var -49.86mm, var -42.32mm], center = [var -74.86mm, var -42.32mm])
+  coincident([line8.end, arc9.start])
+  line10 = line(start = [var -49.86mm, var -42.32mm], end = [var -49.86mm, var 0mm])
+  coincident([arc9.end, line10.start])
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(arc5)
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+lowerFlange = extrude(region002, length = thickness * 2)
+
+// Perimeter trim the upper flange
+sketch003 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 170mm], end = [var -225mm, var 170mm])
+  line2 = line(start = [var -225mm, var 170mm], end = [var -225mm, var 50mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -225mm, var 50mm], end = [var -200.25mm, var 50mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -200.25mm, var 50mm], end = [var -200.25mm, var 70mm])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var -196.45mm, var 83.25mm], end = [var -200.25mm, var 70mm], center = [var -175.25mm, var 70mm])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var -196.45mm, var 83.25mm], end = [var -172.7mm, var 121.25mm])
+  coincident([arc5.start, line6.start])
+  arc7 = arc(start = [var -151.5mm, var 133mm], end = [var -172.7mm, var 121.25mm], center = [var -151.5mm, var 108mm])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var -151.5mm, var 133mm], end = [var -101.5mm, var 133mm])
+  coincident([arc7.start, line8.start])
+  arc9 = arc(start = [var -80.3mm, var 121.25mm], end = [var -101.5mm, var 133mm], center = [var -101.5mm, var 108mm])
+  coincident([line8.end, arc9.end])
+  line10 = line(start = [var -80.3mm, var 121.25mm], end = [var -55.3mm, var 81.25mm])
+  coincident([arc9.start, line10.start])
+  arc11 = arc(start = [var -55.3mm, var 81.25mm], end = [var -34.1mm, var 69.5mm], center = [var -34.1mm, var 94.5mm])
+  coincident([line10.end, arc11.start])
+  line12 = line(start = [var -34.1mm, var 69.5mm], end = [var 0mm, var 69.5mm])
+  coincident([arc11.end, line12.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(arc5)
+}
+region003 = region(segments = [sketch003.line1, sketch003.line2])
+upperFlange = extrude(region003, length = thickness * 2, method = NEW)
+
+// Subtract the trims from the base bracket
+bracket = subtract(bracketExtrusion, tools = [lowerFlange, upperFlange])
+
+// upper flange hole pattern
+upperFlangeHoleSketch = startSketchOn(bracket, face = seg07)
+ufOuter = circle(upperFlangeHoleSketch, center = [xOffset + 3 * xPitch, yOffset], diameter = holeDiameter)
+  |> patternCircular2d(instances = 2, center = [0, profileStartY()])
+  |> patternLinear2d(instances = 2, distance = yPitch, axis = Y)
+ufInner = circle(upperFlangeHoleSketch, center = [xOffset + 2 * xPitch, yOffset], diameter = holeDiameter)
+  |> patternCircular2d(instances = 2, center = [0, profileStartY()])
+  |> patternLinear2d(instances = yCount, distance = yPitch, axis = Y)
+ufSlot = startProfile(upperFlangeHoleSketch, at = [xOffset, yOffset - (holeDiameter / 2)])
+  |> xLine(length = xPitch, tag = $seg161)
+  |> tangentialArc(diameter = holeDiameter, angle = 180deg, tag = $seg151)
+  |> angledLine(angle = tangentToEnd(seg151), length = segLen(seg161))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternCircular2d(instances = 2, center = [0, yOffset])
+  |> patternLinear2d(instances = yCount, distance = yPitch, axis = Y)
+upperFlangeHoles = extrude([ufOuter, ufInner, ufSlot], length = -2 * thickness)
+
+// Lower flange hole and slot pattern
+sketch006 = startSketchOn(bracket, face = seg05)
+sketch004 = startProfile(
+       sketch006,
+       at = [
+         xOffset + 6,
+         -segStartX(seg05) + yPitch
+       ],
+     )
+  |> yLine(length = yPitch / 2, tag = $seg09)
+  |> tangentialArc(angle = 180deg, diameter = 12, tag = $seg08)
+  |> yLine(length = -segLen(seg09))
+  |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> patternLinear2d(instances = 5, distance = xPitch * 3 / 4, axis = X)
+  |> patternCircular2d(
+       instances = 2,
+       center = [
+         0,
+         -segStartX(seg05) + yPitch + yPitch / 4
+       ],
+     )
+profile008 = extrude(sketch004, length = -2 * thickness)
+
+// Create a second instance of the bracket and space them appropriately
+[bracket]
+  |> translate(x = bracketSpacing / 2)
+  |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)

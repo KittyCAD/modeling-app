@@ -1,21 +1,106 @@
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
-import type { Artifact, SourceRange } from '@src/lang/wasm'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   deletionErrorMessage,
   deleteSelectionPromise,
 } from '@src/lang/modifyAst/deleteSelection'
+import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { err } from '@src/lib/trap'
 import { type CommandBarActorType } from '@src/machines/commandBarMachine'
-import { type EnterEditFlowProps, enterEditFlow } from '@src/lib/operations'
+import {
+  type EnterEditFlowProps,
+  enterEditFlow,
+  getHideOpByArtifactId,
+  type HideOperation,
+} from '@src/lib/operations'
 import {
   codeRefFromRange,
+  getArtifactsMatchingPathToNode,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
 import type { ActorRefFrom } from 'xstate'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
+
+export interface FeatureTreeVisibilityState {
+  canToggleVisibility: boolean
+  hideOperation?: HideOperation
+  targetArtifact?: Artifact
+}
+
+export function resolveFeatureTreeVisibility(input: {
+  item: Operation
+  operations: Operation[]
+  artifactGraph: ArtifactGraph
+}): FeatureTreeVisibilityState {
+  const { item, operations, artifactGraph } = input
+
+  if (item.type === 'StdLibCall' && item.name === 'helix') {
+    const operationArtifact = findOperationArtifact(item, artifactGraph)
+    const hideOperation = operationArtifact
+      ? getHideOpByArtifactId(operations, operationArtifact.id)
+      : undefined
+    return {
+      canToggleVisibility: true,
+      hideOperation,
+      targetArtifact: operationArtifact ?? undefined,
+    }
+  }
+
+  if (item.type === 'SketchSolve') {
+    const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
+    if (artifact?.type !== 'sketchBlock') {
+      return { canToggleVisibility: false }
+    }
+
+    return {
+      canToggleVisibility: true,
+      hideOperation: findSketchHideOperation({
+        sketchBlockArtifact: artifact,
+        operations,
+        artifactGraph,
+      }),
+      targetArtifact: artifact,
+    }
+  }
+
+  return { canToggleVisibility: false }
+}
+
+function findSketchHideOperation(input: {
+  sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
+  operations: Operation[]
+  artifactGraph: ArtifactGraph
+}): HideOperation | undefined {
+  const { sketchBlockArtifact, operations, artifactGraph } = input
+  const directSketchHide = getHideOpByArtifactId(
+    operations,
+    sketchBlockArtifact.id
+  )
+  if (directSketchHide) {
+    return directSketchHide
+  }
+
+  for (const artifact of getArtifactsMatchingPathToNode(
+    sketchBlockArtifact.codeRef.pathToNode,
+    artifactGraph
+  )) {
+    if (artifact.id === sketchBlockArtifact.id) {
+      continue
+    }
+
+    const hideOperation = getHideOpByArtifactId(operations, artifact.id)
+    if (hideOperation) {
+      return hideOperation
+    }
+  }
+
+  return undefined
+}
 
 export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
@@ -76,17 +161,25 @@ export function prepareEditCommand(
   })
 }
 
-export function sendSelectionEvent(input: {
-  sourceRange: SourceRange
-  kclManager: KclManager
-  modelingSend: ActorRefFrom<typeof modelingMachine>['send']
-}) {
+export function sendSelectionEvent(
+  input: {
+    sourceRange: SourceRange
+    kclManager: KclManager
+    modelingSend: ActorRefFrom<typeof modelingMachine>['send']
+  },
+  convertRangeToUtf16 = false
+) {
   const artifact =
     getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
     undefined
 
   const selection = {
-    codeRef: codeRefFromRange(input.sourceRange, input.kclManager.ast),
+    codeRef: codeRefFromRange(
+      convertRangeToUtf16
+        ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
+        : input.sourceRange,
+      input.kclManager.ast
+    ),
     artifact,
   }
 

@@ -37,7 +37,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -154,37 +153,6 @@ export async function deleteFromSelection(
     return astClone
   }
 
-  // Sketch Solve Constraint case
-  const sketchBlock = getNodeFromPath<SketchBlock>(
-    astClone,
-    selection.codeRef.pathToNode,
-    wasmInstance,
-    'SketchBlock'
-  )
-  if (!err(sketchBlock) && sketchBlock.node.type === 'SketchBlock') {
-    const isItemInSketchBlock =
-      sketchBlock.deepPath.length > sketchBlock.shallowPath.length
-    const itemsIndex = -2 // index of items in body is second to last
-    const nodeIndex = sketchBlock.deepPath.at(itemsIndex)?.[0]
-    if (
-      isItemInSketchBlock &&
-      typeof nodeIndex === 'number' &&
-      sketchBlock.node.body.items[nodeIndex] !== undefined
-    ) {
-      sketchBlock.node.body.items.splice(nodeIndex, 1)
-      return astClone
-    }
-
-    // Whole sketch block deletion case
-    if (
-      typeof nodeIndex === 'number' &&
-      astClone.body[nodeIndex] !== undefined
-    ) {
-      astClone.body.splice(nodeIndex, 1)
-      return astClone
-    }
-  }
-
   // Below is all AST-based deletion logic
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
@@ -199,6 +167,8 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    (selection.artifact?.type === 'path' &&
+      selection.artifact.subType === 'region') ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'helix' ||
     selection.artifact?.type === 'planeOfFace' ||
@@ -212,6 +182,7 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'plane' &&
       selection.artifact.type !== 'compositeSolid' &&
       selection.artifact.type !== 'helix' &&
+      selection.artifact.type !== 'path' &&
       selection.artifact.type !== 'planeOfFace'
     ) {
       const varDecName = varDec.node.id.name

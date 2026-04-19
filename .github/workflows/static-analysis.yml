@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   npm-fmt-check:
-    runs-on: 'ubuntu-22.04'
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -27,14 +27,14 @@ jobs:
       - run: npm install
       - run: npm run fmt:check
 
-  npm-build-wasm:
+  build-wasm:
     uses: ./.github/workflows/build-wasm.yml
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-tsc:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
@@ -45,7 +45,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Copy prepared wasm
         run: |
@@ -64,7 +64,7 @@ jobs:
 
   npm-lint:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
@@ -75,7 +75,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Copy prepared wasm
         run: |
@@ -94,7 +94,7 @@ jobs:
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
@@ -105,7 +105,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Copy prepared wasm
         run: |
@@ -127,5 +127,5 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Run codespell
-        uses: crate-ci/typos@v1.42.0
+      - name: Run typos
+        uses: crate-ci/typos@v1.45.0

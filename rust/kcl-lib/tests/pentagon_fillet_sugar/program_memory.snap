@@ -127,6 +127,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -406,6 +407,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -636,6 +638,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -806,6 +809,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -907,6 +911,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1140,6 +1145,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1241,6 +1247,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [

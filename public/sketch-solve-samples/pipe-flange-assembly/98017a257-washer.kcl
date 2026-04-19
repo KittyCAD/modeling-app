@@ -1,0 +1,24 @@
+// 98017A257 Washer
+// Washer for the screws in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
+
+// Create a function to make the washer. Must be a function since multiple washers are used.
+export fn washer() {
+  // Create the base of the washer
+  sketch001 = startSketchOn(XY)
+    |> circle(center = [0, 0], radius = washerOuterDia / 2)
+  washerBase = extrude(sketch001, length = washerThickness)
+
+  // Extrude a hole through the washer
+  sketch002 = startSketchOn(washerBase, face = END)
+    |> circle(center = [0, 0], radius = washerInnerDia / 2)
+  washer = extrude(sketch002, length = -washerThickness)
+    |> appearance(color = "#ee4f4f")
+
+  return washer
+}

@@ -1,0 +1,26 @@
+// Pipe
+// Piping for the pipe flange assembly
+// Categories: Construction, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define parameters
+pipeOuterDiameter = 2.375
+pipeInnerDiameter = 2.0
+pipeThickness = (pipeOuterDiameter - pipeInnerDiameter) / 2
+pipeLength = 6
+
+pipeSection = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.95in, var 0in], center = [var 0in, var 0in])
+  radius(circle1) == pipeOuterDiameter / 2
+  circle2 = circle(start = [var 1.71in, var 0.38in], center = [var 0in, var 0in])
+  radius(circle2) == pipeInnerDiameter / 2
+  coincident([circle2.center, ORIGIN])
+  coincident([circle1.center, ORIGIN])
+}
+
+ringRegion = region(point = [(pipeInnerDiameter + pipeThickness)/2, 0], sketch = pipeSection)
+pipeBody = extrude(ringRegion, length = -pipeLength, symmetric = true)
+  |> appearance(color = "#a24ed0")
+hide(pipeSection)

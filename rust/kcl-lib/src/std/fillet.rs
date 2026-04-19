@@ -2,21 +2,32 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::CutType;
 use kittycad_modeling_cmds as kcmc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::RuntimeType,
-    },
-    parsing::ast::types::TagNode,
-    std::Args,
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::EdgeCut;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::FilletSurface;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::csg::CsgAlgorithm;
 
 /// A tag or a uuid of an edge.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
@@ -33,6 +44,23 @@ impl EdgeReference {
         match self {
             EdgeReference::Uuid(uuid) => Ok(*uuid),
             EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(exec_state, tag)?.id),
+        }
+    }
+
+    /// Get all engine IDs for this edge reference.
+    /// For region-mapped tags, returns multiple IDs (one per region segment).
+    pub fn get_all_engine_ids(&self, exec_state: &mut ExecState, args: &Args) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(vec![*uuid]),
+            EdgeReference::Tag(tag) => {
+                let infos = tag.get_all_cur_info();
+                if infos.is_empty() {
+                    // Fallback to single ID lookup (checks the stack).
+                    Ok(vec![args.get_tag_engine_info(exec_state, tag)?.id])
+                } else {
+                    Ok(infos.iter().map(|i| i.id).collect())
+                }
+            }
         }
     }
 }
@@ -66,19 +94,23 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,
     tags: Vec<EdgeReference>,
     tolerance: Option<TyF64>,
+    csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -103,8 +135,14 @@ async fn inner_fillet(
     let mut solid = solid.clone();
     let edge_ids = tags
         .into_iter()
-        .map(|edge_tag| edge_tag.get_engine_id(exec_state, &args))
-        .collect::<Result<Vec<_>, _>>()?;
+        .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
+        .try_fold(Vec::new(), |mut acc, item| match item {
+            Ok(ids) => {
+                acc.extend(ids);
+                Ok(acc)
+            }
+            Err(e) => Err(e),
+        })?;
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
@@ -117,6 +155,7 @@ async fn inner_fillet(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dFilletEdge::builder()
+                    .use_legacy(csg_algorithm.is_legacy())
                     .edge_ids(edge_ids.clone())
                     .extra_face_ids(extra_face_ids)
                     .strategy(Default::default())

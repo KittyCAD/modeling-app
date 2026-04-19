@@ -3,6 +3,38 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_lines_coincident_simple.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "s": {
     "type": "Object",
     "value": {
@@ -12,6 +44,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -83,6 +116,42 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "l1"
                 }
               }
             }
@@ -95,6 +164,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 9,
                 "kind": {
                   "line": {
@@ -166,6 +236,42 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "l2"
                 }
               }
             }
@@ -178,6 +284,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -249,6 +356,42 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "l3"
                 }
               }
             }
@@ -261,6 +404,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -332,11 +476,278 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "end_freedom": "Fixed",
                     "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "l4"
                 }
               }
             }
           }
         }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    1.0,
+                    2.0
+                  ],
+                  "tag": {
+                    "commentStart": 61,
+                    "end": 63,
+                    "moduleId": 0,
+                    "start": 61,
+                    "type": "TagDeclarator",
+                    "value": "l1"
+                  },
+                  "to": [
+                    3.0,
+                    4.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.0,
+                    4.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    14.0,
+                    15.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    14.0,
+                    15.0
+                  ],
+                  "tag": {
+                    "commentStart": 217,
+                    "end": 219,
+                    "moduleId": 0,
+                    "start": 217,
+                    "type": "TagDeclarator",
+                    "value": "l2"
+                  },
+                  "to": [
+                    12.0,
+                    13.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    12.0,
+                    13.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    40.0,
+                    41.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    40.0,
+                    41.0
+                  ],
+                  "tag": {
+                    "commentStart": 382,
+                    "end": 384,
+                    "moduleId": 0,
+                    "start": 382,
+                    "type": "TagDeclarator",
+                    "value": "l3"
+                  },
+                  "to": [
+                    23.0,
+                    24.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    23.0,
+                    24.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    30.0,
+                    31.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    30.0,
+                    31.0
+                  ],
+                  "tag": {
+                    "commentStart": 444,
+                    "end": 446,
+                    "moduleId": 0,
+                    "start": 444,
+                    "type": "TagDeclarator",
+                    "value": "l4"
+                  },
+                  "to": [
+                    40.0,
+                    41.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  1.0,
+                  2.0
+                ],
+                "to": [
+                  1.0,
+                  2.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "l1": {
+                  "type": "TagIdentifier",
+                  "value": "l1"
+                },
+                "l2": {
+                  "type": "TagIdentifier",
+                  "value": "l2"
+                },
+                "l3": {
+                  "type": "TagIdentifier",
+                  "value": "l3"
+                },
+                "l4": {
+                  "type": "TagIdentifier",
+                  "value": "l4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
       },
       "p1": {
         "type": "Segment",
@@ -344,6 +755,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "point": {
@@ -381,6 +793,42 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p1"
                 }
               }
             }
@@ -393,6 +841,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "point": {
@@ -430,6 +879,42 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p2"
                 }
               }
             }

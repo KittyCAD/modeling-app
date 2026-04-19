@@ -1,0 +1,87 @@
+// Hub
+// A wheel hub is the part that connects the wheel to the suspension
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define Parameters
+hubSpacing = 3in
+hubBore = 2.5in
+rotorBore = 3
+lugCount = 5
+lugSpacing = 114.3mm
+lugDiameter = 24mm
+lugThreadDiameter = lugDiameter / 1.75
+lugLength = 5 / 8
+
+// Sketch the base of the hub with a bolting pattern to the upright
+sketch001 = sketch(on = XZ) {
+  arc1 = arc(start = [var 2.81in, var 0in], end = [var 2.49in, var 0.56in], center = [var 2.17in, var 0in])
+  line2 = line(start = [var 2.49in, var 0.56in], end = [var -0.8in, var 2.46in])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var -0.8in, var 2.46in], end = [var -1.76in, var 1.9in], center = [var -1.12in, var 1.9in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var -1.76in, var 1.9in], end = [var -1.76in, var 0in])
+  coincident([arc3.end, line4.start])
+  line5 = line(start = [var -1.76in, var 0in], end = [var 2.81in, var 0in])
+  coincident([line4.end, line5.start])
+  vertical(line5)
+}
+region001 = region(segments = [sketch001.arc1, sketch001.line2])
+baseSketch = extrude(region001, length = hubSpacing * 5 / 4)
+
+// Trim a revolved profile around the hub base sketch
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var 1.5in, var -0.75in], end = [var 2.98in, var -0.49in])
+  line2 = line(start = [var 2.98in, var -0.49in], end = [var 2.98in, var -4.99in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.98in, var -4.99in], end = [var 1.5in, var -4.99in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.5in, var -4.99in], end = [var 1.5in, var -0.75in])
+  coincident([line3.end, line4.start])
+  horizontal(line4)
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+revolveTrim = revolve(region002, axis = Y)
+solid001 = subtract(baseSketch, tools = revolveTrim)
+
+// Create the mounting flange for the wheel
+sketch003 = sketch(on = offsetPlane(XZ, offset = hubSpacing * 3 / 4)) {
+  circle1 = circle(start = [var 76.2in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+mountingFlange = extrude(
+       region003,
+       length = hubSpacing / 4,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
+
+// Chamfer the edges of the mounting flange
+chamfer001 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capStart001]), length = lugSpacing / 30)
+chamfer002 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capEnd001]), length = lugSpacing / 20)
+
+// Model welded bolts to secure the wheel components to the hub
+sketch004 = sketch(on = startSketchOn(mountingFlange, face = START)) {
+  line1 = line(start = [var -1.82in, var 0in], end = [var -51.66in, var 9.5in])
+  line2 = line(start = [var -51.66in, var 9.5in], end = [var -62.64in, var 9.5in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -62.64in, var 9.5in], end = [var -68.12in, var 0in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -68.12in, var 0in], end = [var -62.64in, var -9.5in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -62.64in, var -9.5in], end = [var -51.66in, var -9.5in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -51.66in, var -9.5in], end = [var -46.18in, var 0in])
+  coincident([line5.end, line6.start])
+}
+region004 = region(segments = [sketch004.line1, sketch004.line2])
+boltHead = extrude(region004, length = hubSpacing / 8, method = NEW)
+  |> appearance(color = "#121212")
+sketch005 = sketch(on = startSketchOn(boltHead, face = START)) {
+  circle1 = circle(start = [var 64.01in, var 0in], center = [var 57.15in, var 0in])
+}
+region005 = region(segments = [sketch005.circle1])
+boltStem = extrude(region005, length = hubSpacing / 4 + lugLength)
+  |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])

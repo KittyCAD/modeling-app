@@ -12,19 +12,19 @@ test.describe(
     const booleanOperations = [
       {
         name: 'union',
-        code: 'union([extrude001, extrude006])',
+        code: 'union([extrude001, extrude002])',
       },
       {
         name: 'subtract',
-        code: 'subtract(extrude001, tools = extrude006)',
+        code: 'subtract(extrude001, tools = extrude002)',
       },
       {
         name: 'intersect',
-        code: 'intersect([extrude001, extrude006])',
+        code: 'intersect([extrude001, extrude002])',
       },
       {
         name: 'split',
-        code: 'split([extrude001, extrude006], merge = true)',
+        code: 'split([extrude001, extrude002])',
       },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {
@@ -46,7 +46,7 @@ test.describe(
           path.resolve(
             __dirname,
             '../../',
-            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
+            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-solve-on-faces.kcl'
           ),
           'utf-8'
         )
@@ -110,7 +110,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '2 paths',
+                Solids: '2 regions',
               },
               commandName,
             })
@@ -118,8 +118,8 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '1 path',
-                Tools: '1 path',
+                Solids: '1 region',
+                Tools: '1 region',
               },
               commandName,
             })
@@ -127,7 +127,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Targets: '2 paths',
+                Targets: '2 regions',
               },
               commandName,
             })
@@ -136,7 +136,6 @@ test.describe(
           await cmdBar.submit()
           await scene.settled(cmdBar)
           await editor.openPane()
-          await editor.scrollToText(operation.code)
           await editor.expectEditor.toContain(operation.code)
         })
 

@@ -115,6 +115,7 @@ description: Variables in memory after executing countersunk-plate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

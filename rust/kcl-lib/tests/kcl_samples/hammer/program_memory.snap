@@ -15,10 +15,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3316,
-            "end": 3322,
+            "commentStart": 3328,
+            "end": 3334,
             "moduleId": 0,
-            "start": 3316,
+            "start": 3328,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3372,
+            "commentStart": 3372,
+            "end": 3384,
             "moduleId": 0,
-            "start": 3360,
+            "start": 3372,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -40,6 +40,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -59,10 +60,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.45,
             "tag": {
-              "commentStart": 3316,
-              "end": 3322,
+              "commentStart": 3328,
+              "end": 3334,
               "moduleId": 0,
-              "start": 3316,
+              "start": 3328,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -304,6 +305,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -843,6 +845,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1291,6 +1294,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1548,6 +1552,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2097,6 +2102,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2585,6 +2591,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2832,6 +2839,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3051,6 +3059,7 @@ description: Variables in memory after executing hammer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

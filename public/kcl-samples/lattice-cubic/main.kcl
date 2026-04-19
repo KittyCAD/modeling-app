@@ -1,0 +1,77 @@
+// cubic lattice model
+// Parametric three dimensional grid of spheres and rods used for teaching crystal lattice geometry and spatial repetition
+// Categories: Maker
+
+// units
+@settings(defaultLengthUnit = mm)
+
+// project title
+projectTitle = "cubic lattice ball and stick model"
+
+// project description
+projectDescription = "parametric three dimensional grid of spheres and rods used for teaching crystal lattice geometry and spatial repetition"
+
+// parameters
+gridInstancesPerAxis = 3
+gridSpacingLength = 20
+nodeSphereRadiusLength = 5
+rodCylinderRadiusLength = 0.5
+rodExtrudeLengthY = 2 * gridSpacingLength
+nodeColorHexadecimal = "#ff0059"
+rodColorHexadecimal = "#00fffb"
+
+// node sphere
+nodeSketchPlane = startSketchOn(XZ)
+nodeProfile = startProfile(nodeSketchPlane, at = [0, -nodeSphereRadiusLength])
+  |> yLine(length = 2 * nodeSphereRadiusLength)
+  |> arc(interiorAbsolute = [nodeSphereRadiusLength, 0], endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+nodeSphereSolid = revolve(nodeProfile, angle = 360deg, axis = Y)
+appearance(nodeSphereSolid, color = nodeColorHexadecimal)
+
+// nodes pattern
+nodesPatternAlongX = patternLinear3d(
+  nodeSphereSolid,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = X,
+)
+nodesPatternAlongXThenY = patternLinear3d(
+  nodesPatternAlongX,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Y,
+)
+nodesPatternAlongXThenYThenZ = patternLinear3d(
+  nodesPatternAlongXThenY,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Z,
+)
+
+// rods
+rodYSketchPlane = startSketchOn(XZ)
+rodYProfile = circle(rodYSketchPlane, center = [0, 0], radius = rodCylinderRadiusLength)
+rodYCylinder = extrude(rodYProfile, length = -rodExtrudeLengthY)
+appearance([rodYCylinder], color = rodColorHexadecimal)
+
+rodsAlongYPatternAlongX = patternLinear3d(
+  rodYCylinder,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = X,
+)
+rodsAlongYPatternAlongXThenZ = patternLinear3d(
+  rodsAlongYPatternAlongX,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Z,
+)
+
+rodsAlongX = clone(rodsAlongYPatternAlongXThenZ)
+  |> rotate(axis = Z, angle = 90)
+  |> translate(x = rodExtrudeLengthY, global = true)
+
+rodsAlongZ = clone(rodsAlongYPatternAlongXThenZ)
+  |> rotate(axis = X, angle = 90, global = true)
+  |> translate(y = rodExtrudeLengthY, global = true)

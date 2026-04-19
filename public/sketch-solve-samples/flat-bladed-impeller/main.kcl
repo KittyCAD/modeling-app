@@ -1,0 +1,72 @@
+// Impeller (Flat-bladed)
+// A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.
+// Categories: Automotive, Aerospace
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// parameters
+bladeCount = 4 // number of blades
+outerDiameter = 120 // total impeller diameter
+hubOutsideDiameter = 35 // outer diameter of the central hub
+boreDiameter = 25 // shaft bore diameter
+baseThickness = 5 // thickness of the back plate
+hubHeight = 35 // height of cylindrical hub
+bladeLength = 80 // radial length of blade (root to tip)
+bladeHeight = 40 // vertical height of each blade
+bladeThickness = 3 // width (thickness) of each blade
+
+
+// derived
+outerRadius = outerDiameter / 2
+bladeRootRadius = hubOutsideDiameter / 2 + (outerDiameter - hubOutsideDiameter) / 4
+bladeTipRadius = bladeRootRadius + bladeLength
+
+// blade profile (positioned mid-height)
+bladeSketch = startSketchOn(offsetPlane(XY, offset = -bladeHeight / 2))
+bladeProfile = sketch(on = bladeSketch) {
+  line1 = line(start = [var 38.75mm, var 0mm], end = [var 118.75mm, var 0mm])
+  line2 = line(start = [var 118.75mm, var 0mm], end = [var 118.75mm, var 3mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 118.75mm, var 3mm], end = [var 38.75mm, var 3mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 38.75mm, var 3mm], end = [var 38.75mm, var 0mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+region001 = region(segments = [bladeProfile.line1, bladeProfile.line2])
+blade = extrude(region001, length = bladeHeight)
+
+// pattern blades around center
+blades = patternCircular3d(
+  blade,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  instances = bladeCount,
+  arcDegrees = 360,
+)
+
+// back plate (base disk)
+diskSketch = startSketchOn(offsetPlane(XY, offset = -baseThickness / 2))
+disk = sketch(on = diskSketch) {
+  circle1 = circle(start = [var 60mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [disk.circle1])
+backPlate = extrude(region002, length = baseThickness)
+
+// hub cylinder
+hubSketch = startSketchOn(backPlate, face = END)
+hubCircle = sketch(on = hubSketch) {
+  circle1 = circle(start = [var 17.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [hubCircle.circle1])
+hub = extrude(region003, length = hubHeight)
+
+// bore cutout
+boreSketch = startSketchOn(backPlate, face = START)
+boreCircle = sketch(on = boreSketch) {
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region004 = region(segments = [boreCircle.circle1])
+boreCut = extrude(region004, length = -(baseThickness + hubHeight))

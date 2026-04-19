@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing bike-hub-washer.kcl
 ---
 {
-  "bottom_edge": {
+  "bottomEdge": {
     "type": "Number",
     "value": 1.0,
     "ty": {
@@ -12,7 +12,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "bottom_extrusion_width": {
+  "bottomExtrusionWidth": {
     "type": "Number",
     "value": 2.0,
     "ty": {
@@ -21,7 +21,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "bottom_height": {
+  "bottomHeight": {
     "type": "Number",
     "value": 2.0,
     "ty": {
@@ -30,7 +30,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "bottom_inner_rim_width": {
+  "bottomInnerRimWidth": {
     "type": "Number",
     "value": 2.0,
     "ty": {
@@ -39,7 +39,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "bottom_outer_rim_width": {
+  "bottomOuterRimWidth": {
     "type": "Number",
     "value": 3.0,
     "ty": {
@@ -48,7 +48,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "inside_ring_width": {
+  "insideRingWidth": {
     "type": "Number",
     "value": 3.0,
     "ty": {
@@ -256,40 +256,6 @@ description: Variables in memory after executing bike-hub-washer.kcl
           ],
           "tag": null,
           "to": [
-            7.800000000000001,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            7.800000000000001,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            10.8,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            10.8,
-            0.0
-          ],
-          "tag": null,
-          "to": [
             7.8,
             0.0
           ],
@@ -358,7 +324,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "radius_inner": {
+  "radiusInner": {
     "type": "Number",
     "value": 22.0,
     "ty": {
@@ -450,23 +416,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -663,40 +616,6 @@ description: Variables in memory after executing bike-hub-washer.kcl
             ],
             "tag": null,
             "to": [
-              7.800000000000001,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.800000000000001,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              10.8,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              10.8,
-              0.0
-            ],
-            "tag": null,
-            "to": [
               7.8,
               0.0
             ],
@@ -761,7 +680,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "sectional": false
     }
   },
-  "ring_height": {
+  "ringHeight": {
     "type": "Number",
     "value": 7.5,
     "ty": {
@@ -770,7 +689,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "ring_width": {
+  "ringWidth": {
     "type": "Number",
     "value": 7.0,
     "ty": {
@@ -845,7 +764,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       }
     }
   },
-  "top_height": {
+  "topHeight": {
     "type": "Number",
     "value": 7.0,
     "ty": {
@@ -854,7 +773,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "top_inset": {
+  "topInset": {
     "type": "Number",
     "value": 3.0,
     "ty": {
@@ -863,7 +782,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "angle": "degrees"
     }
   },
-  "top_rim_width": {
+  "topRimWidth": {
     "type": "Number",
     "value": 1.2,
     "ty": {

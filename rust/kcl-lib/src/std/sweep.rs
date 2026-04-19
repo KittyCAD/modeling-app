@@ -1,17 +1,34 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
-use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::BodyType;
+use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::shared::RelativeTo;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    errors::KclError,
-    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
-    parsing::ast::types::TagNode,
-    std::{Args, extrude::do_post_extrude},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::Helix;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::ProfileClosed;
+use crate::execution::Segment;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::extrude::build_segment_surface_sketch;
+use crate::std::extrude::do_post_extrude;
+use crate::std::revolve::coerce_revolve_targets;
 
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -21,14 +38,33 @@ use crate::{
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
+    Segments(Vec<Segment>),
 }
 
-/// Extrude a sketch along a path.
+/// The outer (typical) sweep path gets converted to this, losing some of its variants in the conversion.
+#[allow(clippy::large_enum_variant)]
+enum InnerSweepPath {
+    Sketch(Sketch),
+    Helix(Box<Helix>),
+}
+
+/// Create a 3D surface or solid by sweeping a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketch_values = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment()])),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
     let path: SweepPath = args.get_kw_arg(
         "path",
-        &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
+        &RuntimeType::Union(vec![
+            RuntimeType::sketch(),
+            RuntimeType::helix(),
+            RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
+        ]),
         exec_state,
     )?;
     let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
@@ -36,6 +72,26 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let path = match path {
+        SweepPath::Segments(segments) => InnerSweepPath::Sketch(
+            build_segment_surface_sketch(segments, exec_state, &args.ctx, args.source_range).await?,
+        ),
+        SweepPath::Sketch(sketch) => InnerSweepPath::Sketch(sketch),
+        SweepPath::Helix(helix) => InnerSweepPath::Helix(helix),
+    };
+
+    let sketches = coerce_revolve_targets(
+        sketch_values,
+        body_type.unwrap_or_default(),
+        tag_start.as_ref(),
+        tag_end.as_ref(),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let value = inner_sweep(
         sketches,
@@ -45,6 +101,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         relative_to,
         tag_start,
         tag_end,
+        body_type,
+        version,
         exec_state,
         args,
     )
@@ -55,19 +113,29 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Sketch>,
-    path: SweepPath,
+    path: InnerSweepPath,
     sectional: Option<bool>,
     tolerance: Option<TyF64>,
     relative_to: Option<String>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    body_type: Option<BodyType>,
+    version: Option<u32>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let trajectory = match path {
-        SweepPath::Sketch(sketch) => sketch.id.into(),
-        SweepPath::Helix(helix) => helix.value.into(),
-    };
+    let body_type = body_type.unwrap_or_default();
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot solid sweep an open profile. Either close the profile, or use a surface sweep.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let trajectory = ModelingCmdId::from(match path {
+        InnerSweepPath::Sketch(sketch) => sketch.id,
+        InnerSweepPath::Helix(helix) => helix.value,
+    });
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
         Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
@@ -78,6 +146,8 @@ async fn inner_sweep(
             )));
         }
     };
+
+    let version = version.map(|v| u8::try_from(v).unwrap_or(u8::MAX));
 
     let mut solids = Vec::new();
     for sketch in &sketches {
@@ -94,6 +164,8 @@ async fn inner_sweep(
                             tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                         ))
                         .relative_to(relative_to)
+                        .body_type(body_type)
+                        .maybe_version(version)
                         .build(),
                 ),
             )
@@ -108,12 +180,13 @@ async fn inner_sweep(
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
                 },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+                kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 exec_state,
                 &args,
                 None,
                 None,
-                BodyType::Solid, // TODO: Support surface sweep
+                body_type,
+                crate::std::extrude::BeingExtruded::Sketch,
             )
             .await?,
         );

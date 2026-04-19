@@ -7019,6 +7019,7 @@ description: Variables in memory after executing mike_stress_test.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

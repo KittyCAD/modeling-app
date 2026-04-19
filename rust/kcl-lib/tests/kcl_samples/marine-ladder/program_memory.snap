@@ -256,6 +256,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -356,6 +357,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -579,6 +581,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -679,6 +682,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -779,6 +783,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -879,6 +884,7 @@ description: Variables in memory after executing marine-ladder.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -981,6 +987,7 @@ description: Variables in memory after executing marine-ladder.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1081,6 +1088,7 @@ description: Variables in memory after executing marine-ladder.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

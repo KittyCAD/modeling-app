@@ -293,7 +293,6 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

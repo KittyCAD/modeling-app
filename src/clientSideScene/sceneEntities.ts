@@ -36,7 +36,6 @@ import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 import {
   isQuaternionVertical,
   orthoScale,
-  perspScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import {
@@ -177,8 +176,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { ActorRefFrom } from 'xstate'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
   type updateExtraSegments as updateExtraSegmentsFn,
   type getEventForSegmentSelection as getEventForSegmentSelectionFn,
@@ -199,26 +197,29 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: CommandBarActorType
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
-
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    commandBarActor: CommandBarActorType,
+    getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.kclManager = kclManager
     this.rustContext = rustContext
+    this.commandBarActor = commandBarActor
+    this.getSettings = getSettings
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
@@ -264,11 +265,7 @@ export class SceneEntities {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
-      const factor =
-        (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, segment)) /
-        this.sceneInfra.baseUnitMultiplier
+      const factor = this.sceneInfra.getClientSceneScaleFactor(segment)
       let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
@@ -364,7 +361,7 @@ export class SceneEntities {
         sceneInfra: this.sceneInfra,
         wasmInstance,
       })
-      callBack && !err(callBack) && callbacks.push(callBack)
+      if (callBack && !err(callBack)) callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
         const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
@@ -382,14 +379,11 @@ export class SceneEntities {
       }
     })
     if (this.axisGroup) {
-      const factor =
-        this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
+      const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
+      x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+      y?.scale.set(factor, 1, 1)
       this.updateInfiniteGrid()
     }
     const draftPoint = this.getDraftPoint()
@@ -430,7 +424,6 @@ export class SceneEntities {
     up: [number, number, number],
     sketchPosition?: [number, number, number]
   ) {
-    const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const axisPixelWidth = 1.6
@@ -465,16 +458,14 @@ export class SceneEntities {
     this.axisGroup = new Group()
     const gridRenderer = new InfiniteGridRenderer()
 
-    const factor =
-      this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
-    xAxisMesh?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
-    yAxisMesh?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+    const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
+    xAxisMesh?.scale.set(1, factor, 1)
+    yAxisMesh?.scale.set(factor, 1, 1)
 
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
-    this.currentSketchQuaternion &&
+    if (this.currentSketchQuaternion) {
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    }
 
     this.axisGroup.userData = { type: AXIS_GROUP }
     this.axisGroup.name = AXIS_GROUP
@@ -568,7 +559,7 @@ export class SceneEntities {
     const draftPointGroup = new Group()
     this.draftPointGroups.push(draftPointGroup)
     draftPointGroup.name = DRAFT_POINT_GROUP
-    origin && draftPointGroup.position.set(...origin)
+    if (origin) draftPointGroup.position.set(...origin)
     if (!yAxis) {
       console.error('No sketch quaternion or sketch details found')
       return
@@ -779,7 +770,7 @@ export class SceneEntities {
           return
         } else if (currentTool === 'tangentialArc') {
           toast.error(
-            'Tangential Arc must continue an existing profile, please click on the last segment of the profile'
+            'Tangential Arc must continue an existing profile, please click on the last segment of the profile.'
           )
           return
         }
@@ -814,6 +805,11 @@ export class SceneEntities {
         const { modifiedAst } = inserted
 
         await this.kclManager.updateAst(modifiedAst, false)
+        await this.kclManager.updateEditorWithAstAndWriteToFile(modifiedAst, {
+          shouldAddToHistory: false,
+          shouldWriteToDisk: false,
+          allowProgrammaticDocumentChanges: true,
+        })
 
         // Now perform the caller-specified action
         afterClick(args, {
@@ -870,7 +866,7 @@ export class SceneEntities {
     })
 
     const group = new Group()
-    position && group.position.set(...position)
+    if (position) group.position.set(...position)
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchEntryNodePath,
@@ -1069,7 +1065,7 @@ export class SceneEntities {
     this.intersectionPlane.setRotationFromQuaternion(
       this.currentSketchQuaternion
     )
-    position && this.intersectionPlane.position.set(...position)
+    if (position) this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
 
     // sceneInfra/onMouseMove may call raycastRing() before the next render call,
@@ -1364,10 +1360,7 @@ export class SceneEntities {
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_MOCK,
-          {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          },
+          this.kclManager,
           {
             // TODO: understand why this is needed
             skipErrorsOnMockExecution: true,
@@ -1475,6 +1468,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1627,10 +1625,7 @@ export class SceneEntities {
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
-        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          rustContext: this.rustContext,
-        })
+        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
@@ -1699,6 +1694,11 @@ export class SceneEntities {
 
     // do a quick mock execution to get the program memory up-to-date
     await this.kclManager.executeAstMock(_ast)
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1860,10 +1860,7 @@ export class SceneEntities {
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
@@ -1927,6 +1924,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2066,10 +2068,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
       },
@@ -2144,6 +2143,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2304,10 +2308,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
       },
@@ -2372,6 +2373,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2571,10 +2577,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
           } else {
@@ -2646,6 +2649,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2790,10 +2798,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }
       },
@@ -3638,11 +3643,7 @@ export class SceneEntities {
       this.activeSegments[pathToNodeStr] ||
       this.activeSegments[originalPathToNodeStr]
     const type = group?.userData?.type
-    const factor =
-      (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, group)) /
-      this.sceneInfra.baseUnitMultiplier
+    const factor = this.sceneInfra.getClientSceneScaleFactor(group)
     let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
@@ -3817,18 +3818,14 @@ export class SceneEntities {
           const hoveringArrow = selected?.parent?.name === ARROWHEAD
           updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
           updateExtraSegments(parent, 'selected', isSelected)
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3875,7 +3872,7 @@ export class SceneEntities {
             }
           }
 
-          update &&
+          if (update) {
             update({
               prevSegment: parent.userData.prevSegment,
               input,
@@ -3884,6 +3881,7 @@ export class SceneEntities {
               sceneInfra: this.sceneInfra,
               wasmInstance,
             })
+          }
           return
         }
         this.kclManager.setHighlightRange([defaultSourceRange()])
@@ -3895,18 +3893,12 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent) {
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
-
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3953,7 +3945,7 @@ export class SceneEntities {
             }
           }
 
-          update &&
+          if (update) {
             update({
               prevSegment: parent.userData.prevSegment,
               input,
@@ -3962,6 +3954,7 @@ export class SceneEntities {
               sceneInfra: this.sceneInfra,
               wasmInstance: await this.kclManager.wasmInstancePromise,
             })
+          }
         }
         const isSelected = parent?.userData?.isSelected
         colorSegment(
@@ -4131,11 +4124,7 @@ export class SceneEntities {
     return {
       group: segmentGroup,
       updater: (group: Group, to: Coords2d, orthoFactor: number) => {
-        const scale =
-          (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-            ? orthoFactor
-            : perspScale(this.sceneInfra.camControls.camera, group)) /
-          this.sceneInfra.baseUnitMultiplier
+        const scale = this.sceneInfra.getClientSceneScaleFactor(group)
         const from = group.userData.from
 
         const straightSegmentBodyDashed = group.children.find(
@@ -4280,7 +4269,7 @@ function sketchFromPathToNode({
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
   const result = variables[varDec?.id?.name || '']
-  if (result?.type === 'Solid') {
+  if (result?.type === 'Solid' && result.value.sketch.creatorType == 'sketch') {
     return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)

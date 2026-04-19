@@ -2,7 +2,7 @@ import type { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { EditorView } from 'codemirror'
 
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
@@ -20,7 +20,7 @@ export class KCLError extends Error {
   sourceRange: SourceRange
   msg: string
   kclBacktrace: BacktraceItem[]
-  nonFatal: CompilationError[]
+  nonFatal: CompilationIssue[]
   variables: VariableMap
   operations: Operation[]
   artifactGraph: ArtifactGraph
@@ -32,7 +32,7 @@ export class KCLError extends Error {
     msg: string,
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
-    nonFatal: CompilationError[],
+    nonFatal: CompilationIssue[],
     variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
@@ -86,6 +86,17 @@ export function toUtf16(utf8Offset: number, sourceCode: string): number {
 }
 
 /**
+ * Helper to convert a source range of UTF-8 values into a UTF-16 one.
+ */
+export function sourceRangeToUtf16(
+  s: SourceRange,
+  source: string
+): SourceRange {
+  const t = (n: number) => toUtf16(n, source)
+  return [t(s[0]), t(s[1]), t(s[2])]
+}
+
+/**
  * Maps the KCL errors to an array of CodeMirror diagnostics.
  * Currently the diagnostics are all errors, but in the future they could include lints.
  * */
@@ -130,7 +141,7 @@ export function kclErrorsToDiagnostics(
       }
       if (err.nonFatal.length > 0) {
         nonFatal = nonFatal.concat(
-          compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
+          compilationIssuesToDiagnostics(err.nonFatal, sourceCode)
         )
       }
       diagnostics.push({
@@ -144,19 +155,19 @@ export function kclErrorsToDiagnostics(
   return errs.concat(nonFatal)
 }
 
-export function compilationErrorsToDiagnostics(
-  errors: CompilationError[],
+export function compilationIssuesToDiagnostics(
+  issues: CompilationIssue[],
   sourceCode: string
 ): CodeMirrorDiagnostic[] {
-  return errors
-    ?.filter((err) => isTopLevelModule(err.sourceRange))
-    .map((err) => {
+  return issues
+    ?.filter((issue) => isTopLevelModule(issue.sourceRange))
+    .map((issue) => {
       let severity: any = 'error'
-      if (err.severity === 'Warning') {
+      if (issue.severity === 'Warning') {
         severity = 'warning'
       }
       let actions
-      const suggestion = err.suggestion
+      const suggestion = issue.suggestion
       if (suggestion) {
         actions = [
           {
@@ -175,9 +186,9 @@ export function compilationErrorsToDiagnostics(
         ]
       }
       return {
-        from: toUtf16(err.sourceRange[0], sourceCode),
-        to: toUtf16(err.sourceRange[1], sourceCode),
-        message: err.message,
+        from: toUtf16(issue.sourceRange[0], sourceCode),
+        to: toUtf16(issue.sourceRange[1], sourceCode),
+        message: issue.message,
         severity,
         actions,
       }

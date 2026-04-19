@@ -14,18 +14,19 @@ import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { kclManager } from '@src/lib/singletons'
 import { Suspense, use } from 'react'
 import Loading from '@src/components/Loading'
+import { useSingletons } from '@src/lib/boot'
 
 export const MemoryPaneMenu = () => {
+  const { kclManager } = useSingletons()
   const variables = kclManager.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
       navigator.clipboard
         .writeText(JSON.stringify(variables))
-        .then(() => toast.success('Program memory copied to clipboard'))
+        .then(() => toast.success('Program memory copied to clipboard.'))
         .catch((_e) =>
           trap(new Error('Failed to copy program memory to clipboard'))
         )
@@ -72,6 +73,7 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
+  const { kclManager } = useSingletons()
   const theme = useResolvedTheme()
   const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()

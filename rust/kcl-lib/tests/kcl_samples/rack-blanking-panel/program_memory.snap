@@ -152,6 +152,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1024,6 +1025,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1261,6 +1263,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1945,6 +1948,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2472,6 +2476,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2709,6 +2714,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3393,6 +3399,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4034,6 +4041,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [

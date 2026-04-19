@@ -1,16 +1,14 @@
+import { users } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { UAParser } from 'ua-parser-js'
 
+import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 import type { KclManager } from '@src/lang/KclManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { isDesktop } from '@src/lib/isDesktop'
-import type RustContext from '@src/lib/rustContext'
-import screenshot from '@src/lib/screenshot'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-import type { ConnectionManager } from '@src/network/connectionManager'
-
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { APP_VERSION } from '@src/routes/utils'
 import type { ILog } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -34,35 +32,10 @@ import { EngineDebugger } from '@src/lib/debugger'
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 // TODO: Throw more
 export class CoreDumpManager {
-  engineCommandManager: ConnectionManager
   kclManager: KclManager
-  rustContext: RustContext
-  token: string | undefined
-  baseUrl: string = withAPIBaseURL('')
 
-  constructor(
-    engineCommandManager: ConnectionManager,
-    kclManager: KclManager,
-    rustContext: RustContext,
-    token: string | undefined
-  ) {
-    this.engineCommandManager = engineCommandManager
+  constructor(kclManager: KclManager) {
     this.kclManager = kclManager
-    this.rustContext = rustContext
-    this.token = token
-  }
-
-  // Get the token
-  authToken(): string {
-    if (!this.token) {
-      throw new Error('Token not set')
-    }
-    return this.token
-  }
-
-  // Get the base URL
-  baseApiUrl(): string {
-    return this.baseUrl
   }
 
   // Get the version of the app from the package.json
@@ -114,17 +87,17 @@ export class CoreDumpManager {
   }
 
   getWebrtcStats(): Promise<string> {
-    if (!this.engineCommandManager.connection) {
+    if (!this.kclManager.engineCommandManager.connection) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    if (!this.engineCommandManager.connection.webrtcStatsCollector) {
+    if (!this.kclManager.engineCommandManager.connection.webrtcStatsCollector) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    return this.engineCommandManager.connection
+    return this.kclManager.engineCommandManager.connection
       .webrtcStatsCollector()
       .catch((error: any) => {
         throw new Error(`Error getting webrtc stats: ${error}`)
@@ -203,50 +176,53 @@ export class CoreDumpManager {
       // Singletons
 
       // engine_command_manager
-      debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
+      debugLog(
+        'CoreDump: engineCommandManager',
+        this.kclManager.engineCommandManager
+      )
 
       // command logs - this.engineCommandManager.commandLogs
-      if (this.engineCommandManager?.commandLogs) {
+      if (this.kclManager.engineCommandManager?.commandLogs) {
         debugLog(
           'CoreDump: Engine Command Manager command logs',
-          this.engineCommandManager.commandLogs
+          this.kclManager.engineCommandManager.commandLogs
         )
         clientState.engine_command_manager.command_logs = structuredClone(
-          this.engineCommandManager.commandLogs
+          this.kclManager.engineCommandManager.commandLogs
         )
       }
 
       // default planes - this.rustContext.defaultPlanes
-      if (this.rustContext.defaultPlanes) {
+      if (this.kclManager.rustContext.defaultPlanes) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.rustContext.defaultPlanes
+          this.kclManager.rustContext.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.rustContext.defaultPlanes
+          this.kclManager.rustContext.defaultPlanes
         )
       }
 
       clientState.engine_command_manager.connection_logs = EngineDebugger.logs
 
       // in sequence - this.engineCommandManager.inSequence
-      if (this.engineCommandManager?.inSequence) {
+      if (this.kclManager.engineCommandManager?.inSequence) {
         debugLog(
           'CoreDump: Engine Command Manager in sequence',
-          this.engineCommandManager.inSequence
+          this.kclManager.engineCommandManager.inSequence
         )
         ;(clientState.engine_command_manager as any).in_sequence =
-          this.engineCommandManager.inSequence
+          this.kclManager.engineCommandManager.inSequence
       }
 
       // out sequence - this.engineCommandManager.outSequence
-      if (this.engineCommandManager?.outSequence) {
+      if (this.kclManager.engineCommandManager?.outSequence) {
         debugLog(
           'CoreDump: Engine Command Manager out sequence',
-          this.engineCommandManager.outSequence
+          this.kclManager.engineCommandManager.outSequence
         )
         ;(clientState.engine_command_manager as any).out_sequence =
-          this.engineCommandManager.outSequence
+          this.kclManager.engineCommandManager.outSequence
       }
 
       // KCL Manager - globalThis?.window?.kclManager
@@ -424,14 +400,86 @@ export class CoreDumpManager {
       return Promise.reject(JSON.stringify(error))
     }
   }
+}
 
-  // Return a data URL (png format) of the screenshot of the current page.
-  screenshot(): Promise<string> {
-    return (
-      screenshot()
-        .then((screenshotStr: string) => screenshotStr)
-        // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
-        .catch((_error: any) => ``)
+export const getCoreDumpSupportContact = (user?: UserResponse) => {
+  const trimmedFirstName = user?.first_name?.trim()
+  const trimmedLastName = user?.last_name?.trim()
+  const trimmedName = user?.name?.trim()
+  const nameParts = trimmedName ? trimmedName.split(/\s+/).filter(Boolean) : []
+  const emailFallback = user?.email?.split('@')[0]?.trim()
+
+  return {
+    firstName:
+      trimmedFirstName || nameParts[0] || emailFallback || 'Zoo Design Studio',
+    lastName: trimmedLastName || nameParts.slice(1).join(' ') || 'User',
+  }
+}
+
+export const getCoreDumpSupportMessage = (dump: CoreDumpInfo) => {
+  const sections = [
+    'Automatic support report from Zoo Design Studio.',
+    '',
+    `Reference ID: ${dump.id}`,
+    `Version: ${dump.version}`,
+    `Git Revision: ${dump.git_rev}`,
+    `Desktop: ${dump.desktop ? 'yes' : 'no'}`,
+  ]
+
+  if (dump.os.platform || dump.os.arch || dump.os.version) {
+    sections.push(
+      `OS: ${[dump.os.platform, dump.os.arch, dump.os.version].filter(Boolean).join(' ')}`
     )
+  }
+
+  sections.push(
+    '',
+    'This support report includes the collected diagnostic context for this reference ID.'
+  )
+
+  if (dump.kcl_code.trim()) {
+    sections.push('', 'KCL Code:', '```kcl', dump.kcl_code, '```')
+  }
+
+  return sections.join('\n')
+}
+
+export const submitCoreDumpSupportTicket = async ({
+  dump,
+  token,
+  user,
+}: {
+  dump: CoreDumpInfo
+  token?: string
+  user?: UserResponse
+}) => {
+  if (!token) {
+    throw new Error('Token not set')
+  }
+
+  const email = user?.email?.trim()
+  if (!email) {
+    throw new Error('User email not available')
+  }
+
+  const { firstName, lastName } = getCoreDumpSupportContact(user)
+  const client = createKCClient(token)
+  const result = await kcCall(() =>
+    users.put_public_support_form({
+      client,
+      body: {
+        company: user?.company || undefined,
+        email,
+        first_name: firstName,
+        inquiry_type: 'technical_support',
+        last_name: lastName,
+        message: getCoreDumpSupportMessage(dump),
+        phone: user?.phone || undefined,
+      },
+    })
+  )
+
+  if (result instanceof Error) {
+    throw result
   }
 }

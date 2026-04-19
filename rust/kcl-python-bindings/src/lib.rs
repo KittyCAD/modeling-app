@@ -1,20 +1,46 @@
 #![allow(clippy::useless_conversion)]
+use std::future::Future;
+use std::path::Path;
+use std::path::PathBuf;
+
 use anyhow::Result;
-use kcl_lib::{
-    lint::{checks, Discovered, FindingFamily},
-    ExecutorContext,
-};
-use kittycad_modeling_cmds::{
-    self as kcmc, format::InputFormat3d, shared::FileExportFormat, units::UnitLength, websocket::RawFile, ImageFormat,
-    ImportFile,
-};
-use pyo3::{
-    exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
-    wrap_pyfunction, Bound, PyErr, PyResult, Python,
-};
+use kcl_lib::ExecutorContext;
+use kcl_lib::lint::Discovered;
+use kcl_lib::lint::FindingFamily;
+use kcl_lib::lint::checks;
+use kittycad_modeling_cmds::ImageFormat;
+use kittycad_modeling_cmds::ImportFile;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::format::InputFormat3d;
+use kittycad_modeling_cmds::format::OutputFormat3d;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::FileExportFormat;
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::RawFile;
+use kittycad_modeling_cmds::{self as kcmc};
+use pyo3::Bound;
+use pyo3::PyErr;
+use pyo3::PyResult;
+use pyo3::Python;
+use pyo3::exceptions::PyException;
+use pyo3::prelude::PyModuleMethods;
+use pyo3::pyclass;
+use pyo3::pyfunction;
+use pyo3::pymethods;
+use pyo3::pymodule;
+use pyo3::types::PyModule;
+use pyo3::wrap_pyfunction;
 use pyo3_stub_gen::define_stub_info_gatherer;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
+
+use crate::bridge::bounding_box::BoundingBoxResponse;
+use crate::bridge::physical_properties::PhysicalPropertiesRequest;
+use crate::bridge::physical_properties::PhysicalPropertiesResponse;
+use crate::bridge::sketch_constraints::SketchConstraintReport;
 
 mod bridge;
 
@@ -22,6 +48,17 @@ fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
     static RT: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
     RT.get_or_init(|| tokio::runtime::Runtime::new().unwrap())
+}
+
+async fn spawn_py<T, Fut>(future: Fut) -> PyResult<T>
+where
+    T: Send + 'static,
+    Fut: Future<Output = PyResult<T>> + Send + 'static,
+{
+    tokio()
+        .spawn(future)
+        .await
+        .map_err(|err| PyException::new_err(err.to_string()))?
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
@@ -40,73 +77,6 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
 
-fn get_output_format(
-    format: &FileExportFormat,
-    src_unit: UnitLength,
-) -> kittycad_modeling_cmds::format::OutputFormat3d {
-    // Zoo co-ordinate system.
-    //
-    // * Forward: -Y
-    // * Up: +Z
-    // * Handedness: Right
-    let coords = kittycad_modeling_cmds::coord::System {
-        forward: kittycad_modeling_cmds::coord::AxisDirectionPair {
-            axis: kittycad_modeling_cmds::coord::Axis::Y,
-            direction: kittycad_modeling_cmds::coord::Direction::Negative,
-        },
-        up: kittycad_modeling_cmds::coord::AxisDirectionPair {
-            axis: kittycad_modeling_cmds::coord::Axis::Z,
-            direction: kittycad_modeling_cmds::coord::Direction::Positive,
-        },
-    };
-
-    match format {
-        FileExportFormat::Fbx => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Fbx(kittycad_modeling_cmds::format::fbx::export::Options {
-                storage: kittycad_modeling_cmds::format::fbx::export::Storage::Binary,
-                created: None,
-            })
-        }
-        FileExportFormat::Glb => kittycad_modeling_cmds::format::OutputFormat3d::Gltf(
-            kittycad_modeling_cmds::format::gltf::export::Options {
-                storage: kittycad_modeling_cmds::format::gltf::export::Storage::Binary,
-                presentation: kittycad_modeling_cmds::format::gltf::export::Presentation::Compact,
-            },
-        ),
-        FileExportFormat::Gltf => kittycad_modeling_cmds::format::OutputFormat3d::Gltf(
-            kittycad_modeling_cmds::format::gltf::export::Options {
-                storage: kittycad_modeling_cmds::format::gltf::export::Storage::Embedded,
-                presentation: kittycad_modeling_cmds::format::gltf::export::Presentation::Pretty,
-            },
-        ),
-        FileExportFormat::Obj => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Obj(kittycad_modeling_cmds::format::obj::export::Options {
-                coords,
-                units: src_unit,
-            })
-        }
-        FileExportFormat::Ply => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Ply(kittycad_modeling_cmds::format::ply::export::Options {
-                storage: kittycad_modeling_cmds::format::ply::export::Storage::Ascii,
-                coords,
-                selection: kittycad_modeling_cmds::format::Selection::DefaultScene,
-                units: src_unit,
-            })
-        }
-        FileExportFormat::Step => kittycad_modeling_cmds::format::OutputFormat3d::Step(
-            kittycad_modeling_cmds::format::step::export::Options { coords, created: None },
-        ),
-        FileExportFormat::Stl => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Stl(kittycad_modeling_cmds::format::stl::export::Options {
-                storage: kittycad_modeling_cmds::format::stl::export::Storage::Ascii,
-                coords,
-                units: src_unit,
-                selection: kittycad_modeling_cmds::format::Selection::DefaultScene,
-            })
-        }
-    }
-}
-
 /// Get the path to the current file from the path given, and read the code.
 async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBuf)> {
     let mut path = std::path::PathBuf::from(path);
@@ -118,15 +88,69 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
         }
     } else {
         // Otherwise be sure we have a kcl file.
-        if let Some(ext) = path.extension() {
-            if ext != "kcl" {
-                return Err(anyhow::anyhow!("File must have a .kcl extension"));
-            }
+        if let Some(ext) = path.extension()
+            && ext != "kcl"
+        {
+            return Err(anyhow::anyhow!("File must have a .kcl extension"));
         }
     }
 
     let code = tokio::fs::read_to_string(&path).await?;
     Ok((code, path))
+}
+
+enum KclInput {
+    Path(String),
+    Code(String),
+}
+
+struct KclProgram {
+    code: String,
+    program: kcl_lib::Program,
+    path: Option<PathBuf>,
+    filename: String,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Debug, Clone, Copy)]
+pub struct DefaultUnits {
+    length: UnitLength,
+    angle: UnitAngle,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl DefaultUnits {
+    #[getter]
+    fn length(&self) -> PyResult<UnitLength> {
+        Ok(self.length)
+    }
+
+    #[getter]
+    fn angle(&self) -> PyResult<UnitAngle> {
+        Ok(self.angle)
+    }
+}
+
+async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
+    let (code, path, filename) = match input {
+        KclInput::Path(input_path) => {
+            let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
+            let filename = path.display().to_string();
+            (code, Some(path), filename)
+        }
+        KclInput::Code(code) => (code, None, String::new()),
+    };
+
+    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse(&filename, &code, err))?;
+
+    Ok(KclProgram {
+        code,
+        program,
+        path,
+        filename,
+    })
 }
 
 async fn new_context_state(
@@ -137,6 +161,8 @@ async fn new_context_state(
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
+    // Must turn on SSAO, without it, transparent images will look opaque.
+    settings.enable_ssao = true;
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
@@ -146,22 +172,179 @@ async fn new_context_state(
     Ok((ctx, state))
 }
 
+struct ExecutedKcl {
+    ctx: ExecutorContext,
+    program: kcl_lib::Program,
+    code: String,
+    filename: String,
+}
+
+async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
+    let KclProgram {
+        code,
+        program,
+        path,
+        filename,
+    } = load_and_parse(input).await?;
+
+    let (ctx, mut state) = new_context_state(path, mock).await.map_err(to_py_exception)?;
+    ctx.run(&program, &mut state)
+        .await
+        .map_err(|err| into_miette(err, &code))?;
+
+    Ok(ExecutedKcl {
+        ctx,
+        program,
+        code,
+        filename,
+    })
+}
+
+async fn execute_impl(input: KclInput, mock: bool) -> PyResult<()> {
+    let ExecutedKcl { ctx, .. } = run_kcl(input, mock).await?;
+    ctx.close().await;
+    Ok(())
+}
+
+async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+    let KclProgram {
+        code,
+        program,
+        path,
+        filename: _,
+    } = load_and_parse(input).await?;
+
+    let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
+    let (env_ref, _) = ctx
+        .run(&program, &mut state)
+        .await
+        .map_err(|err| into_miette(err, &code))?;
+
+    let outcome = state.into_exec_outcome(env_ref, &ctx).await;
+    let report = outcome.sketch_constraint_report();
+    ctx.close().await;
+    Ok(report.into())
+}
+
+async fn execute_and_snapshot_views_impl(
+    input: KclInput,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+) -> PyResult<Vec<Vec<u8>>> {
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let result = take_snaps(&ctx, image_format, snapshot_options).await;
+    ctx.close().await;
+    result
+}
+
+async fn execute_and_measure_impl(
+    input: KclInput,
+    request: PhysicalPropertiesRequest,
+) -> PyResult<PhysicalPropertiesResponse> {
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let result = measure_model_properties(&ctx, request).await;
+    ctx.close().await;
+    result
+}
+
+fn parse_uuid(entity_id: &str) -> PyResult<Uuid> {
+    Uuid::parse_str(entity_id).map_err(|err| PyException::new_err(format!("Invalid ID `{entity_id}`: {err}")))
+}
+
+fn parse_entity_ids(entity_ids: Vec<String>) -> PyResult<Vec<Uuid>> {
+    entity_ids.into_iter().map(|s| parse_uuid(&s)).collect()
+}
+
+async fn execute_and_bounding_box_impl(
+    input: KclInput,
+    entity_ids: Vec<String>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
+    let entity_ids = parse_entity_ids(entity_ids)?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
+    ctx.close().await;
+    result
+}
+
+async fn execute_and_export_impl(input: KclInput, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
+    let ExecutedKcl {
+        ctx,
+        program,
+        code,
+        filename,
+    } = run_kcl(input, false).await?;
+
+    let settings = program
+        .meta_settings()
+        .map_err(|err| into_miette_for_parse(&filename, &code, err))?
+        .unwrap_or_default();
+    let units: UnitLength = settings.default_length_units.into();
+
+    // This will not return until there are files.
+    let resp = ctx
+        .engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::Export(
+                kittycad_modeling_cmds::Export::builder()
+                    .entity_ids(vec![])
+                    .format(OutputFormat3d::new(
+                        &export_format,
+                        kcmc::format::OutputFormat3dOptions::new(units),
+                    ))
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let result = match resp {
+        kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } => Ok(files),
+        _ => Err(pyo3::exceptions::PyException::new_err(format!(
+            "Unexpected response from engine: {resp:?}"
+        ))),
+    };
+
+    ctx.close().await;
+    result
+}
+
 /// Parse the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn parse(path: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let _program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    spawn_py(async move {
+        let _parsed = load_and_parse(KclInput::Path(path)).await?;
 
-            Ok(true)
+        Ok(true)
+    })
+    .await
+}
+
+/// Get the default length and angle units from a kcl file.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn default_units(path: String) -> PyResult<DefaultUnits> {
+    spawn_py(async move {
+        let KclProgram {
+            code,
+            program,
+            filename,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
+
+        let settings = program
+            .meta_settings()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?
+            .unwrap_or_default();
+
+        Ok(DefaultUnits {
+            length: settings.default_length_units,
+            angle: settings.default_angle_units,
         })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    })
+    .await
 }
 
 /// Parse the kcl code.
@@ -177,102 +360,50 @@ fn parse_code(code: String) -> PyResult<bool> {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute(path: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
-
-            let (ctx, mut state) = new_context_state(Some(path), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            ctx.close().await;
-            Ok(())
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code(code: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            ctx.close().await;
-            Ok(())
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-
-            let (ctx, mut state) = new_context_state(None, true)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            ctx.close().await;
-            Ok(true)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move {
+        execute_impl(KclInput::Code(code), true).await?;
+        Ok(true)
+    })
+    .await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    spawn_py(async move {
+        execute_impl(KclInput::Path(path), true).await?;
+        Ok(true)
+    })
+    .await
+}
 
-            let (ctx, mut state) = new_context_state(Some(path), true)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+/// Execute a kcl file and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+}
 
-            ctx.close().await;
-            Ok(true)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+/// Execute kcl code and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -310,27 +441,38 @@ async fn import_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
-            import(&ctx, filepaths, format).await?;
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move {
+        let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
+        import(&ctx, filepaths, format).await?;
+        let result = take_snaps(&ctx, image_format, snapshot_options).await;
+        ctx.close().await;
+        result
+    })
+    .await
+}
+
+/// Make an absolute path not absolute. We need to do this to re-root files
+/// under a directory by using [Path::join].
+pub(crate) fn unabs_path(path: &Path) -> &Path {
+    if !path.is_absolute() {
+        return path;
+    }
+    path.strip_prefix("/").expect("not possible given is_absolute check")
 }
 
 /// Return the ID of the imported object.
 async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputFormat3d) -> PyResult<Uuid> {
     let mut files = Vec::with_capacity(filepaths.len());
     for filepath in filepaths {
+        let filepath = Path::new(&filepath);
         let file_contents = tokio::fs::read(&filepath).await.map_err(to_py_exception)?;
-        files.push(ImportFile {
-            path: filepath,
-            data: file_contents,
-        });
+        let relative_filepath = unabs_path(filepath);
+        files.push(
+            ImportFile::builder()
+                .path(relative_filepath.display().to_string())
+                .data(file_contents)
+                .build(),
+        );
     }
     let resp = ctx
         .engine
@@ -341,7 +483,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
         )
         .await?;
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::ImportFiles(data),
+        modeling_response: OkModelingCmdResponse::ImportFiles(data),
     } = resp
     else {
         return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -366,29 +508,8 @@ async fn execute_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
-
-            let (ctx, mut state) = new_context_state(Some(path), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
-
-            ctx.close().await;
-            result
-        })
+    spawn_py(async move { execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options).await })
         .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
@@ -397,6 +518,47 @@ async fn execute_and_snapshot_views(
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
     let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
     Ok(snaps.pop().unwrap())
+}
+
+/// Execute a kcl file and measure physical properties of the resulting model.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
+    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request).await }).await
+}
+
+/// Execute the kcl code and measure physical properties of the resulting model.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn execute_code_and_measure(
+    code: String,
+    request: PhysicalPropertiesRequest,
+) -> PyResult<PhysicalPropertiesResponse> {
+    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request).await }).await
+}
+
+/// Execute a kcl file and return the model's bounding box.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction(signature = (path, entity_ids=None, output_unit=None))]
+async fn execute_and_bounding_box(
+    path: String,
+    entity_ids: Option<Vec<String>>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
+    let entity_ids = entity_ids.unwrap_or_default();
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit).await }).await
+}
+
+/// Execute the kcl code and return the model's bounding box.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction(signature = (code, entity_ids=None, output_unit=None))]
+async fn execute_code_and_bounding_box(
+    code: String,
+    entity_ids: Option<Vec<String>>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
+    let entity_ids = entity_ids.unwrap_or_default();
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit).await }).await
 }
 
 /// Customize a snapshot.
@@ -439,26 +601,8 @@ async fn execute_code_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
-
-            ctx.close().await;
-            result
-        })
+    spawn_py(async move { execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options).await })
         .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 async fn take_snaps(
@@ -492,6 +636,17 @@ async fn take_snaps(
 }
 
 async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
+    // Set orthographic projection
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::DefaultCameraSetOrthographic(
+                kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build(),
+            ),
+        )
+        .await?;
+
     // Zoom to fit.
     ctx.engine
         .send_modeling_cmd(
@@ -522,7 +677,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .await?;
 
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
+        modeling_response: OkModelingCmdResponse::TakeSnapshot(data),
     } = resp
     else {
         return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -533,113 +688,185 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
     Ok(data.contents.0)
 }
 
+async fn measure_model_properties(
+    ctx: &ExecutorContext,
+    request: PhysicalPropertiesRequest,
+) -> PyResult<PhysicalPropertiesResponse> {
+    let mut out = PhysicalPropertiesResponse::default();
+    let PhysicalPropertiesRequest {
+        volume,
+        mass,
+        center_of_mass,
+        surface_area,
+        density,
+        bounding_box,
+    } = request;
+    // volume
+    if let Some(volume_req) = volume {
+        let volume_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(volume_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Volume(volume_resp),
+        } = volume_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {volume_resp:?}",
+            )));
+        };
+        out.volume = Some(volume_resp);
+    }
+    // mass
+    if let Some(mass_req) = mass {
+        let mass_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(mass_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Mass(mass_resp),
+        } = mass_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {mass_resp:?}",
+            )));
+        };
+        out.mass = Some(mass_resp);
+    }
+    // center_of_mass
+    if let Some(center_of_mass_req) = center_of_mass {
+        let center_of_mass_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(center_of_mass_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::CenterOfMass(center_of_mass_resp),
+        } = center_of_mass_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {center_of_mass_resp:?}",
+            )));
+        };
+        out.center_of_mass = Some(center_of_mass_resp);
+    }
+    // density
+    if let Some(density_req) = density {
+        let density_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(density_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Density(density_resp),
+        } = density_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {density_resp:?}",
+            )));
+        };
+        out.density = Some(density_resp);
+    }
+    // surface_area
+    if let Some(surface_area_req) = surface_area {
+        let surface_area_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(surface_area_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area_resp),
+        } = surface_area_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {surface_area_resp:?}",
+            )));
+        };
+        out.surface_area = Some(surface_area_resp);
+    }
+    // Bounding box
+    if let Some(bb_req) = bounding_box {
+        let bb_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(bb_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BoundingBox(bb_resp),
+        } = bb_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {bb_resp:?}",
+            )));
+        };
+        out.bounding_box = Some(bb_resp);
+    }
+
+    Ok(out)
+}
+
+async fn get_bounding_box(
+    ctx: &ExecutorContext,
+    entity_ids: Vec<Uuid>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
+    let bounding_box_resp = ctx
+        .engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &ModelingCmd::from(
+                kcmc::BoundingBox::builder()
+                    .maybe_output_unit(output_unit)
+                    .entity_ids(entity_ids)
+                    .build(),
+            ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box_resp),
+    } = bounding_box_resp
+    else {
+        return Err(pyo3::exceptions::PyException::new_err(format!(
+            "Unexpected response from engine: {bounding_box_resp:?}",
+        )));
+    };
+
+    Ok(bounding_box_resp.into())
+}
+
 /// Execute a kcl file and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
-
-            let (ctx, mut state) = new_context_state(Some(path.clone()), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
-
-            // This will not return until there are files.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(
-                        kittycad_modeling_cmds::Export::builder()
-                            .entity_ids(vec![])
-                            .format(get_output_format(&export_format, units.into()))
-                            .build(),
-                    ),
-                )
-                .await?;
-
-            ctx.close().await;
-            drop(ctx);
-
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
-
-            Ok(files)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format).await }).await
 }
 
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
-
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse("", &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
-
-            // This will not return until there are files.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(
-                        kittycad_modeling_cmds::Export::builder()
-                            .entity_ids(vec![])
-                            .format(get_output_format(&export_format, units.into()))
-                            .build(),
-                    ),
-                )
-                .await?;
-
-            ctx.close().await;
-            drop(ctx);
-
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
-
-            Ok(files)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format).await }).await
 }
 
 /// Format the kcl code. This will return the formatted code.
@@ -656,14 +883,12 @@ fn format(code: String) -> PyResult<String> {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn format_dir(dir: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    spawn_py(async move {
+        kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
+    })
+    .await
 }
 
 /// Lint the kcl code.
@@ -735,16 +960,29 @@ fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> P
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
+    m.add_class::<DefaultUnits>()?;
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
     m.add_class::<FileExportFormat>()?;
-    m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
+    m.add_class::<BoundingBoxResponse>()?;
+    m.add_class::<PhysicalPropertiesRequest>()?;
+    m.add_class::<PhysicalPropertiesResponse>()?;
     m.add_class::<SnapshotOptions>()?;
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
     m.add_class::<FindingFamily>()?;
+    m.add_class::<bridge::sketch_constraints::ConstraintKind>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintStatus>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintReport>()?;
+
+    m.add_class::<kcmc::units::UnitAngle>()?;
+    m.add_class::<kcmc::units::UnitArea>()?;
+    m.add_class::<kcmc::units::UnitDensity>()?;
+    m.add_class::<kcmc::units::UnitLength>()?;
+    m.add_class::<kcmc::units::UnitMass>()?;
+    m.add_class::<kcmc::units::UnitVolume>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;
@@ -761,15 +999,22 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
+    m.add_function(wrap_pyfunction!(default_units, m)?)?;
     m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_and_bounding_box, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_code_and_bounding_box, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
@@ -780,6 +1025,9 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
     m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
+
+    m.add("PanicException", _py.get_type::<pyo3::panic::PanicException>())?;
+
     Ok(())
 }
 

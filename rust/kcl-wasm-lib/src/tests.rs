@@ -2,10 +2,9 @@
 
 use std::env;
 
-use kcl_lib::{
-    wasm_engine::{EngineCommandManager, FileSystemManager},
-    Program,
-};
+use kcl_lib::Program;
+use kcl_lib::wasm_engine::EngineCommandManager;
+use kcl_lib::wasm_engine::FileSystemManager;
 use pretty_assertions::assert_eq;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_test::*;

@@ -5,9 +5,12 @@
 /// This module contains functions for creating and manipulating sketches, and making them into solids.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ### Sketch on Face Behavior
 ///
@@ -35,7 +38,7 @@
 /// profiles, where one profile is piped into the next, is not currently
 /// supported.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// // This does NOT work.
 /// twoSquares = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -53,7 +56,7 @@
 ///
 /// Instead, use separate pipelines, and extrude an array of them all.
 ///
-/// ```kcl,inline
+/// ```kcl,inline,legacySketch
 /// sketch1 = startSketchOn(XY)
 /// squareProfile1 = startProfile(sketch1, at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -68,7 +71,7 @@
 /// twoCubes = extrude([squareProfile1, squareProfile2], length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -97,7 +100,7 @@
 /// example003 = extrude(exampleSketch003, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Sketch on the end of an extruded face by tagging the end face.
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -128,7 +131,7 @@
 /// example003 = extrude(exampleSketch003, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -157,7 +160,7 @@
 /// example003 = extrude(exampleSketch003, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [4, 12])
 ///   |> line(end = [2, 0])
@@ -181,7 +184,7 @@
 /// example002 = extrude(exampleSketch002, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Sketch on the end of a revolved face by tagging the end face.
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -207,7 +210,7 @@
 /// example002 = extrude(exampleSketch002, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// a1 = startSketchOn({
 ///     origin = { x = 0, y = 0, z = 0 },
 ///     xAxis = { x = 1, y = 0, z = 0 },
@@ -223,31 +226,60 @@
 ///  |> extrude(length = 3.14)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///   |> startProfile(at = [-5, -5])
 ///   |> xLine(length = 10)
 ///   |> yLine(length = 10, tag = $b)
 ///   |> xLine(length = -10)
 ///   |> close()
-/// 
+///
 /// cube001 = extrude(sketch001, length = 10)
 ///   |> rotate(roll = 10, pitch = 20, yaw = 30)
-/// 
+///
 /// sketch002 = startSketchOn(cube001, normalToFace = END, alignAxis = Y)
 ///   |> circle(radius = 2, center = [0, 0])
 /// cube002 = extrude(sketch002, length = 4)
-/// 
+///
 /// subtract(cube001, tools = cube002)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// baseProfile = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+///   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+///   line3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+///   line4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   horizontal(line1)
+///   vertical(line2)
+///   horizontal(line3)
+///   vertical(line4)
+/// }
+///
+/// baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+/// block = extrude(baseRegion, length = 4mm, tagEnd = $top)
+///
+/// sideSketch = startSketchOn(block, face = top)
+///   |> startProfile(at = [0.5mm, 0.5mm])
+///   |> line(end = [2mm, 0mm])
+///   |> line(end = [0mm, 1mm])
+///   |> line(end = [-2mm, 0mm])
+///   |> close()
+///
+/// tower = extrude(sideSketch, length = 1mm)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
   /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`.
-  face?: TaggedFace,
+  face?: TaggedFace | Segment,
   /// Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`.
-  normalToFace?: TaggedFace,
+  normalToFace?: TaggedFace | Segment,
   /// If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`.
   alignAxis?: Axis2d,
   /// Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`.
@@ -256,7 +288,10 @@ export fn startSketchOn(
 
 /// Start a new profile at a given point.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -267,7 +302,7 @@ export fn startSketchOn(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfile(at = [10, 10])
 ///   |> line(end = [10, 0])
@@ -278,7 +313,7 @@ export fn startSketchOn(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfile(at = [-10, 23])
 ///   |> line(end = [10, 0])
@@ -289,7 +324,7 @@ export fn startSketchOn(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Create a sketch plane.
 /// mySketch = startSketchOn(XY)
 ///
@@ -320,15 +355,18 @@ export fn startProfile(
 
 /// Sketch a rectangle.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(center = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(corner = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
@@ -355,14 +393,17 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// ```
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> circle(center = [0, 0], radius = 10)
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-15, 0])
 ///   |> line(end = [30, 0])
@@ -392,7 +433,11 @@ export fn circle(
 
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
 ///
-/// ```
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of ellipse is still under development.
+///
+/// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -402,11 +447,12 @@ export fn circle(
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
-  /// The center of the ellipse.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
   /// The minor radius of the ellipse.
   minorRadius: number(Length),
+  /// The center of the ellipse.
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0].
   majorRadius?: number(Length),
   /// The major axis of the ellipse.
@@ -415,9 +461,9 @@ export fn ellipse(
   tag?: TagDecl,
 ): Sketch {}
 
-/// Extend a 2-dimensional sketch through a third dimension in order to
-/// create new 3-dimensional volume, or if extruded into an existing volume,
-/// cut into an existing solid.
+/// Extend a 2-dimensional sketch or individual segment of a sketch through
+/// a third dimension to create a new 3-dimensional volume or surface, or if
+/// extruded into an existing volume, cut into an existing solid.
 ///
 /// You can provide more than one sketch to extrude, and they will all be
 /// extruded in the same direction.
@@ -427,7 +473,7 @@ export fn ellipse(
 /// can change this behavior by using the `method` parameter. See
 /// [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// example = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -448,7 +494,7 @@ export fn ellipse(
 ///   |> extrude(length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
@@ -470,7 +516,7 @@ export fn ellipse(
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
@@ -492,7 +538,7 @@ export fn ellipse(
 /// example = extrude(exampleSketch, length = 20, symmetric = true)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
@@ -513,13 +559,20 @@ export fn ellipse(
 ///
 /// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 /// ```
-/// ```kcl
+/// ```kcl,legacySketch
 /// example = startSketchOn(XZ)
 ///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
 ///   |> extrude(length = 10, twistAngle = 120deg)
 /// ```
-///
-/// ```kcl
+/// ```kcl,legacySketch
+/// // Sketch a square in the corner of the scene.
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> polygon(radius = 1, numSides = 10, center = [4, 4])
+/// // Because the twist defaults to the plane's center, this makes a spiral shape.
+///   |> extrude(length = 10, twistAngle = 360deg)
+/// ```
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 /// profile001 = startProfile(sketch001, at = [0, 0])
 ///   |> yLine(length = 1)
@@ -540,11 +593,11 @@ export fn ellipse(
 /// translate(cylinder, x = 1)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // You could also use the 'to' parameter if you want extrusions
 /// // to end at a reference point, axis, scene geometry, tagged geometry, or plane.
-/// 
-/// 
+///
+///
 /// sketch001 = startSketchOn(XY)
 /// profile001 = startProfile(sketch001, at = [2, 2])
 ///   |> yLine(length = 1)
@@ -553,38 +606,38 @@ export fn ellipse(
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
 ///   |> close()
 /// cube = extrude(profile001, length = 1)
-/// 
+///
 /// // extrude a circle to a point reference (red cylinder)
 /// sketch002 = startSketchOn(XZ)
 /// cylinder0 = circle(sketch002, center = [0.5, 0.5], radius = 0.25)
 ///   |> extrude(to = [-2, -3, -4])
 ///   |> appearance(color='#FF0000')
-/// 
+///
 /// // extrude a circle to an axis reference (green cylinder)
 /// sketch003 = startSketchOn(offsetPlane(XY, offset = -2))
 /// cylinder1 = circle(sketch003, center = [0.5, 0.5], radius = 0.25)
 ///   |> extrude(to = Y)
 ///   |> appearance(color ='#00FF00')
-/// 
+///
 /// // extrude a circle to a solid reference (blue cylinder)
 /// sketch004 = startSketchOn(offsetPlane(YZ, offset = -1))
 /// cylinder2 = circle(sketch004, center = [0.5, 0.5], radius = 0.25)
 ///   |> extrude(to = cube)
 ///   |> appearance(color ='#0000FF')
-/// 
+///
 /// // extrude a circle to a tagged edge (cyan cylinder)
 /// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
 /// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
 ///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
 ///   |> appearance(color = '#00FFFF')
-/// 
+///
 /// // extrude a circle to a plane (magenta cylinder)
 /// sketch006 = startSketchOn(cube, face = facetag1)
 /// cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
 ///   |> extrude(to = XZ, method = NEW)
 ///   |> appearance(color ='#FF00FF')
 /// ```
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Surface extrude of an open profile
 /// openProfile = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -592,21 +645,132 @@ export fn ellipse(
 ///   |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, 10])
-/// // Surface extrude 
+/// // Surface extrude
 /// extrude(openProfile, length = 2, bodyType = SURFACE)
 /// ```
-/// ```kcl
+/// ```kcl,legacySketch
+/// // Extrude a face from an extruded object
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-5, 0])
+///   |> xLine(length=1)
+///   |> yLine(length = -1)
+///   |> line(end = [-1, -1], tag = $seg01)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg01, length = 2, method = MERGE, hideSeams=false) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+///   |> appearance(color = "#ff0000")
+///
+/// // Extrude a face from an extruded object to create a new object
+/// sketch002 = startSketchOn(XY)
+/// profile002 = startProfile(sketch002, at = [-1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg02)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg02, length=2, method = NEW, hideSeams=false) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+///   |> appearance(color = "#00ff00")
+///
+/// // Extrude a face from an extruded object and merge the result
+/// sketch003 = startSketchOn(XY)
+/// profile003 = startProfile(sketch003, at = [1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg03)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg03, length=2, method = MERGE, hideSeams=true)
+///   |> appearance(color = "#0000ff")
+/// ```
+/// ```kcl,legacySketch
+/// // Create a yellow extruded triangle.
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [0, 0])
+///   |> yLine(length = 1, tag = $a)
+///   |> xLine(length = 1, tag = $b)
+///   |> close(tag = $c)
+/// cube = extrude(profile001, length = 1)
+/// |> appearance(color = "#ffaa00")
+///
+/// // Extrude a red box from one of the triangle's side faces.
+/// box = extrude(
+///        c,
+///        length = 4,
+///        hideSeams = false,
+///        method = NEW,
+///      )
+///   |> appearance(color = "#ff0000")
+/// ```
+/// ```kcl,legacySketch
+/// // You can even extrude faces from sweeps!
+/// // In this example, the sweep is blue,
+/// // and the extrusion from its end face is yellow
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-1.0, 1.0])
+///   |> yLine(length = -2.0)
+///   |> xLine(length = 2.0)
+///   |> yLine(length = 2.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// sketch003 = startSketchOn(XZ)
+/// profile002 = startProfile(sketch003, at = [0, 0])
+///   |> yLine(length = 2.0)
+///   |> tangentialArc(end = [-2.0, 2.0])
+///   |> xLine(length = -2.0)
+///   |> tangentialArc(end = [-2, 2.0])
+///   |> yLine(length = 2)
+/// sweep001 = sweep(profile001, path = profile002, tagEnd = $endSweep)
+/// |> appearance(color = "#0000FF")
+/// extrude(endSweep, length = 2, method = NEW)
+/// |> appearance(color = "#FFFF00")
+/// ```
+/// ```kcl,legacySketch
 /// // Surface extrude of a closed profile
 /// closedProfile = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> circle(center = [0, 0], diameter = 10)
-/// // Surface extrude 
+/// // Surface extrude
 /// extrude(closedProfile, length = 5, bodyType = SURFACE)
+/// ```
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
+///   edge3 = line(start = [var 5mm, var 3mm], end = [var 0mm, var 3mm])
+///   edge4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
+/// ```
+/// ```kcl,sketchSolve
+/// // Sketch some disconnected lines in a sketch block.
+/// originalSketch = sketch(on = YZ) {
+///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+///   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+/// }
+///
+/// // Surface extrudes of sketch blocks let you extrude any lines.
+/// extrude([originalSketch.line1, originalSketch.line2], length = 1, bodyType = SURFACE)
+///
+/// // Surface extrudes of sketch blocks are non-destructive: they leave the original sketch
+/// // in place. So we can add another extrude of the same lines, in a different direction.
+/// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
@@ -625,12 +789,15 @@ export fn extrude(
   /// Must be between 4 and 90 degrees.
   /// Only used if `twistAngle` is given, defaults to 15 degrees.
   twistAngleStep?: number(Angle),
-  /// The center around which the sketch will be twisted. Relative to the sketch's center.
-  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
+  /// The center around which the sketch will be twisted. Relative to the plane's origin.
+  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. plane origin.
   @(snippetArray = ["0", "0"])
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
+  /// Whether or not to hide the seams between the original and resulting object.
+  /// Only used if a face is extruded and method = MERGE
+  hideSeams?: bool,
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
@@ -649,7 +816,7 @@ export fn extrude(
 /// You can provide more than one sketch to revolve, and they will all be
 /// revolved around the same axis.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -663,7 +830,7 @@ export fn extrude(
 ///     |> revolve(axis = Y) // default angle is 360deg
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // A donut shape.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
@@ -673,7 +840,7 @@ export fn extrude(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -687,7 +854,7 @@ export fn extrude(
 ///     |> revolve(axis = Y, angle = 180deg)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -709,7 +876,7 @@ export fn extrude(
 ///     |> extrude(length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -726,7 +893,7 @@ export fn extrude(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -743,7 +910,7 @@ export fn extrude(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -761,7 +928,7 @@ export fn extrude(
 ///     )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///   |> startProfile(at = [10, 0])
 ///   |> line(end = [5, -5])
@@ -778,7 +945,7 @@ export fn extrude(
 /// )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Revolve two sketches around the same axis.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -802,7 +969,7 @@ export fn extrude(
 /// )
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Revolve around a path that has not been extruded.
 ///
 /// profile001 = startSketchOn(XY)
@@ -817,7 +984,7 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Revolve around a path that has not been extruded or closed.
 ///
 /// profile001 = startSketchOn(XY)
@@ -830,7 +997,7 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Symmetrically revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -843,7 +1010,7 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis, symmetric = true)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Bidirectional revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -855,21 +1022,74 @@ export fn extrude(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
-/// ```kcl
-/// halfTorus = startSketchOn(XY)
-///     |> circle(center = [15, 0], radius = 5)
-///     |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
-/// closedTorus = startSketchOn(XY)
-///     |> circle(center = [15, 0], radius = 5)
-///     |> revolve(axis = Y, bodyType = SURFACE)
+/// ```kcl,sketchSolve
+/// shellProfile = sketch(on = XY) {
+///   outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
+///   connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
+///   innerWall = line(start = [var 12mm, var 7mm], end = [var 15mm, var 6mm])
+///   coincident([outerWall.end, connector.start])
+///   coincident([connector.end, innerWall.start])
+/// }
+///
+/// halfShell = revolve([shellProfile.outerWall, shellProfile.innerWall], axis = Y, bodyType = SURFACE, angle = 180deg)
+/// closedShell = revolve([shellProfile.outerWall, shellProfile.innerWall], axis = Y, bodyType = SURFACE)
 ///     |> translate(z = 30)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// ringProfile = sketch(on = XZ) {
+///   edge1 = line(start = [var 4mm, var 0mm], end = [var 7mm, var 0mm])
+///   edge2 = line(start = [var 7mm, var 0mm], end = [var 7mm, var 4mm])
+///   edge3 = line(start = [var 7mm, var 4mm], end = [var 4mm, var 4mm])
+///   edge4 = line(start = [var 4mm, var 4mm], end = [var 4mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+/// }
+///
+/// ringRegion = region(point = [5mm, 2mm], sketch = ringProfile)
+/// ring = revolve(ringRegion, axis = Y)
+/// ```
+/// ```kcl,sketchSolve
+/// // Sketch some disconnected lines in a sketch block.
+/// originalSketch = sketch(on = YZ) {
+///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+///   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+/// }
+///
+/// // Revolve just one line in the sketch.
+/// revolve([originalSketch.line1], axis = Y, angle = 180deg, bodyType = SURFACE)
+/// // Surface revolves of sketch blocks are non-destructive, so you can keep revolving
+/// // the same line again.
+/// revolve([originalSketch.line1], axis = Y, angle = -90deg, bodyType = SURFACE)
+/// ```
+/// ```kcl,sketchSolve
+/// // Use a solved constraint line as the axis of a revolve.
+/// sketch001 = sketch(on = XZ) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+///   line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
+/// }
+/// region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+/// revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
-  /// The sketch or set of sketches that should be revolved
-  @sketches: [Sketch; 1+],
+  /// The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve.
+  @sketches: [Sketch | Segment; 1+],
   /// Axis of revolution.
-  axis: Axis2d | Edge,
+  axis: Axis2d | Edge | Segment,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
@@ -889,7 +1109,7 @@ export fn revolve(
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Each instance will be shifted along the X axis.
 /// fn transform(@id) {
 ///   return { translate = [4 * id, 0] }
@@ -914,7 +1134,7 @@ export fn patternTransform2d(
 
 /// Get the opposite edge to the edge given.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -948,7 +1168,7 @@ export fn getOppositeEdge(
 
 /// Get the next adjacent edge to the edge given.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -982,7 +1202,7 @@ export fn getNextAdjacentEdge(
 
 /// Get the previous adjacent edge to the edge given.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -1016,7 +1236,7 @@ export fn getPreviousAdjacentEdge(
 
 /// Get the shared edge between two faces.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Get an edge shared between two faces, created after a chamfer.
 ///
 /// scale = 20
@@ -1043,9 +1263,59 @@ export fn getCommonEdge(
   faces: [TaggedFace; 2],
 ): Edge {}
 
+/// Get a bounded edge of a surface used for the [blend](/docs/kcl-std/functions/std-solid-blend) operation. A bounded edge is a reference to an existing edge that can be clipped at both ends. This will result in only the non-clipped portion of the edge being used during the blend.
+///
+/// ```kcl,sketchSolve
+/// sketch001 = sketch(on = YZ) {
+///   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
+///   line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+///   line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.9mm, var 2.8mm])
+///   line4 = line(start = [var 4.1mm, var 3mm], end = [var 4.5mm, var -0.2mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+/// }
+///
+/// sketch002 = sketch(on = -XZ) {
+///   line5 = line(start = [var -5.3mm, var -0.1mm], end = [var -3.5mm, var -0.1mm])
+///   line6 = line(start = [var -3.5mm, var -0.1mm], end = [var -3.5mm, var 3.1mm])
+///   line7 = line(start = [var -3.5mm, var 4.5mm], end = [var -5.4mm, var 4.5mm])
+///   line8 = line(start = [var -5.3mm, var 3.1mm], end = [var -5.3mm, var -0.1mm])
+///   coincident([line5.end, line6.start])
+///   coincident([line6.end, line7.start])
+///   coincident([line7.end, line8.start])
+///   coincident([line8.end, line5.start])
+/// }
+///
+/// region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+/// extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
+/// region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+/// extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
+///
+/// boundedEdge1 = getBoundedEdge(extrude001, edge = extrude001.sketch.tags.line7, lowerBound = 0.1, upperBound = 0.9)
+/// boundedEdge2 = getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line3, lowerBound = 0.4, upperBound = 0.6)
+///
+/// blend([boundedEdge1, boundedEdge2])
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn getBoundedEdge(
+  /// The solid that the edge belongs to.
+  @solid: Solid,
+  /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
+  edge: Edge,
+  /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
+  lowerBound?: number(Count),
+  /// A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1.
+  upperBound?: number(Count),
+): BoundedEdge {}
+
 /// Construct a circle derived from 3 points.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
 ///   |> extrude(length = 5)
@@ -1066,7 +1336,10 @@ export fn circleThreePoint(
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// // Create a regular hexagon inscribed in a circle of radius 10
 /// hex = startSketchOn(XY)
 ///   |> polygon(
@@ -1079,7 +1352,7 @@ export fn circleThreePoint(
 /// example = extrude(hex, length = 5)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Create a square circumscribed around a circle of radius 5
 /// square = startSketchOn(XY)
 ///   |> polygon(
@@ -1099,16 +1372,17 @@ export fn polygon(
   /// The number of sides in the polygon.
   numSides: number(Count),
   /// The center point of the polygon.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.
   inscribed?: bool = true,
 ): Sketch {}
 
-/// Extrude a sketch along a path.
+/// Create a 3D surface or solid by sweeping a sketch along a path.
 ///
-/// This, like extrude, is able to create a 3-dimensional solid from a
-/// 2-dimensional sketch. However, unlike extrude, this creates a solid
+/// This, like extrude, is able to create a 3-dimensional surface or solid from a
+/// 2-dimensional sketch. However, unlike extrude, this creates a body
 /// by using the extent of the sketch as its path. This is useful for
 /// creating more complex shapes that can't be created with a simple
 /// extrusion.
@@ -1116,7 +1390,7 @@ export fn polygon(
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Create a pipe using a sweep.
 ///
 /// // Create a path for the sweep.
@@ -1139,12 +1413,12 @@ export fn polygon(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Create a spring by sweeping around a helix path.
 ///
 /// // Create a helix around the Z axis.
@@ -1164,7 +1438,7 @@ export fn polygon(
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -1192,7 +1466,7 @@ export fn polygon(
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Sectionally sweep one sketch along the path
 ///
 /// sketch001 = startSketchOn(XY)
@@ -1206,12 +1480,171 @@ export fn polygon(
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
+///
+/// ```kcl,legacySketch
+/// // Sweep a square edge along a path
+/// square = startSketchOn(XY)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [200, 0])
+///   |> line(end = [0, -200])
+///   |> line(end = [-200, 0])
+///  |> close()
+///
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [100, 0])
+///   |> tangentialArc(end = [107, -48])
+///
+/// sweep(square, path, bodyType = SURFACE)
+/// ```
+///
+/// ```kcl,legacySketch
+/// // Sweep a segment along a path
+/// segment = startSketchOn(YZ)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [100, 0])
+///
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [100, 0])
+///   |> tangentialArc(end = [117, 34.5])
+///
+/// sweep(segment, path, bodyType = SURFACE)
+/// ```
+///
+/// ```kcl,legacySketch
+/// // Sweep a segment along a path
+/// segment = startSketchOn(YZ)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [100, 0])
+///
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [100, 0])
+///   |> tangentialArc(end = [117, 34.5])
+///
+/// sweep(segment, path, bodyType = SURFACE, version = 2)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = YZ) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm])
+///   edge2 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 2mm])
+///   edge3 = line(start = [var 2mm, var 2mm], end = [var 0mm, var 2mm])
+///   edge4 = line(start = [var 0mm, var 2mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+/// }
+///
+/// profileRegion = region(point = [1mm, 1mm], sketch = profile)
+///
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0mm, 0mm])
+///   |> line(end = [8mm, 0mm])
+///   |> tangentialArc(end = [4mm, 4mm])
+///
+/// swept = sweep(profileRegion, path)
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates using sweeps with segments from sketch blocks.
+///
+/// // Sketch a square
+/// sketch001 = sketch(on = XZ) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+///
+/// // Sketch a path
+/// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+///   line1 = line(start = [var 00mm, var 0mm], end = [var -3mm, var 0mm])
+///   line2 = line(start = [var 00mm, var 0mm], end = [var 2mm, var 1mm])
+/// }
+///
+/// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+///
+/// // Sweep the square along the path.
+/// sweep(mySquare, path = sketch002.line1)
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates sweeping along a multi-segment path from a sketch block.
+///
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var 2mm, var 2mm], end = [var 2mm, var 0mm])
+///   line2 = line(start = [var 2mm, var 0mm], end = [var 0mm, var 0mm])
+///   line3 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+///   line4 = line(start = [var 0mm, var 2mm], end = [var 2mm, var 2mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+/// }
+/// mySquare = region(point = [1.9975mm, 1mm], sketch = sketch001)
+///
+/// // Sketch a path
+/// sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
+///   line1 = line(start = [var -0.01mm, var -0.01mm], end = [var -0.12mm, var 2.4mm])
+///   arc1 = arc(start = [var 0.6mm, var 4.55mm], end = [var -0.12mm, var 2.4mm], center = [var 3.03mm, var 2.54mm])
+///   coincident([line1.end, arc1.end])
+///   tangent([line1, arc1])
+/// }
+///
+/// // Sweep the square along the path.
+/// path = [sketch002.line1, sketch002.arc1]
+/// sweep(mySquare, path)
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates surface sweeps of open profiles.
+///
+/// // Sketch a square
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+///   line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+///   line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+///   line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+///
+/// mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+///
+/// sketch002 = sketch(on = XZ) {
+///   line1 = line(start = [var -1.17mm, var -0.79mm], end = [var -15.37mm, var -0.7mm])
+///   arc1 = arc(start = [var -15.37mm, var 21.18mm], end = [var -15.37mm, var -0.7mm], center = [var -15.3mm, var 10.24mm])
+///   coincident([line1.end, arc1.end])
+///   tangent([line1, arc1])
+/// }
+///
+/// // Sweep the square along the path.
+/// path = [sketch002.line1, sketch002.arc1]
+/// sweep(sketch001.line2, path, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Segment; 1+],
   /// The path to sweep the sketch along.
-  path: Sketch | Helix,
+  path: Sketch | Helix | [Segment; 1+],
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
@@ -1222,13 +1655,16 @@ export fn sweep(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
+  /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
+  version?: number(Count) = 0,
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 ///
-/// The sketches need to be closed and on different planes that are parallel.
-///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Loft a square and a triangle.
 /// squareSketch = startSketchOn(XY)
 ///     |> startProfile(at = [-100, 200])
@@ -1248,7 +1684,7 @@ export fn sweep(
 /// loft([triangleSketch, squareSketch])
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Loft a square, a circle, and another circle.
 /// squareSketch = startSketchOn(XY)
 ///     |> startProfile(at = [-100, 200])
@@ -1268,7 +1704,7 @@ export fn sweep(
 ///   |> appearance(color = "#da7333", roughness = 50, metalness = 90)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Loft a square, a circle, and another circle with options.
 /// squareSketch = startSketchOn(XY)
 ///     |> startProfile(at = [-100, 200])
@@ -1292,29 +1728,136 @@ export fn sweep(
 /// )
 /// ```
 ///
-/// ```kcl
-/// // Sketch a square on the XY plane
-/// squareSketch = startSketchOn(XY)
-///   |> startProfile(at = [-100, 200])
-///   |> line(end = [200, 0])
-///   |> line(end = [0, -200])
-///   |> line(end = [-200, 0])
-///   |> close()
+/// ```kcl,legacySketch
+/// sketch001 = startSketchOn(XZ)
+/// profile001 = startProfile(sketch001, at = [-3, 0])
+///   |> xLine(length = 6)
+/// plane001 = offsetPlane(XZ, offset = -5)
+/// sketch002 = startSketchOn(plane001)
+/// profile002 = startProfile(sketch002, at = [-2, -2])
+///   |> line(endAbsolute = [-1.25, -0.5])
+///   |> tangentialArc(endAbsolute = [-0.5, 0])
+///   |> xLine(length = 1)
+///   |> tangentialArc(end = [0.75, -0.5])
+///   |> line(end = [0.75, -1.5])
+///
+/// plane002 = offsetPlane(XZ, offset = -10)
+/// sketch003 = startSketchOn(plane002)
+/// profile003 = startProfile(sketch003, at = [-2, -6])
+///   |> line(end = [0.75, 1.5])
+///   |> tangentialArc(end = [0.75, 0.5])
+///   |> line(end = [1, 0])
+///   |> tangentialArc(end = [0.75, -0.5])
+///   |> line(end = [0.75, -1.5])
+/// plane003 = offsetPlane(XZ, offset = -15)
+/// sketch004 = startSketchOn(plane003)
+/// profile004 = startProfile(sketch004, at = [-3, -4])
+///   |> xLine(length = 6)
+///
+/// loft([profile001, profile002, profile003, profile004], bodyType = SURFACE)
+/// ```
+///
+/// ```kcl,legacySketch
+/// sketch001 = startSketchOn(-XY)
+/// profile001 = startProfile(sketch001, at = [-2, 3])
+///   |> arc(interiorAbsolute = [0, 5], endAbsolute = [2, 3])
+///
+/// sketch002 = startSketchOn(XZ)
+/// profile002 = startProfile(sketch002, at = [2, 0])
+///   |> arc(interiorAbsolute = [0, -2], endAbsolute = [-2, 0])
+///
+/// sketch003 = startSketchOn(XY)
+/// profile003 = startProfile(sketch003, at = [2, -3])
+///   |> arc(interiorAbsolute = [0, -5], endAbsolute = [-2, -3])
+///
+/// loft([profile001, profile002, profile003], bodyType = SURFACE)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// lowerProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+///   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+///   edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+///   edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+/// }
+///
+/// upperProfile = sketch(on = offsetPlane(XY, offset = 8mm)) {
+///   edge5 = line(start = [var 1.6mm, var 1mm], end = [var 4.4mm, var 1mm])
+///   edge6 = line(start = [var 4.4mm, var 1mm], end = [var 3.2mm, var 2.6mm])
+///   edge7 = line(start = [var 3.2mm, var 2.6mm], end = [var 2.8mm, var 2.6mm])
+///   edge8 = line(start = [var 2.8mm, var 2.6mm], end = [var 1.6mm, var 1mm])
+///   coincident([edge5.end, edge6.start])
+///   coincident([edge6.end, edge7.start])
+///   coincident([edge7.end, edge8.start])
+///   coincident([edge8.end, edge5.start])
+/// }
+///
+/// lowerRegion = region(point = [2mm, 2mm], sketch = lowerProfile)
+/// upperRegion = region(point = [3mm, 1.8mm], sketch = upperProfile)
+///
+/// lofted = loft([lowerRegion, upperRegion])
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates surface lofts with shapes from sketch blocks.
+/// // Loft a square, a circle, and another circle.
+/// sideLen = 4
+/// squareSketch = sketch(on = XY) {
+///   line1 = line(start = [var -0.02mm, var 4.02mm], end = [var 0mm, var 0mm])
+///   coincident([line1.end, ORIGIN])
+///   line2 = line(start = [var 4.02mm, var 0.03mm], end = [var 4.06mm, var 3.97mm])
+///   line3 = line(start = [var 4.06mm, var 3.97mm], end = [var -0.02mm, var 4.02mm])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.start])
+///   line4 = line(start = [var 0mm, var 0mm], end = [var 4.02mm, var 0.03mm])
+///   coincident([line4.start, line1.end])
+///   coincident([line4.end, line2.start])
+///   equalLength([line1, line2, line3, line4])
+///   parallel([line1, line2])
+/// }
 /// 
-/// // Start a second sketch, 200 units above the XY plane.
-/// circleSketch = startSketchOn(offsetPlane(XY, offset = 100))
-///   |> circle(center = [0, 100], radius = 50)
+/// circleSketch0 = sketch(on = offsetPlane(XY, offset = 2)) {
+///   circle1 = circle(start = [var 2.28mm, var 2.99mm], center = [var 1.98mm, var 2.03mm])
+/// }
 /// 
-/// squareSketch002 = clone(squareSketch)
-/// |> translate(z = 200)
+/// squareRegion = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
+/// circleRegion = region(point = [1.6807mm, 1.0724mm], sketch = circleSketch0)
 /// 
-/// // Loft the square up and into the circle.
-/// loft([squareSketch, circleSketch, squareSketch002], bodyType = SURFACE)
+/// shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
+/// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates surface lofting of segments from multiple sketch blocks.
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
+/// 
+/// sketch002 = sketch(on = XY) {
+///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
+/// }
+/// sketch003 = sketch(on = -XY) {
+///   arc1 = arc(start = [var 2.03mm, var 3.05mm], end = [var -2.03mm, var 3.03mm], center = [var 0mm, var 2.94mm])
+/// }
+/// 
+/// sketch001 = sketch(on = XZ) {
+///   arc1 = arc(start = [var -2.03mm, var -0.13mm], end = [var 2.03mm, var -0.05mm], center = [var 0mm, var 0mm])
+///   coincident([arc1.center, ORIGIN])
+/// }
+/// 
+/// loft(
+///   [
+///     sketch003.arc1,
+///     sketch002.arc1,
+///     sketch001.arc1
+///   ],
+///   bodyType = SURFACE,
+/// )
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn loft(
-  /// Which sketches to loft. Must include at least 2 sketches.
-  @sketches: [Sketch; 2+],
+  /// Which sketches to loft (or segments, for surface lofts).
+  /// Must include at least 2 sketches.
+  @sketches: [Sketch | [Segment; 1+]; 2+],
   /// Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.
   vDegree?: number(Count) = 2,
   /// Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary.
@@ -1335,7 +1878,7 @@ export fn loft(
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 /// of distance between each repetition, some specified number of times.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// /// Pattern using a named axis.
 ///
 /// exampleSketch = startSketchOn(XZ)
@@ -1349,7 +1892,7 @@ export fn loft(
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// /// Pattern using a raw axis.
 ///
 /// exampleSketch = startSketchOn(XZ)
@@ -1382,7 +1925,7 @@ export fn patternLinear2d(
 /// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [.5, 25])
 ///   |> line(end = [0, 5])
@@ -1405,8 +1948,9 @@ export fn patternCircular2d(
   /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
   instances: number(Count),
   /// The center about which to make the pattern. This is a 2D vector.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
   arcDegrees?: number(Angle) = 360deg,
   /// Whether or not to rotate the duplicates as they are copied.
@@ -1417,7 +1961,7 @@ export fn patternCircular2d(
 
 /// Compute the ending point of the provided line segment.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// w = 15
 /// cube = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1448,7 +1992,7 @@ export fn segEnd(
 
 /// Compute the ending point of the provided line segment along the 'x' axis.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
@@ -1456,7 +2000,7 @@ export fn segEnd(
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
 ///   |> close()
-///  
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -1467,7 +2011,7 @@ export fn segEndX(
 
 /// Compute the ending point of the provided line segment along the 'y' axis.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
@@ -1476,7 +2020,7 @@ export fn segEndX(
 ///   |> line(end = [0, segEndY(thing)])
 ///   |> line(end = [-10, 0])
 ///   |> close()
-///  
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -1487,7 +2031,7 @@ export fn segEndY(
 
 /// Compute the starting point of the provided line segment.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// w = 15
 /// cube = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1518,7 +2062,7 @@ export fn segStart(
 
 /// Compute the starting point of the provided line segment along the 'x' axis.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
@@ -1526,7 +2070,7 @@ export fn segStart(
 ///   |> line(end = [20 - segStartX(thing), 0])
 ///   |> line(end = [-20, 10])
 ///   |> close()
-///  
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -1537,7 +2081,7 @@ export fn segStartX(
 
 /// Compute the starting point of the provided line segment along the 'y' axis.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
@@ -1546,7 +2090,7 @@ export fn segStartX(
 ///   |> line(end = [0, 20-segStartY(thing)])
 ///   |> line(end = [-10, 0])
 ///   |> close()
-///  
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -1557,7 +2101,7 @@ export fn segStartY(
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
@@ -1576,7 +2120,7 @@ export fn lastSegX(
 
 /// Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
@@ -1595,7 +2139,7 @@ export fn lastSegY(
 
 /// Compute the length of the provided line segment.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -1620,7 +2164,7 @@ export fn segLen(
 
 /// Compute the angle (in degrees) of the provided line segment.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -1641,7 +2185,7 @@ export fn segAng(
 
 /// Returns the angle coming out of the end of the segment in degrees.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Horizontal pill.
 /// pillSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -1657,7 +2201,7 @@ export fn segAng(
 /// pillExtrude = extrude(pillSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Vertical pill.  Use absolute coordinate for arc.
 /// pillSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -1673,7 +2217,7 @@ export fn segAng(
 /// pillExtrude = extrude(pillSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// rectangleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0], tag = $seg1)
@@ -1688,7 +2232,7 @@ export fn segAng(
 /// rectangleExtrude = extrude(rectangleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// bottom = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> arc(
@@ -1700,7 +2244,7 @@ export fn segAng(
 ///   |> close()
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// circSketch = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius= 3, tag = $circ)
 ///
@@ -1718,7 +2262,7 @@ export fn tangentToEnd(
 
 /// Extract the provided 2-dimensional sketch's profile's origin value.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = 120deg, length = 50 , tag = $seg01)
@@ -1735,7 +2279,7 @@ export fn profileStart(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6deg, length = 50)
@@ -1750,7 +2294,7 @@ export fn profileStartX(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -60deg, length = 14 )
@@ -1764,7 +2308,11 @@ export fn profileStartY(
 
 /// Extend the current sketch with a new involute circular curve.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of involute circular is still under development.
+///
+/// ```kcl,legacySketch
 /// a = 10
 /// b = 14
 /// startSketchOn(XZ)
@@ -1772,7 +2320,7 @@ export fn profileStartY(
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg, reverse = true)
 /// ```
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Example: a gear that uses an involute circular profile for the teeth.
 /// @settings(defaultLengthUnit = mm)
 ///
@@ -1842,7 +2390,10 @@ export fn involuteCircular(
 
 /// Extend the current sketch with a new straight line.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// triangle = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   // The END argument means it ends at exactly [10, 0].
@@ -1880,7 +2431,10 @@ export fn line(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'x' axis.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> xLine(length = 15)
@@ -1915,7 +2469,10 @@ export fn xLine(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'y' axis.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(length = 15)
@@ -1945,7 +2502,10 @@ export fn yLine(
 /// Draw a line segment relative to the current origin using the polar
 /// measure of some angle and distance.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(endAbsolute = 15)
@@ -1983,7 +2543,10 @@ export fn angledLine(
 /// such that the newly created line intersects the desired target line
 /// segment.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [5, 10])
@@ -2015,12 +2578,15 @@ export fn angledLineThatIntersects(
 /// Construct a line segment from the current origin back to the profile's
 /// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// If you want to perform some 3-dimensional operation on a sketch, like
 /// extrude or sweep, you must `close` it first. `close` must be called even
 /// if the end point of the last segment is coincident with the sketch
 /// starting point.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// startSketchOn(XZ)
 ///    |> startProfile(at = [0, 0])
 ///    |> line(end = [10, 10])
@@ -2029,7 +2595,7 @@ export fn angledLineThatIntersects(
 ///    |> extrude(length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -2048,6 +2614,9 @@ export fn close(
 
 /// Draw a curved line segment along an imaginary circle.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
 /// degrees. The resulting arc is the segment of the imaginary circle from
@@ -2057,7 +2626,7 @@ export fn close(
 /// Unless this makes a lot of sense and feels like what you're looking
 /// for to construct your shape, you're likely looking for tangentialArc.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
@@ -2070,7 +2639,7 @@ export fn close(
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> arc(
@@ -2107,13 +2676,16 @@ export fn arc(
 /// some part of an imaginary circle until it reaches the desired (x, y)
 /// coordinates.
 ///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
 /// When using radius and angle, draw a curved line segment along part of an
 /// imaginary circle. The arc is constructed such that the last line segment is
 /// placed tangent to the imaginary circle of the specified radius. The
 /// resulting arc is the segment of the imaginary circle from that tangent point
 /// for 'angle' degrees along the imaginary circle.
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -2127,7 +2699,7 @@ export fn arc(
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -2141,7 +2713,7 @@ export fn arc(
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -2180,7 +2752,11 @@ export fn tangentialArc(
 /// the desired (x, y), using a number of control points to shape the curve's
 /// shape.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of bezier curve is still under development.
+///
+/// ```kcl,legacySketch
 /// // Example using relative control points.
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -2196,7 +2772,7 @@ export fn tangentialArc(
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// // Example using absolute control points.
 /// startSketchOn(XY)
 ///   |> startProfile(at = [300, 300])
@@ -2226,7 +2802,10 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+///
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 5])
@@ -2239,7 +2818,7 @@ export fn bezierCurve(
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,legacySketch
 /// fn squareHoleSketch() {
 ///   squareSketch = startSketchOn(-XZ)
 ///     |> startProfile(at = [-1, -1])
@@ -2265,7 +2844,11 @@ export fn subtract2d(
 
 /// Add a conic section to an existing sketch.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of conic is still under development.
+///
+/// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XZ)
@@ -2303,7 +2886,11 @@ export fn conic(
 
 /// Add a parabolic segment to an existing sketch.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of parabolic is still under development.
+///
+/// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -2331,10 +2918,10 @@ export fn parabolic(
   /// Create a new tag which refers to this segment.
   tag?: TagDecl,
 ): Sketch {}
- 
+
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// point001 = parabolicPoint(x = 5, coefficients = [0.1, 0, 0])
 /// point002 = parabolicPoint(y = 2.5, coefficients = [0.1, 0, 0])
 /// assert(point001[0], isEqualTo = point002[0])
@@ -2351,8 +2938,12 @@ export fn parabolicPoint(
 ): Point2d {}
 
 /// Add a hyperbolic section to an existing sketch.
-/// 
-/// ```kcl
+///
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of hyperbolic is still under development.
+///
+/// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -2387,7 +2978,7 @@ export fn hyperbolic(
 
 /// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
 ///```
 @(impl = std_rust, feature_tree = false)
@@ -2404,7 +2995,11 @@ export fn hyperbolicPoint(
 
 /// Add an elliptic section to an existing sketch.
 ///
-/// ```kcl
+/// This is part of sketch v1 and is soft deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
+/// of elliptic is still under development.
+///
+/// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// majorRadius = 2
@@ -2444,7 +3039,7 @@ export fn elliptic(
 
 /// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
 ///
-/// ```kcl
+/// ```kcl,sketchSyntaxAgnostic
 /// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
 /// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
 /// assert(point001[0], isEqualTo = point002[0])
@@ -2464,31 +3059,57 @@ export fn ellipticPoint(
 
 /// Find the plane a face lies on.
 /// Returns an error if the face doesn't lie on any plane (for example, the curved face of a cylinder)
-///```kcl
+///```kcl,legacySketch
 /// triangle = startSketchOn(XY)
 /// |> polygon(radius = 3, numSides = 3, center = [0, 0])
 /// |> extrude(length = 2)
-/// 
+///
 /// // Find the plane of the triangle's top face.
 /// topPlane = planeOf(triangle, face = END)
-/// 
+///
 /// // Create a new plane, above the triangle's top face.
 /// startSketchOn(offsetPlane(topPlane, offset = 2))
 /// |> circle(radius = 1, center = [0,0])
 /// |> extrude(length = 1)
+/// ```
+/// ```kcl,sketchSolve
+/// baseProfile = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+///   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+///   line3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+///   line4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   horizontal(line1)
+///   vertical(line2)
+///   horizontal(line3)
+///   vertical(line4)
+/// }
+///
+/// baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+/// block = extrude(baseRegion, length = 4mm, tagEnd = $top)
+/// sidePlane = planeOf(block, face = top)
+///
+/// rib = startSketchOn(offsetPlane(sidePlane, offset = 1mm))
+///   |> startProfile(at = [0mm, 0mm])
+///   |> line(end = [2mm, 0mm])
+///   |> line(end = [0mm, 1mm])
+///   |> line(end = [-2mm, 0mm])
+///   |> close()
+///   |> extrude(length = 1mm)
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn planeOf(
   /// The solid whose face is being queried.
   @solid: Solid,
   /// Find the plane which this face lies on.
-  face: TaggedFace,
+  face: TaggedFace | Segment,
 ): Plane {}
 
 /// Get the face of a solid.
-///```kcl
-/// @settings(experimentalFeatures = allow)
-/// 
+///```kcl,sketchSolve
 /// triangle = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [2, 0])
@@ -2496,17 +3117,107 @@ export fn planeOf(
 ///   |> line(end = [-2, -2])
 ///   |> close()
 ///   |> extrude(length = 2)
-/// 
+///
 /// // Get the face of the triangle's side face.
 /// sideFace = faceOf(triangle, face = side)
-/// 
+///
 /// // Create a new sketch, on the triangle's side face.
 /// //sketch(on = sideFace) {}
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+/// ```kcl,sketchSolve
+/// triangle = sketch(on = XY) {
+///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
+///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
+///   coincident([line1.end, line2.start])
+///   line3 = line(start = [var 0.92mm, var 4.67mm], end = [var -0.03mm, var -0.04mm])
+///   coincident([line2.end, line3.start])
+///   coincident([line1.start, line3.end])
+///   horizontal(line1)
+///   equalLength([line2, line3])
+/// }
+///
+/// triangleRegion = region(point = [1.86mm, 3.82mm], sketch = triangle)
+/// prism = extrude(triangleRegion, length = 2)
+///
+/// face001 = faceOf(prism, face = triangleRegion.tags.line1)
+/// ```
+@(impl = std_rust, feature_tree = false)
 export fn faceOf(
   /// The solid that has the face.
   @solid: Solid,
   /// Which face of the solid.
-  face: TaggedFace,
+  face: TaggedFace | Segment,
 ): Face {}
+
+/// Create a region from closed segments.
+///
+/// Form the region from sketch block segments that have a given point within a
+/// closed boundary. When using a 2D point, not a point from the sketch, the
+/// `sketch` parameter is required to specify which sketch the region is from.
+///
+/// Alternatively, form the region by tracing the first segment from its start
+/// point to the intersection with the second segment, and turn at each
+/// intersection using the `direction` until returning back to the first
+/// segment.
+///
+/// ```kcl,sketchSolve
+/// triangle = sketch(on = XY) {
+///   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
+///   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
+///   coincident([line1.end, line2.start])
+///   line3 = line(start = [var 0.92mm, var 4.67mm], end = [var -0.03mm, var -0.04mm])
+///   coincident([line2.end, line3.start])
+///   coincident([line1.start, line3.end])
+///   horizontal(line1)
+///   equalLength([line2, line3])
+/// }
+///
+/// r = region(point = [0.5mm, 0.5mm], sketch = triangle)
+/// extrude(r, length = 5)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// trapezoid = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+///   line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
+///   line3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
+///   line4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   vertical(line2)
+///   horizontal(line3)
+///   parallel([line1, line3])
+/// }
+///
+/// r = region(point = [1mm, 1mm], sketch = trapezoid)
+/// extrude(r, length = 3)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// s = sketch(on = XY) {
+///   line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+///   arc1 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 6mm])
+///   coincident([line1.end, arc1.start])
+///   coincident([line1.start, arc1.end])
+/// }
+///
+/// r = region(point = s.arc1.center)
+/// extrude(r, length = 2)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn region(
+  /// A point that is within the region's boundary.
+  point?: Point2d | Segment,
+  /// The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region.
+  segments?: [Segment; 1+],
+  /// Index of the intersection of the first segment with the second segment to
+  /// use as the region's boundary. The default is `-1`, which uses the last
+  /// intersection.
+  intersectionIndex?: number(Count),
+  /// `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`.
+  direction?: string = "ccw",
+  /// The sketch that the region is from. This is required when point is a `Point2d`.
+  sketch?: any,
+): Sketch {}

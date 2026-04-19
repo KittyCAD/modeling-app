@@ -5,7 +5,7 @@
 
 /// GD&T datum feature.
 ///
-/// ```kcl
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 ///
 /// width = 5
@@ -26,6 +26,34 @@
 ///   framePlane = XZ,
 /// )
 /// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(experimentalFeatures = allow)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+///   edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])
+///   edge3 = line(start = [var 8mm, var 5mm], end = [var 0mm, var 5mm])
+///   edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+///
+/// gdt::datum(
+///   face = top,
+///   name = "A",
+///   framePosition = [10mm, 0mm],
+///   framePlane = XZ,
+/// )
+/// ```
 @(impl = std_rust, experimental = true, feature_tree = true)
 export fn datum(
   /// The face to be annotated.
@@ -40,6 +68,8 @@ export fn datum(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
+  /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
+  leaderScale?: number(Count),
   /// The font point size to use for the annotation text rendering. The default is `36`.
   fontPointSize?: number(Count),
   /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
@@ -48,7 +78,7 @@ export fn datum(
 
 /// GD&T annotation specifying how flat faces should be.
 ///
-/// ```kcl
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -62,7 +92,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -76,7 +106,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -88,6 +118,28 @@ export fn datum(
 ///   |> close()
 ///   |> extrude(length = 5)
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(experimentalFeatures = allow)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// gdt::flatness(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = true)
 export fn flatness(
@@ -106,6 +158,8 @@ export fn flatness(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
+  /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
+  leaderScale?: number(Count),
   /// The font point size to use for the annotation text rendering. The default is `36`.
   fontPointSize?: number(Count),
   /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.

@@ -1,13 +1,10 @@
+import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
-
 import {
-  defaultAppSettings,
-  defaultProjectSettings,
-  parseAppSettings,
-  parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
@@ -15,7 +12,6 @@ import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
 } from '@src/lib/cameraControls'
-import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
   readAppSettingsFile,
@@ -24,11 +20,14 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   createSettings,
   type Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import { getToken } from '@src/machines/authMachine'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -38,6 +37,91 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
+
+/**
+ * Returns whether a feature flag is enabled for the current user.
+ * Resolves to `true` when present, otherwise the provided default.
+ */
+export async function userHasFeature(
+  featureFlagId: string,
+  defaultValue: boolean
+): Promise<boolean> {
+  try {
+    const token = await getToken()
+    if (!token) {
+      return defaultValue
+    }
+
+    const now = Date.now()
+    const cacheValid =
+      featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+    type FeaturesResult = CachedFeaturesData | Error
+    let featuresData: FeaturesResult
+
+    if (cacheValid && featuresCache) {
+      featuresData = featuresCache.data
+    } else if (featuresFetchPromise) {
+      featuresData = await featuresFetchPromise
+    } else {
+      const client = createKCClient(token)
+      featuresFetchPromise = kcCall(() =>
+        users.user_features_get({ client })
+      ).then((result) => {
+        featuresFetchPromise = null
+        if (isCachedFeaturesData(result)) {
+          featuresCache = { data: result, fetchedAt: Date.now() }
+        }
+        return result
+      })
+      featuresData = await featuresFetchPromise
+    }
+
+    if (featuresData instanceof Error) {
+      console.error('Error fetching user features:', featuresData.message)
+      return defaultValue
+    }
+
+    const hasFeature = featuresData.features.some(
+      (feat: { id: string }) => feat.id === featureFlagId
+    )
+
+    return hasFeature ? true : defaultValue
+  } catch (error) {
+    console.error(`Error checking feature flag ${featureFlagId}:`, error)
+    return defaultValue
+  }
+}
+
+const INITIALISM_MAPPING: Record<string, string> = {
+  api: 'API',
+  id: 'ID',
+  ui: 'UI',
+  url: 'URL',
+}
+
+export function formatSettingsLabel(key: string): string {
+  return decamelize(key, { separator: ' ' })
+    .split(' ')
+    .map((word) =>
+      word in INITIALISM_MAPPING ? INITIALISM_MAPPING[word] : word
+    )
+    .join(' ')
+}
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -62,6 +146,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      machineApi: configuration?.settings?.app?.machine_api,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -73,9 +158,11 @@ export function configurationToSettingsPayload(
       gizmoType: configuration?.settings?.modeling?.gizmo_type,
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
-      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
+      useSketchSolveMode:
+        configuration?.settings?.modeling?.use_sketch_solve_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      backfaceColor: configuration?.settings?.modeling?.backface_color,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
       fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
@@ -111,6 +198,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        machine_api: configuration?.app?.machineApi,
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,
@@ -121,9 +209,10 @@ export function settingsPayloadToConfiguration(
           : undefined,
         gizmo_type: configuration?.modeling?.gizmoType,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
+        use_sketch_solve_mode: configuration?.modeling?.useSketchSolveMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
+        backface_color: configuration?.modeling?.backfaceColor,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
         fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,
@@ -200,6 +289,10 @@ export function projectConfigurationToSettingsPayload(
       ),
       showDebugPanel:
         configuration?.settings?.app?.show_debug_panel ?? undefined,
+      zookeeperMode: (() => {
+        const v = configuration?.settings?.app?.zookeeper_mode
+        return v === 'fast' || v === 'thoughtful' ? v : undefined
+      })(),
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
@@ -246,6 +339,7 @@ export function settingsPayloadToProjectConfiguration(
         onboarding_status: configuration?.app?.onboardingStatus,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        zookeeper_mode: configuration?.app?.zookeeperMode,
         named_views: deepPartialNamedViewsToNamedViews(
           configuration?.app?.namedViews
         ),
@@ -271,63 +365,51 @@ export function settingsPayloadToProjectConfiguration(
   }
 }
 
-function localStorageAppSettingsPath() {
-  return '/settings.toml'
+export function mergeProjectConfiguration(
+  existingConfiguration: DeepPartial<ProjectConfiguration>,
+  updatedConfiguration: DeepPartial<ProjectConfiguration>
+): DeepPartial<ProjectConfiguration> {
+  return {
+    ...existingConfiguration,
+    ...updatedConfiguration,
+    settings: {
+      ...existingConfiguration.settings,
+      ...updatedConfiguration.settings,
+      meta: {
+        ...existingConfiguration.settings?.meta,
+        ...updatedConfiguration.settings?.meta,
+      },
+      app: {
+        ...existingConfiguration.settings?.app,
+        ...updatedConfiguration.settings?.app,
+      },
+      modeling: {
+        ...existingConfiguration.settings?.modeling,
+        ...updatedConfiguration.settings?.modeling,
+      },
+      text_editor: {
+        ...existingConfiguration.settings?.text_editor,
+        ...updatedConfiguration.settings?.text_editor,
+      },
+      command_bar: {
+        ...existingConfiguration.settings?.command_bar,
+        ...updatedConfiguration.settings?.command_bar,
+      },
+    },
+  }
 }
 
-function localStorageProjectSettingsPath() {
-  return '/' + BROWSER_PROJECT_NAME + '/project.toml'
-}
-
-export function readLocalStorageAppSettingsFile(
-  wasmInstance: ModuleType
-): DeepPartial<Configuration> | Error {
-  // TODO: Remove backwards compatibility after a few releases.
-  let stored =
-    localStorage.getItem(localStorageAppSettingsPath()) ??
-    localStorage.getItem('/user.toml') ??
-    ''
-
-  if (stored === '') {
-    return defaultAppSettings(wasmInstance)
-  }
-
-  try {
-    return parseAppSettings(stored, wasmInstance)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    const settings = defaultAppSettings(wasmInstance)
-    if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings, wasmInstance)
-    if (err(tomlStr)) return tomlStr
-
-    localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
-    return settings
-  }
-}
-
-export function readLocalStorageProjectSettingsFile(
-  wasmInstance: ModuleType
-): DeepPartial<ProjectConfiguration> | Error {
-  // TODO: Remove backwards compatibility after a few releases.
-  let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
-
-  if (stored === '') {
-    return defaultProjectSettings(wasmInstance)
-  }
-
-  const projectSettings = parseProjectSettings(stored, wasmInstance)
-  if (err(projectSettings)) {
-    const settings = defaultProjectSettings(wasmInstance)
-    if (err(settings)) return settings
-    const tomlStr = serializeProjectConfiguration(settings, wasmInstance)
-    if (err(tomlStr)) return tomlStr
-
-    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
-    return settings
-  } else {
-    return projectSettings
-  }
+function setProjectConfigurationId(
+  projectConfiguration: DeepPartial<ProjectConfiguration>,
+  id: string
+): DeepPartial<ProjectConfiguration> {
+  return mergeProjectConfiguration(projectConfiguration, {
+    settings: {
+      meta: {
+        id,
+      },
+    },
+  })
 }
 
 export interface AppSettings {
@@ -350,20 +432,13 @@ export async function loadAndValidateSettings(
   const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = window.electron
-    ? await readAppSettingsFile(window.electron, wasmInstance)
-    : readLocalStorageAppSettingsFile(wasmInstance)
+  const appSettingsPayload = await readAppSettingsFile(wasmInstance)
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   let settingsNext = createSettings()
 
-  // Because getting the default directory is async, we need to set it after
-  if (isDesktop() && window.electron) {
-    settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
-      window.electron
-    )
-  }
+  settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
 
   settingsNext = setSettingsAtLevel(
     settingsNext,
@@ -371,126 +446,34 @@ export async function loadAndValidateSettings(
     configurationToSettingsPayload(appSettingsPayload)
   )
 
+  settingsNext.modeling.useSketchSolveMode.default =
+    !isPlaywright() && !(await userHasFeature('classic_sketch_mode', false))
+
   // Load the project settings if they exist
   if (projectPath) {
-    let projectSettings = window.electron
-      ? await readProjectSettingsFile(
-          window.electron,
-          projectPath,
-          wasmInstance
-        )
-      : readLocalStorageProjectSettingsFile(wasmInstance)
+    let projectSettings = await readProjectSettingsFile(
+      projectPath,
+      wasmInstance
+    )
 
-    // An id was missing. Create one and write it to disk immediately.
-    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
-      projectSettings = {
-        settings: {
-          meta: {
-            id: v4(),
-          },
-        },
-      }
-      // Duplicated from settingsUtils.ts
+    if (err(projectSettings))
+      return Promise.reject(new Error('Invalid project settings'))
+
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      projectSettings = setProjectConfigurationId(projectSettings, v4())
       const projectTomlString = serializeProjectConfiguration(
         projectSettings,
         wasmInstance
       )
       if (err(projectTomlString))
-        return Promise.reject(new Error('Failed to serialize project settings'))
-      if (window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
-    }
-
-    if (err(projectSettings))
-      return Promise.reject(new Error('Invalid project settings'))
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsNew = {
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-      if (err(projectTomlString))
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
-      if (isDesktop() && window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
 
-      projectSettings = {
-        settings: projectSettingsNew,
-      }
-    }
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsParsed =
-        projectConfigurationToSettingsPayload(projectSettings)
-      const projectSettingsNew = {
-        ...projectSettingsParsed,
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-
-      if (err(projectTomlString))
-        return Promise.reject(
-          new Error('Could not serialize project configuration')
-        )
-      if (window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
-
-      projectSettings =
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      await writeProjectSettingsFile(projectPath, projectTomlString)
     }
 
     const projectSettingsPayload = projectSettings
@@ -577,11 +560,7 @@ export async function saveSettings(
   if (err(appTomlString)) return
 
   // Write the app settings.
-  if (window.electron) {
-    await writeAppSettingsFile(window.electron, appTomlString)
-  } else {
-    localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
-  }
+  await writeAppSettingsFile(appTomlString)
 
   if (!projectPath) {
     // If we're not saving project settings, we're done.
@@ -590,22 +569,24 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  const existingProjectSettings = await readProjectSettingsFile(
+    projectPath,
+    wasmInstance
+  )
+  if (err(existingProjectSettings)) return
+
+  const mergedProjectSettings = mergeProjectConfiguration(
+    existingProjectSettings,
+    settingsPayloadToProjectConfiguration(jsProjectSettings)
+  )
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    mergedProjectSettings,
     wasmInstance
   )
   if (err(projectTomlString)) return
 
   // Write the project settings.
-  if (window.electron) {
-    await writeProjectSettingsFile(
-      window.electron,
-      projectPath,
-      projectTomlString
-    )
-  } else {
-    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
-  }
+  await writeProjectSettingsFile(projectPath, projectTomlString)
 }
 
 export function getChangedSettingsAtLevel(
@@ -767,12 +748,13 @@ export function getSettingsFromActorContext(
   const {
     currentProject: _,
     commandBarActor: _cmd,
+    wasmInstancePromise,
     ...settings
   } = s.getSnapshot().context
   return settings
 }
 
-export async function jsAppSettings(s: SettingsType | SettingsActorType) {
+export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
   return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }

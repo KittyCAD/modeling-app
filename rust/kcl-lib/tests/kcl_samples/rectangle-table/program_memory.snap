@@ -40,6 +40,7 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -206,6 +207,7 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -372,6 +374,7 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -538,6 +541,7 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -900,6 +904,7 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

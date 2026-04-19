@@ -82,6 +82,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

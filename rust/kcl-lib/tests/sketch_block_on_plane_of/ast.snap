@@ -646,104 +646,6 @@ description: Result of parsing sketch_block_on_plane_of.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "plane",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "face",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "side",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "planeOf",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "cube",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "s",
             "start": 0,
             "type": "Identifier"
@@ -761,22 +663,78 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                   "type": "Identifier"
                 },
                 "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "face",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "arg": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "side",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "plane",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "planeOf",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
-                  "path": [],
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "cube",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
                 }
               }
             ],
@@ -927,16 +885,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -1105,16 +1054,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -1280,16 +1220,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -1455,16 +1386,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -1505,16 +1427,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1566,16 +1479,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1627,16 +1531,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1688,16 +1583,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1749,16 +1635,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1892,16 +1769,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2035,16 +1903,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2178,16 +2037,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2321,16 +2171,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2410,16 +2251,7 @@ description: Result of parsing sketch_block_on_plane_of.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2507,58 +2339,6 @@ description: Result of parsing sketch_block_on_plane_of.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": "settings",
-          "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -2573,32 +2353,9 @@ description: Result of parsing sketch_block_on_plane_of.kcl
               "type": "newLine"
             }
           }
-        ],
-        "2": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
         ]
       },
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

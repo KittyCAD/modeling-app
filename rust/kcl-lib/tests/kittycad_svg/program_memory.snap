@@ -1955,30 +1955,10 @@ description: Variables in memory after executing kittycad_svg.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1988,23 +1968,6 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              2.52,
-              -26.04
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               2.52,
               -26.04
             ],
@@ -3965,40 +3928,6 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              14.28,
-              -13.44
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              14.28,
-              -13.44
-            ],
-            "tag": null,
-            "to": [
-              9.24,
-              -13.44
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.24,
-              -13.44
-            ],
-            "tag": null,
-            "to": [
               11.76,
               -13.44
             ],
@@ -6652,23 +6581,6 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               10.92,
-              -5.88
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              10.92,
-              -5.88
-            ],
-            "tag": null,
-            "to": [
-              10.92,
               -5.04
             ],
             "type": "ToPoint",
@@ -6770,8 +6682,8 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.0,
-              0.0
+              2.52,
+              -26.04
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -6810,12 +6722,12 @@ description: Variables in memory after executing kittycad_svg.kcl
         },
         "start": {
           "from": [
-            0.0,
-            0.0
+            2.52,
+            -26.04
           ],
           "to": [
-            0.0,
-            0.0
+            2.52,
+            -26.04
           ],
           "units": "mm",
           "tag": null,

@@ -5,7 +5,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
@@ -16,6 +16,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
+  const { kclManager } = useSingletons()
   const currentLevel: WarningLevel =
     kclManager.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
@@ -58,10 +59,11 @@ export function ExperimentalFeaturesMenu() {
                               `Failed to set file experimental features level: ${newAst.message}`
                             )
                           } else {
-                            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-                              kclManager,
-                              rustContext,
-                            })
+                            updateModelingState(
+                              newAst,
+                              EXECUTION_TYPE_REAL,
+                              kclManager
+                            )
                               .then((result) => {
                                 if (err(result)) {
                                   toast.error(
@@ -71,7 +73,7 @@ export function ExperimentalFeaturesMenu() {
                                 }
 
                                 toast.success(
-                                  `Updated file experimental features level to ${level.type}`
+                                  `Updated file experimental features level to ${level.type}.`
                                 )
                               })
                               .catch(reportRejection)

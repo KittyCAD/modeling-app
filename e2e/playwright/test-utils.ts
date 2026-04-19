@@ -5,7 +5,12 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
+  COOKIE_NAME_PREFIX,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -355,6 +360,35 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
+
+  if (process.env.VERCEL_BASE_URL) {
+    // set bypass secret for the page's requests based on the hostname
+    let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+    if (secret) {
+      await page.route('**/*', async (route, request) => {
+        const url = request.url()
+
+        // Only apply to Vercel preview domain
+        if (new URL(url).hostname.endsWith('vercel.dev.zoo.dev')) {
+          const headers = {
+            ...request.headers(),
+            'X-Vercel-Protection-Bypass': secret,
+          }
+
+          await route.continue({ headers })
+        } else {
+          await route.continue()
+        }
+      })
+    }
+
+    if (token) {
+      // Vercel is external to Playwright, so the token is provided in the URL
+      await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
+      await waitForPageLoad(page)
+    }
+  }
+
   await page.goto('/')
   await waitForPageLoad(page)
   return waitForLspPromise
@@ -499,7 +533,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const buffer = await page.screenshot({
         fullPage: true,
       })
-      const screenshot = await PNG.sync.read(buffer)
+      const screenshot = PNG.sync.read(buffer)
       const pixMultiplier: number = await page.evaluate(
         'window.devicePixelRatio'
       )
@@ -543,8 +577,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
-          const text = await editor.textContent()
-          return toNormalizedCode(text ?? '')
+          try {
+            const text = await editor.textContent()
+            return toNormalizedCode(text ?? '')
+          } catch (e) {
+            console.log(e)
+            return ''
+          }
         })
         .toContain(toNormalizedCode(code))
     },
@@ -914,11 +953,12 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
+      TOKEN_PERSIST_KEY,
       layoutName,
       layoutPayload,
     }) => {
       localStorage.clear()
-      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(
         layoutName,
@@ -955,6 +995,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
+      TOKEN_PERSIST_KEY,
       layoutName: getLayoutPersistKey(),
       layoutPayload: playwrightLayoutConfig,
     }
@@ -1046,6 +1087,8 @@ export async function createProject({
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
+    await closeOnboardingModalIfPresent(page)
+
     if (returnHome) {
       await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
       await page.getByTestId('app-logo').click()
@@ -1053,7 +1096,7 @@ export async function createProject({
   })
 }
 
-async function goToHomePageFromModeling(page: Page) {
+export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
@@ -1138,7 +1181,7 @@ export function getPixelRGBs(page: Page) {
     const buffer = await page.screenshot({
       fullPage: true,
     })
-    const screenshot = await PNG.sync.read(buffer)
+    const screenshot = PNG.sync.read(buffer)
     const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
     const allCords: [number, number][] = [[coords.x, coords.y]]
     for (let i = 1; i < radius; i++) {
@@ -1441,4 +1484,13 @@ export async function pinchFromCenter(
   }
 
   await locator.dispatchEvent('touchend')
+}
+
+export const closeOnboardingModalIfPresent = async (page: Page) => {
+  const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
+  await expect(page.getByTestId('stream')).toBeVisible({ timeout: 10_000 })
+  if (await onboardingNotRightNow.isVisible()) {
+    await onboardingNotRightNow.click()
+    await expect(onboardingNotRightNow).toBeHidden()
+  }
 }

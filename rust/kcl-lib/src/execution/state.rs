@@ -1,35 +1,67 @@
 #[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
-use std::{str::FromStr, sync::Arc};
+use std::str::FromStr;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, MockConfig, SourceRange,
-    collections::AhashIndexSet,
-    errors::{KclError, KclErrorDetails, Severity},
-    exec::DefaultPlanes,
-    execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, UnsolvedSegment, annotations,
-        cad_op::Operation,
-        id_generator::IdGenerator,
-        memory::{ProgramMemory, Stack},
-        types::NumericType,
-    },
-    front::{Object, ObjectId},
-    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef},
-};
+use crate::CompilationIssue;
+use crate::EngineManager;
+use crate::ExecutorContext;
+use crate::KclErrorWithOutputs;
+use crate::MockConfig;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
-    front::Number,
-    id::IncIdGenerator,
-};
+use crate::NodePath;
+use crate::SourceRange;
+use crate::collections::AhashIndexSet;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::exec::DefaultPlanes;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecOutcome;
+use crate::execution::ExecutorSettings;
+use crate::execution::KclValue;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ProgramLookup;
+use crate::execution::SketchVarId;
+use crate::execution::UnsolvedSegment;
+use crate::execution::annotations;
+use crate::execution::cad_op::Operation;
+use crate::execution::id_generator::IdGenerator;
+use crate::execution::memory::ProgramMemory;
+use crate::execution::memory::Stack;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::sketch_solve::Solved;
+use crate::execution::types::NumericType;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::id::IncIdGenerator;
+use crate::modules::ModuleId;
+use crate::modules::ModuleInfo;
+use crate::modules::ModuleLoader;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagNode;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]
@@ -51,7 +83,7 @@ pub(super) struct GlobalState {
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -97,13 +129,18 @@ pub struct ModuleArtifactState {
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    /// Map from artifact ID to object ID in the scene.
+    pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct ModuleArtifactState {}
+pub struct ModuleArtifactState {
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+}
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
@@ -152,10 +189,13 @@ pub(super) struct ModuleState {
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
     #[cfg(feature = "artifact-graph")]
+    pub sketch_id: Option<ObjectId>,
+    #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
-    pub solver_constraints: Vec<kcl_ezpz::Constraint>,
-    pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
+    pub solver_constraints: Vec<ezpz::Constraint>,
+    pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
+    pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
 
 impl ExecState {
@@ -199,12 +239,12 @@ impl ExecState {
     }
 
     /// Log a non-fatal error.
-    pub fn err(&mut self, e: CompilationError) {
-        self.global.errors.push(e);
+    pub fn err(&mut self, e: CompilationIssue) {
+        self.global.issues.push(e);
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+    pub fn warn(&mut self, mut e: CompilationIssue, name: &'static str) {
         debug_assert!(annotations::WARN_VALUES.contains(&name));
 
         if self.mod_local.allowed_warnings.contains(&name) {
@@ -217,14 +257,14 @@ impl ExecState {
             e.severity = Severity::Warning;
         }
 
-        self.global.errors.push(e);
+        self.global.issues.push(e);
     }
 
     pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
         let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
             return;
         };
-        let error = CompilationError {
+        let error = CompilationIssue {
             source_range,
             message: format!("Use of {feature_name} is experimental and may change or be removed."),
             suggestion: None,
@@ -232,11 +272,11 @@ impl ExecState {
             tag: crate::errors::Tag::None,
         };
 
-        self.global.errors.push(error);
+        self.global.issues.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
-        self.global.errors = std::mem::take(&mut self.global.errors)
+        self.global.issues = std::mem::take(&mut self.global.issues)
             .into_iter()
             .filter(|e| {
                 e.severity != Severity::Warning
@@ -246,8 +286,8 @@ impl ExecState {
             .collect();
     }
 
-    pub fn errors(&self) -> &[CompilationError] {
-        &self.global.errors
+    pub fn issues(&self) -> &[CompilationIssue] {
+        &self.global.issues
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -269,7 +309,7 @@ impl ExecState {
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
-            errors: self.global.errors,
+            issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
@@ -322,26 +362,10 @@ impl ExecState {
             }
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn next_object_id(&mut self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn peek_object_id(&self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
@@ -355,20 +379,30 @@ impl ExecState {
             id.0,
             self.mod_local.artifacts.scene_objects.len()
         );
+        let artifact_id = obj.artifact_id;
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
         id
     }
 
     /// Add a placeholder scene object. This is useful when we need to reserve
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
-    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+    pub fn add_placeholder_scene_object(
+        &mut self,
+        id: ObjectId,
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+    ) -> ObjectId {
         debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
-            .push(Object::placeholder(id, source_range));
+            .push(Object::placeholder(id, source_range, node_path));
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
     }
@@ -377,7 +411,21 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub fn set_scene_object(&mut self, object: Object) {
         let id = object.id;
+        let artifact_id = object.artifact_id;
         self.mod_local.artifacts.scene_objects[id.0] = object;
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn scene_object_id_by_artifact_id(&self, artifact_id: ArtifactId) -> Option<ObjectId> {
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .get(&artifact_id)
+            .cloned()
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -410,6 +458,11 @@ impl ExecState {
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
+        self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -534,7 +587,7 @@ impl ExecState {
 
         KclErrorWithOutputs::new(
             error,
-            self.errors().to_vec(),
+            self.issues().to_vec(),
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
@@ -544,6 +597,12 @@ impl ExecState {
             Default::default(),
             #[cfg(feature = "artifact-graph")]
             self.global.artifacts.graph.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.scene_objects.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.source_range_to_object.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.var_solutions.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
@@ -589,7 +648,12 @@ impl ExecState {
 
         // Move the artifacts into ExecState global to simplify cache
         // management.
-        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+        for (id, exec_artifact) in new_exec_artifacts {
+            // Only insert if it wasn't already present. We don't want to
+            // overwrite what was previously there. We haven't filled in node
+            // paths yet.
+            self.global.artifacts.artifacts.entry(id).or_insert(exec_artifact);
+        }
 
         let initial_graph = self.global.artifacts.graph.clone();
 
@@ -602,6 +666,7 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
             &programs,
+            &self.global.module_infos,
         );
 
         let artifact_graph = graph_result?;
@@ -630,7 +695,7 @@ impl GlobalState {
             artifacts: Default::default(),
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
-            errors: Default::default(),
+            issues: Default::default(),
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
@@ -694,6 +759,40 @@ impl ModuleArtifactState {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
+        self.scene_objects = scene_objects.to_vec();
+        self.object_id_generator = IncIdGenerator::new(self.scene_objects.len());
+        self.source_range_to_object.clear();
+        self.artifact_id_to_scene_object.clear();
+
+        for (expected_id, object) in self.scene_objects.iter().enumerate() {
+            debug_assert_eq!(
+                object.id.0, expected_id,
+                "Restored cached scene object ID {} does not match its position {}",
+                object.id.0, expected_id
+            );
+
+            match &object.source {
+                crate::front::SourceRef::Simple { range, node_path: _ } => {
+                    self.source_range_to_object.insert(*range, object.id);
+                }
+                crate::front::SourceRef::BackTrace { ranges } => {
+                    // Don't map the entire backtrace, only the most specific
+                    // range.
+                    if let Some((range, _)) = ranges.first() {
+                        self.source_range_to_object.insert(*range, object.id);
+                    }
+                }
+            }
+
+            // Ignore placeholder artifacts.
+            if object.artifact_id != ArtifactId::placeholder() {
+                self.artifact_id_to_scene_object.insert(object.artifact_id, object.id);
+            }
+        }
+    }
+
     #[cfg(not(feature = "artifact-graph"))]
     pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
 
@@ -709,6 +808,8 @@ impl ModuleArtifactState {
                 .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
         }
         self.source_range_to_object.extend(other.source_range_to_object);
+        self.artifact_id_to_scene_object
+            .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
     }
 
@@ -809,7 +910,7 @@ impl SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
-        solve_outcome: Solved,
+        solve_outcome: &Solved,
         solution_ty: NumericType,
         range: SourceRange,
     ) -> Result<Vec<(SourceRange, Number)>, KclError> {
@@ -926,5 +1027,77 @@ impl MetaSettings {
         }
 
         Ok((updated_len, updated_angle))
+    }
+}
+
+#[cfg(all(feature = "artifact-graph", test))]
+mod tests {
+    use uuid::Uuid;
+
+    use super::ModuleArtifactState;
+    use crate::NodePath;
+    use crate::SourceRange;
+    use crate::execution::ArtifactId;
+    use crate::front::Object;
+    use crate::front::ObjectId;
+    use crate::front::ObjectKind;
+    use crate::front::Plane;
+    use crate::front::SourceRef;
+
+    #[test]
+    fn restore_scene_objects_rebuilds_lookup_maps() {
+        let plane_artifact_id = ArtifactId::new(Uuid::from_u128(1));
+        let sketch_artifact_id = ArtifactId::new(Uuid::from_u128(2));
+        let plane_range = SourceRange::from([1, 4, 0]);
+        let plane_node_path = Some(NodePath::placeholder());
+        let sketch_ranges = vec![
+            (SourceRange::from([5, 9, 0]), None),
+            (SourceRange::from([10, 12, 0]), None),
+        ];
+        let cached_objects = vec![
+            Object {
+                id: ObjectId(0),
+                kind: ObjectKind::Plane(Plane::Object(ObjectId(0))),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: plane_artifact_id,
+                source: SourceRef::new(plane_range, plane_node_path),
+            },
+            Object {
+                id: ObjectId(1),
+                kind: ObjectKind::Nil,
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: sketch_artifact_id,
+                source: SourceRef::BackTrace {
+                    ranges: sketch_ranges.clone(),
+                },
+            },
+            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0]), None),
+        ];
+
+        let mut artifacts = ModuleArtifactState::default();
+        artifacts.restore_scene_objects(&cached_objects);
+
+        assert_eq!(artifacts.scene_objects, cached_objects);
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&plane_artifact_id),
+            Some(&ObjectId(0))
+        );
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&sketch_artifact_id),
+            Some(&ObjectId(1))
+        );
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&ArtifactId::placeholder()),
+            None
+        );
+        assert_eq!(artifacts.source_range_to_object.get(&plane_range), Some(&ObjectId(0)));
+        assert_eq!(
+            artifacts.source_range_to_object.get(&sketch_ranges[0].0),
+            Some(&ObjectId(1))
+        );
+        // We don't map all the ranges in a backtrace.
+        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1].0), None);
     }
 }

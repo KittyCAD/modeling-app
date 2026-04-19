@@ -1,15 +1,17 @@
-use std::{
-    env,
-    fs::File,
-    io::{self, BufWriter},
-    path::{Path, PathBuf},
-};
+use std::env;
+use std::fs::File;
+use std::io::BufWriter;
+use std::io::{self};
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::Parser;
-use flate2::{write::GzEncoder, Compression};
+use flate2::Compression;
+use flate2::write::GzEncoder;
 use time::OffsetDateTime;
-use xshell::{cmd, Shell};
+use xshell::Shell;
+use xshell::cmd;
 use zip::ZipWriter;
 
 /// A subcommand for building and packaging a release.
@@ -93,7 +95,8 @@ fn build_server(sh: &Shell, release: &str, target: &Target) -> anyhow::Result<()
     // let _e = sh.push_env("CARGO_PROFILE_RELEASE_DEBUG", "1");
 
     if target.name.contains("-linux-") {
-        env::set_var("CC", "clang");
+        // TODO: Should this use push_env() instead?
+        sh.set_var("CC", "clang");
     }
 
     let target_name = &target.name;

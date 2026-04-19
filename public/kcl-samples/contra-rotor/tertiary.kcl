@@ -1,0 +1,24 @@
+// Tertiary Shaft Module
+// Short offset shaft with small gear
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Model the side shaft
+tertiaryShaft = startSketchOn(offsetPlane(YZ, offset = 279))
+  |> startProfile(at = [-100, -211])
+  |> yLine(length = -50)
+  |> xLine(length = -300)
+  |> yLine(endAbsolute = profileStartY())
+  |> xLine(endAbsolute = profileStartX(), tag = $seg01)
+  |> close()
+  |> revolve(axis = seg01)
+
+// Insert a gear on the shaft
+helicalGear(nTeeth = 14, helixAngle = 25deg, bore = 100)
+  |> translate(x = 279, y = -200, z = -211)
+  |> rotate(pitch = 10)
