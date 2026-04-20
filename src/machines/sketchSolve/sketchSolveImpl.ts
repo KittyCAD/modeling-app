@@ -985,6 +985,10 @@ function getObjectIdsForCodeSelectionRanges(
 }
 
 function isSelectableFromCodeSelection(object: ApiObject): boolean {
+  if (isConstraint(object)) {
+    return true
+  }
+
   if (object.kind.type !== 'Segment') {
     return false
   }
