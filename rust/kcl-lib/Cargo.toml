@@ -38,6 +38,8 @@ engine = []
 pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
 # Helper functions also used in benchmarks.
 lsp-test-util = []
+# For debugging.
+snapshot-engine-responses = []
 tabled = ["dep:tabled"]
 
 [dependencies]
