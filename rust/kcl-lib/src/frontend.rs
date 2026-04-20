@@ -845,7 +845,8 @@ impl SketchApi for FrontendState {
                                     && let Segment::Point(point) = segment
                                     && let Some(owner_id) = point.owner
                                 {
-                                    // If the owner of this point is getting deleted that also means the point is getting deleted
+                                    // If the owner of this point is getting deleted then the point is getting deleted too
+                                    // -> this point will not be in remaining_segments
                                     return !resolved_segment_ids_to_delete.contains(&owner_id);
                                 }
                                 true
