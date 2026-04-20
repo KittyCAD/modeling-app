@@ -53,6 +53,7 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
+  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -355,6 +356,9 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update selected ids from code selection': assign(
+      updateSelectedIdsFromCodeSelection
+    ),
     'update selected code highlight': updateSelectedCodeHighlight,
     'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
@@ -969,6 +973,12 @@ export const sketchSolveMachine = setup({
         'refresh selection styling',
       ],
     },
+    'update selected ids from code selection': {
+      actions: [
+        'update selected ids from code selection',
+        'refresh selection styling',
+      ],
+    },
     'update hovered id': {
       actions: ['update hovered id', 'refresh selection styling'],
     },
@@ -1201,7 +1211,13 @@ export const sketchSolveMachine = setup({
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
-    ({ context }) => toggleSketchExtension(context.kclManager.editorView, true),
+    ({ context, self }) =>
+      toggleSketchExtension(context.kclManager.editorView, true, (ranges) => {
+        sendToActorIfActive(self, {
+          type: 'update selected ids from code selection',
+          data: { ranges },
+        })
+      }),
   ],
 
   exit: [

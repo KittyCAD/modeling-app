@@ -40,7 +40,7 @@ import {
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -140,6 +140,12 @@ export type SketchSolveMachineEvent =
         constraintHoverPopups?: ConstraintHoverPopup[]
       }
     }
+  | {
+      type: 'update selected ids from code selection'
+      data: {
+        ranges: SketchSolveCodeSelectionRange[]
+      }
+    }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | UpdateSketchOutcomeEvent
   | { type: 'delete selected' }
@@ -184,6 +190,11 @@ export type UpdateSketchOutcomeEvent = {
     addToHistory?: boolean
     checkpointId?: number | null
   }
+}
+
+export type SketchSolveCodeSelectionRange = {
+  from: number
+  to: number
 }
 
 type ToolActorRef =
@@ -764,6 +775,29 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   return updates
 }
 
+export function updateSelectedIdsFromCodeSelection({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update selected ids from code selection')
+
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return {
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    }
+  }
+
+  return {
+    selectedIds: getObjectIdsForCodeSelectionRanges(
+      getCurrentSketchObjectsById(objects, context.sketchId),
+      event.data.ranges
+    ),
+    duringAreaSelectIds: [],
+  }
+}
+
 // Updates codemirror selection highlights based on currently selected objects.
 export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
   const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
@@ -936,6 +970,31 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
+}
+
+function getObjectIdsForCodeSelectionRanges(
+  objects: ApiObject[],
+  codeSelectionRanges: SketchSolveCodeSelectionRange[]
+): number[] {
+  return objects
+    .filter(isNonNullable)
+    .filter(isSelectableFromCodeSelection)
+    .filter((object) =>
+      getSourceRangesForObjectId(objects, object.id).some((sourceRange) =>
+        codeSelectionRanges.some(({ from, to }) =>
+          isOverlap(sourceRange, [from, to, 0])
+        )
+      )
+    )
+    .map((object) => object.id)
+}
+
+function isSelectableFromCodeSelection(object: ApiObject): boolean {
+  if (object.kind.type !== 'Segment') {
+    return false
+  }
+
+  return !isPointSegment(object) || object.kind.segment.owner === null
 }
 
 function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {

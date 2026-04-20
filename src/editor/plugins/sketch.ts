@@ -6,6 +6,7 @@ import {
   type StateEffect,
 } from '@codemirror/state'
 import {
+  type SketchSolveCodeSelectionRange,
   updateSceneGraphFromDelta,
   updateSketchSceneGraphEffect,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -17,7 +18,9 @@ export const sketchSceneGraphCompartment = new Compartment()
 /**
  * Apply this effect while undoing as well.
  */
-function sketchGraphExtension(): Extension {
+function sketchGraphExtension(
+  onSelectionChange?: (ranges: SketchSolveCodeSelectionRange[]) => void
+): Extension {
   const sketchSceneGraphListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
       const effect = tr.effects.find((e) => e.is(updateSketchSceneGraphEffect))
@@ -25,6 +28,16 @@ function sketchGraphExtension(): Extension {
         continue
       }
       updateSceneGraphFromDelta(effect.value)
+    }
+  })
+  const sketchSelectionListener = EditorView.updateListener.of((vu) => {
+    if (
+      onSelectionChange &&
+      vu.transactions.some((tr) => tr.isUserEvent('select'))
+    ) {
+      onSelectionChange(
+        vu.state.selection.ranges.map(({ from, to }) => ({ from, to }))
+      )
     }
   })
   const undoableExecution = invertedEffects.of((tr) => {
@@ -41,13 +54,17 @@ function sketchGraphExtension(): Extension {
     return found
   })
 
-  return [sketchSceneGraphListener, undoableExecution]
+  return [sketchSceneGraphListener, sketchSelectionListener, undoableExecution]
 }
 
-export function toggleSketchExtension(ev: EditorView, active: boolean) {
+export function toggleSketchExtension(
+  ev: EditorView,
+  active: boolean,
+  onSelectionChange?: (ranges: SketchSolveCodeSelectionRange[]) => void
+) {
   ev.dispatch({
     effects: sketchSceneGraphCompartment.reconfigure(
-      active ? sketchGraphExtension() : []
+      active ? sketchGraphExtension(onSelectionChange) : []
     ),
     annotations: Transaction.addToHistory.of(false),
   })
