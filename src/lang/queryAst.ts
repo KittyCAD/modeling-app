@@ -1153,6 +1153,7 @@ export function getVariableNameFromNodePath(
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
+  skipNewSweepCutoff?: boolean
 }
 
 // Go from a selection to a list of KCL expressions that
@@ -1166,7 +1167,11 @@ export function getVariableExprsFromSelection(
   nodeToEdit?: PathToNode,
   options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
-  const { lastChildLookup = false, artifactTypeFilter } = options
+  const {
+    lastChildLookup = false,
+    artifactTypeFilter,
+    skipNewSweepCutoff = false,
+  } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
@@ -1205,7 +1210,8 @@ export function getVariableExprsFromSelection(
     if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
-        artifactGraph
+        artifactGraph,
+        { skipNewSweepCutoff }
       )
       const lastChildVariable = getLastVariable(
         children,
@@ -1699,8 +1705,12 @@ export const getPathNormalisedForTruncatedAst = (
  */
 export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  options: {
+    skipNewSweepCutoff?: boolean
+  } = {}
 ): Artifact[] {
+  const { skipNewSweepCutoff = false } = options
   const result: string[] = []
   const stack: string[] = [artifact.id]
 
@@ -1778,18 +1788,20 @@ export function findAllChildrenAndOrderByPlaceInCode(
     return aCodeRef.range[0] - bCodeRef.range[0]
   })
 
-  // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
-  let firstSweep = true
-  const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
-    if (artifact.type === 'sweep' && firstSweep) {
-      firstSweep = false
-      return false
+  if (!skipNewSweepCutoff) {
+    // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
+    let firstSweep = true
+    const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
+      if (artifact.type === 'sweep' && firstSweep) {
+        firstSweep = false
+        return false
+      }
+      const isNew = artifact.type === 'sweep' && artifact.method === 'new'
+      return isNew && !firstSweep
+    })
+    if (cutoffIndex !== -1) {
+      orderedByCodeRefDest = orderedByCodeRefDest.slice(0, cutoffIndex)
     }
-    const isNew = artifact.type === 'sweep' && artifact.method === 'new'
-    return isNew && !firstSweep
-  })
-  if (cutoffIndex !== -1) {
-    orderedByCodeRefDest = orderedByCodeRefDest.slice(0, cutoffIndex)
   }
 
   return orderedByCodeRefDest.reverse()
