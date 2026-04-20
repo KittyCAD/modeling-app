@@ -68,7 +68,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
     await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await expect
       .poll(async () => {
-        await page.keyboard.press('Escape', { delay: 500 })
+        await page.keyboard.press('Meta+Escape', { delay: 500 })
         return page.getByRole('button', { name: 'Exit Sketch' }).isVisible()
       })
       .toBe(false)

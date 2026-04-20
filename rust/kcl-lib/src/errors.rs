@@ -316,6 +316,11 @@ impl KclErrorWithOutputs {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
+        crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 
