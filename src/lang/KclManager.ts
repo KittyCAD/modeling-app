@@ -714,6 +714,9 @@ export class KclManager extends File {
   get code(): string {
     return this.editorView.state.doc.toString()
   }
+  get currentSketchCheckpointId(): number | null {
+    return this.lastCommittedSketchCheckpointId
+  }
   get codeSignal() {
     return this._code
   }
@@ -1023,7 +1026,10 @@ export class KclManager extends File {
   }
 
   setDiagnosticsForCurrentErrors() {
-    this.setDiagnostics(this.diagnostics)
+    this.setDiagnostics([
+      ...this._diagnostics.value,
+      ...this._sketchSolveDiagnostics.value,
+    ])
   }
 
   set isExecuting(isExecuting) {
@@ -1170,7 +1176,10 @@ export class KclManager extends File {
     async ({
       newCode,
       shouldResetCamera,
-    }: { newCode: string; shouldResetCamera: boolean }) => {
+    }: {
+      newCode: string
+      shouldResetCamera: boolean
+    }) => {
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
