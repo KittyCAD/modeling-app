@@ -2,6 +2,9 @@
 
 /// A helical gear.
 ///```kcl
+/// // Basic helical gear example.
+/// 
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 /// gearBody = gear::helical(
 ///   nTeeth = 10,
 ///   module = 2,
@@ -11,6 +14,9 @@
 /// )
 ///```
 ///```kcl
+/// // Gear with a keyhole.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 /// // Define the constants of the keyway and the bore hole
 /// keywayWidth = 2
 /// keywayDepth = keywayWidth / 2
