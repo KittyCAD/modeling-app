@@ -4,8 +4,9 @@ import { ONBOARDING_TOAST_ID } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   consumeRememberedOnboardingWorkflowPanes,
-  dismissOnboardingInvite,
+  emptyOnboardingProject,
   needsToOnboard,
+  shouldEmptyOnboardingProjectOnDismiss,
   shouldApplyRememberedOnboardingWorkflow,
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
@@ -111,28 +112,43 @@ describe('Onboarding utility functions', () => {
       consumeRememberedOnboardingWorkflowPanes()
       expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
     })
+  })
 
-    it('remembers the selected workflow panes when dismissing the browser invite', () => {
-      const settingsActor = {
+  describe('onboarding project cleanup', () => {
+    it('empties the onboarding project by overwriting main.kcl and deleting the sample files', () => {
+      const systemIOActor = {
         send: vi.fn(),
       } as any
 
-      const dismissSpy = vi.spyOn(toast, 'dismiss')
+      emptyOnboardingProject(systemIOActor)
 
-      dismissOnboardingInvite(settingsActor, {
-        workflowPreference: 'ai',
-        showSuccessToast: false,
+      expect(systemIOActor.send).toHaveBeenCalledWith({
+        type: 'bulk create and delete kcl files and navigate to file',
+        data: {
+          files: [
+            {
+              requestedProjectName: 'tutorial-project',
+              requestedFileName: 'main.kcl',
+              requestedCode: '',
+            },
+          ],
+          override: true,
+          requestedProjectName: 'tutorial-project',
+          requestedFileNameWithExtension: 'main.kcl',
+        },
       })
+    })
 
-      expect(settingsActor.send).toHaveBeenCalledWith({
-        type: 'set.app.onboardingStatus',
-        data: { level: 'user', value: 'dismissed' },
-      })
-      expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
-        DefaultLayoutPaneID.TTC,
-      ])
-      expect(dismissSpy).toHaveBeenCalledWith(ONBOARDING_TOAST_ID)
-      expect(toast.success).not.toHaveBeenCalled()
+    it('only clears the project when dismissing the web onboarding tutorial', () => {
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss('dismissed', 'tutorial-project')
+      ).toBe(true)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss('completed', 'tutorial-project')
+      ).toBe(false)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss('dismissed', 'demo-project')
+      ).toBe(false)
     })
   })
 

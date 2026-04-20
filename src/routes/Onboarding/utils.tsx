@@ -138,15 +138,16 @@ export function useNextClick(newStatus: OnboardingStatus) {
 }
 
 export function useDismiss() {
-  const { settings } = useApp()
+  const { project, settings, systemIOActor } = useApp()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
     (
-      dismissalType:
-        | Extract<OnboardingStatus, 'completed' | 'dismissed'>
-        | undefined = 'dismissed'
+      dismissalType: Extract<
+        OnboardingStatus,
+        'completed' | 'dismissed'
+      > = 'dismissed'
     ) => {
       if (!filePath) {
         return new Error('filePath is undefined')
@@ -162,6 +163,13 @@ export function useDismiss() {
             return Promise.reject(new Error('bug: filePath is undefined'))
           }
 
+          if (
+            shouldEmptyOnboardingProjectOnDismiss(dismissalType, project?.name)
+          ) {
+            emptyOnboardingProject(systemIOActor)
+            return
+          }
+
           void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
@@ -172,7 +180,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [settings, filePath, navigate]
+    [settings, filePath, navigate, project?.name, systemIOActor]
   )
 
   return settingsCallback
@@ -378,6 +386,35 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   dismissOnboardingInvite(settingsActor)
 }
 
+export function shouldEmptyOnboardingProjectOnDismiss(
+  dismissalType: Extract<OnboardingStatus, 'completed' | 'dismissed'>,
+  projectName: string | undefined
+) {
+  return (
+    !window.electron &&
+    dismissalType === 'dismissed' &&
+    projectName === ONBOARDING_PROJECT_NAME
+  )
+}
+
+export function emptyOnboardingProject(systemIOActor: SystemIOActor) {
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+    data: {
+      files: [
+        {
+          requestedProjectName: ONBOARDING_PROJECT_NAME,
+          requestedFileName: 'main.kcl',
+          requestedCode: '',
+        },
+      ],
+      override: true,
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      requestedFileNameWithExtension: 'main.kcl',
+    },
+  })
+}
+
 export function dismissOnboardingInvite(
   settingsActor: SettingsActorType,
   options: {
@@ -462,10 +499,9 @@ export function TutorialRequestToast(
   props: OnboardingUtilDeps & { accountUrl: string }
 ) {
   function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
-    dismissOnboardingInvite(props.settingsActor, {
-      workflowPreference: preference,
-      showSuccessToast: false,
-    })
+    rememberOnboardingWorkflowPreference(preference)
+    acceptOnboarding(props)
+    toast.dismiss(ONBOARDING_TOAST_ID)
   }
 
   return (
