@@ -515,15 +515,13 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
 }
 
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
-    if originates_from_sketch_block(&*result) {
-        return Ok(());
-    }
+    let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } => {
+        KclValue::Sketch { value } if !is_sketch_block => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
@@ -562,7 +560,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
+                    let mut is_part_of_sketch = false;
                     let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
+                        is_part_of_sketch = true;
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -604,7 +604,16 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         exec_state.mut_stack().update(&tag.name, |v, _| {
                             v.as_mut_tag().unwrap().merge_info(&tag_id);
                         });
-                    } else {
+                    } else if !is_sketch_block || !is_part_of_sketch {
+                        // The above condition is saying that we add a tag to
+                        // the stack in either of these cases:
+                        //
+                        // 1. It originates from a legacy sketch v1.
+                        //
+                        // 2. It originates from a sketch block and it's not
+                        // part of the sketch. Instead, it's part of the solid,
+                        // as in tagging a cap face `extrude(tagEnd, tagStart)`
+                        // or chamfer face `chamfer(tag)`.
                         exec_state
                             .mut_stack()
                             .add(
