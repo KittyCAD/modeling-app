@@ -209,6 +209,15 @@ class InputFormat3d:
     
     ...
 
+class KclErrorInfo:
+    r"""
+    Full KCL error details associated with an incomplete report.
+    """
+    @property
+    def phase(self) -> builtins.str: ...
+    @property
+    def text(self) -> builtins.str: ...
+
 class ObjExportOptions:
     r"""
     Options for exporting OBJ.
@@ -336,6 +345,10 @@ class SketchConstraintReport:
     def over_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
     @property
     def errors(self) -> builtins.list[SketchConstraintStatus]: ...
+    @property
+    def is_complete(self) -> builtins.bool: ...
+    @property
+    def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
 
 class SketchConstraintStatus:
     r"""

@@ -58,7 +58,14 @@ export function useQueryParamEffects(kclManager: KclManager) {
    */
   useEffect(() => {
     if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
-      const argDefaultValues = buildCreateFileCommandArgs(searchParams)
+      const webProjectName = !isDesktop()
+        ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
+          DEFAULT_WEB_PROJECT_NAME)
+        : undefined
+      const argDefaultValues = buildCreateFileCommandArgs(
+        searchParams,
+        webProjectName
+      )
       commands.send({
         type: 'Find and select command',
         data: {
@@ -169,7 +176,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
   }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 
-function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
+function buildCreateFileCommandArgs(
+  searchParams: URLSearchParams,
+  webProjectName?: string
+) {
   const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
     code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
     name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
@@ -179,6 +189,9 @@ function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
     name: PROJECT_ENTRYPOINT,
     code: params.code || '',
     method: isDesktop() ? undefined : 'existingProject',
+  }
+  if (!isDesktop()) {
+    argDefaultValues.projectName = webProjectName ?? DEFAULT_WEB_PROJECT_NAME
   }
 
   return argDefaultValues

@@ -33,6 +33,12 @@ import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { useSelector } from '@xstate/react'
+import type { SnapshotFrom } from 'xstate'
+import { isArray, type Platform } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -51,6 +57,7 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { commands } = useApp()
     const { kclManager } = useSingletons()
+    const platform = usePlatform()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -100,6 +107,13 @@ const Toolbar_ = memo(
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
+    const sketchSolveSelectedIdsKey = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot)
+          ? snapshot.context.selectedIds.join('|')
+          : ''
+    )
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -113,6 +127,7 @@ const Toolbar_ = memo(
         sketchPathId,
         editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
+        keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
@@ -240,6 +255,7 @@ const Toolbar_ = memo(
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
+      sketchSolveSelectedIdsKey,
     ])
 
     // To remember the last selected item in an ActionButtonDropdown
@@ -313,6 +329,7 @@ const Toolbar_ = memo(
                   data-onboarding-id={selectedIcon.id + '-dropdown'}
                   id={selectedIcon.id + '-dropdown'}
                   name={maybeIconConfig.id}
+                  platform={platform}
                   className={
                     (maybeIconConfig.array[0].alwaysDark
                       ? 'dark bg-chalkboard-90 '
@@ -325,7 +342,11 @@ const Toolbar_ = memo(
                     id: itemConfig.id,
                     label: itemConfig.title,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => itemConfig.onClick(itemConfig.callbackProps),
+                    onClick: (event) =>
+                      itemConfig.onClick({
+                        ...itemConfig.callbackProps,
+                        keepSelection: event.metaKey || event.ctrlKey,
+                      }),
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
@@ -369,8 +390,11 @@ const Toolbar_ = memo(
                       // aria-description is still in ARIA 1.3 draft.
 
                       aria-description={selectedIcon.description}
-                      onClick={() =>
-                        selectedIcon.onClick(selectedIcon.callbackProps)
+                      onClick={(event) =>
+                        selectedIcon.onClick({
+                          ...selectedIcon.callbackProps,
+                          keepSelection: event.metaKey || event.ctrlKey,
+                        })
                       }
                     >
                       <span
@@ -388,12 +412,14 @@ const Toolbar_ = memo(
                           <ToolbarItemTooltipRichContent
                             itemConfig={selectedIcon}
                             state={props.state}
+                            platform={platform}
                           />
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
                             title={selectedIcon.title}
                             hotkey={selectedIcon.hotkey}
+                            platform={platform}
                           />
                         )}
                       </ToolbarItemTooltip>
@@ -444,7 +470,12 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={() => itemConfig.onClick(itemConfig.callbackProps)}
+                  onClick={(event) =>
+                    itemConfig.onClick({
+                      ...itemConfig.callbackProps,
+                      keepSelection: event.metaKey || event.ctrlKey,
+                    })
+                  }
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}
@@ -459,12 +490,14 @@ const Toolbar_ = memo(
                     <ToolbarItemTooltipRichContent
                       itemConfig={itemConfig}
                       state={props.state}
+                      platform={platform}
                     />
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
                       title={itemConfig.title}
                       hotkey={itemConfig.hotkey}
+                      platform={platform}
                     />
                   )}
                 </ToolbarItemTooltip>
@@ -542,10 +575,12 @@ const ToolbarItemTooltipShortContent = ({
   status,
   title,
   hotkey,
+  platform,
 }: {
   status: string
   title: string
   hotkey?: string | string[]
+  platform: Platform
 }) => (
   <div
     className={`text-sm flex flex-col ${
@@ -564,7 +599,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {filterEscHotkey(hotkey)}
+          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
         </kbd>
       )}
     </div>
@@ -575,9 +610,11 @@ const ToolbarItemTooltipRichContent = memo(
   ({
     itemConfig,
     state,
+    platform,
   }: {
     itemConfig: ToolbarItemResolved
     state: ReturnType<typeof useModelingContext>['state']
+    platform: Platform
   }) => {
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
@@ -608,7 +645,9 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+            <kbd className="flex-none hotkey">
+              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
+            </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
@@ -707,4 +746,18 @@ function isToolbarDropdown(
   item: ToolbarItem | ToolbarDropdown
 ): item is ToolbarDropdown {
   return 'array' in item
+}
+
+function isSketchSolveSnapshot(
+  snapshot: unknown
+): snapshot is SnapshotFrom<typeof sketchSolveMachine> {
+  return !!(
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'context' in snapshot &&
+    snapshot.context &&
+    typeof snapshot.context === 'object' &&
+    'selectedIds' in snapshot.context &&
+    isArray(snapshot.context.selectedIds)
+  )
 }

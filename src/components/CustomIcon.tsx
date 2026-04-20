@@ -1810,6 +1810,16 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  share: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.64645 3.85355L10 3.5L10.3536 3.85355L13.8536 7.35355L13.1464 8.06066L10.5 5.41421L10.5 13.2071H9.5L9.5 5.41421L6.85355 8.06066L6.14645 7.35355L9.64645 3.85355ZM4 9.49711H4.99988V14.1638H5V15.4971H15V10.4971H14.9999V9.49711H15H16V10.4971V15.4971V16.4971H15H5H4V15.4971V10.4971V9.49711Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   shell: (
     <svg
       viewBox="0 0 20 20"

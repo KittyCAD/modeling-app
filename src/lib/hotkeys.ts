@@ -11,7 +11,13 @@ const WHITESPACE = /\s+/g
  * TODO: We should handle capitalized single letter hotkeys like K as Shift+K,
  * but we don't.
  */
-export function hotkeyDisplay(hotkey: string, platform: Platform): string {
+export function hotkeyDisplay(
+  hotkey: string | undefined,
+  platform: Platform
+): string | undefined {
+  if (!hotkey) {
+    return undefined
+  }
   const isMac = platform === 'macos'
   const isWindows = platform === 'windows'
   // Browsers call it metaKey, but that's a misnomer.

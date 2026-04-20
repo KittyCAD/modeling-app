@@ -2,7 +2,7 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -32,16 +32,10 @@ sketch001 = sketch(on = XZ) {
   coincident([line10.end, line11.start])
   line12 = line(start = [var 0mm, var 23.6mm], end = [var 0mm, var 25mm])
   coincident([line11.end, line12.start])
-  horizontal(arc2)
-  vertical(line4)
-  horizontal(line5)
-  vertical(arc6)
-  horizontal(line8)
-  vertical(line9)
-  horizontal(line10)
-  horizontal(line12)
+  coincident([line12.end, line1.start])
 }
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
+hidden001 = hide(sketch001)
 fanCenter = revolve(
        region001,
        axis = {
@@ -61,16 +55,36 @@ bladeTwist = -bladeRootAngle
 
 // Base planform sketch for one blade (on XY at bladeBaseZ)
 bladeBase = sketch(on = offsetPlane(XY, offset = bladeBaseZ)) {
-  arc1 = arc(start = [var 9.64mm, var 11.49mm], end = [var 6.58mm, var 13.48mm], center = [var 0mm, var 0mm])
-  arc2 = arc(start = [var 45.73mm, var 26.4mm], end = [var 6.58mm, var 13.48mm], center = [var 37.74mm, var -15.19mm])
-  coincident([arc1.end, arc2.end])
-  arc3 = arc(start = [var 47.46mm, var 23.15mm], end = [var 45.73mm, var 26.4mm], center = [var 0mm, var 0mm])
+  arc2 = arc(start = [var 52.13mm, var 27.64mm], end = [var 6.88mm, var 13.4mm], center = [var 40.63mm, var -14.83mm])
+  arc3 = arc(start = [var 52.89mm, var 26.14mm], end = [var 52.13mm, var 27.64mm], center = [var 0mm, var 0mm])
   coincident([arc2.start, arc3.end])
-  arc4 = arc(start = [var 47.46mm, var 23.15mm], end = [var 9.64mm, var 11.49mm], center = [var 38.79mm, var -15.9mm])
+  arc4 = arc(start = [var 52.89mm, var 26.14mm], end = [var 7.96mm, var 12.78mm], center = [var 40.63mm, var -14.83mm])
   coincident([arc3.start, arc4.start])
+  radius(arc3) == fanSize / 2 - 1
+  coincident([arc3.center, ORIGIN])
+  arc1 = arc(start = [var 7.96mm, var 12.78mm], end = [var 6.88mm, var 13.4mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, arc3.center])
+  radius(arc1) == 15.06mm
+  coincident([arc4.end, arc1.start])
+  coincident([arc2.end, arc1.end])
+  coincident([arc4.center, arc2.center])
+  line1 = line(start = [var 7.96mm, var 12.78mm], end = [var 30.43mm, var 19.46mm], construction = true)
+  coincident([line1.start, arc1.start])
+  line2 = line(start = [var 30.43mm, var 19.46mm], end = [var 52.89mm, var 26.14mm], construction = true)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, arc4.start])
+  line3 = line(start = [var 30.43mm, var 19.46mm], end = [var 40.63mm, var -14.83mm], construction = true)
+  coincident([line3.start, line2.start])
+  coincident([line3.end, arc4.center])
+  coincident([line1, line2])
+  equalLength([line1, line2])
+  perpendicular([line3, line1])
+  radius(arc4) == 42.77mm
+  radius(arc2) == 44
 }
 
 region002 = region(segments = [bladeBase.arc1, bladeBase.arc2])
+hidden002 = hide(bladeBase)
 // Create the twisted blade solid and pattern
 twistedBlade = extrude(
        region002,

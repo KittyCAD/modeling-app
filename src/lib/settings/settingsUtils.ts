@@ -365,6 +365,53 @@ export function settingsPayloadToProjectConfiguration(
   }
 }
 
+export function mergeProjectConfiguration(
+  existingConfiguration: DeepPartial<ProjectConfiguration>,
+  updatedConfiguration: DeepPartial<ProjectConfiguration>
+): DeepPartial<ProjectConfiguration> {
+  return {
+    ...existingConfiguration,
+    ...updatedConfiguration,
+    settings: {
+      ...existingConfiguration.settings,
+      ...updatedConfiguration.settings,
+      meta: {
+        ...existingConfiguration.settings?.meta,
+        ...updatedConfiguration.settings?.meta,
+      },
+      app: {
+        ...existingConfiguration.settings?.app,
+        ...updatedConfiguration.settings?.app,
+      },
+      modeling: {
+        ...existingConfiguration.settings?.modeling,
+        ...updatedConfiguration.settings?.modeling,
+      },
+      text_editor: {
+        ...existingConfiguration.settings?.text_editor,
+        ...updatedConfiguration.settings?.text_editor,
+      },
+      command_bar: {
+        ...existingConfiguration.settings?.command_bar,
+        ...updatedConfiguration.settings?.command_bar,
+      },
+    },
+  }
+}
+
+function setProjectConfigurationId(
+  projectConfiguration: DeepPartial<ProjectConfiguration>,
+  id: string
+): DeepPartial<ProjectConfiguration> {
+  return mergeProjectConfiguration(projectConfiguration, {
+    settings: {
+      meta: {
+        id,
+      },
+    },
+  })
+}
+
 export interface AppSettings {
   settings: SettingsType
   configuration: DeepPartial<Configuration>
@@ -409,87 +456,24 @@ export async function loadAndValidateSettings(
       wasmInstance
     )
 
-    // An id was missing. Create one and write it to disk immediately.
-    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
-      projectSettings = {
-        settings: {
-          meta: {
-            id: v4(),
-          },
-        },
-      }
-      // Duplicated from settingsUtils.ts
+    if (err(projectSettings))
+      return Promise.reject(new Error('Invalid project settings'))
+
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      projectSettings = setProjectConfigurationId(projectSettings, v4())
       const projectTomlString = serializeProjectConfiguration(
         projectSettings,
         wasmInstance
       )
       if (err(projectTomlString))
-        return Promise.reject(new Error('Failed to serialize project settings'))
-
-      await writeProjectSettingsFile(projectPath, projectTomlString)
-    }
-
-    if (err(projectSettings))
-      return Promise.reject(new Error('Invalid project settings'))
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsNew = {
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-
-      if (err(projectTomlString))
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
 
       await writeProjectSettingsFile(projectPath, projectTomlString)
-
-      projectSettings = {
-        settings: projectSettingsNew,
-      }
-    }
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsParsed =
-        projectConfigurationToSettingsPayload(projectSettings)
-      const projectSettingsNew = {
-        ...projectSettingsParsed,
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-
-      if (err(projectTomlString))
-        return Promise.reject(
-          new Error('Could not serialize project configuration')
-        )
-
-      await writeProjectSettingsFile(projectPath, projectTomlString)
-
-      projectSettings =
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
     }
 
     const projectSettingsPayload = projectSettings
@@ -585,8 +569,18 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  const existingProjectSettings = await readProjectSettingsFile(
+    projectPath,
+    wasmInstance
+  )
+  if (err(existingProjectSettings)) return
+
+  const mergedProjectSettings = mergeProjectConfiguration(
+    existingProjectSettings,
+    settingsPayloadToProjectConfiguration(jsProjectSettings)
+  )
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    mergedProjectSettings,
     wasmInstance
   )
   if (err(projectTomlString)) return

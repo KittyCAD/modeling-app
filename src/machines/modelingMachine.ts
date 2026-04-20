@@ -634,6 +634,7 @@ export type ModelingMachineEvent =
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent

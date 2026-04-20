@@ -233,6 +233,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solver-point-0",
     "std-solver-line-0",
     "std-solver-arc-0",
+    "std-solver-arc-1",
     "std-solver-circle-0",
     "std-solver-coincident-0",
     "std-solver-distance-0",
