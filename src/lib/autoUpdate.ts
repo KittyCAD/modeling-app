@@ -8,8 +8,14 @@ export type AutoUpdateDownloadProgress = {
   transferred: number
 }
 
+export type AutoUpdateReady = {
+  version: string
+  releaseNotes?: string
+}
+
 export const autoUpdateDownloadProgressSignal =
   signal<AutoUpdateDownloadProgress | null>(null)
+export const autoUpdateReadySignal = signal<AutoUpdateReady | null>(null)
 
 export const setAutoUpdateDownloadProgress = (
   progress: AutoUpdateDownloadProgress
@@ -19,4 +25,12 @@ export const setAutoUpdateDownloadProgress = (
 
 export const clearAutoUpdateDownloadProgress = () => {
   autoUpdateDownloadProgressSignal.value = null
+}
+
+export const setAutoUpdateReady = (update: AutoUpdateReady) => {
+  autoUpdateReadySignal.value = update
+}
+
+export const clearAutoUpdateReady = () => {
+  autoUpdateReadySignal.value = null
 }

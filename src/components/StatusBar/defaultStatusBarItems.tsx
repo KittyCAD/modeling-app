@@ -1,13 +1,17 @@
 import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
+import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
-import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type {
+  AutoUpdateDownloadProgress,
+  AutoUpdateReady,
+} from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
@@ -17,12 +21,29 @@ export const defaultGlobalStatusBarItems = ({
   location,
   filePath,
   autoUpdateDownloadProgress,
+  autoUpdateReady,
+  onRestartToUpdate,
 }: {
   location: Location
   filePath?: string
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
+  autoUpdateReady?: AutoUpdateReady | null
+  onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  ...(isDesktop() && autoUpdateDownloadProgress
+  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
+    ? [
+        {
+          id: 'auto-update-ready-status',
+          component: () => (
+            <AutoUpdateReadyStatus
+              update={autoUpdateReady}
+              onRestart={onRestartToUpdate}
+            />
+          ),
+        },
+      ]
+    : []),
+  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {
           id: 'auto-update-download-status',

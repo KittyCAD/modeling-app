@@ -20,9 +20,9 @@ describe('AutoUpdateDownloadStatus', () => {
     expect(screen.getByTestId('auto-update-download-status')).toHaveTextContent(
       'Update 42%'
     )
-    expect(
-      screen.getByTestId('auto-update-download-progress-bar')
-    ).toHaveStyle('width: 42%')
+    expect(screen.getByTestId('auto-update-download-progress-bar')).toHaveStyle(
+      'width: 42%'
+    )
   })
 
   test('clamps percent above 100', () => {
@@ -38,8 +38,8 @@ describe('AutoUpdateDownloadStatus', () => {
       />
     )
 
-    expect(
-      screen.getByTestId('auto-update-download-progress-bar')
-    ).toHaveStyle('width: 100%')
+    expect(screen.getByTestId('auto-update-download-progress-bar')).toHaveStyle(
+      'width: 100%'
+    )
   })
 })

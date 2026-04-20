@@ -25,7 +25,10 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { autoUpdateDownloadProgressSignal } from '@src/lib/autoUpdate'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
 import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
@@ -91,6 +94,7 @@ export function OpenedProject() {
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
   const { onProjectOpen } = useLspContext()
@@ -400,6 +404,10 @@ export function OpenedProject() {
               location,
               filePath,
               autoUpdateDownloadProgress,
+              autoUpdateReady,
+              onRestartToUpdate: () => {
+                window.electron?.appRestart()
+              },
             }),
           ]}
           localItems={[
