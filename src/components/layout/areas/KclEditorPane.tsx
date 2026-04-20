@@ -11,6 +11,8 @@ import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -19,7 +21,6 @@ export const editorShortcutMeta = {
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
-    codeMirror: 'Ctrl-Shift-c',
     display: 'Ctrl + Shift + C',
   },
 }
@@ -83,6 +84,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
+  const platform = usePlatform()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
@@ -118,7 +120,9 @@ export const KclEditorMenu = () => {
               className={styles.button}
             >
               <span>Format code</span>
-              <small>{editorShortcutMeta.formatCode.display}</small>
+              <small>
+                {hotkeyDisplay(editorShortcutMeta.formatCode.display, platform)}
+              </small>
             </button>
           </Menu.Item>
           <Menu.Item>
