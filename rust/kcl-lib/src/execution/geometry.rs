@@ -814,7 +814,8 @@ pub struct Sketch {
     /// sketch ID is the ID of the sketch block it was created from. None,
     /// otherwise. This field corresponds to the `origin_path_id` of the `Path`
     /// artifact.
-    #[serde(skip)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
