@@ -24,6 +24,7 @@ crashBoxOuterWidth = 400
 // Crash box: square tube profile and extrusion
 // -----------------------------
 
+
 crashBoxProfile = sketch(on = XY) {
   bottomEdge = line(start = [var -205mm, var -198mm], end = [var 193mm, var -205mm])
   rightEdge = line(start = [var 207mm, var -191mm], end = [var 212mm, var 188mm])
@@ -71,7 +72,6 @@ crashBoxRegion = region(segments = [
 // Create a solid crash box from the square profile
 crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
 
-
 // Optional exterior edge softening
 crashBoxOuterCornerFillets = fillet(
   crashBoxSolid,
@@ -91,6 +91,7 @@ hide(crashBoxProfile)
 // -----------------------------
 // Bumper beam surrogate: used to cut a mating pocket in the crash box
 // -----------------------------
+
 
 beamProfile = sketch(on = -YZ) {
   topEdge = line(start = [var -861mm, var 6mm], end = [var 882mm, var -4mm])
@@ -142,29 +143,33 @@ hide(beamProfile)
 // Subtract the beam volume from the crash box to form the mating pocket
 // -----------------------------
 
+
 crashBoxWithPocket = subtract(crashBoxShelled, tools = beamEndFillets)
 
 // -----------------------------
 // Mounting holes: through-holes from front to back of crash box
 // -----------------------------
 
+
 leftHoleProfile = circle(
   offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [-mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  center = [
+    -mountHoleSpacing / 2,
+    -mountHoleOffsetFromTop
+  ],
   radius = mountHoleRadius,
 )
 rightHoleProfile = circle(
   offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [mountHoleSpacing / 2, -mountHoleOffsetFromTop],
+  center = [
+    mountHoleSpacing / 2,
+    -mountHoleOffsetFromTop
+  ],
   radius = mountHoleRadius,
 )
 
 // Apply the hole cut to the crash box with pocket
-holeCutters = extrude(
-  [leftHoleProfile, rightHoleProfile],
-  to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm),
-  method = NEW,
-)
+holeCutters = extrude([leftHoleProfile, rightHoleProfile], to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm), method = NEW)
 
 crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 

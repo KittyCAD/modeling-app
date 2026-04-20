@@ -42,7 +42,7 @@ threadProfile = sketch(on = XZ) {
   horizontal(line3)
   vertical(line4)
 
-  horizontalDistance([ORIGIN, line1.start]) == outerCylinderRadius - rectWidth * 5 / 2
+  horizontalDistance([ORIGIN, line1.start]) == outerCylinderRadius - (rectWidth * 5 / 2)
   verticalDistance([ORIGIN, line1.start]) == -rectHeight / 2
   horizontalDistance([line1.start, line1.end]) == rectWidth
   verticalDistance([line2.start, line2.end]) == rectHeight
@@ -55,7 +55,10 @@ threadHelix = helix(
   length = outerCylinderRadius * 2 + rectHeight * 2,
 )
 
-threadProfileRegion = region(segments = [threadProfile.line1, threadProfile.line2])
+threadProfileRegion = region(segments = [
+  threadProfile.line1,
+  threadProfile.line2
+])
 thread = sweep(threadProfileRegion, path = threadHelix)
 
 hide(threadProfile)

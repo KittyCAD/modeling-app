@@ -186,8 +186,8 @@ translatedUpperStopper = translate(upperStopperExtrude, z = 200mm)
 translatedUpperMount = translate(upperMountSolid, z = 200mm)
 
 coiloverTop = [
-    translatedUpperPistonRod,
-    translatedUpperMountPlate,
-    translatedUpperStopper,
-    translatedUpperMount
-  ]
+  translatedUpperPistonRod,
+  translatedUpperMountPlate,
+  translatedUpperStopper,
+  translatedUpperMount
+]

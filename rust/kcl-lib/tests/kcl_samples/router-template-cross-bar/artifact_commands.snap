@@ -33,6 +33,15 @@ description: Artifact commands router-template-cross-bar.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -60,7 +69,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 31.88125,
+          "y": 31.880312488798783,
           "z": 0.0
         }
       }
@@ -81,11 +90,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.75,
-            "y": 0.0,
+            "x": 10.749999999997936,
+            "y": 31.880312488798783,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,17 +107,17 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.75,
-            "y": 20.0
+            "x": 10.748846187107844,
+            "y": 19.99906254482337
           },
-          "radius": 11.88125,
+          "radius": 11.881249999999996,
           "start": {
             "unit": "degrees",
-            "value": 90.0
+            "value": 89.99443588771771
           },
           "end": {
             "unit": "degrees",
-            "value": 0.0
+            "value": 0.004520755403146131
           },
           "relative": false
         }
@@ -123,42 +132,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.63125,
-            "y": -10.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63125,
-            "y": 10.940625,
+            "x": 22.63009615012427,
+            "y": -10.00000000000045,
             "z": 0.0
           },
           "relative": false
@@ -174,8 +149,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 102.63125,
-            "y": 10.940625,
+            "x": 32.63009615012427,
+            "y": -10.00000000000045,
             "z": 0.0
           },
           "relative": false
@@ -191,25 +166,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 20.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63125,
-            "y": 30.940625,
+            "x": 32.63009615012427,
+            "y": 10.94,
             "z": 0.0
           },
           "relative": false
@@ -225,8 +183,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.63125,
-            "y": 41.88125,
+            "x": 102.63009615012427,
+            "y": 10.94,
             "z": 0.0
           },
           "relative": false
@@ -242,8 +200,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 41.88125,
+            "x": 102.63009615012427,
+            "y": 30.94,
             "z": 0.0
           },
           "relative": false
@@ -259,11 +217,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.63125,
-            "y": 0.0,
+            "x": 32.63160714288048,
+            "y": 30.94,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -276,11 +234,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -10.940625,
+            "x": 32.63160714288048,
+            "y": 41.88,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -293,11 +251,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -70.0,
-            "y": 0.0,
+            "x": 0.0003571428804808302,
+            "y": 41.88,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -310,11 +268,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -20.0,
+            "x": -32.63089285711952,
+            "y": 41.88,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -327,11 +285,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 70.0,
-            "y": 0.0,
+            "x": -32.63089285711952,
+            "y": 30.94,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -344,11 +302,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -20.940625,
+            "x": -102.63089285711952,
+            "y": 30.94,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -361,11 +319,11 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
-            "y": 0.0,
+            "x": -102.63089285711952,
+            "y": 10.94,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -378,11 +336,62 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 30.0,
+            "x": -32.630138892364194,
+            "y": 10.94,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.630138892364194,
+            "y": -10.000000000000433,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.63013889236419,
+            "y": -10.000000000000433,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.63013889236419,
+            "y": 19.999999999999567,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -395,17 +404,17 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.749999999999995,
-            "y": 20.0
+            "x": -10.748888929348087,
+            "y": 19.999062540749463
           },
           "radius": 11.88125,
           "start": {
             "unit": "degrees",
-            "value": 180.0
+            "value": 179.99547922495088
           },
           "end": {
             "unit": "degrees",
-            "value": 90.0
+            "value": 90.00535799340012
           },
           "relative": false
         }
@@ -421,7 +430,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 31.88125,
+            "y": 31.880312488798783,
             "z": 0.0
           },
           "relative": false
@@ -432,8 +441,12 @@ description: Artifact commands router-template-cross-bar.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -524,7 +537,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 32.63125,
+          "x": 32.63,
           "y": 0.0,
           "z": 0.0
         }
@@ -546,58 +559,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.0,
-            "y": 0.0000000000000012246467991473533,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.0000000000000018369701987210296,
-            "y": -10.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.0,
-            "y": -0.0000000000000012246467991473533,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63125,
+            "x": 22.63,
             "y": 0.0,
             "z": 0.0
           },
@@ -609,8 +571,63 @@ description: Artifact commands router-template-cross-bar.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 22.63,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.63,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.63,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -697,7 +714,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.63125,
+          "x": -32.63,
           "y": 0.0,
           "z": 0.0
         }
@@ -719,58 +736,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0000000000000006123233995736766,
-            "y": -10.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -10.0,
-            "y": -0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.63125,
+            "x": -22.63,
             "y": 0.0,
             "z": 0.0
           },
@@ -782,8 +748,63 @@ description: Artifact commands router-template-cross-bar.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.63,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.63,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.63,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -870,7 +891,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.63125,
+          "x": -32.631249999992505,
           "y": 0.0,
           "z": 0.0
         }
@@ -892,58 +913,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 65.2625,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0000000000000006123233995736766,
-            "y": -10.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -65.2625,
-            "y": -0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.63125,
+            "x": 32.6312500000025,
             "y": 0.0,
             "z": 0.0
           },
@@ -955,8 +925,63 @@ description: Artifact commands router-template-cross-bar.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.63124999999625,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.631249999985,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.63124999998875,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

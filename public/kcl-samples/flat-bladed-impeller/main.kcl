@@ -15,6 +15,7 @@ bladeLength = 80 // radial length of blade (root to tip)
 bladeHeight = 40 // vertical height of each blade
 bladeThickness = 3 // width (thickness) of each blade
 
+
 // derived parameters
 outerRadius = outerDiameter / 2
 bladeRootRadius = hubOutsideDiameter / 2 + (outerDiameter - hubOutsideDiameter) / 4
@@ -70,7 +71,10 @@ disk = sketch(on = diskPlane) {
   coincident([circle1.start, diskRadiusGuide.end])
 
   horizontal(diskRadiusGuide)
-  distance([diskRadiusGuide.start, diskRadiusGuide.end]) == outerRadius
+  distance([
+  diskRadiusGuide.start,
+  diskRadiusGuide.end
+]) == outerRadius
 }
 
 region002 = region(segments = [disk.circle1])
@@ -87,7 +91,10 @@ hubCircle = sketch(on = faceOf(backPlate, face = END)) {
   coincident([circle1.start, hubRadiusGuide.end])
 
   horizontal(hubRadiusGuide)
-  distance([hubRadiusGuide.start, hubRadiusGuide.end]) == hubOutsideDiameter / 2
+  distance([
+  hubRadiusGuide.start,
+  hubRadiusGuide.end
+]) == hubOutsideDiameter / 2
 }
 
 region003 = region(segments = [hubCircle.circle1])
@@ -104,7 +111,10 @@ boreCircle = sketch(on = faceOf(backPlate, face = START)) {
   coincident([circle1.start, boreRadiusGuide.end])
 
   horizontal(boreRadiusGuide)
-  distance([boreRadiusGuide.start, boreRadiusGuide.end]) == boreDiameter / 2
+  distance([
+  boreRadiusGuide.start,
+  boreRadiusGuide.end
+]) == boreDiameter / 2
 }
 
 region004 = region(segments = [boreCircle.circle1])

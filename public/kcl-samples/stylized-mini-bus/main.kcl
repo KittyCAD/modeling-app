@@ -222,7 +222,6 @@ chassis = extrude(chassisRegion, length = -chassisWidth, symmetric = true)
   |> appearance(%, color = "#ff2e82") // bright pink body
 hide(chassisProfile)
 
-
 // Cabin (main body volume)
 // Represents the entire upper body of the mini-bus,
 // with a sloped front (windshield) and tapered rear wall for style.
@@ -281,7 +280,6 @@ roofRegion = region(segments = [roofProfile.line1])
 roof = extrude(roofRegion, length = -chassisWidth, symmetric = true)
   |> appearance(%, color = "#ff2e82") // bright pink body
 hide(roofProfile)
-
 
 // Wheels
 // Cylindrical wheels with a central hubcap detail.

@@ -24,26 +24,50 @@ transitionTangentLength = (centerLobeRadius - endLobeRadius) / tan(transitionTan
 plateSketch = sketch(on = XY) {
   upperRightTransition = line(start = [var 0.61in, var 1.55in], end = [var 2.77in, var 0.7in])
   rightEndArc = arc(start = [var 2.77in, var -0.7in], end = [var 2.77in, var 0.7in], center = [var 2.5in, var 0in])
-  coincident([upperRightTransition.end, rightEndArc.end])
+  coincident([
+    upperRightTransition.end,
+    rightEndArc.end
+  ])
 
   lowerRightTransition = line(start = [var 2.77in, var -0.7in], end = [var 0.61in, var -1.55in])
-  coincident([rightEndArc.start, lowerRightTransition.start])
+  coincident([
+    rightEndArc.start,
+    lowerRightTransition.start
+  ])
 
   bottomCenterArc = arc(start = [var -0.61in, var -1.55in], end = [var 0.61in, var -1.55in], center = [var 0in, var 0in])
-  coincident([lowerRightTransition.end, bottomCenterArc.end])
+  coincident([
+    lowerRightTransition.end,
+    bottomCenterArc.end
+  ])
 
   lowerLeftTransition = line(start = [var -0.61in, var -1.55in], end = [var -2.77in, var -0.7in])
-  coincident([bottomCenterArc.start, lowerLeftTransition.start])
+  coincident([
+    bottomCenterArc.start,
+    lowerLeftTransition.start
+  ])
 
   leftEndArc = arc(start = [var -2.77in, var 0.7in], end = [var -2.77in, var -0.7in], center = [var -2.5in, var 0in])
-  coincident([lowerLeftTransition.end, leftEndArc.end])
+  coincident([
+    lowerLeftTransition.end,
+    leftEndArc.end
+  ])
 
   upperLeftTransition = line(start = [var -2.77in, var 0.7in], end = [var -0.61in, var 1.55in])
-  coincident([leftEndArc.start, upperLeftTransition.start])
+  coincident([
+    leftEndArc.start,
+    upperLeftTransition.start
+  ])
 
   topCenterArc = arc(start = [var 0.61in, var 1.55in], end = [var -0.61in, var 1.55in], center = [var 0in, var 0in])
-  coincident([upperLeftTransition.end, topCenterArc.end])
-  coincident([topCenterArc.start, upperRightTransition.start])
+  coincident([
+    upperLeftTransition.end,
+    topCenterArc.end
+  ])
+  coincident([
+    topCenterArc.start,
+    upperRightTransition.start
+  ])
 
   tangent([upperLeftTransition, leftEndArc])
   tangent([upperLeftTransition, topCenterArc])
@@ -54,21 +78,39 @@ plateSketch = sketch(on = XY) {
   tangent([lowerLeftTransition, bottomCenterArc])
   tangent([lowerLeftTransition, leftEndArc])
 
-  coincident([bottomCenterArc.center, topCenterArc.center])
+  coincident([
+    bottomCenterArc.center,
+    topCenterArc.center
+  ])
   coincident([topCenterArc.center, ORIGIN])
 
   leftSpacingGuide = line(start = [var -2.5in, var 0in], end = [var 0in, var 0in], construction = true)
-  coincident([leftSpacingGuide.start, leftEndArc.center])
-  coincident([leftSpacingGuide.end, bottomCenterArc.center])
+  coincident([
+    leftSpacingGuide.start,
+    leftEndArc.center
+  ])
+  coincident([
+    leftSpacingGuide.end,
+    bottomCenterArc.center
+  ])
 
   rightSpacingGuide = line(start = [var 0in, var 0in], end = [var 2.5in, var 0in], construction = true)
-  coincident([rightSpacingGuide.start, topCenterArc.center])
-  coincident([rightSpacingGuide.end, rightEndArc.center])
+  coincident([
+    rightSpacingGuide.start,
+    topCenterArc.center
+  ])
+  coincident([
+    rightSpacingGuide.end,
+    rightEndArc.center
+  ])
 
   horizontal(leftSpacingGuide)
   horizontal(rightSpacingGuide)
   equalLength([leftSpacingGuide, rightSpacingGuide])
-  horizontalDistance([leftSpacingGuide.start, rightSpacingGuide.end]) == boltSpacing
+  horizontalDistance([
+  leftSpacingGuide.start,
+  rightSpacingGuide.end
+]) == boltSpacing
 
   radius(leftEndArc) == endLobeRadius
   radius(rightEndArc) == endLobeRadius
@@ -76,7 +118,10 @@ plateSketch = sketch(on = XY) {
   radius(bottomCenterArc) == centerLobeRadius
 
   centerClearanceCircle = circle(start = [var 1.26in, var -0.79in], center = [var -0.01in, var 0in])
-  coincident([centerClearanceCircle.center, rightSpacingGuide.start])
+  coincident([
+    centerClearanceCircle.center,
+    rightSpacingGuide.start
+  ])
   radius(centerClearanceCircle) == centerHoleDiameter / 2
 }
 

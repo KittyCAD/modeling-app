@@ -23,12 +23,11 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
   hubTopLand = line(start = [var 4.4mm, var 60mm], end = [var 7.33mm, var 60mm])
   coincident([shaftWall.end, hubTopLand.start])
 
-  hubShoulderBlendArc = arc(
-    start = [var 8.31mm, var 59.22mm],
-    end = [var 7.33mm, var 60mm],
-    center = [var 7.33mm, var 59mm],
-  )
-  coincident([hubTopLand.end, hubShoulderBlendArc.end])
+  hubShoulderBlendArc = arc(start = [var 8.31mm, var 59.22mm], end = [var 7.33mm, var 60mm], center = [var 7.33mm, var 59mm])
+  coincident([
+    hubTopLand.end,
+    hubShoulderBlendArc.end
+  ])
 
   outerLipDrop = line(start = [var 80mm, var 2mm], end = [var 80mm, var 0mm])
   baseFloor = line(start = [var 80mm, var 0mm], end = [var 4.4mm, var 0mm])
@@ -45,96 +44,136 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
   coincident([shaftRadiusGuide.start, ORIGIN])
   coincident([shaftRadiusGuide.end, baseFloor.end])
   horizontal(shaftRadiusGuide)
-  horizontalDistance([shaftRadiusGuide.start, shaftRadiusGuide.end]) == shaftBoreDiameter / 2
+  horizontalDistance([
+  shaftRadiusGuide.start,
+  shaftRadiusGuide.end
+]) == shaftBoreDiameter / 2
   verticalDistance([shaftWall.start, shaftWall.end]) == impellerHeight
   horizontalDistance([hubTopLand.start, hubTopLand.end]) == shaftBoreDiameter / 3
 
   // Outer impeller envelope and supporting construction geometry.
-  outerEnvelopeArc = arc(
-    start = [var 8.31mm, var 59.22mm],
-    end = [var 80mm, var 2mm],
-    center = [var 80mm, var 75.52mm],
-  )
-  coincident([outerEnvelopeArc.start, hubShoulderBlendArc.start])
-  coincident([outerEnvelopeArc.end, outerLipDrop.start])
+  outerEnvelopeArc = arc(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 2mm], center = [var 80mm, var 75.52mm])
+  coincident([
+    outerEnvelopeArc.start,
+    hubShoulderBlendArc.start
+  ])
+  coincident([
+    outerEnvelopeArc.end,
+    outerLipDrop.start
+  ])
 
-  outerEnvelopeChordGuide = line(
-    start = [var 8.31mm, var 59.22mm],
-    end = [var 80mm, var 2mm],
-    construction = true,
-  )
-  coincident([outerEnvelopeChordGuide.start, hubShoulderBlendArc.start])
-  coincident([outerEnvelopeChordGuide.end, outerLipDrop.start])
+  outerEnvelopeChordGuide = line(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 2mm], construction = true)
+  coincident([
+    outerEnvelopeChordGuide.start,
+    hubShoulderBlendArc.start
+  ])
+  coincident([
+    outerEnvelopeChordGuide.end,
+    outerLipDrop.start
+  ])
 
-  outerEnvelopeRadiusGuide = line(
-    start = [var 8.31mm, var 59.22mm],
-    end = [var 80mm, var 75.52mm],
-    construction = true,
-  )
-  coincident([outerEnvelopeRadiusGuide.start, hubShoulderBlendArc.start])
+  outerEnvelopeRadiusGuide = line(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 75.52mm], construction = true)
+  coincident([
+    outerEnvelopeRadiusGuide.start,
+    hubShoulderBlendArc.start
+  ])
 
-  outerEnvelopeCenterDropGuide = line(
-    start = [var 80mm, var 75.52mm],
-    end = [var 80mm, var 2mm],
-    construction = true,
-  )
-  coincident([outerEnvelopeRadiusGuide.end, outerEnvelopeCenterDropGuide.start])
-  coincident([outerEnvelopeCenterDropGuide.end, outerEnvelopeArc.end])
+  outerEnvelopeCenterDropGuide = line(start = [var 80mm, var 75.52mm], end = [var 80mm, var 2mm], construction = true)
+  coincident([
+    outerEnvelopeRadiusGuide.end,
+    outerEnvelopeCenterDropGuide.start
+  ])
+  coincident([
+    outerEnvelopeCenterDropGuide.end,
+    outerEnvelopeArc.end
+  ])
 
-  outerEnvelopePerpendicularGuide = line(
-    start = [var 80mm, var 75.52mm],
-    end = [var 44.15mm, var 30.61mm],
-    construction = true,
-  )
-  coincident([outerEnvelopePerpendicularGuide.start, outerEnvelopeCenterDropGuide.start])
-  coincident([outerEnvelopePerpendicularGuide.end, outerEnvelopeChordGuide])
-  perpendicular([outerEnvelopePerpendicularGuide, outerEnvelopeChordGuide])
+  outerEnvelopePerpendicularGuide = line(start = [var 80mm, var 75.52mm], end = [var 44.15mm, var 30.61mm], construction = true)
+  coincident([
+    outerEnvelopePerpendicularGuide.start,
+    outerEnvelopeCenterDropGuide.start
+  ])
+  coincident([
+    outerEnvelopePerpendicularGuide.end,
+    outerEnvelopeChordGuide
+  ])
+  perpendicular([
+    outerEnvelopePerpendicularGuide,
+    outerEnvelopeChordGuide
+  ])
   tangent([outerEnvelopeArc, hubShoulderBlendArc])
   verticalDistance([outerLipDrop.end, outerLipDrop.start]) == impellerHeight / 30
-  coincident([outerEnvelopeArc.center, outerEnvelopePerpendicularGuide.start])
+  coincident([
+    outerEnvelopeArc.center,
+    outerEnvelopePerpendicularGuide.start
+  ])
   vertical(outerEnvelopeCenterDropGuide)
 
   // Secondary closed region for the revolved blade envelope body.
   bladeEnvelopeTopEdge = line(start = [var 7.33mm, var 60mm], end = [var 68mm, var 60mm])
-  coincident([bladeEnvelopeTopEdge.start, hubTopLand.end])
+  coincident([
+    bladeEnvelopeTopEdge.start,
+    hubTopLand.end
+  ])
 
   bladeEnvelopeOuterWall = line(start = [var 80mm, var 2mm], end = [var 80mm, var 48mm])
-  coincident([bladeEnvelopeOuterWall.start, outerEnvelopeCenterDropGuide.end])
+  coincident([
+    bladeEnvelopeOuterWall.start,
+    outerEnvelopeCenterDropGuide.end
+  ])
 
-  bladeEnvelopeTipArc = arc(
-    start = [var 80mm, var 48mm],
-    end = [var 68mm, var 60mm],
-    center = [var 68mm, var 48mm],
-  )
-  coincident([bladeEnvelopeTipArc.start, bladeEnvelopeOuterWall.end])
-  coincident([bladeEnvelopeTipArc.end, bladeEnvelopeTopEdge.end])
+  bladeEnvelopeTipArc = arc(start = [var 80mm, var 48mm], end = [var 68mm, var 60mm], center = [var 68mm, var 48mm])
+  coincident([
+    bladeEnvelopeTipArc.start,
+    bladeEnvelopeOuterWall.end
+  ])
+  coincident([
+    bladeEnvelopeTipArc.end,
+    bladeEnvelopeTopEdge.end
+  ])
   horizontal(bladeEnvelopeTopEdge)
   vertical(bladeEnvelopeOuterWall)
   radius(bladeEnvelopeTipArc) == impellerHeight / 5
 
-  bladeEnvelopeTipRadiusGuide = line(
-    start = [var 80mm, var 48mm],
-    end = [var 68mm, var 48mm],
-    construction = true,
-  )
-  coincident([bladeEnvelopeTipRadiusGuide.start, bladeEnvelopeTipArc.start])
-  coincident([bladeEnvelopeTipRadiusGuide.end, bladeEnvelopeTipArc.center])
+  bladeEnvelopeTipRadiusGuide = line(start = [var 80mm, var 48mm], end = [var 68mm, var 48mm], construction = true)
+  coincident([
+    bladeEnvelopeTipRadiusGuide.start,
+    bladeEnvelopeTipArc.start
+  ])
+  coincident([
+    bladeEnvelopeTipRadiusGuide.end,
+    bladeEnvelopeTipArc.center
+  ])
 
-  bladeEnvelopeTipCenterlineGuide = line(
-    start = [var 68mm, var 60mm],
-    end = [var 68mm, var 48mm],
-    construction = true,
-  )
-  coincident([bladeEnvelopeTipCenterlineGuide.start, bladeEnvelopeTipArc.end])
-  coincident([bladeEnvelopeTipCenterlineGuide.end, bladeEnvelopeTipRadiusGuide.end])
+  bladeEnvelopeTipCenterlineGuide = line(start = [var 68mm, var 60mm], end = [var 68mm, var 48mm], construction = true)
+  coincident([
+    bladeEnvelopeTipCenterlineGuide.start,
+    bladeEnvelopeTipArc.end
+  ])
+  coincident([
+    bladeEnvelopeTipCenterlineGuide.end,
+    bladeEnvelopeTipRadiusGuide.end
+  ])
   vertical(bladeEnvelopeTipCenterlineGuide)
   horizontal(bladeEnvelopeTipRadiusGuide)
-  horizontalDistance([shaftRadiusGuide.start, baseFloor.start]) == impellerDiameter / 2
+  horizontalDistance([
+  shaftRadiusGuide.start,
+  baseFloor.start
+]) == impellerDiameter / 2
 
   hubShoulderRadiusGuide = line(start = [var 7.33mm, var 59mm], end = [var 7.33mm, var 60mm])
-  coincident([hubShoulderRadiusGuide.start, hubShoulderBlendArc.center])
-  coincident([hubShoulderRadiusGuide.end, hubShoulderBlendArc.end])
-  verticalDistance([hubShoulderRadiusGuide.end, hubShoulderRadiusGuide.start]) == -1
+  coincident([
+    hubShoulderRadiusGuide.start,
+    hubShoulderBlendArc.center
+  ])
+  coincident([
+    hubShoulderRadiusGuide.end,
+    hubShoulderBlendArc.end
+  ])
+  verticalDistance([
+  hubShoulderRadiusGuide.end,
+  hubShoulderRadiusGuide.start
+]) == -1
 }
 
 // Revolved bodies from the shared sketch
@@ -149,35 +188,60 @@ bladeEnvelope = revolve(bladeEnvelopeRegion, axis = Y)
 bladeCutterSketch = sketch(on = XY) {
   bladeCutterBottomEdge = line(start = [var 4.4mm, var 0mm], end = [var 84.4mm, var 0mm])
   bladeCutterOuterEdge = line(start = [var 84.4mm, var 0mm], end = [var 84.4mm, var 2mm])
-  coincident([bladeCutterBottomEdge.end, bladeCutterOuterEdge.start])
+  coincident([
+    bladeCutterBottomEdge.end,
+    bladeCutterOuterEdge.start
+  ])
 
   bladeCutterTopEdge = line(start = [var 84.4mm, var 2mm], end = [var 4.4mm, var 2mm])
-  coincident([bladeCutterOuterEdge.end, bladeCutterTopEdge.start])
+  coincident([
+    bladeCutterOuterEdge.end,
+    bladeCutterTopEdge.start
+  ])
 
   bladeCutterInnerEdge = line(start = [var 4.4mm, var 2mm], end = [var 4.4mm, var 0mm])
-  coincident([bladeCutterTopEdge.end, bladeCutterInnerEdge.start])
-  coincident([bladeCutterInnerEdge.end, bladeCutterBottomEdge.start])
+  coincident([
+    bladeCutterTopEdge.end,
+    bladeCutterInnerEdge.start
+  ])
+  coincident([
+    bladeCutterInnerEdge.end,
+    bladeCutterBottomEdge.start
+  ])
 
   // Cutter-driving construction guide and dimensional constraints.
-  bladeCutterInnerRadiusGuide = line(
-    start = [var 0mm, var 0mm],
-    end = [var 4.4mm, var 0mm],
-    construction = true,
-  )
-  coincident([bladeCutterInnerRadiusGuide.start, ORIGIN])
-  coincident([bladeCutterInnerRadiusGuide.end, bladeCutterInnerEdge.end])
+  bladeCutterInnerRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 4.4mm, var 0mm], construction = true)
+  coincident([
+    bladeCutterInnerRadiusGuide.start,
+    ORIGIN
+  ])
+  coincident([
+    bladeCutterInnerRadiusGuide.end,
+    bladeCutterInnerEdge.end
+  ])
   horizontal(bladeCutterInnerRadiusGuide)
   horizontal(bladeCutterBottomEdge)
   horizontal(bladeCutterTopEdge)
   vertical(bladeCutterOuterEdge)
   vertical(bladeCutterInnerEdge)
-  horizontalDistance([bladeCutterInnerRadiusGuide.start, bladeCutterInnerRadiusGuide.end]) == shaftBoreDiameter / 2
-  horizontalDistance([bladeCutterBottomEdge.start, bladeCutterBottomEdge.end]) == impellerDiameter / 2
-  verticalDistance([bladeCutterOuterEdge.start, bladeCutterOuterEdge.end]) == bladeSectionThickness
+  horizontalDistance([
+  bladeCutterInnerRadiusGuide.start,
+  bladeCutterInnerRadiusGuide.end
+]) == shaftBoreDiameter / 2
+  horizontalDistance([
+  bladeCutterBottomEdge.start,
+  bladeCutterBottomEdge.end
+]) == impellerDiameter / 2
+  verticalDistance([
+  bladeCutterOuterEdge.start,
+  bladeCutterOuterEdge.end
+]) == bladeSectionThickness
 }
 
 // Blade cutter solid
-bladeCutterRegion = region(segments = [bladeCutterSketch.bladeCutterBottomEdge])
+bladeCutterRegion = region(segments = [
+  bladeCutterSketch.bladeCutterBottomEdge
+])
 bladeCutter = extrude(bladeCutterRegion, twistAngle = bladeTwistAngle, length = 65)
 
 // Final blade geometry

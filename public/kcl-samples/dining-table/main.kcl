@@ -22,6 +22,7 @@ apronThickness = legThickness / 2
 // TABLETOP
 // ──────────────
 
+
 tableTopPlane = offsetPlane(XY, offset = tableHeight)
 tableTopSketch = tableTopPlane
 tableTopProfile = sketch(on = tableTopSketch) {
@@ -51,6 +52,7 @@ hide(tableTopProfile)
 // ──────────────
 // LEGS
 // ──────────────
+
 
 legHeight = tableHeight - tableTopThickness
 distanceBetweenLegAxisWidth = tableWidth - legThickness - (legOffset * 2)
@@ -109,6 +111,7 @@ leg4 = clone(legExtrude)
 // ──────────────
 // APRONS
 // ──────────────
+
 
 longApronLength = tableLength - (legThickness * 2) - (legOffset * 2)
 shortApronLength = tableWidth - (legThickness * 2) - (legOffset * 2)

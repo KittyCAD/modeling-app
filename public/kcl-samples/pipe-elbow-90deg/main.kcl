@@ -85,16 +85,25 @@ boltHoleSketch = sketch(on = boltHoleSketchPlane) {
   boltHoleCircle = circle(start = [var 58.5mm, var 63mm], center = [var 53.5mm, var 63mm])
   boltHoleCenterGuide = line(start = [var 0mm, var 63mm], end = [var 53.5mm, var 63mm], construction = true)
   boltHoleOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 63mm], construction = true)
-  
-  coincident([boltHoleCenterGuide.end, boltHoleCircle.center])
+  coincident([
+    boltHoleCenterGuide.end,
+    boltHoleCircle.center
+  ])
   coincident([boltHoleOffsetGuide.start, ORIGIN])
-  coincident([boltHoleOffsetGuide.end, boltHoleCenterGuide.start])
-  
+  coincident([
+    boltHoleOffsetGuide.end,
+    boltHoleCenterGuide.start
+  ])
   horizontal(boltHoleCenterGuide)
   vertical(boltHoleOffsetGuide)
-  
-  horizontalDistance([boltHoleCenterGuide.start, boltHoleCenterGuide.end]) == boltCircleDiameter / 2
-  verticalDistance([boltHoleOffsetGuide.start, boltHoleOffsetGuide.end]) == elbowCenterlineBendRadius
+  horizontalDistance([
+  boltHoleCenterGuide.start,
+  boltHoleCenterGuide.end
+]) == boltCircleDiameter / 2
+  verticalDistance([
+  boltHoleOffsetGuide.start,
+  boltHoleOffsetGuide.end
+]) == elbowCenterlineBendRadius
   radius(boltHoleCircle) == boltHoleDiameter / 2
 }
 

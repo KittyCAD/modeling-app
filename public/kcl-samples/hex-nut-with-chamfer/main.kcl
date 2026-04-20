@@ -10,12 +10,15 @@ nutAcrossCorners = 20 // Across-corners distance of the hex
 nutThickness = 10 // Overall thickness of the nut
 hexCircumscribedRadius = nutAcrossCorners / 2 // Radius to the hex vertices
 
+
 // Chamfer
 chamferCircleRadius = hexCircumscribedRadius * 1.1
 chamferLength = 2.5 // Chamfer setback distance
 
+
 // Hole
 holeRadius = 4 // Through-hole radius
+
 
 // Base profiles
 // Hex exterior with center hole

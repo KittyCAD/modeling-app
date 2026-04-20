@@ -3,6 +3,137 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing bench-for-kids.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 0,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_22_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_35_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 34,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_40_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 39,
+      "origin": {
+        "x": 0.0,
+        "y": 360.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
   "allFourLegs": {
     "type": "HomArray",
     "value": [
@@ -18,12 +149,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1495,
-                "end": 1505,
+                "commentStart": 1759,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1495,
+                "start": 1759,
                 "type": "TagDeclarator",
-                "value": "legCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -32,10 +163,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1678,
-                "end": 1690,
+                "commentStart": 2393,
+                "end": 2405,
                 "moduleId": 0,
-                "start": 1678,
+                "start": 2393,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -54,25 +185,25 @@ description: Variables in memory after executing bench-for-kids.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  0.0
+                  0.00000000000000021871003473503814,
+                  0.000000000000000012740004597560524
                 ],
                 "from": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
-                "radius": 4.8,
+                "radius": 4.799999999999999,
                 "tag": {
-                  "commentStart": 1495,
-                  "end": 1505,
+                  "commentStart": 1759,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1495,
+                  "start": 1759,
                   "type": "TagDeclarator",
-                  "value": "legCircle"
+                  "value": "circle1"
                 },
                 "to": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
                 "type": "Circle",
                 "units": "cm"
@@ -81,8 +212,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
-              "objectId": 1,
+              "kind": "Custom",
+              "objectId": 21,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -111,12 +242,12 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "start": {
               "from": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "to": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "units": "cm",
               "tag": null,
@@ -126,13 +257,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "legCapStart": {
                 "type": "TagIdentifier",
                 "value": "legCapStart"
-              },
-              "legCircle": {
-                "type": "TagIdentifier",
-                "value": "legCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -173,12 +304,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1495,
-                "end": 1505,
+                "commentStart": 1759,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1495,
+                "start": 1759,
                 "type": "TagDeclarator",
-                "value": "legCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -187,10 +318,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1678,
-                "end": 1690,
+                "commentStart": 2393,
+                "end": 2405,
                 "moduleId": 0,
-                "start": 1678,
+                "start": 2393,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -209,25 +340,25 @@ description: Variables in memory after executing bench-for-kids.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  0.0
+                  0.00000000000000021871003473503814,
+                  0.000000000000000012740004597560524
                 ],
                 "from": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
-                "radius": 4.8,
+                "radius": 4.799999999999999,
                 "tag": {
-                  "commentStart": 1495,
-                  "end": 1505,
+                  "commentStart": 1759,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1495,
+                  "start": 1759,
                   "type": "TagDeclarator",
-                  "value": "legCircle"
+                  "value": "circle1"
                 },
                 "to": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
                 "type": "Circle",
                 "units": "cm"
@@ -236,8 +367,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
-              "objectId": 1,
+              "kind": "Custom",
+              "objectId": 21,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -266,12 +397,12 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "start": {
               "from": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "to": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "units": "cm",
               "tag": null,
@@ -281,13 +412,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "legCapStart": {
                 "type": "TagIdentifier",
                 "value": "legCapStart"
-              },
-              "legCircle": {
-                "type": "TagIdentifier",
-                "value": "legCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -328,12 +459,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1495,
-                "end": 1505,
+                "commentStart": 1759,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1495,
+                "start": 1759,
                 "type": "TagDeclarator",
-                "value": "legCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -342,10 +473,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1678,
-                "end": 1690,
+                "commentStart": 2393,
+                "end": 2405,
                 "moduleId": 0,
-                "start": 1678,
+                "start": 2393,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -364,25 +495,25 @@ description: Variables in memory after executing bench-for-kids.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  0.0
+                  0.00000000000000021871003473503814,
+                  0.000000000000000012740004597560524
                 ],
                 "from": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
-                "radius": 4.8,
+                "radius": 4.799999999999999,
                 "tag": {
-                  "commentStart": 1495,
-                  "end": 1505,
+                  "commentStart": 1759,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1495,
+                  "start": 1759,
                   "type": "TagDeclarator",
-                  "value": "legCircle"
+                  "value": "circle1"
                 },
                 "to": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
                 "type": "Circle",
                 "units": "cm"
@@ -391,8 +522,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
-              "objectId": 1,
+              "kind": "Custom",
+              "objectId": 21,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -421,12 +552,12 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "start": {
               "from": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "to": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "units": "cm",
               "tag": null,
@@ -436,13 +567,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "legCapStart": {
                 "type": "TagIdentifier",
                 "value": "legCapStart"
-              },
-              "legCircle": {
-                "type": "TagIdentifier",
-                "value": "legCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -483,12 +614,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1495,
-                "end": 1505,
+                "commentStart": 1759,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1495,
+                "start": 1759,
                 "type": "TagDeclarator",
-                "value": "legCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -497,10 +628,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1678,
-                "end": 1690,
+                "commentStart": 2393,
+                "end": 2405,
                 "moduleId": 0,
-                "start": 1678,
+                "start": 2393,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -519,25 +650,25 @@ description: Variables in memory after executing bench-for-kids.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  0.0
+                  0.00000000000000021871003473503814,
+                  0.000000000000000012740004597560524
                 ],
                 "from": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
-                "radius": 4.8,
+                "radius": 4.799999999999999,
                 "tag": {
-                  "commentStart": 1495,
-                  "end": 1505,
+                  "commentStart": 1759,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1495,
+                  "start": 1759,
                   "type": "TagDeclarator",
-                  "value": "legCircle"
+                  "value": "circle1"
                 },
                 "to": [
-                  4.8,
-                  0.0
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
                 ],
                 "type": "Circle",
                 "units": "cm"
@@ -546,8 +677,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
-              "objectId": 1,
+              "kind": "Custom",
+              "objectId": 21,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -576,12 +707,12 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "start": {
               "from": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "to": [
-                4.8,
-                0.0
+                -4.799999999999999,
+                0.000000000000000015680004672282222
               ],
               "units": "cm",
               "tag": null,
@@ -591,13 +722,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "legCapStart": {
                 "type": "TagIdentifier",
                 "value": "legCapStart"
-              },
-              "legCircle": {
-                "type": "TagIdentifier",
-                "value": "legCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -627,6 +758,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       }
     ]
+  },
+  "arc1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc1"
   },
   "benchLength": {
     "type": "Number",
@@ -664,6 +800,11 @@ description: Variables in memory after executing bench-for-kids.kcl
       "angle": "degrees"
     }
   },
+  "circle1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle1"
+  },
   "earBody": {
     "type": "Solid",
     "value": {
@@ -676,12 +817,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2898,
-            "end": 2908,
+            "commentStart": 3561,
+            "end": 3568,
             "moduleId": 0,
-            "start": 2898,
+            "start": 3561,
             "type": "TagDeclarator",
-            "value": "earCircle"
+            "value": "circle1"
           },
           "type": "extrudeArc"
         },
@@ -690,10 +831,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2972,
-            "end": 2982,
+            "commentStart": 3768,
+            "end": 3778,
             "moduleId": 0,
-            "start": 2972,
+            "start": 3768,
             "type": "TagDeclarator",
             "value": "earCapEnd"
           },
@@ -721,12 +862,12 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.32,
             "tag": {
-              "commentStart": 2898,
-              "end": 2908,
+              "commentStart": 3561,
+              "end": 3568,
               "moduleId": 0,
-              "start": 2898,
+              "start": 3561,
               "type": "TagDeclarator",
-              "value": "earCircle"
+              "value": "circle1"
             },
             "to": [
               4.32,
@@ -740,7 +881,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 2,
+          "objectId": 34,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -784,13 +925,13 @@ description: Variables in memory after executing bench-for-kids.kcl
           }
         },
         "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          },
           "earCapEnd": {
             "type": "TagIdentifier",
             "value": "earCapEnd"
-          },
-          "earCircle": {
-            "type": "TagIdentifier",
-            "value": "earCircle"
           }
         },
         "artifactId": "[uuid]",
@@ -823,11 +964,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "earCapEnd"
-  },
-  "earCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "earCircle"
   },
   "earDistance": {
     "type": "Number",
@@ -874,7 +1010,277 @@ description: Variables in memory after executing bench-for-kids.kcl
       "angle": "degrees"
     }
   },
+  "earPlane": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 34,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "earProfile": {
+    "type": "Object",
+    "value": {
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 38,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 4.32,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.32,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 36,
+                    "center_object_id": 37,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "from": [
+                    4.32,
+                    0.0
+                  ],
+                  "radius": 4.32,
+                  "tag": {
+                    "commentStart": 3561,
+                    "end": 3568,
+                    "moduleId": 0,
+                    "start": 3561,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    4.32,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "cm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 34,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  4.32,
+                  0.0
+                ],
+                "to": [
+                  4.32,
+                  0.0
+                ],
+                "units": "cm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "cm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "earRadius": {
+    "type": "Number",
+    "value": 4.32,
+    "ty": {
+      "type": "Default",
+      "len": "cm",
+      "angle": "degrees"
+    }
+  },
+  "earRegion": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -896,12 +1302,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 4.32,
           "tag": {
-            "commentStart": 2898,
-            "end": 2908,
+            "commentStart": 3561,
+            "end": 3568,
             "moduleId": 0,
-            "start": 2898,
+            "start": 3561,
             "type": "TagDeclarator",
-            "value": "earCircle"
+            "value": "circle1"
           },
           "to": [
             4.32,
@@ -915,7 +1321,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 2,
+        "objectId": 34,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -959,60 +1365,18 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       },
       "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        },
         "earCapEnd": {
           "type": "TagIdentifier",
           "value": "earCapEnd"
-        },
-        "earCircle": {
-          "type": "TagIdentifier",
-          "value": "earCircle"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "cm"
-    }
-  },
-  "earRadius": {
-    "type": "Number",
-    "value": 4.32,
-    "ty": {
-      "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
-    }
-  },
-  "earSketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 2,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
     }
   },
   "earTiltAngle": {
@@ -1039,12 +1403,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2898,
-                "end": 2908,
+                "commentStart": 3561,
+                "end": 3568,
                 "moduleId": 0,
-                "start": 2898,
+                "start": 3561,
                 "type": "TagDeclarator",
-                "value": "earCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -1053,10 +1417,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2972,
-                "end": 2982,
+                "commentStart": 3768,
+                "end": 3778,
                 "moduleId": 0,
-                "start": 2972,
+                "start": 3768,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1084,12 +1448,12 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 2898,
-                  "end": 2908,
+                  "commentStart": 3561,
+                  "end": 3568,
                   "moduleId": 0,
-                  "start": 2898,
+                  "start": 3561,
                   "type": "TagDeclarator",
-                  "value": "earCircle"
+                  "value": "circle1"
                 },
                 "to": [
                   4.32,
@@ -1103,7 +1467,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 2,
+              "objectId": 34,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1147,13 +1511,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "earCapEnd": {
                 "type": "TagIdentifier",
                 "value": "earCapEnd"
-              },
-              "earCircle": {
-                "type": "TagIdentifier",
-                "value": "earCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -1194,12 +1558,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2898,
-                "end": 2908,
+                "commentStart": 3561,
+                "end": 3568,
                 "moduleId": 0,
-                "start": 2898,
+                "start": 3561,
                 "type": "TagDeclarator",
-                "value": "earCircle"
+                "value": "circle1"
               },
               "type": "extrudeArc"
             },
@@ -1208,10 +1572,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2972,
-                "end": 2982,
+                "commentStart": 3768,
+                "end": 3778,
                 "moduleId": 0,
-                "start": 2972,
+                "start": 3768,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1239,12 +1603,12 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 2898,
-                  "end": 2908,
+                  "commentStart": 3561,
+                  "end": 3568,
                   "moduleId": 0,
-                  "start": 2898,
+                  "start": 3561,
                   "type": "TagDeclarator",
-                  "value": "earCircle"
+                  "value": "circle1"
                 },
                 "to": [
                   4.32,
@@ -1258,7 +1622,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 2,
+              "objectId": 34,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1302,13 +1666,13 @@ description: Variables in memory after executing bench-for-kids.kcl
               }
             },
             "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              },
               "earCapEnd": {
                 "type": "TagIdentifier",
                 "value": "earCapEnd"
-              },
-              "earCircle": {
-                "type": "TagIdentifier",
-                "value": "earCircle"
               }
             },
             "artifactId": "[uuid]",
@@ -1351,12 +1715,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1495,
-            "end": 1505,
+            "commentStart": 1759,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1495,
+            "start": 1759,
             "type": "TagDeclarator",
-            "value": "legCircle"
+            "value": "circle1"
           },
           "type": "extrudeArc"
         },
@@ -1365,10 +1729,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1678,
-            "end": 1690,
+            "commentStart": 2393,
+            "end": 2405,
             "moduleId": 0,
-            "start": 1678,
+            "start": 2393,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1387,25 +1751,25 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.0
+              0.00000000000000021871003473503814,
+              0.000000000000000012740004597560524
             ],
             "from": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
-            "radius": 4.8,
+            "radius": 4.799999999999999,
             "tag": {
-              "commentStart": 1495,
-              "end": 1505,
+              "commentStart": 1759,
+              "end": 1766,
               "moduleId": 0,
-              "start": 1495,
+              "start": 1759,
               "type": "TagDeclarator",
-              "value": "legCircle"
+              "value": "circle1"
             },
             "to": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
             "type": "Circle",
             "units": "cm"
@@ -1414,8 +1778,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 1,
+          "kind": "Custom",
+          "objectId": 21,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1444,12 +1808,12 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "start": {
           "from": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "to": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "units": "cm",
           "tag": null,
@@ -1459,13 +1823,13 @@ description: Variables in memory after executing bench-for-kids.kcl
           }
         },
         "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          },
           "legCapStart": {
             "type": "TagIdentifier",
             "value": "legCapStart"
-          },
-          "legCircle": {
-            "type": "TagIdentifier",
-            "value": "legCircle"
           }
         },
         "artifactId": "[uuid]",
@@ -1506,12 +1870,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1495,
-            "end": 1505,
+            "commentStart": 1759,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1495,
+            "start": 1759,
             "type": "TagDeclarator",
-            "value": "legCircle"
+            "value": "circle1"
           },
           "type": "extrudeArc"
         },
@@ -1520,10 +1884,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1678,
-            "end": 1690,
+            "commentStart": 2393,
+            "end": 2405,
             "moduleId": 0,
-            "start": 1678,
+            "start": 2393,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1542,25 +1906,25 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.0
+              0.00000000000000021871003473503814,
+              0.000000000000000012740004597560524
             ],
             "from": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
-            "radius": 4.8,
+            "radius": 4.799999999999999,
             "tag": {
-              "commentStart": 1495,
-              "end": 1505,
+              "commentStart": 1759,
+              "end": 1766,
               "moduleId": 0,
-              "start": 1495,
+              "start": 1759,
               "type": "TagDeclarator",
-              "value": "legCircle"
+              "value": "circle1"
             },
             "to": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
             "type": "Circle",
             "units": "cm"
@@ -1569,8 +1933,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 1,
+          "kind": "Custom",
+          "objectId": 21,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1599,12 +1963,12 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "start": {
           "from": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "to": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "units": "cm",
           "tag": null,
@@ -1614,13 +1978,13 @@ description: Variables in memory after executing bench-for-kids.kcl
           }
         },
         "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          },
           "legCapStart": {
             "type": "TagIdentifier",
             "value": "legCapStart"
-          },
-          "legCircle": {
-            "type": "TagIdentifier",
-            "value": "legCircle"
           }
         },
         "artifactId": "[uuid]",
@@ -1672,11 +2036,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       "angle": "degrees"
     }
   },
-  "legCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "legCircle"
-  },
   "legExtrudedBody": {
     "type": "Solid",
     "value": {
@@ -1689,12 +2048,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1495,
-            "end": 1505,
+            "commentStart": 1759,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1495,
+            "start": 1759,
             "type": "TagDeclarator",
-            "value": "legCircle"
+            "value": "circle1"
           },
           "type": "extrudeArc"
         },
@@ -1703,10 +2062,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1678,
-            "end": 1690,
+            "commentStart": 2393,
+            "end": 2405,
             "moduleId": 0,
-            "start": 1678,
+            "start": 2393,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1725,25 +2084,25 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.0
+              0.00000000000000021871003473503814,
+              0.000000000000000012740004597560524
             ],
             "from": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
-            "radius": 4.8,
+            "radius": 4.799999999999999,
             "tag": {
-              "commentStart": 1495,
-              "end": 1505,
+              "commentStart": 1759,
+              "end": 1766,
               "moduleId": 0,
-              "start": 1495,
+              "start": 1759,
               "type": "TagDeclarator",
-              "value": "legCircle"
+              "value": "circle1"
             },
             "to": [
-              4.8,
-              0.0
+              -4.799999999999999,
+              0.000000000000000015680004672282222
             ],
             "type": "Circle",
             "units": "cm"
@@ -1752,8 +2111,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 1,
+          "kind": "Custom",
+          "objectId": 21,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1782,12 +2141,12 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "start": {
           "from": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "to": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "units": "cm",
           "tag": null,
@@ -1797,13 +2156,13 @@ description: Variables in memory after executing bench-for-kids.kcl
           }
         },
         "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          },
           "legCapStart": {
             "type": "TagIdentifier",
             "value": "legCapStart"
-          },
-          "legCircle": {
-            "type": "TagIdentifier",
-            "value": "legCircle"
           }
         },
         "artifactId": "[uuid]",
@@ -1834,7 +2193,16 @@ description: Variables in memory after executing bench-for-kids.kcl
       "angle": "degrees"
     }
   },
-  "legProfile": {
+  "legRadius": {
+    "type": "Number",
+    "value": 4.8,
+    "ty": {
+      "type": "Default",
+      "len": "cm",
+      "angle": "degrees"
+    }
+  },
+  "legRegion": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -1847,25 +2215,25 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "ccw": true,
           "center": [
-            0.0,
-            0.0
+            0.00000000000000021871003473503814,
+            0.000000000000000012740004597560524
           ],
           "from": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
-          "radius": 4.8,
+          "radius": 4.799999999999999,
           "tag": {
-            "commentStart": 1495,
-            "end": 1505,
+            "commentStart": 1759,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1495,
+            "start": 1759,
             "type": "TagDeclarator",
-            "value": "legCircle"
+            "value": "circle1"
           },
           "to": [
-            4.8,
-            0.0
+            -4.799999999999999,
+            0.000000000000000015680004672282222
           ],
           "type": "Circle",
           "units": "cm"
@@ -1874,8 +2242,8 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
-        "objectId": 1,
+        "kind": "Custom",
+        "objectId": 21,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1904,12 +2272,12 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "start": {
         "from": [
-          4.8,
-          0.0
+          -4.799999999999999,
+          0.000000000000000015680004672282222
         ],
         "to": [
-          4.8,
-          0.0
+          -4.799999999999999,
+          0.000000000000000015680004672282222
         ],
         "units": "cm",
         "tag": null,
@@ -1919,13 +2287,13 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       },
       "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        },
         "legCapStart": {
           "type": "TagIdentifier",
           "value": "legCapStart"
-        },
-        "legCircle": {
-          "type": "TagIdentifier",
-          "value": "legCircle"
         }
       },
       "artifactId": "[uuid]",
@@ -1933,47 +2301,359 @@ description: Variables in memory after executing bench-for-kids.kcl
       "units": "cm"
     }
   },
-  "legRadius": {
-    "type": "Number",
-    "value": 4.8,
-    "ty": {
-      "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
-    }
-  },
   "legSketch": {
-    "type": "Plane",
+    "type": "Object",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 1,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 25,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": -4.799999999999999,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000015680004672282222,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.00000000000000021871003473503814,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000012740004597560524,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.82,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 7.62,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.54,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 23,
+                    "center_object_id": 24,
+                    "start_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 21,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
+        }
       },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
+      "helperLine": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 28,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -4.8,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000013580004028066286,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.00000000000000018122002561731779,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.00000000000000000938000315322472,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 7.83,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.28,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 26,
+                    "end_object_id": 27,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": true
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 21,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "helperLine"
+                }
+              }
+            }
+          }
+        }
       },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.00000000000000021871003473503814,
+                    0.000000000000000012740004597560524
+                  ],
+                  "from": [
+                    -4.799999999999999,
+                    0.000000000000000015680004672282222
+                  ],
+                  "radius": 4.799999999999999,
+                  "tag": {
+                    "commentStart": 1759,
+                    "end": 1766,
+                    "moduleId": 0,
+                    "start": 1759,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    -4.799999999999999,
+                    0.000000000000000015680004672282222
+                  ],
+                  "type": "Circle",
+                  "units": "cm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 21,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
+                ],
+                "to": [
+                  -4.799999999999999,
+                  0.000000000000000015680004672282222
+                ],
+                "units": "cm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "cm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
   },
   "seatBody": {
     "type": "Solid",
@@ -1986,14 +2666,28 @@ description: Variables in memory after executing bench-for-kids.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 767,
+            "end": 771,
+            "moduleId": 0,
+            "start": 767,
+            "type": "TagDeclarator",
+            "value": "arc1"
+          },
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 869,
+            "end": 874,
+            "moduleId": 0,
+            "start": 869,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         }
       ],
@@ -2007,28 +2701,29 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
+            "ccw": true,
+            "center": [
+              -0.0,
+              15.0
+            ],
             "from": [
-              -20.0,
-              15.0
-            ],
-            "p1": [
-              -20.0,
-              15.0
-            ],
-            "p2": [
-              0.0,
-              35.0
-            ],
-            "p3": [
               20.0,
               15.0
             ],
-            "tag": null,
+            "radius": 20.0,
+            "tag": {
+              "commentStart": 767,
+              "end": 771,
+              "moduleId": 0,
+              "start": 767,
+              "type": "TagDeclarator",
+              "value": "arc1"
+            },
             "to": [
-              20.0,
-              15.0
+              -20.0,
+              15.000000000000002
             ],
-            "type": "ArcThreePoint",
+            "type": "Arc",
             "units": "cm"
           },
           {
@@ -2037,12 +2732,19 @@ description: Variables in memory after executing bench-for-kids.kcl
               "sourceRange": []
             },
             "from": [
-              20.0,
-              15.0
-            ],
-            "tag": null,
-            "to": [
               -20.0,
+              15.000000000000002
+            ],
+            "tag": {
+              "commentStart": 869,
+              "end": 874,
+              "moduleId": 0,
+              "start": 869,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
+            "to": [
+              20.0,
               15.0
             ],
             "type": "ToPoint",
@@ -2052,11 +2754,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
+          "kind": "XZ",
           "objectId": 0,
           "origin": {
             "x": 0.0,
-            "y": 400.0,
+            "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
@@ -2082,11 +2784,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "start": {
           "from": [
-            -20.0,
+            20.0,
             15.0
           ],
           "to": [
-            -20.0,
+            20.0,
             15.0
           ],
           "units": "cm",
@@ -2094,6 +2796,16 @@ description: Variables in memory after executing bench-for-kids.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": []
+          }
+        },
+        "tags": {
+          "arc1": {
+            "type": "TagIdentifier",
+            "value": "arc1"
+          },
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
           }
         },
         "artifactId": "[uuid]",
@@ -2116,6 +2828,535 @@ description: Variables in memory after executing bench-for-kids.kcl
     }
   },
   "seatProfile": {
+    "type": "Object",
+    "value": {
+      "arc1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 5,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": 20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "center_object_id": 4,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XZ",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "helperLine": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 14,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 12,
+                    "end_object_id": 13,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": true
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XZ",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "helperLine"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 8,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 6,
+                    "end_object_id": 7,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XZ",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    -0.0,
+                    15.0
+                  ],
+                  "from": [
+                    20.0,
+                    15.0
+                  ],
+                  "radius": 20.0,
+                  "tag": {
+                    "commentStart": 767,
+                    "end": 771,
+                    "moduleId": 0,
+                    "start": 767,
+                    "type": "TagDeclarator",
+                    "value": "arc1"
+                  },
+                  "to": [
+                    -20.0,
+                    15.000000000000002
+                  ],
+                  "type": "Arc",
+                  "units": "cm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -20.0,
+                    15.000000000000002
+                  ],
+                  "tag": {
+                    "commentStart": 869,
+                    "end": 874,
+                    "moduleId": 0,
+                    "start": 869,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    20.0,
+                    15.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "cm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  20.0,
+                  15.0
+                ],
+                "to": [
+                  20.0,
+                  15.0
+                ],
+                "units": "cm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "arc1": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                },
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "cm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "seatRegion": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -2126,28 +3367,29 @@ description: Variables in memory after executing bench-for-kids.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
+          "ccw": true,
+          "center": [
+            -0.0,
+            15.0
+          ],
           "from": [
-            -20.0,
-            15.0
-          ],
-          "p1": [
-            -20.0,
-            15.0
-          ],
-          "p2": [
-            0.0,
-            35.0
-          ],
-          "p3": [
             20.0,
             15.0
           ],
-          "tag": null,
+          "radius": 20.0,
+          "tag": {
+            "commentStart": 767,
+            "end": 771,
+            "moduleId": 0,
+            "start": 767,
+            "type": "TagDeclarator",
+            "value": "arc1"
+          },
           "to": [
-            20.0,
-            15.0
+            -20.0,
+            15.000000000000002
           ],
-          "type": "ArcThreePoint",
+          "type": "Arc",
           "units": "cm"
         },
         {
@@ -2156,12 +3398,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "sourceRange": []
           },
           "from": [
-            20.0,
-            15.0
-          ],
-          "tag": null,
-          "to": [
             -20.0,
+            15.000000000000002
+          ],
+          "tag": {
+            "commentStart": 869,
+            "end": 874,
+            "moduleId": 0,
+            "start": 869,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            20.0,
             15.0
           ],
           "type": "ToPoint",
@@ -2171,11 +3420,11 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
+        "kind": "XZ",
         "objectId": 0,
         "origin": {
           "x": 0.0,
-          "y": 400.0,
+          "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
@@ -2201,11 +3450,11 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "start": {
         "from": [
-          -20.0,
+          20.0,
           15.0
         ],
         "to": [
-          -20.0,
+          20.0,
           15.0
         ],
         "units": "cm",
@@ -2213,6 +3462,16 @@ description: Variables in memory after executing bench-for-kids.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": []
+        }
+      },
+      "tags": {
+        "arc1": {
+          "type": "TagIdentifier",
+          "value": "arc1"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
         }
       },
       "artifactId": "[uuid]",
@@ -2225,44 +3484,11 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
+      "kind": "XZ",
       "objectId": 0,
       "origin": {
         "x": 0.0,
-        "y": 400.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
         "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
-  },
-  "seatSketchPlane": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 400.0,
         "z": 0.0,
         "units": "mm"
       },
@@ -2298,12 +3524,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3890,
-            "end": 3901,
+            "commentStart": 4574,
+            "end": 4581,
             "moduleId": 0,
-            "start": 3890,
+            "start": 4574,
             "type": "TagDeclarator",
-            "value": "tailCircle"
+            "value": "circle1"
           },
           "type": "extrudeArc"
         },
@@ -2312,10 +3538,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3971,
-            "end": 3984,
+            "commentStart": 4790,
+            "end": 4803,
             "moduleId": 0,
-            "start": 3971,
+            "start": 4790,
             "type": "TagDeclarator",
             "value": "tailCapStart"
           },
@@ -2338,20 +3564,20 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "from": [
-              3.8880000000000003,
+              3.89,
               0.0
             ],
-            "radius": 3.8880000000000003,
+            "radius": 3.89,
             "tag": {
-              "commentStart": 3890,
-              "end": 3901,
+              "commentStart": 4574,
+              "end": 4581,
               "moduleId": 0,
-              "start": 3890,
+              "start": 4574,
               "type": "TagDeclarator",
-              "value": "tailCircle"
+              "value": "circle1"
             },
             "to": [
-              3.8880000000000003,
+              3.89,
               0.0
             ],
             "type": "Circle",
@@ -2362,7 +3588,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 3,
+          "objectId": 39,
           "origin": {
             "x": 0.0,
             "y": 360.0,
@@ -2391,11 +3617,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "start": {
           "from": [
-            3.8880000000000003,
+            3.89,
             0.0
           ],
           "to": [
-            3.8880000000000003,
+            3.89,
             0.0
           ],
           "units": "cm",
@@ -2406,13 +3632,13 @@ description: Variables in memory after executing bench-for-kids.kcl
           }
         },
         "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          },
           "tailCapStart": {
             "type": "TagIdentifier",
             "value": "tailCapStart"
-          },
-          "tailCircle": {
-            "type": "TagIdentifier",
-            "value": "tailCircle"
           }
         },
         "artifactId": "[uuid]",
@@ -2445,11 +3671,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tailCapStart"
-  },
-  "tailCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "tailCircle"
   },
   "tailElevation": {
     "type": "Number",
@@ -2484,7 +3705,7 @@ description: Variables in memory after executing bench-for-kids.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 3,
+      "objectId": 39,
       "origin": {
         "x": 0.0,
         "y": 360.0,
@@ -2512,6 +3733,243 @@ description: Variables in memory after executing bench-for-kids.kcl
     }
   },
   "tailProfile": {
+    "type": "Object",
+    "value": {
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 43,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 3.89,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.89,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 41,
+                    "center_object_id": 42,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 39,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 360.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "from": [
+                    3.89,
+                    0.0
+                  ],
+                  "radius": 3.89,
+                  "tag": {
+                    "commentStart": 4574,
+                    "end": 4581,
+                    "moduleId": 0,
+                    "start": 4574,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    3.89,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "cm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 39,
+                "origin": {
+                  "x": 0.0,
+                  "y": 360.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  3.89,
+                  0.0
+                ],
+                "to": [
+                  3.89,
+                  0.0
+                ],
+                "units": "cm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "cm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "tailRadius": {
+    "type": "Number",
+    "value": 3.8880000000000003,
+    "ty": {
+      "type": "Default",
+      "len": "cm",
+      "angle": "degrees"
+    }
+  },
+  "tailRegion": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -2528,20 +3986,20 @@ description: Variables in memory after executing bench-for-kids.kcl
             0.0
           ],
           "from": [
-            3.8880000000000003,
+            3.89,
             0.0
           ],
-          "radius": 3.8880000000000003,
+          "radius": 3.89,
           "tag": {
-            "commentStart": 3890,
-            "end": 3901,
+            "commentStart": 4574,
+            "end": 4581,
             "moduleId": 0,
-            "start": 3890,
+            "start": 4574,
             "type": "TagDeclarator",
-            "value": "tailCircle"
+            "value": "circle1"
           },
           "to": [
-            3.8880000000000003,
+            3.89,
             0.0
           ],
           "type": "Circle",
@@ -2552,7 +4010,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 3,
+        "objectId": 39,
         "origin": {
           "x": 0.0,
           "y": 360.0,
@@ -2581,11 +4039,11 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "start": {
         "from": [
-          3.8880000000000003,
+          3.89,
           0.0
         ],
         "to": [
-          3.8880000000000003,
+          3.89,
           0.0
         ],
         "units": "cm",
@@ -2596,60 +4054,18 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       },
       "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        },
         "tailCapStart": {
           "type": "TagIdentifier",
           "value": "tailCapStart"
-        },
-        "tailCircle": {
-          "type": "TagIdentifier",
-          "value": "tailCircle"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "cm"
-    }
-  },
-  "tailRadius": {
-    "type": "Number",
-    "value": 3.8880000000000003,
-    "ty": {
-      "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
-    }
-  },
-  "tailSketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 3,
-      "origin": {
-        "x": 0.0,
-        "y": 360.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": null
-      }
     }
   }
 }

@@ -21,45 +21,23 @@ baseFaceSketch = sketch(on = baseFacePlane) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.65mm])
   line2 = line(start = [var 0mm, var 4.65mm], end = [var 2.15mm, var 2.5mm])
   coincident([line1.end, line2.start])
-  line3 = line(
-    start = [var 2.15mm, var 2.5mm],
-    end = [var 2.15mm, var 0.7mm],
-  )
+  line3 = line(start = [var 2.15mm, var 2.5mm], end = [var 2.15mm, var 0.7mm])
   coincident([line2.end, line3.start])
-  line4 = line(
-    start = [var 2.15mm, var 0.7mm],
-    end = [var 2.85mm, var 0mm],
-  )
+  line4 = line(start = [var 2.15mm, var 0.7mm], end = [var 2.85mm, var 0mm])
   coincident([line3.end, line4.start])
   line5 = line(start = [var 2.85mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
   coincident([line1.start, ORIGIN])
-  guide1 = line(
-    start = [var 0mm, var 0mm],
-    end = [var 2.15mm, var 0mm],
-    construction = true,
-  )
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 2.15mm, var 0mm], construction = true)
   coincident([guide1.start, line1.start])
-  guide2 = line(
-    start = [var 2.15mm, var 0mm],
-    end = [var 2.15mm, var 2.5mm],
-    construction = true,
-  )
+  guide2 = line(start = [var 2.15mm, var 0mm], end = [var 2.15mm, var 2.5mm], construction = true)
   coincident([guide1.end, guide2.start])
   coincident([guide2.end, line2.end])
-  guide3 = line(
-    start = [var 0mm, var 0mm],
-    end = [var 2.85mm, var 0mm],
-    construction = true,
-  )
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.85mm, var 0mm], construction = true)
   coincident([guide3.start, line1.start])
   coincident([guide3.end, line4.end])
-  guide4 = line(
-    start = [var 2.15mm, var 0mm],
-    end = [var 2.15mm, var 0.7mm],
-    construction = true,
-  )
+  guide4 = line(start = [var 2.15mm, var 0mm], end = [var 2.15mm, var 0.7mm], construction = true)
   coincident([guide4.start, guide1.end])
   coincident([guide4.end, line3.end])
   vertical(line1)

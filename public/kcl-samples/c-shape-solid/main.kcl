@@ -37,10 +37,8 @@ cRingSketch = sketch(on = XY) {
   coincident([lowerRadialRef.end, centerline.end])
   coincident([upperRadialRef.start, innerArc.start])
   coincident([upperRadialRef.end, lowerRadialRef.end])
-  
   // Symmetry
   equalLength([upperRadialRef, lowerRadialRef])
-  
   // Orientation
   horizontal(topBridge)
   horizontal(bottomBridge)

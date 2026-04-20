@@ -217,7 +217,6 @@ chassis = extrude(chassisRegion, length = -chassisWidth, symmetric = true)
   |> appearance(%, color = "#ffdd00") // bright yellow body
 hide(chassisProfile)
 
-
 // Cabin (front operator area)
 // Represents the front driver's cab with a sloped windshield
 cabinSideProfile = sketch(on = XZ) {
@@ -311,7 +310,6 @@ roofRegion = region(segments = [roofProfile.line1])
 roof = extrude(roofRegion, length = -chassisWidth, symmetric = true)
   |> appearance(%, color = "#ffdd00") // bright yellow body
 hide(roofProfile)
-
 
 // Wheels
 // Cylindrical wheels with a central hubcap detail.

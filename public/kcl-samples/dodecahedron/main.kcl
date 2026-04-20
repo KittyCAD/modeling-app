@@ -42,47 +42,102 @@ cube01 = extrude(baseRegion, length = seedLength)
 cube02 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
   |> translate(z = topPlaneZ * (1 - 1))
-  |> rotate(pitch = dihedral, roll = 0, yaw = 0, global = true)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 0,
+       global = true,
+     )
 // face3
 cube03 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1.001) // slight 0.001 offset to make the 3D Intersect work
-  |> rotate(pitch = dihedral, roll = 0, yaw = 72, global = true)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 72,
+       global = true,
+     )
 // face4
 cube04 = clone(cube01)
   |> scale(x = 1, y = 1.001, z = 1) // slight 0.001 offset to make the 3D Intersect work
-  |> rotate(pitch = dihedral, roll = 0, yaw = 144, global = true)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 144,
+       global = true,
+     )
 // face5
 cube05 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
-  |> rotate(pitch = dihedral, roll = 0, yaw = 216, global = true)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 216,
+       global = true,
+     )
 // face6
 cube06 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1.001) // slight 0.001 offset to make the 3D Intersect work
-  |> rotate(pitch = dihedral, roll = 0, yaw = 288, global = true)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 288,
+       global = true,
+     )
 // face7
 cube07 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
-  |> rotate(pitch = 180, roll = 0, yaw = 0, global = true)
+  |> rotate(
+       pitch = 180,
+       roll = 0,
+       yaw = 0,
+       global = true,
+     )
 // face8
 cube08 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
-  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 36, global = true)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 36,
+       global = true,
+     )
 // face9
 cube09 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1.001)
-  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 108, global = true)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 108,
+       global = true,
+     )
 // face10
 cube10 = clone(cube01)
   |> scale(x = 1, y = 1, z = 0.999) // slight 0.001 offset to make the 3D Intersect work
-  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 180, global = true)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 180,
+       global = true,
+     )
 // face11
 cube11 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
-  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 252, global = true)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 252,
+       global = true,
+     )
 // face12
 cube12 = clone(cube01)
   |> scale(x = 1, y = 1, z = 1)
-  |> rotate(pitch = 180 - dihedral, roll = 0, yaw = 324, global = true)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 324,
+       global = true,
+     )
 
 // Apply intersection to all faces
 intersection01 = intersect([cube01, cube12])

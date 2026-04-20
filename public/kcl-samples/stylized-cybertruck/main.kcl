@@ -220,7 +220,6 @@ chassis = extrude(chassisRegion, length = -chassisWidth, symmetric = true)
   |> appearance(%, color = "#757575") // gray body
 hide(chassisProfile)
 
-
 // Cabin (angular upper body)
 // Defined by intersecting sloped front, back, and side profiles.
 // Emulates the faceted, wedge-like shape of the Cybertruck.

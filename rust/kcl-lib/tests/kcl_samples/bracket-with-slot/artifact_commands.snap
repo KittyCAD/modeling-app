@@ -33,6 +33,15 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": -0.00000000000000016300003011170318,
+          "y": -0.00000000000000022100005282802792,
           "z": 0.0
         }
       }
@@ -81,93 +90,8 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": -0.0000000000000003120000581344484,
             "y": 70.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -66.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 166.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -4.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -178,8 +102,106 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 3.9999999999999996,
+            "y": 70.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 3.999999999999999,
+            "y": 3.9999999999999956,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 170.0,
+            "y": 3.999999999999997,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 170.0,
+            "y": -0.0000000000000023738792748382393,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.0000000000000001730000324309966,
+            "y": -0.0000000000000009575153555484475,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -306,48 +328,52 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "closest_edge",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
+        "closest_to": {
+          "x": 2.0,
+          "y": 20.0,
+          "z": 70.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "closest_edge",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
+        "closest_to": {
+          "x": 2.0,
+          "y": -20.0,
+          "z": 70.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "closest_edge",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
+        "closest_to": {
+          "x": 170.0,
+          "y": 20.0,
+          "z": 2.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "closest_edge",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
+        "closest_to": {
+          "x": 170.0,
+          "y": -20.0,
+          "z": 2.0
+        }
       }
     },
     {
@@ -378,14 +404,6 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "face_is_planar",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "make_plane",
         "origin": {
           "x": 4.0,
@@ -393,14 +411,14 @@ description: Artifact commands bracket-with-slot.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": -0.0,
-          "y": -0.0,
-          "z": -1.0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
         "y_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": -0.0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "size": 60.0,
         "clobber": false,
@@ -426,8 +444,8 @@ description: Artifact commands bracket-with-slot.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": -1.0,
+          "x": -1.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -446,8 +464,8 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -50.0,
-          "y": -9.000523598776926,
+          "x": 56.0,
+          "y": -0.000000000000000024000005235431982,
           "z": 0.0
         }
       }
@@ -466,113 +484,19 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 0.0005235987769264457,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 50.0,
+            "y": -0.00000000000000005300000997614945
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 4.0,
-            "z": 0.0
+          "radius": 6.0,
+          "start": {
+            "unit": "radians",
+            "value": 0.000000000000000004833334123452912
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 5.000000000000001,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 11.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.000000000000002,
-            "y": -5.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -4.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -50.0,
-            "y": -9.000523598776926,
-            "z": 0.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -582,23 +506,293 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 61.0,
+          "y": -0.0000000000000002330000430380347,
+          "z": 0.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "revolve_about_edge",
-        "target": "[uuid]",
-        "edge_id": "[uuid]",
-        "angle": {
-          "unit": "degrees",
-          "value": 360.0
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 50.0,
+            "y": -0.00000000000000011400002114598916
+          },
+          "radius": 11.0,
+          "start": {
+            "unit": "radians",
+            "value": -0.000000000000000010818183808367778
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 4.2,
+          "y": 0.0,
+          "z": 50.0
         },
+        "x_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 11.200000001,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0000000006000000466442222,
+            "y": 0.0
+          },
+          "radius": 11.2000000004,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": -0.2,
+          "y": 0.0,
+          "z": 50.0
+        },
+        "x_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 6.800000001,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.00000000040000003109614805,
+            "y": 0.0
+          },
+          "radius": 6.8000000006,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "loft",
+        "section_ids": [
+          "[uuid]",
+          "[uuid]"
+        ],
+        "v_degree": 2,
+        "bez_approximate_rational": false,
+        "base_curve_index": null,
         "tolerance": 0.0000001,
-        "opposite": "None",
         "body_type": "solid"
       }
     },
@@ -632,23 +826,6 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 1.0,
-          "g": 0.0,
-          "b": 0.0,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
@@ -658,6 +835,33 @@ description: Artifact commands bracket-with-slot.kcl
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -683,6 +887,15 @@ description: Artifact commands bracket-with-slot.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -716,7 +929,7 @@ description: Artifact commands bracket-with-slot.kcl
         "path": "[uuid]",
         "to": {
           "x": 150.0,
-          "y": -6.0,
+          "y": -6.00000000000001,
           "z": 0.0
         }
       }
@@ -737,11 +950,11 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -36.0,
-            "y": 0.0,
+            "x": 114.0,
+            "y": -6.0000000000000115,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -752,13 +965,21 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.0,
-            "y": 12.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 114.0,
+            "y": -0.0000000000000017763568394002505
           },
-          "angle_snap_increment": null
+          "radius": 6.00000000000001,
+          "start": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -270.0
+          },
+          "relative": false
         }
       }
     },
@@ -771,11 +992,11 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 36.0,
-            "y": -0.0000000000000031974423109204513,
+            "x": 150.0,
+            "y": 6.00000000000001,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -786,13 +1007,21 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.0,
-            "y": -11.999999999999996,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 150.0,
+            "y": 0.000000000000003552713678800501
           },
-          "angle_snap_increment": null
+          "radius": 6.000000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "relative": false
         }
       }
     },
@@ -800,8 +1029,12 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 132.0,
+          "y": 0.0
+        }
       }
     },
     {
@@ -829,7 +1062,7 @@ description: Artifact commands bracket-with-slot.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
+        "extrude_method": "new",
         "body_type": "solid"
       }
     },
@@ -864,6 +1097,15 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {

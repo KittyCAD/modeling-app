@@ -104,11 +104,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": -38.099999999999994,
             "y": 25.4,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -121,62 +121,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.524999999999999,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 9.524999999999999,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -9.524999999999999,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
+            "x": -28.701999999999995,
             "y": 25.4,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -189,11 +138,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.462500000000002,
-            "y": 0.0,
+            "x": -28.701999999999995,
+            "y": 35.05199999999999,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -206,11 +155,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 20.637499999999996,
-            "y": -20.6375,
+            "x": -38.099999999999994,
+            "y": 35.05199999999999,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -223,11 +172,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 20.637499999999996,
-            "y": 20.6375,
+            "x": -38.099999999999994,
+            "y": 60.45199999999999,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -240,45 +189,11 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.462500000000002,
-            "y": 0.0,
+            "x": -20.574,
+            "y": 60.45199999999999,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -25.4,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -9.524999999999999,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -292,10 +207,10 @@ description: Artifact commands v-block.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -9.524999999999999,
+            "y": 39.624,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -308,28 +223,113 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.524999999999999,
+            "x": 20.574,
+            "y": 60.45199999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 38.099999999999994,
+            "y": 60.45199999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 38.099999999999994,
+            "y": 35.05199999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 28.701999999999995,
+            "y": 35.05199999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 28.701999999999995,
+            "y": 25.4,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 38.099999999999994,
+            "y": 25.4,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 38.099999999999994,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -25.4,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -354,8 +354,12 @@ description: Artifact commands v-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

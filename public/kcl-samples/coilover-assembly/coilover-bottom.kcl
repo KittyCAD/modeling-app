@@ -7,7 +7,6 @@
 // Import parameters
 import * from "parameters.kcl"
 
-
 // Retainer Plate
 retainerPlateProfile = sketch(on = XY) {
   anchor = line(start = [var 0mm, var 0mm], end = [var 35mm, var 0mm], construction = true)

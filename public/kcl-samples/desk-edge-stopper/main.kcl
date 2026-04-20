@@ -89,7 +89,13 @@ guardProfile = sketch(on = YZ) {
   vertical(line10)
 
   coincident([line1.start, ORIGIN])
-  coincident([line2.end, [uProfileDepthInside, uProfileWidthInside]])
+  coincident([
+    line2.end,
+    [
+      uProfileDepthInside,
+      uProfileWidthInside
+    ]
+  ])
 
   verticalDistance([line4.start, line4.end]) == materialThickness
   verticalDistance([line6.start, line6.end]) == stopWallHeight
@@ -106,11 +112,7 @@ guardBody = extrude(guardRegion, length = guardLengthAlongDesk)
 // holes
 holeProfile01 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-  radiusGuide = line(
-    start = [var 0mm, var 0mm],
-    end = [var 2mm, var 0mm],
-    construction = true,
-  )
+  radiusGuide = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm], construction = true)
 
   coincident([circle1.center, ORIGIN])
   coincident([radiusGuide.start, circle1.center])
@@ -123,16 +125,13 @@ holeRegion01 = region(segments = [holeProfile01.circle1])
 hiddenHoleProfile01 = hide(holeProfile01)
 baseHoleBody = extrude(holeRegion01, length = -materialThickness)
   |> translate(
-    x = holeOffsetFromGuardEdge,
-    y = holeOffsetFromTheUprofileEdge,
-    z = uProfileWidthInside + materialThickness,
-    global = true,
-  )
+       x = holeOffsetFromGuardEdge,
+       y = holeOffsetFromTheUprofileEdge,
+       z = uProfileWidthInside + materialThickness,
+       global = true,
+     )
 holeBody02 = clone(baseHoleBody)
   |> translate(x = holeSpacing, global = true)
 holeBody03 = clone(baseHoleBody)
   |> translate(x = holeSpacing * 2, global = true)
-guardBodyWithHoles = subtract(
-  [guardBody],
-  tools = [baseHoleBody, holeBody02, holeBody03],
-)
+guardBodyWithHoles = subtract([guardBody], tools = [baseHoleBody, holeBody02, holeBody03])

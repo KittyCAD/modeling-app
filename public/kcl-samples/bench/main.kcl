@@ -434,4 +434,3 @@ hide([
 ])
 leftArmRest = clone(rightArmRest)
   |> translate(x = -benchLength, global = true)
-

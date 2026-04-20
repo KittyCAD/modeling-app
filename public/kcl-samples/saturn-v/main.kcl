@@ -13,6 +13,7 @@ transitionRadius = 3.85
 // ----------------------------
 // Created with revolve profiles to model conic nozzles; cloned and rotated to form quad layout
 
+
 nozzleProfile = sketch(on = YZ) {
   line1 = line(start = [var -0.1m, var 0m], end = [var -0.1m, var 9m])
   line2 = line(start = [var -0.1m, var 9m], end = [var -2.4m, var 0m])
@@ -65,6 +66,7 @@ nozzle4 = clone(nozzle1)
 // --- Nozzle Hoods (Alternating) ---
 // ------------------------------------
 // Modeled identically to nozzles but translated upward and given alternating colors
+
 
 hoodProfile = sketch(on = YZ) {
   line1 = line(start = [var -0.1m, var 0m], end = [var -0.1m, var 8.5m])
@@ -122,6 +124,7 @@ hood4 = clone(hood1)
 // ----------------------------
 // Small extrusions in X-Y profile, rotated to form cross pattern
 
+
 finProfile = sketch(on = YZ) {
   line1 = line(start = [var -4m, var 6m], end = [var -7.6m, var 6m])
   line2 = line(start = [var -7.6m, var 6m], end = [var -7.6m, var 8.2m])
@@ -170,6 +173,7 @@ fin4 = clone(fin1)
 // -------------------------------
 // Uses split white/black geometry to emulate paint scheme with mirrored arcs
 
+
 bottomBasePlane = offsetPlane(XY, offset = 6)
 blackPanelProfile = sketch(on = bottomBasePlane) {
   line1 = line(start = [var 0m, var -4.5m], end = [var 0m, var 4.5m])
@@ -209,6 +213,7 @@ whitePanel = extrude(region005, length = 14)
 // --- Stage 1: Upper Section ---
 // ------------------------------
 // Alternating black and white zones using circular cross-sections
+
 
 cylinderBasePlane = offsetPlane(XY, offset = 20)
 stage1CylinderProfile = sketch(on = cylinderBasePlane) {
@@ -416,6 +421,7 @@ stage2Black = extrude(region016, length = 2)
 // --- Launch Escape System ---
 // ----------------------------
 // Final tapered nose modeled using a revolve profile for a sleek profile
+
 
 lesProfile = sketch(on = XZ) {
   line1 = line(start = [var 0m, var 80m], end = [var -3.2m, var 80m])

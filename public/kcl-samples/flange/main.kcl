@@ -51,8 +51,14 @@ baseProfile = sketch(on = XY) {
   bottomHole = circle(start = [var 0in, var -2.1in], center = [var 0in, var -1.75in])
 
   coincident([outerCircle.center, ORIGIN])
-  coincident([outerRadiusGuide.start, outerCircle.center])
-  coincident([outerRadiusGuide.end, outerCircle.start])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
 
   coincident([rightCenterGuide.start, ORIGIN])
   coincident([topCenterGuide.start, ORIGIN])
@@ -62,16 +68,28 @@ baseProfile = sketch(on = XY) {
   coincident([rightCenterGuide.end, rightHole.center])
   coincident([topCenterGuide.end, topHole.center])
   coincident([leftCenterGuide.end, leftHole.center])
-  coincident([bottomCenterGuide.end, bottomHole.center])
+  coincident([
+    bottomCenterGuide.end,
+    bottomHole.center
+  ])
 
-  coincident([rightRadiusGuide.start, rightHole.center])
+  coincident([
+    rightRadiusGuide.start,
+    rightHole.center
+  ])
   coincident([rightRadiusGuide.end, rightHole.start])
   coincident([topRadiusGuide.start, topHole.center])
   coincident([topRadiusGuide.end, topHole.start])
   coincident([leftRadiusGuide.start, leftHole.center])
   coincident([leftRadiusGuide.end, leftHole.start])
-  coincident([bottomRadiusGuide.start, bottomHole.center])
-  coincident([bottomRadiusGuide.end, bottomHole.start])
+  coincident([
+    bottomRadiusGuide.start,
+    bottomHole.center
+  ])
+  coincident([
+    bottomRadiusGuide.end,
+    bottomHole.start
+  ])
 
   horizontal(outerRadiusGuide)
   horizontal(rightCenterGuide)
@@ -83,15 +101,42 @@ baseProfile = sketch(on = XY) {
   horizontal(leftRadiusGuide)
   vertical(bottomRadiusGuide)
 
-  distance([outerRadiusGuide.start, outerRadiusGuide.end]) == baseRadius
-  horizontalDistance([rightCenterGuide.start, rightCenterGuide.end]) == mountingHolePlacementRadius
-  verticalDistance([topCenterGuide.start, topCenterGuide.end]) == mountingHolePlacementRadius
-  horizontalDistance([leftCenterGuide.start, leftCenterGuide.end]) == -mountingHolePlacementRadius
-  verticalDistance([bottomCenterGuide.start, bottomCenterGuide.end]) == -mountingHolePlacementRadius
-  distance([rightRadiusGuide.start, rightRadiusGuide.end]) == mountingHoleRadius
-  distance([topRadiusGuide.start, topRadiusGuide.end]) == mountingHoleRadius
-  distance([leftRadiusGuide.start, leftRadiusGuide.end]) == mountingHoleRadius
-  distance([bottomRadiusGuide.start, bottomRadiusGuide.end]) == mountingHoleRadius
+  distance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == baseRadius
+  horizontalDistance([
+  rightCenterGuide.start,
+  rightCenterGuide.end
+]) == mountingHolePlacementRadius
+  verticalDistance([
+  topCenterGuide.start,
+  topCenterGuide.end
+]) == mountingHolePlacementRadius
+  horizontalDistance([
+  leftCenterGuide.start,
+  leftCenterGuide.end
+]) == -mountingHolePlacementRadius
+  verticalDistance([
+  bottomCenterGuide.start,
+  bottomCenterGuide.end
+]) == -mountingHolePlacementRadius
+  distance([
+  rightRadiusGuide.start,
+  rightRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  topRadiusGuide.start,
+  topRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  leftRadiusGuide.start,
+  leftRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  bottomRadiusGuide.start,
+  bottomRadiusGuide.end
+]) == mountingHoleRadius
 }
 
 baseRegion = region(point = [baseRadius / 2, 0in], sketch = baseProfile)

@@ -87,4 +87,4 @@ hide(toothProfile)
 
 // Pattern the single tooth over the length of the rack body
 teeth = singleTooth
-|> patternLinear3d(axis = [10, 0, 0], distance = 1.59, instances = 63)
+  |> patternLinear3d(axis = [10, 0, 0], distance = 1.59, instances = 63)

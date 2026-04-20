@@ -4,9 +4,9 @@
 // made using zds
 @settings(defaultLengthUnit = in)
 
-ringradius=1in
-numrings=5
-postheight=(ringradius*(numrings+1))*2
+ringradius = 1in
+numrings = 5
+postheight = ringradius * (numrings + 1) * 2
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0in, var 0in], end = [var 0in, var 12in])

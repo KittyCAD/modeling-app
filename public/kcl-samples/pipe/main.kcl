@@ -20,7 +20,13 @@ pipeSection = sketch(on = XZ) {
   coincident([circle1.center, ORIGIN])
 }
 
-ringRegion = region(point = [(pipeInnerDiameter + pipeThickness)/2, 0], sketch = pipeSection)
+ringRegion = region(
+  point = [
+    (pipeInnerDiameter + pipeThickness) / 2,
+    0
+  ],
+  sketch = pipeSection,
+)
 pipeBody = extrude(ringRegion, length = -pipeLength, symmetric = true)
   |> appearance(color = "#a24ed0")
 hide(pipeSection)
