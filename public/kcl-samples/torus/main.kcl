@@ -1,0 +1,21 @@
+// Torus
+// A torus is defined by its diameter and height.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+torusInnerDiameter = 20
+crossSectionDiameter = 10
+
+// create a sketch for the torus profile on the XY plane
+sketch = startSketchOn(XY)
+
+// create the profile for the cross section of the torus
+profile = sketch(on = sketch) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 15mm, var 0mm])
+}
+
+region001 = region(segments = [profile.circle1])
+// revolve the profile to create the torus
+torus = revolve(region001, axis = Y, angle = 360.0)

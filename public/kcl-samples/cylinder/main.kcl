@@ -1,0 +1,21 @@
+// Cylinder
+// A cylinder is a primitive shape defined by its diameter and length
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+length = 10
+cylinderDiameter = 10
+
+// create the profile centered at the origin
+sketch = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == cylinderDiameter / 2
+}
+
+// extrude the profile to create the box
+region = region(segments = [sketch.circle1])
+hide(sketch)
+cylinder = extrude(region, length = length)

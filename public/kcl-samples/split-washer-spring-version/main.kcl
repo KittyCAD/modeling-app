@@ -1,0 +1,90 @@
+// Split Washer (Spring Version)
+// A spring lock washer is a small metal ring with a gap. Unlike flat washers, this one is twisted into a spiral shape, like a slice of a spring. It’s designed to stay slightly compressed, which helps hold bolts and nuts in place — even when things vibrate. This version shows how to model that twist using a helical sweep.
+// Categories: Fasteners
+
+@settings(defaultLengthUnit = mm)
+
+// ──────────
+// PARAMETERS
+// ──────────
+
+// Inner hole diameter — matches the bolt shaft
+washerHoleDiameter = 4
+washerHoleRadius = washerHoleDiameter / 2
+
+// Outer diameter of the washer — must be bigger than the hole
+washerOuterDiameter = 8
+washerOuterRadius = washerOuterDiameter / 2
+
+// Thickness of the washer — this defines how tall the cross-section is
+washerThickness = 1
+
+// Vertical rise from one end of the washer to the other — defines the “spring” effect
+washerSplitHeight = 1
+
+// ──────────────────────────────
+// STEP 1: DEFINE THE HELIX GUIDE
+// ──────────────────────────────
+
+
+// To make a 3D spring-like shape, we need a *path* for the geometry to follow. We'll use a helix (like a spiral staircase) as this path. The sweep will twist the washer’s cross-section along the helix, giving it the spring form.
+
+
+// The helix:
+// - Starts at the origin
+// - Wraps in a counter-clockwise direction (ccw = true)
+// - Has a radius equal to the bolt hole (so it wraps around the center)
+// - Rises by `washerSplitHeight` over the revolution
+// - We set revolutions to 0.95 (just under one full circle) to leave a realistic gap
+// If we set it to exactly 1.0, the washer would be fully closed.
+
+
+helixGuide = helix(
+  axis = Z,
+  radius = washerHoleRadius,
+  length = washerSplitHeight,
+  revolutions = 0.95,
+  angleStart = 0,
+  ccw = true,
+)
+
+// ───────────────────────────────────────
+// STEP 2: DRAW THE WASHER’S CROSS SECTION
+// ───────────────────────────────────────
+
+// Next, we draw the shape that will be swept along the helix. This is a small rectangle that defines one slice of the washer’s ring.
+// - The height of this rectangle is the washer’s thickness.
+// - Its width is the difference between the outer and inner radius — the actual width of the ring material.
+washerSectionWidth = washerOuterRadius - washerHoleRadius
+
+// The sweep profile needs to sit on the XZ plane, because the helix starts at Y = 0.
+washerSectionSketch = startSketchOn(XZ)
+
+// We position the start of the rectangle at the washerHoleRadius, so it aligns with the helix guide.
+
+
+washerSectionProfile = sketch(on = washerSectionSketch) {
+  line1 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 1mm])
+  line2 = line(start = [var 2mm, var 1mm], end = [var 4mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4mm, var 1mm], end = [var 4mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+
+// ──────────────────────────────
+// STEP 3: SWEEP TO FORM THE BODY
+// ──────────────────────────────
+
+
+// Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.
+// This creates a ring that’s slightly twisted — like a slice of a spring.
+// The result is a true spring lock washer in 3D.
+
+
+region001 = region(point = [2.0025mm, 0.5mm], sketch = washerSectionProfile)
+splitWasherBody = sweep(region001, path = helixGuide)

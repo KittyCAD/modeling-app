@@ -1,0 +1,463 @@
+// Stylized Toy Fire Truck
+// A toy parametric fire truck with extended rear compartment and roof ladder. Optimized for real-time rendering or schematic use in stylized design scenes.
+// Categories: Automotive, Maker
+
+// Set units and version
+@settings(defaultLengthUnit = m)
+
+// Chassis dimensions
+chassisLength = 4.2 // total vehicle length
+chassisWidth = 1.8 // total vehicle width
+chassisHeight = 0.4 // height of main chassis block
+
+
+// Wheel configuration
+wheelBase = chassisLength * 0.7 // distance between front and rear wheels
+wheelDiameter = 0.7 // outer diameter of tire
+wheelWidth = chassisWidth * 0.15 // width of tire
+
+
+// Fender geometry
+fenderInset = 0.1 // horizontal gap between chassis and fender
+fenderLength = chassisLength + fenderInset * 2 // overall fender span along length
+fenderWidth = chassisWidth + fenderInset * 2 // overall fender span across width
+fenderHeight = 0.35 // height of the fender block
+
+
+// Elevation levels
+groundClearance = 0.4 // vertical gap between ground and bottom of fender
+chassisElevation = groundClearance + fenderHeight // bottom of the main chassis
+
+
+// Cabin
+cabinElevation = chassisElevation + chassisHeight // vertical start of cabin
+cabinHeight = 1 // total cabin height
+windPanelShift = 0.5 // slant of windshield
+cabinLength = chassisLength * 0.2 // cabin segment along the length
+compartmentLength = chassisLength - windPanelShift - cabinLength
+
+// Roof
+roofElevation = cabinElevation + cabinHeight // roof base height
+roofHeight = 0.1 // thickness of the roof block
+
+
+// Ladder
+ladderElevation = roofElevation + roofHeight + 0.1
+ladderWidth = 0.5
+ladderHeight = 0.5
+ladderLength = chassisLength
+
+// Front lights
+headlightsElevation = chassisElevation + chassisHeight / 2
+headlightsDistance = chassisWidth * 0.75
+headlightsSize = chassisHeight * 0.8
+lightDepth = 0.05 // extrusion depth for headlights and taillights
+
+
+// Rear lights
+taillightsOffset = chassisHeight * 0.2
+taillightsHeight = chassisHeight - (taillightsOffset * 2)
+taillightsWidth = taillightsHeight * 1.5
+taillightsElevation = chassisElevation + taillightsOffset
+taillightsDistance = chassisWidth - (taillightsOffset * 2) - taillightsWidth
+taillightsSize = chassisHeight * 0.8
+
+// Fenders
+// Protective side covers that house the wheels.
+// Positioned slightly wider than the chassis to suggest ruggedness.
+fenderProfile = sketch(on = XZ) {
+  line1 = line(start = [var 0m, var 0m], end = [var 1m, var 0m])
+  line2 = line(start = [var 1m, var 0m], end = [var 1m, var 1m])
+  line3 = line(start = [var 1m, var 1m], end = [var 0m, var 1m])
+  line4 = line(start = [var 0m, var 1m], end = [var 0m, var 0m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, ORIGIN]) == fenderLength / 2
+  verticalDistance([ORIGIN, line1.start]) == groundClearance
+  horizontalDistance([line1.start, line1.end]) == fenderLength
+  verticalDistance([line1.start, line4.start]) == fenderHeight
+}
+
+fenderRegion = region(segments = [fenderProfile.line1])
+fenderBody = extrude(fenderRegion, length = -chassisWidth - (fenderInset * 2), symmetric = true)
+  |> appearance(%, color = "#e0e0e0")
+hide(fenderProfile)
+
+// Wheel Cutouts
+// Hexagonal recesses subtracted from the fenders to make space for the wheels.
+wheelCutoutSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.5m, var 0.35m], center = [var 0m, var 0.35m], construction = true)
+
+  line1 = line(start = [var -0.5m, var 0.35m], end = [var -0.25m, var 0.8m])
+  line2 = line(start = [var -0.25m, var 0.8m], end = [var 0.25m, var 0.8m])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 0.25m, var 0.8m], end = [var 0.5m, var 0.35m])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, circle1.start])
+
+  line4 = line(start = [var 0.5m, var 0.35m], end = [var 0.25m, var -0.1m])
+  coincident([line4.start, line3.end])
+
+  line5 = line(start = [var 0.25m, var -0.1m], end = [var -0.25m, var -0.1m])
+  coincident([line4.end, line5.start])
+
+  line6 = line(start = [var -0.25m, var -0.1m], end = [var -0.5m, var 0.35m])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  coincident([line6.end, circle1])
+  coincident([line2.start, circle1])
+  coincident([line3.start, circle1])
+  coincident([line5.start, circle1])
+  coincident([line6.start, circle1])
+
+  equalLength([
+    line5,
+    line6,
+    line1,
+    line2,
+    line3,
+    line4
+  ])
+
+  line7 = line(start = [var 0m, var 0.35m], end = [var 0.5m, var 0.35m], construction = true)
+  coincident([line7.start, circle1.center])
+  coincident([line7.end, line4.start])
+  horizontal(line7)
+
+  horizontalDistance([ORIGIN, line7.start]) == 0m
+  verticalDistance([ORIGIN, line7.start]) == wheelDiameter / 2
+  horizontalDistance([line7.start, line7.end]) == wheelDiameter * 0.75
+}
+
+cutOutProfile = region(segments = [wheelCutoutSketch.line1])
+cutOutVoid = extrude(cutOutProfile, length = wheelWidth * 3, symmetric = true)
+hide(wheelCutoutSketch)
+
+frontLeftCutout = clone(cutOutVoid)
+  |> translate(
+       x = -wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+rearLeftCutout = clone(cutOutVoid)
+  |> translate(
+       x = wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+frontRightCutout = clone(cutOutVoid)
+  |> translate(
+       x = -wheelBase / 2,
+       y = fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+rearRightCutout = cutOutVoid
+  |> translate(
+       x = wheelBase / 2,
+       y = fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+
+fenderWithCutouts = subtract(
+       fenderBody,
+       tools = [
+         frontLeftCutout,
+         rearLeftCutout,
+         frontRightCutout,
+         rearRightCutout
+       ],
+     )
+  |> appearance(%, color = "#e3e3e3")
+
+// Chassis
+// The main structural body of the vehicle, sitting above the fenders.
+// Defines the base frame on which the cabin and roof are mounted.
+chassisProfile = sketch(on = XZ) {
+  line1 = line(start = [var 0m, var 0m], end = [var 1m, var 0m])
+  line2 = line(start = [var 1m, var 0m], end = [var 1m, var 1m])
+  line3 = line(start = [var 1m, var 1m], end = [var 0m, var 1m])
+  line4 = line(start = [var 0m, var 1m], end = [var 0m, var 0m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, ORIGIN]) == chassisLength / 2
+  verticalDistance([ORIGIN, line1.start]) == chassisElevation
+  horizontalDistance([line1.start, line1.end]) == chassisLength
+  verticalDistance([line1.start, line4.start]) == chassisHeight
+}
+
+chassisRegion = region(segments = [chassisProfile.line1])
+chassis = extrude(chassisRegion, length = -chassisWidth, symmetric = true)
+  |> appearance(%, color = "#ff0000") // bright red body
+hide(chassisProfile)
+
+
+// Cabin (main body volume)
+// Represents the entire upper body of the mini-bus,
+// with a sloped front (windshield) and tapered rear wall for style.
+cabinSideProfile = sketch(on = XZ) {
+  line1 = line(start = [var -2.1m, var 1.15m], end = [var -1.6m, var 2.15m])
+  line2 = line(start = [var -1.6m, var 2.15m], end = [var -0.76m, var 2.15m])
+  line3 = line(start = [var -0.76m, var 2.15m], end = [var -0.76m, var 1.15m])
+  line4 = line(start = [var -0.76m, var 1.15m], end = [var -2.1m, var 1.15m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, ORIGIN]) == chassisLength / 2
+  verticalDistance([ORIGIN, line1.start]) == cabinElevation
+  horizontalDistance([line1.start, line1.end]) == windPanelShift
+  verticalDistance([line1.start, line1.end]) == cabinHeight
+  horizontalDistance([line2.start, line2.end]) == cabinLength
+  verticalDistance([line3.end, line3.start]) == cabinHeight
+}
+
+cabinSideRegion = region(segments = [cabinSideProfile.line1])
+cabinBody = extrude(cabinSideRegion, length = -chassisWidth, symmetric = true)
+  |> appearance(%, color = "#9ce8f2")
+hide(cabinSideProfile)
+
+// Rear Compartment
+rearCompartmentProfile = sketch(on = XZ) {
+  line1 = line(start = [var -0.76m, var 1.15m], end = [var -0.76m, var 2.15m])
+  line2 = line(start = [var -0.76m, var 2.15m], end = [var 2.1m, var 2.15m])
+  line3 = line(start = [var 2.1m, var 2.15m], end = [var 2.1m, var 1.15m])
+  line4 = line(start = [var 2.1m, var 1.15m], end = [var -0.76m, var 1.15m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, ORIGIN]) == chassisLength / 2 - windPanelShift - cabinLength
+  verticalDistance([ORIGIN, line1.start]) == cabinElevation
+  verticalDistance([line1.start, line1.end]) == cabinHeight
+  horizontalDistance([line2.start, line2.end]) == compartmentLength
+  verticalDistance([line3.end, line3.start]) == cabinHeight
+}
+
+rearCompartmentRegion = region(segments = [rearCompartmentProfile.line1])
+rearCompartment = extrude(rearCompartmentRegion, length = -chassisWidth, symmetric = true)
+  |> appearance(%, color = "#ff0000")
+hide(rearCompartmentProfile)
+
+// Roof
+// Flat rectangular panel capping the top of the cabin.
+// Simplified to a thin block for a toy-like appearance.
+roofProfile = sketch(on = XZ) {
+  line1 = line(start = [var -1.6m, var 2.15m], end = [var -1.6m, var 2.25m])
+  line2 = line(start = [var -1.6m, var 2.25m], end = [var 2.1m, var 2.25m])
+  line3 = line(start = [var 2.1m, var 2.25m], end = [var 2.1m, var 2.15m])
+  line4 = line(start = [var 2.1m, var 2.15m], end = [var -1.6m, var 2.15m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, ORIGIN]) == chassisLength / 2 - windPanelShift
+  verticalDistance([ORIGIN, line1.start]) == roofElevation
+  verticalDistance([line1.start, line1.end]) == roofHeight
+  horizontalDistance([line2.start, line2.end]) == cabinLength + compartmentLength
+}
+
+roofRegion = region(segments = [roofProfile.line1])
+roof = extrude(roofRegion, length = -chassisWidth, symmetric = true)
+  |> appearance(%, color = "#ff0000") // bright red body
+hide(roofProfile)
+
+
+// Ladder
+ladderProfile = sketch(on = XZ) {
+  line1 = line(start = [var 2.1m, var 2.35m], end = [var 2.1m, var 2.85m])
+  line2 = line(start = [var 2.1m, var 2.85m], end = [var -2.1m, var 2.85m])
+  line3 = line(start = [var -2.1m, var 2.85m], end = [var -2.1m, var 2.35m])
+  line4 = line(start = [var -2.1m, var 2.35m], end = [var 2.1m, var 2.35m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([ORIGIN, line1.start]) == ladderLength / 2
+  verticalDistance([ORIGIN, line1.start]) == ladderElevation
+  verticalDistance([line1.start, line1.end]) == ladderHeight
+  horizontalDistance([line2.end, line2.start]) == ladderLength
+  verticalDistance([line3.end, line3.start]) == ladderHeight
+}
+
+ladderRegion = region(segments = [ladderProfile.line1])
+ladder = extrude(ladderRegion, length = ladderWidth, symmetric = true)
+hide(ladderProfile)
+
+// Wheels
+// Cylindrical wheels with a central hubcap detail.
+// Created as separate parts and positioned under the fender cutouts.
+wheelSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.32m, var 0.21m], center = [var -0.01m, var 0.35m])
+  circle2 = circle(start = [var 0.18m, var 0.45m], center = [var -0.01m, var 0.35m])
+
+  coincident([circle2.center, circle1.center])
+
+  line1 = line(start = [var 0m, var 0m], end = [var -0.01m, var 0.35m], construction = true)
+  coincident([line1.end, circle2.center])
+
+  horizontalDistance([ORIGIN, line1.start]) == 0m
+  verticalDistance([ORIGIN, line1.start]) == 0m
+  horizontalDistance([line1.start, line1.end]) == 0m
+  verticalDistance([line1.start, line1.end]) == wheelDiameter / 2
+  horizontalDistance([circle2.center, circle2.start]) == wheelDiameter * 0.25
+  verticalDistance([circle2.center, circle2.start]) == 0m
+  horizontalDistance([circle1.center, circle1.start]) == wheelDiameter / 2
+  verticalDistance([circle1.center, circle1.start]) == 0m
+}
+
+wheelProfile = region(point = [0, 0.1], sketch = wheelSketch)
+diskProfile = region(point = [0, wheelDiameter / 2], sketch = wheelSketch)
+wheelTireBody = extrude(wheelProfile, length = -wheelWidth)
+  |> appearance(%, color = "#141414")
+diskBody = extrude(diskProfile, length = -wheelWidth)
+  |> appearance(%, color = "#d1d1d1")
+hide(wheelSketch)
+
+wheelFrontLeft = clone([wheelTireBody, diskBody])
+  |> translate(
+       x = -wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+wheelRearLeft = clone([wheelTireBody, diskBody])
+  |> translate(
+       x = wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+wheelFrontRight = clone([wheelTireBody, diskBody])
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+       global = false,
+     )
+  |> translate(
+       x = wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+wheelRearRight = [wheelTireBody, diskBody]
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+       global = false,
+     )
+  |> translate(
+       x = -wheelBase / 2,
+       y = -fenderWidth / 2,
+       z = 0,
+       global = false,
+     )
+
+// Headlights
+// Two circular front lights mounted on the front face of the chassis.
+headlightsPlane = offsetPlane(YZ, offset = -chassisLength / 2)
+headlightsSketch = sketch(on = headlightsPlane) {
+  circle1 = circle(start = [var 0.2m, var 0.95m], center = [var 0.1m, var 0.95m])
+
+  horizontalDistance([ORIGIN, circle1.center]) == headlightsDistance / 2
+  verticalDistance([ORIGIN, circle1.center]) == headlightsElevation
+  horizontalDistance([circle1.center, circle1.start]) == headlightsSize / 2
+  verticalDistance([circle1.center, circle1.start]) == 0
+}
+
+headlightsProfile = region(segments = [headlightsSketch.circle1])
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = headlightsDistance,
+       axis = [-1, 0],
+     )
+headlightsBody = extrude(headlightsProfile, length = -lightDepth)
+  |> appearance(%, color = "#ededed")
+hide(headlightsSketch)
+
+// Taillights
+// Two rectangular rear lights mounted on the back face of the chassis.
+taillightsPlane = offsetPlane(YZ, offset = chassisLength / 2)
+taillightsSketch = sketch(on = taillightsPlane) {
+  line1 = line(start = [var 0m, var 0m], end = [var 1m, var 0m])
+  line2 = line(start = [var 1m, var 0m], end = [var 1m, var 1m])
+  line3 = line(start = [var 1m, var 1m], end = [var 0m, var 1m])
+  line4 = line(start = [var 0m, var 1m], end = [var 0m, var 0m])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line1.start, ORIGIN]) == chassisWidth / 2 - taillightsOffset
+  verticalDistance([ORIGIN, line1.start]) == taillightsElevation
+  horizontalDistance([line1.start, line1.end]) == taillightsWidth
+  verticalDistance([line1.start, line4.start]) == taillightsHeight
+}
+
+taillightsProfile = region(segments = [taillightsSketch.line1])
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = taillightsDistance,
+       axis = [1, 0],
+     )
+taillightsBody = extrude(taillightsProfile, length = lightDepth)
+  |> appearance(%, color = "#ff0000")
+hide(taillightsSketch)
