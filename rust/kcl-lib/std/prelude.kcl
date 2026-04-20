@@ -27,6 +27,7 @@ export import "std::sweep"
 export import "std::appearance"
 export import "std::vector"
 export import "std::hole"
+export import "std::gear"
 @(experimental = true)
 export import * from "std::runtime"
 
