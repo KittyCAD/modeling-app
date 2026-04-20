@@ -298,8 +298,15 @@ export class SceneFixture {
 
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    *
-   * Expects the viewPort to be 1000x500 */
-  clickNoWhere = () => this.page.mouse.click(998, 60)
+   * Uses a stream-relative point so it stays away from the toolbar across viewport sizes. */
+  clickNoWhere = async () => {
+    const point = await this.convertPagePositionToStream(
+      998 / 1000,
+      60 / 500,
+      'ratio'
+    )
+    return this.page.mouse.click(point.x, point.y)
+  }
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    */
   moveNoWhere = async (steps?: number) => {

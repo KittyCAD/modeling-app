@@ -76,7 +76,7 @@ type ClosestSelectionTarget = {
   apiObject: ApiObject | null
 }
 
-function getClosestSelectionTarget(
+export function getClosestSelectionTarget(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
