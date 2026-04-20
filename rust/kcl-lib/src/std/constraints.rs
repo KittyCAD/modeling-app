@@ -19,10 +19,10 @@ use crate::execution::Artifact;
 use crate::execution::CodeRef;
 use crate::execution::ConstrainablePoint2d;
 use crate::execution::ConstrainablePoint2dOrOrigin;
+use crate::execution::ConstraintState;
 use crate::execution::ConstraintStateKey;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
-use crate::execution::PersistentConstraintState;
 use crate::execution::SegmentRepr;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::SketchBlockConstraint;
@@ -103,14 +103,14 @@ struct ArcVars {
     end: Option<[SketchVarId; 2]>,
 }
 
-fn build_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintStateKey {
+fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintStateKey {
     let mut key = [SketchVarId::INVALID.0; 10];
     key[0..4].copy_from_slice(&flatten_line_vars(line));
     key[4..10].copy_from_slice(&flatten_arc_vars(arc));
     ConstraintStateKey::LineCircle(key)
 }
 
-fn arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintStateKey {
+fn make_arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintStateKey {
     let flat_a = flatten_arc_vars(arc_a);
     let flat_b = flatten_arc_vars(arc_b);
     let (lhs, rhs) = if flat_a <= flat_b {
@@ -3015,15 +3015,13 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     // Hidden radius vars. Empty metadata keeps them out of source write-back.
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
-            let tangency_key = build_line_arc_tangency_key(line, circular);
-            let tangency_side = match exec_state.get_persistent_constraint_state(&tangency_key) {
-                Some(PersistentConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
+            let tangency_key = make_line_arc_tangency_key(line, circular);
+            let tangency_side = match exec_state.get_constraint_state(&tangency_key) {
+                Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
                 _ => {
                     let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
-                    exec_state.set_persistent_constraint_state(
-                        tangency_key,
-                        PersistentConstraintState::Tangency(TangencyMode::LineCircle(side)),
-                    );
+                    exec_state
+                        .set_constraint_state(tangency_key, ConstraintState::Tangency(TangencyMode::LineCircle(side)));
                     side
                 }
             };
@@ -3070,14 +3068,14 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
-            let tangency_key = arc_arc_tangency_key(circular0, circular1);
-            let tangency_side = match exec_state.get_persistent_constraint_state(&tangency_key) {
-                Some(PersistentConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
+            let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
+            let tangency_side = match exec_state.get_constraint_state(&tangency_key) {
+                Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
                 _ => {
                     let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
-                    exec_state.set_persistent_constraint_state(
+                    exec_state.set_constraint_state(
                         tangency_key,
-                        PersistentConstraintState::Tangency(TangencyMode::CircleCircle(side)),
+                        ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
                     );
                     side
                 }

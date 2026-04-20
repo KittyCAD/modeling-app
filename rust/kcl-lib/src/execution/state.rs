@@ -93,7 +93,7 @@ pub(super) struct GlobalState {
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    pub persistent_constraint_state: HashMap<ConstraintStateKey, PersistentConstraintState>,
+    pub constraint_state: HashMap<ConstraintStateKey, ConstraintState>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -109,7 +109,7 @@ pub(crate) enum TangencyMode {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum PersistentConstraintState {
+pub(crate) enum ConstraintState {
     Tangency(TangencyMode),
 }
 
@@ -420,19 +420,12 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
-    pub(crate) fn get_persistent_constraint_state(
-        &self,
-        key: &ConstraintStateKey,
-    ) -> Option<PersistentConstraintState> {
-        self.global.persistent_constraint_state.get(key).copied()
+    pub(crate) fn get_constraint_state(&self, key: &ConstraintStateKey) -> Option<ConstraintState> {
+        self.global.constraint_state.get(key).copied()
     }
 
-    pub(crate) fn set_persistent_constraint_state(
-        &mut self,
-        key: ConstraintStateKey,
-        state: PersistentConstraintState,
-    ) {
-        self.global.persistent_constraint_state.insert(key, state);
+    pub(crate) fn set_constraint_state(&mut self, key: ConstraintStateKey, state: ConstraintState) {
+        self.global.constraint_state.insert(key, state);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -770,7 +763,7 @@ impl GlobalState {
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
-            persistent_constraint_state: Default::default(),
+            constraint_state: Default::default(),
         };
 
         let root_id = ModuleId::default();

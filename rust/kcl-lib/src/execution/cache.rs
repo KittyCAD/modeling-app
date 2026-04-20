@@ -9,10 +9,10 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::execution::ConstraintState;
+use crate::execution::ConstraintStateKey;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
-use crate::execution::ConstraintStateKey;
-use crate::execution::PersistentConstraintState;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
@@ -172,8 +172,7 @@ pub(crate) struct SketchModeState {
     /// Map from module ID to source file contents.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    pub persistent_constraint_state:
-        std::collections::HashMap<ConstraintStateKey, PersistentConstraintState>,
+    pub constraint_state: std::collections::HashMap<ConstraintStateKey, ConstraintState>,
     /// The scene objects.
     #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub scene_objects: Vec<Object>,
@@ -187,7 +186,7 @@ impl SketchModeState {
             module_infos: ModuleInfoMap::default(),
             path_to_source_id: Default::default(),
             id_to_source: Default::default(),
-            persistent_constraint_state: Default::default(),
+            constraint_state: Default::default(),
             scene_objects: Vec::new(),
         }
     }
