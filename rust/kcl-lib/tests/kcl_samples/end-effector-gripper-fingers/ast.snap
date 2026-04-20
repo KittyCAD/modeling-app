@@ -14,6 +14,43 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": "TOL",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "0.001",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.001,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
             "name": "bracketThickness",
             "start": 0,
             "type": "Identifier"
@@ -10363,6 +10400,35 @@ description: Result of parsing end-effector-gripper-fingers.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "name": "tolerance",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "TOL",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
                       "name": "tools",
                       "start": 0,
                       "type": "Identifier"
@@ -10371,7 +10437,37 @@ description: Result of parsing end-effector-gripper-fingers.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [],
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "tolerance",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "TOL",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -10399,7 +10495,37 @@ description: Result of parsing end-effector-gripper-fingers.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "arguments": [],
+                                "arguments": [
+                                  {
+                                    "type": "LabeledArg",
+                                    "label": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tolerance",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "arg": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "TOL",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    }
+                                  }
+                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -10471,7 +10597,37 @@ description: Result of parsing end-effector-gripper-fingers.kcl
                                 }
                               },
                               {
-                                "arguments": [],
+                                "arguments": [
+                                  {
+                                    "type": "LabeledArg",
+                                    "label": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tolerance",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "arg": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "TOL",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    }
+                                  }
+                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -13675,7 +13831,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "1": [
+        "0": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13687,7 +13843,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             }
           }
         ],
-        "4": [
+        "2": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13711,7 +13867,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             }
           }
         ],
-        "10": [
+        "6": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13771,7 +13927,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             }
           }
         ],
-        "21": [
+        "15": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13807,7 +13963,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             }
           }
         ],
-        "26": [
+        "24": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13819,7 +13975,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             }
           }
         ],
-        "28": [
+        "27": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13856,6 +14012,18 @@ description: Result of parsing end-effector-gripper-fingers.kcl
           }
         ],
         "31": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "32": [
           {
             "commentStart": 0,
             "end": 0,

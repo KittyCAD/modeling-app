@@ -5,6 +5,8 @@
 // Set units
 @settings(defaultLengthUnit = mm)
 
+TOL = 0.001
+
 // Define sheet metal parameters
 bracketThickness = 3
 bracketBendRadius = 3.75
@@ -172,11 +174,15 @@ mountingHole02 = circle(
 // Remove all identified material from the gripper
 gripper = subtract(
        [gripBaseBracket],
+       tolerance = TOL,
        tools = [
-         union([
-           union([mountingHole01, mountingHole02]),
-           union([cutOuter, cutInner])
-         ])
+         union(
+           [
+             union([mountingHole01, mountingHole02], tolerance = TOL),
+             union([cutOuter, cutInner], tolerance = TOL)
+           ],
+           tolerance = TOL,
+         )
        ],
      )
   |> appearance(color = "#0f0f0f")

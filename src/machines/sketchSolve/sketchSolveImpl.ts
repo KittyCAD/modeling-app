@@ -1268,8 +1268,13 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
 
   const shouldWriteToDisk = event.data.writeToDisk !== false
   const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+  const isCheckpointOnlyCommit =
+    shouldAddToHistory &&
+    event.data.checkpointId != null &&
+    context.kclManager.code === event.data.sourceDelta.text
   const shouldDispatchSceneImmediately =
-    context.kclManager.code !== event.data.sourceDelta.text
+    context.kclManager.code !== event.data.sourceDelta.text ||
+    isCheckpointOnlyCommit
 
   if (shouldDispatchSceneImmediately) {
     context.kclManager.dispatch({
