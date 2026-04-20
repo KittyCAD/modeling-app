@@ -904,12 +904,7 @@ export class KclManager extends File {
 
   /** In the future this could be a setting. */
   public longExecutionTimeMs = 1000 * 60 * 5
-  private _hotkeys: { [key: string]: () => void } = {
-    ['Ctrl-Shift-c']: () => this.convertToVariable(),
-    ['Alt-Shift-f']: () => {
-      void this.format().catch(reportRejection)
-    },
-  }
+  private _hotkeys: { [key: string]: () => void } = {}
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
@@ -2732,7 +2727,7 @@ export class KclManager extends File {
       key,
       run: () => {
         this._hotkeys[key]()
-        return false
+        return true
       },
       preventDefault: true,
     }))
