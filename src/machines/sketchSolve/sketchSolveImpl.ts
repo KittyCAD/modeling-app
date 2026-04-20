@@ -143,7 +143,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids from code selection'
       data: {
-        ranges: SketchSolveCodeSelectionRange[]
+        ranges: SourceRange[]
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -190,11 +190,6 @@ export type UpdateSketchOutcomeEvent = {
     addToHistory?: boolean
     checkpointId?: number | null
   }
-}
-
-export type SketchSolveCodeSelectionRange = {
-  from: number
-  to: number
 }
 
 type ToolActorRef =
@@ -974,15 +969,15 @@ function getSourceRangesForObjectId(
 
 function getObjectIdsForCodeSelectionRanges(
   objects: ApiObject[],
-  codeSelectionRanges: SketchSolveCodeSelectionRange[]
+  codeSelectionRanges: SourceRange[]
 ): number[] {
   return objects
     .filter(isNonNullable)
     .filter(isSelectableFromCodeSelection)
     .filter((object) =>
       getSourceRangesForObjectId(objects, object.id).some((sourceRange) =>
-        codeSelectionRanges.some(({ from, to }) =>
-          isOverlap(sourceRange, [from, to, 0])
+        codeSelectionRanges.some((selectionRange) =>
+          isOverlap(sourceRange, selectionRange)
         )
       )
     )

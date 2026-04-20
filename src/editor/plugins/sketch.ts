@@ -6,11 +6,12 @@ import {
   type StateEffect,
 } from '@codemirror/state'
 import {
-  type SketchSolveCodeSelectionRange,
   updateSceneGraphFromDelta,
   updateSketchSceneGraphEffect,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
+import { topLevelRange } from '@src/lang/util'
 import { EditorView } from 'codemirror'
 
 export const sketchSceneGraphCompartment = new Compartment()
@@ -19,7 +20,7 @@ export const sketchSceneGraphCompartment = new Compartment()
  * Apply this effect while undoing as well.
  */
 function sketchGraphExtension(
-  onSelectionChange?: (ranges: SketchSolveCodeSelectionRange[]) => void
+  onSelectionChange?: (ranges: SourceRange[]) => void
 ): Extension {
   const sketchSceneGraphListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
@@ -36,7 +37,7 @@ function sketchGraphExtension(
       vu.transactions.some((tr) => tr.isUserEvent('select'))
     ) {
       onSelectionChange(
-        vu.state.selection.ranges.map(({ from, to }) => ({ from, to }))
+        vu.state.selection.ranges.map(({ from, to }) => topLevelRange(from, to))
       )
     }
   })
@@ -60,7 +61,7 @@ function sketchGraphExtension(
 export function toggleSketchExtension(
   ev: EditorView,
   active: boolean,
-  onSelectionChange?: (ranges: SketchSolveCodeSelectionRange[]) => void
+  onSelectionChange?: (ranges: SourceRange[]) => void
 ) {
   ev.dispatch({
     effects: sketchSceneGraphCompartment.reconfigure(

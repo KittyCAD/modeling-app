@@ -6,6 +6,7 @@ import {
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { topLevelRange } from '@src/lang/util'
 import {
   createLineApiObject,
   createPointApiObject,
@@ -88,10 +89,7 @@ describe('updateSelectedIdsFromCodeSelection', () => {
       event: {
         type: 'update selected ids from code selection',
         data: {
-          ranges: [
-            { from: 15, to: 15 },
-            { from: 35, to: 36 },
-          ],
+          ranges: [topLevelRange(15, 15), topLevelRange(35, 36)],
         },
       },
     } as any)
