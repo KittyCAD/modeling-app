@@ -4111,7 +4111,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.001
       }
     },
     {
@@ -4124,7 +4124,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.001
       }
     },
     {
@@ -4137,7 +4137,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.001
       }
     },
     {
@@ -4152,7 +4152,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 0.0000001
+        "tolerance": 0.001
       }
     },
     {
