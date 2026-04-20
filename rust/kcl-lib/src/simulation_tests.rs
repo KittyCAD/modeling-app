@@ -352,7 +352,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             let (outcome, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
-            let snapshot_results = assert_common_snapshots(test, outcome.variables, responses);
+            let snapshot_results = common_snapshots(test, outcome.variables, responses);
 
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
@@ -416,7 +416,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         #[cfg(not(feature = "snapshot-engine-responses"))]
                         None
                     };
-                    let snapshot_results = assert_common_snapshots(test, error.variables, responses);
+                    let snapshot_results = common_snapshots(test, error.variables, responses);
 
                     #[cfg(feature = "artifact-graph")]
                     {
@@ -444,8 +444,11 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 }
 
 /// Assert snapshots that should happen both when KCL execution succeeds and
-/// when it results in an error.
-fn assert_common_snapshots(
+/// when it results in an error. The caller needs to unwrap the returned results
+/// to panic when there's a difference. We don't do it inside this function so
+/// that other snapshots can be written to file first.
+#[must_use]
+fn common_snapshots(
     test: &Test,
     variables: IndexMap<String, KclValue>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
