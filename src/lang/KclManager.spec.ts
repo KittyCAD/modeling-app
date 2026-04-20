@@ -177,6 +177,26 @@ describe('KclManager diagnostics', () => {
     ])
   })
 
+  it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
+    const { kclManager } = createKclManagerTestHarness('abcdef')
+    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+
+    const baseDiagnostic = createDiagnostic(0, 2, 'base diagnostic')
+    const sketchSolveDiagnostic = createDiagnostic(
+      2,
+      4,
+      'sketch solve diagnostic'
+    )
+
+    kclManager.diagnostics = [baseDiagnostic]
+    kclManager.setSketchSolveDiagnostics([sketchSolveDiagnostic])
+    kclManager.setSketchSolveDiagnostics([])
+
+    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
+      baseDiagnostic,
+    ])
+  })
+
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi

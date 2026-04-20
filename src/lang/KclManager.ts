@@ -1023,7 +1023,10 @@ export class KclManager extends File {
   }
 
   setDiagnosticsForCurrentErrors() {
-    this.setDiagnostics(this.diagnostics)
+    this.setDiagnostics([
+      ...this._diagnostics.value,
+      ...this._sketchSolveDiagnostics.value,
+    ])
   }
 
   set isExecuting(isExecuting) {
