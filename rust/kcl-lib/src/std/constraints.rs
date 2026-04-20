@@ -1672,12 +1672,11 @@ fn coincident_points(
     }
 
     let mut solver_constraints = Vec::with_capacity(point_values.len().saturating_sub(1) * 2);
-    if let Some(anchor_fixed) = fixed_points.first().cloned() {
+    if let Some((anchor_fixed, remaining_fixed_points)) = fixed_points.split_first() {
         // A fixed point becomes the shared target location for every variable point.
-        if fixed_points
+        if remaining_fixed_points
             .iter()
-            .skip(1)
-            .any(|point| !fixed_points_match(point, &anchor_fixed))
+            .any(|point| !fixed_points_match(point, anchor_fixed))
         {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "coincident() with more than two inputs can include at most one fixed point location".to_owned(),
