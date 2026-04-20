@@ -444,6 +444,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -2001,6 +2002,7 @@ description: Variables in memory after executing shaft-grommet.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },

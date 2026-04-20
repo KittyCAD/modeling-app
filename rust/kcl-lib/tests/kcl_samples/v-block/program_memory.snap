@@ -514,6 +514,7 @@ description: Variables in memory after executing v-block.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1279,6 +1280,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -2050,6 +2052,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -2803,6 +2806,7 @@ description: Variables in memory after executing v-block.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -3571,6 +3575,7 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -4361,6 +4366,7 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -5120,6 +5126,7 @@ description: Variables in memory after executing v-block.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",

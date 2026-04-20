@@ -311,6 +311,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -439,6 +440,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -583,6 +585,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -735,6 +738,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -884,6 +888,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1033,6 +1038,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1182,6 +1188,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1331,6 +1338,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1480,6 +1488,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1629,6 +1638,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1778,6 +1788,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -1927,6 +1938,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -2076,6 +2088,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -2736,6 +2749,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -2983,6 +2997,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -3230,6 +3245,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -3477,6 +3493,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -3724,6 +3741,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -3971,6 +3989,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -4218,6 +4237,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -4465,6 +4485,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -4712,6 +4733,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -4959,6 +4981,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": null,
@@ -5208,6 +5231,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -5455,6 +5479,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -5639,6 +5664,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -6481,6 +6507,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -6585,6 +6612,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -7124,6 +7152,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -7224,6 +7253,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -7340,6 +7370,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -7934,6 +7965,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8055,6 +8087,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8176,6 +8209,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8297,6 +8331,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8418,6 +8453,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8539,6 +8575,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8660,6 +8697,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8781,6 +8819,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -8902,6 +8941,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -9023,6 +9063,7 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -9147,6 +9188,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -9267,6 +9309,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",

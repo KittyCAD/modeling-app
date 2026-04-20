@@ -177,6 +177,7 @@ description: Variables in memory after executing sketch_block_region_from_point_
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },

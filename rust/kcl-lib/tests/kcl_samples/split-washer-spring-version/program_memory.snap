@@ -218,6 +218,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -454,6 +455,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

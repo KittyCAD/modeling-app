@@ -67,41 +67,6 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       }
     }
   },
-  "arc1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc1"
-  },
-  "arc2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc2"
-  },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
-  "circle2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle2"
-  },
-  "circle3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle3"
-  },
-  "circle4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle4"
-  },
-  "circle5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle5"
-  },
   "extrude001": {
     "type": "Solid",
     "value": {
@@ -335,6 +300,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -576,6 +542,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -938,6 +905,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1103,6 +1071,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1298,6 +1267,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1493,6 +1463,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1688,6 +1659,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1853,6 +1825,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -2026,6 +1999,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -2364,6 +2338,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -2569,6 +2544,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -2818,6 +2794,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -3067,6 +3044,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -3316,6 +3294,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -3521,6 +3500,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
