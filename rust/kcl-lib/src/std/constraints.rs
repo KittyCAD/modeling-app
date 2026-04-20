@@ -1,12 +1,12 @@
 use anyhow::Result;
 use ezpz::Constraint as SolverConstraint;
-use ezpz::LineSide;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumCircularArc;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
+use ezpz::{CircleSide, LineSide};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::errors::KclError;
@@ -2795,7 +2795,11 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::LineTangentToCircle(line_datum, circle, LineSide::Undefined));
+                .push(SolverConstraint::LineTangentToCircle(
+                    line_datum,
+                    circle,
+                    LineSide::Undefined,
+                ));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
             let center0 = datum_point(circular0.center, range)?;
@@ -2866,7 +2870,11 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::CircleTangentToCircle(circle0, circle1));
+                .push(SolverConstraint::CircleTangentToCircle(
+                    circle0,
+                    circle1,
+                    CircleSide::Undefined,
+                ));
         }
     }
 
