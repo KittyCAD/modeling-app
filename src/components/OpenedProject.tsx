@@ -217,9 +217,11 @@ export function OpenedProject() {
     },
     kclManager,
     {
+      enabled: !isDesktop(),
       enableOnContentEditable: true,
       enableOnFormTags: true,
-      // Skip registration to codemirror, this shortcut won't work in CodeMirror because it types a character
+      // Desktop uses the native Electron menu accelerator for this binding.
+      // Skip CodeMirror registration because this combo types a character there.
       registerToCodeMirror: false,
     }
   )
