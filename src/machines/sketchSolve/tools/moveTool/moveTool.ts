@@ -1528,14 +1528,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
 
           if (hasSketchSolveIssues(result.sceneGraphDelta)) {
-            result = await recoverKnownGoodResult('invalid final drag-end result')
+            result = await recoverKnownGoodResult(
+              'invalid final drag-end result'
+            )
           } else if (
             result.checkpointId == null &&
             (Boolean(lastGoodPreview?.segmentsToEdit.length) ||
               Boolean(snapConstraint) ||
               draggedEntityId !== null)
           ) {
-            result = await recoverKnownGoodResult('missing checkpoint on drag end')
+            result = await recoverKnownGoodResult(
+              'missing checkpoint on drag end'
+            )
           }
 
           // Send the event to update the sketch outcome
