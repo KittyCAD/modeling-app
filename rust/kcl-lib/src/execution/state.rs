@@ -139,7 +139,7 @@ pub struct ModuleArtifactState {
     pub var_solutions: Vec<(SourceRange, Number)>,
 }
 
-// It's error-prone to implmenent this manually. New fields are likely to be
+// It's error-prone to implement this manually. New fields are likely to be
 // forgotten. So we only use this implementation when the feature is enabled.
 #[cfg(feature = "snapshot-engine-responses")]
 impl PartialEq for ModuleArtifactState {
