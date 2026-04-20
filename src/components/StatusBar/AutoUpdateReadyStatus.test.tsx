@@ -22,7 +22,7 @@ describe('AutoUpdateReadyStatus', () => {
     expect(onRestart).toHaveBeenCalledTimes(1)
   })
 
-  test('renders release notes in a modal using parsed markdown', () => {
+  test('renders release notes tooltip content using parsed markdown', () => {
     render(
       <AutoUpdateReadyStatus
         onRestart={() => {}}
@@ -33,17 +33,15 @@ describe('AutoUpdateReadyStatus', () => {
       />
     )
 
-    fireEvent.click(screen.getByTestId('auto-update-release-notes-button'))
-
     expect(
-      screen.getByTestId('auto-update-release-notes-modal')
+      screen.getByTestId('auto-update-release-notes-tooltip')
     ).toBeInTheDocument()
     expect(screen.getByText('Release notes for v1.2.3')).toBeInTheDocument()
     expect(screen.getByText('Highlights')).toBeInTheDocument()
     expect(screen.getByText(/Added/)).toBeInTheDocument()
   })
 
-  test('hides release notes button when update has no release notes', () => {
+  test('hides release notes tooltip when update has no release notes', () => {
     render(
       <AutoUpdateReadyStatus
         onRestart={() => {}}
@@ -52,7 +50,7 @@ describe('AutoUpdateReadyStatus', () => {
     )
 
     expect(
-      screen.queryByTestId('auto-update-release-notes-button')
+      screen.queryByTestId('auto-update-release-notes-tooltip')
     ).not.toBeInTheDocument()
   })
 })
