@@ -4,10 +4,12 @@ import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
-import { ToastProgress } from '@src/components/ToastProgress'
 import { ToastUpdate } from '@src/components/ToastUpdate'
-import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import '@src/index.css'
+import {
+  clearAutoUpdateDownloadProgress,
+  setAutoUpdateDownloadProgress,
+} from '@src/lib/autoUpdate'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
@@ -59,28 +61,6 @@ function initSingletonBehavior(app: App) {
 
 /** initialize behaviors that rely on electron (this is only available on desktop) */
 function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
-  const showUpdateDownloadToast = (progress?: AutoUpdateDownloadProgress) => {
-    const percent =
-      progress === undefined ? undefined : Math.round(progress.percent)
-
-    toast.custom(
-      <ToastProgress
-        title="Downloading app update..."
-        subtitle={
-          percent === undefined
-            ? 'Keep the app open so the update can finish downloading.'
-            : `${percent}% complete. Keep the app open so the update can finish downloading.`
-        }
-        progressPercent={percent}
-      />,
-      {
-        duration: Number.POSITIVE_INFINITY,
-        icon: null,
-        id: AUTO_UPDATER_TOAST_ID,
-      }
-    )
-  }
-
   // Monkey patch to prevent issues in the web app with automated browser translation
   // This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
   // we roll out our own i18n solution and can disable browser translation altogether.
@@ -94,6 +74,7 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
   })
 
   electron.onUpdateNotAvailable(() => {
+    clearAutoUpdateDownloadProgress()
     const message = `You're already using the latest version of the app.`
     console.log(message)
     toast.success(message, { id: AUTO_UPDATER_TOAST_ID })
@@ -101,14 +82,15 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
 
   electron.onUpdateDownloadStart((progress) => {
     console.log('Downloading app update...', progress)
-    showUpdateDownloadToast(progress)
+    setAutoUpdateDownloadProgress(progress)
   })
 
   electron.onUpdateDownloadProgress((progress) => {
-    showUpdateDownloadToast(progress)
+    setAutoUpdateDownloadProgress(progress)
   })
 
   electron.onUpdateError(({ error }) => {
+    clearAutoUpdateDownloadProgress()
     console.error(error)
     toast.error('An error occurred while downloading the update.', {
       id: AUTO_UPDATER_TOAST_ID,
@@ -116,6 +98,7 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
   })
 
   electron.onUpdateDownloaded(({ version, releaseNotes }) => {
+    clearAutoUpdateDownloadProgress()
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
     toast.custom(

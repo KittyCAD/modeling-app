@@ -28,6 +28,8 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { useSignals } from '@preact/signals-react/runtime'
+import { autoUpdateDownloadProgressSignal } from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -71,6 +73,7 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useSignals()
   const { auth, billing, commands, settings, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
@@ -106,6 +109,7 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
@@ -408,7 +412,11 @@ const Home = () => {
       <StatusBar
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+          ...defaultGlobalStatusBarItems({
+            location,
+            filePath: undefined,
+            autoUpdateDownloadProgress,
+          }),
         ]}
         localItems={defaultLocalStatusBarItems}
       />

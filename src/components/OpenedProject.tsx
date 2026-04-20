@@ -25,6 +25,7 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { autoUpdateDownloadProgressSignal } from '@src/lib/autoUpdate'
 import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
@@ -89,6 +90,7 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
   const { onProjectOpen } = useLspContext()
@@ -394,7 +396,11 @@ export function OpenedProject() {
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
+            ...defaultGlobalStatusBarItems({
+              location,
+              filePath,
+              autoUpdateDownloadProgress,
+            }),
           ]}
           localItems={[
             ...(getSettings().app.showDebugPanel.current

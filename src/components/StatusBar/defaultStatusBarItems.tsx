@@ -1,11 +1,13 @@
 import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
+import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
@@ -14,10 +16,22 @@ import type { Location } from 'react-router-dom'
 export const defaultGlobalStatusBarItems = ({
   location,
   filePath,
+  autoUpdateDownloadProgress,
 }: {
   location: Location
   filePath?: string
+  autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
 }): StatusBarItemType[] => [
+  ...(isDesktop() && autoUpdateDownloadProgress
+    ? [
+        {
+          id: 'auto-update-download-status',
+          component: () => (
+            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
+          ),
+        },
+      ]
+    : []),
   isDesktop()
     ? {
         id: 'version',
