@@ -736,6 +736,9 @@ export class KclManager extends File {
   get astSignal() {
     return this._ast
   }
+  get lastGoodAst() {
+    return this._lastAst
+  }
   set ast(ast) {
     if (this._ast.value.body.length !== 0) {
       // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
