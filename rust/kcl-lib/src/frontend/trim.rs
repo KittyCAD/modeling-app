@@ -3438,28 +3438,26 @@ fn spline_constraint_ids_to_delete(
             }
             Constraint::Distance(distance)
             | Constraint::HorizontalDistance(distance)
-            | Constraint::VerticalDistance(distance) => {
-                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) {
-                    deletions.insert(obj.id);
-                }
+            | Constraint::VerticalDistance(distance)
+                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) =>
+            {
+                deletions.insert(obj.id);
             }
             Constraint::Horizontal(Horizontal::Points { points })
-            | Constraint::Vertical(Vertical::Points { points }) => {
-                if points
-                    .iter()
-                    .any(|point| matches!(point, ConstraintSegment::Segment(id) if spline_control_ids.contains(id)))
-                {
-                    deletions.insert(obj.id);
-                }
+            | Constraint::Vertical(Vertical::Points { points })
+                if points.iter().any(
+                    |point| matches!(point, ConstraintSegment::Segment(id) if spline_control_ids.contains(id)),
+                ) =>
+            {
+                deletions.insert(obj.id);
             }
-            Constraint::Fixed(fixed) => {
+            Constraint::Fixed(fixed)
                 if fixed
                     .points
                     .iter()
-                    .any(|fixed_point| spline_control_ids.contains(&fixed_point.point))
-                {
-                    deletions.insert(obj.id);
-                }
+                    .any(|fixed_point| spline_control_ids.contains(&fixed_point.point)) =>
+            {
+                deletions.insert(obj.id);
             }
             _ => {}
         }
@@ -4260,14 +4258,13 @@ pub(crate) fn build_trim_plan(
                     continue;
                 };
                 match constraint {
-                    Constraint::Coincident(coincident) => {
+                    Constraint::Coincident(coincident)
                         if spline
                             .controls
                             .last()
-                            .is_some_and(|end_id| coincident.contains_segment(*end_id))
-                        {
-                            constraint_ids_to_delete.push(obj.id);
-                        }
+                            .is_some_and(|end_id| coincident.contains_segment(*end_id)) =>
+                    {
+                        constraint_ids_to_delete.push(obj.id);
                     }
                     Constraint::Tangent(tangent) if tangent.input.contains(&trim_spawn_id) => {
                         constraint_ids_to_delete.push(obj.id);

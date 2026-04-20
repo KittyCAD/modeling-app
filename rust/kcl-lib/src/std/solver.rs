@@ -471,6 +471,7 @@ pub(crate) async fn create_segments_in_engine(
 mod tests {
     use indexmap::IndexMap;
     use kcl_error::SourceRange;
+    use kittycad_modeling_cmds::units::UnitLength;
 
     use super::create_segments_in_engine;
     use super::spline_controls_to_engine_points;
@@ -485,7 +486,6 @@ mod tests {
     use crate::front::ObjectId;
     use crate::std::args::TyF64;
     use crate::std::sketch::PlaneData;
-    use kittycad_modeling_cmds::units::UnitLength;
 
     #[test]
     fn spline_curve_points_skip_entry_control() {
