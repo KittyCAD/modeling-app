@@ -60,6 +60,9 @@ pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::ConstraintStateKey;
+pub(crate) use state::PersistentConstraintState;
+pub(crate) use state::TangencyMode;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
@@ -1088,6 +1091,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.persistent_constraint_state = mem.persistent_constraint_state;
         #[cfg(feature = "artifact-graph")]
         {
             let len = _mock_config
@@ -1150,6 +1154,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let persistent_constraint_state = exec_state.global.persistent_constraint_state.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -1162,6 +1167,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            persistent_constraint_state,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1745,6 +1751,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                persistent_constraint_state: exec_state.global.persistent_constraint_state.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
