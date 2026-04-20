@@ -30,29 +30,6 @@ export const defaultGlobalStatusBarItems = ({
   autoUpdateReady?: AutoUpdateReady | null
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
-    ? [
-        {
-          id: 'auto-update-ready-status',
-          component: () => (
-            <AutoUpdateReadyStatus
-              update={autoUpdateReady}
-              onRestart={onRestartToUpdate}
-            />
-          ),
-        },
-      ]
-    : []),
-  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
-    ? [
-        {
-          id: 'auto-update-download-status',
-          component: () => (
-            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
-          ),
-        },
-      ]
-    : []),
   isDesktop()
     ? {
         id: 'version',
@@ -68,6 +45,29 @@ export const defaultGlobalStatusBarItems = ({
         'data-testid': 'download-desktop-app',
         component: DownloadDesktopApp,
       },
+  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
+    ? [
+        {
+          id: 'auto-update-download-status',
+          component: () => (
+            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
+          ),
+        },
+      ]
+    : []),
+  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
+    ? [
+        {
+          id: 'auto-update-ready-status',
+          component: () => (
+            <AutoUpdateReadyStatus
+              update={autoUpdateReady}
+              onRestart={onRestartToUpdate}
+            />
+          ),
+        },
+      ]
+    : []),
   {
     id: 'environment',
     component: EnvironmentStatusBarItem,
