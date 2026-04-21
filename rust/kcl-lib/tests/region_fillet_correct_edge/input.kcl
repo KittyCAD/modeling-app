@@ -1,0 +1,20 @@
+squareSketch = sketch(on = XY) {
+  line2 = line(start = [var 3.97mm, var 0.72mm], end = [var 3.44mm, var 6.52mm])
+  line4 = line(start = [var -1.41mm, var 7.03mm], end = [var -0.68mm, var 0.54mm])
+  line1 = line(start = [var -1.5mm, var 1.09mm], end = [var 4.32mm, var 1.38mm])
+  line3 = line(start = [var 4.65mm, var 6.1mm], end = [var -3.12mm, var 5.75mm])
+  coincident([line2.start, line1.end])
+  coincident([line3.start, line2.end])
+}
+hidden001 = hide(squareSketch)
+region001 = region(point = [-1.0092362mm, 3.4894111mm], sketch = squareSketch)
+cube = extrude(region001, length = 2)
+edge1 = getCommonEdge(faces = [
+    region001.tags.line1,
+    region001.tags.line2
+  ])
+fillet001 = fillet(
+  cube,
+  tags = edge1,
+  radius = 1,
+)
