@@ -21,6 +21,7 @@ You might also want the KCL language reference or the KCL guide.
 * [`appearance::appearance`](/docs/kcl-std-legacy/modules/std-appearance)
 * [`array`](/docs/kcl-std-legacy/modules/std-array)
 * [`gdt::gdt`](/docs/kcl-std-legacy/modules/std-gdt)
+* [`gear::gear`](/docs/kcl-std-legacy/modules/std-gear)
 * [`hole::hole`](/docs/kcl-std-legacy/modules/std-hole)
 * [`math`](/docs/kcl-std-legacy/modules/std-math)
 * [`runtime`](/docs/kcl-std-legacy/modules/std-runtime)
