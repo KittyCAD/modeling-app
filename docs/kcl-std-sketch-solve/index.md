@@ -33,6 +33,7 @@ layout: manual
 * [**std::gear**](/docs/kcl-std/modules/std-gear)
   * [`gear::helical`](/docs/kcl-std-sketch-solve/functions/std-gear-helical)
   * [`gear::herringbone`](/docs/kcl-std-sketch-solve/functions/std-gear-herringbone)
+  * [`gear::spur`](/docs/kcl-std-sketch-solve/functions/std-gear-spur)
 * [**std::hole**](/docs/kcl-std/modules/std-hole)
   * [`hole::blind`](/docs/kcl-std-sketch-solve/functions/std-hole-blind)
   * [`hole::counterbore`](/docs/kcl-std-sketch-solve/functions/std-hole-counterbore)
