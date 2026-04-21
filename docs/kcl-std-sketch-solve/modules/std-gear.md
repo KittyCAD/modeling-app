@@ -16,4 +16,5 @@ Define gears that users can include in their models.
 
 * [`gear::helical`](/docs/kcl-std-sketch-solve/functions/std-gear-helical)
 * [`gear::herringbone`](/docs/kcl-std-sketch-solve/functions/std-gear-herringbone)
+* [`gear::spur`](/docs/kcl-std-sketch-solve/functions/std-gear-spur)
 

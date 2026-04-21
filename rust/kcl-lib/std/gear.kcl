@@ -110,6 +110,35 @@ export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid 
   return helicalGear
 }
 
+/// A spur gear.
+///```kcl
+/// // Basic example of a spur gear.
+/// 
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+///
+/// gear::spur(
+///   nTeeth = 21,
+///   module = 1.5,
+///   pressureAngle = 14deg,
+///   gearHeight = 6,
+/// )
+/// ```
+@(experimental = true)
+export fn spur(nTeeth, module, pressureAngle, gearHeight): Solid {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle = 0, offsetHeight = 0)
+    |> extrude(length = gearHeight)
+
+  return helicalGear
+}
+
 /// A herringbone gear.
 ///```kcl
 /// // Basic herringbone gear example.
