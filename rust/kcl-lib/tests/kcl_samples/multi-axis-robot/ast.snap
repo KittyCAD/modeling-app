@@ -13,6 +13,9 @@ description: Result of parsing multi-axis-robot.kcl
           "type": "Kcl",
           "filename": "robot-arm-base.kcl"
         },
+        "preComments": [
+          "// Import parts"
+        ],
         "selector": {
           "type": "None",
           "alias": {
@@ -113,6 +116,14 @@ description: Result of parsing multi-axis-robot.kcl
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Robot Arm",
+          "// A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+          "// Categories: Manufacturing, Automotive",
+          "",
+          "",
+          "// Set Units"
+        ],
         "properties": [
           {
             "commentStart": 0,
@@ -184,52 +195,6 @@ description: Result of parsing multi-axis-robot.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Robot Arm",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Categories: Manufacturing, Automotive",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
         {
           "commentStart": 0,
           "end": 0,
