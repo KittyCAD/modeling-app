@@ -50,8 +50,6 @@ export function addFlipSurface({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      skipNewSweepCutoff: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
   if (err(vars)) {
