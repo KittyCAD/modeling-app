@@ -124,7 +124,7 @@ export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid 
 /// )
 ///```
 @(experimental = true)
-export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle) {
+export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module

@@ -16,7 +16,7 @@ gear::herringbone(
   pressureAngle,
   gearHeight,
   helixAngle,
-)
+): Solid
 ```
 
 
@@ -30,6 +30,10 @@ gear::herringbone(
 | `pressureAngle` |  |  | Yes |
 | `gearHeight` |  |  | Yes |
 | `helixAngle` |  |  | Yes |
+
+### Returns
+
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
 
 ### Examples
