@@ -63,12 +63,18 @@ washerSectionSketch = startSketchOn(XZ)
 // We position the start of the rectangle at the washerHoleRadius, so it aligns with the helix guide.
 
 
-washerSectionProfile = startProfile(washerSectionSketch, at = [washerHoleRadius, 0])
-  |> yLine(length = washerThickness) // Go up to define thickness
-  |> xLine(length = washerSectionWidth) // Go outward toward the outer radius
-  |> yLine(length = -washerThickness) // Go back down to complete the rectangle
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+washerSectionProfile = sketch(on = washerSectionSketch) {
+  line1 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 1mm])
+  line2 = line(start = [var 2mm, var 1mm], end = [var 4mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4mm, var 1mm], end = [var 4mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
 
 // ──────────────────────────────
 // STEP 3: SWEEP TO FORM THE BODY
@@ -80,4 +86,5 @@ washerSectionProfile = startProfile(washerSectionSketch, at = [washerHoleRadius,
 // The result is a true spring lock washer in 3D.
 
 
-splitWasherBody = sweep(washerSectionProfile, path = helixGuide)
+region001 = region(point = [2.0025mm, 0.5mm], sketch = washerSectionProfile)
+splitWasherBody = sweep(region001, path = helixGuide)

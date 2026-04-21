@@ -3,9 +3,8 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
-// Define parameters
 binLength = 41.5
 binHeight = 7.0
 binBaseLength = 2.95
@@ -25,35 +24,62 @@ lipStep3 = 0.7
 lipStep4 = 1.8
 lipStep5 = 1.9
 
-// Number of bins in each direction
 countBinWidth = 2
 countBinLength = 3
 countBinHeight = 1
 
-// The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep
 lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
+totalWidth = (binLength + 2 * binTol) * countBinWidth
+totalLength = (binLength + 2 * binTol) * countBinLength
+baseFaceStartX = binBaseLength + binTol
+baseFaceMidX = binTol + thirdStep
+baseFaceTopY = firstStep + secondStep
+baseFaceHeight = height
+binTopRightX = totalWidth - cornerRadius
+binTopOuterX = totalWidth
+binTopTopY = totalLength
+binTopInnerY = totalLength - cornerRadius
 
-// Define a function which builds the profile of the baseplate bin
-fn face(@plane) {
-  faceSketch = startSketchOn(plane)
-    |> startProfile(at = [binBaseLength + binTol, 0])
-    |> yLine(length = height)
-    |> xLine(length = -binBaseLength)
-    |> angledLine(angle = -45, lengthY = thirdStep)
-    |> yLine(length = -secondStep)
-    |> angledLine(angle = -45, lengthY = firstStep)
-    |> close()
-  return faceSketch
+baseFacePlane = offsetPlane(YZ, offset = cornerRadius + binTol)
+baseFaceSketch = sketch(on = baseFacePlane) {
+  baseOffset = line(start = [var 0mm, var 0mm], end = [var 3.2mm, var 0mm], construction = true)
+  coincident([baseOffset.start, ORIGIN])
+  line1 = line(start = [var 3.2mm, var 0mm], end = [var 3.2mm, var 4.75mm])
+  coincident([baseOffset.end, line1.start])
+  line2 = line(start = [var 3.2mm, var 4.75mm], end = [var 0.25mm, var 4.75mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.25mm, var 4.75mm], end = [var 2.4mm, var 2.6mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.4mm, var 2.6mm], end = [var 2.4mm, var 0.8mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.4mm, var 0.8mm], end = [var 3.2mm, var 0mm])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+  midBaseGuide = line(start = [var 0mm, var 0mm], end = [var 2.4mm, var 0mm], construction = true)
+  coincident([midBaseGuide.start, baseOffset.start])
+  midTopGuide = line(start = [var 2.4mm, var 0mm], end = [var 2.4mm, var 2.6mm], construction = true)
+  coincident([midTopGuide.start, midBaseGuide.end])
+  coincident([midTopGuide.end, line4.start])
+  horizontal(baseOffset)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line4)
+  horizontal(midBaseGuide)
+  vertical(midTopGuide)
+  distance([baseOffset.start, baseOffset.end]) == binBaseLength + binTol
+  distance([line1.start, line1.end]) == height
+  distance([line2.end, line2.start]) == binBaseLength
+  distance([midBaseGuide.start, midBaseGuide.end]) == binTol + thirdStep
+  distance([midTopGuide.start, midTopGuide.end]) == firstStep + secondStep
+  distance([line4.start, line4.end]) == secondStep
 }
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
+singleSide = extrude(baseFaceRegion, length = binLength - (cornerRadius * 2))
 
-// Extrude a single side of the bin
-singleSide = extrude(face(offsetPlane(YZ, offset = cornerRadius + binTol)), length = binLength - (cornerRadius * 2))
-
-// Create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
   singleSide,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2,
@@ -64,7 +90,6 @@ sides = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// Define an axis axis000
 axis000 = {
   direction = [0.0, 1.0],
   origin = [
@@ -73,13 +98,13 @@ axis000 = {
   ]
 }
 
-// Create a single corner of the bin
-singleCorner = revolve(face(offsetPlane(YZ, offset = cornerRadius + binTol)), angle = -90, axis = axis000)
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
+singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
+hide(baseFaceSketch)
 
-// Create the corners of the bin
 corners = patternCircular3d(
   singleCorner,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2,
@@ -90,28 +115,49 @@ corners = patternCircular3d(
   rotateDuplicates = true,
 )
 
-singleBinFill = startSketchOn(XY)
-  |> startProfile(at = [
-       binBaseLength + binTol,
-       binBaseLength + binTol
-     ])
-  |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
-  |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
-  |> xLine(endAbsolute = profileStartX(%), tag = $line002)
-  |> close(tag = $line003)
-  |> extrude(length = height)
-  |> fillet(
-       radius = firstStep,
-       tags = [
-         getNextAdjacentEdge(line000),
-         getPreviousAdjacentEdge(line000),
-         getNextAdjacentEdge(line002),
-         getPreviousAdjacentEdge(line002)
-       ],
-     )
-
-magCutout000 = startSketchOn(singleBinFill, face = START)
-  |> circle(
+singleBinFillSketch = sketch(on = XY) {
+  line1 = line(start = [var 4.0mm, var 3.2mm], end = [var 38.0mm, var 3.2mm])
+  arc2 = arc(start = [var 38.0mm, var 3.2mm], end = [var 38.8mm, var 4.0mm], center = [var 38.0mm, var 4.0mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 38.8mm, var 4.0mm], end = [var 38.8mm, var 38.0mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 38.8mm, var 38.0mm], end = [var 38.0mm, var 38.8mm], center = [var 38.0mm, var 38.0mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 38.0mm, var 38.8mm], end = [var 4.0mm, var 38.8mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var 4.0mm, var 38.8mm], end = [var 3.2mm, var 38.0mm], center = [var 4.0mm, var 38.0mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 3.2mm, var 38.0mm], end = [var 3.2mm, var 4.0mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var 3.2mm, var 4.0mm], end = [var 4.0mm, var 3.2mm], center = [var 4.0mm, var 4.0mm])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 4.0mm, var 0mm], construction = true)
+  coincident([guide1.start, ORIGIN])
+  guide2 = line(start = [var 4.0mm, var 0mm], end = [var 4.0mm, var 3.2mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line1.start])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == firstStep
+  radius(arc4) == firstStep
+  radius(arc6) == firstStep
+  radius(arc8) == firstStep
+  distance([guide1.start, guide1.end]) == 4.0mm
+  distance([guide2.start, guide2.end]) == 3.2mm
+  distance([line1.start, line1.end]) == 34.0mm
+  distance([line3.start, line3.end]) == 34.0mm
+}
+singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
+singleBinFill = extrude(singleBinFillRegion, length = height)
+hide(singleBinFillSketch)
+magPocketPlane = planeOf(singleBinFill, face = START)
+magPocketSketch = circle(
+       magPocketPlane,
        center = [
          -magOffset - binBaseLength - binTol,
          magOffset + binBaseLength + binTol
@@ -119,7 +165,7 @@ magCutout000 = startSketchOn(singleBinFill, face = START)
        radius = magOuterDiam / 2,
      )
   |> patternCircular2d(
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        center = [
          (-binLength + 2 * binTol) / 2,
          (binLength + 2 * binTol) / 2
@@ -127,9 +173,10 @@ magCutout000 = startSketchOn(singleBinFill, face = START)
        instances = 4,
        rotateDuplicates = true,
      )
-  |> extrude(length = -magDepth)
+magPocketCutters = extrude(magPocketSketch, length = -magDepth)
+hide(magPocketSketch)
+singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
 
-// Create the baseplate by patterning sides
 binSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
@@ -138,7 +185,6 @@ binSides = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-// Create the corners of the baseplate by patterning the corners
 binCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],
@@ -147,54 +193,57 @@ binCorners = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-// Create the fill of the bin by patterning the corners
 binFill = patternLinear3d(
-       singleBinFill,
+       singleBinFillWithPockets,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
        distance = binLength + binTol * 2,
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfile(at = [0, 0])
-  |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
-  |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
-  |> xLine(endAbsolute = profileStartX(%), tag = $line012)
-  |> close(tag = $line013)
-  |> extrude(length = binHeight * countBinHeight)
-  |> fillet(
-       radius = cornerRadius,
-       tags = [
-         getNextAdjacentEdge(line010),
-         getPreviousAdjacentEdge(line010),
-         getNextAdjacentEdge(line012),
-         getPreviousAdjacentEdge(line012)
-       ],
-     )
-  |> shell(faces = [END], thickness = binThk)
-
-// Define a function which builds the profile of the baseplate bin
-fn lipFace(@plane) {
-  faceSketch = startSketchOn(plane)
-    |> startProfile(at = [0, 0])
-    // |> yLine(length = lipHeight, tag = $line100)
-    |> line(end = [0.0, 5.792893], tag = $line000)
-    |> arc(
-         angleStart = 180.0,
-         angleEnd = 45.0,
-         radius = 0.500000,
-         tag = $arc000,
-       )
-    // |> angledLine(angle = -45, lengthY = lipStep5 )
-    |> line(end = [1.046447, -1.046447], tag = $line001)
-    |> yLine(length = -lipStep4)
-    |> angledLine(angle = -45, lengthY = lipStep3)
-    |> yLine(length = -lipStep2)
-    |> angledLine(angle = -135, lengthY = lipStep1)
-    |> close()
-  return faceSketch
+binTopPlane = offsetPlane(XY, offset = height)
+binTopSketch = sketch(on = binTopPlane) {
+  line1 = line(start = [var 3.75mm, var 0mm], end = [var 80.25mm, var 0mm])
+  arc2 = arc(start = [var 80.25mm, var 0mm], end = [var 84.0mm, var 3.75mm], center = [var 80.25mm, var 3.75mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 84.0mm, var 3.75mm], end = [var 84.0mm, var 122.25mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 84.0mm, var 122.25mm], end = [var 80.25mm, var 126.0mm], center = [var 80.25mm, var 122.25mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 80.25mm, var 126.0mm], end = [var 3.75mm, var 126.0mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var 3.75mm, var 126.0mm], end = [var 0mm, var 122.25mm], center = [var 3.75mm, var 122.25mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 0mm, var 122.25mm], end = [var 0mm, var 3.75mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var 0mm, var 3.75mm], end = [var 3.75mm, var 0mm], center = [var 3.75mm, var 3.75mm])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 3.75mm, var 0mm], construction = true)
+  coincident([guide1.start, ORIGIN])
+  coincident([guide1.end, line1.start])
+  guide2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3.75mm], construction = true)
+  coincident([guide2.start, ORIGIN])
+  coincident([guide2.end, line7.end])
+  horizontal(line1)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line7)
+  horizontal(guide1)
+  vertical(guide2)
+  radius(arc2) == cornerRadius
+  radius(arc4) == cornerRadius
+  radius(arc6) == cornerRadius
+  radius(arc8) == cornerRadius
+  distance([guide1.start, guide1.end]) == cornerRadius
+  distance([line1.start, line1.end]) == totalWidth - (2 * cornerRadius)
+  distance([line3.start, line3.end]) == totalLength - (2 * cornerRadius)
+  distance([guide2.start, guide2.end]) == cornerRadius
 }
+binTopRegion = region(segments = [binTopSketch.line1])
+binTop = extrude(binTopRegion, length = binHeight * countBinHeight)
+  |> shell(faces = [END], thickness = binThk)
+hide(binTopSketch)
 
 plane000 = {
   origin = [
@@ -226,16 +275,108 @@ plane002 = {
   yAxis = [0.0, 0.0, 1.0]
 }
 
-// Extrude a single side of the lip of the bin
-lipSingleLength = extrude(lipFace(plane000), length = binLength * countBinWidth - (2 * cornerRadius) + 2 * binTol * countBinWidth)
+lipLengthSketch = sketch(on = plane000) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+  arc1 = arc(start = [var 0.85mm, var 6.15mm], end = [var 0.04mm, var 5.79mm], center = [var 0.52mm, var 5.8mm])
+  coincident([arc1.start, line3.start])
+  coincident([arc1.end, line1.end])
+  tangent([line1, arc1])
+}
+lipLengthRegion = region(segments = [lipLengthSketch.line1])
+lipSingleLength = extrude(lipLengthRegion, length = binLength * countBinWidth - (2 * cornerRadius) + 2 * binTol * countBinWidth)
 
-// Extrude a single side of the lip of the bin
-lipSingleWidth = extrude(lipFace(plane001), length = binLength * countBinLength - (2 * cornerRadius) + 2 * binTol * countBinLength)
+lipWidthSketch = sketch(on = plane001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+  arc1 = arc(start = [var 0.85mm, var 6.15mm], end = [var 0.03mm, var 5.8mm], center = [var 0.49mm, var 5.85mm])
+  coincident([arc1.start, line3.start])
+  coincident([arc1.end, line1.end])
+  tangent([line1, arc1])
+}
+lipWidthRegion = region(segments = [lipWidthSketch.line1])
+lipSingleWidth = extrude(lipWidthRegion, length = binLength * countBinLength - (2 * cornerRadius) + 2 * binTol * countBinLength)
+hide(lipWidthSketch)
 
-// Create the other sides of the lips by using a circular pattern
 lipLengths = patternCircular3d(
   lipSingleLength,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2 * countBinWidth,
@@ -246,10 +387,9 @@ lipLengths = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// Create the other sides of the lips by using a circular pattern
 lipWidths = patternCircular3d(
   lipSingleWidth,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2 * countBinWidth,
@@ -260,22 +400,68 @@ lipWidths = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// Define an axis axis000
 axis001 = {
   direction = [0.0, 1.0],
   origin = [cornerRadius, cornerRadius]
 }
 
-// Create a single corner of the bin
-lipSingleLengthCorner = revolve(lipFace(plane000), angle = -90, axis = axis001)
+lipLengthCornerRegion = region(segments = [lipLengthSketch.line1])
+lipSingleLengthCorner = revolve(lipLengthCornerRegion, angle = -90deg, axis = axis001)
+hide(lipLengthSketch)
 
-// Create a single corner of the bin
-lipSingleWidthCorner = revolve(lipFace(plane002), angle = 90, axis = axis001)
+lipWidthCornerSketch = sketch(on = plane002) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5.792893mm])
+  arc2 = arc(start = [var 0mm, var 5.792893mm], end = [var 0.853553mm, var 6.146446mm], center = [var 0.5mm, var 5.792893mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [0.853553, 6.146446], end = [1.9, 5.1])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var 1.9mm, var 5.1mm], end = [var 1.9mm, var 3.3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [1.9, 3.3], end = [2.6, 2.6])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.6mm, var 2.6mm], end = [var 2.6mm, var 1.4mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [2.6, 1.4], end = [1.2, 0])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 1.9mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 5.1mm], construction = true)
+  coincident([guide2.start, guide1.end])
+  coincident([guide2.end, line4.start])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.6mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  guide4 = line(start = [var 2.6mm, var 0mm], end = [var 2.6mm, var 2.6mm], construction = true)
+  coincident([guide4.start, guide3.end])
+  coincident([guide4.end, line6.start])
+  vertical(line1)
+  vertical(line4)
+  vertical(line6)
+  horizontal(line8)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  radius(arc2) == lipRadius
+  distance([line1.start, line1.end]) == 5.792893mm
+  distance([guide1.start, guide1.end]) == 1.9mm
+  distance([guide2.start, guide2.end]) == 5.1mm
+  distance([line4.start, line4.end]) == lipStep4
+  distance([guide3.start, guide3.end]) == 2.6mm
+  distance([guide4.start, guide4.end]) == 2.6mm
+  distance([line6.start, line6.end]) == lipStep2
+  distance([line8.start, line8.end]) == lipStep2
+}
+lipWidthCornerRegion = region(segments = [lipWidthCornerSketch.line1])
+lipSingleWidthCorner = revolve(lipWidthCornerRegion, angle = 90deg, axis = axis001)
+hide(lipWidthCornerSketch)
 
-// Create the corners of the bin
 lipCorners000 = patternCircular3d(
   lipSingleLengthCorner,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2 * countBinWidth,
@@ -286,10 +472,9 @@ lipCorners000 = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// Create the corners of the bin
 lipCorners001 = patternCircular3d(
   lipSingleWidthCorner,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [
     (binLength + 2 * binTol) / 2 * countBinWidth,
