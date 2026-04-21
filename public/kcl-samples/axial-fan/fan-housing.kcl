@@ -2,152 +2,228 @@
 // The plastic housing that contains the fan and the motor
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import parameters
 import * from "parameters.kcl"
 
-// Model the housing which holds the motor, the fan, and the mounting provisions
-// Bottom mounting face
-bottomFaceSketch = startSketchOn(XY)
-  |> startProfile(at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = 4))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -52.5mm, var -52.5mm], end = [var 52.5mm, var -52.5mm], construction = true)
+  line2 = line(start = [var 52.5mm, var -52.5mm], end = [var 52.5mm, var 52.5mm], construction = true)
+  line3 = line(start = [var 52.5mm, var 52.5mm], end = [var -52.5mm, var 52.5mm], construction = true)
+  line4 = line(start = [var -52.5mm, var 52.5mm], end = [var -52.5mm, var -52.5mm], construction = true)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -62.5mm, var -62.5mm], end = [var 62.5mm, var -62.5mm])
+  line6 = line(start = [var 62.5mm, var -62.5mm], end = [var 62.5mm, var 62.5mm])
+  line7 = line(start = [var 62.5mm, var 62.5mm], end = [var -62.5mm, var 62.5mm])
+  line8 = line(start = [var -62.5mm, var 62.5mm], end = [var -62.5mm, var -62.5mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+  parallel([line6, line8])
+  parallel([line7, line5])
+  perpendicular([line5, line6])
+  horizontal(line7)
+  line9 = line(start = [var -52.5mm, var -52.5mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line9.start, line4.end])
+  coincident([line9.end, ORIGIN])
+  line10 = line(start = [var 0mm, var 0mm], end = [var 52.5mm, var 52.5mm], construction = true)
+  coincident([line10.start, line9.end])
+  coincident([line10.end, line3.start])
+  line11 = line(start = [var 62.5mm, var -62.5mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line11.start, line6.start])
+  coincident([line11.end, line10.start])
+  line12 = line(start = [var -62.5mm, var 62.5mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line12.start, line8.start])
+  coincident([line12.end, line11.end])
+  equalLength([line12, line11])
+  parallel([line11, line12])
+  parallel([line9, line10])
+  equalLength([line10, line9])
+  equalLength([line5, line6, line7, line8])
+  distance([line5.start, line5.end]) == 125
+  equalLength([line1, line2, line3, line4])
+  distance([line1.start, line1.end]) == mountingHoleSpacing
+  circle1 = circle(start = [var -51.24mm, var 50.64mm], center = [var -52.5mm, var 52.5mm])
+  coincident([circle1.center, line4.start])
+  circle2 = circle(start = [var 50.89mm, var 50.93mm], center = [var 52.5mm, var 52.5mm])
+  coincident([circle2.center, line3.start])
+  circle3 = circle(start = [var 54.32mm, var -51.18mm], center = [var 52.5mm, var -52.5mm])
+  coincident([circle3.center, line2.start])
+  circle4 = circle(start = [var -50.33mm, var -53.1mm], center = [var -52.5mm, var -52.5mm])
+  coincident([circle4.center, line1.start])
+  equalRadius([circle4, circle3, circle2, circle1])
+  diameter(circle2) == mountingHoleSize
+  diameter(circle2) == mountingHoleSize
+  diameter(circle2) == mountingHoleSize
+  diameter(circle2) == mountingHoleSize
+  circle5 = circle(start = [var 0.83mm, var 2.88mm], center = [var 0mm, var 0mm])
+  coincident([circle5.center, line10.start])
+  radius(circle5) == 3
+}
+region001 = region(point = [0mm, -62.4975mm], sketch = sketch001)
+hidden001 = hide(sketch001)
+extrude001 = extrude(region001, length = 25)
+fillet001 = fillet(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [
+      region001.tags.line6,
+      region001.tags.line5
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line7,
+      region001.tags.line5
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line7,
+      region001.tags.line8
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line8,
+      region001.tags.line6
+    ])
+  ],
+  radius = 5,
+)
 
-// Add large openings to the bottom face to allow airflow through the fan
-airflowPattern = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
-  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
-  |> xLine(length = fanSize * 3 / 25)
-  |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()])
-  |> close()
-  |> patternCircular2d(
-       instances = 4,
-       center = [0, 0],
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-  |> extrude(length = -4)
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 116.61mm, var 2.55mm], end = [var 65mm, var 2.55mm], construction = true)
+  point2 = point(at = [var 64mm, var 7mm])
+  point3 = point(at = [var 64mm, var 12.58mm])
+  point4 = point(at = [var 64.02mm, var 18.26mm])
+  line6 = line(start = [var 65mm, var 22.55mm], end = [var 117.16mm, var 22.55mm], construction = true)
+  line7 = line(start = [var 117.16mm, var 22.55mm], end = [var 116.61mm, var 2.55mm])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.start])
+  line9 = line(start = [var 0mm, var 0mm], end = [var 65mm, var 0mm], construction = true)
+  coincident([line9.start, ORIGIN])
+  line10 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 25.09mm], construction = true)
+  coincident([line10.start, line9.start])
+  vertical([line10.end, ORIGIN])
+  line11 = line(start = [var 0mm, var 25.09mm], end = [var 65mm, var 25.09mm], construction = true)
+  coincident([line11.start, line10.end])
+  distance([line10.start, line10.end]) == 25.09mm
+  horizontal(line11)
+  horizontal(line9)
+  line12 = line(start = [var 65mm, var 2.55mm], end = [var 65mm, var 0mm], construction = true)
+  line13 = line(start = [var 65mm, var 22.55mm], end = [var 65mm, var 25.09mm], construction = true)
+  coincident([line11.end, line13.end])
+  coincident([line9.end, line12.end])
+  equalLength([line13, line12])
+  vertical(line12)
+  vertical(line13)
+  coincident([line13, line12])
+  horizontal(line1)
+  horizontal(line6)
+  distance([line9.start, line9.end]) == 65
+  point5 = point(at = [var 65.24mm, var 22.19mm])
+  arc4 = arc(start = [var 66mm, var 22.55mm], end = [var 65mm, var 21.55mm], center = [var 66mm, var 21.55mm])
+  coincident([arc4.start, line6])
+  coincident([point5, arc4])
+  tangent([line6, arc4])
+  point6 = point(at = [var 65.33mm, var 2.8mm])
+  arc5 = arc(start = [var 65mm, var 3.55mm], end = [var 66mm, var 2.55mm], center = [var 66mm, var 3.55mm])
+  coincident([point6, arc5])
+  tangent([line1, arc5])
+  line15 = line(start = [var 66mm, var 2.55mm], end = [var 116.61mm, var 2.55mm])
+  coincident([line15.start, arc5.end])
+  coincident([line15.end, line7.end])
+  line18 = line(start = [var 66mm, var 22.55mm], end = [var 117.16mm, var 22.55mm])
+  coincident([line18.end, line7.start])
+  coincident([line18.start, arc4.start])
+  equalRadius([arc4, arc5])
+  coincident([line15.start, line1])
+  line2 = line(start = [var 65mm, var 21.55mm], end = [var 65mm, var 3.55mm])
+  coincident([line2.start, arc4.end])
+  coincident([line2.end, arc5.start])
+}
+region002 = region(point = [116.8825009mm, 12.5495212mm], sketch = sketch002)
+hidden002 = hide(sketch002)
+revolve001 = revolve(region002, angle = 360deg, axis = Y)
 
-// Create the middle segment of the fan housing body
-housingMiddleLength = fanSize / 3
-housingMiddleRadius = fanSize / 3 - 1
-bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfile(at = [
-       housingMiddleLength / 2,
-       -housingMiddleLength / 2 - housingMiddleRadius
-     ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> extrude(length = fanHeight - 4 - 4)
+sketch003 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 10mm, var 1mm])
+  coincident([line2.start, line1.end])
+  line3 = line(start = [var 10mm, var 1mm], end = [var 10mm, var 15mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 10mm, var 15mm], end = [var 11mm, var 15mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 11mm, var 15mm], end = [var 11mm, var 1mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 11mm, var 1mm], end = [var 60mm, var 1mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 60mm, var 1mm], end = [var 60mm, var 27.13mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 60mm, var 27.13mm], end = [var 0mm, var 27.13mm])
+  coincident([line7.end, line8.start])
+  vertical([line8.end, ORIGIN])
+  line9 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 27.13mm])
+  coincident([line9.start, line2.start])
+  coincident([line9.end, line8.end])
+  coincident([line2, line6])
+  distance([line9.start, line7.start]) == fanSize / 2
+  vertical(line7)
+  distance([line2.start, line2.end]) == 10
+  vertical(line3)
+  vertical(line5)
+  horizontalDistance([line4.start, line4.end]) == 1
+  horizontal(line4)
+  distance([line5.start, line5.end]) == 14
+  horizontal(line2)
+  horizontal(line6)
+  distance([line1.start, line1.end]) == 1
+  horizontal(line8)
+}
+hidden003 = hide(sketch003)
+region003 = region(point = [2mm, 1.0025mm], sketch = sketch003)
+revolve002 = revolve(region003, angle = 360deg, axis = Y)
 
-// Cut a hole in the body to accommodate the fan
-bodyFanHole = startSketchOn(bodyMiddle, face = END)
-  |> circle(center = [0, 0], radius = fanSize * 23 / 50)
-  |> extrude(length = -(fanHeight - 4 - 4))
+sketch004 = sketch(on = XY) {
+  circle1 = circle(start = [var 45.12mm, var 35.07mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  line1 = line(start = [var -42.95mm, var 70.06mm], end = [var -10mm, var 13mm])
+  arc1 = arc(start = [var -10mm, var 13mm], end = [var -8.27mm, var 12mm], center = [var -8.27mm, var 14mm])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var -8.27mm, var 12mm], end = [var 76.47mm, var 12mm])
+  coincident([line2.start, arc1.end])
+  tangent([line2, arc1])
+  horizontal(line2)
+  radius(circle1) == fanSize / 2.01
+  verticalDistance([circle1.center, line2.start]) == 12
+  horizontalDistance([arc1.start, circle1.center]) == 10
+  radius(arc1) == 2
+  line3 = line(start = [var 0mm, var 0mm], end = [var -44.28mm, var 76.69mm], construction = true)
+  coincident([line3.start, circle1.center])
+  angle([line2, line3]) == 120
+  line4 = line(start = [var -10mm, var 13mm], end = [var -11.44mm, var 12.17mm])
+  coincident([line4.start, line1.end])
+  perpendicular([line4, line1])
+  parallel([line1, line3])
+}
+region004 = region(point = [53.1869646mm, 20.8846167mm], sketch = sketch004)
+hidden004 = hide(sketch004)
+extrude002 = extrude(region004, length = fanHeight * 1.5, bidirectionalLength = fanHeight * 0.5)
+pattern001 = patternCircular3d(
+  extrude002,
+  instances = 3,
+  axis = Z,
+  center = [0, 0, 0],
+)
 
-// Top mounting face. Cut a hole in the face to accommodate the fan
-topFaceSketch = startSketchOn(bodyMiddle, face = END)
-topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = fanSize * 23 / 50))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
-
-// Create a housing for the electric motor to sit
-motorHousing = startSketchOn(bottomFaceSketch, face = END)
-  |> circle(center = [0, 0], radius = 11.2)
-  |> extrude(length = 16)
-
-startSketchOn(motorHousing, face = END)
-  |> circle(center = [0, 0], radius = 10)
-  |> extrude(length = -16)
+solid001 = subtract(extrude001, tools = revolve001)
+  |> subtract(tools = revolve002)
+  |> subtract(tools = pattern001)
   |> appearance(color = "#a55e2c")
-  |> fillet(
-       radius = abs(fanSize - mountingHoleSpacing) / 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001),
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
-       ],
-     )

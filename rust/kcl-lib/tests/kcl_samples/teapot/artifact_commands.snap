@@ -33,6 +33,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -81,11 +90,11 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.05,
-            "y": 0.0,
+            "x": -79.05,
+            "y": 26.000127472939514,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -96,12 +105,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
-          "radius": 30.0,
-          "offset": {
+          "type": "arc",
+          "center": {
+            "x": -79.04976063096451,
+            "y": 55.999658139766176
+          },
+          "radius": 29.999530667781634,
+          "start": {
             "unit": "degrees",
-            "value": -110.0
-          }
+            "value": -90.00045716833479
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -199.99988148376093
+          },
+          "relative": false
         }
       }
     },
@@ -114,11 +132,11 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.759619213604249,
-            "y": 15.824423734034701,
+            "x": -101.4803821000829,
+            "y": 82.0901394115505,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -129,12 +147,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
-          "radius": 30.0,
-          "offset": {
+          "type": "arc",
+          "center": {
+            "x": -129.66937471431856,
+            "y": 92.34892035474111
+          },
+          "radius": 29.997698095784006,
+          "start": {
             "unit": "degrees",
-            "value": 100.0
-          }
+            "value": -19.997894135341365
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 79.99908759709189
+          },
+          "relative": false
         }
       }
     },
@@ -216,7 +243,7 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.0,
+          "x": 6.0300027777654845,
           "y": 26.0,
           "z": 0.0
         }
@@ -238,60 +265,20 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 26.0
+            "x": 0.03000277776548973,
+            "y": 26.00000000925922
           },
-          "radius": 6.0,
+          "radius": 5.999999999999995,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": -0.0000000015432034909205578
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.2831853056363824
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -301,17 +288,10 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.800000000000001,
-          "y": 26.0,
+          "x": 4.529991666702424,
+          "y": 26.00999998148156,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -323,17 +303,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 26.0
+            "x": 0.030002777765495287,
+            "y": 26.00000000925922
           },
-          "radius": 4.800000000000001,
+          "radius": 4.500000000000028,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": 0.0022222178783868982
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.285407525057973
           },
           "relative": false
         }
@@ -343,26 +323,12 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": -5.9674972,
+          "y": 26.0
+        }
       }
     },
     {
@@ -442,6 +408,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -490,11 +465,11 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.0,
-            "y": 0.0,
+            "x": 31.999999999999527,
+            "y": 0.0008380040066105019,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -505,13 +480,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 44.19047619047619,
-            "y": 52.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 31.998354248034705,
+            "y": 44.778058100895265
           },
-          "angle_snap_increment": null
+          "radius": 44.77722012713282,
+          "start": {
+            "unit": "degrees",
+            "value": -89.99789413810274
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 9.28141451252033
+          },
+          "relative": false
         }
       }
     },
@@ -522,13 +505,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -22.857142857142854,
-            "y": 66.18181818181817,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -127.40968208466097,
+            "y": 18.71904390105938
           },
-          "angle_snap_increment": null
+          "radius": 206.3011943688841,
+          "start": {
+            "unit": "degrees",
+            "value": 9.283618056037364
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 28.823969118409185
+          },
+          "relative": false
         }
       }
     },
@@ -539,13 +530,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -13.333333333333336,
-            "y": 11.818181818181827,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 30.08933439948277,
+            "y": 105.39059026317551
           },
-          "angle_snap_increment": null
+          "radius": 26.52940252649692,
+          "start": {
+            "unit": "degrees",
+            "value": 28.824143077110573
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 68.06443995786218
+          },
+          "relative": false
         }
       }
     },
@@ -587,8 +586,12 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -672,6 +675,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -720,8 +732,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.0,
-            "y": 26.0,
+            "x": 75.99999999999973,
+            "y": 26.000499257547297,
             "z": 0.0
           },
           "relative": false
@@ -735,13 +747,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 12.98,
-            "y": 6.64,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 75.99919058811388,
+            "y": 42.00958588640884
           },
-          "angle_snap_increment": null
+          "radius": 16.009086649323287,
+          "start": {
+            "unit": "degrees",
+            "value": -89.9971031523545
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -35.821862022669656
+          },
+          "relative": false
         }
       }
     },
@@ -752,13 +772,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 28.39,
-            "y": 63.11,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -50.62016118182193,
+            "y": 133.3796414612163
           },
-          "angle_snap_increment": null
+          "radius": 172.15308193149332,
+          "start": {
+            "unit": "degrees",
+            "value": -35.81534064686688
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -12.62578650720501
+          },
+          "relative": false
         }
       }
     },
@@ -769,13 +797,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -10.27,
-            "y": 14.8,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 105.43082573294511,
+            "y": 98.42880981518366
           },
-          "angle_snap_increment": null
+          "radius": 12.236006904843546,
+          "start": {
+            "unit": "degrees",
+            "value": -12.646098736752949
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 82.15928090580174
+          },
+          "relative": false
         }
       }
     },
@@ -786,13 +822,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -48.01,
-            "y": 1.81,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 74.0300278991163,
+            "y": -129.04000101099854
           },
-          "angle_snap_increment": null
+          "radius": 241.8619412217199,
+          "start": {
+            "unit": "degrees",
+            "value": 82.14127176992297
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 93.54146701416025
+          },
+          "relative": false
         }
       }
     },
@@ -806,7 +850,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 108.70333020657074,
+            "y": 108.7,
             "z": 0.0
           },
           "relative": false
@@ -842,6 +886,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -868,7 +921,7 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -10.0,
+          "x": 10.0,
           "y": 29.5,
           "z": 0.0
         }
@@ -888,16 +941,19 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 31.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 0.000000000000005329070518200751,
+            "y": -3.0799999999999983
+          },
+          "radius": 34.08014671329922,
+          "start": {
+            "unit": "degrees",
+            "value": 72.93682456792743
           },
           "end": {
-            "x": 10.0,
-            "y": 29.5,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 107.06317543207258
           },
           "relative": false
         }
@@ -907,16 +963,12 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
+        "type": "move_path_pen",
         "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.0,
-            "y": -7.0,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
+        "to": {
+          "x": 10.0,
+          "y": 22.5,
+          "z": 0.0
         }
       }
     },
@@ -927,13 +979,34 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -20.0,
-            "y": 0.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 8.930000000000001,
+            "y": 26.0
           },
-          "angle_snap_increment": null
+          "radius": 3.659904370335378,
+          "start": {
+            "unit": "degrees",
+            "value": -73.00085910924625
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 73.00085910924625
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -10.0,
+          "y": 22.5,
+          "z": 0.0
         }
       }
     },
@@ -944,13 +1017,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.0,
-            "y": 7.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000000017763568394002505,
+            "y": 55.08
           },
-          "angle_snap_increment": null
+          "radius": 34.08014671329922,
+          "start": {
+            "unit": "degrees",
+            "value": -107.06317543207258
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -72.93682456792743
+          },
+          "relative": false
         }
       }
     },
@@ -958,8 +1039,50 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -10.0,
+          "y": 29.5,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -8.93,
+            "y": 26.0
+          },
+          "radius": 3.659904370335378,
+          "start": {
+            "unit": "degrees",
+            "value": 106.99914089075376
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 253.0008591092462
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1054,6 +1177,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1107,12 +1239,12 @@ description: Artifact commands teapot.kcl
           },
           "radius": 6.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1122,8 +1254,12 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1217,6 +1353,15 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1265,11 +1410,11 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.0,
-            "y": 0.0,
+            "x": 31.999999999999545,
+            "y": 0.0008088737480116065,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1280,63 +1425,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 44.19047619047619,
-            "y": 52.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 31.998411765031204,
+            "y": 44.77812588535284
           },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -22.857142857142854,
-            "y": 66.18181818181817,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -13.333333333333336,
-            "y": 11.818181818181827,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 3.0,
-          "offset": {
+          "radius": 44.77731703977188,
+          "start": {
             "unit": "degrees",
-            "value": 190.0
-          }
+            "value": -89.99796773977103
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 9.28134052555253
+          },
+          "relative": false
         }
       }
     },
@@ -1347,13 +1450,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 9.07377939205238,
-            "y": -6.100018907691336,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -127.4097249101052,
+            "y": 18.719166794576097
           },
-          "angle_snap_increment": null
+          "radius": 206.30138141716097,
+          "start": {
+            "unit": "degrees",
+            "value": 9.283582395681737
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 28.82393330171514
+          },
+          "relative": false
         }
       }
     },
@@ -1364,13 +1475,21 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 22.857142857142854,
-            "y": -66.18181818181817,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 30.088933702136895,
+            "y": 105.39094562855115
           },
-          "angle_snap_increment": null
+          "radius": 26.529791032010397,
+          "start": {
+            "unit": "degrees",
+            "value": 28.82305207049404
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 68.06335014769193
+          },
+          "relative": false
         }
       }
     },
@@ -1381,13 +1500,96 @@ description: Artifact commands teapot.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -38.19047619047619,
-            "y": -46.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 38.87887687840019,
+            "y": 127.21630791983716
           },
-          "angle_snap_increment": null
+          "radius": 3.000882426094356,
+          "start": {
+            "unit": "degrees",
+            "value": 68.0630436881525
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 258.0981268625461
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 35.23870426367395,
+            "y": 109.99085520707584
+          },
+          "radius": 14.604999999999995,
+          "start": {
+            "unit": "degrees",
+            "value": 78.06122850595317
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 34.10885239965784
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -64.28983665644341,
+            "y": 42.5895421778895
+          },
+          "radius": 134.8084419311793,
+          "start": {
+            "unit": "degrees",
+            "value": 34.10638766840377
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 4.002845931825
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 27.029589648153816,
+            "y": 48.979506218973384
+          },
+          "radius": 43.26572370181727,
+          "start": {
+            "unit": "degrees",
+            "value": 4.003203169882269
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -83.40327321488505
+          },
+          "relative": false
         }
       }
     },
@@ -1429,8 +1631,12 @@ description: Artifact commands teapot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

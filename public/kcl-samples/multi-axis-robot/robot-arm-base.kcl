@@ -28,31 +28,50 @@ mountingHoles02 = startSketchOn(XY)
   |> patternCircular2d(center = [0, 0], instances = 4)
 
 // Base Plate
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-basePlateRadius, -basePlateRadius])
-  |> angledLine(angle = 0, length = 2 * basePlateRadius, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2 * basePlateRadius, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> subtract2d(tool = [mountingHoles01, mountingHoles02])
-  |> extrude(length = basePlateThickness)
-  |> chamfer(
-       length = baseChamfer,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
-       ],
-     )
+sketch004 = sketch(on = XY) {
+  line1 = line(start = [var -5.5in, var -5.5in], end = [var 5.5in, var -5.5in])
+  line2 = line(start = [var 5.5in, var -5.5in], end = [var 5.5in, var 5.5in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 5.5in, var 5.5in], end = [var -5.5in, var 5.5in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -5.5in, var 5.5in], end = [var -5.5in, var -5.5in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch004.line1, sketch004.line2])
+sketch001 = extrude(region001, length = basePlateThickness)
 
 // Base Motor for actuating first joint
-sketch002 = startSketchOn(sketch001, face = END)
-  |> circle(center = [0, 0], radius = 4, tag = $referenceEdge)
-extrude002 = extrude(sketch002, length = baseHeight - basePlateThickness - 1.5)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
-sketch003 = startSketchOn(extrude002, face = END)
-  |> circle(center = [0, 0], radius = 0.5)
-extrude003 = extrude(sketch003, length = 1)
+sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
+  circle1 = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+extrude002 = extrude(region002, length = baseHeight - basePlateThickness - 1.5)
+
+sketch003 = sketch(on = startSketchOn(extrude002, face = END)) {
+  circle1 = circle(start = [var 0.5in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+extrude003 = extrude(region003, length = 1)
   |> appearance(color = "#754110", roughness = 90, metalness = 90)
+chamfer001 = chamfer(
+  sketch001,
+  tags = [
+    getCommonEdge(faces = [
+      region001.tags.line2,
+      region001.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line3,
+      region001.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line3,
+      region001.tags.line4
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line4,
+      region001.tags.line2
+    ])
+  ],
+  length = 1,
+)

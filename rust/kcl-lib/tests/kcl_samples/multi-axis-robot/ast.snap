@@ -13,9 +13,6 @@ description: Result of parsing multi-axis-robot.kcl
           "type": "Kcl",
           "filename": "robot-arm-base.kcl"
         },
-        "preComments": [
-          "// Import parts"
-        ],
         "selector": {
           "type": "None",
           "alias": {
@@ -99,110 +96,6 @@ description: Result of parsing multi-axis-robot.kcl
         "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "abs_path": false,
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "robotArmBase",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "path": [],
-          "start": 0,
-          "type": "Name",
-          "type": "Name"
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "abs_path": false,
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rotatingBase",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "path": [],
-          "start": 0,
-          "type": "Name",
-          "type": "Name"
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "abs_path": false,
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "j2RobotArm",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "path": [],
-          "start": 0,
-          "type": "Name",
-          "type": "Name"
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "abs_path": false,
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "j3RobotArm",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "path": [],
-          "start": 0,
-          "type": "Name",
-          "type": "Name"
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
       }
     ],
     "commentStart": 0,
@@ -220,14 +113,6 @@ description: Result of parsing multi-axis-robot.kcl
           "start": 0,
           "type": "Identifier"
         },
-        "preComments": [
-          "// Robot Arm",
-          "// A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
-          "// Categories: Manufacturing, Automotive",
-          "",
-          "",
-          "// Set Units"
-        ],
         "properties": [
           {
             "commentStart": 0,
@@ -297,21 +182,54 @@ description: Result of parsing multi-axis-robot.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "3": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Robot Arm",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Manufacturing, Automotive",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
         {
           "commentStart": 0,
           "end": 0,

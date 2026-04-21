@@ -13,93 +13,107 @@ outletHeight = 26
 spoutDiameter = 12
 
 // Sketch the path of the teapot spout
-spoutPath = startSketchOn(XZ)
-  |> startProfile(at = [-beltlineDiameter / 2.5, outletHeight])
-  |> xLine(length = -15.05)
-  |> tangentialArc(angle = -110deg, radius = 30, tag = $seg01)
-  |> angledLine(angle = tangentToEnd(seg01), length = 16.84)
-  |> tangentialArc(angle = 100deg, radius = 30)
+spoutPath = sketch(on = XZ) {
+  line1 = line(start = [var -64mm, var 26mm], end = [var -79.05mm, var 26mm])
+  arc2 = arc(start = [var -107.24mm, var 66.26mm], end = [var -79.05mm, var 26mm], center = [var -79.05mm, var 56mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -107.24mm, var 66.26mm], end = [var -101.48mm, var 82.09mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -101.48mm, var 82.09mm], end = [var -124.46mm, var 121.89mm], center = [var -129.67mm, var 92.35mm])
+  coincident([line3.end, arc4.start])
+  // horizontal(arc2)
+}
 
 // Sweep a hollow spout
-spout = startSketchOn(offsetPlane(YZ, offset = -beltlineDiameter / 2.5))
-  |> circle(center = [0, outletHeight], diameter = spoutDiameter)
-  |> subtract2d(tool = circle(center = [0, outletHeight], diameter = spoutDiameter * 0.8))
-  |> sweep(path = spoutPath)
+sketch001 = sketch(on = offsetPlane(YZ, offset = -beltlineDiameter / 2.5)) {
+  circle1 = circle(start = [var 6.03mm, var 26mm], center = [var 0.03mm, var 26mm])
+
+  circle2 = circle(start = [var 4.53mm, var 26.01mm], center = [var 0.03mm, var 26mm])
+  radius(circle1) == 6mm
+  radius(circle2) == 4.5
+  coincident([circle2.center, circle1.center])
+}
+region001 = region(point = [-5.9674972mm, 26mm], sketch = sketch001)
+spout = sweep(region001, path = spoutPath)
 
 // Model the perimeter of the teapot body, to be used to trim the handle so that it fits snug to the body
-tools = startSketchOn(YZ)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = beltlineDiameter / 5)
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 2.1,
-       teapotHeight / 2.5
-     ])
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 3,
-       teapotHeight / 1.1
-     ])
-  |> tangentialArc(endAbsolute = [beltlineDiameter / 4, teapotHeight])
-  |> xLine(endAbsolute = profileStartX(%))
-  |> line(endAbsolute = profileStart(%))
-  |> close()
-  |> revolve(axis = Y)
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 32mm, var 0mm])
+  arc2 = arc(start = [var 32mm, var 0mm], end = [var 76.19mm, var 52mm], center = [var 32mm, var 44.78mm])
+  coincident([line1.end, arc2.start])
+  arc3 = arc(start = [var 76.19mm, var 52mm], end = [var 53.33mm, var 118.18mm], center = [var -127.41mm, var 18.72mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var 53.33mm, var 118.18mm], end = [var 40mm, var 130mm], center = [var 30.09mm, var 105.39mm])
+  coincident([arc3.end, arc4.start])
+  line5 = line(start = [var 40mm, var 130mm], end = [var 0mm, var 130mm])
+  coincident([arc4.end, line5.start])
+  line6 = line(start = [var 0mm, var 130mm], end = [var 0mm, var 0mm])
+  coincident([line5.end, line6.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.arc2])
+tools = revolve(region002, axis = Y)
 
 // Sketch the path of the handle
-handlePath = startSketchOn(XZ)
-  |> startProfile(at = [0, outletHeight])
-  |> xLine(endAbsolute = 76)
-  |> tangentialArc(end = [12.98, 6.64])
-  |> tangentialArc(end = [28.39, 63.11])
-  |> tangentialArc(end = [-10.27, 14.8])
-  |> tangentialArc(end = [-48.01, 1.81], tag = $seg02)
-  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = 0)
+handlePath = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 26mm], end = [var 76mm, var 26mm])
+  arc2 = arc(start = [var 76mm, var 26mm], end = [var 88.98mm, var 32.64mm], center = [var 76mm, var 42.01mm])
+  coincident([line1.end, arc2.start])
+  arc3 = arc(start = [var 88.98mm, var 32.64mm], end = [var 117.37mm, var 95.75mm], center = [var -50.62mm, var 133.38mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var 117.37mm, var 95.75mm], end = [var 107.1mm, var 110.55mm], center = [var 105.43mm, var 98.43mm])
+  coincident([arc3.end, arc4.start])
+  arc5 = arc(start = [var 107.1mm, var 110.55mm], end = [var 59.09mm, var 112.36mm], center = [var 74.03mm, var -129.04mm])
+  coincident([arc4.end, arc5.start])
+  line6 = line(start = [var 59.09mm, var 112.36mm], end = [var 0mm, var 108.7mm])
+  coincident([arc5.end, line6.start])
+}
 
 // Sweep the handle
-handle = startSketchOn(YZ)
-  |> startProfile(at = [-10, outletHeight + 3.5])
-  |> arc(interiorAbsolute = [0, outletHeight + 5], endAbsolute = [10, profileStartY(%)])
-  |> tangentialArc(end = [0, -7])
-  |> tangentialArc(end = [-20, 0])
-  |> tangentialArc(endAbsolute = profileStart())
-  |> close()
-  |> sweep(path = handlePath)
+sketch003 = sketch(on = YZ) {
+  arc1 = arc(start = [var 10mm, var 29.5mm], end = [var -10mm, var 29.5mm], center = [var 0mm, var -3.08mm])
+  arc2 = arc(start = [var 10mm, var 22.5mm], end = [var 10mm, var 29.5mm], center = [var 8.93mm, var 26mm])
+  coincident([arc1.start, arc2.end])
+  arc3 = arc(start = [var -10mm, var 22.5mm], end = [var 10mm, var 22.5mm], center = [var 0mm, var 55.08mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var -10mm, var 29.5mm], end = [var -10mm, var 22.5mm], center = [var -8.93mm, var 26mm])
+  coincident([arc3.start, arc4.end])
+}
+region003 = region(segments = [sketch003.arc1, sketch003.arc2])
+handle = sweep(region003, path = handlePath)
   |> subtract(tools)
 
 // Create a cutout in the body for the spout outlet
-spoutHole = startSketchOn(YZ)
-  |> circle(center = [0, outletHeight], diameter = spoutDiameter)
-  |> extrude(length = -beltlineDiameter / 2)
+sketch004 = sketch(on = YZ) {
+  circle1 = circle(start = [var 6mm, var 26mm], center = [var 0mm, var 26mm])
+}
+region004 = region(segments = [sketch004.circle1])
+spoutHole = extrude(region004, length = -beltlineDiameter / 2)
 
 // Model the body of the teapot
-body = startSketchOn(YZ)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = beltlineDiameter / 5)
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 2.1,
-       teapotHeight / 2.5
-     ])
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 3,
-       teapotHeight / 1.1
-     ])
-  |> tangentialArc(endAbsolute = [beltlineDiameter / 4, teapotHeight])
-  |> tangentialArc(angle = 190deg, diameter = wallThickness)
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 3 - wallThickness,
-       teapotHeight / 1.1
-     ])
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 2.1 - wallThickness,
-       teapotHeight / 2.5
-     ])
-  |> tangentialArc(endAbsolute = [
-       beltlineDiameter / 5,
-       profileStartY() + wallThickness
-     ])
-  |> xLine(endAbsolute = profileStartX(%))
-  |> line(endAbsolute = profileStart(%))
-  |> close()
-  |> revolve(axis = Y)
+sketch005 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 32mm, var 0mm])
+  arc2 = arc(start = [var 32mm, var 0mm], end = [var 76.19mm, var 52mm], center = [var 32mm, var 44.78mm])
+  coincident([line1.end, arc2.start])
+  arc3 = arc(start = [var 76.19mm, var 52mm], end = [var 53.33mm, var 118.18mm], center = [var -127.41mm, var 18.72mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var 53.33mm, var 118.18mm], end = [var 40mm, var 130mm], center = [var 30.09mm, var 105.39mm])
+  coincident([arc3.end, arc4.start])
+  arc5 = arc(start = [var 40mm, var 130mm], end = [var 38.26mm, var 124.28mm], center = [var 38.88mm, var 127.22mm])
+  coincident([arc4.end, arc5.start])
+  arc6 = arc(start = [var 47.33mm, var 118.18mm], end = [var 38.26mm, var 124.28mm], center = [var 35.24mm, var 109.99mm])
+  coincident([arc5.end, arc6.end])
+  arc7 = arc(start = [var 70.19mm, var 52mm], end = [var 47.33mm, var 118.18mm], center = [var -64.29mm, var 42.59mm])
+  coincident([arc6.start, arc7.end])
+  arc8 = arc(start = [var 32mm, var 6mm], end = [var 70.19mm, var 52mm], center = [var 27.03mm, var 48.98mm])
+  coincident([arc7.start, arc8.end])
+  line9 = line(start = [var 32mm, var 6mm], end = [var 0mm, var 6mm])
+  coincident([arc8.start, line9.start])
+  line10 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([line9.end, line10.start])
+  diameter(arc6) == 29.21mm
+}
+region005 = region(segments = [sketch005.line1, sketch005.arc2])
+body = revolve(region005, axis = Y)
   |> subtract(tools = [spoutHole])
 
 // Join each component of the teapot and add an appearance
