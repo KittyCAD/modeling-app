@@ -377,6 +377,54 @@ describe('updateSketchOutcome', () => {
     }
   })
 
+  test('dispatches the scene update immediately for same-code checkpoint commits', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+
+    updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'last good preview',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'last good preview' },
+          sceneGraphDelta,
+          checkpointId: 42,
+        },
+      },
+    } as any)
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(updateCodeEditor).toHaveBeenCalledWith(
+      'last good preview',
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+        shouldAddToHistory: true,
+      },
+      expect.objectContaining({
+        sketchCheckpointId: 42,
+        effects: [],
+      })
+    )
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'last good preview',
+      sceneGraphDelta
+    )
+  })
+
   test('suppresses preview toasts while preserving exec outcome issues', () => {
     const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
     try {

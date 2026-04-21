@@ -102,6 +102,7 @@ pub async fn execute_and_snapshot_ast(
                 return Err(ExecErrorWithState::new(
                     ExecError::BadExport(format!("Export failed: {err:?}")),
                     exec_state.clone(),
+                    None,
                 ));
             }
         };
@@ -131,22 +132,31 @@ async fn do_execute_and_snapshot(
     program: Program,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
-    let result = ctx
-        .run(&program, &mut exec_state)
-        .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    let result = ctx.run(&program, &mut exec_state).await;
+    let responses = if result.is_err() {
+        #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+        {
+            Some(exec_state.take_root_module_responses())
+        }
+        #[cfg(not(all(feature = "artifact-graph", feature = "snapshot-engine-responses")))]
+        None
+    } else {
+        None
+    };
+    let result = result.map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone(), responses))?;
     for issue in exec_state.issues() {
         if issue.severity.is_err() {
             return Err(ExecErrorWithState::new(
                 KclErrorWithOutputs::no_outputs(KclError::new_semantic(issue.clone().into())).into(),
                 exec_state.clone(),
+                None,
             ));
         }
     }
     let snapshot_png_bytes = ctx
         .prepare_snapshot()
         .await
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?
         .contents
         .0;
 
@@ -155,7 +165,7 @@ async fn do_execute_and_snapshot(
         .with_guessed_format()
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?;
 
     Ok((exec_state, result.0, img))
 }
@@ -201,17 +211,19 @@ pub async fn execute_and_export_step(
 > {
     let ctx = new_context(true, current_file).await?;
     let mut exec_state = ExecState::new(&ctx);
-    let program = Program::parse_no_errs(code)
-        .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
+    let program = Program::parse_no_errs(code).map_err(|err| {
+        ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)
+    })?;
     let result = ctx
         .run(&program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone(), None))?;
     for issue in exec_state.issues() {
         if issue.severity.is_err() {
             return Err(ExecErrorWithState::new(
                 KclErrorWithOutputs::no_outputs(KclError::new_semantic(issue.clone().into())).into(),
                 exec_state.clone(),
+                None,
             ));
         }
     }
@@ -222,6 +234,7 @@ pub async fn execute_and_export_step(
             return Err(ExecErrorWithState::new(
                 ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
+                None,
             ));
         }
     };

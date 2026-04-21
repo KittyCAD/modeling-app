@@ -6,6 +6,35 @@ description: Operations executed end-effector-gripper-fingers.kcl
   "public/kcl-samples/end-effector-gripper-fingers/main.kcl": [
     {
       "type": "VariableDeclaration",
+      "name": "TOL",
+      "value": {
+        "type": "Number",
+        "value": 0.001,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
       "name": "bracketThickness",
       "value": {
         "type": "Number",
@@ -21,7 +50,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 0
+            "index": 1
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -50,7 +79,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 1
+            "index": 2
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -79,7 +108,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -108,7 +137,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 3
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -137,7 +166,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -187,7 +216,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -227,7 +256,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -274,7 +303,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -344,7 +373,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -384,7 +413,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -431,7 +460,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -501,7 +530,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -541,7 +570,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -588,7 +617,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -658,7 +687,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -698,7 +727,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -745,7 +774,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -815,7 +844,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -855,7 +884,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -902,7 +931,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -962,7 +991,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1003,7 +1032,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1036,7 +1065,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1093,7 +1122,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1134,7 +1163,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1167,7 +1196,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1218,7 +1247,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1259,7 +1288,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1303,7 +1332,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1337,7 +1366,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1390,7 +1419,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1452,7 +1481,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1494,7 +1523,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1532,7 +1561,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1597,7 +1626,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1661,7 +1690,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1692,7 +1721,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1735,7 +1764,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1778,7 +1807,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1831,7 +1860,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1872,7 +1901,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1964,7 +1993,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2008,7 +2037,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2042,7 +2071,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2088,7 +2117,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2119,55 +2148,6 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 40.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "symmetric": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
             "index": 25
           },
           {
@@ -2175,10 +2155,6 @@ description: Operations executed end-effector-gripper-fingers.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
           }
         ]
       },
@@ -2345,6 +2321,59 @@ description: Operations executed end-effector-gripper-fingers.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 40.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "symmetric": {
+          "value": {
+            "type": "Bool",
+            "value": true
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 29
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "union",
       "unlabeledArg": {
         "value": {
@@ -2366,12 +2395,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
         },
         "sourceRange": []
       },
-      "labeledArgs": {},
+      "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.001,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2385,7 +2427,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
           },
           {
             "type": "CallKwArg",
-            "index": 0
+            "index": 1
           },
           {
             "type": "ArrayElement",
@@ -2425,12 +2467,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
         },
         "sourceRange": []
       },
-      "labeledArgs": {},
+      "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.001,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2444,7 +2499,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
           },
           {
             "type": "CallKwArg",
-            "index": 0
+            "index": 1
           },
           {
             "type": "ArrayElement",
@@ -2484,12 +2539,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
         },
         "sourceRange": []
       },
-      "labeledArgs": {},
+      "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.001,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2503,7 +2571,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
           },
           {
             "type": "CallKwArg",
-            "index": 0
+            "index": 1
           },
           {
             "type": "ArrayElement",
@@ -2531,6 +2599,18 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "tolerance": {
+          "value": {
+            "type": "Number",
+            "value": 0.001,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
         "tools": {
           "value": {
             "type": "Array",
@@ -2550,7 +2630,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2591,7 +2671,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2635,7 +2715,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2669,7 +2749,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2757,7 +2837,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2849,7 +2929,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2901,7 +2981,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2945,7 +3025,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2979,7 +3059,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3067,7 +3147,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3155,7 +3235,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3247,7 +3327,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3299,7 +3379,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3518,7 +3598,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 33
           },
           {
             "type": "ExpressionStatementExpr"
@@ -3630,7 +3710,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3654,7 +3734,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3678,7 +3758,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3702,7 +3782,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3726,7 +3806,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3750,7 +3830,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3774,7 +3854,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3798,7 +3878,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
