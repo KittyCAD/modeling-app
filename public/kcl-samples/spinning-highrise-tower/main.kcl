@@ -1,0 +1,211 @@
+// Spinning Highrise Tower
+// Parametric tower using solver sketches and pattern-based floor/facade repetition.
+@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+
+floorCount = 17_
+floorHeight = 5m
+slabWidth = 30m
+slabThickness = 0.5m
+rotationAngleStep = 5deg
+handrailHeight = 1.2m
+handrailThickness = 0.3m
+balconyDepth = 3m
+baseThickness = 0.2m
+groundDepth = 5m
+groundSize = 50m
+coreLength = 10m
+coreWidth = 8m
+
+facadeWidth = slabWidth - (balconyDepth * 2)
+facadeHeight = floorHeight - slabThickness
+coreHeight = floorCount * floorHeight - slabThickness
+innerSlabWidth = slabWidth - (handrailThickness * 2)
+
+baseSketch = sketch(on = XY) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == slabWidth
+  distance([edge2.start, edge2.end]) == slabWidth
+  horizontalDistance([ORIGIN, edge1.start]) == -slabWidth / 2
+  verticalDistance([ORIGIN, edge1.start]) == -slabWidth / 2
+}
+baseRegion = region(segments = [baseSketch.edge1, baseSketch.edge2])
+baseSlab = extrude(baseRegion, length = -baseThickness)
+  |> appearance(color = "#dbd7d2")
+hiddenBaseSketch = hide(baseSketch)
+
+groundSketch = sketch(on = offsetPlane(XY, offset = -baseThickness)) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == groundSize
+  distance([edge2.start, edge2.end]) == groundSize
+  horizontalDistance([ORIGIN, edge1.start]) == -groundSize / 2
+  verticalDistance([ORIGIN, edge1.start]) == -groundSize / 2
+}
+groundRegion = region(segments = [groundSketch.edge1, groundSketch.edge2])
+groundBody = extrude(groundRegion, length = -groundDepth)
+  |> appearance(color = "#3a3631")
+hiddenGroundSketch = hide(groundSketch)
+
+coreSketch = sketch(on = XY) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == coreLength
+  distance([edge2.start, edge2.end]) == coreWidth
+  horizontalDistance([ORIGIN, edge1.start]) == -coreLength / 2
+  verticalDistance([ORIGIN, edge1.start]) == -coreWidth / 2
+}
+coreRegion = region(segments = [coreSketch.edge1, coreSketch.edge2])
+coreBody = extrude(coreRegion, length = coreHeight)
+  |> appearance(color = "#7c8186")
+hiddenCoreSketch = hide(coreSketch)
+
+floorBlankSketch = sketch(on = offsetPlane(XY, offset = floorHeight - slabThickness)) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == slabWidth
+  distance([edge2.start, edge2.end]) == slabWidth
+  horizontalDistance([ORIGIN, edge1.start]) == -slabWidth / 2
+  verticalDistance([ORIGIN, edge1.start]) == -slabWidth / 2
+}
+floorBlankRegion = region(segments = [
+  floorBlankSketch.edge1,
+  floorBlankSketch.edge2
+])
+floorBlank = extrude(floorBlankRegion, length = slabThickness + handrailHeight)
+hiddenFloorBlankSketch = hide(floorBlankSketch)
+
+floorVoidSketch = sketch(on = faceOf(floorBlank, face = END)) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == innerSlabWidth
+  distance([edge2.start, edge2.end]) == innerSlabWidth
+  horizontalDistance([ORIGIN, edge1.start]) == -innerSlabWidth / 2
+  verticalDistance([ORIGIN, edge1.start]) == -innerSlabWidth / 2
+}
+floorVoidRegion = region(segments = [
+  floorVoidSketch.edge1,
+  floorVoidSketch.edge2
+])
+floorUnitTemplate = extrude(floorVoidRegion, length = -handrailHeight)
+  |> appearance(color = "#dbd7d2")
+hiddenFloorVoidSketch = hide(floorVoidSketch)
+
+facadeSketch = sketch(on = XY) {
+  edge1 = line(start = [var -1m, var -1m], end = [var 1m, var -1m])
+  edge2 = line(start = [var 1m, var -1m], end = [var 1m, var 1m])
+  edge3 = line(start = [var 1m, var 1m], end = [var -1m, var 1m])
+  edge4 = line(start = [var -1m, var 1m], end = [var -1m, var -1m])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+
+  distance([edge1.start, edge1.end]) == facadeWidth
+  distance([edge2.start, edge2.end]) == facadeWidth
+  horizontalDistance([ORIGIN, edge1.start]) == -facadeWidth / 2
+  verticalDistance([ORIGIN, edge1.start]) == -facadeWidth / 2
+}
+facadeRegion = region(segments = [facadeSketch.edge1, facadeSketch.edge2])
+facadeUnitTemplate = extrude(facadeRegion, length = facadeHeight)
+  |> appearance(color = "#151819")
+hiddenFacadeSketch = hide(facadeSketch)
+
+floorUnits = patternTransform(
+  floorUnitTemplate,
+  instances = floorCount,
+  transform = fn(@i) {
+    return {
+      rotation = {
+        angle = i * rotationAngleStep,
+        origin = "local"
+      },
+      translate = [0m, 0m, i * floorHeight]
+    }
+  },
+)
+
+facadeUnits = patternTransform(
+  facadeUnitTemplate,
+  instances = floorCount,
+  transform = fn(@i) {
+    return {
+      rotation = {
+        angle = i * rotationAngleStep,
+        origin = "local"
+      },
+      translate = [0m, 0m, i * floorHeight]
+    }
+  },
+)
