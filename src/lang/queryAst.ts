@@ -1747,7 +1747,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
       if (path && path.type === 'path') {
         const compositeSolidId = path.compositeSolidId
         if (compositeSolidId) {
-          result.push(compositeSolidId)
+          pushToSomething(compositeSolidId, undefined)
         }
       }
     } else if (current?.type === 'wall' || current?.type === 'cap') {
@@ -1762,8 +1762,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.solidIds)
-      pushToSomething(currentId, current.toolIds)
+      // No need to go up-graph here for composite solids, it's the end of the line
+      result.push(currentId)
     }
   }
 
@@ -1778,16 +1778,10 @@ export function findAllChildrenAndOrderByPlaceInCode(
     return aCodeRef.range[0] - bCodeRef.range[0]
   })
 
-  // Cut off traversal results at the first NEW sweep, so long as:
-  // it's not the first sweep,
-  // and it's not a blend.
+  // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
   let firstSweep = true
   const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
-    if (
-      artifact.type === 'sweep' &&
-      artifact.subType !== 'blend' &&
-      firstSweep
-    ) {
+    if (artifact.type === 'sweep' && firstSweep) {
       firstSweep = false
       return false
     }
