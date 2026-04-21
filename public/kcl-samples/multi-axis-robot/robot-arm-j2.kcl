@@ -3,7 +3,8 @@
 // Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-import axisJ1, axisJ2, axisJ2ArmWidth, axisJ2ArmLength, axisJ2ArmThickness, plane003 from "globals.kcl"
+// Import Constants
+import * from "globals.kcl"
 
 // Create Body of J2 Robot Arm
 sketch011 = sketch(on = plane003) {
@@ -32,42 +33,10 @@ sketch013 = sketch(on = startSketchOn(extrude011, face = START)) {
 region003 = region(segments = [sketch013.circle1])
 extrude013 = extrude(region003, length = 1)
 
-// Draw Bolt Patterns on J2 Robot Arm
-sketch014 = startSketchOn(extrude012, face = END)
-  |> circle(center = [-1.75, 6.75], radius = 0.2)
-  |> patternCircular2d(
-       center = [-1.75, 8],
-       instances = 8,
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-
-extrude014 = extrude(sketch014, length = 0.15)
-
-sketch015 = startSketchOn(extrude013, face = END)
-  |> circle(
-       center = [
-         -1.75 - ((axisJ2ArmLength - 1) * cos(axisJ2)),
-         8 + (axisJ2ArmLength - 1.5) * sin(axisJ2)
-       ],
-       radius = 0.2,
-     )
-  |> patternCircular2d(
-       center = [
-         -1.75 - (axisJ2ArmLength * cos(axisJ2)),
-         8 + axisJ2ArmLength * sin(axisJ2)
-       ],
-       instances = 4,
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-
-extrude015 = extrude(sketch015, length = 0.15)
-
 sketch016 = sketch(on = startSketchOn(extrude011, face = END)) {
   circle1 = circle(start = [var -8.55in, var 37.13in], center = [var -8.85in, var 37.13in])
 }
 
-region004 = region(segments = [sketch016.circle1])
-extrude(region004, length = 1)
+region005 = region(segments = [sketch016.circle1])
+extrude(region005, length = 1)
   |> appearance(color = "#454545", metalness = 90, roughness = 90)

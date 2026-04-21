@@ -4,28 +4,7 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import Constants
-import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
-
-// Pattern M8 mounting bolts in base
-mountingHoles01 = startSketchOn(XY)
-  |> circle(
-       center = [
-         -basePlateRadius + 1,
-         -basePlateRadius + baseChamfer + 0.5
-       ],
-       radius = 0.4,
-     )
-  |> patternCircular2d(center = [0, 0], instances = 4)
-
-mountingHoles02 = startSketchOn(XY)
-  |> circle(
-       center = [
-         -basePlateRadius + 0.5 + baseChamfer,
-         -basePlateRadius + 1
-       ],
-       radius = 0.4,
-     )
-  |> patternCircular2d(center = [0, 0], instances = 4)
+import * from "globals.kcl"
 
 // Base Plate
 sketch004 = sketch(on = XY) {
@@ -36,8 +15,87 @@ sketch004 = sketch(on = XY) {
   coincident([line2.end, line3.start])
   line4 = line(start = [var -5.5in, var 5.5in], end = [var -5.5in, var -5.5in])
   coincident([line3.end, line4.start])
+  line5 = line(start = [var 0in, var 0in], end = [var 4.43in, var 2.99in], construction = true)
+  coincident([line5.start, ORIGIN])
+  line6 = line(start = [var 0in, var 0in], end = [var 2.99in, var 4.43in], construction = true)
+  coincident([line6.start, line5.start])
+  line7 = line(start = [var 0in, var 0in], end = [var -2.99in, var 4.43in], construction = true)
+  coincident([line7.start, line6.start])
+  line8 = line(start = [var 0in, var 0in], end = [var -4.43in, var 2.99in], construction = true)
+  coincident([line8.start, line7.start])
+  line9 = line(start = [var 0in, var 0in], end = [var -4.43in, var -2.99in], construction = true)
+  coincident([line9.start, line8.start])
+  line10 = line(start = [var 0in, var 0in], end = [var -2.99in, var -4.43in], construction = true)
+  coincident([line10.start, line9.start])
+  line11 = line(start = [var 0in, var 0in], end = [var 2.99in, var -4.43in], construction = true)
+  coincident([line11.start, line10.start])
+  line12 = line(start = [var 0in, var 0in], end = [var 4.43in, var -2.99in], construction = true)
+  coincident([line12.start, line11.start])
+  equalLength([
+    line11,
+    line12,
+    line5,
+    line6,
+    line7,
+    line8,
+    line9,
+    line10
+  ])
+  line13 = line(start = [var 0in, var 0in], end = [var 4.86in, var 0in], construction = true)
+  coincident([line13.start, line8.start])
+  horizontal([line13.end, ORIGIN])
+  line14 = line(start = [var 0in, var 0in], end = [var -4.41in, var 0in], construction = true)
+  coincident([line14.start, line10.start])
+  horizontal([line14.end, ORIGIN])
+  horizontal(line14)
+  horizontal(line13)
+  angle([line13, line5]) == 34
+  line15 = line(start = [var 0in, var 0in], end = [var 0in, var 4.46in], construction = true)
+  coincident([line15.start, line5.start])
+  vertical([line15.end, ORIGIN])
+  line16 = line(start = [var 0in, var 0in], end = [var 0in, var -3.56in], construction = true)
+  coincident([line16.start, line15.start])
+  vertical([line16.end, ORIGIN])
+  vertical(line16)
+  vertical(line15)
+  angle([line6, line15]) == 34
+  angle([line15, line7]) == 34
+  angle([line8, line14]) == 34
+  angle([line14, line9]) == 34
+  angle([line10, line16]) == 34
+  angle([line16, line11]) == 34
+  angle([line12, line13]) == 34
+  distance([line12.start, line12.end]) == 5.35
+  circle1 = circle(start = [var 4.54in, var 2.61in], center = [var 4.43in, var 2.99in])
+  coincident([circle1.center, line5.end])
+  circle2 = circle(start = [var 3in, var 4.04in], center = [var 2.99in, var 4.43in])
+  coincident([circle2.center, line6.end])
+  circle3 = circle(start = [var -2.6in, var 4.34in], center = [var -2.99in, var 4.43in])
+  coincident([circle3.center, line7.end])
+  circle4 = circle(start = [var -4.32in, var 2.61in], center = [var -4.43in, var 2.99in])
+  coincident([circle4.center, line8.end])
+  circle5 = circle(start = [var -4.3in, var -3.37in], center = [var -4.43in, var -2.99in])
+  coincident([circle5.center, line9.end])
+  circle6 = circle(start = [var -2.63in, var -4.6in], center = [var -2.99in, var -4.43in])
+  coincident([circle6.center, line10.end])
+  circle7 = circle(start = [var 3.35in, var -4.62in], center = [var 2.99in, var -4.43in])
+  coincident([circle7.center, line11.end])
+  circle8 = circle(start = [var 4.59in, var -3.36in], center = [var 4.43in, var -2.99in])
+  coincident([circle8.center, line12.end])
+  equalRadius([
+    circle8,
+    circle7,
+    circle6,
+    circle5,
+    circle4,
+    circle3,
+    circle2,
+    circle1
+  ])
+  radius(circle2) == .4
 }
-region001 = region(segments = [sketch004.line1, sketch004.line2])
+region001 = region(point = [0in, -5.4999016in], sketch = sketch004)
+hidden001 = hide(sketch004)
 sketch001 = extrude(region001, length = basePlateThickness)
 
 // Base Motor for actuating first joint

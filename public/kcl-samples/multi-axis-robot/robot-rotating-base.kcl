@@ -1,8 +1,10 @@
 // Robot Rotating Base
 
+// Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-import axisJ2BasePivotX, axisJ2BasePivotY, plane001, plane002 from "globals.kcl"
+// Import Constants
+import * from "globals.kcl"
 
 sketch005 = sketch(on = plane001) {
   circle1 = circle(start = [var 3.9, var 0], center = [var 0, var 0])

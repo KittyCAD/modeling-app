@@ -28,7 +28,10 @@ extrude006 = extrude(region002, length = 1)
 
 sketch007 = sketch(on = faceOf(extrude006, face = END)) {
   circle1 = circle(start = [var 4.5, var 8], center = [var 1.75, var 8])
-  coincident([circle1.center, [axisJ2BasePivotX, axisJ2BasePivotY]])
+  coincident([
+    circle1.center,
+    [axisJ2BasePivotX, axisJ2BasePivotY]
+  ])
   diameter(circle1) == 5.5
 }
 region003 = region(segments = [sketch007.circle1])
@@ -36,7 +39,10 @@ extrude007 = extrude(region003, length = 1.5)
 
 sketch009 = sketch(on = faceOf(extrude007, face = END)) {
   circle1 = circle(start = [var 2.25, var 8], center = [var 1.75, var 8])
-  coincident([circle1.center, [axisJ2BasePivotX, axisJ2BasePivotY]])
+  coincident([
+    circle1.center,
+    [axisJ2BasePivotX, axisJ2BasePivotY]
+  ])
   diameter(circle1) == 1
 }
 region004 = region(segments = [sketch009.circle1])
@@ -45,7 +51,10 @@ extrude009 = extrude(region004, length = 0.15)
 
 sketch010 = sketch(on = plane002) {
   circle1 = circle(start = [var 2.05, var 8], center = [var 1.75, var 8])
-  coincident([circle1.center, [axisJ2BasePivotX, axisJ2BasePivotY]])
+  coincident([
+    circle1.center,
+    [axisJ2BasePivotX, axisJ2BasePivotY]
+  ])
   diameter(circle1) == 0.6
 }
 region005 = region(segments = [sketch010.circle1])
