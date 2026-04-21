@@ -37,6 +37,7 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -829,6 +830,7 @@ export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
         : [EditorSelection.cursor(context.kclManager.code.length)],
       Math.max(codeMirrorSelections.length - 1, 0)
     ),
+    annotations: selectionDispatchedBySketchSolveEvent,
   })
 }
 

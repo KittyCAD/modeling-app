@@ -11,6 +11,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
+import { selectionDispatchedBySketchSolveAnnotation } from '@src/editor/plugins/sketchSelection'
 import { topLevelRange } from '@src/lang/util'
 import { EditorView } from 'codemirror'
 
@@ -34,7 +35,11 @@ function sketchGraphExtension(
   const sketchSelectionListener = EditorView.updateListener.of((vu) => {
     if (
       onSelectionChange &&
-      vu.transactions.some((tr) => tr.isUserEvent('select'))
+      vu.selectionSet &&
+      // ignore selections dispatched by sketch solve itself to avoid a second refresh
+      !vu.transactions.some((tr) =>
+        tr.annotation(selectionDispatchedBySketchSolveAnnotation)
+      )
     ) {
       onSelectionChange(
         vu.state.selection.ranges.map(({ from, to }) => topLevelRange(from, to))
