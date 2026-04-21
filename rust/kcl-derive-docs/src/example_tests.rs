@@ -384,4 +384,5 @@ pub const TEST_NAMES: &[&str] = &[
     "std-hole-flat-0",
     "std-gear-helical-0",
     "std-gear-helical-1",
+    "std-gear-herringbone-0",
 ];

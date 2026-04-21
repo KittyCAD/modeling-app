@@ -1,6 +1,6 @@
 /// Define gears that users can include in their models.
 
-fn helicalGearProfile(nTeeth, module, pressureAngle): Sketch {
+fn gearProfile(nTeeth, module, pressureAngle, offsetHeight, helixAngle) {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module
@@ -9,25 +9,28 @@ fn helicalGearProfile(nTeeth, module, pressureAngle): Sketch {
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
+  // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+  helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-  helicalGear = startSketchOn(XY)
-    |> startProfile(at = polar(angle = 0, length = baseRadius))
+  return startSketchOn(offsetPlane(XY, offset = offsetHeight))
+    |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
     |> involuteCircular(
-         startDiameter = baseDiameter,
-         endDiameter = tipDiameter,
-         angle = 0,
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = helixCalc,
          tag = $seg01,
        )
-    |> line(endAbsolute = polar(angle = 160deg / nTeeth, length = tipDiameter / 2))
+    |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
     |> involuteCircular(
-         startDiameter = baseDiameter,
-         endDiameter = tipDiameter,
-         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
          reverse = true,
        )
 
     // Position the end line of the sketch at the start of the next tooth
-    |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseRadius))
+    |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
 
     // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
@@ -37,8 +40,6 @@ fn helicalGearProfile(nTeeth, module, pressureAngle): Sketch {
          rotateDuplicates = true,
        )
     |> close()
-
-  return helicalGear
 }
 
 /// A helical gear.
@@ -102,9 +103,63 @@ export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid 
   // Compute twist angle so the tooth helix matches helixAngle over the gear height
   twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
 
-  helicalGear = helicalGearProfile(nTeeth, module, pressureAngle)
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
     |> extrude(length = gearHeight, twistAngle, twistAngleStep = 0)
 
   return helicalGear
 }
 
+/// A herringbone gear.
+///```kcl
+/// // Basic herringbone gear example.
+/// 
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+/// myGear = gear::herringbone(
+///   nTeeth = 10,
+///   module = 2,
+///   pressureAngle = 20deg,
+///   gearHeight = 5,
+///   helixAngle = 40deg,
+/// )
+///```
+export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Draw a gear sketch on the base plane
+  gearSketch001 = gearProfile(
+    nTeeth,
+    module,
+    pressureAngle,
+    offsetHeight = 0,
+    helixAngle,
+  )
+
+  // Draw a gear sketch that has been rotated by the helix angle
+  gearSketch002 = gearProfile(
+    nTeeth,
+    module,
+    pressureAngle,
+    offsetHeight = gearHeight / 2,
+    helixAngle,
+  )
+
+  // Draw a gear sketch at the total gear height that reverses the angle direction
+  gearSketch003 = clone(gearSketch001)
+    |> translate(z = gearHeight)
+
+  // Loft each rotated gear sketch together to form a herringbone gear
+  return loft(
+    [
+      gearSketch001,
+      gearSketch002,
+      gearSketch003
+    ],
+    vDegree = 1,
+  )
+}
