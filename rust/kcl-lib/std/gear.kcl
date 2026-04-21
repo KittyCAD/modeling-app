@@ -1,6 +1,6 @@
 /// Define gears that users can include in their models.
 
-fn gearProfile(nTeeth, module, pressureAngle, offsetHeight, helixAngle) {
+fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle)) {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module
@@ -92,7 +92,12 @@ fn gearProfile(nTeeth, module, pressureAngle, offsetHeight, helixAngle) {
 /// gearWithKeyhole = subtract(gearBody, tools = keyholeSolid)
 ///```
 @(experimental = true)
-export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid {
+export fn helical(nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  helixAngle: number(Angle),
+  gearHeight: number(Length),
+): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module
@@ -124,7 +129,12 @@ export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid 
 /// )
 /// ```
 @(experimental = true)
-export fn spur(nTeeth, module, pressureAngle, gearHeight): Solid {
+export fn spur(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
+): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module
@@ -153,7 +163,13 @@ export fn spur(nTeeth, module, pressureAngle, gearHeight): Solid {
 /// )
 ///```
 @(experimental = true)
-export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle): Solid {
+export fn herringbone(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
+  helixAngle: number(Angle),
+): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
   addendum = module
