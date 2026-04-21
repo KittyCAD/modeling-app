@@ -19,6 +19,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getNodeFromPath,
+  getRegionTagExprFromSegmentId,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -354,17 +355,6 @@ function getSketchSegmentNameFromSourceSurface(
     return null
   }
 
-  if (
-    sweepInput.type === 'MemberExpression' &&
-    sweepInput.property.type === 'Name'
-  ) {
-    return sweepInput.property.name.name
-  }
-
-  if (sweepInput.type !== 'ArrayExpression') {
-    return null
-  }
-
   let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
   if (edgeArtifact.type === 'segment') {
     segmentArtifact = edgeArtifact
@@ -376,6 +366,17 @@ function getSketchSegmentNameFromSourceSurface(
     if (!err(segment) && segment.type === 'segment') {
       segmentArtifact = segment
     }
+  }
+
+  if (
+    sweepInput.type === 'MemberExpression' &&
+    sweepInput.property.type === 'Name'
+  ) {
+    return sweepInput.property.name.name
+  }
+
+  if (sweepInput.type !== 'ArrayExpression') {
+    return null
   }
 
   if (segmentArtifact) {
@@ -414,6 +415,54 @@ function getSketchSegmentNameFromSourceSurface(
   }
 
   return null
+}
+
+function getRegionSketchTagExprFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  edgeArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput || sweepInput.type !== 'Name') {
+    return null
+  }
+
+  const segmentId =
+    edgeArtifact.type === 'segment'
+      ? edgeArtifact.id
+      : edgeArtifact.type === 'sweepEdge'
+        ? edgeArtifact.segId
+        : null
+  if (!segmentId) {
+    return null
+  }
+
+  return getRegionTagExprFromSegmentId(
+    ast,
+    segmentId,
+    artifactGraph,
+    wasmInstance,
+    sweepInput.name.name
+  )
 }
 
 function buildEdgeExpr(
@@ -509,7 +558,28 @@ function buildEdgeExpr(
   }
   const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-  // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression
+  // Region-based sketch-solve surface case: building region###.tags.line#.
+  const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
+    sourceSurfaceArtifact as Artifact,
+    edgeArtifact,
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (regionSketchTagExpr) {
+    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        structuredClone(sourceSurfaceExpr),
+        [createLabeledArg('edge', edgeExpr)]
+      ),
+    }
+  }
+
+  // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression.
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
     sourceSurfaceArtifact as Artifact,
     edgeArtifact,

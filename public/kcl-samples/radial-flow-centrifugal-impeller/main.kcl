@@ -20,21 +20,40 @@ rootR = hubOd / 2 + 10
 
 // root rectangle (leading edge)
 leadSketch = startSketchOn(XY)
-leadRect = startProfile(leadSketch, at = [0, 0])
-  |> xLine(length = bladeThickness)
-  |> yLine(length = bladeChord)
-  |> xLine(length = -bladeThickness)
-  |> close()
+leadRect = sketch(on = leadSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
+  line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3mm, var 35mm], end = [var 0mm, var 35mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  distance([line4.start, line4.end]) == bladeChord
+  distance([line3.start, line3.end]) == bladeThickness
+}
 
 // tip rectangle (trailing edge, rotated by sweepDeg)
 trailPlane = offsetPlane(XY, offset = bladeHeight) // lift by bladeHeight to give sheet thickness
 trailSketch = startSketchOn(trailPlane)
-trailRect = startProfile(trailSketch, at = [0, 0])
-  |> xLine(length = bladeThickness)
-  |> yLine(length = bladeChord)
-  |> xLine(length = -bladeThickness)
-  |> close()
-  |> rotate(yaw = sweepDeg)
+trailRect = sketch(on = trailSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
+  line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3mm, var 35mm], end = [var 0mm, var 35mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  distance([line2.start, line2.end]) == bladeChord
+  distance([line3.start, line3.end]) == bladeThickness
+}
 
 // loft one curved blade
 oneBlade = loft([leadRect, trailRect])
@@ -58,18 +77,30 @@ blades = patternCircular3d(
 
 // back-plate disk
 diskSketch = startSketchOn(XY)
-diskCircle = circle(diskSketch, center = [0, 0], radius = od / 2)
-backPlate = extrude(diskCircle, length = -baseThick)
+diskCircle = sketch(on = diskSketch) {
+  circle1 = circle(start = [var 112.5mm, var 0mm], center = [var -37.5mm, var 0mm])
+  diameter(circle1) == od
+}
+region001 = region(segments = [diskCircle.circle1])
+backPlate = extrude(region001, length = -baseThick)
 
 // hub solid
 hubSketch = startSketchOn(backPlate, face = END)
-hubCircle = circle(hubSketch, center = [0, 0], radius = hubOd / 2)
-hub = extrude(hubCircle, length = hubHeight)
+hubCircle = sketch(on = hubSketch) {
+  circle1 = circle(start = [var 30mm, var 0mm], center = [var -10mm, var 0mm])
+  diameter(circle1) == hubOd
+}
+region002 = region(segments = [hubCircle.circle1])
+hub = extrude(region002, length = hubHeight)
 
 // bore hole
 boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
-boreCircle = circle(boreSketch, center = [0, 0], radius = boreDia / 2)
-bore = extrude(boreCircle, length = baseThick * 2 + hubHeight + 5)
+boreCircle = sketch(on = boreSketch) {
+  circle1 = circle(start = [var 22.5mm, var 0mm], center = [var -7.5mm, var 0mm])
+  diameter(circle1) == boreDia
+}
+region003 = region(segments = [boreCircle.circle1])
+bore = extrude(region003, length = baseThick * 2 + hubHeight + 5)
 
 // final impeller
 impeller = subtract(hub, tools = [bore])

@@ -2,25 +2,52 @@
 // An example of an inner thread on a cylinder.
 // Categories: Fasteners
 
-outerCylinderRadius = 5
-outerCylinder = circle(startSketchOn(XY), center = [0, 0], diameter = outerCylinderRadius * 2)
-  |> extrude(length = 10)
+outerCylinderRadius = 5mm
 
-inner = circle(startSketchOn(XY), center = [0, 0], diameter = 8)
-  |> extrude(length = 10)
+outerCylinderSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  horizontalDistance([circle1.center, circle1.start]) == outerCylinderRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+outerCylinderRegion = region(segments = [outerCylinderSketch.circle1])
+hide(outerCylinderSketch)
+outerCylinder = extrude(outerCylinderRegion, length = 10mm)
+
+innerSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  horizontalDistance([circle1.center, circle1.start]) == 4mm
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+innerRegion = region(segments = [innerSketch.circle1])
+hide(innerSketch)
+inner = extrude(innerRegion, length = 10mm)
 
 rectHeight = 0.5mm
 rectWidth = 0.5mm
 
-threadProfile = rectangle(
-  startSketchOn(XZ),
-  width = rectWidth,
-  height = rectHeight,
-  center = [
-    outerCylinderRadius - (rectWidth * 2),
-    0
-  ],
-)
+threadProfile = sketch(on = XZ) {
+  line1 = line(start = [var 3.7mm, var -0.2mm], end = [var 4.3mm, var -0.2mm])
+  line2 = line(start = [var 4.3mm, var -0.2mm], end = [var 4.3mm, var 0.2mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4.3mm, var 0.2mm], end = [var 3.7mm, var 0.2mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3.7mm, var 0.2mm], end = [var 3.7mm, var -0.2mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == outerCylinderRadius - (rectWidth * 5 / 2)
+  verticalDistance([ORIGIN, line1.start]) == -rectHeight / 2
+  horizontalDistance([line1.start, line1.end]) == rectWidth
+  verticalDistance([line2.start, line2.end]) == rectHeight
+}
+
 threadHelix = helix(
   revolutions = 10,
   angleStart = 0deg,
@@ -28,6 +55,13 @@ threadHelix = helix(
   length = outerCylinderRadius * 2 + rectHeight * 2,
 )
 
-thread = sweep(threadProfile, path = threadHelix)
+threadProfileRegion = region(segments = [
+  threadProfile.line1,
+  threadProfile.line2
+])
+thread = sweep(threadProfileRegion, path = threadHelix)
 
-subtract([outerCylinder], tools = [inner, thread])
+hide(threadProfile)
+hide(threadHelix)
+
+innerThread = subtract([outerCylinder], tools = [inner, thread])

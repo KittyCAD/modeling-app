@@ -108,7 +108,24 @@ description: Artifact commands dining-table.kcl
             "y": 2100.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 800.0,
+            "y": 2100.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -125,24 +142,7 @@ description: Artifact commands dining-table.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -2100.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -167,8 +167,12 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -237,6 +241,15 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -256,6 +269,15 @@ description: Artifact commands dining-table.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -314,7 +336,24 @@ description: Artifact commands dining-table.kcl
             "y": 40.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 40.0,
+            "y": 40.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -331,24 +370,7 @@ description: Artifact commands dining-table.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -40.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -373,8 +395,12 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -455,7 +481,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -463,6 +489,15 @@ description: Artifact commands dining-table.kcl
             "scale": null
           }
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -531,7 +566,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -607,7 +642,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -683,7 +718,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -797,7 +832,24 @@ description: Artifact commands dining-table.kcl
             "y": 1900.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 20.0,
+            "y": 1900.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -814,24 +866,7 @@ description: Artifact commands dining-table.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -1900.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -856,8 +891,12 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -876,7 +915,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -952,6 +991,15 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
       }
@@ -1014,7 +1062,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -1089,7 +1137,24 @@ description: Artifact commands dining-table.kcl
             "y": 20.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 600.0,
+            "y": 20.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -1106,24 +1171,7 @@ description: Artifact commands dining-table.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -20.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1148,8 +1196,12 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1168,7 +1220,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -1244,6 +1296,15 @@ description: Artifact commands dining-table.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
       }
@@ -1306,7 +1367,7 @@ description: Artifact commands dining-table.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,

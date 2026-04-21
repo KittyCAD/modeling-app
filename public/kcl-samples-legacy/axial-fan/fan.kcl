@@ -1,0 +1,71 @@
+// Fan
+// Spinning axial fan that moves airflow
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Model the center hub of the fan
+fanCenter = startSketchOn(XZ)
+  |> startProfile(at = [-0.0001, fanHeight])
+  |> xLine(endAbsolute = -15 + 1.5)
+  |> tangentialArc(radius = 1.5, angle = 90deg)
+  |> yLine(endAbsolute = 4.5)
+  |> xLine(endAbsolute = -13)
+  |> yLine(endAbsolute = profileStartY(%) - 5)
+  |> tangentialArc(radius = 1, angle = -90)
+  |> xLine(endAbsolute = -1)
+  |> yLine(length = 2)
+  |> xLine(length = -0.15)
+  |> line(endAbsolute = [
+       profileStartX(%) - 1,
+       profileStartY(%) - 1.4
+     ])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> yLine(endAbsolute = profileStartY(%))
+  |> close()
+  |> revolve(axis = {
+       direction = [0.0, 1.0],
+       origin = [0.0, 0.0]
+     })
+  |> appearance(color = "#f3e2d8")
+
+// Define blade construction
+bladeBaseZ = 4.5
+bladeLengthZ = fanHeight - 2 - bladeBaseZ
+bladeRootAngle = 50deg
+bladeOuterR = fanSize * 22 / 50
+bladeInnerR = 15
+bladeTwist = -bladeRootAngle
+
+// Base planform sketch for one blade (on XY at bladeBaseZ)
+bladeBase = startSketchOn(offsetPlane(XY, offset = bladeBaseZ))
+  |> startProfile(at = polar(angle = bladeRootAngle, length = bladeInnerR))
+  // Leading-edge arc segment near the root
+  |> arc(angleStart = bladeRootAngle, angleEnd = bladeRootAngle + 14deg, radius = bladeInnerR)
+  // Camber to mid radius
+  |> arc(endAbsolute = polar(angle = bladeRootAngle - 20deg, length = bladeOuterR), interiorAbsolute = polar(angle = bladeRootAngle + 3deg, length = fanSize * 11 / 50))
+  // Slight sweep back near the tip
+  |> arc(endAbsolute = polar(angle = bladeRootAngle - 24deg, length = bladeOuterR), interiorAbsolute = polar(angle = bladeRootAngle - 22deg, length = bladeOuterR))
+  // Return to root to close the profile with gentle camber
+  |> arc(endAbsolute = [profileStartX(%), profileStartY(%)], interiorAbsolute = polar(angle = bladeRootAngle - 5deg, length = fanSize * 11 / 50))
+  |> close()
+
+// Create the twisted blade solid and pattern
+twistedBlade = extrude(
+       bladeBase,
+       length = bladeLengthZ,
+       twistAngle = bladeTwist,
+       twistAngleStep = 12deg,
+       twistCenter = [0, 0],
+     )
+  |> appearance(color = "#f3e2d8")
+  |> patternCircular3d(
+       instances = 9,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

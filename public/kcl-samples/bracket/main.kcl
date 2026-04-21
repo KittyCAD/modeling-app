@@ -2,84 +2,188 @@
 // This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
-// Set units
+// Set units and enable experimental sketch constraints.
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-// Define parameters
-sigmaAllow = 35000 // psi (6061-T6 aluminum)
-width = 5.0
-p = 300 // Force on shelf - lbs
-fos = 1.2 // Factor of safety of 1.2
-shelfMountLength = 5.0
-wallMountLength = 2.25
-shelfDepth = 12 // Shelf is 12 inches deep from the wall
-shelfMountingHoleDiameter = .50
-wallMountingHoleDiameter = .625
+// Define structural design inputs.
+allowableStress = 35000 // psi
+appliedLoad = 300 // lb applied at the end of the shelf
+factorOfSafety = 1.2
 
-// Calculated parameters
-moment = shelfDepth * p // assume the force is applied at the end of the shelf
-thickness = sqrt(moment * fos * 6 / (sigmaAllow * width)) // required thickness for two brackets to hold up the shelf
-bendRadius = 0.25
-extBendRadius = bendRadius + thickness
-filletRadius = .5
-shelfMountingHolePlacementOffset = shelfMountingHoleDiameter * 1.5
-wallMountingHolePlacementOffset = wallMountingHoleDiameter * 1.5
+// Define the overall bracket envelope.
+bracketWidth = 5.0
+shelfLegLength = 5.0
+wallLegLength = 2.25
+shelfDepth = 12
 
-// Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges.
-assert(wallMountLength, isGreaterThanOrEqual = wallMountingHoleDiameter * 3, error = "Holes not possible. Either decrease hole diameter or increase wallMountLength")
-assert(shelfMountLength, isGreaterThanOrEqual = shelfMountingHoleDiameter * 5.5, error = "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength")
-assert(width, isGreaterThanOrEqual = shelfMountingHoleDiameter * 5.5, error = "Holes not possible. Either decrease hole diameter or increase width")
-assert(width, isGreaterThanOrEqual = wallMountingHoleDiameter * 5.5, error = "Holes not possible. Either decrease hole diameter or increase width")
+// Define reference hole diameters used for simple geometric fit checks.
+referenceShelfMountHoleDiameter = 0.50
+referenceWallMountHoleDiameter = 0.625
 
-// Create the body of the bracket
-bracketBody = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = shelfMountLength - thickness, tag = $seg01)
-  |> yLine(length = thickness, tag = $seg02)
-  |> xLine(length = -shelfMountLength, tag = $seg03)
-  |> yLine(length = -wallMountLength, tag = $seg04)
-  |> xLine(length = thickness, tag = $seg05)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
-  |> close()
-  |> extrude(length = width)
+// Calculate the bending load and required section thickness.
+bendingMoment = shelfDepth * appliedLoad
+bracketThickness = sqrt(bendingMoment * factorOfSafety * 6 / (allowableStress * bracketWidth))
+insideBendRadius = 0.25
+outsideBendRadius = insideBendRadius + bracketThickness
+cornerFilletRadius = 0.5
 
-// Add mounting holes to mount to the shelf
-shelfMountingHoles = startSketchOn(bracketBody, face = seg03)
-  |> circle(
-       center = [
-         -(bendRadius + shelfMountingHolePlacementOffset),
-         shelfMountingHolePlacementOffset
-       ],
-       radius = shelfMountingHoleDiameter / 2,
-     )
-  |> patternLinear2d(instances = 2, distance = -(extBendRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
-  |> patternLinear2d(instances = 2, distance = width - (shelfMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(length = -thickness - .01)
+// Define the actual modeled hole sizes and blind depths.
+shelfMountHoleDiameter = 0.5
+shelfMountHoleDepth = 1.0
+wallMountHoleDiameter = 0.8
+wallMountHoleDepth = 1.0
 
-// Add mounting holes to mount to the wall
-wallMountingHoles = startSketchOn(bracketBody, face = seg04)
-  |> circle(
-       center = [
-         wallMountLength - wallMountingHolePlacementOffset - bendRadius,
-         wallMountingHolePlacementOffset
-       ],
-       radius = wallMountingHoleDiameter / 2,
-     )
-  |> patternLinear2d(instances = 2, distance = width - (wallMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(length = -thickness - 0.1)
+// Define hole center locations on the shelf-mount leg.
+shelfMountHoleBendSideCenterX = -1.5
+shelfMountHoleTipSideCenterX = -4.0
+shelfMountHoleTopRowCenterY = 1.5
+shelfMountHoleBottomRowCenterY = -1.5
 
-// Apply bends
-fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
-fillet(bracketBody, radius = bendRadius, tags = [getNextAdjacentEdge(seg06)])
+// Define hole center locations on the wall-mount leg.
+wallMountHoleColumnCenterX = -1.5
+wallMountHoleTopRowCenterY = 1.5
+wallMountHoleBottomRowCenterY = -1.5
 
-// Apply corner fillets
-fillet(
-  bracketBody,
-  radius = filletRadius,
-  tags = [
-    seg02,
-    getOppositeEdge(seg02),
-    seg05,
-    getOppositeEdge(seg05)
+// Group the hole center coordinates into arrays for the hole operations.
+shelfMountHoleCenters = [
+  [
+    shelfMountHoleBendSideCenterX,
+    shelfMountHoleTopRowCenterY
   ],
+  [
+    shelfMountHoleTipSideCenterX,
+    shelfMountHoleTopRowCenterY
+  ],
+  [
+    shelfMountHoleBendSideCenterX,
+    shelfMountHoleBottomRowCenterY
+  ],
+  [
+    shelfMountHoleTipSideCenterX,
+    shelfMountHoleBottomRowCenterY
+  ]
+]
+
+wallMountHoleCenters = [
+  [
+    wallMountHoleColumnCenterX,
+    wallMountHoleTopRowCenterY
+  ],
+  [
+    wallMountHoleColumnCenterX,
+    wallMountHoleBottomRowCenterY
+  ]
+]
+
+// Check that the bracket envelope is large enough for the reference mounting holes.
+assert(wallLegLength, isGreaterThanOrEqual = referenceWallMountHoleDiameter * 3, error = "Wall leg is too short for the reference wall-mount hole diameter")
+assert(shelfLegLength, isGreaterThanOrEqual = referenceShelfMountHoleDiameter * 5.5, error = "Shelf leg is too short for the reference shelf-mount hole diameter")
+assert(bracketWidth, isGreaterThanOrEqual = referenceShelfMountHoleDiameter * 5.5, error = "Bracket width is too small for the reference shelf-mount hole diameter")
+assert(bracketWidth, isGreaterThanOrEqual = referenceWallMountHoleDiameter * 5.5, error = "Bracket width is too small for the reference wall-mount hole diameter")
+
+// Create the 2D bracket side profile on the XZ plane using constrained sketch geometry.
+bracketProfileSketch = sketch(on = XZ) {
+  line1 = line(start = [var -0.29in, var 1.23in], end = [var -0.28in, var 3.34in])
+  line2 = line(start = [var 0in, var 0in], end = [var 4.69in, var 3.79in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4.69in, var 3.79in], end = [var 4.66in, var 3.4in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4.66in, var 3.4in], end = [var -0.39in, var -0.39in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.93in, var -0.68in], end = [var -0.38in, var -2.25in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 1.6in, var -2.15in], end = [var -0.29in, var 1.23in])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+  coincident([line2.start, ORIGIN])
+
+  // Lock the intended line orientations.
+  horizontal(line6)
+  horizontal(line4)
+  horizontal(line2)
+  vertical(line1)
+  vertical(line5)
+  vertical(line3)
+
+  // Drive the profile from the design parameters.
+  horizontalDistance([line6.start, line6.end]) == -bracketThickness
+  verticalDistance([line3.end, line3.start]) == bracketThickness
+  horizontalDistance([line2.start, line2.end]) == shelfLegLength
+  verticalDistance([line1.start, line1.end]) == wallLegLength
+}
+
+// Turn the closed sketch into a solid blank and hide the sketch.
+bracketProfileRegion = region(segments = [bracketProfileSketch.line1])
+hide(bracketProfileSketch)
+
+bracketBlank = extrude(
+  bracketProfileRegion,
+  length = bracketWidth,
+  symmetric = true,
+  tagEnd = $bracketEndFace,
+  tagStart = $bracketStartFace,
+)
+
+// Apply the inside bend radius at the elbow of the bracket.
+bracketWithInsideFillet = fillet(
+  bracketBlank,
+  tags = getCommonEdge(faces = [
+    bracketProfileRegion.tags.line6,
+    bracketProfileRegion.tags.line5
+  ]),
+  radius = insideBendRadius,
+)
+
+// Apply the outside bend radius around the outer corner.
+bracketWithBendFillets = fillet(
+  bracketWithInsideFillet,
+  tags = getCommonEdge(faces = [
+    bracketProfileRegion.tags.line3,
+    bracketProfileRegion.tags.line1
+  ]),
+  radius = outsideBendRadius,
+)
+
+// Round the four free outside corners of the extruded bracket.
+bracketWithCornerFillets = fillet(
+  bracketWithBendFillets,
+  tags = [
+    getCommonEdge(faces = [
+      bracketProfileRegion.tags.line2,
+      bracketEndFace
+    ]),
+    getCommonEdge(faces = [
+      bracketProfileRegion.tags.line4,
+      bracketEndFace
+    ]),
+    getCommonEdge(faces = [
+      bracketProfileRegion.tags.line4,
+      bracketStartFace
+    ]),
+    getCommonEdge(faces = [
+      bracketProfileRegion.tags.line2,
+      bracketStartFace
+    ])
+  ],
+  radius = cornerFilletRadius,
+)
+
+// Drill the shelf-side mounting holes into the horizontal leg.
+bracketWithShelfMountHoles = hole::holes(
+  bracketWithCornerFillets,
+  face = bracketProfileRegion.tags.line5,
+  cutsAt = shelfMountHoleCenters,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = shelfMountHoleDepth, diameter = shelfMountHoleDiameter),
+  holeType = hole::simple(),
+)
+
+// Drill the wall-side mounting holes into the vertical leg.
+finalBracket = hole::holes(
+  bracketWithShelfMountHoles,
+  face = bracketProfileRegion.tags.line6,
+  cutsAt = wallMountHoleCenters,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = wallMountHoleDepth, diameter = wallMountHoleDiameter),
+  holeType = hole::simple(),
 )

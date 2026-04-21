@@ -24,23 +24,9 @@ description: Artifact commands cycloidal-gear.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
+        "hide": true
       }
     },
     {
@@ -82,8 +68,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.810999999999998,
-          "y": 7.619999999999999,
+          "x": 11.810999999999842,
+          "y": -7.620000000001257,
           "z": 0.0
         }
       }
@@ -104,141 +90,20 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.810999999999998,
-            "y": -0.0
+            "x": 11.810999999999854,
+            "y": -0.00000000000027353674880714604
           },
-          "radius": 7.619999999999999,
+          "radius": 7.620000000000983,
           "start": {
             "unit": "degrees",
-            "value": 90.0
+            "value": -90.0000000000001
           },
           "end": {
             "unit": "degrees",
-            "value": -90.0
+            "value": 90.00000000000121
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 11.020519673318491,
-            "y": -6.362699999999999,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -248,17 +113,10 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.7718999999999996,
-          "y": 0.0,
+          "x": 11.810999999999842,
+          "y": -7.6200000000023005,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -270,17 +128,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 0.0
+            "x": 11.810999999999776,
+            "y": -20.345400000002446
           },
-          "radius": 3.7718999999999996,
+          "radius": 12.725400000000143,
           "start": {
             "unit": "degrees",
-            "value": 0.0
+            "value": 89.9999999999997
           },
           "end": {
             "unit": "degrees",
-            "value": 360.0
+            "value": 150.00000000000756
           },
           "relative": false
         }
@@ -290,26 +148,100 @@ description: Artifact commands cycloidal-gear.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -5.8086332501562525,
+            "y": -10.172700000005293
+          },
+          "radius": 7.61999999999853,
+          "start": {
+            "unit": "degrees",
+            "value": -29.999999999993683
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -210.00000000000574
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -23.428266500323865,
+            "y": -0.0000000000047361337074391936
+          },
+          "radius": 12.725400000011874,
+          "start": {
+            "unit": "degrees",
+            "value": -29.999999999972406
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 29.99999999997451
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -5.808633250148135,
+            "y": 10.172700000000992
+          },
+          "radius": 7.6200000000081465,
+          "start": {
+            "unit": "degrees",
+            "value": -149.9999999999946
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -330.0000000000063
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 11.811000000017302,
+            "y": 20.34540000000378
+          },
+          "radius": 12.72540000000149,
+          "start": {
+            "unit": "degrees",
+            "value": -150.0000000000068
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -89.99999999999925
+          },
+          "relative": false
+        }
       }
     },
     {
@@ -320,7 +252,7 @@ description: Artifact commands cycloidal-gear.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 19.049999999999997
+          "z": 0.0
         },
         "x_axis": {
           "x": 1.0,
@@ -332,23 +264,9 @@ description: Artifact commands cycloidal-gear.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
+        "hide": true
       }
     },
     {
@@ -390,173 +308,7 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.94579250348968,
-          "y": -1.7547058014411026,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 9.04775091767825,
-            "y": -7.591964458007714
-          },
-          "radius": 7.619999999999999,
-          "start": {
-            "unit": "degrees",
-            "value": 50.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -130.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 4.352343131876468,
-            "y": -11.957964476548998,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.7718999999999996,
+          "x": 3.7719000000253997,
           "y": 0.0,
           "z": 0.0
         }
@@ -578,17 +330,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
+            "x": 0.000000000012700000468278007,
             "y": 0.0
           },
-          "radius": 3.7718999999999996,
+          "radius": 3.7719000000127,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -598,64 +350,11 @@ description: Artifact commands cycloidal-gear.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
+        "query_point": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 38.099999999999994
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
+          "y": 5.08
         }
       }
     },
@@ -663,9 +362,12 @@ description: Artifact commands cycloidal-gear.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": 1.8859499999999998,
+          "y": 0.0
+        }
       }
     },
     {
@@ -688,261 +390,31 @@ description: Artifact commands cycloidal-gear.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 9.555193704377139,
-          "y": -10.308365257005178,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 2.0509586264241157,
-            "y": -11.631564370827189
-          },
-          "radius": 7.619999999999999,
-          "start": {
-            "unit": "degrees",
-            "value": 10.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -170.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 12.725399999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": 60.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 7.619999999999999,
-          "offset": {
-            "unit": "degrees",
-            "value": -180.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -4.352343131876471,
-            "y": -11.957964476548998,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
+        "type": "twist_extrude",
+        "target": "[uuid]",
+        "distance": 38.099999999999994,
+        "faces": null,
+        "center_2d": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.7718999999999996,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "radius": 3.7718999999999996,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "loft",
-        "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "v_degree": 2,
-        "bez_approximate_rational": false,
-        "base_curve_index": null,
+          "y": 0.0
+        },
+        "total_rotation_angle": {
+          "unit": "degrees",
+          "value": -80.0
+        },
+        "angle_step_size": {
+          "unit": "degrees",
+          "value": 15.0
+        },
         "tolerance": 0.0000001,
         "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -969,6 +441,119 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 38.099999999999994,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

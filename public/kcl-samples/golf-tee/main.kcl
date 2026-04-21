@@ -4,31 +4,52 @@
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
-// --- Main Dimensions ---
-teeHeight = 70 // total height of the tee
-tipHeight = 10 // height of the pointed section inserted into the ground
-cupHeight = 14.6 // height of the flared cup section
-shaftHeight = teeHeight - tipHeight - cupHeight // derived height of the cylindrical shaft
-cupDepth = 2 // depth of the inner cup (how far the ball sits in)
+// Primary dimensions
+teeHeight = 70
+tipHeight = 10
+cupHeight = 14.6
+cupDepth = 2
+shaftDiameter = 4.5
+cupDiameter = 14.6
 
-
-shaftDiameter = 4.5 // diameter of the shaft
-cupDiameter = 14.6 // outer diameter of the cup (typically wider than the shaft)
-
-
+// Derived values for constraints
 shaftRadius = shaftDiameter / 2
-cupRadius = cupDiameter / 2
+cupOuterRadius = cupDiameter / 2
 
-// --- Tee Profile ---
-teeSketch = startSketchOn(YZ)
+// Revolve profile on YZ
+teeProfile = sketch(on = YZ) {
+  tipEdge = line(start = [var 0mm, var 0mm], end = [var 2.25mm, var 10mm])
+  coincident([tipEdge.start, ORIGIN])
 
-teeProfile = startProfile(teeSketch, at = [0, 0])
-  |> line(end = [shaftRadius, tipHeight]) // conical tip
-  |> yLine(length = shaftHeight) // straight shaft
-  |> line(end = [cupRadius, cupHeight]) // flared transition to cup
-  |> line(endAbsolute = [0, teeHeight - cupDepth]) // inner wall of the cup
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)]) // close shape
-  |> close()
+  shaftEdge = line(start = [var 2.25mm, var 10mm], end = [var 2.25mm, var 55.4mm])
+  coincident([tipEdge.end, shaftEdge.start])
 
-// --- Solid Revolve ---
-golfTee = revolve(teeProfile, axis = Y, angle = 360)
+  flareEdge = line(start = [var 2.25mm, var 55.4mm], end = [var 7.3mm, var 70mm])
+  coincident([shaftEdge.end, flareEdge.start])
+
+  cupLipArc = arc(start = [var 0mm, var 68mm], end = [var 7.3mm, var 70mm], center = [var 0mm, var 82.32mm])
+  coincident([cupLipArc.end, flareEdge.end])
+
+  axisEdge = line(start = [var 0mm, var 68mm], end = [var 0mm, var 0mm])
+  coincident([axisEdge.start, cupLipArc.start])
+  coincident([axisEdge.end, tipEdge.start])
+
+  cupDepthGuide = line(start = [var 0mm, var 68mm], end = [var 0mm, var 82.32mm], construction = true)
+  coincident([cupDepthGuide.start, axisEdge.start])
+  coincident([cupDepthGuide.end, cupLipArc.center])
+
+  vertical(axisEdge)
+  vertical(shaftEdge)
+  vertical(cupDepthGuide)
+
+  verticalDistance([axisEdge.end, cupLipArc.end]) == teeHeight
+  verticalDistance([tipEdge.start, tipEdge.end]) == tipHeight
+  verticalDistance([flareEdge.start, flareEdge.end]) == cupHeight
+  verticalDistance([cupDepthGuide.start, cupLipArc.end]) == cupDepth
+  horizontalDistance([axisEdge.end, shaftEdge.start]) == shaftRadius
+  horizontalDistance([cupDepthGuide.start, cupLipArc.end]) == cupOuterRadius
+}
+
+teeRegion = region(segments = [teeProfile.tipEdge])
+hide(teeProfile)
+golfTee = revolve(teeRegion, axis = Y, angle = 360)

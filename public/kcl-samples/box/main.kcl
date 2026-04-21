@@ -9,15 +9,40 @@ length = 10
 width = 10
 height = 10
 
-// create a sketch for the box profile on the XY plane
-sketch = startSketchOn(XY)
+// create the profile centered at the origin on the XY plane
+profile = sketch(on = XY) {
+  line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
+  line2 = line(start = [var 5mm, var -5mm], end = [var 5.04mm, var 5mm])
+  line3 = line(start = [var 4.97mm, var 7.08mm], end = [var -5mm, var 5mm])
+  line4 = line(start = [var -5mm, var 5mm], end = [var -5mm, var -5mm])
+  line5 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm], construction = true)
+  line6 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm], construction = true)
 
-// create the profile centered at the origin
-profile = startProfile(sketch, at = [-length / 2, -width / 2])
-  |> xLine(length = length)
-  |> yLine(length = width)
-  |> xLine(length = -length)
-  |> close()
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line5.start, ORIGIN])
+  coincident([line6.start, line5.start])
+  coincident([line6.end, line2])
+  coincident([line5.end, line1])
+
+  horizontal(line1)
+  horizontal(line3)
+  horizontal(line1)
+  horizontal(line3)
+  horizontal(line6)
+  vertical(line2)
+  vertical(line4)
+  vertical(line2)
+  vertical(line5)
+
+  horizontalDistance([line1.start, line1.end]) == width
+  verticalDistance([line4.end, line4.start]) == length
+  horizontalDistance([line6.start, line6.end]) == width / 2
+  verticalDistance([line5.end, line5.start]) == length / 2
+}
 
 // extrude the profile to create the box
-box = extrude(profile, length = height)
+footprintRegion = region(segments = [profile.line1, profile.line2])
+box = extrude(footprintRegion, length = height)

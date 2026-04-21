@@ -565,7 +565,7 @@ extrude001 = extrude(region001, length = 5)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${bracket}surface001 = deleteFace(bracketBody, faces = seg03)`
+        `${bracket}surface001 = deleteFace(bracketBlank, faces = bracketProfileRegion.tags.line6)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

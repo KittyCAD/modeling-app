@@ -11,6 +11,7 @@ use serde::Serialize;
 use thiserror::Error;
 use tower_lsp::lsp_types::Diagnostic;
 use tower_lsp::lsp_types::DiagnosticSeverity;
+use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ModuleId;
@@ -65,14 +66,24 @@ impl From<KclErrorWithOutputs> for ExecError {
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: Option<crate::execution::ExecState>,
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: Option<IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-    pub fn new(error: ExecError, exec_state: crate::execution::ExecState) -> Self {
+    pub fn new(
+        error: ExecError,
+        exec_state: crate::execution::ExecState,
+        #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
+            IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
+        >,
+    ) -> Self {
         Self {
             error,
             exec_state: Some(exec_state),
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses,
         }
     }
 }
@@ -103,6 +114,8 @@ impl From<ExecError> for ExecErrorWithState {
         Self {
             error,
             exec_state: None,
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses: None,
         }
     }
 }
@@ -112,6 +125,8 @@ impl From<ConnectionError> for ExecErrorWithState {
         Self {
             error: error.into(),
             exec_state: None,
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses: None,
         }
     }
 }
@@ -299,6 +314,11 @@ impl KclErrorWithOutputs {
             source_files: Default::default(),
             default_planes: outcome.default_planes,
         }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
+        crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
