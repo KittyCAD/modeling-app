@@ -91,6 +91,7 @@ fn gearProfile(nTeeth, module, pressureAngle, offsetHeight, helixAngle) {
 /// keyholeSolid = extrude(keyhole, length = gearHeight)
 /// gearWithKeyhole = subtract(gearBody, tools = keyholeSolid)
 ///```
+@(experimental = true)
 export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -122,6 +123,7 @@ export fn helical(nTeeth, module, pressureAngle, helixAngle, gearHeight): Solid 
 ///   helixAngle = 40deg,
 /// )
 ///```
+@(experimental = true)
 export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle) {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth

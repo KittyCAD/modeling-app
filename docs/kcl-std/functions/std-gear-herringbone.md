@@ -5,6 +5,8 @@ excerpt: "A herringbone gear."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 A herringbone gear.
 
 ```kcl
