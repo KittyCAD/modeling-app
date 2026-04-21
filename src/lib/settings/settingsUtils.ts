@@ -773,7 +773,7 @@ export function setSettingsAtLevel(
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
       // it seems to always collapses to `never`, which is not correct
       // @ts-ignore
-      if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
+      if (!(settingKey in allSettings[categoryKey])) return // ignore unrecognized settings
       // @ts-ignore
       allSettings[categoryKey][settingKey][level] = settingValue as unknown
     })
