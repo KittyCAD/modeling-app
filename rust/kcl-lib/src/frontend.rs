@@ -827,6 +827,42 @@ impl SketchApi for FrontendState {
             };
 
             match constraint {
+                Constraint::Coincident(coincident) => {
+                    // The remaining segments are the segments that are not getting deleted
+                    let remaining_segments = coincident
+                        .segments
+                        .iter()
+                        .copied()
+                        .filter(|segment| match segment {
+                            ConstraintSegment::Segment(point_id) => {
+                                if resolved_segment_ids_to_delete.contains(point_id) {
+                                    // This point is getting deleted
+                                    return false;
+                                }
+                                let point_object = self.scene_graph.objects.get(point_id.0);
+                                if let Some(object) = point_object
+                                    && let ObjectKind::Segment { segment } = &object.kind
+                                    && let Segment::Point(point) = segment
+                                    && let Some(owner_id) = point.owner
+                                {
+                                    // If the owner of this point is getting deleted then the point is getting deleted too
+                                    // -> this point will not be in remaining_segments
+                                    return !resolved_segment_ids_to_delete.contains(&owner_id);
+                                }
+                                true
+                            }
+                            ConstraintSegment::Origin(_) => true,
+                        })
+                        .collect::<Vec<_>>();
+
+                    // If there are at least 2 segments left in the constraint: keep it, otherwise delete it.
+                    if remaining_segments.len() >= 2 {
+                        self.edit_coincident_constraint(&mut new_ast, constraint_id, remaining_segments)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    } else {
+                        constraint_ids_set.insert(constraint_id);
+                    }
+                }
                 Constraint::EqualRadius(equal_radius) => {
                     let remaining_input = equal_radius
                         .input
@@ -2444,6 +2480,38 @@ impl FrontendState {
         Ok(())
     }
 
+    fn edit_coincident_constraint(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        constraint_id: ObjectId,
+        segments: Vec<ConstraintSegment>,
+    ) -> Result<(), KclError> {
+        if segments.len() < 2 {
+            return Err(KclError::refactor(format!(
+                "Coincident constraint must have at least 2 inputs, got {}",
+                segments.len()
+            )));
+        }
+
+        let segment_asts = segments
+            .iter()
+            .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: segment_asts,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        self.mutate_ast(
+            new_ast,
+            constraint_id,
+            AstMutateCommand::EditCallUnlabeled { arg: array_expr },
+        )?;
+        Ok(())
+    }
+
     /// updates the equalLength constraint with the given lines
     fn edit_equal_length_constraint(
         &mut self,
@@ -2848,21 +2916,20 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
-        let [seg0_ast, seg1_ast] = match coincident.segments.as_slice() {
-            [seg0, seg1] => [
-                self.coincident_segment_to_ast(seg0, new_ast)?,
-                self.coincident_segment_to_ast(seg1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Coincident constraint must have exactly 2 inputs, got {}",
-                    coincident.segments.len()
-                )));
-            }
-        };
+        let segment_asts = coincident
+            .segments
+            .iter()
+            .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
+            .collect::<Result<Vec<_>, _>>()?;
+        if segment_asts.len() < 2 {
+            return Err(KclError::refactor(format!(
+                "Coincident constraint must have at least 2 inputs, got {}",
+                segment_asts.len()
+            )));
+        }
 
         // Create the coincident() call using shared helper.
-        let coincident_ast = create_coincident_ast(seg0_ast, seg1_ast);
+        let coincident_ast = create_coincident_ast(segment_asts);
 
         // Add the line to the AST of the sketch block.
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -5286,11 +5353,14 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
 
 // Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
 
-/// Create an AST node for coincident([expr1, expr2])
-pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::Expr {
-    // Create array [expr1, expr2]
+/// Create an AST node for coincident([expr1, expr2, ...])
+pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) -> ast::Expr {
+    let elements = exprs.into_iter().collect::<Vec<_>>();
+    debug_assert!(elements.len() >= 2, "Coincident AST should have at least 2 inputs");
+
+    // Create array [expr1, expr2, ...]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
-        elements: vec![expr1, expr2],
+        elements,
         digest: None,
         non_code_meta: Default::default(),
     })));
@@ -7138,6 +7208,70 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_point_preserves_multiline_coincident_constraint() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point3 = point(at = [var 5, var 6])
+  coincident([point1, point2, point3])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point3_id = *sketch.segments.get(2).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point3_id])
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("point1 = point("), "{}", src_delta.text);
+        assert!(src_delta.text.contains("point2 = point("), "{}", src_delta.text);
+        assert!(!src_delta.text.contains("point3 = point("), "{}", src_delta.text);
+        assert!(
+            src_delta.text.contains("coincident([point1, point2])"),
+            "{}",
+            src_delta.text
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.segments.len(), 2);
+        assert_eq!(sketch.constraints.len(), 1);
+
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Coincident(coincident) = constraint else {
+            panic!("Expected coincident constraint");
+        };
+        assert_eq!(
+            coincident.segments,
+            sketch
+                .segments
+                .iter()
+                .copied()
+                .map(Into::into)
+                .collect::<Vec<ConstraintSegment>>()
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_preserves_multiline_equal_length_constraint() {
         let initial_source = "\
 sketch(on = XY) {
@@ -7191,6 +7325,62 @@ sketch(on = XY) {
         assert_eq!(lines_equal_length.lines.len(), 2);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_line_preserves_multiline_coincident_constraint() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
+  coincident([line1.end, line2.start, line3.start])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line1_id])
+            .await
+            .unwrap();
+        assert!(!src_delta.text.contains("line1 = line("), "{}", src_delta.text);
+        assert!(src_delta.text.contains("line2 = line("), "{}", src_delta.text);
+        assert!(src_delta.text.contains("line3 = line("), "{}", src_delta.text);
+        assert!(
+            src_delta.text.contains("coincident([line2.start, line3.start])"),
+            "{}",
+            src_delta.text
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.constraints.len(), 1);
+
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Coincident(coincident) = constraint else {
+            panic!("Expected coincident constraint");
+        };
+        let remaining_segments = vec![sketch.segments[0].into(), sketch.segments[3].into()];
+        assert_eq!(coincident.segments, remaining_segments);
+
         mock_ctx.close().await;
     }
 
@@ -7440,6 +7630,122 @@ sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_three_points_coincident() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let segments = sketch
+            .segments
+            .iter()
+            .take(3)
+            .copied()
+            .map(Into::into)
+            .collect::<Vec<ConstraintSegment>>();
+
+        let constraint = Constraint::Coincident(Coincident {
+            segments: segments.clone(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point3 = point(at = [var 5, var 6])
+  coincident([point1, point2, point3])
+}
+"
+        );
+
+        let constraint_object = scene_delta
+            .new_graph
+            .objects
+            .iter()
+            .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+            .unwrap();
+
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected a constraint object");
+        };
+
+        assert_eq!(constraint, &Constraint::Coincident(Coincident { segments }));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_source_with_three_point_coincident_tracks_all_segments() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point3 = point(at = [var 5, var 6])
+  coincident([point1, point2, point3])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+
+        let constraint_object = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find(|obj| matches!(obj.kind, ObjectKind::Constraint { .. }))
+            .unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected a constraint object");
+        };
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let expected_segments = sketch
+            .segments
+            .iter()
+            .take(3)
+            .copied()
+            .map(Into::into)
+            .collect::<Vec<ConstraintSegment>>();
+
+        assert_eq!(
+            constraint,
+            &Constraint::Coincident(Coincident {
+                segments: expected_segments,
+            })
+        );
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

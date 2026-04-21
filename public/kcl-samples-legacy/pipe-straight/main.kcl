@@ -1,0 +1,48 @@
+// Horizontal Pipe Spool
+// Short, straight pipe section with two identical flat, bolted end flanges; used to connect flanged equipment or piping runs and to set a precise face-to-face length in real systems.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+faceToFaceLength = 165
+flangeOutsideDiameter = 120
+flangeThickness = 20
+pipeOutsideDiameterScale = 0.78
+requestedWallThicknessFraction = 0.12
+boltHoleCount = 16
+nominalBoltHoleDiameter = 14
+boltHoleDiameterScale = 0.70
+
+pipeOutsideDiameter = pipeOutsideDiameterScale * flangeOutsideDiameter
+pipeWallThickness = requestedWallThicknessFraction * pipeOutsideDiameter
+pipeInsideDiameter = pipeOutsideDiameter - (2 * pipeWallThickness)
+boltCircleDiameter = (pipeOutsideDiameter + flangeOutsideDiameter) / 2
+boltCircleRadius = boltCircleDiameter / 2
+finalBoltHoleDiameter = nominalBoltHoleDiameter * boltHoleDiameterScale
+pipeLengthBetweenFlangeInnerFaces = faceToFaceLength - (2 * flangeThickness)
+
+pipeRingSketch = startSketchOn(YZ)
+pipeOuterCircle = circle(pipeRingSketch, center = [0, 0], radius = pipeOutsideDiameter / 2)
+pipeInnerCircle = circle(pipeRingSketch, center = [0, 0], radius = pipeInsideDiameter / 2)
+pipeSectionSketch = subtract2d(pipeOuterCircle, tool = pipeInnerCircle)
+pipeBody = extrude(pipeSectionSketch, length = pipeLengthBetweenFlangeInnerFaces, symmetric = true)
+
+flangeSketch = startSketchOn(YZ)
+flangeOuterCircle = circle(flangeSketch, center = [0, 0], radius = flangeOutsideDiameter / 2)
+flangeBoreCircle = circle(flangeSketch, center = [0, 0], radius = pipeInsideDiameter / 2)
+flangeRingProfile = subtract2d(flangeOuterCircle, tool = flangeBoreCircle)
+seedBoltHole = circle(flangeSketch, center = [0, boltCircleRadius], diameter = finalBoltHoleDiameter)
+boltHolesRing = patternCircular2d(
+  [seedBoltHole],
+  instances = boltHoleCount,
+  center = [0, 0],
+  arcDegrees = 360deg,
+  rotateDuplicates = false,
+)
+flangePerforatedProfile = subtract2d(flangeRingProfile, tool = boltHolesRing)
+baseFlange = extrude(flangePerforatedProfile, length = flangeThickness, method = NEW)
+
+rightEndFlange = baseFlange
+  |> translate(x = faceToFaceLength / 2 - flangeThickness, global = true)
+leftEndFlange = clone(rightEndFlange)
+  |> rotate(axis = Y, angle = 180deg)

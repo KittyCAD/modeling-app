@@ -1,0 +1,100 @@
+// Coilover Top
+// Part consists of a 70 mm diameter plate with a tapered mount body , and a eye-end mount (with a hole) on top of it. Below this plate/body, there is a stopper that limits the travel of the coilover, and a piston shaft below it to guide the coilover.
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Import parameters
+import eyeEndMountOuterDia, pointOffset, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, pistonRodStopDia, pistonRodStopLength, upperMountPlateDia, upperMountPlateThickness from "parameters.kcl"
+
+// Stopper for the Piston Rod located just below Upper Mount Plate
+pistonRodStopSketch = startSketchOn(XY)
+pistonRodStopperProfile = circle(
+  pistonRodStopSketch,
+  center = [0, 0],
+  radius = pistonRodStopDia / 2,
+  tag = $seg01,
+)
+
+pistonRodStopperExtrude = extrude(pistonRodStopperProfile, length = -pistonRodStopLength, tagStart = $capStart001)
+  |> chamfer(
+       length = 6,
+       tags = [
+         getCommonEdge(faces = [seg01, capStart001])
+       ],
+     )
+
+// Piston Rod located below the Stopper
+pistonRodSketch = startSketchOn(pistonRodStopperExtrude, face = START)
+pistonRodProfile = circle(pistonRodSketch, center = [0, 0], radius = 4.95)
+pistonRodExtrude = extrude(pistonRodProfile, length = 200)
+
+// Upper Mount Plate
+upperMountPlateSketch = startSketchOn(pistonRodStopperExtrude, face = END)
+upperMountPlateProfile = circle(
+  upperMountPlateSketch,
+  center = [0, 0],
+  radius = upperMountPlateDia / 2,
+  tag = $seg02,
+)
+upperMountPlateExtrude = extrude(upperMountPlateProfile, length = upperMountPlateThickness, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 19,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )
+
+// Eye End for Upper Mount
+eyeEndSketch = startSketchOn(upperMountPlateExtrude, face = END)
+eyeEndProfile = circle(
+  eyeEndSketch,
+  center = [0, 0],
+  radius = eyeEndMountOuterDia / 2,
+  tag = $seg03,
+)
+eyeEndExtrude = extrude(eyeEndProfile, length = eyeEndMountLength, tagEnd = $capEnd002)
+  |> fillet(
+       radius = eyeEndMountOuterDia / 2 - 0.01,
+       tags = [
+         getCommonEdge(faces = [seg03, capEnd002])
+       ],
+     )
+
+// Eye End Outer Profile for Upper Mount
+eyeEndOuterSketch = startSketchOn(YZ)
+eyeEndOuterProfile = startProfile(
+       eyeEndOuterSketch,
+       at = [
+         eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset,
+         upperMountPlateThickness + eyeEndMountLength - 25
+       ],
+     )
+  |> xLine(length = -pointOffset)
+  |> tangentialArc(radius = eyeEndMountFillet, angle = -90)
+  |> yLine(length = 22)
+  |> xLine(length = -eyeEndMountThickness)
+  |> yLine(length = -22)
+  |> tangentialArc(radius = eyeEndMountFillet, angle = -90)
+  |> xLine(length = -20)
+  |> yLine(length = 30)
+  |> xLine(endAbsolute = eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset)
+  |> close(%)
+
+eyeEndOuterExtrude = extrude(eyeEndOuterProfile, length = 30, symmetric = true)
+upperMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
+
+// Eye End Hole for Upper Mount
+eyeEndHolePlane = offsetPlane(XZ, offset = 15)
+eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
+eyeEndHoleProfile = circle(
+  eyeEndHoleSketch,
+  center = [
+    0,
+    upperMountPlateThickness + eyeEndMountLength - (eyeEndMountOuterDia / 2)
+  ],
+  radius = eyeEndMountHoleDia / 2,
+)
+eyeEndHoleExtrude = extrude(eyeEndHoleProfile, length = -40)
+upperMountSolid = subtract([upperMount], tools = [eyeEndHoleExtrude])
+  |> appearance(color = "#252318", roughness = 90, metalness = 90)

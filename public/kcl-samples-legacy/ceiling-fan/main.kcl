@@ -1,0 +1,69 @@
+// Ceiling Propeller
+// A twisted ceiling fan geometry made using boolean cutouts
+// Categories: Construction
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+bladeCount = 3 // Number of fan blades
+bladeTwistAngle = 5deg // Twist angle applied to the void cut geometry
+bladeSpanLength = 100 // Blade span (radial length)
+bladeWidth = 17.5 // Half-width of the blade at its widest point
+bladeBaseThickness = 10 // Total thickness of the extruded root/base
+bladeThickness = 2 // Thickness of the profile at void section
+
+
+// Root geometry
+bladeRootWidth = bladeWidth * 2
+bladeSeamLength = bladeRootWidth / 2 / cos(30deg) // Angled base segment (30°)
+
+
+// Void cutout dimensions
+voidCutoutLength = bladeSpanLength + 30 // Longitudinal length of the void
+voidCutoutWidth = bladeWidth * 3 // Width of the void cut
+voidCutoutHeight = bladeWidth * 2 // Height (used in tangential arc)
+
+
+// Construct blade profile
+bladePlane = offsetPlane(XY, offset = -bladeBaseThickness / 2)
+bladeSketch = startSketchOn(XY)
+bladeProfile = startProfile(bladePlane, at = [0, 0])
+  |> angledLine(angle = 90 - (360deg / bladeCount / 2), length = bladeSeamLength, tag = $radial)
+  |> angledLine(angle = segAng(radial) + 95, endAbsoluteX = bladeWidth / 2, tag = $segUpperNeck)
+  |> yLine(length = bladeSpanLength - (bladeWidth / 3), tag = $segSpanTop)
+  |> tangentialArc(angle = 90deg, radius = bladeWidth / 3)
+  |> xLine(endAbsolute = 0, tag = $seg01)
+  |> mirror2d(axis = Y)
+
+// Extrude blade solid and apply fillets
+bladeSolid = extrude(bladeProfile, length = bladeBaseThickness)
+
+// Construct twisted void cutout (one side only)
+voidSketch = startSketchOn(YZ)
+voidProfile = startProfile(
+       voidSketch,
+       at = [
+         bladeSpanLength * 1.5,
+         bladeThickness / 2
+       ],
+     )
+  |> xLine(length = -bladeSpanLength * 1.15)
+  // Arc defining central void (based on voidCutoutHeight)
+  |> tangentialArc(end = [-voidCutoutHeight, voidCutoutHeight])
+  |> xLine(length = bladeSpanLength * 1.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+voidCutoutOne = extrude(voidProfile, length = voidCutoutWidth, symmetric = true)
+  |> rotate(roll = 0, pitch = bladeTwistAngle, yaw = 0)
+
+// Mirror second void cut to other side
+voidCutoutTwo = clone(voidCutoutOne)
+  |> rotate(roll = 0, pitch = 180, yaw = 0)
+
+// Subtract voids from blade
+bladeWithVoidOne = subtract([bladeSolid], tools = [voidCutoutOne])
+bladeWithVoids = subtract([bladeWithVoidOne], tools = [voidCutoutTwo])
+  // Circular pattern: 3 blade instance fan
+  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])

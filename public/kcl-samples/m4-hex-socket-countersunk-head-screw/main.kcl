@@ -1,0 +1,118 @@
+// M4 Hex Socket Countersunk Head Screw
+// Simplified M4 countersunk screw with a conical flush-mount head and internal hex socket drive for fast layout and fit checks.
+// Categories: Fasteners
+
+@settings(defaultLengthUnit = mm)
+
+boltShankLength = 20
+boltShankDiameter = 3.87
+boltHeadDiameter = 7.9
+boltHeadTransitionHeight = 2.7
+socketAcrossCorners = 2.9
+socketDepth = 2.2
+socketRadius = socketAcrossCorners / 2
+
+boltProfileSketch = sketch(on = XY) {
+  shankTopEdge = line(start = [var 0mm, var -20mm], end = [var -1.94mm, var -20mm])
+  shankSideWall = line(start = [var -1.94mm, var -20mm], end = [var -1.94mm, var -2.7mm])
+  coincident([shankTopEdge.end, shankSideWall.start])
+  headTransitionEdge = line(start = [var -1.94mm, var -2.7mm], end = [var -3.95mm, var 0mm])
+  coincident([
+    shankSideWall.end,
+    headTransitionEdge.start
+  ])
+  headTopEdge = line(start = [var -3.95mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([
+    headTransitionEdge.end,
+    headTopEdge.start
+  ])
+  boltAxis = line(start = [var 0mm, var 0mm], end = [var 0mm, var -20mm])
+  coincident([headTopEdge.end, boltAxis.start])
+  vertical(shankSideWall)
+  vertical(boltAxis)
+  horizontal(headTopEdge)
+  coincident([boltAxis.end, shankTopEdge.start])
+  coincident([boltAxis.start, ORIGIN])
+  horizontal(shankTopEdge)
+  verticalDistance([boltAxis.end, boltAxis.start]) == boltShankLength
+  horizontalDistance([shankTopEdge.end, shankTopEdge.start]) == boltShankDiameter / 2
+  horizontalDistance([headTopEdge.start, headTopEdge.end]) == boltHeadDiameter / 2
+  verticalDistance([
+  headTransitionEdge.start,
+  headTransitionEdge.end
+]) == boltHeadTransitionHeight
+}
+
+hexSocketSketch = sketch(on = XZ) {
+  socketReferenceCircle = circle(start = [var 1.45mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
+  coincident([socketReferenceCircle.center, ORIGIN])
+  upperRightFacet = line(start = [var 1.45mm, var 0mm], end = [var 0.73mm, var 1.26mm])
+  topFacet = line(start = [var 0.73mm, var 1.26mm], end = [var -0.73mm, var 1.26mm])
+  coincident([upperRightFacet.end, topFacet.start])
+  coincident([topFacet.end, socketReferenceCircle])
+  upperLeftFacet = line(start = [var -0.73mm, var 1.26mm], end = [var -1.45mm, var 0mm])
+  coincident([
+    upperLeftFacet.start,
+    socketReferenceCircle
+  ])
+  coincident([
+    upperLeftFacet.end,
+    socketReferenceCircle
+  ])
+  lowerLeftFacet = line(start = [var -1.45mm, var 0mm], end = [var -0.73mm, var -1.26mm])
+  coincident([
+    lowerLeftFacet.start,
+    upperLeftFacet.end
+  ])
+  coincident([
+    lowerLeftFacet.end,
+    socketReferenceCircle
+  ])
+  bottomFacet = line(start = [var -0.73mm, var -1.26mm], end = [var 0.73mm, var -1.26mm])
+  coincident([bottomFacet.start, lowerLeftFacet.end])
+  coincident([bottomFacet.end, socketReferenceCircle])
+  lowerRightFacet = line(start = [var 0.73mm, var -1.26mm], end = [var 1.45mm, var 0mm])
+  coincident([lowerRightFacet.start, bottomFacet.end])
+  coincident([
+    lowerRightFacet.end,
+    socketReferenceCircle.start
+  ])
+  coincident([topFacet.start, socketReferenceCircle])
+  equalLength([
+    upperRightFacet,
+    topFacet,
+    upperLeftFacet,
+    lowerLeftFacet,
+    bottomFacet,
+    lowerRightFacet
+  ])
+  socketRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 1.45mm, var 0mm], construction = true)
+  coincident([
+    socketRadiusGuide.start,
+    socketReferenceCircle.center
+  ])
+  coincident([
+    socketRadiusGuide.end,
+    lowerRightFacet.end
+  ])
+  horizontal(socketRadiusGuide)
+  horizontalDistance([
+  socketRadiusGuide.start,
+  socketRadiusGuide.end
+]) == socketRadius
+  coincident([topFacet.end, upperLeftFacet.start])
+  coincident([
+    socketRadiusGuide.end,
+    upperRightFacet.start
+  ])
+}
+
+boltProfileRegion = region(point = [-0.9675mm, -19.9975mm], sketch = boltProfileSketch)
+boltBlank = revolve(boltProfileRegion, angle = 360deg, axis = Y)
+hexSocketRegion = region(point = [1.0853349mm, 0.6266184mm], sketch = hexSocketSketch)
+hexSocketCut = extrude(hexSocketRegion, length = socketDepth)
+bolt = subtract([boltBlank], tools = [hexSocketCut])
+  |> appearance(color = "#acb1b9", metalness = 100, roughness = 50)
+
+hidden001 = hide(boltProfileSketch)
+hidden002 = hide(hexSocketSketch)

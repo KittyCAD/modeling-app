@@ -3,33 +3,434 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Define the bench length
-benchLength = 56
-
-// Import various constants and functions from our library
-import dividerThickness from "bench-parts.kcl"
-import divider from "bench-parts.kcl"
-import connector from "bench-parts.kcl"
-import seatSlats from "bench-parts.kcl"
-import backSlats from "bench-parts.kcl"
-import armRest from "bench-parts.kcl"
+benchLength = 56mm
+dividerThickness = 4mm
+dividerShellThickness = 1.5mm
+connectorInradius = 1.2mm
+connectorVertexRadius = 2 * connectorInradius / sqrt(3)
+dividerOffset = benchLength / 2
+seatAndBackPlaneOffset = -benchLength / 2 - (dividerThickness / 2)
+rightArmRestOffset = benchLength / 2
+rightArmRestProfileOffset = -rightArmRestOffset
 
 // Create the dividers, these hold the seat and back slats
-divider(YZ)
-divider(offsetPlane(YZ, offset = benchLength / 2))
-divider(offsetPlane(YZ, offset = -benchLength / 2))
+dividerProfile = sketch(on = YZ) {
+  line1 = line(start = [var -16.82mm, var 21.2mm], end = [var -16.95mm, var 19.93mm])
+  arc2 = arc(start = [var -16.95mm, var 19.93mm], end = [var -15.94mm, var 13.47mm], center = [var -4.16mm, var 18.62mm])
+  arc3 = arc(start = [var -16.6mm, var 5.68mm], end = [var -15.94mm, var 13.47mm], center = [var -23.46mm, var 10.18mm])
+  arc4 = arc(start = [var -16.6mm, var 5.68mm], end = [var -18.38mm, var 2.57mm], center = [var 7.81mm, var -10.35mm])
+  line5 = line(start = [var -18.38mm, var 2.57mm], end = [var -19.63mm, var -0.03mm])
+  line6 = line(start = [var -19.63mm, var -0.03mm], end = [var -13.59mm, var -0.03mm])
+  line7 = line(start = [var -13.59mm, var -0.03mm], end = [var -6.91mm, var 7.84mm])
+  arc8 = arc(start = [var 10.06mm, var 8.51mm], end = [var -6.91mm, var 7.84mm], center = [var 1.88mm, var 0.38mm])
+  line9 = line(start = [var 10.06mm, var 8.51mm], end = [var 17.34mm, var 0.04mm])
+  line10 = line(start = [var 17.34mm, var 0.04mm], end = [var 23.32mm, var 0.04mm])
+  line11 = line(start = [var 23.32mm, var 0.04mm], end = [var 22.02mm, var 3.05mm])
+  arc12 = arc(start = [var 22.45mm, var 18.36mm], end = [var 22.02mm, var 3.05mm], center = [var 38.68mm, var 10.24mm])
+  arc13 = arc(start = [var 22.45mm, var 18.36mm], end = [var 25.08mm, var 27.62mm], center = [var -0.69mm, var 29.94mm])
+  line14 = line(start = [var 25.08mm, var 27.62mm], end = [var 27.43mm, var 43.98mm])
+  line15 = line(start = [var 27.43mm, var 43.98mm], end = [var 29.21mm, var 45.13mm])
+  arc16 = arc(start = [var 29.21mm, var 45.13mm], end = [var 23.93mm, var 48.49mm], center = [var 27.34mm, var 48.02mm])
+  line17 = line(start = [var 23.93mm, var 48.49mm], end = [var 22.01mm, var 48.7mm])
+  line18 = line(start = [var 22.01mm, var 48.7mm], end = [var 18.27mm, var 22.16mm])
+  arc19 = arc(start = [var 15.13mm, var 19.48mm], end = [var 18.27mm, var 22.16mm], center = [var 15.19mm, var 22.59mm])
+  arc20 = arc(start = [var -16.82mm, var 21.2mm], end = [var 15.13mm, var 19.48mm], center = [var 23.01mm, var 463.5mm])
+
+  coincident([line1.end, arc2.start])
+  coincident([arc2.end, arc3.end])
+  coincident([arc3.start, arc4.start])
+  coincident([arc4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, arc8.end])
+  coincident([arc8.start, line9.start])
+  coincident([line9.end, line10.start])
+  coincident([line10.end, line11.start])
+  coincident([line11.end, arc12.end])
+  coincident([arc12.start, arc13.start])
+  coincident([arc13.end, line14.start])
+  coincident([line14.end, line15.start])
+  coincident([line15.end, arc16.start])
+  coincident([arc16.end, line17.start])
+  coincident([line17.end, line18.start])
+  coincident([line18.end, arc19.end])
+  coincident([arc19.start, arc20.end])
+  coincident([arc20.start, line1.start])
+
+  tangent([line1, arc2])
+  tangent([arc2, arc3])
+  tangent([arc3, arc4])
+  tangent([line7, arc8])
+  tangent([line11, arc12])
+  tangent([arc12, arc13])
+  tangent([line15, arc16])
+  tangent([line18, arc19])
+  tangent([arc19, arc20])
+
+  horizontal(line6)
+  horizontal(line10)
+
+  horizontalDistance([line5.end, ORIGIN]) == 19.63mm
+  verticalDistance([line5.end, ORIGIN]) == 0.03mm
+
+  horizontalDistance([line1.end, line1.start]) == 0.13mm
+  verticalDistance([line1.end, line1.start]) == 1.27mm
+
+  horizontalDistance([line5.end, line5.start]) == 1.25mm
+  verticalDistance([line5.end, line5.start]) == 2.6mm
+
+  horizontalDistance([line6.start, line6.end]) == 6.04mm
+
+  horizontalDistance([line7.start, line7.end]) == 6.68mm
+  verticalDistance([line7.start, line7.end]) == 7.87mm
+
+  horizontalDistance([line9.start, line9.end]) == 7.28mm
+  verticalDistance([line9.end, line9.start]) == 8.47mm
+
+  horizontalDistance([line10.start, line10.end]) == 5.98mm
+
+  horizontalDistance([line11.end, line11.start]) == 1.3mm
+  verticalDistance([line11.start, line11.end]) == 3.01mm
+
+  horizontalDistance([line14.start, line14.end]) == 2.35mm
+  verticalDistance([line14.start, line14.end]) == 16.36mm
+
+  horizontalDistance([line15.start, line15.end]) == 1.78mm
+  verticalDistance([line15.start, line15.end]) == 1.15mm
+
+  horizontalDistance([line17.end, line17.start]) == 1.92mm
+  verticalDistance([line17.start, line17.end]) == 0.21mm
+
+  horizontalDistance([line18.end, line18.start]) == 3.74mm
+  verticalDistance([line18.end, line18.start]) == 26.54mm
+
+  radius(arc2) == 12.85mm
+  radius(arc3) == 8.20mm
+  radius(arc4) == 29.20mm
+  radius(arc8) == 11.53mm
+  radius(arc12) == 18.15mm
+  radius(arc13) == 25.88mm
+  radius(arc16) == 3.44mm
+  radius(arc19) == 3.11mm
+  radius(arc20) == 444mm
+
+  horizontalDistance([line1.start, ORIGIN]) == 16.82mm
+  verticalDistance([ORIGIN, line1.start]) == 21.2mm
+
+  horizontalDistance([arc2.end, ORIGIN]) == 15.94mm
+  verticalDistance([ORIGIN, arc2.end]) == 13.47mm
+
+  horizontalDistance([arc3.start, ORIGIN]) == 16.6mm
+  verticalDistance([ORIGIN, arc3.start]) == 5.68mm
+
+  horizontalDistance([ORIGIN, arc8.start]) == 10.06mm
+  verticalDistance([ORIGIN, arc8.start]) == 8.51mm
+
+  horizontalDistance([ORIGIN, line11.end]) == 22.02mm
+  verticalDistance([ORIGIN, line11.end]) == 3.05mm
+
+  horizontalDistance([ORIGIN, arc12.start]) == 22.45mm
+  verticalDistance([ORIGIN, arc12.start]) == 18.36mm
+
+  horizontalDistance([ORIGIN, line15.end]) == 29.21mm
+  verticalDistance([ORIGIN, line15.end]) == 45.13mm
+
+  horizontalDistance([ORIGIN, arc16.end]) == 23.93mm
+  verticalDistance([ORIGIN, arc16.end]) == 48.49mm
+
+  horizontalDistance([ORIGIN, arc19.start]) == 15.13mm
+  verticalDistance([ORIGIN, arc19.start]) == 19.48mm
+}
+
+dividerRightRegion = region(segments = [
+  dividerProfile.line1,
+  dividerProfile.arc2
+])
+dividerLeftRegion = region(segments = [
+  dividerProfile.line1,
+  dividerProfile.arc2
+])
+dividerCenterRightBase = extrude(dividerRightRegion, length = dividerThickness / 2)
+dividerCenterLeftBase = extrude(dividerLeftRegion, length = -dividerThickness / 2)
+hide(dividerProfile)
+dividerCenterRight = shell(dividerCenterRightBase, thickness = dividerShellThickness, faces = [END])
+dividerCenterLeft = shell(dividerCenterLeftBase, thickness = dividerShellThickness, faces = [START])
+dividerRightRight = clone(dividerCenterRight)
+  |> translate(x = dividerOffset, global = true)
+dividerRightLeft = clone(dividerCenterLeft)
+  |> translate(x = dividerOffset, global = true)
+dividerLeftRight = clone(dividerCenterRight)
+  |> translate(x = -dividerOffset, global = true)
+dividerLeftLeft = clone(dividerCenterLeft)
+  |> translate(x = -dividerOffset, global = true)
 
 // Create the connectors to join the dividers
-connector(offsetPlane(YZ, offset = -benchLength / 2), length = benchLength)
+connectorPlane = offsetPlane(YZ, offset = -benchLength / 2)
+connectorProfile = sketch(on = connectorPlane) {
+  guide = circle(start = [var -10.61mm, var 8mm], center = [var -12mm, var 8mm], construction = true)
+  line1 = line(start = [var -10.61mm, var 8mm], end = [var -11.31mm, var 9.2mm])
+  line2 = line(start = [var -11.31mm, var 9.2mm], end = [var -12.69mm, var 9.2mm])
+  line3 = line(start = [var -12.69mm, var 9.2mm], end = [var -13.39mm, var 8mm])
+  line4 = line(start = [var -13.39mm, var 8mm], end = [var -12.69mm, var 6.8mm])
+  line5 = line(start = [var -12.69mm, var 6.8mm], end = [var -11.31mm, var 6.8mm])
+  line6 = line(start = [var -11.31mm, var 6.8mm], end = [var -10.61mm, var 8mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  coincident([guide.start, line1.start])
+  coincident([line1.start, guide])
+  coincident([line1.end, guide])
+  coincident([line2.end, guide])
+  coincident([line3.end, guide])
+  coincident([line4.end, guide])
+  coincident([line5.end, guide])
+
+  horizontal(line2)
+  horizontal(line5)
+  parallel([line1, line4])
+  parallel([line2, line5])
+  parallel([line3, line6])
+  equalLength([
+    line1,
+    line2,
+    line3,
+    line4,
+    line5,
+    line6
+  ])
+
+  diameter(guide) == connectorVertexRadius * 2
+  horizontalDistance([guide.center, guide.start]) == connectorVertexRadius
+  horizontalDistance([guide.center, ORIGIN]) == 12mm
+  verticalDistance([ORIGIN, guide.center]) == 8mm
+}
+
+connectorRegion = region(point = connectorProfile.guide.center)
+connectorSeed = extrude(connectorRegion, length = benchLength)
+hide(connectorProfile)
+connectorArray = patternLinear3d(
+  connectorSeed,
+  instances = 2,
+  distance = 28mm,
+  axis = [0, 1, 0],
+)
 
 // Create the seat slats
-seatSlats(offsetPlane(YZ, offset = -benchLength / 2 - (dividerThickness / 2)), length = benchLength + dividerThickness)
+seatSlatPlane = offsetPlane(YZ, offset = seatAndBackPlaneOffset)
+seatSlatProfile = sketch(on = seatSlatPlane) {
+  line1 = line(start = [var -7mm, var 19mm], end = [var -17mm, var 19.5mm])
+  line2 = line(start = [var -17mm, var 19.5mm], end = [var -16.8mm, var 22mm])
+  line3 = line(start = [var -16.8mm, var 22mm], end = [var -15.3mm, var 23.5mm])
+  line4 = line(start = [var -15.3mm, var 23.5mm], end = [var -8.4mm, var 23mm])
+  line5 = line(start = [var -8.4mm, var 23mm], end = [var -6.9mm, var 21.5mm])
+  line6 = line(start = [var -6.9mm, var 21.5mm], end = [var -7mm, var 19mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  horizontalDistance([line1.start, ORIGIN]) == 7mm
+  verticalDistance([ORIGIN, line1.start]) == 19mm
+
+  horizontalDistance([line1.end, line1.start]) == 10mm
+  verticalDistance([line1.start, line1.end]) == 0.5mm
+
+  horizontalDistance([line2.start, line2.end]) == 0.2mm
+  verticalDistance([line2.start, line2.end]) == 2.5mm
+
+  horizontalDistance([line3.start, line3.end]) == 1.5mm
+  verticalDistance([line3.start, line3.end]) == 1.5mm
+
+  horizontalDistance([line4.start, line4.end]) == 6.9mm
+  verticalDistance([line4.end, line4.start]) == 0.5mm
+
+  horizontalDistance([line5.start, line5.end]) == 1.5mm
+  verticalDistance([line5.end, line5.start]) == 1.5mm
+
+  horizontalDistance([line6.end, line6.start]) == 0.1mm
+  verticalDistance([line6.end, line6.start]) == 2.5mm
+
+  equalLength([line3, line5])
+}
+
+seatSlatRegion = region(point = [-12mm, 21mm], sketch = seatSlatProfile)
+seatSlatSeed = extrude(seatSlatRegion, length = benchLength + dividerThickness)
+hide(seatSlatProfile)
+seatSlatArray = patternLinear3d(
+  seatSlatSeed,
+  instances = 3,
+  distance = 11mm,
+  axis = [0, 1, -0.05],
+)
 
 // Create the back slats
-backSlats(offsetPlane(YZ, offset = -benchLength / 2 - (dividerThickness / 2)), length = benchLength + dividerThickness)
+backSlatPlane = offsetPlane(YZ, offset = seatAndBackPlaneOffset)
+backSlatProfile = sketch(on = backSlatPlane) {
+  line1 = line(start = [var 22mm, var 38.5mm], end = [var 20.01mm, var 38.74mm])
+  line2 = line(start = [var 20.01mm, var 38.74mm], end = [var 18.27mm, var 40.77mm])
+  line3 = line(start = [var 18.27mm, var 40.77mm], end = [var 19.19mm, var 47.31mm])
+  line4 = line(start = [var 19.19mm, var 47.31mm], end = [var 21.42mm, var 48.73mm])
+  line5 = line(start = [var 21.42mm, var 48.73mm], end = [var 23.41mm, var 48.49mm])
+  line6 = line(start = [var 23.41mm, var 48.49mm], end = [var 22mm, var 38.5mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  horizontalDistance([ORIGIN, line1.start]) == 22mm
+  verticalDistance([ORIGIN, line1.start]) == 38.5mm
+
+  horizontalDistance([line1.end, line1.start]) == 1.99mm
+  verticalDistance([line1.start, line1.end]) == 0.24mm
+
+  horizontalDistance([line2.end, line2.start]) == 1.74mm
+  verticalDistance([line2.start, line2.end]) == 2.03mm
+
+  horizontalDistance([line3.start, line3.end]) == 0.92mm
+  verticalDistance([line3.start, line3.end]) == 6.54mm
+
+  horizontalDistance([line4.start, line4.end]) == 2.23mm
+  verticalDistance([line4.start, line4.end]) == 1.42mm
+
+  horizontalDistance([line5.start, line5.end]) == 1.99mm
+  verticalDistance([line5.end, line5.start]) == 0.24mm
+
+  horizontalDistance([line6.end, line6.start]) == 1.41mm
+  verticalDistance([line6.end, line6.start]) == 9.99mm
+
+  equalLength([line1, line5])
+  parallel([line1, line5])
+}
+
+backSlatRegion = region(point = [21mm, 43mm], sketch = backSlatProfile)
+backSlatSeed = extrude(backSlatRegion, length = benchLength + dividerThickness)
+hide(backSlatProfile)
+backSlatArray = patternLinear3d(
+  backSlatSeed,
+  instances = 2,
+  distance = 11mm,
+  axis = [0, -0.137, -1],
+)
 
 // Create the arm rests
-armRest(YZ, offset = benchLength / 2)
-armRest(YZ, offset = -benchLength / 2)
+rightArmRestPathSketch = sketch(on = offsetPlane(YZ, offset = rightArmRestOffset)) {
+  line1 = line(start = [var 20mm, var 33mm], end = [var 0mm, var 33mm])
+  arc2 = arc(start = [var 0mm, var 33mm], end = [var -10mm, var 23mm], center = [var 0mm, var 23mm])
+  centerGuide = line(start = [var 0mm, var 33mm], end = [var 0mm, var 23mm], construction = true)
+  endGuide = line(start = [var 0mm, var 23mm], end = [var -10mm, var 23mm], construction = true)
+
+  coincident([line1.end, arc2.start])
+  coincident([centerGuide.start, arc2.start])
+  coincident([centerGuide.end, arc2.center])
+  coincident([endGuide.start, arc2.center])
+  coincident([endGuide.end, arc2.end])
+
+  horizontalDistance([ORIGIN, line1.start]) == 20mm
+  verticalDistance([ORIGIN, line1.start]) == 33mm
+
+  horizontal(line1)
+  horizontalDistance([line1.end, line1.start]) == 20mm
+
+  vertical(centerGuide)
+  verticalDistance([centerGuide.end, centerGuide.start]) == 10mm
+
+  horizontal(endGuide)
+  horizontalDistance([endGuide.end, endGuide.start]) == 10mm
+
+  tangent([line1, arc2])
+  radius(arc2) == 10mm
+}
+
+rightArmRestProfileSketch = sketch(on = offsetPlane(-XZ, offset = 20mm)) {
+  line1 = line(start = [var 0mm, var 32.4mm], end = [var 1.3mm, var 32.4mm])
+  line2 = line(start = [var 1.3mm, var 32.4mm], end = [var 1.6mm, var 33mm])
+  line3 = line(start = [var 1.6mm, var 33mm], end = [var 1.3mm, var 33.6mm])
+  line4 = line(start = [var 1.3mm, var 33.6mm], end = [var -1.3mm, var 33.6mm])
+  line5 = line(start = [var -1.3mm, var 33.6mm], end = [var -1.6mm, var 33mm])
+  line6 = line(start = [var -1.6mm, var 33mm], end = [var -1.3mm, var 32.4mm])
+  line7 = line(start = [var -1.3mm, var 32.4mm], end = [var 0mm, var 32.4mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.start])
+
+  coincident([
+    line1.start,
+    [rightArmRestProfileOffset, 32.4mm]
+  ])
+  coincident([
+    line1.end,
+    [
+      rightArmRestProfileOffset + 1.3mm,
+      32.4mm
+    ]
+  ])
+  coincident([
+    line2.end,
+    [
+      rightArmRestProfileOffset + 1.6mm,
+      33mm
+    ]
+  ])
+  coincident([
+    line3.end,
+    [
+      rightArmRestProfileOffset + 1.3mm,
+      33.6mm
+    ]
+  ])
+  coincident([
+    line4.end,
+    [
+      rightArmRestProfileOffset - 1.3mm,
+      33.6mm
+    ]
+  ])
+  coincident([
+    line5.end,
+    [
+      rightArmRestProfileOffset - 1.6mm,
+      33mm
+    ]
+  ])
+  coincident([
+    line6.end,
+    [
+      rightArmRestProfileOffset - 1.3mm,
+      32.4mm
+    ]
+  ])
+}
+
+rightArmRestProfileRegion = region(point = [rightArmRestProfileOffset, 33mm], sketch = rightArmRestProfileSketch)
+rightArmRest = sweep(
+  rightArmRestProfileRegion,
+  path = [
+    rightArmRestPathSketch.line1,
+    rightArmRestPathSketch.arc2
+  ],
+)
+hide([
+  rightArmRestPathSketch,
+  rightArmRestProfileSketch
+])
+leftArmRest = clone(rightArmRest)
+  |> translate(x = -benchLength, global = true)

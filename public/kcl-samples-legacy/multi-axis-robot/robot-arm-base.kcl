@@ -1,0 +1,58 @@
+// Robot Arm Base
+
+// Set Units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import Constants
+import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
+
+// Pattern M8 mounting bolts in base
+mountingHoles01 = startSketchOn(XY)
+  |> circle(
+       center = [
+         -basePlateRadius + 1,
+         -basePlateRadius + baseChamfer + 0.5
+       ],
+       radius = 0.4,
+     )
+  |> patternCircular2d(center = [0, 0], instances = 4)
+
+mountingHoles02 = startSketchOn(XY)
+  |> circle(
+       center = [
+         -basePlateRadius + 0.5 + baseChamfer,
+         -basePlateRadius + 1
+       ],
+       radius = 0.4,
+     )
+  |> patternCircular2d(center = [0, 0], instances = 4)
+
+// Base Plate
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-basePlateRadius, -basePlateRadius])
+  |> angledLine(angle = 0, length = 2 * basePlateRadius, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2 * basePlateRadius, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = [mountingHoles01, mountingHoles02])
+  |> extrude(length = basePlateThickness)
+  |> chamfer(
+       length = baseChamfer,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Base Motor for actuating first joint
+sketch002 = startSketchOn(sketch001, face = END)
+  |> circle(center = [0, 0], radius = 4, tag = $referenceEdge)
+extrude002 = extrude(sketch002, length = baseHeight - basePlateThickness - 1.5)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
+sketch003 = startSketchOn(extrude002, face = END)
+  |> circle(center = [0, 0], radius = 0.5)
+extrude003 = extrude(sketch003, length = 1)
+  |> appearance(color = "#754110", roughness = 90, metalness = 90)

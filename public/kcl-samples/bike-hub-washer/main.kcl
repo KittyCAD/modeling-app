@@ -23,20 +23,49 @@ insideRingWidth = 3
 
 assert(bottomInnerRimWidth + bottomOuterRimWidth + bottomExtrusionWidth, isEqualTo = ringWidth)
 
-sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])
-  |> xLine(length = bottomInnerRimWidth)
-  |> yLine(length = -bottomHeight)
-  |> xLine(length = bottomExtrusionWidth)
-  |> yLine(length = bottomHeight)
-  |> xLine(length = bottomOuterRimWidth - 0.3)
-  |> yLine(length = bottomEdge)
-  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ringHeight])
-  |> xLine(length = -topRimWidth)
-  |> yLine(length = -topInset)
-  |> xLine(length = -2)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-
-revolve001 = revolve(profile001, angle = 360deg, axis = Y)
-sketch002 = startSketchOn(-XZ)
+hubSketch = sketch(on = XZ) {
+  line1 = line(start = [var 7.8mm, var 0mm], end = [var 9.8mm, var 0mm])
+  line2 = line(start = [var 9.8mm, var 0mm], end = [var 9.8mm, var -2mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 9.8mm, var -2mm], end = [var 11.8mm, var -2mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 11.8mm, var -2mm], end = [var 11.8mm, var 0mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 11.8mm, var 0mm], end = [var 14.5mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 14.5mm, var 0mm], end = [var 14.5mm, var 1mm])
+  coincident([line5.end, line6.start])
+  arc7 = arc(start = [var 11mm, var 7.5mm], end = [var 14.5mm, var 1mm], center = [var 30.3mm, var 13.7mm])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var 11mm, var 7.5mm], end = [var 9.8mm, var 7.5mm])
+  coincident([arc7.start, line8.start])
+  line9 = line(start = [var 9.8mm, var 7.5mm], end = [var 9.8mm, var 4.5mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 9.8mm, var 4.5mm], end = [var 7.8mm, var 4.5mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 7.8mm, var 4.5mm], end = [var 7.8mm, var 0mm])
+  coincident([line10.end, line11.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
+  vertical(line11)
+  horizontalDistance([line1.start, line1.end]) == bottomInnerRimWidth
+  verticalDistance([line2.end, line2.start]) == bottomHeight
+  horizontalDistance([line3.start, line3.end]) == bottomExtrusionWidth
+  verticalDistance([line4.start, line4.end]) == bottomHeight
+  horizontalDistance([line5.start, line5.end]) == bottomOuterRimWidth - 0.3
+  verticalDistance([line6.start, line6.end]) == bottomEdge
+  horizontalDistance([line8.end, line8.start]) == topRimWidth
+  verticalDistance([line9.end, line9.start]) == topInset
+  horizontalDistance([line10.end, line10.start]) == 2
+  verticalDistance([line11.end, line11.start]) == 4.5mm
+}
+hubRegion = region(segments = [hubSketch.line1, hubSketch.line2])
+hide(hubSketch)
+hubRevolve = revolve(hubRegion, angle = 360deg, axis = Y)

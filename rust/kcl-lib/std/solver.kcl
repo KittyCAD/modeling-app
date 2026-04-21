@@ -172,8 +172,9 @@ export fn circle(
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn coincident(
-  /// Two points, or one point and one line/arc segment, that should occupy the same location.
-  @points: [Segment | Point2d; 2],
+  /// Two or more sketch entities that should be coincident.
+  /// When more than two inputs are provided, each item must be a point or `ORIGIN`.
+  @points: [Segment | Point2d; 2+],
 ) {}
 
 /// Constrain the distance between two points.

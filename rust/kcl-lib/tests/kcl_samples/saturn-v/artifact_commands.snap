@@ -33,6 +33,15 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -81,11 +90,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": -100.0,
             "y": 9000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2000.0,
-            "y": -9000.0,
+            "x": -2400.0,
+            "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -127,8 +136,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -199,7 +212,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -293,7 +306,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -369,7 +382,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -445,7 +458,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -477,6 +490,15 @@ description: Artifact commands saturn-v.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -531,11 +553,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 9000.0,
+            "x": -100.0,
+            "y": 8500.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -548,11 +570,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2000.0,
-            "y": -9000.0,
+            "x": -2200.0,
+            "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -577,8 +599,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -649,7 +675,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_rpy": null,
@@ -743,7 +769,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -836,7 +862,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -929,7 +955,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -984,6 +1010,15 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1010,8 +1045,8 @@ description: Artifact commands saturn-v.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4230.0,
-          "y": 6020.0,
+          "x": -4000.0,
+          "y": 6000.0,
           "z": 0.0
         }
       }
@@ -1032,59 +1067,8 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3400.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 2200.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 3400.0,
-            "y": 3000.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4230.0,
-            "y": 6020.0,
+            "x": -7600.0,
+            "y": 6000.0,
             "z": 0.0
           },
           "relative": false
@@ -1095,8 +1079,63 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -7600.0,
+            "y": 8200.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -4000.0,
+            "y": 11200.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -4000.0,
+            "y": 6000.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1245,7 +1284,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -1321,7 +1360,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -1397,7 +1436,7 @@ description: Artifact commands saturn-v.kcl
               },
               "set": false,
               "origin": {
-                "type": "local"
+                "type": "global"
               }
             },
             "rotate_angle_axis": null,
@@ -1507,29 +1546,7 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 9000.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 4500.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": 0.0,
-            "y": -4500.0,
+            "y": 4500.0,
             "z": 0.0
           },
           "relative": false
@@ -1540,8 +1557,37 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000002755455298081545,
+            "y": -0.0
+          },
+          "radius": 4500.0,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1685,29 +1731,7 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 9000.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -4500.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": 0.0,
-            "y": -4500.0,
+            "y": 4500.0,
             "z": 0.0
           },
           "relative": false
@@ -1718,8 +1742,37 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000002755455298081545,
+            "y": -0.0
+          },
+          "radius": 4500.0,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 270.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1906,12 +1959,12 @@ description: Artifact commands saturn-v.kcl
           },
           "radius": 4500.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1921,8 +1974,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2104,29 +2161,7 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9000.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 4500.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": -4500.0,
+            "x": 4500.0,
             "y": 0.0,
             "z": 0.0
           },
@@ -2138,8 +2173,37 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0,
+            "y": -0.0
+          },
+          "radius": 4500.0,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2282,29 +2346,7 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9000.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": -4500.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": -4500.0,
+            "x": 4500.0,
             "y": 0.0,
             "z": 0.0
           },
@@ -2316,8 +2358,37 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0,
+            "y": -0.0
+          },
+          "radius": 4500.0,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -180.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2504,12 +2575,12 @@ description: Artifact commands saturn-v.kcl
           },
           "radius": 4500.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2519,8 +2590,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2707,12 +2782,12 @@ description: Artifact commands saturn-v.kcl
           },
           "radius": 4500.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2722,8 +2797,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2834,6 +2913,15 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2883,10 +2971,10 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": -4500.0,
-            "y": 0.0,
+            "y": 64000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2899,11 +2987,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 649.9999999999999,
-            "y": 2500.0,
+            "x": -3850.0,
+            "y": 66500.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2945,8 +3033,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -3022,6 +3114,40 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3071,10 +3197,10 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": -4500.0,
-            "y": 0.0,
+            "y": 64000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3087,11 +3213,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 649.9999999999999,
-            "y": 2500.0,
+            "x": -3850.0,
+            "y": 66500.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3133,8 +3259,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -3235,6 +3365,15 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3284,10 +3423,10 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": -3850.0,
-            "y": 0.0,
+            "y": 66500.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3300,11 +3439,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 649.9999999999999,
-            "y": 2500.0,
+            "x": -3200.0,
+            "y": 69000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3346,8 +3485,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -3423,6 +3566,40 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3472,10 +3649,10 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": -3850.0,
-            "y": 0.0,
+            "y": 66500.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3488,11 +3665,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 649.9999999999999,
-            "y": 2500.0,
+            "x": -3200.0,
+            "y": 69000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3534,8 +3711,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -3712,12 +3893,12 @@ description: Artifact commands saturn-v.kcl
           },
           "radius": 3200.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -3727,8 +3908,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -3915,12 +4100,12 @@ description: Artifact commands saturn-v.kcl
           },
           "radius": 3200.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -3930,8 +4115,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -4042,6 +4231,15 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -4091,10 +4289,10 @@ description: Artifact commands saturn-v.kcl
           "type": "line",
           "end": {
             "x": -3200.0,
-            "y": 0.0,
+            "y": 80000.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4107,11 +4305,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1750.0,
-            "y": 7200.0,
+            "x": -1450.0,
+            "y": 87200.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4124,11 +4322,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 4000.0,
+            "x": -1450.0,
+            "y": 91200.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4141,11 +4339,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1000.0,
-            "y": 1200.0,
+            "x": -450.0,
+            "y": 92400.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4158,11 +4356,11 @@ description: Artifact commands saturn-v.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 7000.0,
+            "x": -450.0,
+            "y": 99400.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4204,8 +4402,12 @@ description: Artifact commands saturn-v.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
