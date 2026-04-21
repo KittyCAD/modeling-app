@@ -19,7 +19,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getNodeFromPath,
-  getSketchSegmentName,
+  getRegionTagExprFromSegmentId,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -446,35 +446,22 @@ function getRegionSketchTagExprFromSourceSurface(
     return null
   }
 
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
-  if (edgeArtifact.type === 'segment') {
-    segmentArtifact = edgeArtifact
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: edgeArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      segmentArtifact = segment
-    }
-  }
-  if (!segmentArtifact) {
+  const segmentId =
+    edgeArtifact.type === 'segment'
+      ? edgeArtifact.id
+      : edgeArtifact.type === 'sweepEdge'
+        ? edgeArtifact.segId
+        : null
+  if (!segmentId) {
     return null
   }
 
-  const sketchSegmentName = getSketchSegmentName(
+  return getRegionTagExprFromSegmentId(
     ast,
-    segmentArtifact.originalSegId ?? segmentArtifact.id,
+    segmentId,
     artifactGraph,
-    wasmInstance
-  )
-  if (!sketchSegmentName) {
-    return null
-  }
-
-  return createMemberExpression(
-    createMemberExpression(sweepInput.name.name, 'tags'),
-    sketchSegmentName
+    wasmInstance,
+    sweepInput.name.name
   )
 }
 

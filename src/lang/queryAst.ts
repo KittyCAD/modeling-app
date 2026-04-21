@@ -1933,3 +1933,71 @@ export function getSketchSegmentName(
 
   return null
 }
+
+/**
+ * Builds a region-tag member expression for a sketch-solve segment, e.g.
+ * region001.tags.line2.
+ *
+ * If regionNameOverride is provided, the region name comes from that value.
+ * Otherwise, this attempts to infer the region variable from the segment's
+ * VariableDeclaration path.
+ */
+export function getRegionTagExprFromSegmentId(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  regionNameOverride?: string
+): Expr | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segment)) {
+    return null
+  }
+  if (!segment.originalSegId || segment.originalSegId === segment.id) {
+    return null
+  }
+
+  const regionName = (() => {
+    if (regionNameOverride) {
+      return regionNameOverride
+    }
+
+    const regionVarDec = getNodeFromPath<VariableDeclaration>(
+      ast,
+      segment.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (
+      err(regionVarDec) ||
+      regionVarDec.node.type !== 'VariableDeclaration' ||
+      regionVarDec.node.declaration.init.type !== 'CallExpressionKw' ||
+      regionVarDec.node.declaration.init.callee.name.name !== 'region'
+    ) {
+      return null
+    }
+
+    return regionVarDec.node.declaration.id.name
+  })()
+  if (!regionName) {
+    return null
+  }
+
+  const originalSegName = getSketchSegmentName(
+    ast,
+    segment.originalSegId,
+    artifactGraph,
+    wasmInstance
+  )
+  if (!originalSegName) {
+    return null
+  }
+
+  return createMemberExpression(
+    createMemberExpression(regionName, 'tags'),
+    originalSegName
+  )
+}
