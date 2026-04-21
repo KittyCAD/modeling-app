@@ -30,6 +30,8 @@ layout: manual
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
   * [`gdt::datum`](/docs/kcl-std-sketch-solve/functions/std-gdt-datum)
   * [`gdt::flatness`](/docs/kcl-std-sketch-solve/functions/std-gdt-flatness)
+* [**std::gear**](/docs/kcl-std/modules/std-gear)
+  * [`gear::helical`](/docs/kcl-std-sketch-solve/functions/std-gear-helical)
 * [**std::hole**](/docs/kcl-std/modules/std-hole)
   * [`hole::blind`](/docs/kcl-std-sketch-solve/functions/std-hole-blind)
   * [`hole::counterbore`](/docs/kcl-std-sketch-solve/functions/std-hole-counterbore)

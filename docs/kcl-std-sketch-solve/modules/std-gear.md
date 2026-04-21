@@ -12,4 +12,7 @@ Define gears that users can include in their models.
 
 
 
+## Functions and constants
+
+* [`gear::helical`](/docs/kcl-std-sketch-solve/functions/std-gear-helical)
 
