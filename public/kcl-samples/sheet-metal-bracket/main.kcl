@@ -32,69 +32,199 @@ flangeExtrusion = if mountingBoltPatternY > componentBoltPatternY {
 }
 
 // Draw the extrusion profile of the sheet metal bracket
-bracketProfile = startSketchOn(XZ)
-  |> startProfile(at = [
-       -mountingBoltPatternX / 2 - overhang,
-       0
-     ])
-  |> xLine(length = flangeLength)
-  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
-  |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
-  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle, tag = $seg02)
-  |> line(endAbsolute = [-segEnd(seg02)[0], segEnd(seg02)[1]])
-  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
-  |> angledLine(angle = -bendAngle, length = segLen(seg01))
-  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
-  |> xLine(length = flangeLength)
-  |> yLine(length = thickness, tag = $seg03)
-  |> xLine(length = -flangeLength, tag = $seg04)
-  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
-  |> angledLine(angle = 180deg - bendAngle, length = segLen(seg01))
-  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle, tag = $seg05)
-  |> line(endAbsolute = [-segEnd(seg05)[0], segEnd(seg05)[1]], tag = $holeFace)
-  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
-  |> angledLine(angle = bendAngle - 180deg, length = segLen(seg01))
-  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
-  |> xLine(length = -flangeLength, tag = $seg06)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
-  |> close()
-  |> extrude(length = flangeExtrusion)
-  |> fillet(
-       radius = flangeLength / 3,
-       tags = [
-         seg03,
-         getOppositeEdge(seg03),
-         seg07,
-         getOppositeEdge(seg07)
-       ],
-     )
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -4.25in, var 0in], end = [var -2.75in, var 0in])
+  arc2 = arc(start = [var -2.75in, var 0in], end = [var -2.51in, var 0.19in], center = [var -2.75in, var 0.25in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -2.51in, var 0.19in], end = [var -1.92in, var 2.38in])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -1.8in, var 2.47in], end = [var -1.92in, var 2.38in], center = [var -1.8in, var 2.35in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -1.8in, var 2.47in], end = [var 1.8in, var 2.47in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var 1.92in, var 2.38in], end = [var 1.8in, var 2.47in], center = [var 1.8in, var 2.35in])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var 1.92in, var 2.38in], end = [var 2.51in, var 0.19in])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var 2.51in, var 0.19in], end = [var 2.75in, var 0in], center = [var 2.75in, var 0.25in])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var 2.75in, var 0in], end = [var 4.25in, var 0in])
+  coincident([arc8.end, line9.start])
+  line10 = line(start = [var 4.25in, var 0in], end = [var 4.25in, var 0.12in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 4.25in, var 0.12in], end = [var 2.75in, var 0.12in])
+  coincident([line10.end, line11.start])
+  arc12 = arc(start = [var 2.63in, var 0.21in], end = [var 2.75in, var 0.12in], center = [var 2.75in, var 0.25in])
+  coincident([line11.end, arc12.end])
+  line13 = line(start = [var 2.63in, var 0.21in], end = [var 2.04in, var 2.41in])
+  coincident([arc12.start, line13.start])
+  arc14 = arc(start = [var 2.04in, var 2.41in], end = [var 1.8in, var 2.59in], center = [var 1.8in, var 2.34in])
+  coincident([line13.end, arc14.start])
+  line15 = line(start = [var 1.8in, var 2.59in], end = [var -1.8in, var 2.59in])
+  coincident([arc14.end, line15.start])
+  arc16 = arc(start = [var -1.8in, var 2.59in], end = [var -2.05in, var 2.4in], center = [var -1.8in, var 2.34in])
+  coincident([line15.end, arc16.start])
+  line17 = line(start = [var -2.05in, var 2.4in], end = [var -2.63in, var 0.21in])
+  coincident([arc16.end, line17.start])
+  arc18 = arc(start = [var -2.75in, var 0.11in], end = [var -2.63in, var 0.21in], center = [var -2.75in, var 0.24in])
+  coincident([line17.end, arc18.end])
+  line19 = line(start = [var -2.75in, var 0.11in], end = [var -4.25in, var 0.11in])
+  coincident([arc18.start, line19.start])
+  line20 = line(start = [var -4.25in, var 0.11in], end = [var -4.25in, var 0.11in])
+  coincident([line19.end, line20.start])
+  line21 = line(start = [var -4.25in, var 0.11in], end = [var -4.25in, var 0in])
+  coincident([line21.start, line19.end])
+  coincident([line21.end, line1.start])
+  tangent([line1, arc2])
+  tangent([line3, arc2])
+  tangent([line3, arc4])
+  tangent([line5, arc4])
+  tangent([line5, arc6])
+  tangent([line7, arc6])
+  tangent([line7, arc8])
+  tangent([line9, arc8])
+  tangent([line9, arc8])
+  tangent([line11, arc12])
+  tangent([line13, arc12])
+  tangent([line13, arc14])
+  tangent([line15, arc14])
+  tangent([line15, arc16])
+  tangent([line17, arc16])
+  tangent([line17, arc18])
+  tangent([line19, arc18])
+  horizontal(line19)
+  horizontal(line20)
+  horizontal(line5)
+  horizontal(line15)
+  horizontal(line9)
+  horizontal(line11)
+  equalLength([line3, line17, line7, line13])
+  equalLength([line11, line9, line1, line19])
+  equalLength([line5, line15])
+  line2 = line(start = [var -4.25in, var 0in], end = [var 4.25in, var 0in], construction = true)
+  coincident([line2.start, line1.start])
+  coincident([line2.end, line10.start])
+  distance([line2.start, line2.end]) == mountingBoltPatternX * 1.2
+  parallel([line3, line17])
+  parallel([line7, line13])
+  vertical(line21)
+  vertical(line10)
+}
+region0011 = region(segments = [sketch001.line1, sketch001.arc2])
+bracketProfile = extrude(
+  region0011,
+  symmetric = true,
+  length = flangeExtrusion,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
 
 // Cut the bolt pattern in the left base flange
-leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
-  |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
-  |> extrude(length = -thickness)
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -7.55in, var -5.79in], end = [var 7.55in, var -5.79in], construction = true)
+  line2 = line(start = [var 7.55in, var -5.79in], end = [var 7.55in, var 5.79in], construction = true)
+  line3 = line(start = [var 7.55in, var 5.79in], end = [var -7.55in, var 5.79in], construction = true)
+  line4 = line(start = [var -7.55in, var 5.79in], end = [var -7.55in, var -5.79in], construction = true)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -16.76in, var -13.56in], end = [var 16.76in, var -13.56in], construction = true)
+  line6 = line(start = [var 16.76in, var -13.56in], end = [var 16.76in, var 13.56in], construction = true)
+  line7 = line(start = [var 16.76in, var 13.56in], end = [var -16.76in, var 13.56in], construction = true)
+  line8 = line(start = [var -16.76in, var 13.56in], end = [var -16.76in, var -13.56in], construction = true)
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+  parallel([line6, line8])
+  parallel([line7, line5])
+  perpendicular([line5, line6])
+  horizontal(line7)
+  line9 = line(start = [var -16.76in, var 13.56in], end = [var -0in, var -0in], construction = true)
+  coincident([line9.start, line8.start])
+  coincident([line9.end, ORIGIN])
+  line10 = line(start = [var -0in, var -0in], end = [var 16.76in, var -13.56in], construction = true)
+  coincident([line10.start, line9.end])
+  coincident([line10.end, line6.start])
+  line11 = line(start = [var 7.55in, var 5.79in], end = [var -0in, var -0in], construction = true)
+  coincident([line11.start, line3.start])
+  coincident([line11.end, line10.start])
+  line12 = line(start = [var -0in, var -0in], end = [var -7.55in, var -5.79in], construction = true)
+  coincident([line12.start, line11.end])
+  coincident([line12.end, line4.end])
+  parallel([line9, line10])
+  equalLength([line9, line10])
+  parallel([line12, line11])
+  equalLength([line12, line11])
+  distance([line5.start, line5.end]) == mountingBoltPatternX
+  distance([line6.start, line6.end]) == mountingBoltPatternY
+  distance([line1.start, line1.end]) == componentBoltPatternX
+  distance([line2.start, line2.end]) == componentBoltPatternY
+  circle1 = circle(start = [var -20.7in, var 15.39in], center = [var -16.76in, var 13.56in])
+  coincident([circle1.center, line9.start])
+  circle2 = circle(start = [var -19.36in, var -17.22in], center = [var -16.76in, var -13.56in])
+  coincident([circle2.center, line8.end])
+  circle3 = circle(start = [var 20.08in, var -16.61in], center = [var 16.76in, var -13.56in])
+  coincident([circle3.center, line10.end])
+  circle4 = circle(start = [var 21.35in, var 10.44in], center = [var 16.76in, var 13.56in])
+  coincident([circle4.center, line7.start])
+  circle5 = circle(start = [var 10.28in, var 3.88in], center = [var 7.55in, var 5.79in])
+  coincident([circle5.center, line11.start])
+  circle6 = circle(start = [var -9.18in, var 3.96in], center = [var -7.55in, var 5.79in])
+  coincident([circle6.center, line4.start])
+  circle7 = circle(start = [var -6.26in, var -8.07in], center = [var -7.55in, var -5.79in])
+  coincident([circle7.center, line12.end])
+  circle8 = circle(start = [var 7.14in, var -8.3in], center = [var 7.55in, var -5.79in])
+  coincident([circle8.center, line2.start])
+  radius(circle1) == mountingBoltDiameter
+  radius(circle4) == mountingBoltDiameter
+  radius(circle3) == mountingBoltDiameter
+  radius(circle2) == mountingBoltDiameter
+  radius(circle7) == componentBoltDiameter
+  radius(circle6) == componentBoltDiameter
+  radius(circle5) == componentBoltDiameter
+  radius(circle8) == componentBoltDiameter
+  circle9 = circle(start = [var -0.14in, var 1.01in], center = [var 0in, var 0in])
+  coincident([circle9.center, line12.start])
+}
 
-// Cut the bolt pattern in the right base flange
-rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
-  |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
-  |> extrude(length = -thickness)
+region001 = region(point = [-83.5119mm, -54.1555mm], sketch = sketch002)
+region002 = region(point = [-91.277mm, 44.9144mm], sketch = sketch002)
+region003 = region(point = [-21.77mm, 35.021mm], sketch = sketch002)
+region004 = region(point = [-21.3146mm, -35.6573mm], sketch = sketch002)
+region005 = region(point = [20.724mm, -37.2099mm], sketch = sketch002)
+region006 = region(point = [22.5716mm, 34.2714mm], sketch = sketch002)
+region007 = region(point = [85.2549mm, 45.6035mm], sketch = sketch002)
+region008 = region(point = [82.8907mm, -52.8442mm], sketch = sketch002)
+region009 = region(point = [0mm, 0mm], sketch = sketch002)
+extrude001 = extrude(
+  [
+    region001,
+    region002,
+    region003,
+    region004,
+    region005,
+    region006,
+    region007,
+    region008,
+    region009
+  ],
+  length = hatHeight * 3,
+  symmetric = true,
+)
 
-// Provision the top flange with holes to mount an object
-topFlangeBoltPattern = startSketchOn(bracketProfile, face = holeFace)
-  |> circle(
-       center = [
-         -componentBoltPatternX / 2,
-         -componentBoltPatternY / 2 + flangeExtrusion / 2
+solid001 = subtract(bracketProfile, tools = extrude001)
+  |> fillet(
+       tags = [
+         getCommonEdge(faces = [region0011.tags.arc2, capEnd001]),
+         getCommonEdge(faces = [region0011.tags.line11, capEnd001]),
+         getCommonEdge(faces = [region0011.tags.line11, capStart001]),
+         getCommonEdge(faces = [region0011.tags.arc2, capStart001])
        ],
-       radius = componentBoltDiameter / 2,
+       radius = flangeLength / 3,
      )
-  |> patternLinear2d(instances = 2, distance = componentBoltPatternX, axis = [1, 0])
-  |> patternLinear2d(instances = 2, distance = componentBoltPatternY, axis = [0, 1])
-  |> extrude(length = -thickness)
-
-// Place a hole at the center of the component bolt pattern to reduce mass
-centeredHole = startSketchOn(bracketProfile, face = holeFace)
-  |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
-  |> extrude(length = -thickness)

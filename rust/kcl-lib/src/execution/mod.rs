@@ -350,6 +350,105 @@ pub struct SketchConstraintReport {
     pub errors: Vec<SketchConstraintStatus>,
 }
 
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+    use crate::front::ObjectKind;
+    use crate::front::Segment;
+
+    // Closure to look up a point's freedom by ObjectId.
+    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+        let obj = scene_objects.get(id.0)?;
+        if let ObjectKind::Segment {
+            segment: Segment::Point(p),
+        } = &obj.kind
+        {
+            Some(p.freedom())
+        } else {
+            None
+        }
+    };
+
+    let mut fully_constrained = Vec::new();
+    let mut under_constrained = Vec::new();
+    let mut over_constrained = Vec::new();
+    let mut errors = Vec::new();
+
+    for obj in scene_objects {
+        let ObjectKind::Sketch(sketch) = &obj.kind else {
+            continue;
+        };
+
+        let mut free_count: usize = 0;
+        let mut conflict_count: usize = 0;
+        let mut error_count: usize = 0;
+        let mut total_count: usize = 0;
+
+        for &seg_id in &sketch.segments {
+            let Some(seg_obj) = scene_objects.get(seg_id.0) else {
+                continue;
+            };
+            let ObjectKind::Segment { segment } = &seg_obj.kind else {
+                continue;
+            };
+            // Skip owned points — their freedom is already captured by
+            // the parent geometry (Line/Arc/Circle) that looks them up.
+            if let Segment::Point(p) = segment
+                && p.owner.is_some()
+            {
+                continue;
+            }
+            let freedom = segment
+                .freedom(lookup)
+                .map(SegmentFreedom::from)
+                .unwrap_or(SegmentFreedom::Error);
+            total_count += 1;
+            match freedom {
+                SegmentFreedom::Free => free_count += 1,
+                SegmentFreedom::Conflict => conflict_count += 1,
+                SegmentFreedom::Error => error_count += 1,
+                SegmentFreedom::Fixed => {}
+            }
+        }
+
+        // Note: a sketch with no countable segments (total_count == 0)
+        // is reported as FullyConstrained. This is vacuously true — there
+        // are no free or conflicting segments, so it satisfies the
+        // definition. Callers can check total_count == 0 to distinguish
+        // this from a genuinely constrained sketch.
+        let status = if error_count > 0 {
+            ConstraintKind::Error
+        } else if conflict_count > 0 {
+            ConstraintKind::OverConstrained
+        } else if free_count > 0 {
+            ConstraintKind::UnderConstrained
+        } else {
+            ConstraintKind::FullyConstrained
+        };
+
+        let entry = SketchConstraintStatus {
+            name: obj.label.clone(),
+            status,
+            free_count,
+            conflict_count,
+            total_count,
+        };
+
+        match status {
+            ConstraintKind::FullyConstrained => fully_constrained.push(entry),
+            ConstraintKind::UnderConstrained => under_constrained.push(entry),
+            ConstraintKind::OverConstrained => over_constrained.push(entry),
+            ConstraintKind::Error => errors.push(entry),
+        }
+    }
+
+    SketchConstraintReport {
+        fully_constrained,
+        under_constrained,
+        over_constrained,
+        errors,
+    }
+}
+
 impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
         #[cfg(feature = "artifact-graph")]
@@ -382,101 +481,7 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        use crate::front::ObjectKind;
-        use crate::front::Segment;
-
-        // Closure to look up a point's freedom by ObjectId.
-        let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
-            let obj = self.scene_objects.get(id.0)?;
-            if let ObjectKind::Segment {
-                segment: Segment::Point(p),
-            } = &obj.kind
-            {
-                Some(p.freedom())
-            } else {
-                None
-            }
-        };
-
-        let mut fully_constrained = Vec::new();
-        let mut under_constrained = Vec::new();
-        let mut over_constrained = Vec::new();
-        let mut errors = Vec::new();
-
-        for obj in &self.scene_objects {
-            let ObjectKind::Sketch(sketch) = &obj.kind else {
-                continue;
-            };
-
-            let mut free_count: usize = 0;
-            let mut conflict_count: usize = 0;
-            let mut error_count: usize = 0;
-            let mut total_count: usize = 0;
-
-            for &seg_id in &sketch.segments {
-                let Some(seg_obj) = self.scene_objects.get(seg_id.0) else {
-                    continue;
-                };
-                let ObjectKind::Segment { segment } = &seg_obj.kind else {
-                    continue;
-                };
-                // Skip owned points — their freedom is already captured by
-                // the parent geometry (Line/Arc/Circle) that looks them up.
-                if let Segment::Point(p) = segment
-                    && p.owner.is_some()
-                {
-                    continue;
-                }
-                let freedom = segment
-                    .freedom(lookup)
-                    .map(SegmentFreedom::from)
-                    .unwrap_or(SegmentFreedom::Error);
-                total_count += 1;
-                match freedom {
-                    SegmentFreedom::Free => free_count += 1,
-                    SegmentFreedom::Conflict => conflict_count += 1,
-                    SegmentFreedom::Error => error_count += 1,
-                    SegmentFreedom::Fixed => {}
-                }
-            }
-
-            // Note: a sketch with no countable segments (total_count == 0)
-            // is reported as FullyConstrained. This is vacuously true — there
-            // are no free or conflicting segments, so it satisfies the
-            // definition. Callers can check total_count == 0 to distinguish
-            // this from a genuinely constrained sketch.
-            let status = if error_count > 0 {
-                ConstraintKind::Error
-            } else if conflict_count > 0 {
-                ConstraintKind::OverConstrained
-            } else if free_count > 0 {
-                ConstraintKind::UnderConstrained
-            } else {
-                ConstraintKind::FullyConstrained
-            };
-
-            let entry = SketchConstraintStatus {
-                name: obj.label.clone(),
-                status,
-                free_count,
-                conflict_count,
-                total_count,
-            };
-
-            match status {
-                ConstraintKind::FullyConstrained => fully_constrained.push(entry),
-                ConstraintKind::UnderConstrained => under_constrained.push(entry),
-                ConstraintKind::OverConstrained => over_constrained.push(entry),
-                ConstraintKind::Error => errors.push(entry),
-            }
-        }
-
-        SketchConstraintReport {
-            fully_constrained,
-            under_constrained,
-            over_constrained,
-            errors,
-        }
+        sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 }
 

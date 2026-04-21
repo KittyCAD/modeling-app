@@ -1365,6 +1365,22 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await applyConstraintStep({
+      label: 'coincident 3 points',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+        await clickPoint('11')
+      },
+      apply: async () => {
+        await page.getByTestId('coincident').click()
+      },
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+        expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
+      },
+    })
+
+    await applyConstraintStep({
       label: 'tangent',
       select: async () => {
         await clickMidpoint('11', '12')
@@ -1795,6 +1811,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
       )
@@ -1896,6 +1913,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion uses inches for region point', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
       )
@@ -1919,6 +1937,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -1981,6 +2000,7 @@ extrude001 = extrude(region001, length = 5)`
     tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.35, {

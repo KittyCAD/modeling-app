@@ -36,7 +36,9 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
-import { isArray } from '@src/lib/utils'
+import { isArray, type Platform } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -55,6 +57,7 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { commands } = useApp()
     const { kclManager } = useSingletons()
+    const platform = usePlatform()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -326,6 +329,7 @@ const Toolbar_ = memo(
                   data-onboarding-id={selectedIcon.id + '-dropdown'}
                   id={selectedIcon.id + '-dropdown'}
                   name={maybeIconConfig.id}
+                  platform={platform}
                   className={
                     (maybeIconConfig.array[0].alwaysDark
                       ? 'dark bg-chalkboard-90 '
@@ -408,12 +412,14 @@ const Toolbar_ = memo(
                           <ToolbarItemTooltipRichContent
                             itemConfig={selectedIcon}
                             state={props.state}
+                            platform={platform}
                           />
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
                             title={selectedIcon.title}
                             hotkey={selectedIcon.hotkey}
+                            platform={platform}
                           />
                         )}
                       </ToolbarItemTooltip>
@@ -484,12 +490,14 @@ const Toolbar_ = memo(
                     <ToolbarItemTooltipRichContent
                       itemConfig={itemConfig}
                       state={props.state}
+                      platform={platform}
                     />
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
                       title={itemConfig.title}
                       hotkey={itemConfig.hotkey}
+                      platform={platform}
                     />
                   )}
                 </ToolbarItemTooltip>
@@ -567,10 +575,12 @@ const ToolbarItemTooltipShortContent = ({
   status,
   title,
   hotkey,
+  platform,
 }: {
   status: string
   title: string
   hotkey?: string | string[]
+  platform: Platform
 }) => (
   <div
     className={`text-sm flex flex-col ${
@@ -589,7 +599,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {filterEscHotkey(hotkey)}
+          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
         </kbd>
       )}
     </div>
@@ -600,9 +610,11 @@ const ToolbarItemTooltipRichContent = memo(
   ({
     itemConfig,
     state,
+    platform,
   }: {
     itemConfig: ToolbarItemResolved
     state: ReturnType<typeof useModelingContext>['state']
+    platform: Platform
   }) => {
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
@@ -633,7 +645,9 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+            <kbd className="flex-none hotkey">
+              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
+            </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">

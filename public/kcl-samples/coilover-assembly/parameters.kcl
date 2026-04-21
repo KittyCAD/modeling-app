@@ -2,37 +2,45 @@
 // Key dimensional parameters for all parts in the coilover assembly. These are imported into the kcl part files. Key parameters include retainer plate, eye mount, spring and piston rod dimensions.
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Coilover Bottom (coilover-bottom.kcl)
-export retainerPlateDia = 70
-export retainerPlateLength = 6.3
-export baseSeatingDia = 55
-export baseSeatingLength = 5
-export lowerMountDia = 38
-export damperBodyLength = 51
-export lowerMountLength = 92
-export eyeEndMountOuterDia = 25
-export eyeEndMountLength = eyeEndMountOuterDia / 2 + 30
-export eyeEndMountHoleDia = 12.5
-export eyeEndMountThickness = 12.7
-export eyeEndMountFillet = 5
-export damperBodyDia = lowerMountDia
-export pistonShaftHoleDia = 10
-export lengthBelowRetainerPlate = baseSeatingLength + lowerMountLength + eyeEndMountLength
-export lowerMountOverallLength = lengthBelowRetainerPlate + retainerPlateLength
-export pointOffset = 20 // Used to help build profile for subtraction
-
+export retainerPlateLength = 6.3mm
+export retainerPlateRadius = 35mm
+export retainerPlateChamfer = 3.7mm
+export baseSeatingLength = 5mm
+export baseSeatingRadius = 27.5mm
+export lowerMountLength = 92mm
+export lowerMountRadius = 19mm
+export lowerMountChamfer = 3mm
+export eyeEndMountRadius = 12.5mm
+export eyeEndMountLength = eyeEndMountRadius + 30mm
+export eyeEndTipFillet = eyeEndMountRadius - 0.01mm
+export eyeEndRootFillet = 3mm
+export eyeEndOuterHalfWidth = 31.35mm
+export eyeEndShoulderHalfWidth = 11.35mm
+export eyeEndSlotHalfWidth = 6.35mm
+export eyeEndCutTop = -114.5mm
+export eyeEndCutBottom = -144.5mm
+export eyeEndSlotTop = -119.5mm
+export eyeEndSlotBottom = -141.5mm
+export eyeEndShoulderRadius = 5mm
+export eyeEndCutThickness = 30mm
+export damperBodyLength = 51mm
+export pistonShaftHoleRadius = 5mm
 
 // Coilover Spring (spring.kcl)
-export springRadius = 22
-export springLength = 200
+export springRadius = 22mm
+export springLength = 200mm
 export springRevolutions = 8
-export coilThickness = 6
+export coilThickness = 6mm
 
 // Coilover Top (coilover-top.kcl)
-export pistonRodStopDia = 25
-export pistonRodStopLength = 32.5
-export upperMountPlateDia = 70
-export upperMountPlateThickness = 22.5
-export pistonShaftDia = pistonShaftHoleDia - 0.1 // reduced shaft dia from the hole to provide some clearance
+export upperPistonRodStopLength = 32.5mm
+export upperPistonRodRadius = 4.95mm
+export upperMountPlateThickness = 22.5mm
+export upperEyeEndCutTop = 40mm
+export upperEyeEndCutBottom = 70mm
+export upperEyeEndSlotTop = 45mm
+export upperEyeEndSlotBottom = 67mm
+export upperEyeEndHoleCenterZ = 52.5mm

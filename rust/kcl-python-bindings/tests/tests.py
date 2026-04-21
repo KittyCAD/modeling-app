@@ -576,6 +576,31 @@ s2 = sketch(on = XZ) {
 }
 """
 
+execution_error_after_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+extrude(missing_sketch, length = 5mm)
+"""
+
+parse_error_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+"""
+
 
 @requires_engine
 @pytest.mark.asyncio
@@ -585,6 +610,8 @@ async def test_sketch_constraint_status_fully_constrained():
     assert len(report.under_constrained) == 0
     assert len(report.over_constrained) == 0
     assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
     assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
     assert report.total_sketches() == 1
 
@@ -609,3 +636,35 @@ async def test_sketch_constraint_status_mixed():
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 1
     assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_parse_error_returns_report():
+    report = await kcl.get_sketch_constraint_status_code(parse_error_sketch_code)
+    assert report.total_sketches() == 0
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "parse"
+    assert "KCL Syntax error" in report.kcl_error.text
+    assert "Unexpected token" in report.kcl_error.text
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_execution_error_returns_partial_report():
+    report = await kcl.get_sketch_constraint_status_code(execution_error_after_sketch_code)
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text

@@ -33,6 +33,15 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -82,29 +91,7 @@ description: Artifact commands lattice-cubic.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 10.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 5.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": 0.0,
-            "y": -5.0,
+            "y": 5.0,
             "z": 0.0
           },
           "relative": false
@@ -115,8 +102,37 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000000003061616997868383,
+            "y": -0.0
+          },
+          "radius": 5.0,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 270.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -169,6 +185,15 @@ description: Artifact commands lattice-cubic.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1092,7 +1117,7 @@ description: Artifact commands lattice-cubic.kcl
         "type": "make_plane",
         "origin": {
           "x": 0.0,
-          "y": 0.0,
+          "y": -0.001,
           "z": 0.0
         },
         "x_axis": {
@@ -1105,9 +1130,32 @@ description: Artifact commands lattice-cubic.kcl
           "y": 0.0,
           "z": 1.0
         },
-        "size": 60.0,
+        "size": 100.0,
         "clobber": false,
-        "hide": true
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1167,12 +1215,12 @@ description: Artifact commands lattice-cubic.kcl
           },
           "radius": 0.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1182,8 +1230,12 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1246,6 +1298,41 @@ description: Artifact commands lattice-cubic.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": -0.001,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1595,662 +1682,6 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "set_object_transform",
         "object_id": "[uuid]",
         "transforms": [
@@ -2309,25 +1740,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
-                "y": 0.0,
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": 20.0,
                 "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": 40.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -2335,25 +1809,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
+          [
+            {
+              "translate": {
+                "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 20.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 40.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -2361,25 +1878,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
+          [
+            {
+              "translate": {
+                "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 20.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 40.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -2387,530 +1947,69 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
+          [
+            {
+              "translate": {
+                "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 20.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 40.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 0.0
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 0.0
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "replicate": true
+            }
+          ]
         ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 40.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_clone",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
       }
     },
     {
@@ -3003,59 +2102,90 @@ description: Artifact commands lattice-cubic.kcl
         "object_id": "[uuid]",
         "transforms": [
           {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
+            "translate": {
               "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
+                "x": 0.0,
+                "y": 40.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
-                "type": "custom",
-                "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": [
+          [
+            {
+              "translate": {
+                "x": 20.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
                 "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 40.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
                 }
-              }
-            },
-            "scale": null
-          }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -3063,63 +2193,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -20.0,
+                "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
                 "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
                 }
-              }
-            },
-            "scale": null
-          }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -3127,63 +2262,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -20.0,
+                "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
                 "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
                 }
-              }
-            },
-            "scale": null
-          }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -3191,297 +2331,68 @@ description: Artifact commands lattice-cubic.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -20.0,
+                "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "custom",
-                "origin": {
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
-                }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 90.0
-              },
-              "set": false,
-              "origin": {
-                "type": "custom",
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
                 "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ],
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
                 }
-              }
-            },
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "global"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "replicate": true
+            }
+          ]
         ]
       }
     }

@@ -1,0 +1,85 @@
+// M4 Heat-Set Insert
+// Simplified M4 heat-set threaded insert with stepped outer retention features, a tapered lead-in section, and a plain inner bore for envelope and fit modeling.
+// Categories: Fasteners
+
+@settings(defaultLengthUnit = mm)
+
+insertBodyMaxDiameter = 6.3
+insertGuideDiameter = 3.11
+insertLowerBandDiameter = 5.5
+insertOverallHeight = 8.1
+
+topSectionHeight = 2.28
+midSectionHeight = 2.4
+bottomSectionHeight = 1.16
+ribWidth = 0.6
+taperAngle = 60deg
+
+insertColorHex = "#ff7e29"
+insertMetalness = 100
+insertRoughness = 50
+
+insertProfileSketch = sketch(on = XY) {
+  outerTopWall = line(start = [var -3.15mm, var 0mm], end = [var -3.15mm, var -2.28mm])
+  topShoulder = line(start = [var -3.15mm, var -2.28mm], end = [var -2.55mm, var -2.28mm])
+  coincident([outerTopWall.end, topShoulder.start])
+  upperNeckWall = line(start = [var -2.55mm, var -2.28mm], end = [var -2.55mm, var -3.13mm])
+  coincident([topShoulder.end, upperNeckWall.start])
+  upperRib = line(start = [var -2.55mm, var -3.13mm], end = [var -3.11mm, var -3.13mm])
+  coincident([upperNeckWall.end, upperRib.start])
+  midWall = line(start = [var -3.11mm, var -3.13mm], end = [var -3.11mm, var -5.53mm])
+  coincident([upperRib.end, midWall.start])
+  taperFlank = line(start = [var -3.11mm, var -5.53mm], end = [var -2.15mm, var -6.09mm])
+  coincident([midWall.end, taperFlank.start])
+  lowerNeckWall = line(start = [var -2.15mm, var -6.09mm], end = [var -2.15mm, var -6.94mm])
+  coincident([taperFlank.end, lowerNeckWall.start])
+  lowerRib = line(start = [var -2.15mm, var -6.94mm], end = [var -2.75mm, var -6.94mm])
+  coincident([lowerNeckWall.end, lowerRib.start])
+  lowerBandWall = line(start = [var -2.75mm, var -6.94mm], end = [var -2.75mm, var -8.1mm])
+  coincident([lowerRib.end, lowerBandWall.start])
+  topBridge = line(start = [var -3.15mm, var 0mm], end = [var -1.56mm, var 0mm])
+  innerWall = line(start = [var -1.56mm, var 0mm], end = [var -1.56mm, var -8.1mm])
+  coincident([topBridge.end, innerWall.start])
+  bottomBridge = line(start = [var -1.56mm, var -8.1mm], end = [var -2.75mm, var -8.1mm])
+  coincident([innerWall.end, bottomBridge.start])
+  coincident([bottomBridge.end, lowerBandWall.end])
+  centerGuide = line(start = [var -1.56mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([centerGuide.start, innerWall.start])
+  coincident([centerGuide.end, ORIGIN])
+  horizontal(topBridge)
+  horizontal(centerGuide)
+  horizontal(bottomBridge)
+  vertical(innerWall)
+  coincident([topBridge.start, outerTopWall.start])
+  horizontal(topShoulder)
+  horizontal(upperRib)
+  horizontal(lowerRib)
+  vertical(lowerBandWall)
+  vertical(lowerNeckWall)
+  vertical(midWall)
+  vertical(upperNeckWall)
+  vertical(outerTopWall)
+  verticalDistance([outerTopWall.end, outerTopWall.start]) == topSectionHeight
+  verticalDistance([midWall.end, midWall.start]) == midSectionHeight
+  verticalDistance([lowerBandWall.end, lowerBandWall.start]) == bottomSectionHeight
+  equalLength([upperNeckWall, lowerNeckWall])
+  horizontalDistance([topShoulder.start, topShoulder.end]) == ribWidth
+  equalLength([lowerRib, topShoulder])
+  horizontalDistance([centerGuide.start, centerGuide.end]) == insertGuideDiameter / 2
+  horizontalDistance([topBridge.start, centerGuide.end]) == insertBodyMaxDiameter / 2
+  horizontalDistance([midWall.start, centerGuide.end]) == insertGuideDiameter
+  horizontalDistance([bottomBridge.end, centerGuide.end]) == insertLowerBandDiameter / 2
+  verticalDistance([innerWall.end, innerWall.start]) == insertOverallHeight
+  angle([midWall, taperFlank]) == taperAngle
+}
+
+insertProfileRegion = region(point = [-3.1475mm, -1.14mm], sketch = insertProfileSketch)
+insertBody = revolve(insertProfileRegion, angle = 360deg, axis = Y)
+simpleInsert = appearance(
+  insertBody,
+  color = insertColorHex,
+  metalness = insertMetalness,
+  roughness = insertRoughness,
+)
+
+hiddenInsertProfile = hide(insertProfileSketch)

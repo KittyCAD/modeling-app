@@ -53,6 +53,17 @@ impl From<kcl_lib::SketchConstraintStatus> for SketchConstraintStatus {
     }
 }
 
+/// Full KCL error details associated with an incomplete report.
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Debug, Clone)]
+pub struct KclErrorInfo {
+    #[pyo3(get)]
+    pub phase: String,
+    #[pyo3(get)]
+    pub text: String,
+}
+
 /// Grouped report of all sketches by constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass]
@@ -66,6 +77,10 @@ pub struct SketchConstraintReport {
     pub over_constrained: Vec<SketchConstraintStatus>,
     #[pyo3(get)]
     pub errors: Vec<SketchConstraintStatus>,
+    #[pyo3(get)]
+    pub is_complete: bool,
+    #[pyo3(get)]
+    pub kcl_error: Option<KclErrorInfo>,
 }
 
 #[pymethods]
@@ -83,6 +98,8 @@ impl From<kcl_lib::SketchConstraintReport> for SketchConstraintReport {
             under_constrained: r.under_constrained.into_iter().map(Into::into).collect(),
             over_constrained: r.over_constrained.into_iter().map(Into::into).collect(),
             errors: r.errors.into_iter().map(Into::into).collect(),
+            is_complete: true,
+            kcl_error: None,
         }
     }
 }

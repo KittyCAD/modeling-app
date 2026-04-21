@@ -6,35 +6,31 @@
 import axisJ1, axisJ2, axisJ2ArmWidth, axisJ2ArmLength, axisJ2ArmThickness, plane003 from "globals.kcl"
 
 // Create Body of J2 Robot Arm
-sketch011 = startSketchOn(plane003)
-  |> startProfile(at = [
-       1.75 - (axisJ2ArmWidth / 2 * sin(axisJ2)),
-       8 + axisJ2ArmWidth / 2 * cos(axisJ2)
-     ])
-  |> arc(angleStart = 90 + axisJ2, angleEnd = 270 + axisJ2, radius = axisJ2ArmWidth / 2)
-  |> angledLine(angle = axisJ2, length = axisJ2ArmLength)
-  |> arc(angleStart = -90 + axisJ2, angleEnd = 90 + axisJ2, radius = axisJ2ArmWidth / 2)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude011 = extrude(sketch011, length = -axisJ2ArmThickness)
+sketch011 = sketch(on = plane003) {
+  arc1 = arc(start = [var -0.13in, var 7.32in], end = [var 3.63in, var 8.68in], center = [var 1.75in, var 8in])
+  line2 = line(start = [var 3.63in, var 8.68in], end = [var -6.97in, var 37.81in])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var -6.97in, var 37.81in], end = [var -10.73in, var 36.45in], center = [var -8.85in, var 37.13in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var -10.73in, var 36.45in], end = [var -0.13in, var 7.32in])
+  coincident([arc3.end, line4.start])
+}
+region001 = region(segments = [sketch011.arc1, sketch011.line2])
+extrude011 = extrude(region001, length = -axisJ2ArmThickness)
 
-sketch012 = startSketchOn(extrude011, face = START)
-  |> circle(center = [-1.75, 8], radius = 1.9, tag = $referenceEdge4)
+sketch012 = sketch(on = startSketchOn(extrude011, face = START)) {
+  circle1 = circle(start = [var 0.15in, var 8in], center = [var -1.75in, var 8in])
+}
 
-extrude012 = extrude(sketch012, length = 0.15)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge4)])
-sketch013 = startSketchOn(extrude011, face = START)
-  |> circle(
-       center = [
-         -1.75 - (axisJ2ArmLength * cos(axisJ2)),
-         8 + axisJ2ArmLength * sin(axisJ2)
-       ],
-       radius = 1.9,
-       tag = $referenceEdge5,
-     )
+region002 = region(segments = [sketch012.circle1])
+extrude012 = extrude(region002, length = 0.15)
 
-extrude013 = extrude(sketch013, length = 1)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge5)])
+sketch013 = sketch(on = startSketchOn(extrude011, face = START)) {
+  circle1 = circle(start = [var 10.75in, var 37.13in], center = [var 8.85in, var 37.13in])
+}
+
+region003 = region(segments = [sketch013.circle1])
+extrude013 = extrude(region003, length = 1)
 
 // Draw Bolt Patterns on J2 Robot Arm
 sketch014 = startSketchOn(extrude012, face = END)
@@ -68,14 +64,10 @@ sketch015 = startSketchOn(extrude013, face = END)
 
 extrude015 = extrude(sketch015, length = 0.15)
 
-sketch016 = startSketchOn(extrude011, face = END)
-  |> circle(
-       center = [
-         1.75 + axisJ2ArmLength * cos(axisJ2),
-         8 + axisJ2ArmLength * sin(axisJ2)
-       ],
-       radius = 0.3,
-     )
+sketch016 = sketch(on = startSketchOn(extrude011, face = END)) {
+  circle1 = circle(start = [var -8.55in, var 37.13in], center = [var -8.85in, var 37.13in])
+}
 
-extrude(sketch016, length = 1)
+region004 = region(segments = [sketch016.circle1])
+extrude(region004, length = 1)
   |> appearance(color = "#454545", metalness = 90, roughness = 90)
