@@ -1,0 +1,504 @@
+// Tooling Nest Block
+// A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry
+// Categories: Manufacturing, Construction
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+sideLength = 50
+size01 = 15
+size02 = 10
+size03 = 6
+size04 = 0.375in
+size05 = 0.25in
+size06 = 0.5in
+size07 = 0.75in
+size08 = 5
+size09 = 4.5
+size10 = 4
+size11 = 3.5
+size12 = 3
+size13 = 2.5
+size14 = 2
+size15 = 1
+
+// Step 1: sketch and extrude the base cube with sketch-solve constraints.
+cubeSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 50mm, var 0mm])
+  line2 = line(start = [var 50mm, var 0mm], end = [var 50mm, var 50mm])
+  line3 = line(start = [var 50mm, var 50mm], end = [var 0mm, var 50mm])
+  line4 = line(start = [var 0mm, var 50mm], end = [var 0mm, var 0mm])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, ORIGIN])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  distance([line1.start, line1.end]) == sideLength
+  distance([line2.start, line2.end]) == sideLength
+}
+
+cubeRegion = region(segments = [cubeSketch.line1, cubeSketch.line2])
+cubeBody = extrude(cubeRegion, length = sideLength)
+side1Face = faceOf(cubeBody, face = cubeRegion.tags.line1)
+side2Face = faceOf(cubeBody, face = cubeRegion.tags.line3)
+side3Face = faceOf(cubeBody, face = cubeRegion.tags.line2)
+side4Face = faceOf(cubeBody, face = cubeRegion.tags.line4)
+hide(cubeSketch)
+
+// Step 2: add the center nest on the top face.
+topNestProfile = sketch(on = startSketchOn(cubeBody, face = END)) {
+  circle1 = circle(start = [var 40mm, var 25mm], center = [var 25mm, var 25mm])
+  radiusGuide = line(
+    start = [var 40mm, var 25mm],
+    end = [var 25mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size01
+}
+
+topNestRegion = region(segments = [topNestProfile.circle1])
+topNest = extrude(topNestRegion, length = -size01, tagStart = $topNestCap)
+  |> fillet(
+       radius = size01 * 0.99,
+       tags = [getCommonEdge(faces = [topNestRegion.tags.circle1, topNestCap])],
+     )
+hide(topNestProfile)
+
+// Step 3: add the first nest on side 1.
+side1Nest01Profile = sketch(on = side1Face) {
+  circle1 = circle(start = [var 43mm, var 25mm], center = [var 33mm, var 25mm])
+  radiusGuide = line(
+    start = [var 43mm, var 25mm],
+    end = [var 33mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == 0.65 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size02
+}
+
+side1Nest01Region = region(segments = [side1Nest01Profile.circle1])
+side1Nest01 = extrude(side1Nest01Region, length = -size02, tagStart = $side1Nest01Cap)
+  |> fillet(
+       radius = size02 * 0.99,
+       tags = [getCommonEdge(faces = [side1Nest01Region.tags.circle1, side1Nest01Cap])],
+     )
+hide(side1Nest01Profile)
+
+// Step 4: add the lower nest on side 1.
+side1Nest02Profile = sketch(on = side1Face) {
+  circle1 = circle(start = [var 18mm, var 13mm], center = [var 12mm, var 13mm])
+  radiusGuide = line(
+    start = [var 18mm, var 13mm],
+    end = [var 12mm, var 13mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == sideLength / 4
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 4
+  distance([radiusGuide.start, radiusGuide.end]) == size03
+}
+
+side1Nest02Region = region(segments = [side1Nest02Profile.circle1])
+side1Nest02 = extrude(side1Nest02Region, length = -size03, tagStart = $side1Nest02Cap)
+  |> fillet(
+       radius = size03 * 0.99,
+       tags = [getCommonEdge(faces = [side1Nest02Region.tags.circle1, side1Nest02Cap])],
+     )
+hide(side1Nest02Profile)
+
+// Step 5: add the upper nest on side 1.
+side1Nest03Profile = sketch(on = side1Face) {
+  circle1 = circle(start = [var 18mm, var 38mm], center = [var 12mm, var 38mm])
+  radiusGuide = line(
+    start = [var 18mm, var 38mm],
+    end = [var 12mm, var 38mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == sideLength / 4
+  verticalDistance([ORIGIN, circle1.center]) == 0.75 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size03
+}
+
+side1Nest03Region = region(segments = [side1Nest03Profile.circle1])
+side1Nest03 = extrude(side1Nest03Region, length = -size03, tagStart = $side1Nest03Cap)
+  |> fillet(
+       radius = size03 * 0.99,
+       tags = [getCommonEdge(faces = [side1Nest03Region.tags.circle1, side1Nest03Cap])],
+     )
+hide(side1Nest03Profile)
+
+// Step 6: add the first nest on side 2.
+side2Nest01Profile = sketch(on = side2Face) {
+  circle1 = circle(start = [var 45mm, var 15mm], center = [var 35mm, var 15mm])
+  radiusGuide = line(
+    start = [var 45mm, var 15mm],
+    end = [var 35mm, var 15mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == 0.7 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.3 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size04
+}
+
+side2Nest01Region = region(segments = [side2Nest01Profile.circle1])
+side2Nest01 = extrude(side2Nest01Region, length = -size04, tagStart = $side2Nest01Cap)
+  |> fillet(
+       radius = size04 * 0.99,
+       tags = [getCommonEdge(faces = [side2Nest01Region.tags.circle1, side2Nest01Cap])],
+     )
+hide(side2Nest01Profile)
+
+// Step 7: add the lower-left nest on side 2.
+side2Nest02Profile = sketch(on = side2Face) {
+  circle1 = circle(start = [var 19mm, var 15mm], center = [var 12mm, var 15mm])
+  radiusGuide = line(
+    start = [var 19mm, var 15mm],
+    end = [var 12mm, var 15mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == sideLength / 4
+  verticalDistance([ORIGIN, circle1.center]) == 0.3 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size05
+}
+
+side2Nest02Region = region(segments = [side2Nest02Profile.circle1])
+side2Nest02 = extrude(side2Nest02Region, length = -size05, tagStart = $side2Nest02Cap)
+  |> fillet(
+       radius = size05 * 0.99,
+       tags = [getCommonEdge(faces = [side2Nest02Region.tags.circle1, side2Nest02Cap])],
+     )
+hide(side2Nest02Profile)
+
+// Step 8: add the upper-left nest on side 2.
+side2Nest03Profile = sketch(on = side2Face) {
+  circle1 = circle(start = [var 19mm, var 35mm], center = [var 12mm, var 35mm])
+  radiusGuide = line(
+    start = [var 19mm, var 35mm],
+    end = [var 12mm, var 35mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == sideLength / 4
+  verticalDistance([ORIGIN, circle1.center]) == 0.7 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size05
+}
+
+side2Nest03Region = region(segments = [side2Nest03Profile.circle1])
+side2Nest03 = extrude(side2Nest03Region, length = -size05, tagStart = $side2Nest03Cap)
+  |> fillet(
+       radius = size05 * 0.99,
+       tags = [getCommonEdge(faces = [side2Nest03Region.tags.circle1, side2Nest03Cap])],
+     )
+hide(side2Nest03Profile)
+
+// Step 9: add the upper-right nest on side 2.
+side2Nest04Profile = sketch(on = side2Face) {
+  circle1 = circle(start = [var 41mm, var 35mm], center = [var 35mm, var 35mm])
+  radiusGuide = line(
+    start = [var 41mm, var 35mm],
+    end = [var 35mm, var 35mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == 0.7 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.7 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size05
+}
+
+side2Nest04Region = region(segments = [side2Nest04Profile.circle1])
+side2Nest04 = extrude(side2Nest04Region, length = -size05, tagStart = $side2Nest04Cap)
+  |> fillet(
+       radius = size05 * 0.99,
+       tags = [getCommonEdge(faces = [side2Nest04Region.tags.circle1, side2Nest04Cap])],
+     )
+hide(side2Nest04Profile)
+
+// Step 10: add the single nest on side 3.
+side3Nest01Profile = sketch(on = side3Face) {
+  circle1 = circle(start = [var -12mm, var 25mm], center = [var -25mm, var 25mm])
+  radiusGuide = line(
+    start = [var -12mm, var 25mm],
+    end = [var -25mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -sideLength / 2
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size06
+}
+
+side3Nest01Region = region(segments = [side3Nest01Profile.circle1])
+side3Nest01 = extrude(side3Nest01Region, length = -size06, tagStart = $side3Nest01Cap)
+  |> fillet(
+       radius = size06 * 0.99,
+       tags = [getCommonEdge(faces = [side3Nest01Region.tags.circle1, side3Nest01Cap])],
+     )
+hide(side3Nest01Profile)
+
+// Step 11: add the first nest on side 4.
+side4Nest01Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -9mm, var 10mm], center = [var -10mm, var 10mm])
+  radiusGuide = line(
+    start = [var -9mm, var 10mm],
+    end = [var -10mm, var 10mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.2 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.2 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size15
+}
+
+side4Nest01Region = region(segments = [side4Nest01Profile.circle1])
+side4Nest01 = extrude(side4Nest01Region, length = -size15, tagStart = $side4Nest01Cap)
+  |> fillet(
+       radius = size15 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest01Region.tags.circle1, side4Nest01Cap])],
+     )
+hide(side4Nest01Profile)
+
+// Step 12: add the second nest on side 4.
+side4Nest02Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -8mm, var 25mm], center = [var -10mm, var 25mm])
+  radiusGuide = line(
+    start = [var -8mm, var 25mm],
+    end = [var -10mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.2 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size14
+}
+
+side4Nest02Region = region(segments = [side4Nest02Profile.circle1])
+side4Nest02 = extrude(side4Nest02Region, length = -size14, tagStart = $side4Nest02Cap)
+  |> fillet(
+       radius = size14 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest02Region.tags.circle1, side4Nest02Cap])],
+     )
+hide(side4Nest02Profile)
+
+// Step 13: add the third nest on side 4.
+side4Nest03Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -7.5mm, var 40mm], center = [var -10mm, var 40mm])
+  radiusGuide = line(
+    start = [var -7.5mm, var 40mm],
+    end = [var -10mm, var 40mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.2 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.8 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size13
+}
+
+side4Nest03Region = region(segments = [side4Nest03Profile.circle1])
+side4Nest03 = extrude(side4Nest03Region, length = -size13, tagStart = $side4Nest03Cap)
+  |> fillet(
+       radius = size13 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest03Region.tags.circle1, side4Nest03Cap])],
+     )
+hide(side4Nest03Profile)
+
+// Step 14: add the fourth nest on side 4.
+side4Nest04Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -37mm, var 10mm], center = [var -40mm, var 10mm])
+  radiusGuide = line(
+    start = [var -37mm, var 10mm],
+    end = [var -40mm, var 10mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.8 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.2 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size12
+}
+
+side4Nest04Region = region(segments = [side4Nest04Profile.circle1])
+side4Nest04 = extrude(side4Nest04Region, length = -size12, tagStart = $side4Nest04Cap)
+  |> fillet(
+       radius = size12 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest04Region.tags.circle1, side4Nest04Cap])],
+     )
+hide(side4Nest04Profile)
+
+// Step 15: add the fifth nest on side 4.
+side4Nest05Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -36mm, var 25mm], center = [var -40mm, var 25mm])
+  radiusGuide = line(
+    start = [var -36mm, var 25mm],
+    end = [var -40mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.8 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size10
+}
+
+side4Nest05Region = region(segments = [side4Nest05Profile.circle1])
+side4Nest05 = extrude(side4Nest05Region, length = -size10, tagStart = $side4Nest05Cap)
+  |> fillet(
+       radius = size10 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest05Region.tags.circle1, side4Nest05Cap])],
+     )
+hide(side4Nest05Profile)
+
+// Step 16: add the sixth nest on side 4.
+side4Nest06Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -35mm, var 40mm], center = [var -40mm, var 40mm])
+  radiusGuide = line(
+    start = [var -35mm, var 40mm],
+    end = [var -40mm, var 40mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -0.8 * sideLength
+  verticalDistance([ORIGIN, circle1.center]) == 0.8 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size08
+}
+
+side4Nest06Region = region(segments = [side4Nest06Profile.circle1])
+side4Nest06 = extrude(side4Nest06Region, length = -size08, tagStart = $side4Nest06Cap)
+  |> fillet(
+       radius = size08 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest06Region.tags.circle1, side4Nest06Cap])],
+     )
+hide(side4Nest06Profile)
+
+// Step 17: add the seventh nest on side 4.
+side4Nest07Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -20.5mm, var 16.5mm], center = [var -25mm, var 16.5mm])
+  radiusGuide = line(
+    start = [var -20.5mm, var 16.5mm],
+    end = [var -25mm, var 16.5mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -sideLength / 2
+  verticalDistance([ORIGIN, circle1.center]) == 0.33 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size09
+}
+
+side4Nest07Region = region(segments = [side4Nest07Profile.circle1])
+side4Nest07 = extrude(side4Nest07Region, length = -size09, tagStart = $side4Nest07Cap)
+  |> fillet(
+       radius = size09 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest07Region.tags.circle1, side4Nest07Cap])],
+     )
+hide(side4Nest07Profile)
+
+// Step 18: add the eighth nest on side 4.
+side4Nest08Profile = sketch(on = side4Face) {
+  circle1 = circle(start = [var -21.5mm, var 33.5mm], center = [var -25mm, var 33.5mm])
+  radiusGuide = line(
+    start = [var -21.5mm, var 33.5mm],
+    end = [var -25mm, var 33.5mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -sideLength / 2
+  verticalDistance([ORIGIN, circle1.center]) == 0.67 * sideLength
+  distance([radiusGuide.start, radiusGuide.end]) == size11
+}
+
+side4Nest08Region = region(segments = [side4Nest08Profile.circle1])
+side4Nest08 = extrude(side4Nest08Region, length = -size11, tagStart = $side4Nest08Cap)
+  |> fillet(
+       radius = size11 * 0.99,
+       tags = [getCommonEdge(faces = [side4Nest08Region.tags.circle1, side4Nest08Cap])],
+     )
+hide(side4Nest08Profile)
+
+// Step 19: add the bottom-face nest.
+bottomNestProfile = sketch(on = startSketchOn(cubeBody, face = START)) {
+  circle1 = circle(start = [var -6mm, var 25mm], center = [var -25mm, var 25mm])
+  radiusGuide = line(
+    start = [var -6mm, var 25mm],
+    end = [var -25mm, var 25mm],
+    construction = true,
+  )
+
+  coincident([radiusGuide.start, circle1.start])
+  coincident([radiusGuide.end, circle1.center])
+  horizontal(radiusGuide)
+  horizontalDistance([ORIGIN, circle1.center]) == -sideLength / 2
+  verticalDistance([ORIGIN, circle1.center]) == sideLength / 2
+  distance([radiusGuide.start, radiusGuide.end]) == size07
+}
+
+bottomNestRegion = region(segments = [bottomNestProfile.circle1])
+bottomNest = extrude(bottomNestRegion, length = -size07, tagStart = $bottomNestCap)
+  |> fillet(
+       radius = size07 * 0.99,
+       tags = [getCommonEdge(faces = [bottomNestRegion.tags.circle1, bottomNestCap])],
+     )
+hide(bottomNestProfile)

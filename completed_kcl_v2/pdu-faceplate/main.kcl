@@ -1,0 +1,440 @@
+// Power Distribution Unit (PDU) faceplate with European plug sockets and switch
+// Sketch-solve reconstruction with matching feature order
+// Categories: Computer Hardware
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define the dimensions
+// Width fits standard 19” rack, height is 1U, depth is variable
+faceplateWidth = 482.6 // this is standardized to fit 19-inch racks)
+faceplateHeight = 44.45 // usually 1U (44.45 mm), but can be 2U (88.9 mm) or more
+faceplateDepth = 100 // varies by manufacturer, but commonly between 100 mm and 300 mm
+
+// Define dimensions of side supports (width and thickness)
+supportWidth = 50
+supportThickness = 3
+
+// Creates recessed volume within the faceplate for inserting modules
+nestWall = 2
+nestWidth = faceplateWidth - (nestWall * 2)
+nestHeight = faceplateHeight - (nestWall * 2)
+nestDepth = faceplateDepth - nestWall
+
+// Spacer block on the left side, used to position components correctly
+moduleHeight = nestHeight
+moduleWidth = nestHeight
+moduleDepth = nestHeight
+
+leftSpacerWidth = moduleWidth * 1.5
+leftSpacerPosition = leftSpacerWidth / 2 - (nestWidth / 2)
+
+// Module for power switch including front plate and red rocker button
+switchPosition = leftSpacerPosition + leftSpacerWidth / 2 + moduleWidth / 2
+switchWidth = moduleWidth
+
+// Switch Plate
+switchPlateWidth = 20
+switchPlateHeight = 30
+switchPlateThickness = 3
+
+// Switch Button
+switchButtonHeight = 26
+switchButtonWidth = 15
+
+// Spacer between switch and plug modules for layout alignment
+secondSpacerWidth = moduleWidth / 2
+secondSpacerPosition = switchPosition + switchWidth / 2 + secondSpacerWidth / 2
+
+// European power plug modules with circular sockets and two-pin holes
+// 8 identical sockets, each with grounding notch and dual-pin recesses
+powerPlugWidth = moduleWidth
+powerPlugCount = 8
+firstPowerPlugPosition = secondSpacerPosition + secondSpacerWidth / 2 + powerPlugWidth / 2
+lastPowerPlugPosition = firstPowerPlugPosition + powerPlugWidth * (powerPlugCount - 1)
+plugHoleDistance = 20
+plugRecessDepth = 20
+plugHoleDepth = 5
+
+// Rightmost spacer to fill in remaining horizontal space
+rightSpacerWidth = nestWidth / 2 - lastPowerPlugPosition - (powerPlugWidth / 2)
+rightSpacerPosition = lastPowerPlugPosition + powerPlugWidth / 2 + rightSpacerWidth / 2
+
+// Rack mounting holes on flanges, elongated for alignment flexibility
+holeWidth = 25
+holeDiameter = 5
+holeStraightSegment = holeWidth - holeDiameter
+holeVerticalDistance = faceplateHeight * 0.3
+
+// STEP 01 START: Solver faceplate shell
+// Main body of the PDU faceplate with integrated rack mounting flanges
+faceplateShape = sketch(on = offsetPlane(XY, offset = -faceplateHeight / 2)) {
+  line1 = line(start = [var -291mm, var 0mm], end = [var -291mm, var 3mm])
+  line2 = line(start = [var -291mm, var 3mm], end = [var -241mm, var 3mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var -241mm, var 3mm], end = [var -241mm, var 100mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -241mm, var 100mm], end = [var 241mm, var 100mm])
+  coincident([line3.end, line4.start])
+
+  line5 = line(start = [var 241mm, var 100mm], end = [var 241mm, var 3mm])
+  coincident([line4.end, line5.start])
+
+  line6 = line(start = [var 241mm, var 3mm], end = [var 291mm, var 3mm])
+  coincident([line5.end, line6.start])
+
+  line7 = line(start = [var 291mm, var 3mm], end = [var 291mm, var 0mm])
+  coincident([line6.end, line7.start])
+
+  line8 = line(start = [var 291mm, var 0mm], end = [var -291mm, var 0mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  vertical(line7)
+  horizontal(line8)
+
+  horizontalDistance([ORIGIN, line1.start]) == -(faceplateWidth / 2 + supportWidth)
+  verticalDistance([ORIGIN, line1.start]) == 0mm
+  verticalDistance([line1.start, line1.end]) == supportThickness
+  horizontalDistance([line2.start, line2.end]) == supportWidth
+  verticalDistance([line3.start, line3.end]) == faceplateDepth - supportThickness
+  horizontalDistance([line4.start, line4.end]) == faceplateWidth
+  verticalDistance([line5.start, line5.end]) == -(faceplateDepth - supportThickness)
+  horizontalDistance([line6.start, line6.end]) == supportWidth
+  verticalDistance([line7.start, line7.end]) == -supportThickness
+  horizontalDistance([line8.start, line8.end]) == -(faceplateWidth + supportWidth * 2)
+}
+faceplateRegion = region(segments = [faceplateShape.line1, faceplateShape.line2])
+hide(faceplateShape)
+faceplateBody = extrude(faceplateRegion, length = faceplateHeight)
+// STEP 01 END
+
+// STEP 02 START: Solver front recess
+nestCutterSketch = sketch(on = XZ) {
+  line1 = line(start = [var -239mm, var 20mm], end = [var 239mm, var 20mm])
+  line2 = line(start = [var 239mm, var 20mm], end = [var 239mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 239mm, var -20mm], end = [var -239mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -239mm, var -20mm], end = [var -239mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -nestWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == nestHeight / 2
+  horizontalDistance([line1.start, line1.end]) == nestWidth
+  verticalDistance([line2.start, line2.end]) == -nestHeight
+}
+nestCutterRegion = region(segments = [nestCutterSketch.line1, nestCutterSketch.line2])
+hide(nestCutterSketch)
+nestCutter = extrude(nestCutterRegion, length = -nestDepth, method = NEW)
+faceplateWithNest = subtract(faceplateBody, tools = [nestCutter])
+// STEP 02 END
+
+// STEP 03 START: Solver left spacer block
+leftSpacerProfile = sketch(on = XZ) {
+  line1 = line(start = [var -30mm, var 20mm], end = [var 30mm, var 20mm])
+  line2 = line(start = [var 30mm, var 20mm], end = [var 30mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 30mm, var -20mm], end = [var -30mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -30mm, var -20mm], end = [var -30mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -leftSpacerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == moduleHeight / 2
+  horizontalDistance([line1.start, line1.end]) == leftSpacerWidth
+  verticalDistance([line2.start, line2.end]) == -moduleHeight
+}
+leftSpacerRegion = region(segments = [leftSpacerProfile.line1, leftSpacerProfile.line2])
+hide(leftSpacerProfile)
+leftSpacerBody = extrude(leftSpacerRegion, length = -moduleDepth)
+  |> translate(x = leftSpacerPosition, y = 0, z = 0, global = true)
+// STEP 03 END
+
+// STEP 04 START: Solver switch module
+// Switch Body
+switchBodyProfile = sketch(on = XZ) {
+  line1 = line(start = [var -20mm, var 20mm], end = [var 20mm, var 20mm])
+  line2 = line(start = [var 20mm, var 20mm], end = [var 20mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 20mm, var -20mm], end = [var -20mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -20mm, var -20mm], end = [var -20mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -moduleWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == moduleHeight / 2
+  horizontalDistance([line1.start, line1.end]) == moduleWidth
+  verticalDistance([line2.start, line2.end]) == -moduleHeight
+}
+switchBodyRegion = region(segments = [switchBodyProfile.line1, switchBodyProfile.line2])
+hide(switchBodyProfile)
+switchBody = extrude(switchBodyRegion, length = -moduleDepth)
+  |> translate(x = switchPosition, y = 0, z = 0, global = true)
+
+switchPlateProfile = sketch(on = XZ) {
+  line1 = line(start = [var -10mm, var 15mm], end = [var 10mm, var 15mm])
+  line2 = line(start = [var 10mm, var 15mm], end = [var 10mm, var -15mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 10mm, var -15mm], end = [var -10mm, var -15mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -10mm, var -15mm], end = [var -10mm, var 15mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -switchPlateWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == switchPlateHeight / 2
+  horizontalDistance([line1.start, line1.end]) == switchPlateWidth
+  verticalDistance([line2.start, line2.end]) == -switchPlateHeight
+}
+switchPlateRegion = region(segments = [switchPlateProfile.line1, switchPlateProfile.line2])
+hide(switchPlateProfile)
+switchPlateBody = extrude(switchPlateRegion, length = switchPlateThickness)
+  |> translate(x = switchPosition, y = 0, z = 0, global = true)
+
+switchButtonProfile = sketch(on = offsetPlane(-YZ, offset = -switchButtonWidth / 2)) {
+  line1 = line(start = [var 3mm, var 13mm], end = [var 6mm, var 12mm])
+  arc2 = arc(start = [var 6mm, var 12mm], end = [var 12mm, var -9mm], center = [var 25mm, var 6mm])
+  coincident([line1.end, arc2.start])
+
+  line3 = line(start = [var 12mm, var -9mm], end = [var 3mm, var -13mm])
+  coincident([arc2.end, line3.start])
+
+  line4 = line(start = [var 3mm, var -13mm], end = [var 3mm, var 13mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line4.start]) == switchPlateThickness
+  verticalDistance([ORIGIN, line4.start]) == switchButtonHeight / 2
+  verticalDistance([line4.start, line4.end]) == -switchButtonHeight
+  horizontalDistance([line1.start, line1.end]) == 3mm
+  verticalDistance([line1.start, line1.end]) == -1mm
+  horizontalDistance([line3.start, line3.end]) == -9mm
+  horizontalDistance([ORIGIN, arc2.center]) == 24.75mm
+  verticalDistance([ORIGIN, arc2.center]) == 6mm
+}
+switchButtonRegion = region(point = [4mm, 0mm], sketch = switchButtonProfile)
+hide(switchButtonProfile)
+switchButtonBody = extrude(switchButtonRegion, length = switchButtonWidth)
+  |> translate(x = switchPosition, y = 0, z = 0, global = true)
+  |> appearance(color = "#ff0000")
+// STEP 04 END
+
+// STEP 05 START: Solver center spacer block
+secondSpacerProfile = sketch(on = XZ) {
+  line1 = line(start = [var -10mm, var 20mm], end = [var 10mm, var 20mm])
+  line2 = line(start = [var 10mm, var 20mm], end = [var 10mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 10mm, var -20mm], end = [var -10mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -10mm, var -20mm], end = [var -10mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -secondSpacerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == moduleHeight / 2
+  horizontalDistance([line1.start, line1.end]) == secondSpacerWidth
+  verticalDistance([line2.start, line2.end]) == -moduleHeight
+}
+secondSpacerRegion = region(segments = [secondSpacerProfile.line1, secondSpacerProfile.line2])
+hide(secondSpacerProfile)
+secondSpacerBody = extrude(secondSpacerRegion, length = -moduleDepth)
+  |> translate(x = secondSpacerPosition, y = 0, z = 0, global = true)
+// STEP 05 END
+
+// STEP 06 START: Solver outlet module field
+powerPlugSeedProfile = sketch(on = XZ) {
+  line1 = line(start = [var -20mm, var 20mm], end = [var 20mm, var 20mm])
+  line2 = line(start = [var 20mm, var 20mm], end = [var 20mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 20mm, var -20mm], end = [var -20mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -20mm, var -20mm], end = [var -20mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -powerPlugWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == moduleHeight / 2
+  horizontalDistance([line1.start, line1.end]) == powerPlugWidth
+  verticalDistance([line2.start, line2.end]) == -moduleHeight
+}
+powerPlugSeedRegion = region(segments = [powerPlugSeedProfile.line1, powerPlugSeedProfile.line2])
+hide(powerPlugSeedProfile)
+powerPlugSeed = extrude(powerPlugSeedRegion, length = -moduleDepth)
+
+plugRecessProfile = sketch(on = XZ) {
+  circle1 = circle(start = [var 0mm, var 17mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  horizontalDistance([circle1.center, circle1.start]) == 0mm
+  verticalDistance([circle1.center, circle1.start]) == 17mm
+}
+plugRecessRegion = region(segments = [plugRecessProfile.circle1])
+hide(plugRecessProfile)
+plugRecessSeed = extrude(plugRecessRegion, length = -plugRecessDepth)
+
+leftPinHoleProfile = sketch(on = XZ) {
+  circle1 = circle(start = [var -7mm, var 0mm], center = [var -10mm, var 0mm])
+  horizontalDistance([ORIGIN, circle1.center]) == -(plugHoleDistance / 2)
+  verticalDistance([ORIGIN, circle1.center]) == 0mm
+  horizontalDistance([circle1.center, circle1.start]) == 3mm
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+leftPinHoleRegion = region(segments = [leftPinHoleProfile.circle1])
+hide(leftPinHoleProfile)
+leftPinHoleBody = extrude(leftPinHoleRegion, length = -plugHoleDepth)
+
+rightPinHoleProfile = sketch(on = XZ) {
+  circle1 = circle(start = [var 13mm, var 0mm], center = [var 10mm, var 0mm])
+  horizontalDistance([ORIGIN, circle1.center]) == plugHoleDistance / 2
+  verticalDistance([ORIGIN, circle1.center]) == 0mm
+  horizontalDistance([circle1.center, circle1.start]) == 3mm
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+rightPinHoleRegion = region(segments = [rightPinHoleProfile.circle1])
+hide(rightPinHoleProfile)
+rightPinHoleBody = extrude(rightPinHoleRegion, length = -plugHoleDepth)
+
+powerPlugField = powerPlugSeed
+  |> patternLinear3d(instances = powerPlugCount, distance = powerPlugWidth, axis = [1, 0, 0])
+  |> translate(x = firstPowerPlugPosition, y = 0, z = 0, global = true)
+plugRecessField = plugRecessSeed
+  |> patternLinear3d(instances = powerPlugCount, distance = powerPlugWidth, axis = [1, 0, 0])
+  |> translate(x = firstPowerPlugPosition, y = 0, z = 0, global = true)
+leftPinHoleField = leftPinHoleBody
+  |> patternLinear3d(instances = powerPlugCount, distance = powerPlugWidth, axis = [1, 0, 0])
+  |> translate(x = firstPowerPlugPosition, y = 0, z = 0, global = true)
+rightPinHoleField = rightPinHoleBody
+  |> patternLinear3d(instances = powerPlugCount, distance = powerPlugWidth, axis = [1, 0, 0])
+  |> translate(x = firstPowerPlugPosition, y = 0, z = 0, global = true)
+// STEP 06 END
+
+// STEP 07 START: Solver right spacer block
+rightSpacerProfile = sketch(on = XZ) {
+  line1 = line(start = [var -14mm, var 20mm], end = [var 14mm, var 20mm])
+  line2 = line(start = [var 14mm, var 20mm], end = [var 14mm, var -20mm])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 14mm, var -20mm], end = [var -14mm, var -20mm])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -14mm, var -20mm], end = [var -14mm, var 20mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([ORIGIN, line1.start]) == -rightSpacerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == moduleHeight / 2
+  horizontalDistance([line1.start, line1.end]) == rightSpacerWidth
+  verticalDistance([line2.start, line2.end]) == -moduleHeight
+}
+rightSpacerRegion = region(segments = [rightSpacerProfile.line1, rightSpacerProfile.line2])
+hide(rightSpacerProfile)
+rightSpacerBody = extrude(rightSpacerRegion, length = -moduleDepth)
+  |> translate(x = rightSpacerPosition, y = 0, z = 0, global = true)
+// STEP 07 END
+
+// STEP 08 START: Solver rack slot pattern
+rackSlotProfile = sketch(on = XZ) {
+  line1 = line(start = [var -10mm, var 2.5mm], end = [var 10mm, var 2.5mm])
+  arc2 = arc(start = [var 10mm, var 2.5mm], end = [var 10mm, var -2.5mm], center = [var 10mm, var 0mm])
+  coincident([line1.end, arc2.start])
+
+  line3 = line(start = [var 10mm, var -2.5mm], end = [var -10mm, var -2.5mm])
+  coincident([arc2.end, line3.start])
+
+  arc4 = arc(start = [var -10mm, var -2.5mm], end = [var -10mm, var 2.5mm], center = [var -10mm, var 0mm])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line1.start])
+
+  horizontal(line1)
+  horizontal(line3)
+
+  horizontalDistance([ORIGIN, line1.start]) == -(holeStraightSegment / 2)
+  verticalDistance([ORIGIN, line1.start]) == holeDiameter / 2
+  horizontalDistance([line1.start, line1.end]) == holeStraightSegment
+  horizontalDistance([line1.start, line3.end]) == 0mm
+  verticalDistance([line1.start, line3.end]) == -holeDiameter
+  horizontalDistance([line1.end, line3.start]) == 0mm
+  verticalDistance([line1.end, line3.start]) == -holeDiameter
+  horizontalDistance([line1.end, arc2.center]) == 0mm
+  verticalDistance([line1.end, arc2.center]) == -(holeDiameter / 2)
+  verticalDistance([arc2.start, arc2.end]) == -holeDiameter
+  radius(arc2) == holeDiameter / 2
+  horizontalDistance([line3.end, arc4.center]) == 0mm
+  verticalDistance([line3.end, arc4.center]) == holeDiameter / 2
+  verticalDistance([arc4.start, arc4.end]) == holeDiameter
+  radius(arc4) == holeDiameter / 2
+}
+rackSlotRegion = region(segments = [rackSlotProfile.line1, rackSlotProfile.arc2])
+hide(rackSlotProfile)
+rackSlotSeed = extrude(rackSlotRegion, length = -supportThickness, method = NEW)
+  |> translate(
+       x = -(faceplateWidth / 2 + supportWidth / 2),
+       y = 0,
+       z = -holeVerticalDistance,
+       global = true,
+     )
+rackSlotField = rackSlotSeed
+  |> patternLinear3d(instances = 3, distance = holeVerticalDistance, axis = [0, 0, 1])
+  |> patternLinear3d(instances = 2, distance = faceplateWidth + supportWidth, axis = [1, 0, 0])
+faceplateWithSlots = subtract(faceplateWithNest, tools = [rackSlotField])
+// STEP 08 END

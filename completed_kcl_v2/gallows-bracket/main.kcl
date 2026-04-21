@@ -1,0 +1,343 @@
+// Gallows Bracket
+// A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.
+// Categories: Construction
+// Sketch-solve reconstruction with matching feature order.
+
+@settings(defaultLengthUnit = mm)
+
+depth = 450
+height = 1250
+width = 2400
+ironWidth = 75
+ironThickness = 6
+
+// Drawings recommend 450mm spacing
+bracketsNeeded = ceil(width / 450)
+
+boltRadius = 4
+clearanceBoltRadius = boltRadius + 0.5
+csgFriendlyOffset = 1
+
+// Recommendations from drawings
+bottomBoltOffset = 75
+distanceBetweenBolts = 450
+
+assert(
+  height,
+  isGreaterThan = bottomBoltOffset + distanceBetweenBolts,
+  error = "You must have at least 525mm of height to get sufficient bolt spacing",
+)
+
+strutLength = sqrt(2 * (min([height, depth]) - ironThickness) ^ 2)
+
+fn solverAngleIronBlank(length, sectionWidth, sectionThickness) {
+  angleProfile = sketch(on = -XZ) {
+    bottomOuter = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
+    outerLip = line(start = [var 75mm, var 0mm], end = [var 75mm, var -6mm])
+    innerTop = line(start = [var 75mm, var -6mm], end = [var 6mm, var -6mm])
+    innerWeb = line(start = [var 6mm, var -6mm], end = [var 6mm, var -75mm])
+    outerWeb = line(start = [var 6mm, var -75mm], end = [var 0mm, var -75mm])
+    closeEdge = line(start = [var 0mm, var -75mm], end = [var 0mm, var 0mm])
+
+    coincident([bottomOuter.end, outerLip.start])
+    coincident([outerLip.end, innerTop.start])
+    coincident([innerTop.end, innerWeb.start])
+    coincident([innerWeb.end, outerWeb.start])
+    coincident([outerWeb.end, closeEdge.start])
+    coincident([closeEdge.end, bottomOuter.start])
+
+    horizontal(bottomOuter)
+    vertical(outerLip)
+    horizontal(innerTop)
+    vertical(innerWeb)
+    horizontal(outerWeb)
+    vertical(closeEdge)
+
+    coincident([bottomOuter.start, ORIGIN])
+
+    horizontalDistance([bottomOuter.start, bottomOuter.end]) == sectionWidth
+    verticalDistance([outerLip.start, outerLip.end]) == -sectionThickness
+    horizontalDistance([closeEdge.end, innerTop.end]) == sectionThickness
+    verticalDistance([closeEdge.end, outerWeb.start]) == -sectionWidth
+  }
+
+  angleRegion = region(segments = [angleProfile.bottomOuter, angleProfile.outerLip])
+  angleBlank = extrude(angleRegion, length = length + csgFriendlyOffset * 2)
+  hide(angleProfile)
+
+  return angleBlank
+}
+
+fn solverStartMiterCutter(sectionWidth, miterAngle) {
+  cutRun = sectionWidth + csgFriendlyOffset
+  cutRise = cutRun * tan(abs(miterAngle))
+  startPointX = if miterAngle > 0deg {
+    csgFriendlyOffset - csgFriendlyOffset * sin(miterAngle)
+  } else {
+    -sectionWidth - csgFriendlyOffset - csgFriendlyOffset * sin(miterAngle)
+  }
+  startPointY = csgFriendlyOffset - csgFriendlyOffset * cos(miterAngle)
+
+  startMiterSketch = sketch(on = XY) {
+    miterEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    rightEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    bottomEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    leftEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+
+    coincident([miterEdge.end, rightEdge.start])
+    coincident([rightEdge.end, bottomEdge.start])
+    coincident([bottomEdge.end, leftEdge.start])
+    coincident([leftEdge.end, miterEdge.start])
+
+    vertical(rightEdge)
+    horizontal(bottomEdge)
+    vertical(leftEdge)
+
+    horizontalDistance([ORIGIN, miterEdge.start]) == startPointX
+    verticalDistance([ORIGIN, miterEdge.start]) == startPointY
+    horizontalDistance([miterEdge.start, miterEdge.end]) == cutRun
+    verticalDistance([miterEdge.start, miterEdge.end]) == cutRise
+    verticalDistance([rightEdge.start, rightEdge.end]) == -(cutRise + csgFriendlyOffset)
+    horizontalDistance([bottomEdge.start, bottomEdge.end]) == -cutRun
+    verticalDistance([leftEdge.start, leftEdge.end]) == csgFriendlyOffset
+  }
+
+  startMiterRegion = region(segments = [startMiterSketch.miterEdge, startMiterSketch.rightEdge])
+  startMiterBody = extrude(startMiterRegion, length = -(sectionWidth + csgFriendlyOffset * 2))
+    |> translate(x = 0, y = 0, z = csgFriendlyOffset, global = true)
+  hide(startMiterSketch)
+
+  return startMiterBody
+}
+
+fn solverEndMiterCutter(length, sectionWidth, miterAngle) {
+  cutRun = sectionWidth + csgFriendlyOffset
+  cutRise = cutRun * tan(abs(miterAngle))
+  startPointX = if miterAngle > 0deg {
+    csgFriendlyOffset - csgFriendlyOffset * sin(miterAngle)
+  } else {
+    -sectionWidth - csgFriendlyOffset - csgFriendlyOffset * sin(miterAngle)
+  }
+  startPointY = length + csgFriendlyOffset + csgFriendlyOffset * cos(miterAngle)
+
+  endMiterSketch = sketch(on = XY) {
+    miterEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    rightEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    topEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+    leftEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 0mm])
+
+    coincident([miterEdge.end, rightEdge.start])
+    coincident([rightEdge.end, topEdge.start])
+    coincident([topEdge.end, leftEdge.start])
+    coincident([leftEdge.end, miterEdge.start])
+
+    vertical(rightEdge)
+    horizontal(topEdge)
+    vertical(leftEdge)
+
+    horizontalDistance([ORIGIN, miterEdge.start]) == startPointX
+    verticalDistance([ORIGIN, miterEdge.start]) == startPointY
+    horizontalDistance([miterEdge.start, miterEdge.end]) == cutRun
+    verticalDistance([miterEdge.start, miterEdge.end]) == -cutRise
+    verticalDistance([rightEdge.start, rightEdge.end]) == cutRise + csgFriendlyOffset
+    horizontalDistance([topEdge.start, topEdge.end]) == -cutRun
+    verticalDistance([leftEdge.start, leftEdge.end]) == -csgFriendlyOffset
+  }
+
+  endMiterRegion = region(segments = [endMiterSketch.miterEdge, endMiterSketch.rightEdge])
+  endMiterBody = extrude(endMiterRegion, length = -(sectionWidth + csgFriendlyOffset * 2))
+    |> translate(x = 0, y = 0, z = csgFriendlyOffset, global = true)
+  hide(endMiterSketch)
+
+  return endMiterBody
+}
+
+// STEP 01 START: Solver top support angle iron
+beam = solverAngleIronBlank(
+  length = width,
+  sectionWidth = ironWidth,
+  sectionThickness = ironThickness,
+)
+  |> rotate(pitch = 90deg, global = false)
+  |> translate(
+    y = -ironWidth,
+    x = depth,
+    z = height,
+    global = true,
+  )
+// STEP 01 END
+
+// STEP 02 START: Solver vertical bracket angle
+verticalBlank = solverAngleIronBlank(
+  length = height,
+  sectionWidth = ironWidth,
+  sectionThickness = ironThickness,
+)
+verticalEndMiter = solverEndMiterCutter(
+  length = height,
+  sectionWidth = ironWidth,
+  miterAngle = 45deg,
+)
+vertical = subtract(verticalBlank, tools = verticalEndMiter, legacyMethod = true)
+  |> rotate(roll = 90deg, yaw = 180deg, global = false)
+// STEP 02 END
+
+// STEP 03 START: Solver vertical bolt-hole pattern
+verticalHolePlane = offsetPlane(YZ, offset = -csgFriendlyOffset)
+verticalHoleSketch = sketch(on = verticalHolePlane) {
+  holeOffsetAcross = line(start = [var 0mm, var 0mm], end = [var -38mm, var 0mm], construction = true)
+  holeOffsetUp = line(start = [var -38mm, var 0mm], end = [var -38mm, var 75mm], construction = true)
+  holeRadiusGuide = line(start = [var -38mm, var 75mm], end = [var -33.5mm, var 75mm], construction = true)
+  holeCircle = circle(start = [var -33.5mm, var 75mm], center = [var -38mm, var 75mm])
+
+  coincident([holeOffsetAcross.start, ORIGIN])
+  coincident([holeOffsetAcross.end, holeOffsetUp.start])
+  coincident([holeOffsetUp.end, holeRadiusGuide.start])
+  coincident([holeOffsetUp.end, holeCircle.center])
+  coincident([holeRadiusGuide.end, holeCircle.start])
+
+  horizontal(holeOffsetAcross)
+  vertical(holeOffsetUp)
+  horizontal(holeRadiusGuide)
+
+  horizontalDistance([holeOffsetAcross.start, holeOffsetAcross.end]) == -ironWidth / 2
+  verticalDistance([holeOffsetUp.start, holeOffsetUp.end]) == bottomBoltOffset
+  horizontalDistance([holeRadiusGuide.start, holeRadiusGuide.end]) == clearanceBoltRadius
+  radius(holeCircle) == clearanceBoltRadius
+}
+
+verticalHoleRegion = region(segments = [verticalHoleSketch.holeCircle])
+verticalHoleSeed = extrude(verticalHoleRegion, length = ironThickness + csgFriendlyOffset * 2)
+hide(verticalHoleSketch)
+
+verticalHoleCutters = patternLinear3d(
+  verticalHoleSeed,
+  instances = ceil((height - bottomBoltOffset) / distanceBetweenBolts),
+  distance = (height - bottomBoltOffset) / ceil((height - bottomBoltOffset) / distanceBetweenBolts),
+  axis = [0, 0, 1],
+)
+verticalWithHoles = subtract(vertical, tools = verticalHoleCutters, legacyMethod = true)
+// STEP 03 END
+
+// STEP 04 START: Solver horizontal bracket angle
+horizontalBlank = solverAngleIronBlank(
+  length = depth,
+  sectionWidth = ironWidth,
+  sectionThickness = ironThickness,
+)
+horizontalStartMiter = solverStartMiterCutter(
+  sectionWidth = ironWidth,
+  miterAngle = 45deg,
+)
+horizontal = subtract(horizontalBlank, tools = horizontalStartMiter, legacyMethod = true)
+  |> rotate(pitch = 270deg, yaw = -90deg, global = false)
+  |> translate(z = height + csgFriendlyOffset, global = true)
+// STEP 04 END
+
+// STEP 05 START: Solver horizontal bolt hole
+horizontalHolePlane = offsetPlane(XY, offset = height - ironThickness)
+horizontalHoleSketch = sketch(on = horizontalHolePlane) {
+  holeOffsetForward = line(start = [var 0mm, var 0mm], end = [var 413mm, var 0mm], construction = true)
+  holeOffsetAcross = line(start = [var 413mm, var 0mm], end = [var 413mm, var -38mm], construction = true)
+  holeRadiusGuide = line(start = [var 413mm, var -38mm], end = [var 417.5mm, var -38mm], construction = true)
+  holeCircle = circle(start = [var 417.5mm, var -38mm], center = [var 413mm, var -38mm])
+
+  coincident([holeOffsetForward.start, ORIGIN])
+  coincident([holeOffsetForward.end, holeOffsetAcross.start])
+  coincident([holeOffsetAcross.end, holeRadiusGuide.start])
+  coincident([holeOffsetAcross.end, holeCircle.center])
+  coincident([holeRadiusGuide.end, holeCircle.start])
+
+  horizontal(holeOffsetForward)
+  vertical(holeOffsetAcross)
+  horizontal(holeRadiusGuide)
+
+  horizontalDistance([holeOffsetForward.start, holeOffsetForward.end]) == depth - ironWidth / 2
+  verticalDistance([holeOffsetAcross.start, holeOffsetAcross.end]) == -ironWidth / 2
+  horizontalDistance([holeRadiusGuide.start, holeRadiusGuide.end]) == clearanceBoltRadius
+  radius(holeCircle) == clearanceBoltRadius
+}
+
+horizontalHoleRegion = region(segments = [horizontalHoleSketch.holeCircle])
+horizontalHoleSeed = extrude(horizontalHoleRegion, length = ironThickness + csgFriendlyOffset * 2)
+hide(horizontalHoleSketch)
+
+horizontalWithHoles = subtract(horizontal, tools = horizontalHoleSeed, legacyMethod = true)
+// STEP 05 END
+
+// STEP 06 START: Solver diagonal strut
+strutBlank = solverAngleIronBlank(
+  length = strutLength,
+  sectionWidth = ironWidth - ironThickness,
+  sectionThickness = ironThickness,
+)
+strutStartMiter = solverStartMiterCutter(
+  sectionWidth = ironWidth - ironThickness,
+  miterAngle = -45deg,
+)
+strutStartCut = subtract(strutBlank, tools = strutStartMiter, legacyMethod = true)
+strutEndMiter = solverEndMiterCutter(
+  length = strutLength,
+  sectionWidth = ironWidth - ironThickness,
+  miterAngle = -45deg,
+)
+strutCut = subtract(strutStartCut, tools = strutEndMiter, legacyMethod = true)
+strut = strutCut
+  |> rotate(pitch = 270deg, yaw = -90deg, global = false)
+  |> translate(
+    x = -strutLength - csgFriendlyOffset,
+    z = ironWidth - ironThickness,
+    global = true,
+  )
+  |> rotate(pitch = -45deg, global = true)
+  |> translate(
+    y = -ironThickness,
+    x = depth,
+    z = height - ironThickness,
+    global = true,
+  )
+// STEP 06 END
+
+// STEP 07 START: Solver wall leg
+legProfile = sketch(on = -YZ) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 75mm, var 0mm])
+  rightEdge = line(start = [var 75mm, var 0mm], end = [var 75mm, var 75mm])
+  topEdge = line(start = [var 75mm, var 75mm], end = [var 0mm, var 75mm])
+  leftEdge = line(start = [var 0mm, var 75mm], end = [var 0mm, var 0mm])
+
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+
+  coincident([bottomEdge.start, ORIGIN])
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == ironWidth
+  verticalDistance([rightEdge.start, rightEdge.end]) == ironWidth
+}
+
+legRegion = region(segments = [legProfile.bottomEdge, legProfile.rightEdge])
+hide(legProfile)
+
+// Leg to insert into party wall
+leg = extrude(legRegion, length = 100)
+  |> translate(z = height - ironWidth, global = true)
+// STEP 07 END
+
+// STEP 08 START: Solver bracket array
+bracketArray = patternLinear3d(
+  [verticalWithHoles, horizontalWithHoles, strut, leg],
+  instances = bracketsNeeded,
+  distance = (width - bracketsNeeded * ironWidth) / (bracketsNeeded - 1) + ironWidth,
+  axis = [0, 1, 0],
+)
+// STEP 08 END
+
+// OUTPUT START
+beam
+bracketArray
+// OUTPUT END

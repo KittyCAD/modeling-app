@@ -1,0 +1,164 @@
+// Aircraft telemetry antenna plate
+// Solver reconstruction with the countersunk mounting holes added.
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = in)
+
+plateThickness = 0.08
+boltDiameter = 0.196
+boltPitchCircleRadius = 1.25
+countersinkLength = 0.04
+cutterOverlap = 0.01
+
+// STEP 01 START: Solver revolve profile
+antennaProfile = sketch(on = YZ) {
+  plateRadiusGuide = line(start = [var 0in, var 0in], end = [var 1.5in, var 0in], construction = true)
+
+  outerWall = line(start = [var 1.5in, var 0in], end = [var 1.5in, var 0.08in])
+  plateTop = line(start = [var 1.5in, var 0.08in], end = [var 0.33in, var 0.08in])
+  mastSide = line(start = [var 0.33in, var 0.08in], end = [var 0.23in, var 1.18in])
+  mastCap = arc(start = [var 0.23in, var 1.18in], end = [var 0.03in, var 1.36in], center = [var 0.03in, var 1.16in])
+  tipFlat = line(start = [var 0.03in, var 1.36in], end = [var 0in, var 1.36in])
+  centerAxis = line(start = [var 0in, var 1.36in], end = [var 0in, var -0.78in])
+  connectorBase = line(start = [var 0in, var -0.78in], end = [var 0.25in, var -0.78in])
+  connectorStep = line(start = [var 0.25in, var -0.78in], end = [var 0.25in, var -0.73in])
+  upperChamfer = line(start = [var 0.25in, var -0.73in], end = [var 0.27in, var -0.71in])
+  midWall = line(start = [var 0.27in, var -0.71in], end = [var 0.27in, var -0.59in])
+  lowerChamfer = line(start = [var 0.27in, var -0.59in], end = [var 0.25in, var -0.57in])
+  upperWall = line(start = [var 0.25in, var -0.57in], end = [var 0.25in, var -0.45in])
+  seatShelf = line(start = [var 0.25in, var -0.45in], end = [var 0.28in, var -0.45in])
+  seatRise = line(start = [var 0.28in, var -0.45in], end = [var 0.28in, var -0.42in])
+  seatLip = line(start = [var 0.28in, var -0.42in], end = [var 0.31in, var -0.42in])
+  lowerStem = line(start = [var 0.31in, var -0.42in], end = [var 0.31in, var -0.25in])
+  lowerShoulder = line(start = [var 0.31in, var -0.25in], end = [var 0.6in, var -0.25in])
+  plateUndersideWall = line(start = [var 0.6in, var -0.25in], end = [var 0.6in, var 0in])
+  plateBottom = line(start = [var 0.6in, var 0in], end = [var 1.5in, var 0in])
+
+  coincident([plateRadiusGuide.start, ORIGIN])
+  coincident([plateRadiusGuide.end, outerWall.start])
+  coincident([outerWall.end, plateTop.start])
+  coincident([plateTop.end, mastSide.start])
+  coincident([mastSide.end, mastCap.start])
+  coincident([mastCap.end, tipFlat.start])
+  coincident([tipFlat.end, centerAxis.start])
+  coincident([centerAxis.end, connectorBase.start])
+  coincident([connectorBase.end, connectorStep.start])
+  coincident([connectorStep.end, upperChamfer.start])
+  coincident([upperChamfer.end, midWall.start])
+  coincident([midWall.end, lowerChamfer.start])
+  coincident([lowerChamfer.end, upperWall.start])
+  coincident([upperWall.end, seatShelf.start])
+  coincident([seatShelf.end, seatRise.start])
+  coincident([seatRise.end, seatLip.start])
+  coincident([seatLip.end, lowerStem.start])
+  coincident([lowerStem.end, lowerShoulder.start])
+  coincident([
+    lowerShoulder.end,
+    plateUndersideWall.start
+  ])
+  coincident([
+    plateUndersideWall.end,
+    plateBottom.start
+  ])
+  coincident([plateBottom.end, outerWall.start])
+
+  horizontal(plateRadiusGuide)
+  vertical(outerWall)
+  horizontal(plateTop)
+  tangent([mastSide, mastCap])
+  horizontal(tipFlat)
+  vertical(centerAxis)
+  horizontal(connectorBase)
+  vertical(connectorStep)
+  vertical(midWall)
+  vertical(upperWall)
+  horizontal(seatShelf)
+  vertical(seatRise)
+  horizontal(seatLip)
+  vertical(lowerStem)
+  horizontal(lowerShoulder)
+  vertical(plateUndersideWall)
+  horizontal(plateBottom)
+
+  horizontalDistance([
+  plateRadiusGuide.start,
+  plateRadiusGuide.end
+]) == 1.5in
+  verticalDistance([outerWall.start, outerWall.end]) == plateThickness
+  horizontalDistance([plateTop.end, plateTop.start]) == 1.175in
+  distance([mastSide.start, mastSide.end]) == 1.1in
+  angle([plateTop, mastSide]) == 95
+  radius(mastCap) == 0.2018in
+  equalLength([
+    tipFlat,
+    upperChamfer,
+    lowerChamfer,
+    seatShelf,
+    seatRise
+  ])
+  distance([tipFlat.start, tipFlat.end]) == 0.025in
+  distance([centerAxis.start, centerAxis.end]) == 2.14in
+  horizontalDistance([connectorBase.start, connectorBase.end]) == 0.25in
+  verticalDistance([connectorStep.start, connectorStep.end]) == 0.05in
+  angle([connectorBase, upperChamfer]) == 45deg
+  angle([midWall, lowerChamfer]) == 45deg
+  equalLength([midWall, upperWall])
+  verticalDistance([midWall.start, midWall.end]) == 0.125in
+  horizontalDistance([seatLip.start, seatLip.end]) == 0.0375in
+  horizontalDistance([lowerShoulder.start, lowerShoulder.end]) == 0.2875in
+  verticalDistance([
+  plateUndersideWall.start,
+  plateUndersideWall.end
+]) == 0.25in
+  horizontalDistance([plateBottom.start, plateBottom.end]) == 0.9in
+}
+
+antennaRegion = region(point = [1in, 0.02in], sketch = antennaProfile)
+antennaBodyBlank = revolve(antennaRegion, angle = 360, axis = Y)
+hide(antennaProfile)
+// STEP 01 END
+
+
+plane001 = offsetPlane(YZ, offset = boltPitchCircleRadius)
+
+// STEP 02 START: Countersunk mounting-hole cutters
+holeCutterProfile = sketch(on = plane001) {
+  topEdge = line(start = [var 0in, var 0.09in], end = [var 0.14in, var 0.09in])
+  centerline = line(start = [var 0in, var 0in], end = [var 0in, var 0.09in])
+  coincident([centerline.end, topEdge.start])
+  coincident([centerline.start, ORIGIN])
+  horizontal(topEdge)
+  vertical(centerline)
+
+  horizontalDistance([topEdge.start, topEdge.end]) == boltDiameter / 2 + countersinkLength
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var -0.1in])
+  coincident([line1.start, centerline.start])
+  vertical([line1.end, ORIGIN])
+  distance([centerline.start, centerline.end]) == plateThickness + cutterOverlap
+  distance([line1.start, line1.end]) == 0.1
+  line2 = line(start = [var 0in, var -0.1in], end = [var 0.08in, var -0.1in])
+  coincident([line2.start, line1.end])
+  distance([line2.start, line2.end]) == countersinkLength * 2
+  horizontal(line2)
+  line3 = line(start = [var 0.14in, var 0.09in], end = [var 0.08in, var 0.03in])
+  coincident([line3.start, topEdge.end])
+  line4 = line(start = [var 0.08in, var -0.1in], end = [var 0.08in, var 0.03in])
+  coincident([line4.start, line2.end])
+  coincident([line3.end, line4.end])
+  angle([line3, topEdge]) == 135
+  vertical(line4)
+}
+
+holeCutterRegion = region(point = [boltDiameter / 4, 0.02in], sketch = holeCutterProfile)
+holeCutterSeed = revolve(holeCutterRegion, angle = 360, axis = Y)
+hide(holeCutterProfile)
+
+holeCutters = patternCircular3d(
+  holeCutterSeed,
+  instances = 6,
+  axis = Z,
+  center = [0, 0, 0],
+)
+
+antennaBody = subtract([antennaBodyBlank], tools = [holeCutters])
+// STEP 02 END
