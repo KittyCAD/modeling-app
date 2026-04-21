@@ -18,73 +18,116 @@ chainThickness = sphereDia / 8
 linkDiameter = sphereDia / 4
 
 // Sketch the inside bearing piece
-insideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
-  |> circle(center = [0, 0], radius = shaftDia / 2 + wallThickness)
-  |> subtract2d(tool = circle(center = [0, 0], radius = shaftDia / 2))
+insideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2)) {
+  circle1 = circle(start = [var 0.48in, var 0in], center = [var 0in, var 0in])
+  distance([circle1.center, circle1.start]) == shaftDia / 2 + wallThickness
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 0.3in, var 0in], center = [var 0in, var 0in])
+  distance([circle2.center, circle2.start]) == shaftDia / 2
+  coincident([circle2.center, ORIGIN])
+}
 
 // Extrude the inside bearing piece
-insideWall = extrude(insideWallSketch, length = overallThickness)
+insideWallRegion = region(point = [12mm, 0mm], sketch = insideWallSketch)
+insideWall = extrude(insideWallRegion, length = overallThickness)
 
 // Create the sketch of one of the balls
-ballsSketch = startSketchOn(XY)
-  |> startProfile(at = [shaftDia / 2 + wallThickness, 0.001])
-  |> arc(angleStart = 180deg, angleEnd = 0, radius = sphereDia / 2)
-  |> close()
+ballsSketch = sketch(on = XY) {
+  arc1 = arc(start = [var 0.23in, var 0in], end = [var -0.34in, var 0in], center = [var 0in, var 0in])
+  coincident([arc1.center, ORIGIN])
+  line1 = line(start = [var -0.27in, var 0in], end = [var 0.12in, var 0.01in])
+  horizontal(line1)
+  coincident([line1.start, arc1.end])
+  coincident([line1.end, arc1.start])
+  coincident([line1, arc1.center])
+  distance([line1.start, line1.end]) == sphereDia
+}
 
 // Revolve the ball to make a sphere and pattern around the inside wall
-balls = revolve(ballsSketch, axis = X)
-  |> patternCircular3d(
-       arcDegrees = 360,
-       axis = [0, 0, 1],
-       center = [0, 0, 0],
-       instances = nBalls,
-       rotateDuplicates = true,
-     )
+ballRegion = region(point = [-0mm, 3mm], sketch = ballsSketch)
+ballBody = revolve(ballRegion, angle = 360deg, axis = X)
+hide(ballsSketch)
+ballTranslated = translate(ballBody, x = shaftDia / 2 + wallThickness + sphereDia / 2)
+balls = patternCircular3d(
+  ballBody,
+  instances = nBalls,
+  axis = Z,
+  center = [0, 0, 0],
+)
 
 // Create the sketch for the chain around the balls
-chainSketch = startSketchOn(XY)
-  |> startProfile(at = [
-       shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
-       0.125 * sin(60deg)
-     ])
-  |> arc(angleStart = 120deg, angleEnd = 60deg, radius = sphereDia / 2)
-  |> line(end = [0, chainThickness])
-  |> line(end = [-chainWidth, 0])
-  |> close()
+chainSketch = sketch(on = XY) {
+  arc1 = arc(start = [var 0.06in, var 0.11in], end = [var -0.06in, var 0.11in], center = [var 0in, var 0in])
+  coincident([arc1.center, ORIGIN])
+  coincident([arc1.start, arc1.start])
+  line1 = line(start = [var -0.01in, var 0.03in], end = [var -0.03in, var 0.09in])
+  coincident([line1.start, arc1.end])
+  line2 = line(start = [var -0.04in, var 0.09in], end = [var 0.06in, var 0.14in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.06in, var 0.15in], end = [var 0.08in, var 0.09in])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, arc1.start])
+  vertical(line1)
+  vertical(line3)
+  horizontal(line2)
+  equalLength([line1, line3])
+  distance([arc1.center, arc1.end]) == sphereDia / 2
+  horizontalDistance([line2.start, line2.end]) == chainWidth
+  verticalDistance([line3.end, line3.start]) == chainThickness
+}
 
 // Revolve the chain sketch
-chainHead = revolve(chainSketch, axis = X)
-  |> patternCircular3d(
-       arcDegrees = 360deg,
-       axis = [0, 0, 1],
-       center = [0, 0, 0],
-       instances = nBalls,
-       rotateDuplicates = true,
-     )
+chainHeadRegion = region(segments = [chainSketch.arc1])
+chainHeadBody = revolve(chainHeadRegion, axis = X)
+hide(chainSketch)
+chainHeadBodyTranslated = translate(chainHeadBody, x = shaftDia / 2 + wallThickness + sphereDia / 2)
+chainHeadBodies = patternCircular3d(
+  chainHeadBody,
+  instances = nBalls,
+  axis = Z,
+  center = [0, 0, 0],
+)
 
 // Create the sketch for the links in between the chains
-linkSketch = startSketchOn(XZ)
-  |> circle(
-       center = [
-         shaftDia / 2 + wallThickness + sphereDia / 2,
-         0
-       ],
-       radius = linkDiameter / 2,
-     )
+linkSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.63in, var 0in], center = [var 0.6in, var 0in])
+  lineForOffset = line(start = [var 0in, var 0in], end = [var 0.6in, var 0in], construction = true)
+  coincident([lineForOffset.start, ORIGIN])
+  coincident([lineForOffset.end, circle1.center])
+  horizontal(lineForOffset)
+  horizontalDistance([lineForOffset.start, lineForOffset.end]) == shaftDia / 2 + wallThickness + sphereDia / 2
+  lineForRadius = line(start = [var 0.6in, var 0in], end = [var 0.63in, var 0in], construction = true)
+  coincident([lineForRadius.start, lineForOffset.end])
+  coincident([lineForRadius.end, circle1.start])
+  horizontal(lineForRadius)
+  horizontalDistance([lineForRadius.start, lineForRadius.end]) == linkDiameter / 2
+}
 
-// Revolve the link sketch
-linkRevolve = revolve(linkSketch, axis = Y, angle = 360deg / nBalls)
-  |> patternCircular3d(
-       arcDegrees = 360deg,
-       axis = [0, 0, 1],
-       center = [0, 0, 0],
-       instances = nBalls,
-       rotateDuplicates = true,
-     )
+// Revolve and pattern the link sketch
+linkRegion = region(segments = [linkSketch.circle1])
+linkRevolve = revolve(linkRegion, axis = Y, angle = 14deg)
+linkPrerotated = rotate(
+  linkRevolve,
+  axis = Z,
+  angle = 11,
+  global = true,
+)
+links = patternCircular3d(
+  linkRevolve,
+  instances = nBalls,
+  axis = Z,
+  center = [0, 0, 0],
+)
 
 // Create the sketch for the outside walls
-outsideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
-  |> circle(center = [0, 0], radius = outsideDiameter / 2)
-  |> subtract2d(tool = circle(center = [0, 0], radius = shaftDia / 2 + wallThickness + sphereDia))
+outsideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2)) {
+  circle1 = circle(start = [var 0.81in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == outsideDiameter / 2
+  circle2 = circle(start = [var 0.71in, var 0in], center = [var 0in, var 0in])
+  coincident([circle2.center, ORIGIN])
+  distance([circle2.center, circle2.start]) == shaftDia / 2 + wallThickness + sphereDia
+}
 
-outsideWall = extrude(outsideWallSketch, length = overallThickness)
+outsideRegion = region(point = [20.6mm, 0mm], sketch = outsideWallSketch)
+outsideWall = extrude(outsideRegion, length = overallThickness)

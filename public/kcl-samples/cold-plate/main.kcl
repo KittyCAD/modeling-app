@@ -9,60 +9,467 @@
 tubeDiameter = 5 / 8
 wallThickness = 0.080
 bendRadius = 1
+plateLength = 10
 
-// Create the cold plate with indentions to secure each pass of the brazed copper tube
-coldPlate = startSketchOn(YZ)
-  |> startProfile(at = [0, tubeDiameter * 2])
-  |> xLine(length = bendRadius - (tubeDiameter / 2))
-  |> yLine(length = -tubeDiameter)
-  |> tangentialArc(angle = 180deg, radius = tubeDiameter / 2)
-  |> yLine(length = tubeDiameter)
-  |> xLine(length = bendRadius * 2 - tubeDiameter, tag = $seg07)
-  |> yLine(length = -tubeDiameter, tag = $seg09)
-  |> tangentialArc(angle = 180deg, radius = tubeDiameter / 2)
-  |> yLine(length = tubeDiameter, tag = $seg08)
-  |> xLine(length = bendRadius - (tubeDiameter / 2))
-  |> angledLine(angle = -77deg, length = tubeDiameter / 3)
-  |> tangentialArc(angle = 77deg, radius = tubeDiameter, tag = $seg01)
-  |> angledLine(angle = tangentToEnd(seg01), length = 1)
-  |> yLine(endAbsolute = 0)
-  |> xLine(endAbsolute = 0)
-  |> mirror2d(axis = Y)
-  |> close()
-  |> extrude(length = 10, symmetric = true)
+tubeOuterRadius = tubeDiameter / 2
+tubeInnerRadius = tubeOuterRadius - wallThickness
+plateTopZ = tubeDiameter * 2
+grooveFloorZ = tubeDiameter
+grooveWallHeight = plateTopZ - grooveFloorZ
+
+firstGrooveCenterY = bendRadius
+secondGrooveCenterY = bendRadius * 3
+firstGrooveLeftY = firstGrooveCenterY - tubeOuterRadius
+firstGrooveRightY = firstGrooveCenterY + tubeOuterRadius
+secondGrooveLeftY = secondGrooveCenterY - tubeOuterRadius
+secondGrooveRightY = secondGrooveCenterY + tubeOuterRadius
+
+outletRampAngle = 77deg
+outletRampLength = tubeDiameter / 3
+outletRampRun = outletRampLength * cos(outletRampAngle)
+outletRampDrop = outletRampLength * sin(outletRampAngle)
+outletStraightLength = 1
+outletArcRadius = tubeDiameter
+
+rampStartY = bendRadius * 4
+rampEndY = rampStartY + outletRampRun
+rampEndZ = plateTopZ - outletRampDrop
+outletArcCenterY = rampEndY + outletArcRadius * sin(outletRampAngle)
+outletArcCenterZ = rampEndZ + outletArcRadius * cos(outletRampAngle)
+outletArcEndY = outletArcCenterY
+outletArcEndZ = outletArcCenterZ - outletArcRadius
+outerEdgeY = outletArcEndY + outletStraightLength
+
+topCenter = [0in, plateTopZ]
+firstGrooveLeftTop = [firstGrooveLeftY, plateTopZ]
+firstGrooveLeftBottom = [firstGrooveLeftY, grooveFloorZ]
+firstGrooveCenter = [firstGrooveCenterY, grooveFloorZ]
+firstGrooveRightBottom = [firstGrooveRightY, grooveFloorZ]
+firstGrooveRightTop = [firstGrooveRightY, plateTopZ]
+secondGrooveLeftTop = [secondGrooveLeftY, plateTopZ]
+secondGrooveLeftBottom = [secondGrooveLeftY, grooveFloorZ]
+secondGrooveCenter = [secondGrooveCenterY, grooveFloorZ]
+secondGrooveRightBottom = [secondGrooveRightY, grooveFloorZ]
+secondGrooveRightTop = [secondGrooveRightY, plateTopZ]
+rampStart = [rampStartY, plateTopZ]
+rampEnd = [rampEndY, rampEndZ]
+outletArcCenter = [outletArcCenterY, outletArcCenterZ]
+outletArcEnd = [outletArcEndY, outletArcEndZ]
+outerShoulderRight = [outerEdgeY, outletArcEndZ]
+outerBottomRight = [outerEdgeY, 0in]
+outerBottomLeft = [-outerEdgeY, 0in]
+outerShoulderLeft = [-outerEdgeY, outletArcEndZ]
+leftOutletArcStart = [-outletArcEndY, outletArcEndZ]
+leftOutletArcCenter = [-outletArcCenterY, outletArcCenterZ]
+leftRampEnd = [-rampEndY, rampEndZ]
+leftRampStart = [-rampStartY, plateTopZ]
+leftSecondGrooveRightTop = [-secondGrooveRightY, plateTopZ]
+leftSecondGrooveRightBottom = [-secondGrooveRightY, grooveFloorZ]
+leftSecondGrooveCenter = [-secondGrooveCenterY, grooveFloorZ]
+leftSecondGrooveLeftBottom = [-secondGrooveLeftY, grooveFloorZ]
+leftSecondGrooveLeftTop = [-secondGrooveLeftY, plateTopZ]
+leftFirstGrooveLeftTop = [-firstGrooveRightY, plateTopZ]
+leftFirstGrooveLeftBottom = [-firstGrooveRightY, grooveFloorZ]
+leftFirstGrooveCenter = [-firstGrooveCenterY, grooveFloorZ]
+leftFirstGrooveRightBottom = [-firstGrooveLeftY, grooveFloorZ]
+leftFirstGrooveRightTop = [-firstGrooveLeftY, plateTopZ]
+
+tubeInletX = -7.35
+tubeRightLoopX = 6.78
+tubeLeftLoopX = -6.24
+tubeLowerPassY = -(bendRadius * 3)
+tubeLowerMiddlePassY = -bendRadius
+tubeUpperMiddlePassY = bendRadius
+tubeUpperPassY = bendRadius * 3
+tubeLowerLoopCenterY = -(bendRadius * 2)
+tubeUpperLoopCenterY = bendRadius * 2
+
+tubeInletStart = [tubeInletX, tubeLowerPassY]
+tubeRightLowerTurnStart = [tubeRightLoopX, tubeLowerPassY]
+tubeRightLowerLoopCenter = [tubeRightLoopX, -(bendRadius * 2)]
+tubeRightLowerTurnEnd = [tubeRightLoopX, tubeLowerMiddlePassY]
+tubeLeftMiddlePassEnd = [tubeLeftLoopX, tubeLowerMiddlePassY]
+tubeLeftLoopCenter = [tubeLeftLoopX, 0in]
+tubeLeftUpperTurnStart = [tubeLeftLoopX, tubeUpperMiddlePassY]
+tubeRightUpperTurnStart = [tubeRightLoopX, tubeUpperMiddlePassY]
+tubeRightUpperLoopCenter = [tubeRightLoopX, bendRadius * 2]
+tubeRightUpperTurnEnd = [tubeRightLoopX, tubeUpperPassY]
+tubeOutletEnd = [tubeInletX, tubeUpperPassY]
+
+tubeInletSectionCenter = [tubeLowerPassY, grooveFloorZ]
+
+capTopArcCenter = [
+  secondGrooveCenterY,
+  plateTopZ + tubeDiameter * 0.75
+]
+
+// Create the cold plate with indentations to secure each pass of the brazed copper tube
+coldPlateProfile = sketch(on = YZ) {
+  line1 = line(start = [var 0in, var 1.25in], end = [var 0.69in, var 1.25in])
+  line2 = line(start = [var 0.69in, var 1.25in], end = [var 0.69in, var 0.63in])
+  arc3 = arc(start = [var 0.69in, var 0.63in], end = [var 1.31in, var 0.63in], center = [var 1in, var 0.63in])
+  line4 = line(start = [var 1.31in, var 0.63in], end = [var 1.31in, var 1.25in])
+  line5 = line(start = [var 1.31in, var 1.25in], end = [var 2.69in, var 1.25in])
+  line6 = line(start = [var 2.69in, var 1.25in], end = [var 2.69in, var 0.63in])
+  arc7 = arc(start = [var 2.69in, var 0.63in], end = [var 3.31in, var 0.63in], center = [var 3in, var 0.63in])
+  line8 = line(start = [var 3.31in, var 0.63in], end = [var 3.31in, var 1.25in])
+  line9 = line(start = [var 3.31in, var 1.25in], end = [var 4in, var 1.25in])
+  line10 = line(start = [var 4in, var 1.25in], end = [var 4.05in, var 1.05in])
+  arc11 = arc(start = [var 4.05in, var 1.05in], end = [var 4.66in, var 0.56in], center = [var 4.66in, var 1.19in])
+  line12 = line(start = [var 4.66in, var 0.56in], end = [var 5.66in, var 0.56in])
+  line13 = line(start = [var 5.66in, var 0.56in], end = [var 5.66in, var 0in])
+  line14 = line(start = [var 5.66in, var 0in], end = [var -5.66in, var 0in])
+  line15 = line(start = [var -5.66in, var 0in], end = [var -5.66in, var 0.56in])
+  line16 = line(start = [var -5.66in, var 0.56in], end = [var -4.66in, var 0.56in])
+  arc16 = arc(start = [var -4.66in, var 0.56in], end = [var -4.05in, var 1.05in], center = [var -4.66in, var 1.19in])
+  line17 = line(start = [var -4.05in, var 1.05in], end = [var -4in, var 1.25in])
+  line18 = line(start = [var -4in, var 1.25in], end = [var -3.31in, var 1.25in])
+  line19 = line(start = [var -3.31in, var 1.25in], end = [var -3.31in, var 0.63in])
+  arc20 = arc(start = [var -3.31in, var 0.63in], end = [var -2.69in, var 0.63in], center = [var -3in, var 0.63in])
+  line21 = line(start = [var -2.69in, var 0.63in], end = [var -2.69in, var 1.25in])
+  line22 = line(start = [var -2.69in, var 1.25in], end = [var -1.31in, var 1.25in])
+  line23 = line(start = [var -1.31in, var 1.25in], end = [var -1.31in, var 0.63in])
+  arc24 = arc(start = [var -1.31in, var 0.63in], end = [var -0.69in, var 0.63in], center = [var -1in, var 0.63in])
+  line25 = line(start = [var -0.69in, var 0.63in], end = [var -0.69in, var 1.25in])
+  line26 = line(start = [var -0.69in, var 1.25in], end = [var 0in, var 1.25in])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, arc3.start])
+  coincident([arc3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, arc7.start])
+  coincident([arc7.end, line8.start])
+  coincident([line8.end, line9.start])
+  coincident([line9.end, line10.start])
+  coincident([line10.end, arc11.start])
+  coincident([arc11.end, line12.start])
+  coincident([line12.end, line13.start])
+  coincident([line13.end, line14.start])
+  coincident([line14.end, line15.start])
+  coincident([line15.end, line16.start])
+  coincident([line16.end, arc16.start])
+  coincident([arc16.end, line17.start])
+  coincident([line17.end, line18.start])
+  coincident([line18.end, line19.start])
+  coincident([line19.end, arc20.start])
+  coincident([arc20.end, line21.start])
+  coincident([line21.end, line22.start])
+  coincident([line22.end, line23.start])
+  coincident([line23.end, arc24.start])
+  coincident([arc24.end, line25.start])
+  coincident([line25.end, line26.start])
+  coincident([line26.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  vertical(line8)
+  horizontal(line9)
+  tangent([line2, arc3])
+  tangent([arc3, line4])
+  tangent([line6, arc7])
+  tangent([arc7, line8])
+  tangent([line10, arc11])
+  tangent([arc11, line12])
+  horizontal(line12)
+  vertical(line13)
+  horizontal(line14)
+  vertical(line15)
+  horizontal(line16)
+  tangent([line16, arc16])
+  tangent([arc16, line17])
+  horizontal(line18)
+  vertical(line19)
+  tangent([line19, arc20])
+  tangent([arc20, line21])
+  horizontal(line22)
+  vertical(line23)
+  tangent([line23, arc24])
+  tangent([arc24, line25])
+  horizontal(line26)
+  vertical(line21)
+  vertical(line25)
+  horizontalDistance([ORIGIN, line1.start]) == 0in
+  verticalDistance([ORIGIN, line1.start]) == plateTopZ
+  distance([line1.start, line1.end]) == firstGrooveLeftY
+  distance([line2.start, line2.end]) == grooveWallHeight
+  equalLength([line2, line4])
+  equalLength([line2, line6])
+  equalLength([line2, line8])
+  radius(arc3) == tubeOuterRadius
+  distance([line5.start, line5.end]) == secondGrooveLeftY - firstGrooveRightY
+  radius(arc7) == tubeOuterRadius
+  distance([line9.start, line9.end]) == rampStartY - secondGrooveRightY
+  horizontalDistance([line10.start, line10.end]) == outletRampRun
+  verticalDistance([line10.start, line10.end]) == -outletRampDrop
+  radius(arc11) == outletArcRadius
+  distance([line12.start, line12.end]) == outletStraightLength
+  distance([line13.start, line13.end]) == outletArcEndZ
+  equalLength([line13, line15])
+  equalLength([line12, line16])
+  radius(arc16) == outletArcRadius
+  horizontalDistance([line17.start, line17.end]) == outletRampRun
+  verticalDistance([line17.start, line17.end]) == outletRampDrop
+  equalLength([line9, line18])
+  equalLength([line2, line19])
+  radius(arc20) == tubeOuterRadius
+  equalLength([line2, line21])
+  equalLength([line5, line22])
+  equalLength([line2, line23])
+  radius(arc24) == tubeOuterRadius
+  equalLength([line2, line25])
+  equalLength([line1, line26])
+}
+
+coldPlateRegion = region(segments = [coldPlateProfile.line1])
+coldPlate = extrude(coldPlateRegion, length = plateLength, symmetric = true)
+hide(coldPlateProfile)
 
 // Sketch the path for the copper tube to follow
-copperTubePath = startSketchOn(offsetPlane(XY, offset = tubeDiameter))
-  |> startProfile(at = [-7.35, -bendRadius * 3])
-  |> xLine(length = 14.13, tag = $seg05)
-  |> tangentialArc(angle = 180deg, radius = bendRadius, tag = $seg02)
-  |> angledLine(angle = tangentToEnd(seg02), length = 13.02, tag = $seg06)
-  |> tangentialArc(angle = -180deg, radius = bendRadius, tag = $seg03)
-  |> angledLine(angle = tangentToEnd(seg03), length = segLen(seg06))
-  |> tangentialArc(angle = 180deg, radius = bendRadius, tag = $seg04)
-  |> angledLine(angle = tangentToEnd(seg04), length = segLen(seg05))
+copperTubePath = sketch(on = offsetPlane(XY, offset = tubeDiameter)) {
+  inletGuide = line(start = [var 0in, var 0in], end = [var -7.35in, var -3in], construction = true)
+  rightLowerLoopGuide = line(start = [var 0in, var 0in], end = [var 6.78in, var -2in], construction = true)
+  leftLoopGuide = line(start = [var 0in, var 0in], end = [var -6.24in, var 0in], construction = true)
+  rightUpperLoopGuide = line(start = [var 0in, var 0in], end = [var 6.78in, var 2in], construction = true)
+  outletGuide = line(start = [var 0in, var 0in], end = [var -7.35in, var 3in], construction = true)
+  rightLowerArcStartGuide = line(start = [var 6.78in, var -2in], end = [var 6.78in, var -3in], construction = true)
+  rightLowerArcEndGuide = line(start = [var 6.78in, var -2in], end = [var 6.78in, var -1in], construction = true)
+  leftArcStartGuide = line(start = [var -6.24in, var 0in], end = [var -6.24in, var 1in], construction = true)
+  leftArcEndGuide = line(start = [var -6.24in, var 0in], end = [var -6.24in, var -1in], construction = true)
+  rightUpperArcStartGuide = line(start = [var 6.78in, var 2in], end = [var 6.78in, var 1in], construction = true)
+  rightUpperArcEndGuide = line(start = [var 6.78in, var 2in], end = [var 6.78in, var 3in], construction = true)
 
-// Create the profile for the inner and outer diameter of the hollow copper tube
-tubeWall = startSketchOn(offsetPlane(YZ, offset = -7.35))
-  |> circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2)
-  |> subtract2d(tool = circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2 - wallThickness))
-  |> sweep(path = copperTubePath)
-  |> appearance(color = "#b81b0a")
+  line1 = line(start = [var -7.35in, var -3in], end = [var 6.78in, var -3in])
+  arc2 = arc(start = [var 6.78in, var -3in], end = [var 6.78in, var -1in], center = [var 6.78in, var -2in])
+  line3 = line(start = [var 6.78in, var -1in], end = [var -6.24in, var -1in])
+  arc4 = arc(start = [var -6.24in, var 1in], end = [var -6.24in, var -1in], center = [var -6.24in, var 0in])
+  line5 = line(start = [var -6.24in, var 1in], end = [var 6.78in, var 1in])
+  arc6 = arc(start = [var 6.78in, var 1in], end = [var 6.78in, var 3in], center = [var 6.78in, var 2in])
+  line7 = line(start = [var 6.78in, var 3in], end = [var -7.35in, var 3in])
+
+  coincident([inletGuide.start, ORIGIN])
+  coincident([rightLowerLoopGuide.start, ORIGIN])
+  coincident([leftLoopGuide.start, ORIGIN])
+  coincident([rightUpperLoopGuide.start, ORIGIN])
+  coincident([outletGuide.start, ORIGIN])
+  coincident([inletGuide.end, line1.start])
+  coincident([rightLowerLoopGuide.end, arc2.center])
+  coincident([leftLoopGuide.end, arc4.center])
+  coincident([rightUpperLoopGuide.end, arc6.center])
+  coincident([outletGuide.end, line7.end])
+  coincident([
+    rightLowerArcStartGuide.start,
+    arc2.center
+  ])
+  coincident([
+    rightLowerArcStartGuide.end,
+    arc2.start
+  ])
+  coincident([
+    rightLowerArcEndGuide.start,
+    arc2.center
+  ])
+  coincident([rightLowerArcEndGuide.end, arc2.end])
+  coincident([leftArcStartGuide.start, arc4.center])
+  coincident([leftArcStartGuide.end, arc4.start])
+  coincident([leftArcEndGuide.start, arc4.center])
+  coincident([leftArcEndGuide.end, arc4.end])
+  coincident([
+    rightUpperArcStartGuide.start,
+    arc6.center
+  ])
+  coincident([
+    rightUpperArcStartGuide.end,
+    arc6.start
+  ])
+  coincident([
+    rightUpperArcEndGuide.start,
+    arc6.center
+  ])
+  coincident([rightUpperArcEndGuide.end, arc6.end])
+  coincident([line1.end, arc2.start])
+  coincident([arc2.end, line3.start])
+  coincident([line3.end, arc4.end])
+  coincident([arc4.start, line5.start])
+  coincident([line5.end, arc6.start])
+  coincident([arc6.end, line7.start])
+  horizontal(line1)
+  tangent([line1, arc2])
+  tangent([arc2, line3])
+  horizontal(line3)
+  tangent([line3, arc4])
+  tangent([arc4, line5])
+  horizontal(line5)
+  tangent([line5, arc6])
+  tangent([arc6, line7])
+  horizontal(line7)
+  vertical(rightLowerArcStartGuide)
+  vertical(rightLowerArcEndGuide)
+  vertical(leftArcStartGuide)
+  vertical(leftArcEndGuide)
+  vertical(rightUpperArcStartGuide)
+  vertical(rightUpperArcEndGuide)
+  horizontalDistance([inletGuide.start, inletGuide.end]) == tubeInletX
+  verticalDistance([inletGuide.start, inletGuide.end]) == tubeLowerPassY
+  horizontalDistance([
+  rightLowerLoopGuide.start,
+  rightLowerLoopGuide.end
+]) == tubeRightLoopX
+  verticalDistance([
+  rightLowerLoopGuide.start,
+  rightLowerLoopGuide.end
+]) == tubeLowerLoopCenterY
+  horizontalDistance([leftLoopGuide.start, leftLoopGuide.end]) == tubeLeftLoopX
+  verticalDistance([leftLoopGuide.start, leftLoopGuide.end]) == 0in
+  horizontalDistance([
+  rightUpperLoopGuide.start,
+  rightUpperLoopGuide.end
+]) == tubeRightLoopX
+  verticalDistance([
+  rightUpperLoopGuide.start,
+  rightUpperLoopGuide.end
+]) == tubeUpperLoopCenterY
+  horizontalDistance([outletGuide.start, outletGuide.end]) == tubeInletX
+  verticalDistance([outletGuide.start, outletGuide.end]) == tubeUpperPassY
+  distance([
+  rightLowerArcStartGuide.start,
+  rightLowerArcStartGuide.end
+]) == bendRadius
+  equalLength([
+    rightLowerArcStartGuide,
+    rightLowerArcEndGuide
+  ])
+  distance([
+  leftArcStartGuide.start,
+  leftArcStartGuide.end
+]) == bendRadius
+  equalLength([leftArcStartGuide, leftArcEndGuide])
+  distance([
+  rightUpperArcStartGuide.start,
+  rightUpperArcStartGuide.end
+]) == bendRadius
+  equalLength([
+    rightUpperArcStartGuide,
+    rightUpperArcEndGuide
+  ])
+}
+
+copperTubeSweepPath = [
+  copperTubePath.line1,
+  copperTubePath.arc2,
+  copperTubePath.line3,
+  copperTubePath.arc4,
+  copperTubePath.line5,
+  copperTubePath.arc6,
+  copperTubePath.line7
+]
 
 // Model a brazed cap to cover each tube. Constrain the caps using the walls of the plate
-brazedCap = startSketchOn(YZ)
-  |> startProfile(at = segEnd(seg07))
-  |> arc(interiorAbsolute = [bendRadius * 3, tubeDiameter * 1.85], endAbsolute = segEnd(seg08))
-  |> yLine(endAbsolute = segStartY(seg08))
-  |> arc(
-       interiorAbsolute = [
-         bendRadius * 3,
-         segEndY(seg09) + tubeDiameter / 2
-       ],
-       endAbsolute = segEnd(seg09),
-     )
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = 10, symmetric = true)
-  |> patternLinear3d(instances = 4, distance = bendRadius * 2, axis = [0, -1, 0])
-  |> appearance(color = "#6b261e")
+brazedCapProfile = sketch(on = YZ) {
+  bottomCenterGuide = line(start = [var 0in, var 0in], end = [var 3in, var 0.63in], construction = true)
+  topCenterGuide = line(start = [var 0in, var 0in], end = [var 3in, var 1.72in], construction = true)
+
+  arc1 = arc(start = [var 2.69in, var 1.25in], end = [var 3.31in, var 1.25in], center = [var 3in, var 1.72in])
+  line2 = line(start = [var 3.31in, var 1.25in], end = [var 3.31in, var 0.63in])
+  arc3 = arc(start = [var 3.31in, var 0.63in], end = [var 2.69in, var 0.63in], center = [var 3in, var 0.63in])
+  line4 = line(start = [var 2.69in, var 0.63in], end = [var 2.69in, var 1.25in])
+
+  coincident([bottomCenterGuide.start, ORIGIN])
+  coincident([topCenterGuide.start, ORIGIN])
+  coincident([bottomCenterGuide.end, arc3.center])
+  coincident([topCenterGuide.end, arc1.center])
+  coincident([arc1.end, line2.start])
+  coincident([line2.end, arc3.start])
+  coincident([arc3.end, line4.start])
+  coincident([line4.end, arc1.start])
+  vertical(line2)
+  tangent([line2, arc3])
+  tangent([arc3, line4])
+  vertical(line4)
+  horizontalDistance([
+  bottomCenterGuide.start,
+  bottomCenterGuide.end
+]) == secondGrooveCenterY
+  verticalDistance([
+  bottomCenterGuide.start,
+  bottomCenterGuide.end
+]) == grooveFloorZ
+  horizontalDistance([
+  topCenterGuide.start,
+  topCenterGuide.end
+]) == secondGrooveCenterY
+  verticalDistance([
+  topCenterGuide.start,
+  topCenterGuide.end
+]) == plateTopZ + tubeDiameter * 0.75
+  distance([line2.start, line2.end]) == grooveWallHeight
+  equalLength([line2, line4])
+  radius(arc3) == tubeOuterRadius
+}
+
+brazedCapRegion = region(segments = [brazedCapProfile.arc1])
+brazedCapBody = extrude(brazedCapRegion, length = plateLength, symmetric = true)
+brazedCapPattern = patternLinear3d(
+  brazedCapBody,
+  instances = 4,
+  distance = bendRadius * 2,
+  axis = [0, -1, 0],
+)
+brazedCap = appearance(brazedCapPattern, color = "#6b261e")
+hide(brazedCapProfile)
+
+// Create the profile for the inner and outer diameter of the hollow copper tube
+tubeSectionSketch = sketch(on = offsetPlane(YZ, offset = tubeInletX)) {
+  centerGuide = line(start = [var 0in, var 0in], end = [var -3in, var 0.63in], construction = true)
+  outerRadiusGuide = line(start = [var -3in, var 0.63in], end = [var -2.69in, var 0.63in], construction = true)
+  innerRadiusGuide = line(start = [var -3in, var 0.63in], end = [var -2.77in, var 0.63in], construction = true)
+
+  outerCircle = circle(start = [var -2.69in, var 0.63in], center = [var -3in, var 0.63in])
+  innerCircle = circle(start = [var -2.77in, var 0.63in], center = [var -3in, var 0.63in])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, outerCircle.center])
+  coincident([innerCircle.center, outerCircle.center])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+  coincident([
+    innerRadiusGuide.start,
+    innerCircle.center
+  ])
+  coincident([
+    innerRadiusGuide.end,
+    innerCircle.start
+  ])
+  horizontal(outerRadiusGuide)
+  horizontal(innerRadiusGuide)
+  horizontalDistance([centerGuide.start, centerGuide.end]) == tubeLowerPassY
+  verticalDistance([centerGuide.start, centerGuide.end]) == grooveFloorZ
+  horizontalDistance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == tubeOuterRadius
+  horizontalDistance([
+  innerRadiusGuide.start,
+  innerRadiusGuide.end
+]) == tubeInnerRadius
+}
+
+tubeSectionProfile = region(
+  point = [
+    tubeLowerPassY + tubeInnerRadius + wallThickness / 2,
+    grooveFloorZ
+  ],
+  sketch = tubeSectionSketch,
+)
+tubeWallBody = sweep(tubeSectionProfile, path = copperTubeSweepPath)
+tubeWall = appearance(tubeWallBody, color = "#b81b0a")
+hide(tubeSectionSketch)
+hide(copperTubePath)

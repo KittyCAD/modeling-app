@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 mountingHoleDia = .625
@@ -18,36 +18,179 @@ baseThickness = .625
 topTotalThickness = totalThickness - (bottomThickness + baseThickness)
 nHoles = 4
 
+mountingHoleRadius = mountingHoleDia / 2
+mountingHolePlacementRadius = mountingHolePlacementDiameter / 2
+baseRadius = baseDia / 2
+topTotalRadius = topTotalDiameter / 2
+bottomTotalRadius = bottomTotalDiameter / 2
+pipeRadius = pipeDia / 2
+
 // Add assertion so nHoles are always greater than 1
 assert(nHoles, isGreaterThan = 1, error = "nHoles must be greater than 1")
-
-// Create the circular pattern for the mounting holes
-circles = startSketchOn(XY)
-  |> circle(center = [mountingHolePlacementDiameter / 2, 0], radius = mountingHoleDia / 2)
-  |> patternCircular2d(
-       arcDegrees = 360,
-       center = [0, 0],
-       instances = nHoles,
-       rotateDuplicates = true,
-     )
+assert(nHoles, isEqualTo = 4, error = "This converted flange sample preserves the legacy four-hole layout.")
 
 // Create the base of the flange and add the mounting holes
-flangeBase = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = baseDia / 2)
-  |> subtract2d(tool = circles)
-  |> extrude(length = baseThickness)
+baseProfile = sketch(on = XY) {
+  outerCircle = circle(start = [var 2.4in, var 0in], center = [var 0in, var 0in])
+  outerRadiusGuide = line(start = [var 0in, var 0in], end = [var 2.4in, var 0in], construction = true)
+
+  // Create the circular pattern for the mounting holes
+  rightCenterGuide = line(start = [var 0in, var 0in], end = [var 1.75in, var 0in], construction = true)
+  topCenterGuide = line(start = [var 0in, var 0in], end = [var 0in, var 1.75in], construction = true)
+  leftCenterGuide = line(start = [var 0in, var 0in], end = [var -1.75in, var 0in], construction = true)
+  bottomCenterGuide = line(start = [var 0in, var 0in], end = [var 0in, var -1.75in], construction = true)
+
+  rightRadiusGuide = line(start = [var 1.75in, var 0in], end = [var 2.1in, var 0in], construction = true)
+  topRadiusGuide = line(start = [var 0in, var 1.75in], end = [var 0in, var 2.1in], construction = true)
+  leftRadiusGuide = line(start = [var -1.75in, var 0in], end = [var -2.1in, var 0in], construction = true)
+  bottomRadiusGuide = line(start = [var 0in, var -1.75in], end = [var 0in, var -2.1in], construction = true)
+
+  rightHole = circle(start = [var 2.1in, var 0in], center = [var 1.75in, var 0in])
+  topHole = circle(start = [var 0in, var 2.1in], center = [var 0in, var 1.75in])
+  leftHole = circle(start = [var -2.1in, var 0in], center = [var -1.75in, var 0in])
+  bottomHole = circle(start = [var 0in, var -2.1in], center = [var 0in, var -1.75in])
+
+  coincident([outerCircle.center, ORIGIN])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+
+  coincident([rightCenterGuide.start, ORIGIN])
+  coincident([topCenterGuide.start, ORIGIN])
+  coincident([leftCenterGuide.start, ORIGIN])
+  coincident([bottomCenterGuide.start, ORIGIN])
+
+  coincident([rightCenterGuide.end, rightHole.center])
+  coincident([topCenterGuide.end, topHole.center])
+  coincident([leftCenterGuide.end, leftHole.center])
+  coincident([
+    bottomCenterGuide.end,
+    bottomHole.center
+  ])
+
+  coincident([
+    rightRadiusGuide.start,
+    rightHole.center
+  ])
+  coincident([rightRadiusGuide.end, rightHole.start])
+  coincident([topRadiusGuide.start, topHole.center])
+  coincident([topRadiusGuide.end, topHole.start])
+  coincident([leftRadiusGuide.start, leftHole.center])
+  coincident([leftRadiusGuide.end, leftHole.start])
+  coincident([
+    bottomRadiusGuide.start,
+    bottomHole.center
+  ])
+  coincident([
+    bottomRadiusGuide.end,
+    bottomHole.start
+  ])
+
+  horizontal(outerRadiusGuide)
+  horizontal(rightCenterGuide)
+  vertical(topCenterGuide)
+  horizontal(leftCenterGuide)
+  vertical(bottomCenterGuide)
+  horizontal(rightRadiusGuide)
+  vertical(topRadiusGuide)
+  horizontal(leftRadiusGuide)
+  vertical(bottomRadiusGuide)
+
+  distance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == baseRadius
+  horizontalDistance([
+  rightCenterGuide.start,
+  rightCenterGuide.end
+]) == mountingHolePlacementRadius
+  verticalDistance([
+  topCenterGuide.start,
+  topCenterGuide.end
+]) == mountingHolePlacementRadius
+  horizontalDistance([
+  leftCenterGuide.start,
+  leftCenterGuide.end
+]) == -mountingHolePlacementRadius
+  verticalDistance([
+  bottomCenterGuide.start,
+  bottomCenterGuide.end
+]) == -mountingHolePlacementRadius
+  distance([
+  rightRadiusGuide.start,
+  rightRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  topRadiusGuide.start,
+  topRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  leftRadiusGuide.start,
+  leftRadiusGuide.end
+]) == mountingHoleRadius
+  distance([
+  bottomRadiusGuide.start,
+  bottomRadiusGuide.end
+]) == mountingHoleRadius
+}
+
+baseRegion = region(point = [baseRadius / 2, 0in], sketch = baseProfile)
+hiddenBaseProfile = hide(baseProfile)
+flangeBase = extrude(baseRegion, length = baseThickness)
 
 // Create the extrusion on the top of the flange base
-topExtrusion = startSketchOn(flangeBase, face = END)
-  |> circle(center = [0, 0], radius = topTotalDiameter / 2)
-  |> extrude(length = topTotalThickness)
+topBossProfile = sketch(on = startSketchOn(flangeBase, face = END)) {
+  circle1 = circle(start = [var 1.2in, var 0in], center = [var 0in, var 0in])
+  radiusGuide = line(start = [var 0in, var 0in], end = [var 1.2in, var 0in], construction = true)
+
+  coincident([circle1.center, ORIGIN])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(radiusGuide)
+  distance([radiusGuide.start, radiusGuide.end]) == topTotalRadius
+}
+
+topBossRegion = region(segments = [topBossProfile.circle1])
+hiddenTopBossProfile = hide(topBossProfile)
+flangeWithTopBoss = extrude(topBossRegion, length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
-bottomExtrusion = startSketchOn(flangeBase, face = START)
-  |> circle(center = [0, 0], radius = bottomTotalDiameter / 2)
-  |> extrude(length = bottomThickness)
+bottomBossProfile = sketch(on = startSketchOn(flangeBase, face = START)) {
+  circle1 = circle(start = [var 1.3in, var 0in], center = [var 0in, var 0in])
+  radiusGuide = line(start = [var 0in, var 0in], end = [var 1.3in, var 0in], construction = true)
+
+  coincident([circle1.center, ORIGIN])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(radiusGuide)
+  distance([radiusGuide.start, radiusGuide.end]) == bottomTotalRadius
+}
+
+bottomBossRegion = region(segments = [bottomBossProfile.circle1])
+hiddenBottomBossProfile = hide(bottomBossProfile)
+flangeWithBottomBoss = extrude(bottomBossRegion, length = bottomThickness)
 
 // Cut a hole through the entire body
-pipeHole = startSketchOn(topExtrusion, face = END)
-  |> circle(center = [0, 0], radius = pipeDia / 2)
-  |> extrude(length = -(topTotalThickness + baseThickness + bottomThickness))
+pipeHoleProfile = sketch(on = startSketchOn(flangeWithTopBoss, face = END)) {
+  circle1 = circle(start = [var 0.7in, var 0in], center = [var 0in, var 0in])
+  radiusGuide = line(start = [var 0in, var 0in], end = [var 0.7in, var 0in], construction = true)
+
+  coincident([circle1.center, ORIGIN])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(radiusGuide)
+  distance([radiusGuide.start, radiusGuide.end]) == pipeRadius
+}
+
+pipeHoleRegion = region(segments = [pipeHoleProfile.circle1])
+hiddenPipeHoleProfile = hide(pipeHoleProfile)
+pipeHoleCutter = extrude(pipeHoleRegion, length = -totalThickness, method = NEW)
+flange = subtract([flangeWithBottomBoss], tools = [pipeHoleCutter])

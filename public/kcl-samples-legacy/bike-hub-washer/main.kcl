@@ -1,0 +1,42 @@
+// Bike hub washer
+// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.
+// Categories: Automotive
+
+@settings(defaultLengthUnit = mm)
+
+radius = 29
+radiusInner = 22
+ringWidth = 7
+ringHeight = 7.5
+
+topHeight = 7
+topRimWidth = 1.2
+topInset = 3
+
+bottomInnerRimWidth = 2
+bottomOuterRimWidth = 3
+bottomEdge = 1
+bottomHeight = 2
+bottomExtrusionWidth = 2
+
+insideRingWidth = 3
+
+assert(bottomInnerRimWidth + bottomOuterRimWidth + bottomExtrusionWidth, isEqualTo = ringWidth)
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])
+  |> xLine(length = bottomInnerRimWidth)
+  |> yLine(length = -bottomHeight)
+  |> xLine(length = bottomExtrusionWidth)
+  |> yLine(length = bottomHeight)
+  |> xLine(length = bottomOuterRimWidth - 0.3)
+  |> yLine(length = bottomEdge)
+  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ringHeight])
+  |> xLine(length = -topRimWidth)
+  |> yLine(length = -topInset)
+  |> xLine(length = -2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+revolve001 = revolve(profile001, angle = 360deg, axis = Y)
+sketch002 = startSketchOn(-XZ)

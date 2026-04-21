@@ -33,6 +33,15 @@ description: Artifact commands box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,7 +68,7 @@ description: Artifact commands box.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.0,
+          "x": -5.000000000000013,
           "y": -5.0,
           "z": 0.0
         }
@@ -81,11 +90,11 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
-            "y": 0.0,
+            "x": 4.999999999999988,
+            "y": -5.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 10.0,
+            "x": 4.999999999999989,
+            "y": 4.999999999999999,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -115,11 +124,11 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.0,
-            "y": 0.0,
+            "x": -5.000000000000015,
+            "y": 4.999999999999999,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -127,8 +136,29 @@ description: Artifact commands box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -5.000000000000014,
+            "y": -5.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

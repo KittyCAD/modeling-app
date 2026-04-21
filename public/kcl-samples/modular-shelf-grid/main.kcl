@@ -10,7 +10,7 @@
 // All dimensions and counts are parametric, enabling rapid iteration
 // for uses such as built-ins, modular wall storage, or retail shelving.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0)
+@settings(defaultLengthUnit = m)
 
 columnCount = 5 // number of shelf modules in horizontal direction (X axis)
 rowCount = 3 // number of shelf modules in vertical direction (Z axis)
@@ -35,32 +35,73 @@ shelfSpacing = unitHeight - shelfThickness // position of top shelf above bottom
 
 
 // --- Reference Plane ---
-basePlane = startSketchOn(XY)
+basePlane = XY
 
 // --- Side Panels ---
 // Left and right vertical panels forming module sides.
-sidePanelProfile = startProfile(basePlane, at = [-unitWidth / 2, 0])
-  |> yLine(length = -unitDepth)
-  |> xLine(length = panelThickness)
-  |> yLine(length = unitDepth)
-  |> close()
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = sidePanelOffset,
-       axis = [1, 0],
-     )
-sidePanels = extrude(sidePanelProfile, length = unitHeight)
+sidePanelProfile = sketch(on = basePlane) {
+  bottomEdge = line(start = [var -0.2m, var -0.4m], end = [var -0.18m, var -0.4m])
+  innerEdge = line(start = [var -0.18m, var -0.4m], end = [var -0.18m, var 0m])
+  coincident([bottomEdge.end, innerEdge.start])
+  topEdge = line(start = [var -0.18m, var 0m], end = [var -0.2m, var 0m])
+  coincident([innerEdge.end, topEdge.start])
+  outerEdge = line(start = [var -0.2m, var 0m], end = [var -0.2m, var -0.4m])
+  coincident([topEdge.end, outerEdge.start])
+  coincident([outerEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  vertical(innerEdge)
+  horizontal(topEdge)
+  vertical(outerEdge)
+
+  originGuide = line(start = [var -0.18m, var 0m], end = [var 0m, var 0m], construction = true)
+  coincident([originGuide.start, topEdge.start])
+  coincident([originGuide.end, ORIGIN])
+  horizontal(originGuide)
+
+  horizontalDistance([outerEdge.start, ORIGIN]) == unitWidth / 2
+  verticalDistance([outerEdge.end, outerEdge.start]) == unitDepth
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == panelThickness
+}
+
+sidePanelRegion = region(segments = [sidePanelProfile.bottomEdge])
+sidePanel = extrude(sidePanelRegion, length = unitHeight)
+sidePanels = patternLinear3d(
+  sidePanel,
+  instances = 2,
+  distance = sidePanelOffset,
+  axis = [1, 0, 0],
+)
 
 // --- Shelf Boards ---
 // Two shelves: one at the bottom, one at the top of each module.
-firstShelfSketch = startSketchOn(basePlane)
-firstShelfProfile = startProfile(firstShelfSketch, at = [-shelfWidth / 2, 0])
-  |> yLine(length = -shelfDepth)
-  |> xLine(length = shelfWidth)
-  |> yLine(length = shelfDepth)
-  |> close()
-firstShelf = extrude(firstShelfProfile, length = shelfThickness)
+firstShelfProfile = sketch(on = basePlane) {
+  leftEdge = line(start = [var -0.18m, var 0m], end = [var -0.18m, var -0.4m])
+  backEdge = line(start = [var -0.18m, var -0.4m], end = [var 0.18m, var -0.4m])
+  coincident([leftEdge.end, backEdge.start])
+  rightEdge = line(start = [var 0.18m, var -0.4m], end = [var 0.18m, var 0m])
+  coincident([backEdge.end, rightEdge.start])
+  frontEdge = line(start = [var 0.18m, var 0m], end = [var -0.18m, var 0m])
+  coincident([rightEdge.end, frontEdge.start])
+  coincident([frontEdge.end, leftEdge.start])
+
+  vertical(leftEdge)
+  horizontal(backEdge)
+  vertical(rightEdge)
+  horizontal(frontEdge)
+
+  centerGuide = line(start = [var -0.18m, var 0m], end = [var 0m, var 0m], construction = true)
+  coincident([centerGuide.start, frontEdge.end])
+  coincident([centerGuide.end, ORIGIN])
+  horizontal(centerGuide)
+
+  horizontalDistance([leftEdge.start, ORIGIN]) == shelfWidth / 2
+  verticalDistance([leftEdge.end, leftEdge.start]) == shelfDepth
+  horizontalDistance([backEdge.start, backEdge.end]) == shelfWidth
+}
+
+firstShelfRegion = region(segments = [firstShelfProfile.leftEdge])
+firstShelf = extrude(firstShelfRegion, length = shelfThickness)
 
 // Stack two shelf boards inside the unit (bottom and top)
 shelves = patternLinear3d(
@@ -70,11 +111,12 @@ shelves = patternLinear3d(
   axis = [0, 0, 1],
 )
 
+hiddenSidePanelProfile = hide(sidePanelProfile)
+hiddenFirstShelfProfile = hide(firstShelfProfile)
+
 // --- Grid of Shelf Modules ---
 // Repeats the basic shelf module (side panels + two shelves)
 // in both horizontal and vertical directions to form a full grid.
-
-
 modularShelfArray = patternLinear3d(
        [sidePanels, shelves],
        instances = columnCount,
