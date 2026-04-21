@@ -1,7 +1,7 @@
 // Fun-Stacker!
-// the fun stacking toy from Zoo
-// for babies 6 months and older
-// made using zds
+// The fun stacking toy from Zoo for babies 6 months and older made using zds.
+// Categories: Maker
+
 @settings(defaultLengthUnit = in)
 
 ringradius = 1in

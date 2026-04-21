@@ -1,5 +1,7 @@
 // Adjustable L‑Bracket
 // Sketch-solve reconstruction with matching feature order
+// Categories: Manufacturing, Automotive, Aerospace, Construction
+
 @settings(defaultLengthUnit = mm)
 
 // model parameters
