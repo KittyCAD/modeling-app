@@ -4,7 +4,7 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import Constants
-import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
+import * from "globals.kcl"
 
 // Base Plate
 sketch004 = sketch(on = XY) {

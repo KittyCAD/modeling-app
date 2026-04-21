@@ -3,7 +3,8 @@
 // Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-import axisJ1, axisJ2, axisJ2ArmWidth, axisJ2ArmLength, axisJ2ArmThickness, plane003 from "globals.kcl"
+// Import Constants
+import * from "globals.kcl"
 
 // Create Body of J2 Robot Arm
 sketch011 = sketch(on = plane003) {

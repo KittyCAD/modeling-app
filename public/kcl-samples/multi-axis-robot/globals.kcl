@@ -1,7 +1,9 @@
 // Global constants for the multi-axis robot
 
+// Define Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
+// Export constants
 export axisJ4 = 25deg
 export axisJ3 = 60deg
 export axisJ2 = 110deg
