@@ -1762,8 +1762,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      // No need to go up-graph here for composite solids, it's the end of the line
-      result.push(currentId)
+      pushToSomething(currentId, current.compositeSolidId)
     }
   }
 
