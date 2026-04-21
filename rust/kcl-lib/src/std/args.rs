@@ -18,6 +18,7 @@ use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Geometry;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
@@ -347,21 +348,20 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let (epoch, KclValue::TagIdentifier(t)) =
-            exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
-        {
-            let info = t.get_info(epoch).ok_or_else(|| {
-                KclError::new_type(KclErrorDetails::new(
-                    format!("Tag `{}` does not have engine info", tag.value),
-                    vec![self.source_range],
-                ))
-            })?;
-            Ok(info)
-        } else {
-            Err(KclError::new_type(KclErrorDetails::new(
-                format!("Tag `{}` does not exist", tag.value),
+        match exec_state.stack().get_from_call_stack(&tag.value, self.source_range)? {
+            (epoch, KclValue::TagIdentifier(t)) => {
+                let info = t.get_info(epoch).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        format!("Tag `{}` does not have engine info", tag.value),
+                        vec![self.source_range],
+                    ))
+                })?;
+                Ok(info)
+            }
+            _ => Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Tag `{}` is bound to an unexpected type", tag.value),
                 vec![self.source_range],
-            )))
+            ))),
         }
     }
 
@@ -390,13 +390,48 @@ impl Args {
     where
         'e: 'a,
     {
-        if let Some(info) = tag.get_cur_info()
+        let info = tag.get_cur_info();
+        if let Some(info) = info
             && info.surface.is_some()
         {
             return Ok(info);
         }
 
-        self.get_tag_info_from_memory(exec_state, tag)
+        self.get_tag_info_from_memory(exec_state, tag).map_err(|err| {
+            if err.is_undefined_value() {
+                // Looking the tag up in memory didn't find it. Provide a more
+                // helpful message.
+                self.tag_requires_face_error(tag, info)
+            } else {
+                err
+            }
+        })
+    }
+
+    fn tag_requires_face_error(&self, tag: &TagIdentifier, info: Option<&crate::execution::TagEngineInfo>) -> KclError {
+        let what = if let Some(info) = info {
+            if info.path.is_some() {
+                match &info.geometry {
+                    Geometry::Sketch(_) => "a sketch edge",
+                    Geometry::Solid(_) => "a solid edge",
+                }
+            } else {
+                match &info.geometry {
+                    Geometry::Sketch(_) => "sketch geometry",
+                    Geometry::Solid(_) => "solid geometry",
+                }
+            }
+        } else {
+            "non-face geometry"
+        };
+
+        KclError::new_type(KclErrorDetails::new(
+            format!(
+                "Tag `{}` refers to {what}, but this operation requires a face tag",
+                tag.value
+            ),
+            vec![self.source_range],
+        ))
     }
 
     pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
@@ -447,12 +482,10 @@ impl Args {
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
-        let surface = engine_info.surface.as_ref().ok_or_else(|| {
-            KclError::new_type(KclErrorDetails::new(
-                format!("Tag `{}` does not have a surface", tag.value),
-                vec![self.source_range],
-            ))
-        })?;
+        let surface = engine_info
+            .surface
+            .as_ref()
+            .ok_or_else(|| self.tag_requires_face_error(tag, Some(engine_info)))?;
 
         if let Some(face_from_surface) = match surface {
             ExtrudeSurface::ExtrudePlane(extrude_plane) => {
@@ -1439,5 +1472,68 @@ impl From<Args> for Vec<Metadata> {
         vec![Metadata {
             source_range: value.source_range,
         }]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Args;
+    use crate::ExecutorContext;
+    use crate::Program;
+    use crate::SourceRange;
+    use crate::execution::ExecState;
+    use crate::execution::KclValue;
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn get_adjacent_face_to_tag_reports_edge_type_error() {
+        let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -29.28mm, var 0mm], end = [var 125.8mm, var 0mm])
+  line2 = line(start = [var 99.31mm, var -22.51mm], end = [var 100.13mm, var 117.07mm])
+  line3 = line(start = [var 134.91mm, var 99.22mm], end = [var -24.16mm, var 100.24mm])
+  line4 = line(start = [var 0mm, var 111.97mm], end = [var 0mm, var -28.12mm])
+}
+region001 = region(point = [50mm, 0.0025mm], sketch = sketch001)
+"#;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = Program::parse_no_errs(code).unwrap();
+        let result = ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+
+        let tag = result
+            .variables
+            .get("region001")
+            .and_then(KclValue::as_sketch)
+            .expect("region001 should be a sketch")
+            .tags
+            .get("line1")
+            .expect("line1 tag should exist on the region")
+            .clone();
+
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        exec_state.mut_stack().push_new_root_env(false);
+        let args = Args::new_no_args(SourceRange::default(), None, ctx.clone(), Some("test".to_owned()));
+
+        let err = args
+            .get_adjacent_face_to_tag(&mut exec_state, &tag, false)
+            .await
+            .unwrap_err();
+
+        assert_eq!(err.error_type(), "type");
+        assert_eq!(
+            err.message(),
+            "Tag `line1` refers to a sketch edge, but this operation requires a face tag"
+        );
+
+        ctx.close().await;
     }
 }
