@@ -11751,12 +11751,6 @@ description: Result of parsing fun-stacker-toy.kcl
           "start": 0,
           "type": "Identifier"
         },
-        "preComments": [
-          "// Fun-Stacker!",
-          "// the fun stacking toy from Zoo",
-          "// for babies 6 months and older",
-          "// made using zds"
-        ],
         "properties": [
           {
             "commentStart": 0,
@@ -11813,6 +11807,52 @@ description: Result of parsing fun-stacker-toy.kcl
         ]
       },
       "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Fun-Stacker!",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "The fun stacking toy from Zoo for babies 6 months and older made using zds.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
         {
           "commentStart": 0,
           "end": 0,

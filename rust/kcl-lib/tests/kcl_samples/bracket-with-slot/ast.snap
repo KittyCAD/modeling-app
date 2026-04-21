@@ -16689,10 +16689,6 @@ description: Result of parsing bracket-with-slot.kcl
           "start": 0,
           "type": "Identifier"
         },
-        "preComments": [
-          "// Adjustable L‑Bracket",
-          "// Sketch-solve reconstruction with matching feature order"
-        ],
         "properties": [
           {
             "commentStart": 0,
@@ -16941,6 +16937,52 @@ description: Result of parsing bracket-with-slot.kcl
         ]
       },
       "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Adjustable L‑Bracket",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Sketch-solve reconstruction with matching feature order",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Manufacturing, Automotive, Aerospace, Construction",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
         {
           "commentStart": 0,
           "end": 0,

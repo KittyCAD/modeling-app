@@ -140,6 +140,12 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Automotive",
+      "Aerospace",
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "bracket-with-slot/main.kcl",
     "multipleFiles": false,
     "title": "Adjustable L‑Bracket",
@@ -447,10 +453,13 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "fun-stacker-toy/main.kcl",
     "multipleFiles": false,
     "title": "Fun-Stacker!",
-    "description": "the fun stacking toy from Zoo",
+    "description": "The fun stacking toy from Zoo for babies 6 months and older made using zds.",
     "files": [
       "main.kcl"
     ]
@@ -845,10 +854,13 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "router-template-cross-bar/main.kcl",
     "multipleFiles": false,
-    "title": "@settings(defaultLengthUnit = mm, kclVersion = 1.0)",
-    "description": "",
+    "title": "Router Template for a Cross bar",
+    "description": "A guide for routing a slate for a cross bar.",
     "files": [
       "main.kcl"
     ]
