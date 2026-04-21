@@ -30,8 +30,10 @@ export function AutoUpdateReadyStatus({
         <Tooltip
           data-testid="auto-update-release-notes-tooltip"
           position="top-left"
-          wrapperClassName="z-50"
+          wrapperClassName="z-50 pointer-events-auto"
           contentClassName="max-w-[28rem] text-left"
+          inert={false}
+          onClick={(event) => event.stopPropagation()}
         >
           <div className="px-1 py-0.5 space-y-2">
             <p className="text-[10px] uppercase tracking-wide text-chalkboard-70 dark:text-chalkboard-40">
@@ -44,7 +46,7 @@ export function AutoUpdateReadyStatus({
             )}
             <MarkdownText
               text={releaseNotes}
-              className="block text-xs leading-relaxed max-h-48 overflow-hidden"
+              className="block text-xs leading-relaxed max-h-48 overflow-y-auto"
             />
           </div>
         </Tooltip>

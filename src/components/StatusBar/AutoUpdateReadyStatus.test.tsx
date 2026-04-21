@@ -33,12 +33,16 @@ describe('AutoUpdateReadyStatus', () => {
       />
     )
 
-    expect(
-      screen.getByTestId('auto-update-release-notes-tooltip')
-    ).toBeInTheDocument()
+    const tooltip = screen.getByTestId('auto-update-release-notes-tooltip')
+
+    expect(tooltip).toBeInTheDocument()
+    expect(tooltip).not.toHaveAttribute('inert')
     expect(screen.getByText('Release notes for v1.2.3')).toBeInTheDocument()
     expect(screen.getByText('Highlights')).toBeInTheDocument()
     expect(screen.getByText(/Added/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Added/).closest('span.parsed-markdown')
+    ).toHaveClass('overflow-y-auto')
   })
 
   test('hides release notes tooltip when update has no release notes', () => {
