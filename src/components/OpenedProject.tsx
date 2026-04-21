@@ -210,6 +210,29 @@ export function OpenedProject() {
     kclManager
   )
 
+  useHotkeyWrapper(
+    ['alt + shift + f'],
+    () => {
+      void kclManager.format()
+    },
+    kclManager,
+    {
+      enabled: !isDesktop(),
+      enableOnContentEditable: true,
+      enableOnFormTags: true,
+      // Desktop uses the native Electron menu accelerator for this binding.
+      // Skip CodeMirror registration because this combo types a character there.
+      registerToCodeMirror: false,
+    }
+  )
+  useHotkeyWrapper(
+    ['ctrl + shift + c'],
+    () => {
+      void kclManager.convertToVariable()
+    },
+    kclManager
+  )
+
   useEngineConnectionSubscriptions()
 
   useEffect(() => {
