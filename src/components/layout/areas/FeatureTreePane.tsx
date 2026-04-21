@@ -199,7 +199,7 @@ export const FeatureTreePaneContents = memo(() => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1 flex flex-col gap-2"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         {kclManager.isExecuting ? (
           <Loading className="h-full" isDummy={true}>
@@ -211,7 +211,7 @@ export const FeatureTreePaneContents = memo(() => {
               <DefaultPlanes systemDeps={systemDeps} />
             )}
             {hasParseErrors && (
-              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none">
+              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
                 <p className="font-medium">
                   KCL parse errors are blocking the current feature tree.
                 </p>
