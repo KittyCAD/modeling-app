@@ -821,6 +821,26 @@ function getSolidSelectionsFromFaceSelections(
         return []
       }
 
+      const path = artifactGraph.get(sweep.pathId)
+      if (
+        face.artifact.type === 'cap' &&
+        path?.type === 'path' &&
+        path.compositeSolidId
+      ) {
+        const compositeSolid = artifactGraph.get(path.compositeSolidId)
+        if (compositeSolid?.type !== 'compositeSolid') {
+          return {
+            artifact: sweep as Artifact,
+            codeRef: sweep.codeRef,
+          }
+        }
+
+        return {
+          artifact: compositeSolid as Artifact,
+          codeRef: compositeSolid.codeRef,
+        }
+      }
+
       return {
         artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
