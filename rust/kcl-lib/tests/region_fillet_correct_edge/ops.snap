@@ -466,7 +466,7 @@ description: Operations executed region_fillet_correct_edge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
           }
         },
         "sourceRange": []
@@ -525,19 +525,19 @@ description: Operations executed region_fillet_correct_edge.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "meta": {
                 "type": "Object",
@@ -545,7 +545,7 @@ description: Operations executed region_fillet_correct_edge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
                     }
                   }
                 }
@@ -578,7 +578,7 @@ description: Operations executed region_fillet_correct_edge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []
@@ -620,7 +620,7 @@ description: Operations executed region_fillet_correct_edge.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -641,7 +641,7 @@ description: Operations executed region_fillet_correct_edge.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "d1f7ddf8-0900-5192-883a-c5663106d1e2"
           },
           "sourceRange": []
         }

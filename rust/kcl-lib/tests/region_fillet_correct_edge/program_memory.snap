@@ -6,8 +6,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,12 +39,12 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15dbbfa5-9041-5bba-95e7-7bf979e46c03",
+          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
           "sourceRange": [],
           "tag": {
             "commentStart": 35,
@@ -57,8 +57,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48074c54-c4ca-5e90-a769-aa07fedf724a",
+          "id": "19b80591-b217-553e-b524-394df234e28a",
           "sourceRange": [],
           "tag": {
             "commentStart": 116,
@@ -71,8 +71,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "39eb24b5-b442-587f-adb7-4fbd42682ff1",
+          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
           "sourceRange": [],
           "tag": {
             "commentStart": 199,
@@ -85,8 +85,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f7f85599-376d-5b79-9b5f-8c51c3872bad",
+          "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
           "sourceRange": [],
           "tag": {
             "commentStart": 280,
@@ -102,11 +102,11 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
               "sourceRange": []
             },
             "from": [
@@ -130,7 +130,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19b80591-b217-553e-b524-394df234e28a",
               "sourceRange": []
             },
             "from": [
@@ -154,7 +154,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
               "sourceRange": []
             },
             "from": [
@@ -178,7 +178,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
               "sourceRange": []
             },
             "from": [
@@ -202,8 +202,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -244,7 +244,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           }
         },
@@ -266,30 +266,30 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+        "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c6895390-6ee1-5890-9fe4-ca65fe8aedd4",
+      "endCapId": "4c1c48f9-1ae5-5ca7-87c1-116638ebf5da",
       "units": "mm",
       "sectional": false
     }
   },
   "edge1": {
     "type": "Uuid",
-    "value": "[uuid]"
+    "value": "d1f7ddf8-0900-5192-883a-c5663106d1e2"
   },
   "fillet001": {
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15dbbfa5-9041-5bba-95e7-7bf979e46c03",
+          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
           "sourceRange": [],
           "tag": {
             "commentStart": 35,
@@ -302,8 +302,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48074c54-c4ca-5e90-a769-aa07fedf724a",
+          "id": "19b80591-b217-553e-b524-394df234e28a",
           "sourceRange": [],
           "tag": {
             "commentStart": 116,
@@ -316,8 +316,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "39eb24b5-b442-587f-adb7-4fbd42682ff1",
+          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
           "sourceRange": [],
           "tag": {
             "commentStart": 199,
@@ -330,8 +330,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f7f85599-376d-5b79-9b5f-8c51c3872bad",
+          "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
           "sourceRange": [],
           "tag": {
             "commentStart": 280,
@@ -347,11 +347,11 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
               "sourceRange": []
             },
             "from": [
@@ -375,7 +375,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19b80591-b217-553e-b524-394df234e28a",
               "sourceRange": []
             },
             "from": [
@@ -399,7 +399,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
               "sourceRange": []
             },
             "from": [
@@ -423,7 +423,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
               "sourceRange": []
             },
             "from": [
@@ -447,8 +447,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -489,7 +489,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           }
         },
@@ -511,16 +511,16 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+        "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c6895390-6ee1-5890-9fe4-ca65fe8aedd4",
+      "endCapId": "4c1c48f9-1ae5-5ca7-87c1-116638ebf5da",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -529,7 +529,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "d1f7ddf8-0900-5192-883a-c5663106d1e2",
           "tag": null
         }
       ],
@@ -541,11 +541,11 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -569,7 +569,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           },
           "from": [
@@ -586,7 +586,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -610,7 +610,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "sourceRange": []
           },
           "from": [
@@ -627,7 +627,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -651,7 +651,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
             "sourceRange": []
           },
           "from": [
@@ -668,7 +668,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -692,8 +692,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -734,7 +734,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": []
         }
       },
@@ -756,8 +756,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "originalId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "units": "mm",
       "isClosed": "no"
     }
@@ -786,11 +786,11 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
             "sourceRange": []
           },
           "from": [
@@ -814,7 +814,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19b80591-b217-553e-b524-394df234e28a",
             "sourceRange": []
           },
           "from": [
@@ -838,7 +838,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
             "sourceRange": []
           },
           "from": [
@@ -862,7 +862,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
             "sourceRange": []
           },
           "from": [
@@ -886,8 +886,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -928,7 +928,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": []
         }
       },
@@ -950,8 +950,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "units": "mm"
     }
   },
@@ -964,7 +964,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1038,8 +1038,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1068,7 +1068,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1084,7 +1084,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1158,8 +1158,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1188,7 +1188,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1204,7 +1204,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1278,8 +1278,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1308,7 +1308,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1324,7 +1324,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1398,8 +1398,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1428,7 +1428,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1445,11 +1445,11 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1473,7 +1473,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -1490,7 +1490,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1514,7 +1514,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1531,7 +1531,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1555,7 +1555,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -1572,7 +1572,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1596,8 +1596,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1638,7 +1638,7 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 }
               },
@@ -1660,8 +1660,8 @@ description: Variables in memory after executing region_fillet_correct_edge.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "originalId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "units": "mm",
               "isClosed": "no"
             }
