@@ -692,8 +692,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "tag": {
             "commentStart": 260,
@@ -704,7 +704,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line1"
           },
           "to": [
-            -0.0000000000005229907781075566,
+            -0.0000000000005229605950849603,
             11.999999999999885
           ],
           "type": "ToPoint",
@@ -716,8 +716,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "sourceRange": []
           },
           "from": [
-            0.0000000000000983149083648061,
-            0.00000000000002325162169544042
+            0.000000000000098459596614261,
+            0.00000000000002325769367526282
           ],
           "tag": {
             "commentStart": 435,
@@ -729,7 +729,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "to": [
             3.2500000000003384,
-            0.00000000000007710728476535312
+            0.00000000000007711605675137452
           ],
           "type": "ToPoint",
           "units": "in"
@@ -740,7 +740,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000000009044229325698491,
+            -0.0000000000009044208569483673,
             11.9999999999998
           ],
           "tag": {
@@ -752,7 +752,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line3"
           },
           "to": [
-            1.4999999999987141,
+            1.499999999998714,
             11.999999999999584
           ],
           "type": "ToPoint",
@@ -764,8 +764,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "sourceRange": []
           },
           "from": [
-            2.0099234289098122,
-            11.489955800642393
+            2.0099234276949374,
+            11.489955800784898
           ],
           "tag": {
             "commentStart": 797,
@@ -776,8 +776,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           },
           "to": [
-            2.0099234289094534,
-            10.98995580064235
+            2.009923427694579,
+            10.989955800784857
           ],
           "type": "ToPoint",
           "units": "in"
@@ -789,14 +789,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            51.32992342860155,
-            10.99014845631888
+            51.3299234273867,
+            10.990148461633831
           ],
           "from": [
-            2.0099234289094534,
-            10.98995580064235
+            2.009923427694579,
+            10.989955800784857
           ],
-          "radius": 49.32000000006838,
+          "radius": 49.320000000068426,
           "tag": {
             "commentStart": 946,
             "end": 950,
@@ -806,8 +806,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "arc1"
           },
           "to": [
-            3.249999999849308,
-            -0.000000000006288303211476887
+            3.249999999849315,
+            -0.00000000000631494856406789
           ],
           "type": "Arc",
           "units": "in"
@@ -819,14 +819,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            4.053932335733485,
+            4.053932335641727,
             1.0000000000000797
           ],
           "from": [
-            4.789628115975477,
-            0.32268787185337866
+            4.789628111358945,
+            0.32268786693857276
           ],
-          "radius": 1.000000000000243,
+          "radius": 1.0000000000002434,
           "tag": {
             "commentStart": 1134,
             "end": 1141,
@@ -836,8 +836,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle1"
           },
           "to": [
-            4.789628115975477,
-            0.32268787185337866
+            4.789628111358945,
+            0.32268786693857276
           ],
           "type": "Circle",
           "units": "in"
@@ -876,12 +876,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -954,14 +954,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.681017807960737,
-            2.9649261449181177
+            3.6810178076480735,
+            2.9649261448761943
           ],
           "from": [
-            4.603706583114856,
-            2.5793805260766542
+            4.603706582437075,
+            2.5793805251609294
           ],
-          "radius": 1.0000000000016274,
+          "radius": 1.0000000000016285,
           "tag": {
             "commentStart": 1251,
             "end": 1258,
@@ -971,8 +971,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle2"
           },
           "to": [
-            4.603706583114856,
-            2.5793805260766542
+            4.603706582437075,
+            2.5793805251609294
           ],
           "type": "Circle",
           "units": "in"
@@ -984,14 +984,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.681017807960737,
-            2.9649261449181177
+            3.6810178076480735,
+            2.9649261448761943
           ],
           "from": [
-            4.603706583114856,
-            2.5793805260766542
+            4.603706582437075,
+            2.5793805251609294
           ],
-          "radius": 1.0000000000016274,
+          "radius": 1.0000000000016285,
           "tag": {
             "commentStart": 1251,
             "end": 1258,
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle2"
           },
           "to": [
-            4.603706583114856,
-            2.5793805260766542
+            4.603706582437075,
+            2.5793805251609294
           ],
           "type": "Circle",
           "units": "in"
@@ -1041,12 +1041,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -1119,14 +1119,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.3897350233488557,
-            4.943601039739143
+            3.3897350228137335,
+            4.943601039664472
           ],
           "from": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
-          "radius": 0.9999999999999902,
+          "radius": 0.9999999999999903,
           "tag": {
             "commentStart": 1371,
             "end": 1378,
@@ -1136,8 +1136,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle3"
           },
           "to": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
           "type": "Circle",
           "units": "in"
@@ -1149,14 +1149,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.3897350233488557,
-            4.943601039739143
+            3.3897350228137335,
+            4.943601039664472
           ],
           "from": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
-          "radius": 0.9999999999999902,
+          "radius": 0.9999999999999903,
           "tag": {
             "commentStart": 1371,
             "end": 1378,
@@ -1166,8 +1166,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle3"
           },
           "to": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
           "type": "Circle",
           "units": "in"
@@ -1179,14 +1179,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.3897350233488557,
-            4.943601039739143
+            3.3897350228137335,
+            4.943601039664472
           ],
           "from": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
-          "radius": 0.9999999999999902,
+          "radius": 0.9999999999999903,
           "tag": {
             "commentStart": 1371,
             "end": 1378,
@@ -1196,8 +1196,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle3"
           },
           "to": [
-            4.3855113045038,
-            5.035413881374774
+            4.385511303973125,
+            5.035413881251873
           ],
           "type": "Circle",
           "units": "in"
@@ -1236,12 +1236,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -1314,14 +1314,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.1805830053518096,
-            6.932634833663683
+            3.1805830045930836,
+            6.9326348335655
           ],
           "from": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
-          "radius": 1.0000000000026945,
+          "radius": 1.0000000000026965,
           "tag": {
             "commentStart": 1491,
             "end": 1498,
@@ -1331,8 +1331,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle4"
           },
           "to": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
           "type": "Circle",
           "units": "in"
@@ -1344,14 +1344,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.1805830053518096,
-            6.932634833663683
+            3.1805830045930836,
+            6.9326348335655
           ],
           "from": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
-          "radius": 1.0000000000026945,
+          "radius": 1.0000000000026965,
           "tag": {
             "commentStart": 1491,
             "end": 1498,
@@ -1361,8 +1361,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle4"
           },
           "to": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
           "type": "Circle",
           "units": "in"
@@ -1374,14 +1374,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.1805830053518096,
-            6.932634833663683
+            3.1805830045930836,
+            6.9326348335655
           ],
           "from": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
-          "radius": 1.0000000000026945,
+          "radius": 1.0000000000026965,
           "tag": {
             "commentStart": 1491,
             "end": 1498,
@@ -1391,8 +1391,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle4"
           },
           "to": [
-            4.17031005114074,
-            6.789664994748949
+            4.170310050333979,
+            6.7896649943182235
           ],
           "type": "Circle",
           "units": "in"
@@ -1431,12 +1431,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -1509,14 +1509,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.0539200716180983,
-            8.928619929105016
+            3.0539200706349696,
+            8.928619928992594
           ],
           "from": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
-          "radius": 1.0000000000068412,
+          "radius": 1.000000000006846,
           "tag": {
             "commentStart": 1611,
             "end": 1618,
@@ -1526,8 +1526,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle5"
           },
           "to": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
           "type": "Circle",
           "units": "in"
@@ -1539,14 +1539,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.0539200716180983,
-            8.928619929105016
+            3.0539200706349696,
+            8.928619928992594
           ],
           "from": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
-          "radius": 1.0000000000068412,
+          "radius": 1.000000000006846,
           "tag": {
             "commentStart": 1611,
             "end": 1618,
@@ -1556,8 +1556,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle5"
           },
           "to": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
           "type": "Circle",
           "units": "in"
@@ -1569,14 +1569,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            3.0539200716180983,
-            8.928619929105016
+            3.0539200706349696,
+            8.928619928992594
           ],
           "from": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
-          "radius": 1.0000000000068412,
+          "radius": 1.000000000006846,
           "tag": {
             "commentStart": 1611,
             "end": 1618,
@@ -1586,8 +1586,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle5"
           },
           "to": [
-            3.954846548703247,
-            9.36259168267963
+            3.9548465473886685,
+            9.36259168325531
           ],
           "type": "Circle",
           "units": "in"
@@ -1626,12 +1626,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -1704,14 +1704,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            1.499923430082978,
-            11.490000003408264
+            1.4999234288681043,
+            11.490000003408301
           ],
           "from": [
-            2.00992342825004,
-            11.489955800642457
+            2.0099234270351665,
+            11.489955800784962
           ],
-          "radius": 0.510000000082635,
+          "radius": 0.5100000000826229,
           "tag": {
             "commentStart": 2038,
             "end": 2042,
@@ -1722,7 +1722,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "to": [
             1.4999999999983167,
-            11.999999997742908
+            11.99999999774275
           ],
           "type": "Arc",
           "units": "in"
@@ -1734,14 +1734,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "ccw": true,
           "center": [
-            1.499923430082978,
-            11.490000003408264
+            1.4999234288681043,
+            11.490000003408301
           ],
           "from": [
-            2.00992342825004,
-            11.489955800642457
+            2.0099234270351665,
+            11.489955800784962
           ],
-          "radius": 0.510000000082635,
+          "radius": 0.5100000000826229,
           "tag": {
             "commentStart": 2038,
             "end": 2042,
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           "to": [
             1.4999999999983167,
-            11.999999997742908
+            11.99999999774275
           ],
           "type": "Arc",
           "units": "in"
@@ -1791,12 +1791,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "start": {
         "from": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "to": [
-          -0.00000000000014155862328071372,
-          -0.00000000000003079688268835557
+          -0.00000000000014150033285675128,
+          -0.00000000000003079357309029059
         ],
         "units": "in",
         "tag": null,
@@ -2118,8 +2118,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000000014155862328071372,
-              -0.00000000000003079688268835557
+              -0.00000000000014150033285675128,
+              -0.00000000000003079357309029059
             ],
             "tag": {
               "commentStart": 260,
@@ -2130,7 +2130,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "line1"
             },
             "to": [
-              -0.0000000000005229907781075566,
+              -0.0000000000005229605950849603,
               11.999999999999885
             ],
             "type": "ToPoint",
@@ -2142,8 +2142,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "sourceRange": []
             },
             "from": [
-              0.0000000000000983149083648061,
-              0.00000000000002325162169544042
+              0.000000000000098459596614261,
+              0.00000000000002325769367526282
             ],
             "tag": {
               "commentStart": 435,
@@ -2155,7 +2155,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "to": [
               3.2500000000003384,
-              0.00000000000007710728476535312
+              0.00000000000007711605675137452
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2166,7 +2166,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000009044229325698491,
+              -0.0000000000009044208569483673,
               11.9999999999998
             ],
             "tag": {
@@ -2178,7 +2178,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "line3"
             },
             "to": [
-              1.4999999999987141,
+              1.499999999998714,
               11.999999999999584
             ],
             "type": "ToPoint",
@@ -2190,8 +2190,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "sourceRange": []
             },
             "from": [
-              2.0099234289098122,
-              11.489955800642393
+              2.0099234276949374,
+              11.489955800784898
             ],
             "tag": {
               "commentStart": 797,
@@ -2202,8 +2202,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "line4"
             },
             "to": [
-              2.0099234289094534,
-              10.98995580064235
+              2.009923427694579,
+              10.989955800784857
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2215,14 +2215,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              51.32992342860155,
-              10.99014845631888
+              51.3299234273867,
+              10.990148461633831
             ],
             "from": [
-              2.0099234289094534,
-              10.98995580064235
+              2.009923427694579,
+              10.989955800784857
             ],
-            "radius": 49.32000000006838,
+            "radius": 49.320000000068426,
             "tag": {
               "commentStart": 946,
               "end": 950,
@@ -2232,8 +2232,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "arc1"
             },
             "to": [
-              3.249999999849308,
-              -0.000000000006288303211476887
+              3.249999999849315,
+              -0.00000000000631494856406789
             ],
             "type": "Arc",
             "units": "in"
@@ -2245,14 +2245,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              4.053932335733485,
+              4.053932335641727,
               1.0000000000000797
             ],
             "from": [
-              4.789628115975477,
-              0.32268787185337866
+              4.789628111358945,
+              0.32268786693857276
             ],
-            "radius": 1.000000000000243,
+            "radius": 1.0000000000002434,
             "tag": {
               "commentStart": 1134,
               "end": 1141,
@@ -2262,8 +2262,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle1"
             },
             "to": [
-              4.789628115975477,
-              0.32268787185337866
+              4.789628111358945,
+              0.32268786693857276
             ],
             "type": "Circle",
             "units": "in"
@@ -2302,12 +2302,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -2420,14 +2420,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.681017807960737,
-              2.9649261449181177
+              3.6810178076480735,
+              2.9649261448761943
             ],
             "from": [
-              4.603706583114856,
-              2.5793805260766542
+              4.603706582437075,
+              2.5793805251609294
             ],
-            "radius": 1.0000000000016274,
+            "radius": 1.0000000000016285,
             "tag": {
               "commentStart": 1251,
               "end": 1258,
@@ -2437,8 +2437,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle2"
             },
             "to": [
-              4.603706583114856,
-              2.5793805260766542
+              4.603706582437075,
+              2.5793805251609294
             ],
             "type": "Circle",
             "units": "in"
@@ -2450,14 +2450,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.681017807960737,
-              2.9649261449181177
+              3.6810178076480735,
+              2.9649261448761943
             ],
             "from": [
-              4.603706583114856,
-              2.5793805260766542
+              4.603706582437075,
+              2.5793805251609294
             ],
-            "radius": 1.0000000000016274,
+            "radius": 1.0000000000016285,
             "tag": {
               "commentStart": 1251,
               "end": 1258,
@@ -2467,8 +2467,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle2"
             },
             "to": [
-              4.603706583114856,
-              2.5793805260766542
+              4.603706582437075,
+              2.5793805251609294
             ],
             "type": "Circle",
             "units": "in"
@@ -2507,12 +2507,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -2639,14 +2639,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.3897350233488557,
-              4.943601039739143
+              3.3897350228137335,
+              4.943601039664472
             ],
             "from": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
-            "radius": 0.9999999999999902,
+            "radius": 0.9999999999999903,
             "tag": {
               "commentStart": 1371,
               "end": 1378,
@@ -2656,8 +2656,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle3"
             },
             "to": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
             "type": "Circle",
             "units": "in"
@@ -2669,14 +2669,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.3897350233488557,
-              4.943601039739143
+              3.3897350228137335,
+              4.943601039664472
             ],
             "from": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
-            "radius": 0.9999999999999902,
+            "radius": 0.9999999999999903,
             "tag": {
               "commentStart": 1371,
               "end": 1378,
@@ -2686,8 +2686,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle3"
             },
             "to": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
             "type": "Circle",
             "units": "in"
@@ -2699,14 +2699,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.3897350233488557,
-              4.943601039739143
+              3.3897350228137335,
+              4.943601039664472
             ],
             "from": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
-            "radius": 0.9999999999999902,
+            "radius": 0.9999999999999903,
             "tag": {
               "commentStart": 1371,
               "end": 1378,
@@ -2716,8 +2716,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle3"
             },
             "to": [
-              4.3855113045038,
-              5.035413881374774
+              4.385511303973125,
+              5.035413881251873
             ],
             "type": "Circle",
             "units": "in"
@@ -2756,12 +2756,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -2888,14 +2888,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.1805830053518096,
-              6.932634833663683
+              3.1805830045930836,
+              6.9326348335655
             ],
             "from": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
-            "radius": 1.0000000000026945,
+            "radius": 1.0000000000026965,
             "tag": {
               "commentStart": 1491,
               "end": 1498,
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle4"
             },
             "to": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
             "type": "Circle",
             "units": "in"
@@ -2918,14 +2918,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.1805830053518096,
-              6.932634833663683
+              3.1805830045930836,
+              6.9326348335655
             ],
             "from": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
-            "radius": 1.0000000000026945,
+            "radius": 1.0000000000026965,
             "tag": {
               "commentStart": 1491,
               "end": 1498,
@@ -2935,8 +2935,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle4"
             },
             "to": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
             "type": "Circle",
             "units": "in"
@@ -2948,14 +2948,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.1805830053518096,
-              6.932634833663683
+              3.1805830045930836,
+              6.9326348335655
             ],
             "from": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
-            "radius": 1.0000000000026945,
+            "radius": 1.0000000000026965,
             "tag": {
               "commentStart": 1491,
               "end": 1498,
@@ -2965,8 +2965,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle4"
             },
             "to": [
-              4.17031005114074,
-              6.789664994748949
+              4.170310050333979,
+              6.7896649943182235
             ],
             "type": "Circle",
             "units": "in"
@@ -3005,12 +3005,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -3137,14 +3137,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.0539200716180983,
-              8.928619929105016
+              3.0539200706349696,
+              8.928619928992594
             ],
             "from": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
-            "radius": 1.0000000000068412,
+            "radius": 1.000000000006846,
             "tag": {
               "commentStart": 1611,
               "end": 1618,
@@ -3154,8 +3154,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle5"
             },
             "to": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
             "type": "Circle",
             "units": "in"
@@ -3167,14 +3167,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.0539200716180983,
-              8.928619929105016
+              3.0539200706349696,
+              8.928619928992594
             ],
             "from": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
-            "radius": 1.0000000000068412,
+            "radius": 1.000000000006846,
             "tag": {
               "commentStart": 1611,
               "end": 1618,
@@ -3184,8 +3184,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle5"
             },
             "to": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
             "type": "Circle",
             "units": "in"
@@ -3197,14 +3197,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              3.0539200716180983,
-              8.928619929105016
+              3.0539200706349696,
+              8.928619928992594
             ],
             "from": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
-            "radius": 1.0000000000068412,
+            "radius": 1.000000000006846,
             "tag": {
               "commentStart": 1611,
               "end": 1618,
@@ -3214,8 +3214,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "value": "circle5"
             },
             "to": [
-              3.954846548703247,
-              9.36259168267963
+              3.9548465473886685,
+              9.36259168325531
             ],
             "type": "Circle",
             "units": "in"
@@ -3254,12 +3254,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -3372,14 +3372,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              1.499923430082978,
-              11.490000003408264
+              1.4999234288681043,
+              11.490000003408301
             ],
             "from": [
-              2.00992342825004,
-              11.489955800642457
+              2.0099234270351665,
+              11.489955800784962
             ],
-            "radius": 0.510000000082635,
+            "radius": 0.5100000000826229,
             "tag": {
               "commentStart": 2038,
               "end": 2042,
@@ -3390,7 +3390,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "to": [
               1.4999999999983167,
-              11.999999997742908
+              11.99999999774275
             ],
             "type": "Arc",
             "units": "in"
@@ -3402,14 +3402,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "ccw": true,
             "center": [
-              1.499923430082978,
-              11.490000003408264
+              1.4999234288681043,
+              11.490000003408301
             ],
             "from": [
-              2.00992342825004,
-              11.489955800642457
+              2.0099234270351665,
+              11.489955800784962
             ],
-            "radius": 0.510000000082635,
+            "radius": 0.5100000000826229,
             "tag": {
               "commentStart": 2038,
               "end": 2042,
@@ -3420,7 +3420,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             },
             "to": [
               1.4999999999983167,
-              11.999999997742908
+              11.99999999774275
             ],
             "type": "Arc",
             "units": "in"
@@ -3459,12 +3459,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         "start": {
           "from": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "to": [
-            -0.00000000000014155862328071372,
-            -0.00000000000003079688268835557
+            -0.00000000000014150033285675128,
+            -0.00000000000003079357309029059
           ],
           "units": "in",
           "tag": null,
@@ -3553,7 +3553,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.0099234290324124,
+                        "n": 2.009923427817533,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3561,7 +3561,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 10.989955800642331,
+                        "n": 10.989955800784836,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3571,7 +3571,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.250000000000578,
+                        "n": 3.2500000000005786,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3579,7 +3579,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000013193537546489958,
+                        "n": 0.00000000000013194716213852963,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3589,7 +3589,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 51.32992342872452,
+                        "n": 51.329923427509655,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3597,7 +3597,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 10.990148456318858,
+                        "n": 10.990148461633813,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3705,7 +3705,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.00992342825004,
+                        "n": 2.0099234270351665,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3713,7 +3713,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 11.489955800642457,
+                        "n": 11.489955800784962,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3731,7 +3731,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 11.99999999784903,
+                        "n": 11.99999999784901,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3741,7 +3741,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.499923430082978,
+                        "n": 1.4999234288681043,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3749,7 +3749,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 11.490000003408264,
+                        "n": 11.490000003408301,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3857,7 +3857,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.789628115975477,
+                        "n": 4.789628111358945,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3865,7 +3865,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 0.32268787185337866,
+                        "n": 0.32268786693857276,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3875,7 +3875,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.053932335733485,
+                        "n": 4.053932335641727,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3977,7 +3977,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.603706583114856,
+                        "n": 4.603706582437075,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3985,7 +3985,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 2.5793805260766542,
+                        "n": 2.5793805251609294,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3995,7 +3995,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.681017807960737,
+                        "n": 3.6810178076480735,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4003,7 +4003,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 2.9649261449181177,
+                        "n": 2.9649261448761943,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4097,7 +4097,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.3855113045038,
+                        "n": 4.385511303973125,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4105,7 +4105,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 5.035413881374774,
+                        "n": 5.035413881251873,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.3897350233488557,
+                        "n": 3.3897350228137335,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4123,7 +4123,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 4.943601039739143,
+                        "n": 4.943601039664472,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4217,7 +4217,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.17031005114074,
+                        "n": 4.170310050333979,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4225,7 +4225,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 6.789664994748949,
+                        "n": 6.7896649943182235,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.1805830053518096,
+                        "n": 3.1805830045930836,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4243,7 +4243,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 6.932634833663683,
+                        "n": 6.9326348335655,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4337,7 +4337,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 3.954846548703247,
+                        "n": 3.9548465473886685,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4345,7 +4345,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 9.36259168267963,
+                        "n": 9.36259168325531,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4355,7 +4355,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.0539200716180983,
+                        "n": 3.0539200706349696,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4363,7 +4363,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 8.928619929105016,
+                        "n": 8.928619928992594,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4457,7 +4457,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000014155862328071372,
+                        "n": -0.00000000000014150033285675128,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4465,7 +4465,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000003079688268835557,
+                        "n": -0.00000000000003079357309029059,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4475,7 +4475,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000005229907781075566,
+                        "n": -0.0000000000005229605950849603,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4577,7 +4577,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000983149083648061,
+                        "n": 0.000000000000098459596614261,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4585,7 +4585,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000002325162169544042,
+                        "n": 0.00000000000002325769367526282,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4603,7 +4603,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000007710728476535312,
+                        "n": 0.00000000000007711605675137452,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4697,7 +4697,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000009044229325698491,
+                        "n": -0.0000000000009044208569483673,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4715,7 +4715,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.4999999999987141,
+                        "n": 1.499999999998714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4817,7 +4817,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.0099234289098122,
+                        "n": 2.0099234276949374,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4825,7 +4825,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 11.489955800642393,
+                        "n": 11.489955800784898,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4835,7 +4835,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.0099234289094534,
+                        "n": 2.009923427694579,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4843,7 +4843,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         }
                       },
                       {
-                        "n": 10.98995580064235,
+                        "n": 10.989955800784857,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4940,8 +4940,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000014155862328071372,
-                    -0.00000000000003079688268835557
+                    -0.00000000000014150033285675128,
+                    -0.00000000000003079357309029059
                   ],
                   "tag": {
                     "commentStart": 260,
@@ -4952,7 +4952,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.0000000000005229907781075566,
+                    -0.0000000000005229605950849603,
                     11.999999999999885
                   ],
                   "type": "ToPoint",
@@ -4964,13 +4964,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000005229907781075566,
+                    -0.0000000000005229605950849603,
                     11.999999999999885
                   ],
                   "tag": null,
                   "to": [
-                    0.0000000000000983149083648061,
-                    0.00000000000002325162169544042
+                    0.000000000000098459596614261,
+                    0.00000000000002325769367526282
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -4981,8 +4981,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000000000983149083648061,
-                    0.00000000000002325162169544042
+                    0.000000000000098459596614261,
+                    0.00000000000002325769367526282
                   ],
                   "tag": {
                     "commentStart": 435,
@@ -4994,7 +4994,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "to": [
                     3.2500000000003384,
-                    0.00000000000007710728476535312
+                    0.00000000000007711605675137452
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5006,11 +5006,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "from": [
                     3.2500000000003384,
-                    0.00000000000007710728476535312
+                    0.00000000000007711605675137452
                   ],
                   "tag": null,
                   "to": [
-                    -0.0000000000009044229325698491,
+                    -0.0000000000009044208569483673,
                     11.9999999999998
                   ],
                   "type": "ToPoint",
@@ -5022,7 +5022,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000009044229325698491,
+                    -0.0000000000009044208569483673,
                     11.9999999999998
                   ],
                   "tag": {
@@ -5034,7 +5034,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "line3"
                   },
                   "to": [
-                    1.4999999999987141,
+                    1.499999999998714,
                     11.999999999999584
                   ],
                   "type": "ToPoint",
@@ -5046,13 +5046,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.4999999999987141,
+                    1.499999999998714,
                     11.999999999999584
                   ],
                   "tag": null,
                   "to": [
-                    2.0099234289098122,
-                    11.489955800642393
+                    2.0099234276949374,
+                    11.489955800784898
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5063,8 +5063,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.0099234289098122,
-                    11.489955800642393
+                    2.0099234276949374,
+                    11.489955800784898
                   ],
                   "tag": {
                     "commentStart": 797,
@@ -5075,8 +5075,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "line4"
                   },
                   "to": [
-                    2.0099234289094534,
-                    10.98995580064235
+                    2.009923427694579,
+                    10.989955800784857
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5088,14 +5088,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    51.32992342860155,
-                    10.99014845631888
+                    51.3299234273867,
+                    10.990148461633831
                   ],
                   "from": [
-                    2.0099234289094534,
-                    10.98995580064235
+                    2.009923427694579,
+                    10.989955800784857
                   ],
-                  "radius": 49.32000000006838,
+                  "radius": 49.320000000068426,
                   "tag": {
                     "commentStart": 946,
                     "end": 950,
@@ -5105,8 +5105,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    3.249999999849308,
-                    -0.000000000006288303211476887
+                    3.249999999849315,
+                    -0.00000000000631494856406789
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -5117,13 +5117,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.249999999849308,
-                    -0.000000000006288303211476887
+                    3.249999999849315,
+                    -0.00000000000631494856406789
                   ],
                   "tag": null,
                   "to": [
-                    4.789628115975477,
-                    0.32268787185337866
+                    4.789628111358945,
+                    0.32268786693857276
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5135,14 +5135,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    4.053932335733485,
+                    4.053932335641727,
                     1.0000000000000797
                   ],
                   "from": [
-                    4.789628115975477,
-                    0.32268787185337866
+                    4.789628111358945,
+                    0.32268786693857276
                   ],
-                  "radius": 1.000000000000243,
+                  "radius": 1.0000000000002434,
                   "tag": {
                     "commentStart": 1134,
                     "end": 1141,
@@ -5152,8 +5152,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    4.789628115975477,
-                    0.32268787185337866
+                    4.789628111358945,
+                    0.32268786693857276
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -5164,13 +5164,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.789628115975477,
-                    0.32268787185337866
+                    4.789628111358945,
+                    0.32268786693857276
                   ],
                   "tag": null,
                   "to": [
-                    4.603706583114856,
-                    2.5793805260766542
+                    4.603706582437075,
+                    2.5793805251609294
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5182,14 +5182,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.681017807960737,
-                    2.9649261449181177
+                    3.6810178076480735,
+                    2.9649261448761943
                   ],
                   "from": [
-                    4.603706583114856,
-                    2.5793805260766542
+                    4.603706582437075,
+                    2.5793805251609294
                   ],
-                  "radius": 1.0000000000016274,
+                  "radius": 1.0000000000016285,
                   "tag": {
                     "commentStart": 1251,
                     "end": 1258,
@@ -5199,8 +5199,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    4.603706583114856,
-                    2.5793805260766542
+                    4.603706582437075,
+                    2.5793805251609294
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -5211,13 +5211,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.603706583114856,
-                    2.5793805260766542
+                    4.603706582437075,
+                    2.5793805251609294
                   ],
                   "tag": null,
                   "to": [
-                    4.3855113045038,
-                    5.035413881374774
+                    4.385511303973125,
+                    5.035413881251873
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5229,14 +5229,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.3897350233488557,
-                    4.943601039739143
+                    3.3897350228137335,
+                    4.943601039664472
                   ],
                   "from": [
-                    4.3855113045038,
-                    5.035413881374774
+                    4.385511303973125,
+                    5.035413881251873
                   ],
-                  "radius": 0.9999999999999902,
+                  "radius": 0.9999999999999903,
                   "tag": {
                     "commentStart": 1371,
                     "end": 1378,
@@ -5246,8 +5246,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "circle3"
                   },
                   "to": [
-                    4.3855113045038,
-                    5.035413881374774
+                    4.385511303973125,
+                    5.035413881251873
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -5258,13 +5258,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.3855113045038,
-                    5.035413881374774
+                    4.385511303973125,
+                    5.035413881251873
                   ],
                   "tag": null,
                   "to": [
-                    4.17031005114074,
-                    6.789664994748949
+                    4.170310050333979,
+                    6.7896649943182235
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5276,14 +5276,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.1805830053518096,
-                    6.932634833663683
+                    3.1805830045930836,
+                    6.9326348335655
                   ],
                   "from": [
-                    4.17031005114074,
-                    6.789664994748949
+                    4.170310050333979,
+                    6.7896649943182235
                   ],
-                  "radius": 1.0000000000026945,
+                  "radius": 1.0000000000026965,
                   "tag": {
                     "commentStart": 1491,
                     "end": 1498,
@@ -5293,8 +5293,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "circle4"
                   },
                   "to": [
-                    4.17031005114074,
-                    6.789664994748949
+                    4.170310050333979,
+                    6.7896649943182235
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -5305,13 +5305,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.17031005114074,
-                    6.789664994748949
+                    4.170310050333979,
+                    6.7896649943182235
                   ],
                   "tag": null,
                   "to": [
-                    3.954846548703247,
-                    9.36259168267963
+                    3.9548465473886685,
+                    9.36259168325531
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5323,14 +5323,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.0539200716180983,
-                    8.928619929105016
+                    3.0539200706349696,
+                    8.928619928992594
                   ],
                   "from": [
-                    3.954846548703247,
-                    9.36259168267963
+                    3.9548465473886685,
+                    9.36259168325531
                   ],
-                  "radius": 1.0000000000068412,
+                  "radius": 1.000000000006846,
                   "tag": {
                     "commentStart": 1611,
                     "end": 1618,
@@ -5340,8 +5340,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "value": "circle5"
                   },
                   "to": [
-                    3.954846548703247,
-                    9.36259168267963
+                    3.9548465473886685,
+                    9.36259168325531
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -5352,13 +5352,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.954846548703247,
-                    9.36259168267963
+                    3.9548465473886685,
+                    9.36259168325531
                   ],
                   "tag": null,
                   "to": [
-                    2.00992342825004,
-                    11.489955800642457
+                    2.0099234270351665,
+                    11.489955800784962
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -5370,14 +5370,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.499923430082978,
-                    11.490000003408264
+                    1.4999234288681043,
+                    11.490000003408301
                   ],
                   "from": [
-                    2.00992342825004,
-                    11.489955800642457
+                    2.0099234270351665,
+                    11.489955800784962
                   ],
-                  "radius": 0.510000000082635,
+                  "radius": 0.5100000000826229,
                   "tag": {
                     "commentStart": 2038,
                     "end": 2042,
@@ -5388,7 +5388,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   },
                   "to": [
                     1.4999999999983167,
-                    11.999999997742908
+                    11.99999999774275
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -5427,12 +5427,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               },
               "start": {
                 "from": [
-                  -0.00000000000014155862328071372,
-                  -0.00000000000003079688268835557
+                  -0.00000000000014150033285675128,
+                  -0.00000000000003079357309029059
                 ],
                 "to": [
-                  -0.00000000000014155862328071372,
-                  -0.00000000000003079688268835557
+                  -0.00000000000014150033285675128,
+                  -0.00000000000003079357309029059
                 ],
                 "units": "in",
                 "tag": null,

@@ -987,6 +987,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
+    "multipleFiles": false,
+    "title": "Spinning Highrise Tower",
+    "description": "Parametric tower using solver sketches and pattern-based floor/facade repetition.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Fasteners"
     ],
