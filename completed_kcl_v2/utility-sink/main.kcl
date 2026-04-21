@@ -310,7 +310,7 @@ sinkOffsetFront = 40
 sinkOffsetLeft = (blockWidth - sinkWidth) / 2
 sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
-sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
+sinkPlaneOutside = faceOf(tableTopBody, face = START)
 
 // STEP 08 START: Outer sink basin walls
 sinkOutsideProfile = sketch(on = sinkPlaneOutside) {
@@ -350,7 +350,7 @@ sinkBodyOutside = extrude(sinkOutsideRegion, length = sinkDepth)
 hide(sinkOutsideProfile)
 // STEP 08 END
 
-sinkPlaneInside = startSketchOn(tableTopBody, face = END)
+sinkPlaneInside = faceOf(tableTopBody, face = END)
 
 // STEP 09 START: Inner sink basin walls
 sinkInsideProfile = sketch(on = sinkPlaneInside) {
