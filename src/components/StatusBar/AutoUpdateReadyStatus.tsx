@@ -20,7 +20,7 @@ export function AutoUpdateReadyStatus({
   return (
     <ActionButton
       Element="button"
-      className={`${defaultStatusBarItemClassNames} !text-primary dark:!text-primary hover:!text-primary dark:hover:!text-primary`}
+      className={`${defaultStatusBarItemClassNames} !bg-primary dark:!bg-primary !text-white dark:!text-white hover:!bg-primary/90 dark:hover:!bg-primary/90 focus:!bg-primary/90 dark:focus:!bg-primary/90 hover:!text-white dark:hover:!text-white focus:!text-white dark:focus:!text-white`}
       data-testid="auto-update-ready-status"
       onClick={onRestart}
     >
@@ -31,11 +31,11 @@ export function AutoUpdateReadyStatus({
           data-testid="auto-update-release-notes-tooltip"
           position="top-left"
           wrapperClassName="z-50 pointer-events-auto"
-          contentClassName="max-w-[28rem] text-left"
+          contentClassName="max-w-[28rem] text-left pb-0"
           inert={false}
           onClick={(event) => event.stopPropagation()}
         >
-          <div className="px-1 py-0.5 space-y-2">
+          <div className="px-1 pt-0.5 space-y-2">
             <p className="text-[10px] uppercase tracking-wide text-chalkboard-70 dark:text-chalkboard-40">
               {`Release notes for v${update.version}`}
             </p>
@@ -46,7 +46,7 @@ export function AutoUpdateReadyStatus({
             )}
             <MarkdownText
               text={releaseNotes}
-              className="block text-xs leading-relaxed max-h-48 overflow-y-auto"
+              className="block text-xs leading-relaxed max-h-48 overflow-y-auto pb-0"
             />
           </div>
         </Tooltip>
