@@ -11,10 +11,10 @@ A spur gear.
 
 ```kcl
 gear::spur(
-  nTeeth,
-  module,
-  pressureAngle,
-  gearHeight,
+  nTeeth: number(_),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
 ): Solid
 ```
 
@@ -24,10 +24,10 @@ gear::spur(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `nTeeth` |  |  | Yes |
-| `module` |  |  | Yes |
-| `pressureAngle` |  |  | Yes |
-| `gearHeight` |  |  | Yes |
+| `nTeeth` | `number(_)` | A number. | Yes |
+| `module` | `number(Length)` | A number. | Yes |
+| `pressureAngle` | `number(Angle)` | A number. | Yes |
+| `gearHeight` | `number(Length)` | A number. | Yes |
 
 ### Returns
 
