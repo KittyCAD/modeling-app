@@ -1,0 +1,200 @@
+// T-Slotted Rectangle Frame with Shelf
+// A box frame with interior shelf made up of T-slotted rails
+// Categories: Manufacturing, Construction
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+frameHeight = 8ft
+frameWidth = 3ft
+frameDepth = 2ft
+railHeight = 1.5
+shelfHeight = 2ft
+
+fn railTslot(railHeight, length) {
+  interiorRadius = 0.01in
+  scoreDepth = 0.018in
+  holeDiameter = 0.262 * railHeight
+
+  // This quarter sketch still reports 3 free solver DOF, but this
+  // mirror-and-close profile matches the legacy section and executes reliably.
+  railQuarter = sketch(on = -XZ) {
+    slotBridge = line(start = [var 0.5in, var 0.322in], end = [var 0.42in, var 0.322in])
+    throatArc = arc(
+      start = [var 0.42in, var 0.322in],
+      end = [var 0.35636in, var 0.29564in],
+      center = [var 0.42in, var 0.232in],
+    )
+    diagonalWeb = line(start = [var 0.35636in, var 0.29564in], end = [var 0.17372in, var 0.113in])
+    innerBlend = arc(
+      start = [var 0.17372in, var 0.113in],
+      end = [var 0.18079in, var 0.09593in],
+      center = [var 0.18079in, var 0.10593in],
+    )
+    innerShelf = line(start = [var 0.18079in, var 0.09593in], end = [var 0.33in, var 0.09593in])
+    rootArc = arc(
+      start = [var 0.33in, var 0.09593in],
+      end = [var 0.34in, var 0.08593in],
+      center = [var 0.33in, var 0.08593in],
+    )
+    rootWall = line(start = [var 0.34in, var 0.08593in], end = [var 0.34in, var 0.01in])
+    faceArc = arc(
+      start = [var 0.34in, var 0.01in],
+      end = [var 0.33in, var 0in],
+      center = [var 0.33in, var 0.01in],
+    )
+    ribA = line(start = [var 0.33in, var 0in], end = [var 0.3in, var 0in])
+    grooveA = arc(
+      start = [var 0.3in, var 0in],
+      end = [var 0.264in, var 0in],
+      center = [var 0.282in, var 0in],
+    )
+    ribB = line(start = [var 0.264in, var 0in], end = [var 0.164in, var 0in])
+    grooveB = arc(
+      start = [var 0.164in, var 0in],
+      end = [var 0.128in, var 0in],
+      center = [var 0.146in, var 0in],
+    )
+    ribC = line(start = [var 0.128in, var 0in], end = [var 0.098in, var 0in])
+    cornerArc = arc(
+      start = [var 0.098in, var 0in],
+      end = [var 0.0275in, var 0.0275in],
+      center = [var 0.098in, var 0.10412in],
+    )
+
+    coincident([slotBridge.end, throatArc.start])
+    coincident([throatArc.end, diagonalWeb.start])
+    coincident([diagonalWeb.end, innerBlend.start])
+    coincident([innerBlend.end, innerShelf.start])
+    coincident([innerShelf.end, rootArc.start])
+    coincident([rootArc.end, rootWall.start])
+    coincident([rootWall.end, faceArc.start])
+    coincident([faceArc.end, ribA.start])
+    coincident([ribA.end, grooveA.start])
+    coincident([grooveA.end, ribB.start])
+    coincident([ribB.end, grooveB.start])
+    coincident([grooveB.end, ribC.start])
+    coincident([ribC.end, cornerArc.start])
+
+    horizontal(slotBridge)
+    horizontal(innerShelf)
+    vertical(rootWall)
+    horizontal(ribA)
+    horizontal(ribB)
+    horizontal(ribC)
+
+    tangent([slotBridge, throatArc])
+    tangent([throatArc, diagonalWeb])
+    tangent([diagonalWeb, innerBlend])
+    tangent([innerBlend, innerShelf])
+    tangent([innerShelf, rootArc])
+    tangent([rootArc, rootWall])
+    tangent([rootWall, faceArc])
+    tangent([faceArc, ribA])
+    tangent([ribA, grooveA])
+    tangent([grooveA, ribB])
+    tangent([ribB, grooveB])
+    tangent([grooveB, ribC])
+    tangent([ribC, cornerArc])
+
+    coincident([slotBridge.start, [0.5in, 0.322in]])
+    coincident([cornerArc.end, [0.0275in, 0.0275in]])
+
+    radius(throatArc) == 0.09in
+    radius(innerBlend) == interiorRadius
+    radius(rootArc) == interiorRadius
+    radius(faceArc) == interiorRadius
+    radius(grooveA) == scoreDepth
+    radius(grooveB) == scoreDepth
+    radius(cornerArc) == 0.10412in
+
+    horizontalDistance([ORIGIN, throatArc.end]) == 0.35636in
+    verticalDistance([ORIGIN, throatArc.end]) == 0.29564in
+    verticalDistance([ORIGIN, throatArc.center]) == 0.232in
+    horizontalDistance([ORIGIN, diagonalWeb.end]) == 0.17372in
+    verticalDistance([ORIGIN, diagonalWeb.end]) == 0.113in
+    horizontalDistance([ORIGIN, innerBlend.end]) == 0.18079in
+    verticalDistance([ORIGIN, innerBlend.end]) == 0.09593in
+    verticalDistance([ORIGIN, innerBlend.center]) == 0.10593in
+    horizontalDistance([ORIGIN, innerShelf.end]) == 0.33in
+    verticalDistance([ORIGIN, innerShelf.end]) == 0.09593in
+    horizontalDistance([ORIGIN, rootArc.end]) == 0.34in
+    verticalDistance([ORIGIN, rootArc.end]) == 0.08593in
+    horizontalDistance([ORIGIN, faceArc.end]) == 0.33in
+    verticalDistance([ORIGIN, faceArc.end]) == 0in
+    horizontalDistance([ORIGIN, grooveA.end]) == 0.264in
+    horizontalDistance([ORIGIN, grooveB.end]) == 0.128in
+    horizontalDistance([ORIGIN, ribC.end]) == 0.098in
+    verticalDistance([ORIGIN, rootWall.end]) == 0.01in
+    verticalDistance([ORIGIN, cornerArc.center]) == 0.10412in
+
+    distance([slotBridge.start, slotBridge.end]) == 0.08in
+    distance([ribA.start, ribA.end]) == 0.03in
+    distance([ribB.start, ribB.end]) == 0.1in
+    distance([ribC.start, ribC.end]) == 0.03in
+  }
+
+  centerBoreSketch = sketch(on = -XZ) {
+    centerBoreCircle = circle(start = [var 0.95in, var 0.75in], center = [var 0.75in, var 0.75in])
+
+    horizontalDistance([ORIGIN, centerBoreCircle.center]) == railHeight / 2
+    verticalDistance([ORIGIN, centerBoreCircle.center]) == railHeight / 2
+    horizontalDistance([centerBoreCircle.center, centerBoreCircle.start]) == holeDiameter / 2
+    verticalDistance([centerBoreCircle.center, centerBoreCircle.start]) == 0in
+    radius(centerBoreCircle) == holeDiameter / 2
+  }
+
+  railOutline = mirror2d(railQuarter, axis = {
+    direction = [1.0, 1.0],
+    origin = [0in, 0in],
+  })
+    |> mirror2d(axis = {
+         direction = [1.0, 0.0],
+         origin = [0in, 0.5in],
+       })
+    |> mirror2d(axis = {
+         direction = [0.0, 1.0],
+         origin = [0.5in, 0in],
+       })
+    |> close()
+
+  scaledRailOutline = railOutline
+    |> scale(x = railHeight, y = railHeight, z = railHeight)
+
+  railBlank = extrude([scaledRailOutline], length = length)
+  centerBoreRegion = region(segments = [centerBoreSketch.centerBoreCircle])
+  centerBore = extrude(centerBoreRegion, length = length, method = NEW)
+
+  hide(railQuarter)
+  hide(centerBoreSketch)
+
+  return subtract(railBlank, tools = [centerBore])
+}
+
+// Generate the vertical rails.
+verticalRails = railTslot(railHeight = railHeight, length = frameHeight)
+  |> rotate(axis = X, angle = 90deg, global = false)
+  |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [1, 0, 0])
+
+// Generate the horizontal rails running with the frame depth.
+depthRails = railTslot(railHeight = railHeight, length = frameDepth - 2 * railHeight)
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [1, 0, 0])
+  |> patternLinear3d(instances = 2, distance = frameHeight - railHeight, axis = [0, 0, 1])
+
+// Generate the horizontal rails running with the frame width.
+widthRails = railTslot(railHeight = railHeight, length = -frameWidth + 2 * railHeight)
+  |> rotate(axis = Z, angle = 90deg, global = false)
+  |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
+  |> patternLinear3d(instances = 2, distance = frameHeight - railHeight, axis = [0, 0, 1])
+
+// Generate the shelf rails running with the frame depth.
+shelfDepthRails = railTslot(railHeight = railHeight, length = frameDepth - 2 * railHeight)
+  |> translate(z = shelfHeight, global = true)
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [1, 0, 0])
+
+// Generate the shelf rails running with the frame width.
+shelfWidthRails = railTslot(railHeight = railHeight, length = -frameWidth + 2 * railHeight)
+  |> rotate(axis = Z, angle = 90deg, global = false)
+  |> translate(z = shelfHeight, global = true)
+  |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
