@@ -1,0 +1,178 @@
+// T-Slotted Rectangle Frame
+// A rectangular frame made up of T-slotted rails
+// Categories: Manufacturing, Construction
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+frameLength = 2ft
+frameWidth = 1.5ft
+railHeight = 1
+
+fn railTslot(railHeight, length) {
+  holeDiameter = 0.262
+
+  // Trace the legacy upper-left quadrant directly, then mirror it across the
+  // horizontal and vertical midplanes to recover the full rail section.
+  upperLeftProfile = sketch(on = -XZ) {
+    line1 = line(start = [var 0.5, var 0.322], end = [var 0.42, var 0.322])
+    arc2 = arc(start = [var 0.42, var 0.322], end = [var 0.3564, var 0.2956], center = [var 0.42, var 0.232])
+    line3 = line(start = [var 0.3564, var 0.2956], end = [var 0.1737, var 0.113])
+    arc4 = arc(start = [var 0.1737, var 0.113], end = [var 0.1808, var 0.0959], center = [var 0.1808, var 0.1059])
+    line5 = line(start = [var 0.1808, var 0.0959], end = [var 0.33, var 0.0959])
+    arc6 = arc(start = [var 0.33, var 0.0959], end = [var 0.34, var 0.0859], center = [var 0.33, var 0.0859])
+    line7 = line(start = [var 0.34, var 0.0859], end = [var 0.34, var 0.01])
+    arc8 = arc(start = [var 0.34, var 0.01], end = [var 0.33, var 0], center = [var 0.33, var 0.01])
+    line9 = line(start = [var 0.33, var 0], end = [var 0.3, var 0])
+    arc10 = arc(start = [var 0.3, var 0], end = [var 0.264, var 0], center = [var 0.282, var 0])
+    line11 = line(start = [var 0.264, var 0], end = [var 0.164, var 0])
+    arc12 = arc(start = [var 0.164, var 0], end = [var 0.128, var 0], center = [var 0.146, var 0])
+    line13 = line(start = [var 0.128, var 0], end = [var 0.098, var 0])
+    arc14 = arc(start = [var 0.098, var 0], end = [var 0.0275, var 0.0275], center = [var 0.098, var 0.1041])
+    arc15 = arc(start = [var 0.0275, var 0.0275], end = [var 0, var 0.098], center = [var 0.1041, var 0.098])
+    line16 = line(start = [var 0, var 0.098], end = [var 0, var 0.128])
+    arc17 = arc(start = [var 0, var 0.128], end = [var 0, var 0.164], center = [var 0, var 0.146])
+    line18 = line(start = [var 0, var 0.164], end = [var 0, var 0.264])
+    arc19 = arc(start = [var 0, var 0.264], end = [var 0, var 0.3], center = [var 0, var 0.282])
+    line20 = line(start = [var 0, var 0.3], end = [var 0, var 0.33])
+    arc21 = arc(start = [var 0, var 0.33], end = [var 0.01, var 0.34], center = [var 0.01, var 0.33])
+    line22 = line(start = [var 0.01, var 0.34], end = [var 0.0859, var 0.34])
+    arc23 = arc(start = [var 0.0859, var 0.34], end = [var 0.0959, var 0.33], center = [var 0.0859, var 0.33])
+    line24 = line(start = [var 0.0959, var 0.33], end = [var 0.0959, var 0.1808])
+    arc25 = arc(start = [var 0.0959, var 0.1808], end = [var 0.113, var 0.1737], center = [var 0.1059, var 0.1808])
+    line26 = line(start = [var 0.113, var 0.1737], end = [var 0.2956, var 0.3564])
+    arc27 = arc(start = [var 0.2956, var 0.3564], end = [var 0.322, var 0.42], center = [var 0.232, var 0.42])
+    line28 = line(start = [var 0.322, var 0.42], end = [var 0.322, var 0.5])
+
+    coincident([line1.end, arc2.start])
+    coincident([arc2.end, line3.start])
+    coincident([line3.end, arc4.start])
+    coincident([arc4.end, line5.start])
+    coincident([line5.end, arc6.start])
+    coincident([arc6.end, line7.start])
+    coincident([line7.end, arc8.start])
+    coincident([arc8.end, line9.start])
+    coincident([line9.end, arc10.start])
+    coincident([arc10.end, line11.start])
+    coincident([line11.end, arc12.start])
+    coincident([arc12.end, line13.start])
+    coincident([line13.end, arc14.start])
+    coincident([arc14.end, arc15.start])
+    coincident([arc15.end, line16.start])
+    coincident([line16.end, arc17.start])
+    coincident([arc17.end, line18.start])
+    coincident([line18.end, arc19.start])
+    coincident([arc19.end, line20.start])
+    coincident([line20.end, arc21.start])
+    coincident([arc21.end, line22.start])
+    coincident([line22.end, arc23.start])
+    coincident([arc23.end, line24.start])
+    coincident([line24.end, arc25.start])
+    coincident([arc25.end, line26.start])
+    coincident([line26.end, arc27.start])
+    coincident([arc27.end, line28.start])
+
+    fixed([line1.start, [0.5, 0.322]])
+    fixed([line1.end, [0.42, 0.322]])
+    fixed([arc2.center, [0.42, 0.232]])
+    fixed([arc2.end, [0.3564, 0.2956]])
+    fixed([line3.end, [0.1737, 0.113]])
+    fixed([arc4.center, [0.1808, 0.1059]])
+    fixed([arc4.end, [0.1808, 0.0959]])
+    fixed([line5.end, [0.33, 0.0959]])
+    fixed([arc6.center, [0.33, 0.0859]])
+    fixed([arc6.end, [0.34, 0.0859]])
+    fixed([line7.end, [0.34, 0.01]])
+    fixed([arc8.center, [0.33, 0.01]])
+    fixed([arc8.end, [0.33, 0]])
+    fixed([line9.end, [0.3, 0]])
+    fixed([arc10.center, [0.282, 0]])
+    fixed([arc10.end, [0.264, 0]])
+    fixed([line11.end, [0.164, 0]])
+    fixed([arc12.center, [0.146, 0]])
+    fixed([arc12.end, [0.128, 0]])
+    fixed([line13.end, [0.098, 0]])
+    fixed([arc14.center, [0.098, 0.1041]])
+    fixed([arc14.end, [0.0275, 0.0275]])
+    fixed([arc15.center, [0.1041, 0.098]])
+    fixed([arc15.end, [0, 0.098]])
+    fixed([line16.end, [0, 0.128]])
+    fixed([arc17.center, [0, 0.146]])
+    fixed([arc17.end, [0, 0.164]])
+    fixed([line18.end, [0, 0.264]])
+    fixed([arc19.center, [0, 0.282]])
+    fixed([arc19.end, [0, 0.3]])
+    fixed([line20.end, [0, 0.33]])
+    fixed([arc21.center, [0.01, 0.33]])
+    fixed([arc21.end, [0.01, 0.34]])
+    fixed([line22.end, [0.0859, 0.34]])
+    fixed([arc23.center, [0.0859, 0.33]])
+    fixed([arc23.end, [0.0959, 0.33]])
+    fixed([line24.end, [0.0959, 0.1808]])
+    fixed([arc25.center, [0.1059, 0.1808]])
+    fixed([arc25.end, [0.113, 0.1737]])
+    fixed([line26.end, [0.2956, 0.3564]])
+    fixed([arc27.center, [0.232, 0.42]])
+    fixed([arc27.end, [0.322, 0.42]])
+    fixed([line28.end, [0.322, 0.5]])
+  }
+
+  leftSideProfile = mirror2d(
+    upperLeftProfile,
+    axis = {
+      direction = [1.0, 0.0],
+      origin = [0.0, 0.5]
+    },
+  )
+  outerRailProfile = mirror2d(
+    leftSideProfile,
+    axis = {
+      direction = [0.0, 1.0],
+      origin = [0.5, 0.0]
+    },
+  )
+
+  holeProfile = sketch(on = -XZ) {
+    centerlineX = line(start = [var 0, var 0], end = [var 0.5, var 0], construction = true)
+    centerlineY = line(start = [var 0.5, var 0], end = [var 0.5, var 0.5], construction = true)
+    radiusGuide = line(start = [var 0.5, var 0.5], end = [var 0.631, var 0.5], construction = true)
+    circle1 = circle(start = [var 0.631, var 0.5], center = [var 0.5, var 0.5])
+
+    coincident([centerlineX.start, ORIGIN])
+    coincident([centerlineX.end, centerlineY.start])
+    coincident([centerlineY.end, radiusGuide.start])
+    coincident([radiusGuide.start, circle1.center])
+    coincident([radiusGuide.end, circle1.start])
+
+    horizontal(centerlineX)
+    vertical(centerlineY)
+    horizontal(radiusGuide)
+
+    distance([centerlineX.start, centerlineX.end]) == 0.5
+    distance([centerlineY.start, centerlineY.end]) == 0.5
+    distance([radiusGuide.start, radiusGuide.end]) == holeDiameter / 2
+  }
+
+  holeRegion = region(segments = [holeProfile.circle1])
+  hide([
+    upperLeftProfile,
+    leftSideProfile,
+    outerRailProfile,
+    holeProfile,
+  ])
+  outerRailBody = extrude(outerRailProfile, length = length)
+  holeCutter = extrude(holeRegion, length = length, method = NEW)
+  railBody = subtract(outerRailBody, tools = holeCutter)
+    |> scale(x = railHeight, y = railHeight, z = railHeight, global = false)
+
+  return railBody
+}
+
+// Generate a pair of rails along the X direction
+railTslot(railHeight, length = frameWidth)
+  |> rotate(yaw = 90deg, global = false)
+  |> patternLinear3d(instances = 2, distance = frameLength - railHeight, axis = [0, 1, 0])
+
+// Generate a pair of rails along the Y direction
+railTslot(railHeight, length = frameLength - (2 * railHeight))
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [-1, 0, 0])
