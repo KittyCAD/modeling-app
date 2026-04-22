@@ -302,7 +302,8 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    await vi.advanceTimersByTimeAsync(999)
+    // Write debounce timer is currently 10s
+    await vi.advanceTimersByTimeAsync(9_999)
     expect(writeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1)
