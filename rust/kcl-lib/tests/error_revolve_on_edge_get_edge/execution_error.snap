@@ -8,7 +8,7 @@ KCL Engine error
   │ No such edge exists, cannot retrieve adjacency information.
     ╭─[15:6]
  14 │   |> close()
- 15 │   |> revolve(axis = revolveAxis, angle = 90)
-    ·      ───────────────────┬───────────────────
-    ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
+ 15 │   |> revolve(axis = revolveAxis, angle = -90)
+    ·      ────────────────────┬───────────────────
+    ·                          ╰── tests/error_revolve_on_edge_get_edge/input.kcl
     ╰────

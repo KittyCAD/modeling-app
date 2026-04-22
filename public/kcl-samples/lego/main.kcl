@@ -17,6 +17,10 @@ t = (pitch - (2 * clearance) - bumpDiam) / 2.0
 postDiam = pitch - t // works out to 6.5
 totalLength = lbumps * pitch - (2.0 * clearance)
 totalWidth = wbumps * pitch - (2.0 * clearance)
+pegCenterX = -(pitch * (wbumps - 1) / 2)
+pegCenterY = -(pitch * (lbumps - 1) / 2)
+tubeCenterX = pegCenterX + pitch / 2
+tubeCenterY = pegCenterY + pitch / 2
 
 // Calculate the number of segments in the length and width
 lSegments = totalLength / lbumps
@@ -27,48 +31,88 @@ assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
 assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
-base = startSketchOn(XY)
-  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
-  |> line(end = [totalWidth, 0])
-  |> line(end = [0, totalLength])
-  |> line(end = [-totalWidth, 0])
-  |> close()
-  |> extrude(length = height)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -7.9in, var -11.9in], end = [var 7.9in, var -11.9in])
+  line2 = line(start = [var 7.9in, var -11.9in], end = [var 7.9in, var 11.9in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 7.9in, var 11.9in], end = [var -7.9in, var 11.9in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -7.9in, var 11.9in], end = [var -7.9in, var -11.9in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+base = extrude(region001, length = height)
+hide(sketch001)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
-shellExtrude = startSketchOn(base, face = START)
-  |> startProfile(at = [
-       -(totalWidth / 2 - t),
-       -(totalLength / 2 - t)
-     ])
-  |> line(end = [totalWidth - (2 * t), 0])
-  |> line(end = [0, totalLength - (2 * t)])
-  |> line(end = [-(totalWidth - (2 * t)), 0])
-  |> close()
-  |> extrude(length = -(height - t))
+sketch002 = sketch(on = startSketchOn(base, face = START)) {
+  line1 = line(start = [var -6.4in, var -10.4in], end = [var 6.4in, var -10.4in])
+  line2 = line(start = [var 6.4in, var -10.4in], end = [var 6.4in, var 10.4in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 6.4in, var 10.4in], end = [var -6.4in, var 10.4in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -6.4in, var 10.4in], end = [var -6.4in, var -10.4in])
+  coincident([line3.end, line4.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+shellExtrude = extrude(region002, length = -(height - t))
+hide(sketch002)
 
 // Create the pegs on the top of the base
-peg = startSketchOn(base, face = END)
-  |> circle(
-       center = [
-         -(pitch * (wbumps - 1) / 2),
-         -(pitch * (lbumps - 1) / 2)
-       ],
-       radius = bumpDiam / 2,
+pegSketchPlane = startSketchOn(base, face = END)
+pegSeedSketch = sketch(on = pegSketchPlane) {
+  pegCircle = circle(start = [var -1.6in, var -8in], center = [var -4in, var -8in])
+  pegCenterGuide = line(start = [var -4in, var -8in], end = [var 0in, var 0in], construction = true)
+  coincident([pegCircle.center, pegCenterGuide.start])
+  coincident([pegCenterGuide.end, ORIGIN])
+  radius(pegCircle) == bumpDiam / 2
+  horizontalDistance([
+  pegCenterGuide.start,
+  pegCenterGuide.end
+]) == -pegCenterX
+  verticalDistance([
+  pegCenterGuide.start,
+  pegCenterGuide.end
+]) == -pegCenterY
+}
+pegRegion = region(segments = [pegSeedSketch.pegCircle])
+pegSeed = extrude(pegRegion, length = bumpHeight, method = NEW)
+hide(pegSeedSketch)
+pegPattern = patternLinear3d(
+       pegSeed,
+       axis = [1, 0, 0],
+       instances = wbumps,
+       distance = pitch,
      )
-  |> patternLinear2d(axis = [1, 0], instances = wbumps, distance = pitch)
-  |> patternLinear2d(axis = [0, 1], instances = lbumps, distance = pitch)
-  |> extrude(length = bumpHeight)
+  |> patternLinear3d(axis = [0, 1, 0], instances = lbumps, distance = pitch)
 
-// Create the pegs on the bottom of the base
-tubePattern = startSketchOn(shellExtrude, face = START)
-  |> circle(
-       center = [
-         -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
-         -(pitch * (lbumps - 1) / 2 - (pitch / 2))
-       ],
-       radius = bumpDiam / 2,
+// Create the tubes on the bottom of the base
+tubeSketchPlane = startSketchOn(shellExtrude, face = START)
+tubeSeedSketch = sketch(on = tubeSketchPlane) {
+  tubeCircle = circle(start = [var 2.4in, var -4in], center = [var 0in, var -4in])
+  tubeCenterGuide = line(start = [var 0in, var -4in], end = [var 0in, var 0in], construction = true)
+  coincident([
+    tubeCircle.center,
+    tubeCenterGuide.start
+  ])
+  coincident([tubeCenterGuide.end, ORIGIN])
+  radius(tubeCircle) == bumpDiam / 2
+  horizontalDistance([
+  tubeCenterGuide.start,
+  tubeCenterGuide.end
+]) == -tubeCenterX
+  verticalDistance([
+  tubeCenterGuide.start,
+  tubeCenterGuide.end
+]) == -tubeCenterY
+}
+tubeRegion = region(segments = [tubeSeedSketch.tubeCircle])
+tubeSeed = extrude(tubeRegion, length = bumpHeight, method = NEW)
+hide(tubeSeedSketch)
+tubePattern = patternLinear3d(
+       tubeSeed,
+       axis = [1, 0, 0],
+       instances = wbumps - 1,
+       distance = pitch,
      )
-  |> patternLinear2d(axis = [1, 0], instances = wbumps - 1, distance = pitch)
-  |> patternLinear2d(axis = [0, 1], instances = lbumps - 1, distance = pitch)
-  |> extrude(length = bumpHeight)
+  |> patternLinear3d(axis = [0, 1, 0], instances = lbumps - 1, distance = pitch)

@@ -108,7 +108,7 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             // Insert a new variable declaration for the problematic call.
             let new_var_name = match next_free_name(NEW_VAR_PREFIX, &bound_names) {
                 Ok(name) => name,
-                Err(err) => return vec![Err(err)],
+                Err(err) => return vec![Err(anyhow::anyhow!(err.msg))],
             };
             new_program.body.insert(
                 item_index + 1,
@@ -257,7 +257,7 @@ fn is_str_profile_function(name: &str) -> bool {
     )
 }
 
-fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
+fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> crate::front::Result<String> {
     next_free_name_using_max(prefix, taken_names, 10_000)
 }
 

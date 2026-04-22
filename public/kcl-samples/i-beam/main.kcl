@@ -13,14 +13,227 @@ flangeThickness = 0.293
 webThickness = 0.193
 rootRadius = 0.457
 
-// Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
-iBeam = startSketchOn(-XZ)
-  |> startProfile(at = [0, beamHeight / 2])
-  |> xLine(length = flangeWidth / 2)
-  |> yLine(length = -flangeThickness)
-  |> xLine(endAbsolute = webThickness / 2 + rootRadius)
-  |> tangentialArc(radius = rootRadius, angle = 90deg)
-  |> yLine(endAbsolute = 0)
-  |> mirror2d(axis = X)
-  |> mirror2d(axis = Y)
-  |> extrude(length = beamLength)
+beamSection = sketch(on = XZ) {
+  topFlangeLeftOuterEdge = line(start = [var -1.33in, var 2in], end = [var 0in, var 2in])
+  horizontal(topFlangeLeftOuterEdge)
+
+  bottomFlangeLeftOuterEdge = line(start = [var -1.33in, var -2in], end = [var 0in, var -2in])
+  verticalDistance([
+  bottomFlangeLeftOuterEdge.start,
+  topFlangeLeftOuterEdge.start
+]) == beamHeight
+  horizontal(bottomFlangeLeftOuterEdge)
+
+  bottomCenterGuide = line(start = [var 0in, var -2in], end = [var 0in, var 0in], construction = true)
+  coincident([
+    bottomCenterGuide.start,
+    bottomFlangeLeftOuterEdge.end
+  ])
+  coincident([bottomCenterGuide.end, ORIGIN])
+  vertical(bottomCenterGuide)
+
+  topCenterGuide = line(start = [var 0in, var 0in], end = [var 0in, var 2in], construction = true)
+  coincident([
+    topCenterGuide.start,
+    bottomCenterGuide.end
+  ])
+  coincident([
+    topCenterGuide.end,
+    topFlangeLeftOuterEdge.end
+  ])
+  vertical(topCenterGuide)
+  equalLength([topCenterGuide, bottomCenterGuide])
+
+  topFlangeRightOuterEdge = line(start = [var 0in, var 2in], end = [var 1.33in, var 2in])
+  coincident([
+    topFlangeRightOuterEdge.start,
+    topFlangeLeftOuterEdge.end
+  ])
+
+  bottomFlangeRightOuterEdge = line(start = [var 0in, var -2in], end = [var 1.33in, var -2in])
+  horizontal(bottomFlangeLeftOuterEdge)
+  horizontal(topFlangeRightOuterEdge)
+  coincident([
+    bottomFlangeRightOuterEdge.start,
+    bottomFlangeLeftOuterEdge.end
+  ])
+  horizontal(bottomFlangeRightOuterEdge)
+  horizontalDistance([
+  topFlangeLeftOuterEdge.start,
+  topFlangeRightOuterEdge.end
+]) == flangeWidth
+  equalLength([
+    topFlangeLeftOuterEdge,
+    topFlangeRightOuterEdge,
+    bottomFlangeLeftOuterEdge,
+    bottomFlangeRightOuterEdge
+  ])
+
+  topFlangeLeftOuterSide = line(start = [var -1.33in, var 2in], end = [var -1.33in, var 1.71in])
+  coincident([
+    topFlangeLeftOuterSide.start,
+    topFlangeLeftOuterEdge.start
+  ])
+
+  topFlangeLeftInnerEdge = line(start = [var -1.33in, var 1.71in], end = [var -0.59in, var 1.71in])
+  coincident([
+    topFlangeLeftInnerEdge.start,
+    topFlangeLeftOuterSide.end
+  ])
+  vertical(topFlangeLeftOuterSide)
+  horizontal(topFlangeLeftInnerEdge)
+  verticalDistance([
+  topFlangeLeftOuterSide.end,
+  topFlangeLeftOuterSide.start
+]) == flangeThickness
+
+  topFlangeRightOuterSide = line(start = [var 1.33in, var 2in], end = [var 1.33in, var 1.71in])
+  coincident([
+    topFlangeRightOuterSide.start,
+    topFlangeRightOuterEdge.end
+  ])
+
+  topFlangeRightInnerEdge = line(start = [var 1.33in, var 1.71in], end = [var 0.55in, var 1.71in])
+  coincident([
+    topFlangeRightOuterSide.end,
+    topFlangeRightInnerEdge.start
+  ])
+
+  bottomFlangeRightOuterSide = line(start = [var 1.33in, var -2in], end = [var 1.33in, var -1.71in])
+  coincident([
+    bottomFlangeRightOuterSide.start,
+    bottomFlangeRightOuterEdge.end
+  ])
+
+  bottomFlangeRightInnerEdge = line(start = [var 1.33in, var -1.71in], end = [var 0.54in, var -1.71in])
+  coincident([
+    bottomFlangeRightOuterSide.end,
+    bottomFlangeRightInnerEdge.start
+  ])
+
+  bottomFlangeLeftOuterSide = line(start = [var -1.33in, var -2in], end = [var -1.33in, var -1.71in])
+  coincident([
+    bottomFlangeLeftOuterSide.start,
+    bottomFlangeLeftOuterEdge.start
+  ])
+
+  bottomFlangeLeftInnerEdge = line(start = [var -1.33in, var -1.71in], end = [var -0.67in, var -1.71in])
+  coincident([
+    bottomFlangeLeftOuterSide.end,
+    bottomFlangeLeftInnerEdge.start
+  ])
+
+  vertical(bottomFlangeLeftOuterSide)
+  vertical(bottomFlangeRightOuterSide)
+  vertical(topFlangeRightOuterSide)
+  equalLength([
+    topFlangeLeftOuterSide,
+    topFlangeRightOuterSide,
+    bottomFlangeLeftOuterSide,
+    bottomFlangeRightOuterSide
+  ])
+
+  horizontal(topFlangeLeftInnerEdge)
+  horizontal(topFlangeRightInnerEdge)
+  horizontal(bottomFlangeRightInnerEdge)
+  horizontal(bottomFlangeLeftInnerEdge)
+
+  topRightRootArc = arc(start = [var 0.55in, var 1.71in], end = [var 0.1in, var 1.26in], center = [var 0.55in, var 1.3in])
+  coincident([
+    topRightRootArc.start,
+    topFlangeRightInnerEdge.end
+  ])
+
+  bottomRightRootArc = arc(start = [var 0.14in, var -1.31in], end = [var 0.54in, var -1.71in], center = [var 0.54in, var -1.31in])
+
+  bottomLeftRootArc = arc(start = [var -0.67in, var -1.71in], end = [var -0.19in, var -1.23in], center = [var -0.67in, var -1.23in])
+  coincident([
+    bottomLeftRootArc.start,
+    bottomFlangeLeftInnerEdge.end
+  ])
+
+  topLeftRootArc = arc(start = [var -0.1in, var 1.22in], end = [var -0.59in, var 1.71in], center = [var -0.59in, var 1.22in])
+  coincident([
+    topLeftRootArc.end,
+    topFlangeLeftInnerEdge.end
+  ])
+  coincident([
+    bottomRightRootArc.end,
+    bottomFlangeRightInnerEdge.end
+  ])
+
+  tangent([topFlangeLeftInnerEdge, topLeftRootArc])
+  tangent([
+    topFlangeRightInnerEdge,
+    topRightRootArc
+  ])
+  tangent([
+    bottomFlangeRightInnerEdge,
+    bottomRightRootArc
+  ])
+  tangent([
+    bottomFlangeLeftInnerEdge,
+    bottomLeftRootArc
+  ])
+
+  leftWebEdge = line(start = [var -0.19in, var -1.23in], end = [var -0.19in, var 1.33in])
+  coincident([
+    leftWebEdge.start,
+    bottomLeftRootArc.end
+  ])
+  coincident([leftWebEdge.end, topLeftRootArc.start])
+
+  rightWebEdge = line(start = [var 0.14in, var -1.31in], end = [var 0.08in, var 1.23in])
+  coincident([
+    rightWebEdge.start,
+    bottomRightRootArc.start
+  ])
+  coincident([rightWebEdge.end, topRightRootArc.end])
+  vertical(rightWebEdge)
+  vertical(leftWebEdge)
+  tangent([leftWebEdge, topLeftRootArc])
+  tangent([leftWebEdge, bottomLeftRootArc])
+  tangent([rightWebEdge, bottomRightRootArc])
+  tangent([rightWebEdge, topRightRootArc])
+
+  leftWebThicknessGuide = line(start = [var -0.16in, var -1.23in], end = [var -0in, var -1.23in], construction = true)
+  coincident([
+    leftWebThicknessGuide.start,
+    leftWebEdge.start
+  ])
+
+  rightWebThicknessGuide = line(start = [var 0.16in, var -1.23in], end = [var -0in, var -1.23in], construction = true)
+  coincident([
+    rightWebThicknessGuide.start,
+    bottomRightRootArc.start
+  ])
+  coincident([
+    rightWebThicknessGuide.end,
+    bottomCenterGuide
+  ])
+  coincident([
+    leftWebThicknessGuide.end,
+    rightWebThicknessGuide.end
+  ])
+  horizontal(leftWebThicknessGuide)
+  horizontal(rightWebThicknessGuide)
+  equalLength([
+    rightWebThicknessGuide,
+    leftWebThicknessGuide
+  ])
+
+  horizontalDistance([
+  leftWebThicknessGuide.start,
+  rightWebThicknessGuide.start
+]) == webThickness
+  radius(bottomLeftRootArc) == rootRadius
+  radius(topLeftRootArc) == rootRadius
+  equalLength([
+    topFlangeRightInnerEdge,
+    topFlangeLeftInnerEdge
+  ])
+}
+
+beamRegion = region(segments = [beamSection.topFlangeLeftOuterEdge])
+hide(beamSection)
+iBeam = extrude(beamRegion, length = beamLength, symmetric = true)

@@ -33,6 +33,15 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -85,7 +94,7 @@ description: Artifact commands enclosure.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010715659492539341,
+            "x": 125.0,
             "y": 175.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -115,11 +124,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -125.0,
-            "y": -0.0,
+            "x": 0.0,
+            "y": 175.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -144,8 +153,12 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -214,112 +227,48 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -364,10 +313,19 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": 13.0,
+          "y": 13.0,
           "z": 3.0
         },
         "x_axis": {
@@ -424,8 +382,8 @@ description: Artifact commands enclosure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 20.0,
-          "y": 13.0,
+          "x": 7.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -446,60 +404,20 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 13.0,
-            "y": 13.0
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 7.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -509,17 +427,10 @@ description: Artifact commands enclosure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 17.0,
-          "y": 13.0,
+          "x": 4.0,
+          "y": 0.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -531,17 +442,17 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 13.0,
-            "y": 13.0
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 4.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -551,26 +462,12 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": 0.0,
+          "y": 5.5
+        }
       }
     },
     {
@@ -639,31 +536,6 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 3.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -673,215 +545,24 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
+        "type": "entity_clone",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 20.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 13.0,
-            "y": 162.0
-          },
-          "radius": 7.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 17.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 13.0,
-            "y": 162.0
-          },
-          "radius": 4.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 67.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
@@ -914,249 +595,50 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 3.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
+        "type": "set_object_transform",
         "object_id": "[uuid]",
-        "hidden": true
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 99.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
+        "type": "entity_clone",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 119.0,
-          "y": 13.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 112.0,
-            "y": 13.0
-          },
-          "radius": 7.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 116.0,
-          "y": 13.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 112.0,
-            "y": 13.0
-          },
-          "radius": 4.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 67.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
@@ -1189,249 +671,50 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 3.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
+        "type": "set_object_transform",
         "object_id": "[uuid]",
-        "hidden": true
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 149.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
+        "type": "entity_clone",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 119.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 112.0,
-            "y": 162.0
-          },
-          "radius": 7.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 116.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 112.0,
-            "y": 162.0
-          },
-          "radius": 4.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 67.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
       }
     },
     {
@@ -1464,58 +747,93 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 149.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
           "x": 150.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 0.0,
           "y": 0.0,
           "z": 0.0
         }
@@ -1541,7 +859,7 @@ description: Artifact commands enclosure.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1554,11 +872,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010715659492539341,
+            "x": 125.0,
             "y": 175.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1571,11 +889,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -125.0,
-            "y": -0.0,
+            "x": 0.0,
+            "y": 175.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1588,7 +906,7 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 150.0,
+            "x": 0.0,
             "y": 0.0,
             "z": 0.0
           },
@@ -1600,41 +918,10 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 167.0,
+          "x": 17.0,
           "y": 13.0,
           "z": 0.0
         }
@@ -1644,29 +931,22 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 163.0,
+            "x": 13.0,
             "y": 13.0
           },
           "radius": 4.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1676,153 +956,10 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 167.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 163.0,
-            "y": 162.0
-          },
-          "radius": 4.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 266.0,
+          "x": 116.0,
           "y": 13.0,
           "z": 0.0
         }
@@ -1832,81 +969,25 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 262.0,
+            "x": 112.0,
             "y": 13.0
           },
           "radius": 4.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -1916,17 +997,10 @@ description: Artifact commands enclosure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 266.0,
+          "x": 116.0,
           "y": 162.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -1938,17 +1012,17 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 262.0,
+            "x": 112.0,
             "y": 162.0
           },
           "radius": 4.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1958,26 +1032,50 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 17.0,
+          "y": 162.0,
+          "z": 0.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 13.0,
+            "y": 162.0
+          },
+          "radius": 4.0,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": 62.5,
+          "y": 87.5
+        }
       }
     },
     {
@@ -2046,112 +1144,48 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -2177,6 +1211,15 @@ description: Artifact commands enclosure.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -2227,11 +1270,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 119.0,
-            "y": 0.0,
+            "x": 272.0,
+            "y": 3.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2244,11 +1287,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010348265452795134,
-            "y": 169.0,
+            "x": 272.0,
+            "y": 172.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2261,11 +1304,11 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -119.0,
-            "y": -0.0,
+            "x": 153.0,
+            "y": 172.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2290,33 +1333,6 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
@@ -2324,13 +1340,6 @@ description: Artifact commands enclosure.kcl
           "y": 13.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -2347,150 +1356,15 @@ description: Artifact commands enclosure.kcl
           },
           "radius": 7.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 170.0,
-          "y": 162.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 163.0,
-            "y": 162.0
-          },
-          "radius": 7.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -2510,13 +1384,6 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -2527,60 +1394,15 @@ description: Artifact commands enclosure.kcl
           },
           "radius": 7.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -2600,7 +1422,38 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "sketch_mode_disable"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 262.0,
+            "y": 162.0
+          },
+          "radius": 7.0,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 170.0,
+          "y": 162.0,
+          "z": 0.0
+        }
       }
     },
     {
@@ -2612,17 +1465,17 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 262.0,
+            "x": 163.0,
             "y": 162.0
           },
           "radius": 7.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2632,26 +1485,12 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": 212.5,
+          "y": 87.5
+        }
       }
     },
     {
@@ -2716,112 +1555,48 @@ description: Artifact commands enclosure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -2847,6 +1622,15 @@ description: Artifact commands enclosure.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

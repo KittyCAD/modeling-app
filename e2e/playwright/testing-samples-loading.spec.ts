@@ -1,15 +1,9 @@
 import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
-import * as fsp from 'fs/promises'
 
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
-import {
-  executorInputPath,
-  getUtils,
-  testsInputPath,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -177,106 +171,6 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
-    })
-  })
-
-  const externalModelCases = [
-    {
-      modelName: 'cylinder.kcl',
-      deconflictedModelName: 'cylinder-1.kcl',
-      modelPath: executorInputPath('cylinder.kcl'),
-    },
-    {
-      modelName: 'cube.step',
-      deconflictedModelName: 'cube-1.step',
-      modelPath: testsInputPath('cube.step'),
-    },
-  ]
-  externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
-    // TODO: REACTIVATE. I'm (lee) not sure how to write this test now that
-    // it's all through the browser file picker.
-    test.skip(`Load external models from local drive - ${modelName}`, async ({
-      page,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
-
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-      const modelFileContent = await fsp.readFile(modelPath, 'utf-8')
-      const { editorTextMatches } = await getUtils(page, test)
-
-      async function loadExternalFileThroughCommandBar(tronApp: ElectronZoo) {
-        await toolbar.loadButton.click()
-        await cmdBar.selectOption({ name: 'Local Drive' }).click()
-        await cmdBar.expectState({
-          commandName: 'Add file to project',
-          currentArgKey: 'pathOpen file',
-          currentArgValue: '',
-          headerArguments: {
-            Method: 'Existing project',
-            Path: '',
-            Source: 'local',
-            ProjectName: 'testDefault',
-          },
-          highlightedHeaderArg: 'path',
-          stage: 'arguments',
-        })
-
-        // Mock the file picker selection
-        const handleFile = tronApp.electron.evaluate(
-          async ({ dialog }, filePaths) => {
-            dialog.showOpenDialog = () =>
-              Promise.resolve({ canceled: false, filePaths })
-          },
-          [modelPath]
-        )
-        await page.getByTestId('cmd-bar-arg-file-button').click()
-        await handleFile
-
-        await cmdBar.expectState({
-          commandName: 'Add file to project',
-          currentArgKey: 'pathOpen file',
-          currentArgValue: '',
-          headerArguments: {
-            Method: 'Existing project',
-            Path: '',
-            Source: 'local',
-            ProjectName: 'testDefault',
-          },
-          highlightedHeaderArg: 'path',
-          stage: 'arguments',
-        })
-        await cmdBar.progressCmdBar()
-      }
-
-      await test.step('Load the external model from local drive', async () => {
-        await loadExternalFileThroughCommandBar(tronApp)
-        // TODO: I think the files pane should auto open?
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([modelName, 'main.kcl'])
-        if (modelName.endsWith('.kcl')) {
-          await editorTextMatches(modelFileContent)
-        }
-      })
-
-      await test.step('Load the same external model, except deconflicted name', async () => {
-        await loadExternalFileThroughCommandBar(tronApp)
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([
-          deconflictedModelName,
-          modelName,
-          'main.kcl',
-        ])
-        if (modelName.endsWith('.kcl')) {
-          await editorTextMatches(modelFileContent)
-        }
-      })
     })
   })
 })

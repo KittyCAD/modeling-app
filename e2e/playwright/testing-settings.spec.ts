@@ -591,7 +591,7 @@ test.describe(
             })
             await button.click()
             const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}`
+              `Updated per-file units to ${unitOfMeasure}.`
             )
             await expect(toastMessage).toBeVisible()
           }
@@ -821,6 +821,7 @@ test.describe(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, editor, folderSetupFn }) => {
+        const u = await getUtils(page)
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -847,22 +848,25 @@ test.describe(
 
         await test.step(`Manually write inline settings`, async () => {
           await editor.openPane()
+          // Clear debug logs so expectCmdLog waits for executeAst from this edit, not a prior run.
+          await u.openDebugPanel()
+          await u.clearCommandLogs()
+          await u.closeDebugPanel()
           await editor.replaceCode(
             `fn cube`,
             `${inlineSettingsString(initialInlineUnits)}
 fn cube`
           )
+          await u.openDebugPanel()
+          await u.expectCmdLog('[data-message-type="execution-done"]', 20_000)
+          await u.closeDebugPanel()
           await expect(unitsIndicator).toContainText(initialInlineUnits)
         })
 
         await test.step(`Change units setting via lower-right control`, async () => {
           await unitsIndicator.click()
           await unitsChangeButton(editedInlineUnits.long).click()
-          await expect(
-            page.getByText(
-              `Updated per-file units to ${editedInlineUnits.short}`
-            )
-          ).toBeVisible()
+          await expect(unitsIndicator).toContainText(editedInlineUnits.short)
         })
       }
     )

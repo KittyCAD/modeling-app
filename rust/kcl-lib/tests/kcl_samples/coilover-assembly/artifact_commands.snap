@@ -33,6 +33,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -86,12 +95,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 35.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -101,8 +110,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -214,12 +227,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -263,12 +306,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 27.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -278,8 +321,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -291,7 +338,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -344,12 +395,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -393,12 +474,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 19.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -408,8 +489,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -421,7 +506,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -517,12 +606,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -566,12 +685,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 12.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -581,8 +700,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -594,7 +717,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -725,6 +852,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -744,6 +880,15 @@ description: Artifact commands coilover-assembly.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -798,11 +943,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -20.0,
-            "y": 0.0,
+            "x": 11.35,
+            "y": -114.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -813,12 +958,21 @@ description: Artifact commands coilover-assembly.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
+          "type": "arc",
+          "center": {
+            "x": 11.35,
+            "y": -119.5
+          },
           "radius": 5.0,
-          "offset": {
+          "start": {
             "unit": "degrees",
             "value": 90.0
-          }
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "relative": false
         }
       }
     },
@@ -831,11 +985,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -22.0,
+            "x": 6.35,
+            "y": -141.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -848,11 +1002,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.7,
-            "y": 0.0,
+            "x": -6.35,
+            "y": -141.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -865,11 +1019,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 22.0,
+            "x": -6.35,
+            "y": -119.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -880,12 +1034,21 @@ description: Artifact commands coilover-assembly.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
+          "type": "arc",
+          "center": {
+            "x": -11.35,
+            "y": -119.5
+          },
           "radius": 5.0,
-          "offset": {
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
             "unit": "degrees",
             "value": 90.0
-          }
+          },
+          "relative": false
         }
       }
     },
@@ -898,11 +1061,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -20.0,
-            "y": 0.0,
+            "x": -31.35,
+            "y": -114.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -915,11 +1078,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -30.0,
+            "x": -31.35,
+            "y": -144.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -944,8 +1107,29 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 31.35,
+            "y": -114.5,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1029,6 +1213,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -1103,8 +1296,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.25,
-          "y": -127.0,
+          "x": 6.25000000325,
+          "y": -127.000000004,
           "z": 0.0
         }
       }
@@ -1125,17 +1318,17 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": -127.0
+            "x": 0.0000000015000001233605564,
+            "y": -127.000000001
           },
-          "radius": 6.25,
+          "radius": 6.25000000175,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": -0.0000000004799994711467896
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185306699587
           },
           "relative": false
         }
@@ -1145,8 +1338,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1174,7 +1371,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
+        "extrude_method": "new",
         "body_type": "solid"
       }
     },
@@ -1230,6 +1427,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -1249,6 +1455,15 @@ description: Artifact commands coilover-assembly.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1308,12 +1523,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 19.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1323,8 +1538,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1393,12 +1612,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -1442,12 +1691,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 5.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1457,8 +1706,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1470,7 +1723,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -1482,7 +1739,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -51.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
+        "extrude_method": "new",
         "body_type": "solid"
       }
     },
@@ -1518,6 +1775,43 @@ description: Artifact commands coilover-assembly.kcl
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_union",
+        "solid_ids": [
+          "[uuid]",
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
     }
   ],
   "public/kcl-samples/coilover-assembly/coilover-top.kcl": [
@@ -1544,6 +1838,15 @@ description: Artifact commands coilover-assembly.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1603,12 +1906,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 12.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1618,8 +1921,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1731,12 +2038,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -1780,12 +2117,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 4.95,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1795,8 +2132,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1808,7 +2149,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
       }
     },
     {
@@ -1861,12 +2206,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -1910,12 +2285,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 35.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1925,8 +2300,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1938,7 +2317,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -2034,12 +2417,42 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -2083,12 +2496,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 12.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2098,8 +2511,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2111,7 +2528,11 @@ description: Artifact commands coilover-assembly.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
       }
     },
     {
@@ -2203,6 +2624,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -2222,6 +2652,15 @@ description: Artifact commands coilover-assembly.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -2276,11 +2715,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -20.0,
-            "y": 0.0,
+            "x": 11.35,
+            "y": 40.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2288,15 +2727,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
+        "type": "move_path_pen",
         "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 5.0,
-          "offset": {
-            "unit": "degrees",
-            "value": -90.0
-          }
+        "to": {
+          "x": 6.3500000000062835,
+          "y": 45.00374999969544,
+          "z": 0.0
         }
       }
     },
@@ -2309,11 +2745,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 22.0,
+            "x": 6.350000000006282,
+            "y": 67.00374999969544,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2326,11 +2762,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.7,
-            "y": 0.0,
+            "x": -6.34999999999372,
+            "y": 67.00374999969544,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2343,11 +2779,11 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -22.0,
+            "x": -6.349999999993723,
+            "y": 45.00374999969544,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2355,32 +2791,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
+        "type": "move_path_pen",
         "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 5.0,
-          "offset": {
-            "unit": "degrees",
-            "value": -90.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -20.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
+        "to": {
+          "x": -11.35,
+          "y": 40.0,
+          "z": 0.0
         }
       }
     },
@@ -2393,11 +2809,28 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 30.0,
+            "x": -31.35,
+            "y": 40.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -31.35,
+            "y": 70.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -2422,8 +2855,105 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 31.35,
+            "y": 40.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -11.35,
+          "y": 40.00000000000004,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -11.349998593743853,
+            "y": 44.99999999999994
+          },
+          "radius": 5.000000000000099,
+          "start": {
+            "unit": "degrees",
+            "value": -90.00001611450843
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 0.04297183517403297
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 6.350000000006285,
+          "y": 45.00374999969544,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 11.349998593756414,
+            "y": 44.99999999999994
+          },
+          "radius": 5.000000000000098,
+          "start": {
+            "unit": "degrees",
+            "value": 179.95702816482597
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 270.0000161143645
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2507,6 +3037,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -2581,8 +3120,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.25,
-          "y": 52.5,
+          "x": 6.25000000325,
+          "y": 52.499999999,
           "z": 0.0
         }
       }
@@ -2603,17 +3142,17 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 52.5
+            "x": 0.0000000015000001233605564,
+            "y": 52.499999998999996
           },
-          "radius": 6.25,
+          "radius": 6.25000000175,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": 0.0000000000000011368683768978372
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179587
           },
           "relative": false
         }
@@ -2623,8 +3162,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2652,7 +3195,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
+        "extrude_method": "new",
         "body_type": "solid"
       }
     },
@@ -2720,9 +3263,94 @@ description: Artifact commands coilover-assembly.kcl
         "roughness": 0.9,
         "ambient_occlusion": 0.0
       }
-    }
-  ],
-  "public/kcl-samples/coilover-assembly/main.kcl": [
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -2805,6 +3433,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2858,12 +3495,12 @@ description: Artifact commands coilover-assembly.kcl
           },
           "radius": 3.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2873,8 +3510,12 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2940,6 +3581,15 @@ description: Artifact commands coilover-assembly.kcl
         "metalness": 0.5,
         "roughness": 0.9,
         "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

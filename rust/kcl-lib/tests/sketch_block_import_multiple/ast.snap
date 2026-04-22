@@ -1,0 +1,46 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing sketch_block_import_multiple.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "rectangle1.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "rectangle2.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "moduleId": 0,
+    "start": 0
+  }
+}

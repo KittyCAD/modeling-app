@@ -28,7 +28,6 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
-
     // axis accepts: (1) Edge or Axis3d (legacy), or (2) an object with sideFaces (edge reference payload)
     let axis_value: Option<KclValue> = args.get_kw_arg_opt("axis", &RuntimeType::any(), exec_state)?;
     let axis_opt: Option<Axis3dOrEdgeReference> = axis_value.as_ref().and_then(|v| {
@@ -177,7 +176,6 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     } else {
         axis_opt
     };
-
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let cylinder = args.get_kw_arg_opt("cylinder", &RuntimeType::solid(), exec_state)?;
 

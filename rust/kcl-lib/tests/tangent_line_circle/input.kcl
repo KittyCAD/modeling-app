@@ -4,10 +4,8 @@ s = sketch(on = XY) {
   l = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
   c = circle(start = [var 0mm, var 7mm], center = [var 0mm, var 4mm])
 
-  l.start.at[0] == -10mm
-  l.start.at[1] == 0mm
-  l.end.at[0] == 10mm
-  l.end.at[1] == 0mm
+  fixed([l.start, [-10mm, 0mm]])
+  fixed([l.end, [10mm, 0mm]])
 
   radius(c) == 3mm
   c.center.at[0] == 0mm

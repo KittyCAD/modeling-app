@@ -63,28 +63,10 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    // Check if we can send telemetry for this user.
-    let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
-        Ok(privacy_settings) => privacy_settings.can_train_on_data,
-        Err(err) => {
-            // In the case of dev we don't always have a sub set, but prod we should.
-            if err
-                .to_string()
-                .contains("The Design Studio subscription type is missing.")
-            {
-                true
-            } else {
-                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
-                false
-            }
-        }
-    };
-
-    let (service, socket) = LspService::build(|client| {
-        kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client, can_send_telemetry).unwrap()
-    })
-    .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
-    .finish();
+    let (service, socket) =
+        LspService::build(|client| kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client).unwrap())
+            .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
+            .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
     let input = input

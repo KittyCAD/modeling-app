@@ -200,13 +200,13 @@ function CommandBarVector2DInput({
 
     // 1. Check if calculations are still running
     if (!canSubmit) {
-      toast.error('Please wait for calculations to complete')
+      toast.error('Please wait for calculations to complete.')
       return
     }
 
     // 2. Validate that all coordinate values are not empty
     if (!x.trim() || !y.trim()) {
-      toast.error('Please enter values for all coordinates (X, Y)')
+      toast.error('Please enter values for all coordinates (X, Y).')
       return
     }
 
@@ -215,13 +215,13 @@ function CommandBarVector2DInput({
       xCalculation.calcResult === 'NAN' ||
       yCalculation.calcResult === 'NAN'
     ) {
-      toast.error('Invalid coordinate values - please check your input')
+      toast.error('Invalid coordinate values - please check your input.')
       return
     }
 
     // 4. Check if all coordinates have valid AST nodes for code generation
     if (!xCalculation.valueNode || !yCalculation.valueNode) {
-      toast.error('Unable to parse coordinate expressions')
+      toast.error('Unable to parse coordinate expressions.')
       return
     }
 
@@ -232,7 +232,7 @@ function CommandBarVector2DInput({
     stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
-          toast.error('Unable to create valid vector expression')
+          toast.error('Unable to create valid vector expression.')
           console.error('Invalid vector expression:', vectorExpression)
           return
         }
@@ -240,7 +240,7 @@ function CommandBarVector2DInput({
         onSubmit(result)
       })
       .catch((error) => {
-        toast.error('Failed to calculate vector expression')
+        toast.error('Failed to calculate vector expression.')
         console.error('Error calculating vector expression:', error)
       })
   }

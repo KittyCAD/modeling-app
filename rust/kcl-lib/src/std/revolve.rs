@@ -16,78 +16,116 @@ use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::is_edge_ref_object;
+use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
 
 extern crate nalgebra_glm as glm;
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment()])),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
 
     // axis accepts: (1) Edge or Axis2d (legacy), or (2) an object with sideFaces (edge reference payload)
-    let axis_value: Option<KclValue> = args.get_kw_arg_opt("axis", &RuntimeType::any(), exec_state)?;
-    let axis_opt: Option<Axis2dOrEdgeReference> = axis_value.as_ref().and_then(|v| {
-        if !is_edge_ref_object(v) {
-            Axis2dOrEdgeReference::from_kcl_val(v)
-        } else {
-            None
-        }
-    });
+    let axis_value: KclValue = args.get_kw_arg("axis", &RuntimeType::any(), exec_state)?;
+    let axis_opt: Option<Axis2dOrEdgeReference> = if !is_edge_ref_object(&axis_value) {
+        Axis2dOrEdgeReference::from_kcl_val(&axis_value)
+    } else {
+        None
+    };
 
-    let axis: Axis2dOrEdgeReference = if let Some(axis_val) = axis_value {
-        if is_edge_ref_object(&axis_val) {
-            // axis is an edge reference payload (object with sideFaces)
-            let edge_ref_obj = match axis_val {
-                KclValue::Object { value, .. } => value,
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) must be an object with 'sideFaces' field".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-
-            let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
-                KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) must have 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                })
-            })?;
-
-            let faces_array = match faces_value {
-                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) 'sideFaces' must be an array".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-
-            if faces_array.is_empty() {
+    let axis: Axis2dOrEdgeReference = if is_edge_ref_object(&axis_value) {
+        // axis is an edge reference payload (object with sideFaces)
+        let edge_ref_obj = match &axis_value {
+            KclValue::Object { value, .. } => value,
+            _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) 'sideFaces' must have at least one face".to_string(),
+                    message: "axis (edge reference) must be an object with 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
             }
+        };
 
-            // Resolve faces to UUIDs - for revolve, we try to resolve tags to face IDs
-            let mut face_uuids = Vec::new();
-            for face_value in faces_array {
-                let face_uuid = match face_value {
+        let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
+            KclError::new_type(KclErrorDetails {
+                message: "axis (edge reference) must have 'sideFaces' field".to_string(),
+                source_ranges: vec![args.source_range],
+                backtrace: Default::default(),
+            })
+        })?;
+
+        let faces_array = match faces_value {
+            KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+            _ => {
+                return Err(KclError::new_type(KclErrorDetails {
+                    message: "axis (edge reference) 'sideFaces' must be an array".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                }));
+            }
+        };
+
+        if faces_array.is_empty() {
+            return Err(KclError::new_type(KclErrorDetails {
+                message: "axis (edge reference) 'sideFaces' must have at least one face".to_string(),
+                source_ranges: vec![args.source_range],
+                backtrace: Default::default(),
+            }));
+        }
+
+        // Resolve faces to UUIDs - for revolve, we try to resolve tags to face IDs
+        let mut face_uuids = Vec::new();
+        for face_value in faces_array {
+            let face_uuid = match face_value {
+                KclValue::Uuid { value, .. } => *value,
+                KclValue::TagIdentifier(tag) => match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+                    Ok(face_id) => face_id,
+                    Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
+                },
+                _ => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+            };
+            face_uuids.push(face_uuid);
+        }
+
+        // Get endFaces (optional)
+        let mut end_face_uuids = Vec::new();
+        if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
+            let end_faces_array = match end_faces_value {
+                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+                _ => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) 'endFaces' must be an array".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+            };
+            for end_face_value in end_faces_array {
+                let end_face_uuid = match end_face_value {
                     KclValue::Uuid { value, .. } => *value,
                     KclValue::TagIdentifier(tag) => match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
                         Ok(face_id) => face_id,
@@ -95,92 +133,52 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     },
                     _ => {
                         return Err(KclError::new_type(KclErrorDetails {
-                            message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
+                            message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
                             source_ranges: vec![args.source_range],
                             backtrace: Default::default(),
                         }));
                     }
                 };
-                face_uuids.push(face_uuid);
+                end_face_uuids.push(end_face_uuid);
             }
-
-            // Get endFaces (optional)
-            let mut end_face_uuids = Vec::new();
-            if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
-                let end_faces_array = match end_faces_value {
-                    KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-                    _ => {
-                        return Err(KclError::new_type(KclErrorDetails {
-                            message: "axis (edge reference) 'endFaces' must be an array".to_string(),
-                            source_ranges: vec![args.source_range],
-                            backtrace: Default::default(),
-                        }));
-                    }
-                };
-                for end_face_value in end_faces_array {
-                    let end_face_uuid = match end_face_value {
-                        KclValue::Uuid { value, .. } => *value,
-                        KclValue::TagIdentifier(tag) => {
-                            match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                                Ok(face_id) => face_id,
-                                Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
-                            }
-                        }
-                        _ => {
-                            return Err(KclError::new_type(KclErrorDetails {
-                                message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
-                                source_ranges: vec![args.source_range],
-                                backtrace: Default::default(),
-                            }));
-                        }
-                    };
-                    end_face_uuids.push(end_face_uuid);
-                }
-            }
-
-            // Get index (optional)
-            let index = match edge_ref_obj.get("index") {
-                Some(KclValue::Number { value, .. }) => Some(*value as u32),
-                Some(_) => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) 'index' must be a number".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-                None => None,
-            };
-
-            // Build EdgeSpecifier from shared module
-            use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
-            let builder = ModelingEdgeReference::builder()
-                .side_faces(face_uuids)
-                .end_faces(end_face_uuids);
-
-            let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
-                builder.index(index_val).build()
-            } else {
-                builder.build()
-            };
-
-            Axis2dOrEdgeReference::EdgeReference(edge_reference)
-        } else if let Some(axis_val) = axis_opt {
-            axis_val
-        } else {
-            return Err(KclError::new_type(KclErrorDetails {
-                message: "axis must be an Edge, Axis2d, or an object with 'sideFaces' (edge reference)".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            }));
         }
+
+        // Get index (optional)
+        let index = match edge_ref_obj.get("index") {
+            Some(KclValue::Number { value, .. }) => Some(*value as u32),
+            Some(_) => {
+                return Err(KclError::new_type(KclErrorDetails {
+                    message: "axis (edge reference) 'index' must be a number".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                }));
+            }
+            None => None,
+        };
+
+        // Build EdgeSpecifier from shared module
+        use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
+        let builder = ModelingEdgeReference::builder()
+            .side_faces(face_uuids)
+            .end_faces(end_face_uuids);
+
+        let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
+            builder.index(index_val).build()
+        } else {
+            builder.build()
+        };
+
+        Axis2dOrEdgeReference::EdgeReference(edge_reference)
+    } else if let Some(axis_val) = axis_opt {
+        axis_val
     } else {
-        return Err(KclError::new_semantic(KclErrorDetails {
-            message: "The `revolve` function requires a keyword argument `axis`".to_string(),
+        return Err(KclError::new_type(KclErrorDetails {
+            message: "axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)"
+                .to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));
     };
-
     let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
@@ -188,7 +186,19 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
-    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let body_type: BodyType = args
+        .get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?
+        .unwrap_or_default();
+    let sketches = coerce_revolve_targets(
+        sketch_values,
+        body_type,
+        tag_start.as_ref(),
+        tag_end.as_ref(),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let value = inner_revolve(
         sketches,
@@ -217,11 +227,10 @@ async fn inner_revolve(
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
     bidirectional_angle: Option<f64>,
-    body_type: Option<BodyType>,
+    body_type: BodyType,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let body_type = body_type.unwrap_or_default();
     if let Some(angle) = angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -358,6 +367,10 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
+                continue;
+            }
+
             if !path.is_straight_line() {
                 edge_id = Some(path.get_id());
                 break;
@@ -396,4 +409,144 @@ async fn inner_revolve(
     }
 
     Ok(solids)
+}
+
+pub async fn coerce_revolve_targets(
+    sketch_values: Vec<KclValue>,
+    body_type: BodyType,
+    tag_start: Option<&TagNode>,
+    tag_end: Option<&TagNode>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: crate::SourceRange,
+) -> Result<Vec<Sketch>, KclError> {
+    let mut sketches = Vec::new();
+    let mut segments = Vec::new();
+
+    for value in sketch_values {
+        if let Some(segment) = value.clone().into_segment() {
+            segments.push(segment);
+            continue;
+        }
+
+        let Some(sketch) = Sketch::from_kcl_val(&value) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected sketches or solved sketch segments for revolve.".to_owned(),
+                vec![source_range],
+            )));
+        };
+        sketches.push(sketch);
+    }
+
+    if !segments.is_empty() && !sketches.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot revolve sketch segments together with sketches in the same call. Use separate `revolve()` calls."
+                .to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    if !segments.is_empty() {
+        if !matches!(body_type, BodyType::Surface) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Revolving sketch segments is only supported for surface revolves. Set `bodyType = SURFACE`."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if tag_start.is_some() || tag_end.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`tagStart` and `tagEnd` are not supported when revolving sketch segments. Segment surface revolves do not create start or end caps."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
+        return Ok(vec![synthetic_sketch]);
+    }
+
+    Ok(sketches)
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
+
+    use super::*;
+    use crate::execution::AbstractSegment;
+    use crate::execution::Plane;
+    use crate::execution::Segment;
+    use crate::execution::SegmentKind;
+    use crate::execution::SegmentRepr;
+    use crate::execution::SketchSurface;
+    use crate::execution::types::NumericType;
+    use crate::front::Expr;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+    use crate::front::PointCtor;
+    use crate::parsing::ast::types::TagDeclarator;
+    use crate::std::sketch::PlaneData;
+
+    fn point_expr(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        }
+    }
+
+    fn segment_value(exec_state: &mut ExecState) -> KclValue {
+        let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, exec_state).unwrap();
+        let segment = Segment {
+            id: exec_state.next_uuid(),
+            object_id: ObjectId(1),
+            kind: SegmentKind::Point {
+                position: [TyF64::new(0.0, NumericType::mm()), TyF64::new(0.0, NumericType::mm())],
+                ctor: Box::new(PointCtor {
+                    position: point_expr(0.0, 0.0),
+                }),
+                freedom: None,
+            },
+            surface: SketchSurface::Plane(Box::new(plane)),
+            sketch_id: exec_state.next_uuid(),
+            sketch: None,
+            tag: None,
+            node_path: None,
+            meta: vec![],
+        };
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Solved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn segment_revolve_rejects_cap_tags() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let err = coerce_revolve_targets(
+            vec![segment_value(&mut exec_state)],
+            BodyType::Surface,
+            Some(&TagDeclarator::new("cap_start")),
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("`tagStart` and `tagEnd` are not supported when revolving sketch segments"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
 }

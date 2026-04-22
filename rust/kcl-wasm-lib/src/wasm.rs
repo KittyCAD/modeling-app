@@ -18,6 +18,7 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let program = program.fill_node_paths();
     let mut findings = vec![];
     for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
@@ -54,6 +55,7 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
+    // Note: We don't need to fill in node paths to recast.
     Ok(JsValue::from_serde(&program.recast())?)
 }
 
@@ -328,6 +330,7 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+    // Note: We don't need to fill in node paths to get settings.
     let settings = program.meta_settings().map_err(|e| e.to_string())?;
 
     JsValue::from_serde(&settings).map_err(|e| e.to_string())

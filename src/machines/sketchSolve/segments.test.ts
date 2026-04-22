@@ -31,7 +31,7 @@ function createPointObject(id: number, freedom: Freedom): ApiObject {
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -67,7 +67,7 @@ function createLineSegmentObject(
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -109,7 +109,7 @@ function createArcSegmentObject(
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -146,7 +146,7 @@ function createCircleSegmentObject(
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -164,7 +164,7 @@ describe('deriveSegmentFreedom', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
 
     expect(deriveSegmentFreedom(nonSegment, [])).toBeNull()
@@ -201,7 +201,7 @@ describe('deriveSegmentFreedom', () => {
       label: '',
       comments: '',
       artifact_id: '0',
-      source: { type: 'Simple', range: [0, 0, 0] },
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
     }
     expect(deriveSegmentFreedom(point, [])).toBeNull()
   })
@@ -279,7 +279,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const endPoint = createPointObject(2, 'Fixed')
       const line = createLineSegmentObject(3, 1, 2)
@@ -309,7 +309,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const endPoint: ApiObject = {
         id: 2,
@@ -330,7 +330,7 @@ describe('deriveSegmentFreedom', () => {
         label: '',
         comments: '',
         artifact_id: '0',
-        source: { type: 'Simple', range: [0, 0, 0] },
+        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       }
       const line = createLineSegmentObject(3, 1, 2)
       const objects = [startPoint, endPoint, line]
@@ -488,6 +488,19 @@ describe('getSegmentColor', () => {
     expect(color).toBe(CONFLICT_COLOR)
   })
 
+  it('should return conflict color when the solver has outcome errors', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
+    })
+
+    expect(color).toBe(CONFLICT_COLOR)
+  })
+
   it('should return unconstrained color when freedom is Free (priority 5)', () => {
     const color = getSegmentColor({
       isDraft: false,
@@ -608,6 +621,19 @@ describe('getSegmentColor', () => {
 
     expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
     expect(unselectedColor).toBe(UNCONSTRAINED_COLOR)
+  })
+
+  it('should prioritize selection over solver errors', () => {
+    const selectedColor = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: true,
+      hasSolveErrors: true,
+      freedom: 'Fixed',
+      theme: DARK_THEME,
+    })
+
+    expect(selectedColor).toBe(SKETCH_SELECTION_COLOR)
   })
 
   it('should prioritize conflict over free and fixed', () => {

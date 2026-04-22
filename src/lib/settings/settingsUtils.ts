@@ -1,9 +1,9 @@
+import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
-
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -20,11 +20,14 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   createSettings,
   type Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import { getToken } from '@src/machines/authMachine'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -34,6 +37,75 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
+
+/**
+ * Returns whether a feature flag is enabled for the current user.
+ * Resolves to `true` when present, otherwise the provided default.
+ */
+export async function userHasFeature(
+  featureFlagId: string,
+  defaultValue: boolean
+): Promise<boolean> {
+  try {
+    const token = await getToken()
+    if (!token) {
+      return defaultValue
+    }
+
+    const now = Date.now()
+    const cacheValid =
+      featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+    type FeaturesResult = CachedFeaturesData | Error
+    let featuresData: FeaturesResult
+
+    if (cacheValid && featuresCache) {
+      featuresData = featuresCache.data
+    } else if (featuresFetchPromise) {
+      featuresData = await featuresFetchPromise
+    } else {
+      const client = createKCClient(token)
+      featuresFetchPromise = kcCall(() =>
+        users.user_features_get({ client })
+      ).then((result) => {
+        featuresFetchPromise = null
+        if (isCachedFeaturesData(result)) {
+          featuresCache = { data: result, fetchedAt: Date.now() }
+        }
+        return result
+      })
+      featuresData = await featuresFetchPromise
+    }
+
+    if (featuresData instanceof Error) {
+      console.error('Error fetching user features:', featuresData.message)
+      return defaultValue
+    }
+
+    const hasFeature = featuresData.features.some(
+      (feat: { id: string }) => feat.id === featureFlagId
+    )
+
+    return hasFeature ? true : defaultValue
+  } catch (error) {
+    console.error(`Error checking feature flag ${featureFlagId}:`, error)
+    return defaultValue
+  }
+}
 
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
@@ -293,6 +365,53 @@ export function settingsPayloadToProjectConfiguration(
   }
 }
 
+export function mergeProjectConfiguration(
+  existingConfiguration: DeepPartial<ProjectConfiguration>,
+  updatedConfiguration: DeepPartial<ProjectConfiguration>
+): DeepPartial<ProjectConfiguration> {
+  return {
+    ...existingConfiguration,
+    ...updatedConfiguration,
+    settings: {
+      ...existingConfiguration.settings,
+      ...updatedConfiguration.settings,
+      meta: {
+        ...existingConfiguration.settings?.meta,
+        ...updatedConfiguration.settings?.meta,
+      },
+      app: {
+        ...existingConfiguration.settings?.app,
+        ...updatedConfiguration.settings?.app,
+      },
+      modeling: {
+        ...existingConfiguration.settings?.modeling,
+        ...updatedConfiguration.settings?.modeling,
+      },
+      text_editor: {
+        ...existingConfiguration.settings?.text_editor,
+        ...updatedConfiguration.settings?.text_editor,
+      },
+      command_bar: {
+        ...existingConfiguration.settings?.command_bar,
+        ...updatedConfiguration.settings?.command_bar,
+      },
+    },
+  }
+}
+
+function setProjectConfigurationId(
+  projectConfiguration: DeepPartial<ProjectConfiguration>,
+  id: string
+): DeepPartial<ProjectConfiguration> {
+  return mergeProjectConfiguration(projectConfiguration, {
+    settings: {
+      meta: {
+        id,
+      },
+    },
+  })
+}
+
 export interface AppSettings {
   settings: SettingsType
   configuration: DeepPartial<Configuration>
@@ -327,6 +446,9 @@ export async function loadAndValidateSettings(
     configurationToSettingsPayload(appSettingsPayload)
   )
 
+  settingsNext.modeling.useSketchSolveMode.default =
+    !isPlaywright() && !(await userHasFeature('classic_sketch_mode', false))
+
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
@@ -334,87 +456,24 @@ export async function loadAndValidateSettings(
       wasmInstance
     )
 
-    // An id was missing. Create one and write it to disk immediately.
-    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
-      projectSettings = {
-        settings: {
-          meta: {
-            id: v4(),
-          },
-        },
-      }
-      // Duplicated from settingsUtils.ts
+    if (err(projectSettings))
+      return Promise.reject(new Error('Invalid project settings'))
+
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      projectSettings = setProjectConfigurationId(projectSettings, v4())
       const projectTomlString = serializeProjectConfiguration(
         projectSettings,
         wasmInstance
       )
       if (err(projectTomlString))
-        return Promise.reject(new Error('Failed to serialize project settings'))
-
-      await writeProjectSettingsFile(projectPath, projectTomlString)
-    }
-
-    if (err(projectSettings))
-      return Promise.reject(new Error('Invalid project settings'))
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsNew = {
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-
-      if (err(projectTomlString))
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
 
       await writeProjectSettingsFile(projectPath, projectTomlString)
-
-      projectSettings = {
-        settings: projectSettingsNew,
-      }
-    }
-
-    // An id was missing. Create one and write it to disk immediately.
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      const projectSettingsParsed =
-        projectConfigurationToSettingsPayload(projectSettings)
-      const projectSettingsNew = {
-        ...projectSettingsParsed,
-        meta: {
-          id: v4(),
-        },
-      }
-
-      // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew),
-        wasmInstance
-      )
-
-      if (err(projectTomlString))
-        return Promise.reject(
-          new Error('Could not serialize project configuration')
-        )
-
-      await writeProjectSettingsFile(projectPath, projectTomlString)
-
-      projectSettings =
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
     }
 
     const projectSettingsPayload = projectSettings
@@ -510,8 +569,18 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  const existingProjectSettings = await readProjectSettingsFile(
+    projectPath,
+    wasmInstance
+  )
+  if (err(existingProjectSettings)) return
+
+  const mergedProjectSettings = mergeProjectConfiguration(
+    existingProjectSettings,
+    settingsPayloadToProjectConfiguration(jsProjectSettings)
+  )
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    mergedProjectSettings,
     wasmInstance
   )
   if (err(projectTomlString)) return

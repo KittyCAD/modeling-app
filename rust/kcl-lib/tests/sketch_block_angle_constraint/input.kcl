@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   a = [var 0mm, var 4mm]
   b = [var 2mm, var 2mm]

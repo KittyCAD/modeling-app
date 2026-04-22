@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_import_multiple.kcl
+---
+import "rectangle1.kcl"
+import "rectangle2.kcl"

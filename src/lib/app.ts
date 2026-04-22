@@ -442,7 +442,7 @@ export class App implements AppSubsystems {
       this.singletons.kclManager.updateTheme(newTheme),
       ...(this.singletons.kclManager.engineCommandManager.connection?.connected
         ? [
-            this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
               newBackfaceColor
             ),
           ]

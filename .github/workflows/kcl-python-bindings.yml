@@ -31,7 +31,7 @@ concurrency:
 jobs:
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -111,7 +111,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   test:
     name: kcl-python-bindings (test)
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
       - name: Track setup
@@ -124,7 +124,7 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.0.0
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           rustflags: '' # Use .cargo/config.toml
@@ -154,11 +154,11 @@ jobs:
           CI_SUITE: integration:kcl
   sdist:
     name: kcl-python-bindings (sdist)
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.0.0
       - name: Create venv
         run: |
           uv venv .venv
@@ -178,7 +178,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   release:
     name: Release
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     permissions:
       contents: write
     if: startsWith(github.ref, 'refs/tags/')
@@ -189,7 +189,7 @@ jobs:
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.0.0
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings

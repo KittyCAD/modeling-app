@@ -18,6 +18,7 @@ use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
 use crate::ExecutorContext;
+use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -88,7 +89,15 @@ async fn inner_pattern_transform(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Solid>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Solid>(
+            i,
+            &transform,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -118,7 +127,15 @@ async fn inner_pattern_transform_2d(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Sketch>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Sketch>(
+            i,
+            &transform,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -212,6 +229,7 @@ async fn make_transform<T: GeometryTrait>(
     i: u32,
     transform: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<Vec<Transform>, KclError> {
@@ -225,6 +243,7 @@ async fn make_transform<T: GeometryTrait>(
         Default::default(),
         vec![(None, Arg::new(repetition_num, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("transform closure".to_owned()),

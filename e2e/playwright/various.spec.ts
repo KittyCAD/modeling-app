@@ -16,7 +16,7 @@ test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
   await millimetersButton.click()
 
   // Look out for the toast message
-  const toastMessage = page.getByText('Updated per-file units to mm')
+  const toastMessage = page.getByText('Updated per-file units to mm.')
   await expect(toastMessage).toBeVisible()
 
   // Verify that the popover has closed
@@ -245,7 +245,7 @@ test(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     // Exit sketch
-    await page.keyboard.press('Escape')
+    await page.keyboard.press('Meta+Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).not.toBeVisible()

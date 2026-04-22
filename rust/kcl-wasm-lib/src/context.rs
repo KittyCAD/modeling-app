@@ -11,6 +11,7 @@ use kcl_lib::MockConfig;
 use kcl_lib::Program;
 use kcl_lib::ProjectManager;
 use kcl_lib::front::FrontendState;
+use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::wasm_engine::FileManager;
 use wasm_bindgen::prelude::*;
 
@@ -78,7 +79,7 @@ impl Context {
             ));
         }
 
-        Ok(kcl_lib::ExecutorContext::new(
+        Ok(kcl_lib::ExecutorContext::new_with_engine_and_fs(
             self.engine.clone(),
             self.fs.clone(),
             settings,
@@ -114,17 +115,21 @@ impl Context {
         program_ast_json: &str,
         path: Option<String>,
         settings: &str,
-    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    ) -> Result<SceneGraphDelta, KclErrorWithOutputs> {
         let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
             let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
             KclErrorWithOutputs::no_outputs(err)
         })?;
+        let program = program.fill_node_paths();
         let ctx = self.create_executor_ctx(settings, path, false).map_err(|e| {
             KclErrorWithOutputs::no_outputs(KclError::internal(format!(
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
             )))
         })?;
-        ctx.run_with_caching(program).await
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        guard.engine_execute(&ctx, program).await
     }
 
     /// Reset the scene and bust the cache.
@@ -184,6 +189,7 @@ impl Context {
             let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
             KclErrorWithOutputs::no_outputs(err)
         })?;
+        let program = program.fill_node_paths();
         let ctx = self.create_executor_ctx(settings, path, true).map_err(|e| {
             KclErrorWithOutputs::no_outputs(KclError::internal(format!(
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"

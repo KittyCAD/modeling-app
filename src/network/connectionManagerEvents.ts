@@ -42,7 +42,7 @@ export const createOnEngineOffline = ({
 export const createOnEngineConnectionOpened = ({
   settings,
   sendSceneCommand,
-  setBackfaceColor,
+  setDefaultSystemProperties,
   setTheme,
   listenToDarkModeMatcher,
   camControlsCameraChange,
@@ -54,7 +54,7 @@ export const createOnEngineConnectionOpened = ({
     command: EngineCommand,
     forceWebsocket?: boolean
   ) => Promise<WebSocketResponse | [WebSocketResponse] | null>
-  setBackfaceColor: (color: string) => Promise<void>
+  setDefaultSystemProperties: (backfaceColor: string) => Promise<void>
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
@@ -130,10 +130,10 @@ export const createOnEngineConnectionOpened = ({
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
-      message: 'default_backface_set_color',
+      message: 'default_system_properties_set',
     })
 
-    await setBackfaceColor(settings.backfaceColor)
+    await setDefaultSystemProperties(settings.backfaceColor)
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',

@@ -113,6 +113,7 @@ export default defineConfig([
       ],
 
       '@typescript-eslint/no-unsafe-unary-minus': 'error',
+      '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/no-wrapper-object-types': 'error',
       'no-throw-literal': 'off',
       '@typescript-eslint/only-throw-error': 'error',

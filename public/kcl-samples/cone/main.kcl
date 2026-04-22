@@ -5,17 +5,27 @@
 @settings(defaultLengthUnit = mm)
 
 // Define parameters
-diameter = 10
-height = 10
-
-// create a sketch for the cone profile on the XY plane
-sketch = startSketchOn(XY)
+coneDiameter = 10
+coneHeight = 10
 
 // create the profile at the top of the cone
-profile = startProfile(sketch, at = [0, height])
-  |> yLine(length = -height)
-  |> xLine(length = diameter / 2)
-  |> close()
+sketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 5mm, var 0mm], end = [var 0mm, var 10mm])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+  coincident([line2.start, ORIGIN])
 
-// revolve the profile to create the cone
-cone = revolve(profile, axis = Y, angle = 360.0)
+  vertical(line1)
+  horizontal(line2)
+
+  horizontalDistance([line2.start, line2.end]) == coneDiameter / 2
+  verticalDistance([line1.start, line1.end]) == -coneHeight
+}
+
+// revolve the sketch to create the cone
+coneRegion = region(segments = [sketch.line1, sketch.line2])
+cone = revolve(coneRegion, axis = Y, angle = 360.0)
+hide(sketch)

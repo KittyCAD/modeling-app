@@ -1,7 +1,7 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { distance2d, dot2d, subVec } from '@src/lib/utils2d'
+import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import { getAngleDiff, isArray } from '@src/lib/utils'
 import {
   getArcPoints,
@@ -38,15 +38,18 @@ type HitObject =
   | ScreenRectHitObject
 type ConstraintHitObjects = HitObject[] | 'auto'
 
-function distanceToLineSegment(
+export function getClosestPointOnLineSegment(
   point: Coords2d,
   line: readonly [Coords2d, Coords2d]
-): number {
+): { closestPoint: Coords2d; distance: number } {
   const [start, end] = line
   const segment = subVec(end, start)
   const segmentLengthSquared = dot2d(segment, segment)
   if (segmentLengthSquared === 0) {
-    return distance2d(point, start)
+    return {
+      closestPoint: [...start],
+      distance: distance2d(point, start),
+    }
   }
 
   const startToPoint = subVec(point, start)
@@ -59,14 +62,23 @@ function distanceToLineSegment(
     start[1] + segment[1] * t,
   ]
 
-  return distance2d(point, closestPoint)
+  return {
+    closestPoint,
+    distance: distance2d(point, closestPoint),
+  }
 }
 
-function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
+export function getClosestPointOnArcSegment(
+  point: Coords2d,
+  arc: ArcPoints
+): { closestPoint: Coords2d; distance: number } {
   const { center, start, end } = arc
   const radius = distance2d(center, start)
   if (radius === 0) {
-    return distance2d(point, center)
+    return {
+      closestPoint: [...center],
+      distance: distance2d(point, center),
+    }
   }
 
   const pointAngle = Math.atan2(point[1] - center[1], point[0] - center[0])
@@ -78,23 +90,44 @@ function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
   const isWithinArcSweep = pointSweepAngle <= sweepAngle
 
   if (isWithinArcSweep) {
-    return Math.abs(distance2d(point, center) - radius)
+    const closestPoint: Coords2d = polar2d(center, radius, pointAngle)
+    return {
+      closestPoint,
+      distance: Math.abs(distance2d(point, center) - radius),
+    }
   }
 
-  return Math.min(distance2d(point, start), distance2d(point, end))
+  const closestPoint: Coords2d =
+    distance2d(point, start) <= distance2d(point, end) ? [...start] : [...end]
+  return {
+    closestPoint,
+    distance: distance2d(point, closestPoint),
+  }
 }
 
-function distanceToCircleSegment(
+export function getClosestPointOnCircleSegment(
   point: Coords2d,
   circle: CirclePoints
-): number {
+): { closestPoint: Coords2d; distance: number } {
   const { center, start } = circle
   const radius = distance2d(center, start)
   if (radius === 0) {
-    return distance2d(point, center)
+    return {
+      closestPoint: [...center],
+      distance: distance2d(point, center),
+    }
   }
 
-  return Math.abs(distance2d(point, center) - radius)
+  const pointAngle = Math.atan2(point[1] - center[1], point[0] - center[0])
+  const closestPoint: Coords2d = [
+    center[0] + radius * Math.cos(pointAngle),
+    center[1] + radius * Math.sin(pointAngle),
+  ]
+
+  return {
+    closestPoint,
+    distance: Math.abs(distance2d(point, center) - radius),
+  }
 }
 
 function getAutoHitObjects(line: Line2): LinePoints[] {
@@ -154,9 +187,9 @@ function getClosestConstraintHitDistance(
   for (const hitObject of getConstraintHitObjects(constraintGroup)) {
     const distance =
       hitObject.type === 'arc'
-        ? distanceToArcSegment(mousePosition, hitObject)
+        ? getClosestPointOnArcSegment(mousePosition, hitObject).distance
         : hitObject.type === 'line'
-          ? distanceToLineSegment(mousePosition, hitObject.line)
+          ? getClosestPointOnLineSegment(mousePosition, hitObject.line).distance
           : distanceToScreenRect(
               getMouseScreenPosition(),
               hitObject,
@@ -224,8 +257,12 @@ export type ClosestApiObject = {
   apiObject: ApiObject
 }
 
+export function getSketchHoverDistance(scale: number) {
+  return 10 * scale
+}
+
 /**
- * Finds the closest apiObject to mousePosition (which is given in sketch space).
+ * Finds the closest apiObject to mousePosition within hoverDistance (which is given in sketch space).
  * Uses ApiObjects instead of the three.js scene.
  * Constraints still use the three.js group to avoid having to set up its hit areas manually.
  */
@@ -242,7 +279,7 @@ export function findClosestApiObjects(
   // All segments outside of hoverDistance are dropped.
   // Visible non-visual constraints take precedence over overlapping geometry,
   // then points take precedence over other segments to keep them easy to target.
-  const hoverDistance = 10 * scale
+  const hoverDistance = getSketchHoverDistance(scale)
   let mouseScreenPosition: Coords2d | undefined
   const getMouseScreenPosition = () =>
     (mouseScreenPosition ??= localToScreen(
@@ -272,7 +309,10 @@ export function findClosestApiObjects(
     if (isLineSegment(apiObject)) {
       const linePoints = getLinePoints(apiObject, objects)
       if (linePoints) {
-        const distance = distanceToLineSegment(mousePosition, linePoints)
+        const distance = getClosestPointOnLineSegment(
+          mousePosition,
+          linePoints
+        ).distance
         if (distance <= hoverDistance) {
           candidates.push({
             distance,
@@ -287,8 +327,8 @@ export function findClosestApiObjects(
       const arcPoints = getArcPoints(apiObject, objects)
       if (arcPoints) {
         const distance = arcPoints.isCircle
-          ? distanceToCircleSegment(mousePosition, arcPoints)
-          : distanceToArcSegment(mousePosition, arcPoints)
+          ? getClosestPointOnCircleSegment(mousePosition, arcPoints).distance
+          : getClosestPointOnArcSegment(mousePosition, arcPoints).distance
         if (distance <= hoverDistance) {
           candidates.push({
             distance,

@@ -1,15 +1,15 @@
 import type { ApiObject, Number } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import {
-  CanvasTexture,
-  Group,
-  Mesh,
-  Sprite,
-  SpriteMaterial,
-  Color,
-  Vector3,
-  type Vector3 as Vector3Type,
-} from 'three'
+  DISTANCE_CONSTRAINT_ARROW,
+  DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_LABEL,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+import type { Coords2d } from '@src/lang/util'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   CONSTRAINT_TYPE,
   isConstraintWithSource,
@@ -19,18 +19,18 @@ import type {
   ConstraintObject,
   SpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
-  DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_ARROW,
-  DISTANCE_CONSTRAINT_LABEL,
-} from '@src/clientSideScene/sceneConstants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
-import type { Coords2d } from '@src/lang/util'
+  CanvasTexture,
+  Color,
+  Group,
+  Mesh,
+  Sprite,
+  SpriteMaterial,
+  Vector3,
+  type Vector3 as Vector3Type,
+} from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -69,17 +69,21 @@ export function createDimensionLine(
   const materials = resources.materials
 
   const lineGeom1 = new LineGeometry()
-  lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
   const line1 = new Line2(lineGeom1, materials.default.line)
   line1.userData.type = DISTANCE_CONSTRAINT_BODY
   line1.userData.hitObjects = 'auto'
+  line1.userData.segmentStart = new Vector3()
+  line1.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line1, [0, 0, 0, 100, 100, 0])
   group.add(line1)
 
   const lineGeom2 = new LineGeometry()
-  lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
   const line2 = new Line2(lineGeom2, materials.default.line)
   line2.userData.type = DISTANCE_CONSTRAINT_BODY
   line2.userData.hitObjects = 'auto'
+  line2.userData.segmentStart = new Vector3()
+  line2.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line2, [0, 0, 0, 100, 100, 0])
   group.add(line2)
 
   // Arrow tip is at origin, so position directly at start/end
@@ -216,7 +220,7 @@ export function updateDimensionLine(
     return
   }
 
-  line1.geometry.setPositions([
+  updateConstraintLinePositions(line1, [
     lineStart.x,
     lineStart.y,
     0,
@@ -224,7 +228,14 @@ export function updateDimensionLine(
     gapStart.y,
     0,
   ])
-  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, lineEnd.x, lineEnd.y, 0])
+  updateConstraintLinePositions(line2, [
+    gapEnd.x,
+    gapEnd.y,
+    0,
+    lineEnd.x,
+    lineEnd.y,
+    0,
+  ])
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO
@@ -279,7 +290,7 @@ function updateCollapsedDimensionLine(
     .clone()
     .add(markerDir.clone().multiplyScalar(markerHalfLength))
 
-  line1.geometry.setPositions([
+  updateConstraintLinePositions(line1, [
     markerStart.x,
     markerStart.y,
     0,
@@ -297,6 +308,27 @@ function updateCollapsedDimensionLine(
   arrow2.position.copy(center)
   arrow2.rotation.z = angle + Math.PI / 2
   arrow2.scale.setScalar(scale)
+}
+
+export function updateConstraintLinePositions(
+  line: Line2,
+  positions: number[]
+) {
+  const segmentStart =
+    line.userData.segmentStart instanceof Vector3
+      ? line.userData.segmentStart
+      : new Vector3()
+  const segmentEnd =
+    line.userData.segmentEnd instanceof Vector3
+      ? line.userData.segmentEnd
+      : new Vector3()
+  segmentStart.set(positions[0] ?? 0, positions[1] ?? 0, positions[2] ?? 0)
+  segmentEnd.set(positions[3] ?? 0, positions[4] ?? 0, positions[5] ?? 0)
+  line.userData.segmentStart = segmentStart
+  line.userData.segmentEnd = segmentEnd
+  line.geometry.setPositions(positions)
+  line.geometry.computeBoundingSphere()
+  line.computeLineDistances()
 }
 
 export function updateLabel(

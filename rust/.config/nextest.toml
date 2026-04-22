@@ -50,9 +50,6 @@ test-group = "after-engine"
 filter = "test(docs::gen_std_tests)"
 test-group = "after-engine"
 
-[profile.default.junit]
-path = "../../../../test-results/junit.xml"
-
 [[profile.default.overrides]]
 filter = 'test(kcl_samples)'
 junit.store-success-output = true

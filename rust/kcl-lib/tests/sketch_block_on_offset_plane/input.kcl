@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 plane1 = offsetPlane(XY, offset = 5mm)
 
 sketch(on = plane1) {

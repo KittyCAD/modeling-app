@@ -537,10 +537,10 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 102,
-                    "end": 104,
+                    "commentStart": 61,
+                    "end": 63,
                     "moduleId": 0,
-                    "start": 102,
+                    "start": 61,
                     "type": "TagDeclarator",
                     "value": "l1"
                   },
@@ -578,10 +578,10 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 258,
-                    "end": 260,
+                    "commentStart": 217,
+                    "end": 219,
                     "moduleId": 0,
-                    "start": 258,
+                    "start": 217,
                     "type": "TagDeclarator",
                     "value": "l2"
                   },
@@ -619,10 +619,10 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     41.0
                   ],
                   "tag": {
-                    "commentStart": 423,
-                    "end": 425,
+                    "commentStart": 382,
+                    "end": 384,
                     "moduleId": 0,
-                    "start": 423,
+                    "start": 382,
                     "type": "TagDeclarator",
                     "value": "l3"
                   },
@@ -660,10 +660,10 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 485,
-                    "end": 487,
+                    "commentStart": 444,
+                    "end": 446,
                     "moduleId": 0,
-                    "start": 485,
+                    "start": 444,
                     "type": "TagDeclarator",
                     "value": "l4"
                   },

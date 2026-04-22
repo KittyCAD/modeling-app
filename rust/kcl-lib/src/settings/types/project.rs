@@ -27,6 +27,11 @@ pub struct ProjectConfiguration {
     #[serde(default)]
     #[validate(nested)]
     pub settings: PerProjectSettings,
+
+    /// Settings for cloud-backed project metadata.
+    #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
+    pub cloud: ProjectCloudSettings,
 }
 
 impl ProjectConfiguration {
@@ -77,6 +82,27 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+}
+
+/// Cloud-backed project metadata.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectCloudSettings {
+    /// Environment-scoped cloud metadata keyed by environment name.
+    /// TOML with dotted environment names should use quoted table names, for
+    /// example `[cloud."zoo.dev"]`.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub environments: IndexMap<String, ProjectCloudEnvironmentSettings>,
+}
+
+/// Cloud-backed metadata for a single environment.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectCloudEnvironmentSettings {
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub project_id: uuid::Uuid,
 }
 
 /// Project specific application settings.
@@ -189,6 +215,8 @@ mod tests {
     use super::NamedView;
     use super::PerProjectSettings;
     use super::ProjectAppSettings;
+    use super::ProjectCloudEnvironmentSettings;
+    use super::ProjectCloudSettings;
     use super::ProjectCommandBarSettings;
     use super::ProjectConfiguration;
     use super::ProjectMetaSettings;
@@ -334,6 +362,7 @@ mod tests {
                     include_settings: Some(false),
                 },
             },
+            cloud: ProjectCloudSettings::default(),
         };
         let serialized = toml::to_string(&conf).unwrap();
         let old_project_file = r#"[settings.meta]
@@ -377,5 +406,47 @@ include_settings = false
 "#;
 
         assert_eq!(serialized, old_project_file)
+    }
+
+    #[test]
+    fn test_project_settings_cloud_metadata_round_trip() {
+        let local_project_id = uuid::uuid!("e8f5178c-5227-4567-bb5a-f52b3caef5ea");
+        let zoo_cloud_project_id = uuid::uuid!("04c988e3-ec37-48a4-b491-45c3668934f1");
+        let dev_cloud_project_id = uuid::uuid!("e9632dae-19ca-49ea-bcc1-ee8e34ff9de3");
+
+        let conf = ProjectConfiguration {
+            settings: PerProjectSettings {
+                meta: ProjectMetaSettings { id: local_project_id },
+                ..Default::default()
+            },
+            cloud: ProjectCloudSettings {
+                environments: IndexMap::from([
+                    (
+                        "zoo.dev".to_owned(),
+                        ProjectCloudEnvironmentSettings {
+                            project_id: zoo_cloud_project_id,
+                        },
+                    ),
+                    (
+                        "dev.zoo.dev".to_owned(),
+                        ProjectCloudEnvironmentSettings {
+                            project_id: dev_cloud_project_id,
+                        },
+                    ),
+                ]),
+            },
+        };
+
+        let serialized = toml::to_string(&conf).unwrap();
+        assert!(serialized.contains(&format!(
+            "[cloud.\"zoo.dev\"]\nproject_id = \"{zoo_cloud_project_id}\"\n"
+        )));
+        assert!(serialized.contains(&format!(
+            "[cloud.\"dev.zoo.dev\"]\nproject_id = \"{dev_cloud_project_id}\"\n"
+        )));
+        assert!(serialized.contains(&format!("[settings.meta]\nid = \"{local_project_id}\"\n")));
+
+        let parsed = ProjectConfiguration::parse_and_validate(&serialized).unwrap();
+        assert_eq!(parsed, conf);
     }
 }

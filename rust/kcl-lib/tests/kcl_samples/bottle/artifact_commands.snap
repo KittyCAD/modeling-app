@@ -33,6 +33,15 @@ description: Artifact commands bottle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands bottle.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -62.5,
-          "y": 0.0,
+          "x": -62.500000000022034,
+          "y": -26.669999999996705,
           "z": 0.0
         }
       }
@@ -81,11 +90,11 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 26.666666666666668,
+            "x": -62.500000000023924,
+            "y": 26.66333333333638,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -96,16 +105,19 @@ description: Artifact commands bottle.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 40.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 0.0000000000027213786779611837,
+            "y": -112.59441187335123
+          },
+          "radius": 152.64000000017708,
+          "start": {
+            "unit": "degrees",
+            "value": 114.17092789340526
           },
           "end": {
-            "x": 62.5,
-            "y": 26.666666666666668,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 65.82907210661133
           },
           "relative": false
         }
@@ -120,8 +132,8 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.5,
-            "y": 0.0,
+            "x": 62.49999999997797,
+            "y": -26.670000000010017,
             "z": 0.0
           },
           "relative": false
@@ -132,19 +144,24 @@ description: Artifact commands bottle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_mirror",
-        "ids": [
-          "[uuid]"
-        ],
-        "axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "point": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000055493387662863825,
+            "y": 113.14656733030625
+          },
+          "radius": 153.15000000010056,
+          "start": {
+            "unit": "degrees",
+            "value": -65.91467551249656
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -114.08532448751697
+          },
+          "relative": false
         }
       }
     },
@@ -152,8 +169,21 @@ description: Artifact commands bottle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 30.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -271,12 +301,12 @@ description: Artifact commands bottle.kcl
           },
           "radius": 22.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -286,8 +316,21 @@ description: Artifact commands bottle.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
