@@ -176,7 +176,10 @@ pillarProfile = sketch(on = pillarPlane) {
 
 pillarProfiles = patternLinear2d(
   region(
-    point = [blockSubdivisionWidth + profileThickness / 2, profileThickness / 2],
+    point = [
+      blockSubdivisionWidth + profileThickness / 2,
+      profileThickness / 2
+    ],
     sketch = pillarProfile,
   ),
   instances = 2,
@@ -330,7 +333,10 @@ sinkOutsideProfile = sketch(on = sinkPlaneOutside) {
 }
 
 sinkOutsideRegion = region(
-  point = [-sinkOffsetLeft - sinkWidth / 2, sinkOffsetFront + sinkLength / 2],
+  point = [
+    -sinkOffsetLeft - (sinkWidth / 2),
+    sinkOffsetFront + sinkLength / 2
+  ],
   sketch = sinkOutsideProfile,
 )
 sinkBodyOutside = extrude(sinkOutsideRegion, length = sinkDepth)
@@ -371,7 +377,7 @@ sinkInsideProfile = sketch(on = sinkPlaneInside) {
 sinkInsideRegion = region(
   point = [
     sinkOffsetLeft + sinkWidth / 2,
-    sinkOffsetFront + sinkLength / 2,
+    sinkOffsetFront + sinkLength / 2
   ],
   sketch = sinkInsideProfile,
 )
@@ -389,8 +395,14 @@ tapPlateSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 
   coincident([centerYGuide.start, ORIGIN])
   coincident([centerYGuide.end, centerXGuide.start])
-  coincident([tapPlateCircle.center, centerXGuide.end])
-  coincident([radiusGuide.start, tapPlateCircle.center])
+  coincident([
+    tapPlateCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapPlateCircle.center
+  ])
   coincident([radiusGuide.end, tapPlateCircle.start])
 
   vertical(centerYGuide)
@@ -399,7 +411,10 @@ tapPlateSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 
   verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
-  distance([tapPlateCircle.center, tapPlateCircle.start]) == 40
+  distance([
+  tapPlateCircle.center,
+  tapPlateCircle.start
+]) == 40
 }
 
 tapPlateRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPlateSketch)
@@ -421,8 +436,14 @@ tapPillarSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 
   coincident([centerYGuide.start, ORIGIN])
   coincident([centerYGuide.end, centerXGuide.start])
-  coincident([tapPillarCircle.center, centerXGuide.end])
-  coincident([radiusGuide.start, tapPillarCircle.center])
+  coincident([
+    tapPillarCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapPillarCircle.center
+  ])
   coincident([radiusGuide.end, tapPillarCircle.start])
 
   vertical(centerYGuide)
@@ -431,7 +452,10 @@ tapPillarSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 
   verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
-  distance([tapPillarCircle.center, tapPillarCircle.start]) == 15
+  distance([
+  tapPillarCircle.center,
+  tapPillarCircle.start
+]) == 15
 }
 
 tapPillarRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPillarSketch)
@@ -454,7 +478,10 @@ tapNoseSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
   coincident([heightGuide.start, ORIGIN])
   coincident([heightGuide.end, centerXGuide.start])
   coincident([tapNoseCircle.center, centerXGuide.end])
-  coincident([radiusGuide.start, tapNoseCircle.center])
+  coincident([
+    radiusGuide.start,
+    tapNoseCircle.center
+  ])
   coincident([radiusGuide.end, tapNoseCircle.start])
 
   vertical(heightGuide)
@@ -463,7 +490,10 @@ tapNoseSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
 
   verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 100
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
-  distance([tapNoseCircle.center, tapNoseCircle.start]) == 10
+  distance([
+  tapNoseCircle.center,
+  tapNoseCircle.start
+]) == 10
 }
 
 tapNoseRegion = region(point = [blockWidth / 2, tableHeight + 100], sketch = tapNoseSketch)
@@ -485,8 +515,14 @@ tapHandleSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
 
   coincident([heightGuide.start, ORIGIN])
   coincident([heightGuide.end, centerXGuide.start])
-  coincident([tapHandleCircle.center, centerXGuide.end])
-  coincident([radiusGuide.start, tapHandleCircle.center])
+  coincident([
+    tapHandleCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapHandleCircle.center
+  ])
   coincident([radiusGuide.end, tapHandleCircle.start])
 
   vertical(heightGuide)
@@ -495,7 +531,10 @@ tapHandleSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
 
   verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 150
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
-  distance([tapHandleCircle.center, tapHandleCircle.start]) == 4
+  distance([
+  tapHandleCircle.center,
+  tapHandleCircle.start
+]) == 4
 }
 
 tapHandleRegion = region(point = [blockWidth / 2, tableHeight + 150], sketch = tapHandleSketch)
@@ -548,7 +587,10 @@ doorProfile = sketch(on = doorPlane) {
 
 // Workaround: region -> extrude -> 3D pattern stayed closer than extruding a patterned 2D profile.
 doorRegion = region(
-  point = [doorStart + doorWidth / 2, profileThickness / 2],
+  point = [
+    doorStart + doorWidth / 2,
+    profileThickness / 2
+  ],
   sketch = doorProfile,
 )
 doorSeed = extrude(doorRegion, length = doorHeight)
@@ -599,7 +641,10 @@ panelProfile = sketch(on = doorPlane) {
 }
 
 panelRegion = region(
-  point = [profileThickness / 2, doorStart + panelWidth / 2],
+  point = [
+    profileThickness / 2,
+    doorStart + panelWidth / 2
+  ],
   sketch = panelProfile,
 )
 panelSeed = extrude(panelRegion, length = doorHeight)
@@ -655,11 +700,20 @@ handleProfilePath = sketch(on = handlePlane) {
   vertical(rightLeg)
   horizontal(topSpanGuide)
 
-  horizontalDistance([startOffsetGuide.start, startOffsetGuide.end]) == handleOffset
+  horizontalDistance([
+  startOffsetGuide.start,
+  startOffsetGuide.end
+]) == handleOffset
   distance([leftLeg.start, leftLeg.end]) == handleLengthSegmentA
   equalLength([leftLeg, rightLeg])
-  distance([leftRadiusGuide.start, leftRadiusGuide.end]) == handleFillet
-  distance([rightRadiusGuide.start, rightRadiusGuide.end]) == handleFillet
+  distance([
+  leftRadiusGuide.start,
+  leftRadiusGuide.end
+]) == handleFillet
+  distance([
+  rightRadiusGuide.start,
+  rightRadiusGuide.end
+]) == handleFillet
   distance([grip.start, grip.end]) == handleLengthSegmentB
   horizontalDistance([topSpanGuide.start, topSpanGuide.end]) == handleWidth
   radius(leftArc) == handleFillet
@@ -679,7 +733,10 @@ handleSectionProfile = sketch(on = XZ) {
   coincident([heightGuide.start, ORIGIN])
   coincident([heightGuide.end, centerXGuide.start])
   coincident([sectionCircle.center, centerXGuide.end])
-  coincident([radiusGuide.start, sectionCircle.center])
+  coincident([
+    radiusGuide.start,
+    sectionCircle.center
+  ])
   coincident([radiusGuide.end, sectionCircle.start])
 
   vertical(heightGuide)
@@ -688,7 +745,10 @@ handleSectionProfile = sketch(on = XZ) {
 
   verticalDistance([heightGuide.start, heightGuide.end]) == handleHeightAboveTheFloor
   horizontalDistance([centerXGuide.start, centerXGuide.end]) == handleOffset
-  distance([sectionCircle.center, sectionCircle.start]) == 2
+  distance([
+  sectionCircle.center,
+  sectionCircle.start
+]) == 2
 }
 
 handleSection = region(segments = [handleSectionProfile.sectionCircle])

@@ -51,7 +51,10 @@ handleProfile = sketch(on = YZ) {
   tangent([base, heelArc])
   tangent([returnEdge, heelArc])
   equalLength([base, topFace])
-  distance([arcCenterGuide.start, arcCenterGuide.end]) == stockThickness + bendRadius
+  distance([
+  arcCenterGuide.start,
+  arcCenterGuide.end
+]) == stockThickness + bendRadius
   radius(frontBend) == bendRadius
   horizontalDistance([base.start, base.end]) == handleLength
   verticalDistance([frontFace.start, frontFace.end]) == stockThickness
@@ -179,31 +182,61 @@ grip01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset + 16)) {
   coincident([centerGuide.start, ORIGIN])
   coincident([centerGuide.end, outerCircle.center])
   coincident([innerCircle.center, outerCircle.center])
-  coincident([outerRadiusGuide.start, outerCircle.center])
-  coincident([outerRadiusGuide.end, outerCircle.start])
-  coincident([innerRadiusGuide.start, innerCircle.center])
-  coincident([innerRadiusGuide.end, innerCircle.start])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+  coincident([
+    innerRadiusGuide.start,
+    innerCircle.center
+  ])
+  coincident([
+    innerRadiusGuide.end,
+    innerCircle.start
+  ])
   vertical(centerGuide)
   horizontal(outerRadiusGuide)
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
-  horizontalDistance([outerRadiusGuide.start, outerRadiusGuide.end]) == gripOuterRadius
-  horizontalDistance([innerRadiusGuide.start, innerRadiusGuide.end]) == bitSize01
+  horizontalDistance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == gripOuterRadius
+  horizontalDistance([
+  innerRadiusGuide.start,
+  innerRadiusGuide.end
+]) == bitSize01
 }
-grip01Region = region(point = [(gripOuterRadius + bitSize01) / 2, firstBitAxisY], sketch = grip01Sketch)
+grip01Region = region(
+  point = [
+    (gripOuterRadius + bitSize01) / 2,
+    firstBitAxisY
+  ],
+  sketch = grip01Sketch,
+)
 hide(grip01Sketch)
 
 grip01 = extrude(
-  grip01Region,
-  length = -10,
-  tagEnd = $capEnd005,
-  tagStart = $capStart003,
-)
+       grip01Region,
+       length = -10,
+       tagEnd = $capEnd005,
+       tagStart = $capStart003,
+     )
   |> fillet(
        radius = 1,
        tags = [
-         getCommonEdge(faces = [grip01Region.tags.outerCircle, capEnd005]),
-         getCommonEdge(faces = [grip01Region.tags.outerCircle, capStart003])
+         getCommonEdge(faces = [
+           grip01Region.tags.outerCircle,
+           capEnd005
+         ]),
+         getCommonEdge(faces = [
+           grip01Region.tags.outerCircle,
+           capStart003
+         ])
        ],
      )
   |> appearance(color = "#af7b23")
@@ -277,31 +310,61 @@ grip02Sketch = sketch(on = offsetPlane(XY, offset = -3)) {
   coincident([centerGuide.start, ORIGIN])
   coincident([centerGuide.end, outerCircle.center])
   coincident([innerCircle.center, outerCircle.center])
-  coincident([outerRadiusGuide.start, outerCircle.center])
-  coincident([outerRadiusGuide.end, outerCircle.start])
-  coincident([innerRadiusGuide.start, innerCircle.center])
-  coincident([innerRadiusGuide.end, innerCircle.start])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+  coincident([
+    innerRadiusGuide.start,
+    innerCircle.center
+  ])
+  coincident([
+    innerRadiusGuide.end,
+    innerCircle.start
+  ])
   vertical(centerGuide)
   horizontal(outerRadiusGuide)
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == handleLength
-  horizontalDistance([outerRadiusGuide.start, outerRadiusGuide.end]) == gripOuterRadius
-  horizontalDistance([innerRadiusGuide.start, innerRadiusGuide.end]) == bitSize02
+  horizontalDistance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == gripOuterRadius
+  horizontalDistance([
+  innerRadiusGuide.start,
+  innerRadiusGuide.end
+]) == bitSize02
 }
-grip02Region = region(point = [(gripOuterRadius + bitSize02) / 2, handleLength], sketch = grip02Sketch)
+grip02Region = region(
+  point = [
+    (gripOuterRadius + bitSize02) / 2,
+    handleLength
+  ],
+  sketch = grip02Sketch,
+)
 hide(grip02Sketch)
 
 grip02 = extrude(
-  grip02Region,
-  length = -10,
-  tagStart = $capStart002,
-  tagEnd = $capEnd002,
-)
+       grip02Region,
+       length = -10,
+       tagStart = $capStart002,
+       tagEnd = $capEnd002,
+     )
   |> fillet(
        radius = 1,
        tags = [
-         getCommonEdge(faces = [grip02Region.tags.outerCircle, capStart002]),
-         getCommonEdge(faces = [grip02Region.tags.outerCircle, capEnd002])
+         getCommonEdge(faces = [
+           grip02Region.tags.outerCircle,
+           capStart002
+         ]),
+         getCommonEdge(faces = [
+           grip02Region.tags.outerCircle,
+           capEnd002
+         ])
        ],
      )
   |> appearance(color = "#23af93")

@@ -485,6 +485,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "gallows-bracket/main.kcl",
+    "multipleFiles": false,
+    "title": "Gallows Bracket",
+    "description": "A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Aerospace",
       "Manufacturing"
     ],
@@ -1130,12 +1143,39 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Medical"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
+    "multipleFiles": false,
+    "title": "Surgical Drill Guide",
+    "description": "A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
     "multipleFiles": false,
     "title": "Teapot",
     "description": "A vessel with a spout and a handle used for serving tea and boiling water on a stovetop",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive",
+      "Computer Hardware"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
+    "multipleFiles": false,
+    "title": "Thermal Block Insert",
+    "description": "Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency",
     "files": [
       "main.kcl"
     ]
@@ -1156,6 +1196,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Automotive",
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Tube manifold",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Electronics",
       "Connector",
       "Consumer Hardware"
@@ -1164,6 +1218,19 @@
     "multipleFiles": false,
     "title": "USB-C Connector Assembly",
     "description": "Parametric model of a USB-C style connector shell, rear housing, and swept cable.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
+    "multipleFiles": false,
+    "title": "Utility Sink",
+    "description": "A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.",
     "files": [
       "main.kcl"
     ]
@@ -1204,6 +1271,19 @@
     "multipleFiles": false,
     "title": "Wedge",
     "description": "A wedge is a triangular prism defined by it's length, width, and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wheel-hub/main.kcl",
+    "multipleFiles": false,
+    "title": "Hub",
+    "description": "A wheel hub is the part that connects the wheel to the suspension",
     "files": [
       "main.kcl"
     ]
