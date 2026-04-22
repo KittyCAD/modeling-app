@@ -141,6 +141,7 @@ impl GlobalState {
             module_infos: self.exec_state.module_infos.clone(),
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
+            constraint_state: self.exec_state.constraint_state.clone(),
             #[cfg(feature = "artifact-graph")]
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
             #[cfg(not(feature = "artifact-graph"))]
