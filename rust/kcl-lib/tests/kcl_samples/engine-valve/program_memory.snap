@@ -406,7 +406,7 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "to": [
               -2.999999999999771,
-              14.999999865680554
+              14.999999865683069
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -418,14 +418,14 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "ccw": false,
             "center": [
-              -15.48819762751865,
-              14.992140149064285
+              -15.488197624933699,
+              14.992140143685473
             ],
             "from": [
               -2.999999999999771,
-              14.999999865680554
+              14.999999865683069
             ],
-            "radius": 12.48820010085975,
+            "radius": 12.488200098278185,
             "tag": {
               "commentStart": 694,
               "end": 698,
@@ -435,8 +435,8 @@ description: Variables in memory after executing engine-valve.kcl
               "value": "arc3"
             },
             "to": [
-              -12.004117724262562,
-              2.999795549827633
+              -12.004117724770051,
+              2.999795546238696
             ],
             "type": "Arc",
             "units": "mm"
@@ -448,14 +448,14 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "ccw": true,
             "center": [
-              -10.778324636091808,
-              -1.2202833048430186
+              -10.778324637402692,
+              -1.2202833083753557
             ],
             "from": [
-              -12.004117724262562,
-              2.999795549827633
+              -12.004117724770051,
+              2.999795546238696
             ],
-            "radius": 4.394500453367317,
+            "radius": 4.394500453088866,
             "tag": {
               "commentStart": 803,
               "end": 807,
@@ -465,8 +465,8 @@ description: Variables in memory after executing engine-valve.kcl
               "value": "arc4"
             },
             "to": [
-              -15.000000001001398,
-              0.000000001590793718975192
+              -15.000000001001403,
+              0.0000000015907954953320314
             ],
             "type": "Arc",
             "units": "mm"
@@ -477,8 +477,8 @@ description: Variables in memory after executing engine-valve.kcl
               "sourceRange": []
             },
             "from": [
-              -15.000000001001398,
-              0.000000001590793718975192
+              -15.000000001001403,
+              0.0000000015907954953320314
             ],
             "tag": {
               "commentStart": 912,
@@ -490,7 +490,7 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "to": [
               -10.499865566733625,
-              -0.00000000000006582215046163516
+              -0.00000000000006582249207860946
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -507,7 +507,7 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "from": [
               -10.499865566733625,
-              -0.00000000000006582215046163516
+              -0.00000000000006582249207860946
             ],
             "radius": 41.37678758962333,
             "tag": {
@@ -543,7 +543,7 @@ description: Variables in memory after executing engine-valve.kcl
               "value": "line7"
             },
             "to": [
-              0.00000000000018303539336270248,
+              0.00000000000018303513291491597,
               29.999999999999986
             ],
             "type": "ToPoint",
@@ -555,7 +555,7 @@ description: Variables in memory after executing engine-valve.kcl
               "sourceRange": []
             },
             "from": [
-              0.00000000000018303539336270248,
+              0.00000000000018303513291491597,
               29.999999999999986
             ],
             "tag": {
@@ -567,7 +567,7 @@ description: Variables in memory after executing engine-valve.kcl
               "value": "line6"
             },
             "to": [
-              0.0000000000001830353945094756,
+              0.00000000000018303513406160973,
               79.99999999999997
             ],
             "type": "ToPoint",
@@ -579,7 +579,7 @@ description: Variables in memory after executing engine-valve.kcl
               "sourceRange": []
             },
             "from": [
-              0.0000000000001830353945094756,
+              0.00000000000018303513406160973,
               79.99999999999997
             ],
             "tag": {
@@ -1171,7 +1171,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "to": [
             -2.999999999999771,
-            14.999999865680554
+            14.999999865683069
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1183,14 +1183,14 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "ccw": false,
           "center": [
-            -15.48819762751865,
-            14.992140149064285
+            -15.488197624933699,
+            14.992140143685473
           ],
           "from": [
             -2.999999999999771,
-            14.999999865680554
+            14.999999865683069
           ],
-          "radius": 12.48820010085975,
+          "radius": 12.488200098278185,
           "tag": {
             "commentStart": 694,
             "end": 698,
@@ -1200,8 +1200,8 @@ description: Variables in memory after executing engine-valve.kcl
             "value": "arc3"
           },
           "to": [
-            -12.004117724262562,
-            2.999795549827633
+            -12.004117724770051,
+            2.999795546238696
           ],
           "type": "Arc",
           "units": "mm"
@@ -1213,14 +1213,14 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "ccw": true,
           "center": [
-            -10.778324636091808,
-            -1.2202833048430186
+            -10.778324637402692,
+            -1.2202833083753557
           ],
           "from": [
-            -12.004117724262562,
-            2.999795549827633
+            -12.004117724770051,
+            2.999795546238696
           ],
-          "radius": 4.394500453367317,
+          "radius": 4.394500453088866,
           "tag": {
             "commentStart": 803,
             "end": 807,
@@ -1230,8 +1230,8 @@ description: Variables in memory after executing engine-valve.kcl
             "value": "arc4"
           },
           "to": [
-            -15.000000001001398,
-            0.000000001590793718975192
+            -15.000000001001403,
+            0.0000000015907954953320314
           ],
           "type": "Arc",
           "units": "mm"
@@ -1242,8 +1242,8 @@ description: Variables in memory after executing engine-valve.kcl
             "sourceRange": []
           },
           "from": [
-            -15.000000001001398,
-            0.000000001590793718975192
+            -15.000000001001403,
+            0.0000000015907954953320314
           ],
           "tag": {
             "commentStart": 912,
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "to": [
             -10.499865566733625,
-            -0.00000000000006582215046163516
+            -0.00000000000006582249207860946
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1272,7 +1272,7 @@ description: Variables in memory after executing engine-valve.kcl
           ],
           "from": [
             -10.499865566733625,
-            -0.00000000000006582215046163516
+            -0.00000000000006582249207860946
           ],
           "radius": 41.37678758962333,
           "tag": {
@@ -1308,7 +1308,7 @@ description: Variables in memory after executing engine-valve.kcl
             "value": "line7"
           },
           "to": [
-            0.00000000000018303539336270248,
+            0.00000000000018303513291491597,
             29.999999999999986
           ],
           "type": "ToPoint",
@@ -1320,7 +1320,7 @@ description: Variables in memory after executing engine-valve.kcl
             "sourceRange": []
           },
           "from": [
-            0.00000000000018303539336270248,
+            0.00000000000018303513291491597,
             29.999999999999986
           ],
           "tag": {
@@ -1332,7 +1332,7 @@ description: Variables in memory after executing engine-valve.kcl
             "value": "line6"
           },
           "to": [
-            0.0000000000001830353945094756,
+            0.00000000000018303513406160973,
             79.99999999999997
           ],
           "type": "ToPoint",
@@ -1344,7 +1344,7 @@ description: Variables in memory after executing engine-valve.kcl
             "sourceRange": []
           },
           "from": [
-            0.0000000000001830353945094756,
+            0.00000000000018303513406160973,
             79.99999999999997
           ],
           "tag": {
@@ -1885,7 +1885,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -12.00411772421641,
+                        "n": -12.004117724723896,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1893,7 +1893,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": 2.999795549668809,
+                        "n": 2.999795546079874,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1911,7 +1911,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": 14.999999865680554,
+                        "n": 14.999999865683069,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1921,7 +1921,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "center": [
                       {
-                        "n": -15.48819762751864,
+                        "n": -15.488197624933687,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1929,7 +1929,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": 14.992140149064285,
+                        "n": 14.992140143685473,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2037,7 +2037,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -12.004117723849859,
+                        "n": -12.004117724357346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2045,7 +2045,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": 2.9997955484069747,
+                        "n": 2.9997955448180416,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2063,7 +2063,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000009873322498084481,
+                        "n": -0.00000000000009873373740629162,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2073,7 +2073,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "center": [
                       {
-                        "n": -10.778324635679105,
+                        "n": -10.778324636989987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2081,7 +2081,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -1.2202833062636766,
+                        "n": -1.2202833097960104,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2189,7 +2189,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.00000000000015997629644724773,
+                        "n": 0.000000000000159975938991026,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2215,7 +2215,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000004936661306801539,
+                        "n": -0.00000000000004936686928074994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2341,7 +2341,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000019456494079555936,
+                        "n": 0.00000000000019456472885206009,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3688,7 +3688,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": 14.999999865680554,
+                        "n": 14.999999865683069,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4270,7 +4270,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000003291107551612818,
+                        "n": -0.00000000000003291124632462146,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4280,7 +4280,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000000006845859941069217,
+                        "n": 0.00000000000006845837217838073,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4288,7 +4288,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000016455537923005587,
+                        "n": -0.000000000000016455623327256535,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4383,7 +4383,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000013691719873560843,
+                        "n": 0.0000000000001369167442709861,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4391,7 +4391,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000016455538232270888,
+                        "n": -0.00000000000001645562363652991,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4401,7 +4401,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000000014844674768442933,
+                        "n": 0.0000000000001484463417240049,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4512,7 +4512,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000008227768777278421,
+                        "n": -0.0000000000000822781147939961,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4530,7 +4530,7 @@ description: Variables in memory after executing engine-valve.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000006582215046163516,
+                        "n": -0.00000000000006582249207860946,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4624,7 +4624,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000018303539405076635,
+                        "n": 0.00000000000018303513360293223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4642,7 +4642,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000001830353945094756,
+                        "n": 0.00000000000018303513406160973,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4744,7 +4744,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000017150584501242705,
+                        "n": 0.00000000000017150553606041684,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4762,7 +4762,7 @@ description: Variables in memory after executing engine-valve.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000000018303539336270248,
+                        "n": 0.00000000000018303513291491597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4864,7 +4864,7 @@ description: Variables in memory after executing engine-valve.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000018303539473883022,
+                        "n": 0.0000000000001830351342909485,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5120,7 +5120,7 @@ description: Variables in memory after executing engine-valve.kcl
                   },
                   "to": [
                     -2.999999999999771,
-                    14.999999865680554
+                    14.999999865683069
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5132,14 +5132,14 @@ description: Variables in memory after executing engine-valve.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -15.48819762751865,
-                    14.992140149064285
+                    -15.488197624933699,
+                    14.992140143685473
                   ],
                   "from": [
                     -2.999999999999771,
-                    14.999999865680554
+                    14.999999865683069
                   ],
-                  "radius": 12.48820010085975,
+                  "radius": 12.488200098278185,
                   "tag": {
                     "commentStart": 694,
                     "end": 698,
@@ -5149,8 +5149,8 @@ description: Variables in memory after executing engine-valve.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -12.004117724262562,
-                    2.999795549827633
+                    -12.004117724770051,
+                    2.999795546238696
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5162,14 +5162,14 @@ description: Variables in memory after executing engine-valve.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -10.778324636091808,
-                    -1.2202833048430186
+                    -10.778324637402692,
+                    -1.2202833083753557
                   ],
                   "from": [
-                    -12.004117724262562,
-                    2.999795549827633
+                    -12.004117724770051,
+                    2.999795546238696
                   ],
-                  "radius": 4.394500453367317,
+                  "radius": 4.394500453088866,
                   "tag": {
                     "commentStart": 803,
                     "end": 807,
@@ -5179,8 +5179,8 @@ description: Variables in memory after executing engine-valve.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -15.000000001001398,
-                    0.000000001590793718975192
+                    -15.000000001001403,
+                    0.0000000015907954953320314
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5191,8 +5191,8 @@ description: Variables in memory after executing engine-valve.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -15.000000001001398,
-                    0.000000001590793718975192
+                    -15.000000001001403,
+                    0.0000000015907954953320314
                   ],
                   "tag": {
                     "commentStart": 912,
@@ -5204,7 +5204,7 @@ description: Variables in memory after executing engine-valve.kcl
                   },
                   "to": [
                     -10.499865566733625,
-                    -0.00000000000006582215046163516
+                    -0.00000000000006582249207860946
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5221,7 +5221,7 @@ description: Variables in memory after executing engine-valve.kcl
                   ],
                   "from": [
                     -10.499865566733625,
-                    -0.00000000000006582215046163516
+                    -0.00000000000006582249207860946
                   ],
                   "radius": 41.37678758962333,
                   "tag": {
@@ -5257,7 +5257,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "value": "line7"
                   },
                   "to": [
-                    0.00000000000018303539336270248,
+                    0.00000000000018303513291491597,
                     29.999999999999986
                   ],
                   "type": "ToPoint",
@@ -5269,7 +5269,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.00000000000018303539336270248,
+                    0.00000000000018303513291491597,
                     29.999999999999986
                   ],
                   "tag": {
@@ -5281,7 +5281,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "value": "line6"
                   },
                   "to": [
-                    0.0000000000001830353945094756,
+                    0.00000000000018303513406160973,
                     79.99999999999997
                   ],
                   "type": "ToPoint",
@@ -5293,7 +5293,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000000001830353945094756,
+                    0.00000000000018303513406160973,
                     79.99999999999997
                   ],
                   "tag": {
