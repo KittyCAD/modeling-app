@@ -217,7 +217,6 @@ export function useEngineConnectionSubscriptions() {
           }
           return
         }
-
         // Normal flow for other states
         ;(async () => {
           const event = await getEventForQueryEntityTypeWithPoint(engineEvent, {

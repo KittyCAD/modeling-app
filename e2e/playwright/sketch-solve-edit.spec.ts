@@ -193,40 +193,37 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           '[data-segment_id="14"]'
         )
 
-      const centerX = segmentBox.x + segmentBox.width / 2
-      const centerY = segmentBox.y + segmentBox.height / 2
+        const centerX = segmentBox.x + segmentBox.width / 2
+        const centerY = segmentBox.y + segmentBox.height / 2
 
-      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
-      await editor.expectEditor.toContain(lineToEdit)
+        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
+        await editor.expectEditor.toContain(lineToEdit)
 
-      await page.mouse.move(centerX, centerY)
-      await page.mouse.down()
-      await page.mouse.move(centerX, centerY + 50, { steps: 5 })
-      await page.mouse.up()
+        await page.mouse.move(centerX, centerY)
+        await page.mouse.down()
+        await page.mouse.move(centerX, centerY + 50, { steps: 5 })
+        await page.mouse.up()
 
-      await page.waitForTimeout(500)
+        await page.waitForTimeout(500)
 
-      await editor.expectEditor.not.toContain(lineToEdit)
+        await editor.expectEditor.not.toContain(lineToEdit)
       })
 
-      await test.step(
-        'Drag line segment by dragging midpoint between points 8 and 9 down',
-        async () => {
-          const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
+      await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
+        const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
-          const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
-      await editor.expectEditor.toContain(lineToEdit)
+        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
+        await editor.expectEditor.toContain(lineToEdit)
 
-      await page.mouse.move(midpoint.x, midpoint.y)
-      await page.mouse.down()
-      await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
-      await page.mouse.up()
+        await page.mouse.move(midpoint.x, midpoint.y)
+        await page.mouse.down()
+        await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
+        await page.mouse.up()
 
-          await page.waitForTimeout(500)
+        await page.waitForTimeout(500)
 
-          await editor.expectEditor.not.toContain(lineToEdit)
-        }
-      )
+        await editor.expectEditor.not.toContain(lineToEdit)
+      })
     })
   })
 

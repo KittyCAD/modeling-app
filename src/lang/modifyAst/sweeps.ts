@@ -990,7 +990,10 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
-    const edgeResolved = resolveToCodeRef(edge.graphSelections[0], artifactGraph)
+    const edgeResolved = resolveToCodeRef(
+      edge.graphSelections[0],
+      artifactGraph
+    )
     let axisSelection =
       edge?.graphSelections[0] != null
         ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact

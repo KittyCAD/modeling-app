@@ -2285,7 +2285,10 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
       if (!edgeSelection) throw new Error('Edge selection not found')
       expect(result.axisOrEdge).toEqual('Edge')
       expect(result.edge).toBeDefined()
-      const resolvedEdgeSelection = resolveToCodeRef(edgeSelection, artifactGraph)
+      const resolvedEdgeSelection = resolveToCodeRef(
+        edgeSelection,
+        artifactGraph
+      )
       if (!resolvedEdgeSelection?.artifact) {
         throw new Error('Edge artifact not found')
       }

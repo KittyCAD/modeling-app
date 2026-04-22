@@ -1373,10 +1373,7 @@ export function getSelectionCountByType(
       )
       if (artifact?.type === 'helix') {
         incrementOrInitializeSelectionType('path')
-      } else if (
-        artifact?.type === 'path' &&
-        artifact.subType === 'region'
-      ) {
+      } else if (artifact?.type === 'path' && artifact.subType === 'region') {
         incrementOrInitializeSelectionType('pathRegion')
       } else if (artifact?.type === 'path') {
         incrementOrInitializeSelectionType('path')
