@@ -54,6 +54,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![bracket-with-slot](screenshots/bracket-with-slot.png)](bracket-with-slot/main.kcl)
 #### [c-shape-solid](c-shape-solid/main.kcl) ([screenshot](screenshots/c-shape-solid.png))
 [![c-shape-solid](screenshots/c-shape-solid.png)](c-shape-solid/main.kcl)
+#### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([screenshot](screenshots/car-wheel-assembly.png))
+[![car-wheel-assembly](screenshots/car-wheel-assembly.png)](car-wheel-assembly/main.kcl)
 #### [ceiling-fan](ceiling-fan/main.kcl) ([screenshot](screenshots/ceiling-fan.png))
 [![ceiling-fan](screenshots/ceiling-fan.png)](ceiling-fan/main.kcl)
 #### [coilover-assembly](coilover-assembly/main.kcl) ([screenshot](screenshots/coilover-assembly.png))

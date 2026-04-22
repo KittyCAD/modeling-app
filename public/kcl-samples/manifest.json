@@ -170,6 +170,24 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
+    "multipleFiles": true,
+    "title": "Car Wheel Assembly",
+    "description": "A car wheel assembly with a rotor, tire, and lug nuts.",
+    "files": [
+      "brake-rotor.kcl",
+      "car-tire.kcl",
+      "car-wheel.kcl",
+      "lug-nut.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
@@ -987,10 +1005,13 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
     "multipleFiles": false,
     "title": "Spinning Highrise Tower",
-    "description": "Parametric tower using solver sketches and pattern-based floor/facade repetition.",
+    "description": "A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
     "files": [
       "main.kcl"
     ]
