@@ -3528,4 +3528,37 @@ return union([right, left])
 ";
         assert_eq!(actual_recasted, expected_recasted);
     }
+
+    #[test]
+    fn first_in_pipeline_indent() {
+        // These code snippets are identical, except that one passes the gear into a clone,
+        // and the other doesn't.
+        let not_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+";
+        let yes_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+|> clone()
+";
+        // Both these should format their gear::helical parameters the same.
+        let not_clone_recasted = crate::parsing::top_level_parse(not_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        let yes_clone_recasted = crate::parsing::top_level_parse(yes_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert!(not_clone_recasted.contains("\n  nTeeth"));
+        assert!(!yes_clone_recasted.contains("\n       nTeeth"));
+        assert!(yes_clone_recasted.contains("\n  nTeeth"));
+    }
 }
