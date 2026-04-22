@@ -67,6 +67,46 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       }
     }
   },
+  "arc12": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc12"
+  },
+  "arc14": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc14"
+  },
+  "arc16": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc16"
+  },
+  "arc18": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc18"
+  },
+  "arc2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc2"
+  },
+  "arc4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc4"
+  },
+  "arc6": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc6"
+  },
+  "arc8": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc8"
+  },
   "bendAngle": {
     "type": "Number",
     "value": 75.0,
@@ -1087,6 +1127,51 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capStart001"
+  },
+  "circle1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle1"
+  },
+  "circle2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle2"
+  },
+  "circle3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle3"
+  },
+  "circle4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle4"
+  },
+  "circle5": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle5"
+  },
+  "circle6": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle6"
+  },
+  "circle7": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle7"
+  },
+  "circle8": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle8"
+  },
+  "circle9": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle9"
   },
   "componentBoltDiameter": {
     "type": "Number",
@@ -3922,6 +4007,71 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "len": "in",
       "angle": "degrees"
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line10": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line10"
+  },
+  "line11": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line11"
+  },
+  "line13": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line13"
+  },
+  "line15": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line15"
+  },
+  "line17": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line17"
+  },
+  "line19": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line19"
+  },
+  "line20": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line20"
+  },
+  "line21": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line21"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line5": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line5"
+  },
+  "line7": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line7"
+  },
+  "line9": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line9"
   },
   "mountingBoltDiameter": {
     "type": "Number",
