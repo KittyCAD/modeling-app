@@ -865,6 +865,140 @@ const prepareToEditHole: PrepareToEditCallback = async ({
 }
 
 /**
+ * Gather up the argument values for the Helical Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHelicalGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Helical Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, helixAngle, gearHeight] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Helical Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    helixAngle,
+    gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Spur Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditSpurGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Spur Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, gearHeight] = await Promise.all([
+    extractKclArgument(code, operation, 'nTeeth', rustContext),
+    extractKclArgument(code, operation, 'module', rustContext),
+    extractKclArgument(code, operation, 'pressureAngle', rustContext),
+    extractKclArgument(code, operation, 'gearHeight', rustContext),
+  ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Spur Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Ring Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditRingGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Ring Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, helixAngle, gearHeight] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Ring Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    helixAngle,
+    gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the SketchSolve command
  * to be used in the command bar edit flow.
  */
@@ -1868,6 +2002,27 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gear::helical': {
+    label: 'Helical Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditHelicalGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::spur': {
+    label: 'Spur Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditSpurGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::ring': {
+    label: 'Ring Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditRingGear,
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   helix: {
     label: 'Helix',

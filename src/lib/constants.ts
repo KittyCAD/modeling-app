@@ -47,6 +47,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  GEAR: 'gear',
   CLONE: 'clone',
   HIDDEN: 'hidden',
   SOLID: 'solid',
