@@ -81,6 +81,7 @@ description: Artifact commands region_fillet_correct_edge.kcl
         "type": "sketch_mode_disable"
       }
     },
+//// segment 1
     {
       "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
@@ -111,6 +112,7 @@ description: Artifact commands region_fillet_correct_edge.kcl
         }
       }
     },
+//// segment 2
     {
       "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
@@ -141,6 +143,7 @@ description: Artifact commands region_fillet_correct_edge.kcl
         }
       }
     },
+//// segment 3
     {
       "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
@@ -171,6 +174,7 @@ description: Artifact commands region_fillet_correct_edge.kcl
         }
       }
     },
+//// segment 4
     {
       "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
