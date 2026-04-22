@@ -1,7 +1,11 @@
 // Spinning Highrise Tower
-// Parametric tower using solver sketches and pattern-based floor/facade repetition.
+// A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation
+// Categories: Maker
+
+// Declare units and version
 @settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
 
+// Define global parameters for floor geometry and building layout
 floorCount = 17_
 floorHeight = 5m
 slabWidth = 30m
@@ -16,6 +20,7 @@ groundSize = 50m
 coreLength = 10m
 coreWidth = 8m
 
+// Calculate facade and core geometry from parameters
 facadeWidth = slabWidth - (balconyDepth * 2)
 facadeHeight = floorHeight - slabThickness
 coreHeight = floorCount * floorHeight - slabThickness
