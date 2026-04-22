@@ -21,12 +21,11 @@ fn bench_edit_segments(c: &mut Criterion) {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let (mut frontend, mock_ctx, version, sketch_id, segments) = rt.block_on(async {
             let mut frontend = FrontendState::new();
-            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
             let mock_ctx = ExecutorContext::new_mock(None).await;
             let version = Version(0);
             let source = include_str!("../tests/inputs/lots_of_segments.kcl");
             let program = Program::parse(source).unwrap().0.unwrap();
-            let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+            let outcome = frontend.hack_set_program(&mock_ctx, program).await.unwrap();
             match outcome {
                 kcl_lib::front::SetProgramOutcome::Success { .. } => {}
                 kcl_lib::front::SetProgramOutcome::ExecFailure { error } => panic!("{}", error.to_string()),
@@ -57,7 +56,6 @@ fn bench_edit_segments(c: &mut Criterion) {
                 id: point_id,
                 ctor: SegmentCtor::Point(point_ctor),
             }];
-            ctx.close().await;
             (frontend, mock_ctx, version, sketch_id, segments)
         });
         b.iter(|| {
@@ -68,7 +66,6 @@ fn bench_edit_segments(c: &mut Criterion) {
                         .await
                         .unwrap(),
                 );
-                mock_ctx.close().await;
                 Ok::<(), anyhow::Error>(())
             }) {
                 panic!("Failed to execute program: {err}");

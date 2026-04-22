@@ -1592,7 +1592,9 @@ impl FrontendState {
 
         // Execute so that the objects are updated and available for the next
         // API call.
-        // This always uses engine execution (not mock) so that things are cached.
+        // Use engine execution when available so results are cached, but allow
+        // mock contexts for benches/tests that need to seed frontend state
+        // without relying on a live websocket connection.
         // Engine execution now runs freedom analysis automatically.
         // Keep existing checkpoints alive here. History may still reference
         // older committed sketch states across a direct-edit boundary, and a
@@ -1601,7 +1603,19 @@ impl FrontendState {
         // Clear the freedom cache since IDs might have changed after direct editing
         // and we're about to run freedom analysis which will repopulate it.
         self.point_freedom_cache.clear();
-        match ctx.run_with_caching(program).await {
+        let exec_result = if ctx.is_mock() {
+            ctx.run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..MockConfig::default()
+                },
+            )
+            .await
+        } else {
+            ctx.run_with_caching(program).await
+        };
+        match exec_result {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
                 let checkpoint_id = self
@@ -6364,6 +6378,31 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         frontend.restore_sketch_checkpoint(old_checkpoint).await.unwrap();
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hack_set_program_accepts_mock_context() {
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+
+        let program = Program::parse("sketch(on = XY) {\n  point(at = [1mm, 2mm])\n}\n")
+            .unwrap()
+            .0
+            .unwrap();
+
+        let result = frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        let SetProgramOutcome::Success {
+            checkpoint_id: Some(_), ..
+        } = result
+        else {
+            panic!("Expected Success with a fresh checkpoint baseline");
+        };
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).expect("Expected a sketch object");
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.segments.len(), 1);
+
         mock_ctx.close().await;
     }
 
