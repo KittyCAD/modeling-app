@@ -380,7 +380,7 @@ export const systemIOMachine = setup({
           ('error' in event &&
             event.error instanceof Error &&
             event.error.message) ||
-          'Unknown error in SystemIOMachine'
+          'Unknown error in SystemIOMachine.'
       )
     },
     [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({
@@ -403,7 +403,7 @@ export const systemIOMachine = setup({
     }),
     [SystemIOMachineActions.toastProjectNameTooLong]: () => {
       toast.error(
-        `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
+        `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
       )
     },
     [SystemIOMachineActions.setMlEphantConversations]: assign({

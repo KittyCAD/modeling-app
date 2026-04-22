@@ -1,7 +1,7 @@
 //! Standard library appearance.
 
 use anyhow::Result;
-use kcl_error::CompilationError;
+use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::shared::Color;
@@ -120,7 +120,7 @@ async fn inner_appearance(
             }
             if zero_one_range.contains(&x) && x != 0.0 {
                 exec_state.warn(
-                        CompilationError::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
+                        CompilationIssue::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
                         annotations::WARN_SHOULD_BE_PERCENTAGE,
                     );
             }

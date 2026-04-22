@@ -33,6 +33,15 @@ description: Artifact commands gas-impeller.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands gas-impeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.4,
-          "y": 0.0,
+          "x": 4.40000000000101,
+          "y": -0.0000000000014289141902248151,
           "z": 0.0
         }
       }
@@ -81,11 +90,11 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 60.0,
+            "x": 4.400000000001291,
+            "y": 59.99999999999831,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.9333333333333336,
-            "y": 0.0,
+            "x": 7.333333333335186,
+            "y": 59.999999999997875,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -113,12 +122,34 @@ description: Artifact commands gas-impeller.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
-          "radius": 0.8800000000000001,
-          "offset": {
+          "type": "arc",
+          "center": {
+            "x": 7.333441484093204,
+            "y": 58.999999999996525
+          },
+          "radius": 1.0000000058496432,
+          "start": {
             "unit": "degrees",
-            "value": -90.0
-          }
+            "value": 90.00619658196145
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 12.801682047112765
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 79.99999999999983,
+          "y": 1.9999999999984657,
+          "z": 0.0
         }
       }
     },
@@ -129,15 +160,10 @@ description: Artifact commands gas-impeller.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 53.333333333333336,
-            "y": 12.0,
-            "z": 0.0
-          },
+          "type": "line",
           "end": {
-            "x": 80.0,
-            "y": 4.0,
+            "x": 79.99999999999993,
+            "y": -0.0000000000014110395027430983,
             "z": 0.0
           },
           "relative": false
@@ -153,8 +179,106 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 80.0,
-            "y": 0.0,
+            "x": 4.4000000000007295,
+            "y": -0.000000000001164236696791333,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 8.30858434353974,
+          "y": 59.22157712513699,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 79.99999999999918,
+            "y": 75.52093729530907
+          },
+          "radius": 73.52093729533262,
+          "start": {
+            "unit": "degrees",
+            "value": -167.19128330121939
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -89.9999999999996
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 7.333333333335186,
+          "y": 59.999999999997875,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 67.99999999999959,
+            "y": 59.999999999997875,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 79.99999999999959,
+          "y": 1.9999999999983327,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 79.99999999999959,
+            "y": 47.999999999997875,
             "z": 0.0
           },
           "relative": false
@@ -168,10 +292,48 @@ description: Artifact commands gas-impeller.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
+          "type": "arc",
+          "center": {
+            "x": 67.99999999999959,
+            "y": 47.999999999997875
+          },
+          "radius": 12.0,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 7.3334414840935,
+          "y": 58.99999999771448,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
           "type": "line",
           "end": {
-            "x": 4.4,
-            "y": 0.0,
+            "x": 7.333333333335466,
+            "y": 59.99999999771493,
             "z": 0.0
           },
           "relative": false
@@ -182,8 +344,76 @@ description: Artifact commands gas-impeller.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 5.0,
+          "y": 30.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "revolve",
+        "target": "[uuid]",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "axis_is_2d": true,
+        "angle": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "tolerance": 0.0000001,
+        "opposite": "None",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 30.0,
+          "y": 55.0
+        }
       }
     },
     {
@@ -249,206 +479,6 @@ description: Artifact commands gas-impeller.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 8.213333333333335,
-          "y": 59.12,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 53.333333333333336,
-            "y": 12.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": 80.0,
-            "y": 4.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 75.97552147780749,
-            "y": 50.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 10.666666666666666,
-          "offset": {
-            "unit": "degrees",
-            "value": 85.0
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 8.213333333333335,
-            "y": 59.12,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "revolve",
-        "target": "[uuid]",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "axis_is_2d": true,
-        "angle": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0
@@ -461,6 +491,15 @@ description: Artifact commands gas-impeller.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -515,11 +554,11 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 80.0,
+            "x": 84.4,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -532,11 +571,11 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000000000012246467991473532,
+            "x": 84.4,
             "y": 2.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -549,11 +588,11 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -80.0,
-            "y": -0.0,
+            "x": 4.4,
+            "y": 2.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -578,8 +617,12 @@ description: Artifact commands gas-impeller.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -687,6 +730,24 @@ description: Artifact commands gas-impeller.kcl
         "num_repetitions": 8,
         "arc_degrees": 360.0,
         "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

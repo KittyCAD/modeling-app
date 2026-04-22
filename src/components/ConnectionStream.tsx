@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -13,10 +13,12 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
+  getEngineRegionSelectionFromEntity,
 } from '@src/lib/selections'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import { artifactToEntityRef } from '@src/lang/queryAst'
@@ -38,8 +40,10 @@ const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
+  sketchSolveStreamDimming?: number
 }) => {
-  const { settings, project } = useApp()
+  const { settings, project, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
@@ -112,7 +116,7 @@ export const ConnectionStream = (props: {
         sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         })
-          .then((result) => {
+          .then(async (result) => {
             if (!result) {
               return
             }
@@ -167,6 +171,37 @@ export const ConnectionStream = (props: {
             if (!entityId) {
               return
             }
+            const directArtifact = kclManager.artifactGraph.get(entityId)
+            const sketchBlockArtifact = getSketchBlockForArtifact(
+              directArtifact,
+              kclManager.artifactGraph
+            )
+            if (sketchBlockArtifact) {
+              sceneInfra.modelingSend({
+                type: 'Edit sketch solve',
+                data: { artifactId: sketchBlockArtifact.id },
+              })
+              return
+            }
+
+            if (!directArtifact) {
+              const regionSelection = await getEngineRegionSelectionFromEntity(
+                entityId,
+                kclManager.artifactGraph,
+                kclManager.ast,
+                engineCommandManager,
+                wasmInstance
+              )
+
+              if (regionSelection?.sketchId) {
+                sceneInfra.modelingSend({
+                  type: 'Edit sketch solve',
+                  data: { artifactId: regionSelection.sketchId },
+                })
+              }
+              return
+            }
+
             const artifactResult = getArtifactOfTypes(
               {
                 key: entityId,
@@ -203,6 +238,13 @@ export const ConnectionStream = (props: {
               entityId,
               kclManager.artifactGraph
             )?.[0]
+            sceneInfra.modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: { entityRef, codeRef },
+              },
+            })
             sceneInfra.modelingSend({ type: 'Enter sketch' })
           })
           .catch((e) => {
@@ -454,11 +496,15 @@ export const ConnectionStream = (props: {
   const onOfflineToExitSketchModeParams = useMemo(
     () => ({
       callback: () => {
-        modelingSend({ type: 'Cancel' })
+        modelingSend({
+          type: modelingMachineState.matches('sketchSolveMode')
+            ? 'Exit sketch'
+            : 'Cancel',
+        })
       },
       engineCommandManager,
     }),
-    [modelingSend, engineCommandManager]
+    [modelingMachineState, modelingSend, engineCommandManager]
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
@@ -516,6 +562,7 @@ export const ConnectionStream = (props: {
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
+        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
       <ViewControlContextMenu
         event="mouseup"

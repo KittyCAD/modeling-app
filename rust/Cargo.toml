@@ -22,16 +22,15 @@ clap = { version = "4.6.0", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
-indexmap = "2.13.0"
-ezpz = "0.2.18"
-kittycad = { version = "0.4.8", default-features = false, features = [
+indexmap = "2.13.1"
+ezpz = "0.2.22"
+kittycad = { version = "0.4.9", default-features = false, features = [
   "js",
   "requests",
 ] }
-# Pinned to the latest ben/face_api commit for
-# EdgeReference, RevolveAboutEdgeReference, Solid3dCutEdgeReferences,
-# EntityMakeHelixFromEdge::edge_reference (not in crates.io 0.2.169).
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "83ba9d98c51d3187b6ac1432b3e2d4c6311dc84f", features = [
+# Pinned to the face_api stack commit for
+# EdgeSpecifier / EntityReference and the newer edge-reference endpoints.
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "4502b0b6f075dc5baa8b4a78e0d7574255f11143", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -60,7 +59,7 @@ tracing-subscriber = { version = "0.3.23", features = [
   "json",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "8.3.0", default-features = false }
+zip = { version = "8.5.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"
@@ -87,5 +86,5 @@ debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "83ba9d98c51d3187b6ac1432b3e2d4c6311dc84f" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "4502b0b6f075dc5baa8b4a78e0d7574255f11143" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }

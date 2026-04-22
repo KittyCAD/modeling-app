@@ -65,9 +65,9 @@ jobs:
 
   snapshots:
     needs: [build-wasm]
-
-    runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
+    runs-on: namespace-profile-ubuntu-8-cores
+    if: github.repository == 'kittycad/modeling-app'
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -193,7 +193,6 @@ jobs:
 
   web:
     needs: [build-wasm]
-
     strategy:
       fail-fast: false
       matrix:
@@ -294,7 +293,6 @@ jobs:
 
   desktop:
     needs: [build-wasm]
-
     strategy:
       fail-fast: false
       matrix:

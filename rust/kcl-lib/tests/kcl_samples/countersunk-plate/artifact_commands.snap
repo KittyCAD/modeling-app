@@ -33,184 +33,9 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 15.413037500000007,
-          "y": 39.314119998717935,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 55.04021250000001,
-            "y": -21.578426766213614,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 19.049999999999997,
-          "offset": {
-            "unit": "degrees",
-            "value": -137.1848345922876
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -55.04021250000001,
-            "y": -21.578426766213614,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 42.2275,
-          "offset": {
-            "unit": "degrees",
-            "value": -42.81516540771243
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -55.04021250000001,
-            "y": 21.578426766213614,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc",
-          "radius": 19.049999999999997,
-          "offset": {
-            "unit": "degrees",
-            "value": -137.1848345922876
-          }
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 55.04021250000001,
-            "y": 21.578426766213614,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 30.82607500000002,
-            "y": -0.000000000000005639932965095795,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -243,8 +68,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 33.3375,
-          "y": 0.0,
+          "x": 23.771150914984016,
+          "y": 43.452885893427876,
           "z": 0.0
         }
       }
@@ -254,6 +79,23 @@ description: Artifact commands countersunk-plate.kcl
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 72.64347655331424,
+            "y": 16.712251095055766,
+            "z": 0.0
+          },
+          "relative": false
+        }
       }
     },
     {
@@ -265,17 +107,17 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 0.0
+            "x": 63.50000000177963,
+            "y": 0.0000000032430545138240063
           },
-          "radius": 33.3375,
+          "radius": 19.05000000011177,
           "start": {
             "unit": "degrees",
-            "value": 0.0
+            "value": 61.31639257643312
           },
           "end": {
             "unit": "degrees",
-            "value": 360.0
+            "value": -61.31639258427173
           },
           "relative": false
         }
@@ -285,26 +127,215 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 23.771150915882405,
+            "y": -43.45288589293372,
+            "z": 0.0
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -23.771150897777712,
+          "y": -43.452885861220146,
+          "z": 0.0
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0,
+            "y": 0.000000000002667688292490311
+          },
+          "radius": 49.530000047177225,
+          "start": {
+            "unit": "degrees",
+            "value": -118.68111771985086
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -61.31888227938299
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -23.77115091530137,
+          "y": -43.45288589325164,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -72.64347655542981,
+            "y": -16.7122510938956,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -63.5000000017796,
+            "y": -0.0000000032403586258666902
+          },
+          "radius": 19.050000000111766,
+          "start": {
+            "unit": "degrees",
+            "value": -118.68360743081996
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -241.31639257979938
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -23.77115091550405,
+            "y": 43.45288589314338,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 23.771150897460338,
+          "y": 43.452885861396354,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0000000000000028199664825478975,
+            "y": -0.0
+          },
+          "radius": 49.53000004717715,
+          "start": {
+            "unit": "degrees",
+            "value": 61.31888228056759
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 118.68111772011814
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 32.28053204385113,
+          "y": -20.23801499569313,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.000000000000000004246447095286306,
+            "y": 0.000000000000000014247536946376865
+          },
+          "radius": 38.099999999999994,
+          "start": {
+            "unit": "radians",
+            "value": -0.5599944503577594
+          },
+          "end": {
+            "unit": "radians",
+            "value": 5.723190856821827
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
         "object_id": "[uuid]",
-        "hidden": true
+        "query_point": {
+          "x": 40.64,
+          "y": 0.0
+        }
       }
     },
     {
@@ -373,12 +404,58 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 63.5,
+          "y": 0.0,
+          "z": 9.525
+        },
+        "x_axis": {
+          "x": -0.0,
+          "y": -1.0,
+          "z": -0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
     },
     {
@@ -395,8 +472,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -60.324999999999996,
-          "y": 0.0,
+          "x": -0.0,
+          "y": -12.700277071019457,
           "z": 0.0
         }
       }
@@ -415,19 +492,113 @@ description: Artifact commands countersunk-plate.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc",
-          "center": {
-            "x": -63.5,
-            "y": 0.0
-          },
-          "radius": 3.175,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
+          "type": "line",
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "x": 0.0,
+            "y": 0.0002770710194569108,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 9.524999999999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 3.1750000000000007,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 6.35,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -3.175000000000001,
+            "y": -3.1750000000000007,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": -9.524999999999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.0,
+            "y": -12.700277071019457,
+            "z": 0.0
           },
           "relative": false
         }
@@ -445,32 +616,16 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
+        "type": "revolve_about_edge",
         "target": "[uuid]",
-        "distance": -9.524999999999999,
-        "faces": null,
+        "edge_id": "[uuid]",
+        "angle": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "tolerance": 0.0000001,
         "opposite": "None",
-        "extrude_method": "merge",
         "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -503,31 +658,74 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "color": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "metalness": 0.0,
+        "roughness": 0.01,
+        "ambient_occlusion": 0.0
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
+        "type": "boolean_subtract",
+        "target_ids": [
           "[uuid]"
         ],
-        "cut_type": {
-          "chamfer": {
-            "distance": 6.35,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
-          }
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "face_is_planar",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": -63.5,
+          "y": 0.0,
+          "z": 9.525
         },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
+        "x_axis": {
+          "x": -0.0,
+          "y": -1.0,
+          "z": -0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -539,7 +737,11 @@ description: Artifact commands countersunk-plate.kcl
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
-        "planar_normal": null
+        "planar_normal": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
     },
     {
@@ -556,8 +758,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 66.675,
-          "y": 0.0,
+          "x": -0.0,
+          "y": -12.700277071019457,
           "z": 0.0
         }
       }
@@ -576,19 +778,113 @@ description: Artifact commands countersunk-plate.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc",
-          "center": {
-            "x": 63.5,
-            "y": 0.0
-          },
-          "radius": 3.175,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
+          "type": "line",
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "x": 0.0,
+            "y": 0.0002770710194569108,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 9.524999999999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 3.1750000000000007,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 6.35,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -3.175000000000001,
+            "y": -3.1750000000000007,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": -9.524999999999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.0,
+            "y": -12.700277071019457,
+            "z": 0.0
           },
           "relative": false
         }
@@ -606,32 +902,16 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
+        "type": "revolve_about_edge",
         "target": "[uuid]",
-        "distance": -9.524999999999999,
-        "faces": null,
+        "edge_id": "[uuid]",
+        "angle": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "tolerance": 0.0000001,
         "opposite": "None",
-        "extrude_method": "merge",
         "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -664,31 +944,32 @@ description: Artifact commands countersunk-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
+        "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "color": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "metalness": 0.0,
+        "roughness": 0.01,
+        "ambient_occlusion": 0.0
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
+        "type": "boolean_subtract",
+        "target_ids": [
           "[uuid]"
         ],
-        "cut_type": {
-          "chamfer": {
-            "distance": 6.35,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
       }
     }
   ]

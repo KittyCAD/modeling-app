@@ -179,8 +179,6 @@ async fn test_freedom_analysis_with_zero_constraints() {
     // This test verifies the fix for the bug where segments with no constraints
     // incorrectly showed as Fixed (white) instead of Free (blue).
     let kcl = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
   line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
   line2 = line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])

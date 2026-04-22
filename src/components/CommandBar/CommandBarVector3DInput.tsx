@@ -210,13 +210,13 @@ function CommandBarVector3DInput({
 
     // 1. Check if calculations are still running
     if (!canSubmit) {
-      toast.error('Please wait for calculations to complete')
+      toast.error('Please wait for calculations to complete.')
       return
     }
 
     // 2. Validate that all coordinate values are not empty
     if (!x.trim() || !y.trim() || !z.trim()) {
-      toast.error('Please enter values for all coordinates (X, Y, Z)')
+      toast.error('Please enter values for all coordinates (X, Y, Z).')
       return
     }
 
@@ -226,7 +226,7 @@ function CommandBarVector3DInput({
       yCalculation.calcResult === 'NAN' ||
       zCalculation.calcResult === 'NAN'
     ) {
-      toast.error('Invalid coordinate values - please check your input')
+      toast.error('Invalid coordinate values - please check your input.')
       return
     }
 
@@ -236,7 +236,7 @@ function CommandBarVector3DInput({
       !yCalculation.valueNode ||
       !zCalculation.valueNode
     ) {
-      toast.error('Unable to parse coordinate expressions')
+      toast.error('Unable to parse coordinate expressions.')
       return
     }
 
@@ -249,7 +249,7 @@ function CommandBarVector3DInput({
     })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
-          toast.error('Unable to create valid vector expression')
+          toast.error('Unable to create valid vector expression.')
           console.error('Invalid vector expression:', vectorExpression)
           return
         }
@@ -257,7 +257,7 @@ function CommandBarVector3DInput({
         onSubmit(result)
       })
       .catch((error) => {
-        toast.error('Failed to calculate vector expression')
+        toast.error('Failed to calculate vector expression.')
         console.error('Error calculating vector expression:', error)
       })
   }

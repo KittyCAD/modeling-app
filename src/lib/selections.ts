@@ -6,6 +6,7 @@ import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -19,6 +20,7 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getSettingsAnnotation,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -29,6 +31,7 @@ import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getSketchBlockForPathArtifact,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
   getArtifactOfTypes,
@@ -55,6 +58,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -67,6 +74,7 @@ import {
   isArray,
   isNonNullable,
   isOverlap,
+  mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
@@ -89,6 +97,8 @@ import type {
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import type { KclManager } from '@src/lang/KclManager'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
@@ -205,17 +215,28 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data?.query_point ?? null
 }
 
-async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- EngineRegionSelection from modelingSharedTypes
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
-  const point = await getRegionQueryPointForRegion(
+  const queryPointMm = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
   )
-  if (!point) return null
+  if (!queryPointMm) return null
+  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
+  const point: Point2d = {
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+  }
 
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
@@ -226,19 +247,11 @@ async function getEngineRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
-  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
-  const sketch = artifactGraph
-    .values()
-    .find(
-      (a) =>
-        a.type === 'sketchBlock' &&
-        JSON.stringify(a.codeRef.pathToNode) ===
-          JSON.stringify(path.codeRef.pathToNode)
-    )
+  const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
   if (!sketch) return null
 
   return {
-    type: 'region',
+    type: 'engineRegion',
     id: regionEntityId,
     point,
     sketchId: sketch.id,
@@ -304,7 +317,7 @@ export function isEngineRegionSelection(
   return (
     typeof selection === 'object' &&
     'type' in selection &&
-    selection.type === 'region'
+    selection.type === 'engineRegion'
   )
 }
 
@@ -543,13 +556,15 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
 export async function getEventForQueryEntityTypeWithPoint(
   engineEvent: any, // Using any for now since TypeScript types may not be updated yet
   {
-    artifactGraph,
     engineCommandManager,
+    kclManager,
     rustContext,
+    wasmInstance,
   }: {
-    artifactGraph: ArtifactGraph
     engineCommandManager: ConnectionManager
+    kclManager: KclManager
     rustContext: RustContext
+    wasmInstance: ModuleType
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
@@ -559,6 +574,7 @@ export async function getEventForQueryEntityTypeWithPoint(
         entity_id?: string
       }
     | undefined
+  const { ast, artifactGraph } = kclManager
   const clickEntityId =
     data?.entity_id ??
     (engineEvent as { entity_id?: string } | undefined)?.entity_id
@@ -764,7 +780,9 @@ export async function getEventForQueryEntityTypeWithPoint(
     const regionSelection = await getEngineRegionSelectionFromEntity(
       clickEntityId,
       artifactGraph,
-      engineCommandManager
+      ast,
+      engineCommandManager,
+      wasmInstance
     )
     if (regionSelection) {
       return {
@@ -939,7 +957,6 @@ export function handleSelectionBatch({
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
-
   let engineEvents: WebSocketRequest[] = []
 
   const entityReferences: EntityReference[] = selections.graphSelections
@@ -950,8 +967,6 @@ export function handleSelectionBatch({
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
   } else {
     for (const s of selections.graphSelections) {
-      const codeRef = s.codeRef
-      if (!codeRef) continue
       const entityId =
         s.entityRef && 'solid3d_id' in s.entityRef
           ? s.entityRef.solid3d_id
@@ -961,18 +976,26 @@ export function handleSelectionBatch({
               ? s.entityRef.face_id
               : s.entityRef && 'plane_id' in s.entityRef
                 ? s.entityRef.plane_id
-                : undefined
-      if (entityId) {
-        const refRange = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
-          ?.range
-        if (refRange)
-          selectionToEngine.push({
-            id: entityId,
-            range: refRange || defaultSourceRange(),
-          })
-      }
+                : s.artifact?.id
+      if (!entityId) continue
+
+      selectionToEngine.push({
+        id: entityId,
+        range:
+          getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
+          defaultSourceRange(),
+      })
     }
+
     for (const other of selections.otherSelections) {
+      if (isEnginePrimitiveSelection(other)) {
+        selectionToEngine.push({
+          id: other.entityId,
+          range: defaultSourceRange(),
+        })
+        continue
+      }
+
       if (isEngineRegionSelection(other)) {
         selectionToEngine.push({
           id: other.id,
@@ -980,6 +1003,7 @@ export function handleSelectionBatch({
         })
       }
     }
+
     engineEvents = resetAndSetEngineEntitySelectionCmds(
       selectionToEngine,
       systemDeps
@@ -1162,7 +1186,7 @@ function updateSceneObjectColors(
       ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
     segmentGroup.traverse((child) => {
-      child instanceof Mesh && child.material.color.set(color)
+      if (child instanceof Mesh) child.material.color.set(color)
     })
     // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
     updateExtraSegments(segmentGroup, 'selected', groupHasCursor)
@@ -1288,7 +1312,7 @@ export function getSelectionCountByType(
     if (typeof sel === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(sel)) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in sel) {
       incrementOrInitializeSelectionType('plane')
     } else if (sel.type === 'enginePrimitive' && sel.primitiveType === 'face') {
@@ -1349,6 +1373,11 @@ export function getSelectionCountByType(
       )
       if (artifact?.type === 'helix') {
         incrementOrInitializeSelectionType('path')
+      } else if (
+        artifact?.type === 'path' &&
+        artifact.subType === 'region'
+      ) {
+        incrementOrInitializeSelectionType('pathRegion')
       } else if (artifact?.type === 'path') {
         incrementOrInitializeSelectionType('path')
       } else {
@@ -1812,8 +1841,15 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'region'],
-  edge: ['segment', 'edgeCut', 'primitiveEdge', 'enginePrimitiveEdge'],
+  profile: ['solid2d'],
+  region: ['pathRegion', 'engineRegion'],
+  edge: [
+    'segment',
+    'sweepEdge',
+    'edgeCutEdge',
+    'primitiveEdge',
+    'enginePrimitiveEdge',
+  ],
   point: [],
   plane: ['defaultPlane'],
 }
@@ -1920,6 +1956,19 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+
+const defaultPlaneDataByName: Record<
+  PlaneName,
+  Omit<DefaultPlane, 'type' | 'planeId'>
+> = {
+  xy: { plane: 'XY', zAxis: [0, 0, 1], yAxis: [0, 1, 0] },
+  negXy: { plane: '-XY', zAxis: [0, 0, -1], yAxis: [0, 1, 0] },
+  xz: { plane: 'XZ', zAxis: [0, -1, 0], yAxis: [0, 0, 1] },
+  negXz: { plane: '-XZ', zAxis: [0, 1, 0], yAxis: [0, 0, 1] },
+  yz: { plane: 'YZ', zAxis: [1, 0, 0], yAxis: [0, 0, 1] },
+  negYz: { plane: '-YZ', zAxis: [-1, 0, 0], yAxis: [0, 0, 1] },
+}
+
 export async function getPlaneDataFromSketchBlock(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
   artifactGraph: ArtifactGraph,
@@ -1933,18 +1982,16 @@ export async function getPlaneDataFromSketchBlock(
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // Similar logic to selectSketchPlane but for a sketchBlock artifact.
-  if (!sketchBlock.planeId) {
-    return null
+  if (sketchBlock.standardPlane && systemDeps.rustContext.defaultPlanes) {
+    return {
+      type: 'defaultPlane',
+      planeId: systemDeps.rustContext.defaultPlanes[sketchBlock.standardPlane],
+      ...defaultPlaneDataByName[sketchBlock.standardPlane],
+    }
   }
 
-  // @pierremtb At the time of writing, this isn't working yet,
-  // so we always go to the next step and treat default planes as offset planes.
-  const defaultResult = getDefaultSketchPlaneData(
-    sketchBlock.planeId,
-    systemDeps
-  )
-  if (!err(defaultResult) && defaultResult) {
-    return defaultResult
+  if (!sketchBlock.planeId) {
+    return null
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
@@ -2140,7 +2187,7 @@ export async function selectionBodyFace(
       } else if (maybeImportNode.node.path.type === 'Foreign') {
         showSketchOnImportToast(maybeImportNode.node.path.path)
       } else if (maybeImportNode.node.path.type === 'Std') {
-        toast.error("can't sketch on this face")
+        toast.error("Can't sketch on this face.")
       } else {
         // force tsc error if more cases are added
         const _exhaustiveCheck: never = maybeImportNode.node.path

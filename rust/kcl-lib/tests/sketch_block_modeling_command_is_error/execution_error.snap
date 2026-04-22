@@ -6,23 +6,23 @@ KCL InvalidExpression error
 
   × invalid expression: Modeling commands communicating with the engine cannot
   │ be used inside a sketch block
-   ╭─[4:3]
- 3 │ sketch(on = XY) {
- 4 │   startSketchOn(XY)
+   ╭─[2:3]
+ 1 │ sketch(on = XY) {
+ 2 │   startSketchOn(XY)
    ·   ────────┬────────┬
    ·           ╰── tests/sketch_block_modeling_command_is_error/input.kcl
    ·           ╰── tests/sketch_block_modeling_command_is_error/input.kcl
- 5 │ }
+ 3 │ }
    ╰────
   ╰─▶ KCL InvalidExpression error
       
         × invalid expression: Modeling commands communicating with the engine
         │ cannot be used inside a sketch block
-         ╭─[4:3]
-       3 │ sketch(on = XY) {
-       4 │   startSketchOn(XY)
+         ╭─[2:3]
+       1 │ sketch(on = XY) {
+       2 │   startSketchOn(XY)
          ·   ────────┬────────
          ·           ╰── tests/sketch_block_modeling_command_is_error/
       input.kcl
-       5 │ }
+       3 │ }
          ╰────

@@ -82,7 +82,7 @@ export const ErrorPage = () => {
               window.localStorage.clear()
             }}
           >
-            Clear storage
+            Clear Storage
           </ActionButton>
           <ActionButton
             Element="externalLink"

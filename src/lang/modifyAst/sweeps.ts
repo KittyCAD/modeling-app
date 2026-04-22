@@ -25,9 +25,11 @@ import {
   getNodeFromPath,
   getVariableExprsFromSelection,
   resolveToCodeRef,
+  getVariableNameFromNodePath,
+  isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getArtifactFromRange,
   getArtifactOfTypes,
@@ -36,11 +38,11 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
   Expr,
   LabeledArg,
   PathToNode,
   Program,
-  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -51,7 +53,10 @@ import {
   KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EngineRegionSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import {
   getFacesExprsFromSelection,
   isFaceArtifact,
@@ -61,10 +66,14 @@ import {
   entityReferenceToEdgeRefPayload,
   createEdgeRefObjectExpression,
   retrieveEdgeSelectionsFromSingleEdgeRef,
+  getPrimitiveEdgeSelections,
+  groupSelectionsByBodyAndAddTags,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 import { isEngineRegionSelection } from '@src/lib/selections'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addExtrude({
   ast,
@@ -188,6 +197,15 @@ export function addExtrude({
   }
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -372,7 +390,7 @@ export function addSweep({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -390,6 +408,15 @@ export function addSweep({
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -400,23 +427,23 @@ export function addSweep({
     vars.exprs.push(...regionExprs)
   }
 
-  // Find the path declaration for the labeled argument
-  // TODO: see if we can replace this with `getVariableExprsFromSelection`
-  const pathResolved = resolveToCodeRef(path.graphSelections[0], artifactGraph)
-  if (!pathResolved?.codeRef)
-    return new Error('Could not resolve path selection.')
-  const pathDeclaration = getNodeFromPath<VariableDeclaration>(
-    ast,
-    pathResolved.codeRef.pathToNode,
+  const pathVars = getVariableExprsFromSelection(
+    path,
+    artifactGraph,
+    modifiedAst,
     wasmInstance,
-    'VariableDeclaration'
+    mNodeToEdit
   )
-  if (err(pathDeclaration)) {
-    return pathDeclaration
+  if (err(pathVars)) {
+    return pathVars
+  }
+
+  const pathExpr = createVariableExpressionsArray(pathVars.exprs)
+  if (!pathExpr) {
+    return new Error("Couldn't retrieve path selection")
   }
 
   // Extra labeled args expressions
-  const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
   const sectionalExpr =
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
@@ -495,7 +522,7 @@ export function addLoft({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -513,6 +540,15 @@ export function addLoft({
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -687,6 +723,15 @@ export function addRevolve({
   }
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       engineRegions,
       modifiedAst,
@@ -697,125 +742,18 @@ export function addRevolve({
     vars.exprs.push(...regionExprs)
   }
 
-  // Handle axis/edge: Check if edge has V2 selections (edgeRefs) or use tag-based approach
-  let axisExpr: Expr | null = null
-  let edgeRefExpr: Expr | null = null
-  const hasV2Selections =
-    edge && edge.graphSelections && edge.graphSelections.length > 0
-  const entityRefType = hasV2Selections
-    ? edge.graphSelections[0]?.entityRef?.type
-    : null
-
-  // Solid2dEdge uses legacy tag-based approach, not edgeRefs
-  // Only use edgeRefs for BRep edges (type === 'edge'), not for Solid2D edges
-  const useEdgeRefs = hasV2Selections && entityRefType === 'edge'
-
-  if (useEdgeRefs && edge.graphSelections[0]?.entityRef) {
-    // Use edgeRefs (new API) - only for BRep edges, not Solid2D edges
-    const entityRef = edge.graphSelections[0].entityRef
-    if (entityRef.type === 'edge') {
-      const payload = entityReferenceToEdgeRefPayload(entityRef)
-      const originalEdgeSelection =
-        edge.graphSelections[0] != null
-          ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)
-          : undefined
-      // Note: fallbackCodeRef removed - Solid2dEdge should use legacy path, not edgeRefs
-      const edgeRefResult = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        modifiedAst,
-        artifactGraph,
-        originalEdgeSelection ?? undefined
-      )
-      if (err(edgeRefResult)) {
-        return edgeRefResult
-      }
-      edgeRefExpr = edgeRefResult.expr
-      modifiedAst = edgeRefResult.modifiedAst
-    }
-  } else if (edge) {
-    // Re-check for BRep edge (entityRef.type === 'edge') in case useEdgeRefs was false due to structure
-    const firstEdgeSel = edge.graphSelections?.[0]
-    if (firstEdgeSel?.entityRef?.type === 'edge') {
-      const entityRef = firstEdgeSel.entityRef
-      const payload = entityReferenceToEdgeRefPayload(entityRef)
-      const originalEdgeSelection = resolveToCodeRef(
-        firstEdgeSel,
-        artifactGraph
-      )
-      const edgeRefResult = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        modifiedAst,
-        artifactGraph,
-        originalEdgeSelection ?? undefined
-      )
-      if (err(edgeRefResult)) {
-        return edgeRefResult
-      }
-      edgeRefExpr = edgeRefResult.expr
-      modifiedAst = edgeRefResult.modifiedAst
-    } else {
-      // Use tag-based approach (legacy) - for Solid2dEdge or V1 selections
-      // For Solid2dEdge, we need to normalize to V1 format (segment artifact)
-      let normalizedEdge = edge
-      if (
-        edge.graphSelections &&
-        edge.graphSelections.length > 0 &&
-        edge.graphSelections[0]?.entityRef?.type === 'solid2d_edge'
-      ) {
-        // Solid2dEdge: the edgeId IS the segment artifact ID directly!
-        // When a segment becomes part of a solid2d, it becomes an edge, and the edgeId
-        // is the same as the original segment's artifact ID.
-        const edgeId = edge.graphSelections[0].entityRef.edge_id
-
-        // Look up the segment artifact directly by edgeId
-        const segmentArtifact = artifactGraph.get(edgeId)
-
-        // Verify it's a segment and has a codeRef
-        if (
-          segmentArtifact &&
-          segmentArtifact.type === 'segment' &&
-          segmentArtifact.codeRef
-        ) {
-          normalizedEdge = {
-            ...edge,
-            graphSelections: [
-              {
-                entityRef: artifactToEntityRef(segmentArtifact.type, edgeId),
-                codeRef: segmentArtifact.codeRef,
-              },
-            ],
-          }
-        } else {
-          // If we can't find the segment, return an error with debug info
-          return new Error(
-            `Could not find segment artifact for Solid2D edge with ID ${edgeId}. ` +
-              `Found artifact type: ${segmentArtifact?.type || 'undefined'}. ` +
-              `Please select the edge again.`
-          )
-        }
-      }
-
-      const getAxisResult = getAxisExpressionAndIndex(
-        axis,
-        normalizedEdge,
-        modifiedAst,
-        wasmInstance,
-        artifactGraph
-      )
-      if (err(getAxisResult) || !getAxisResult.generatedAxis) {
-        return new Error('Generated axis selection is missing.')
-      }
-      axisExpr = getAxisResult.generatedAxis
-      modifiedAst = modifiedAst // getAxisResult might modify AST, but getAxisExpressionAndIndex doesn't return it
-    }
-  } else if (axis) {
-    // Use axis string
-    axisExpr = createLocalName(axis)
-  } else {
-    return new Error('Axis or edge selection is missing.')
+  const getAxisResult = getAxisExpression(
+    axis,
+    edge,
+    modifiedAst,
+    wasmInstance,
+    artifactGraph,
+    mNodeToEdit
+  )
+  if (err(getAxisResult)) {
+    return new Error('Generated axis selection is missing.')
   }
+  modifiedAst = getAxisResult.modifiedAst
 
   // Extra labeled args expressions
   const symmetricExpr =
@@ -841,12 +779,7 @@ export function addRevolve({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  // std revolve(..., axis = ...) — axis may be X/Y or an edge-ref object (sideFaces); not edgeRef=
-  const axisArgs = edgeRefExpr
-    ? [createLabeledArg('axis', edgeRefExpr)]
-    : axisExpr
-      ? [createLabeledArg('axis', axisExpr)]
-      : []
+  const axisArgs = [createLabeledArg('axis', getAxisResult.generatedAxis)]
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
     createLabeledArg('angle', valueOrVariable(angle)),
     ...axisArgs,
@@ -896,18 +829,168 @@ export function addRevolve({
 
 // Utilities
 
-export function getAxisExpressionAndIndex(
+function addHideCallsForRegionSketches({
+  engineRegions,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  engineRegions: EngineRegionSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Node<Program> {
+  let updatedAst = modifiedAst
+  const hiddenSketches = collectHiddenSketchNames(updatedAst)
+  const hiddenSketchIds = new Set<string>()
+
+  for (const regionSelection of engineRegions) {
+    if (hiddenSketchIds.has(regionSelection.sketchId)) {
+      continue
+    }
+
+    const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+    if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+      return new Error("Couldn't retrieve sketch block artifact")
+    }
+
+    const sketchVarNameForHide = getVariableNameFromNodePath(
+      sketchArtifact.codeRef.pathToNode,
+      updatedAst,
+      wasmInstance
+    )
+    if (!sketchVarNameForHide) {
+      return new Error("Couldn't retrieve sketch block variable")
+    }
+
+    if (hiddenSketches.has(sketchVarNameForHide)) {
+      hiddenSketchIds.add(regionSelection.sketchId)
+      continue
+    }
+
+    const hideResult = addHide({
+      ast: updatedAst,
+      artifactGraph,
+      objects: {
+        graphSelections: [
+          {
+            artifact: sketchArtifact,
+            codeRef: sketchArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance,
+    })
+    if (err(hideResult)) {
+      return hideResult
+    }
+
+    updatedAst = hideResult.modifiedAst
+    hiddenSketchIds.add(regionSelection.sketchId)
+    hiddenSketches.add(sketchVarNameForHide)
+  }
+
+  return updatedAst
+}
+
+function collectHiddenSketchNames(modifiedAst: Node<Program>): Set<string> {
+  const hiddenSketches = new Set<string>()
+
+  for (const bodyItem of modifiedAst.body) {
+    const maybeCall =
+      bodyItem.type === 'VariableDeclaration'
+        ? bodyItem.declaration.init
+        : bodyItem.type === 'ExpressionStatement'
+          ? bodyItem.expression
+          : undefined
+
+    if (!maybeCall || !isCallExprWithName(maybeCall, 'hide')) {
+      continue
+    }
+
+    const sketchNames = getSketchNamesFromHideArg(maybeCall.unlabeled)
+    sketchNames.forEach((name) => hiddenSketches.add(name))
+  }
+
+  return hiddenSketches
+}
+
+function getSketchNamesFromHideArg(
+  hideArg: CallExpressionKw['unlabeled']
+): string[] {
+  if (!hideArg) {
+    return []
+  }
+
+  if (hideArg.type === 'Name') {
+    return [hideArg.name.name]
+  }
+
+  if (hideArg.type === 'ArrayExpression') {
+    return hideArg.elements
+      .filter((element) => element.type === 'Name')
+      .map((element) => element.name.name)
+  }
+
+  return []
+}
+
+export function getAxisExpression(
   axis: string | undefined,
   edge: Selections | undefined,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  nodeToEdit?: PathToNode
 ) {
-  if (edge) {
-    const edgeResolved = resolveToCodeRef(
-      edge.graphSelections[0],
-      artifactGraph
+  let modifiedAst = structuredClone(ast)
+  if (axis) {
+    return { generatedAxis: createLocalName(axis), modifiedAst }
+  } else if (edge && artifactGraph) {
+    const firstEdgeSelection = edge.graphSelections[0]
+    if (firstEdgeSelection?.entityRef?.type === 'edge') {
+      const payload = entityReferenceToEdgeRefPayload(
+        firstEdgeSelection.entityRef
+      )
+      const originalEdgeSelection = resolveToCodeRef(
+        firstEdgeSelection,
+        artifactGraph
+      )
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+
+      return {
+        generatedAxis: edgeRefResult.expr,
+        modifiedAst: edgeRefResult.modifiedAst,
+      }
+    }
+
+    // Direct segment case (sketch solve)
+    const segmentAxisExpr = getVariableExprsFromSelection(
+      edge,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
     )
+    if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
+      const directAxisExpr = segmentAxisExpr.exprs[0]
+      if (directAxisExpr.type === 'MemberExpression') {
+        return { generatedAxis: directAxisExpr, modifiedAst }
+      }
+    }
+
+    // Direct segment case (old sketch)
+    const edgeResolved = resolveToCodeRef(edge.graphSelections[0], artifactGraph)
     let axisSelection =
       edge?.graphSelections[0] != null
         ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
@@ -957,7 +1040,7 @@ export function getAxisExpressionAndIndex(
         }
       }
     }
-    if (!axisSelectionAny) {
+    if (!axisSelection) {
       return new Error('Generated axis selection is missing.')
     }
 
@@ -974,49 +1057,53 @@ export function getAxisExpressionAndIndex(
     }
 
     const tagResult = mutateAstWithTagForSketchSegment(
-      ast,
+      modifiedAst,
       pathToAxisSelection,
       wasmInstance
     )
-
-    // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) {
-      return tagResult
+    if (!err(tagResult)) {
+      modifiedAst = tagResult.modifiedAst
+      const { tag } = tagResult
+      const generatedAxis = getEdgeTagCall(tag, axisSelectionAny)
+      return { generatedAxis, modifiedAst }
     }
 
-    const { tag } = tagResult
-    const generatedAxis = getEdgeTagCall(tag, axisSelectionAny)
-    if (
-      axisSelectionAny.type === 'segment' ||
-      axisSelectionAny.type === 'path' ||
-      axisSelectionAny.type === 'edgeCut'
-    ) {
-      const axisDeclaration = axisSelectionAny.codeRef?.pathToNode
-      if (axisDeclaration) {
-        const axisIndexInPathToNode =
-          axisDeclaration.findIndex((a: any) => a[0] === 'body') + 1
-        const value = axisDeclaration[axisIndexInPathToNode][0]
-        if (typeof value !== 'number') {
-          return new Error('expected axis index value to be a number')
-        }
-        const axisIndexIfAxis = value
-        return { generatedAxis, axisIndexIfAxis }
-      }
-      // If we can't find axisDeclaration, we can still return a tagged axis.
-      return { generatedAxis }
-    } else {
-      return { generatedAxis }
+    // Sweep edge case (both sketch v1 and sketch solve)
+    const bodyData = groupSelectionsByBodyAndAddTags(
+      edge,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(bodyData)) return bodyData
+    let bodies = bodyData.bodies
+    modifiedAst = bodyData.modifiedAst
+
+    const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
+    if (primitiveEdgeSelections.length > 0) {
+      const primitiveEdgeResult =
+        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+          primitiveEdgeSelections,
+          bodies,
+          modifiedAst,
+          artifactGraph,
+          wasmInstance,
+        })
+      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+      bodies = primitiveEdgeResult.bodies
     }
+    if (bodies.size !== 1) {
+      return new Error('No edges found in the selection')
+    }
+    const expr = bodies.values().toArray()[0].tagsExpr
+    return { generatedAxis: expr, modifiedAst }
+  } else {
+    return new Error('Must provide either an axis or an edge selection')
   }
-
-  if (axis) {
-    return { generatedAxis: createLocalName(axis) }
-  }
-
-  return new Error('Axis or edge selection is missing.')
 }
 
-// Sort of an inverse from getAxisExpressionAndIndex
+// Sort of an inverse from getAxisExpression
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
   artifactGraph: ArtifactGraph
@@ -1031,6 +1118,30 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   let axis: string | undefined
   let edge: Selections | undefined
   const axisValue = opArg.value
+  const buildEdgeSelectionFromSegmentId = (
+    segmentId: string
+  ): Selections | Error => {
+    const artifact = getArtifactOfTypes(
+      {
+        key: segmentId,
+        types: ['segment'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    return {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  }
   const nonZero = (val: OpKclValue): number => {
     if (val.type === 'Number') {
       return val.value
@@ -1070,26 +1181,19 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case
     axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.artifact_id,
-        types: ['segment'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
-
-    edge = {
-      graphSelections: [
-        {
-          entityRef: artifactToEntityRef(artifact.type, axisValue.artifact_id),
-          codeRef: artifact.codeRef,
-        },
-      ],
-      otherSelections: [],
+    edge = edgeSelection
+  } else if (axisValue.type === 'Segment') {
+    // segment case from sketch-solve member expressions (for example: sketch001.line5)
+    axisOrEdge = 'Edge'
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
+    edge = edgeSelection
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge was removed from artifact graph; use edgeRef/tag-based axis instead
     return new Error(

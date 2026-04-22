@@ -28,6 +28,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis2d),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;

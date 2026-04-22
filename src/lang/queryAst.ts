@@ -5,6 +5,7 @@ import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
@@ -1286,6 +1287,32 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolved = resolveToCodeRef(s, artifactGraph)
+    if (resolved?.artifact?.type === 'segment') {
+      const sketchSegmentId =
+        resolved.artifact.originalSegId ?? resolved.artifact.id
+      const sketchName = getSketchVariableNameForSegment(
+        ast,
+        sketchSegmentId,
+        artifactGraph,
+        wasmInstance
+      )
+      const lineName =
+        sketchName &&
+        getSketchSegmentName(ast, sketchSegmentId, artifactGraph, wasmInstance)
+
+      if (sketchName && lineName) {
+        const memberName = `${sketchName}.${lineName}`
+        if (pushedNames[memberName]) {
+          continue
+        }
+
+        exprs.push(createMemberExpression(sketchName, lineName))
+        pushedNames[memberName] = true
+        continue
+      }
+    }
+
+    const resolved = resolveToCodeRef(s, artifactGraph)
     if (!resolved) continue
     const { codeRef, artifact } = resolved
 
@@ -1437,6 +1464,45 @@ export function artifactToEntityRef(
   return undefined
 }
 
+function getSketchVariableNameForSegment(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segment)) {
+    return null
+  }
+
+  const sketchPath = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(sketchPath)) {
+    return null
+  }
+
+  const sketchVarDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    sketchPath.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(sketchVarDec) ||
+    sketchVarDec.node.type !== 'VariableDeclaration' ||
+    sketchVarDec.node.declaration.init.type !== 'SketchBlock'
+  ) {
+    return null
+  }
+
+  return sketchVarDec.node.declaration.id.name
+}
+
 // Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
@@ -1446,14 +1512,29 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
-  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+  if (
+    opArg.value.type === 'Solid' ||
+    opArg.value.type === 'Sketch' ||
+    opArg.value.type === 'Helix'
+  ) {
     artifactIds = [opArg.value.value.artifactId]
+  } else if (opArg.value.type === 'Segment') {
+    artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value
-      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
-      .map((v) => v.value.artifactId)
+    artifactIds = opArg.value.value.flatMap((v) => {
+      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
+        return [v.value.artifactId]
+      }
+      if (v.type === 'Segment') {
+        return [v.artifact_id]
+      }
+      if (v.type === 'TagIdentifier' && v.artifact_id) {
+        return [v.artifact_id]
+      }
+      return []
+    })
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
     artifactIds = [opArg.value.artifact_id]
   } else {
@@ -1471,11 +1552,9 @@ export function retrieveSelectionsFromOpArg(
       const correspondingWall = artifactGraph
         .values()
         .find((a) => a.type === 'wall' && a.segId === artifact?.id)
-      if (!correspondingWall) {
-        continue
+      if (correspondingWall) {
+        artifact = correspondingWall
       }
-
-      artifact = correspondingWall
     }
 
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
@@ -1950,7 +2029,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
       if (path && path.type === 'path') {
         const compositeSolidId = path.compositeSolidId
         if (compositeSolidId) {
-          result.push(compositeSolidId)
+          pushToSomething(compositeSolidId, undefined)
         }
       }
     } else if (current?.type === 'wall' || current?.type === 'cap') {
@@ -1965,8 +2044,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.solidIds)
-      pushToSomething(currentId, current.toolIds)
+      // No need to go up-graph here for composite solids, it's the end of the line
+      result.push(currentId)
     }
   }
 
@@ -2163,46 +2242,73 @@ export function getSketchSegmentName(
     return directSegmentVarDec.node.declaration.id.name
   }
 
-  const sketchPath = getArtifactOfTypes(
-    { key: segment.pathId, types: ['path'] },
+  return null
+}
+
+/**
+ * Builds a region-tag member expression for a sketch-solve segment, e.g.
+ * region001.tags.line2.
+ *
+ * If regionNameOverride is provided, the region name comes from that value.
+ * Otherwise, this attempts to infer the region variable from the segment's
+ * VariableDeclaration path.
+ */
+export function getRegionTagExprFromSegmentId(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  regionNameOverride?: string
+): Expr | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
     artifactGraph
   )
-  if (err(sketchPath)) {
+  if (err(segment)) {
+    return null
+  }
+  if (!segment.originalSegId || segment.originalSegId === segment.id) {
     return null
   }
 
-  const segmentIndex = sketchPath.segIds.indexOf(segment.id)
-  if (segmentIndex < 0) {
+  const regionName = (() => {
+    if (regionNameOverride) {
+      return regionNameOverride
+    }
+
+    const regionVarDec = getNodeFromPath<VariableDeclaration>(
+      ast,
+      segment.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (
+      err(regionVarDec) ||
+      regionVarDec.node.type !== 'VariableDeclaration' ||
+      regionVarDec.node.declaration.init.type !== 'CallExpressionKw' ||
+      regionVarDec.node.declaration.init.callee.name.name !== 'region'
+    ) {
+      return null
+    }
+
+    return regionVarDec.node.declaration.id.name
+  })()
+  if (!regionName) {
     return null
   }
 
-  const sketchPathVarDec = getNodeFromPath<VariableDeclaration>(
+  const originalSegName = getSketchSegmentName(
     ast,
-    sketchPath.codeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
+    segment.originalSegId,
+    artifactGraph,
+    wasmInstance
   )
-  if (
-    err(sketchPathVarDec) ||
-    sketchPathVarDec.node.type !== 'VariableDeclaration' ||
-    sketchPathVarDec.node.declaration.init.type !== 'SketchBlock'
-  ) {
+  if (!originalSegName) {
     return null
   }
 
-  const segmentNames =
-    sketchPathVarDec.node.declaration.init.body.items.flatMap((item) => {
-      if (
-        item.type !== 'VariableDeclaration' ||
-        item.declaration.init.type !== 'CallExpressionKw'
-      ) {
-        return []
-      }
-      if (!isSketchSegmentCallName(item.declaration.init.callee.name.name)) {
-        return []
-      }
-      return [item.declaration.id.name]
-    })
-
-  return segmentNames[segmentIndex] ?? null
+  return createMemberExpression(
+    createMemberExpression(regionName, 'tags'),
+    originalSegName
+  )
 }

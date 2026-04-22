@@ -17,7 +17,7 @@ use winnow::stream::ContainsToken;
 use winnow::stream::Stream;
 use winnow::{self};
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -80,7 +80,7 @@ impl NumericSuffix {
 }
 
 impl FromStr for NumericSuffix {
-    type Err = CompilationError;
+    type Err = CompilationIssue;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -96,7 +96,7 @@ impl FromStr for NumericSuffix {
             "deg" | "degrees" => Ok(NumericSuffix::Deg),
             "rad" | "radians" => Ok(NumericSuffix::Rad),
             "?" => Ok(NumericSuffix::Unknown),
-            _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
+            _ => Err(CompilationIssue::err(SourceRange::default(), "invalid unit of measure")),
         }
     }
 }

@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sketch_block_import_multiple.kcl
+---
+{
+  "__mod_rectangle1": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_rectangle2": {
+    "type": "Module",
+    "value": 2
+  }
+}

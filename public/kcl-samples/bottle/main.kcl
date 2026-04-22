@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set Units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Input dimensions to define the bottle
 bottleWidth = 80
@@ -13,21 +13,84 @@ neckDepth = 18
 neckDiameter = 45
 wallThickness = 4
 
+halfBottleLength = bottleLength / 2
+halfBottleWidth = bottleWidth / 2
+shoulderTransitionHeight = bottleWidth / 3
+shoulderArcRise = halfBottleWidth - shoulderTransitionHeight
+shoulderArcRadius = (halfBottleLength ^ 2 + shoulderArcRise ^ 2) / (2 * shoulderArcRise)
+shoulderArcCenterOffset = shoulderArcRadius - halfBottleWidth
+neckRadius = neckDiameter / 2
+
 // Create a rounded body for the bottle
-bottleBody = startSketchOn(XY)
-  |> startProfile(at = [-bottleLength / 2, 0])
-  |> yLine(length = bottleWidth / 3)
-  |> arc(endAbsolute = [bottleLength / 2, bottleWidth / 3], interiorAbsolute = [0, bottleWidth / 2])
-  |> yLine(endAbsolute = 0)
-  |> mirror2d(axis = X)
-  |> close()
-  |> extrude(length = bottleHeight - neckDepth)
+bottleFootprint = sketch(on = XY) {
+  leftSide = line(start = [var -62.5mm, var -26.67mm], end = [var -62.5mm, var 26.67mm])
+  topArc = arc(start = [var 62.5mm, var 26.52mm], end = [var -62.5mm, var 26.81mm], center = [var 0mm, var -112.78mm])
+  rightSide = line(start = [var 62.5mm, var 26.52mm], end = [var 62.5mm, var -26.67mm])
+  bottomArc = arc(start = [var -62.5mm, var -26.67mm], end = [var 62.5mm, var -26.67mm], center = [var 0mm, var 113.15mm])
+
+  topGuide = line(start = [var -62.5mm, var 26.67mm], end = [var 63.21mm, var 30.34mm], construction = true)
+  bottomGuide = line(start = [var -62.5mm, var -26.67mm], end = [var 62.5mm, var -26.67mm], construction = true)
+  centerAxis = line(start = [var 2.22mm, var -100.21mm], end = [var 0mm, var 113.15mm], construction = true)
+
+  coincident([leftSide.end, topArc.end])
+  coincident([topArc.start, rightSide.start])
+  coincident([rightSide.end, bottomArc.end])
+  coincident([bottomArc.start, leftSide.start])
+
+  coincident([topGuide.start, topArc.end])
+  coincident([topGuide.end, topArc.start])
+  coincident([bottomGuide.start, bottomArc.start])
+  coincident([bottomGuide.end, bottomArc.end])
+  coincident([centerAxis.start, topArc.center])
+  coincident([centerAxis.end, bottomArc.center])
+
+  vertical(leftSide)
+  vertical(rightSide)
+  horizontal(topGuide)
+  horizontal(bottomGuide)
+  vertical(centerAxis)
+
+  horizontalDistance([topGuide.start, topGuide.end]) == bottleLength
+  verticalDistance([leftSide.start, leftSide.end]) == shoulderTransitionHeight * 2
+  equalLength([leftSide, rightSide])
+  horizontalDistance([topArc.center, ORIGIN]) == 0mm
+  horizontalDistance([bottomArc.center, ORIGIN]) == 0mm
+  verticalDistance([bottomGuide.start, ORIGIN]) == 26.67mm
+  radius(topArc) == 152.64mm
+  horizontalDistance([centerAxis.start, ORIGIN]) == 0mm
+  radius(bottomArc) == 153.15mm
+}
+
+bottleBodyRegion = region(point = [30mm, 0mm], sketch = bottleFootprint)
+hide(bottleFootprint)
+bottleBody = extrude(bottleBodyRegion, length = bottleHeight - neckDepth)
 
 // Create a neck centered at the top of the bottle
-bottleNeck = startSketchOn(bottleBody, face = END)
-  |> circle(center = [0, 0], radius = neckDiameter / 2)
-  |> extrude(length = neckDepth)
+neckProfile = sketch(on = faceOf(bottleBody, face = END)) {
+  neckCircle = circle(start = [var 22.5mm, var 0mm], center = [var 0mm, var 0mm])
+  neckRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 22.5mm, var 0mm], construction = true)
+
+  coincident([neckCircle.center, ORIGIN])
+  coincident([
+    neckRadiusGuide.start,
+    neckCircle.center
+  ])
+  coincident([neckRadiusGuide.end, neckCircle.start])
+  horizontal(neckRadiusGuide)
+
+  diameter(neckCircle) == neckDiameter
+  distance([neckCircle.center, neckCircle.start]) == neckRadius
+}
+
+neckRegion = region(segments = [neckProfile.neckCircle])
+hide(neckProfile)
+bottleWithNeck = extrude(
+  neckRegion,
+  length = neckDepth,
+  method = MERGE,
+  tagEnd = $neckTop,
+)
 
 // Define a shell operation so that the entire body and neck are hollow, with only the top face opened
-bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
-  |> appearance(color = "#0078c2")
+bottleShellSolid = shell(bottleWithNeck, faces = [neckTop], thickness = wallThickness)
+bottleShell = appearance(bottleShellSolid, color = "#0078c2")

@@ -6,14 +6,16 @@
 
 // Define parameters
 length = 10
-diameter = 10
-
-// create a sketch for the cylinder profile on the XY plane
-sketch = startSketchOn(XY)
+cylinderDiameter = 10
 
 // create the profile centered at the origin
-profile = startProfile(sketch, at = [0, 0])
-  |> circle(center = profileStart(), radius = diameter / 2)
+sketch = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == cylinderDiameter / 2
+}
 
 // extrude the profile to create the box
-cylinder = extrude(profile, length = length)
+region = region(segments = [sketch.circle1])
+hide(sketch)
+cylinder = extrude(region, length = length)

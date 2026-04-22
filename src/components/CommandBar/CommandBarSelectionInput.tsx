@@ -37,7 +37,6 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(
@@ -121,15 +120,15 @@ function CommandBarSelectionInput({
 
   // Clear selection if needed
   useEffect(() => {
-    arg.clearSelectionFirst &&
+    if (arg.clearSelectionFirst) {
       engineCommandManager.modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
           selection: {},
         },
-      }) &&
-      setHasClearedSelection(true)
+      })
+    }
   }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
@@ -144,21 +143,18 @@ function CommandBarSelectionInput({
             otherSelections: [],
           }
 
-      if (
-        !(arg.clearSelectionFirst && !hasClearedSelection) &&
-        canSubmitSelection &&
-        resolvedSelection
-      ) {
+      if (!arg.clearSelectionFirst && canSubmitSelection && resolvedSelection) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasClearedSelection])
+  }, [])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter &&
+    if (arg.selectionFilter) {
       kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+    }
     return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])

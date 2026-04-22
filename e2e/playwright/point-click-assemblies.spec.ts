@@ -210,7 +210,7 @@ test.describe(
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+              path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
               path.join(bracketDir, 'bracket.kcl')
             ),
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
@@ -863,7 +863,7 @@ foreign
           await fsp.mkdir(projectDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
+              path.join('public', 'kcl-samples-legacy', 'washer', 'main.kcl'),
               path.join(projectDir, 'washer.kcl')
             ),
             fsp.writeFile(

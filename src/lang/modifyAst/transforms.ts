@@ -465,7 +465,9 @@ export function addHide({
     objects.graphSelections[0] != null
       ? resolveToCodeRef(objects.graphSelections[0], artifactGraph)
       : null
-  const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
+  const lastChildLookup =
+    firstResolved?.artifact?.type !== 'helix' &&
+    firstResolved?.artifact?.type !== 'sketchBlock'
   const vars = getVariableExprsFromSelection(
     objects,
     artifactGraph,

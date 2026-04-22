@@ -29,7 +29,7 @@ export const dummyInitSketchGraphDelta = Object.freeze({
   new_objects: [],
   invalidates_ids: false,
   exec_outcome: {
-    errors: [],
+    issues: [],
     variables: {},
     operations: [],
     artifactGraph: { map: {}, itemCount: 0 },
@@ -41,7 +41,6 @@ export const dummyInitSketchGraphDelta = Object.freeze({
 
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
-    currentMode: 'modeling',
     currentTool: 'none',
     showNonVisualConstraints: false,
     toastId: null,
@@ -84,7 +83,6 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
-    currentMode: 'modeling',
     currentTool: 'none',
     showNonVisualConstraints: false,
     toastId: null,

@@ -21,6 +21,7 @@ type CreatingCircleEvent = {
   output: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
   }
 }
 
@@ -61,11 +62,83 @@ describe('circleToolImpl', () => {
           },
         },
         'circle',
-        expect.anything()
+        expect.any(Object),
+        true
       )
       expect(result).toEqual({
         kclSource: { text: 'circle' },
         sceneGraphDelta,
+      })
+    })
+
+    it('adds coincident constraints for snapped center and radius points', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
+      const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
+      const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
+      const addSegmentResult = {
+        kclSource: { text: 'circle' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, circleObj],
+          [1, 2, 3]
+        ),
+      }
+      const centerSnapResult = {
+        kclSource: { text: 'center-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [10]),
+      }
+      const startSnapResult = {
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [11]),
+      }
+      ;(rustContext.addSegment as any).mockResolvedValue(addSegmentResult)
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce(centerSnapResult)
+        .mockResolvedValueOnce(startSnapResult)
+
+      const result = await createCircleActor({
+        input: {
+          centerPoint: [10, 20],
+          startPoint: [30, 40],
+          centerSnapTarget: { type: 'origin' },
+          startSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [1, 'ORIGIN'],
+        },
+        expect.anything(),
+        true
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        2,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 99],
+        },
+        expect.anything(),
+        true
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: {
+          ...startSnapResult.sceneGraphDelta,
+          new_objects: [1, 2, 3, 10, 11],
+        },
+        checkpointId: null,
       })
     })
   })
@@ -108,6 +181,7 @@ describe('circleToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
         },
       })
 

@@ -10,10 +10,8 @@ s = sketch(on = XY) {
   a = arc(start = [var -5mm, var 5mm], end = [var 5mm, var 5mm], center = [var 0mm, var 5mm])
 
   // Lock the line in place so branch selection comes only from tangent().
-  l.start.at[0] == 10mm
-  l.start.at[1] == 0mm
-  l.end.at[0] == -10mm
-  l.end.at[1] == 0mm
+  fixed([l.start, [10mm, 0mm]])
+  fixed([l.end, [-10mm, 0mm]])
 
   // Keep the arc radius and x-position fixed, leaving two possible tangent branches.
   radius(a) == 5mm

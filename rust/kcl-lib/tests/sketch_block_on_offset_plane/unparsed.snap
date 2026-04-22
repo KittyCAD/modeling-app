@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_block_on_offset_plane.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 plane1 = offsetPlane(XY, offset = 5mm)
 
 sketch(on = plane1) {

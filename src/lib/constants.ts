@@ -103,6 +103,27 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+/** The sketch mode revamp highlight rgb values */
+export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
+  Math.round(val * 0.7)
+)
+/** The sketch mode revamp highlight rgb values as HEX */
+export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
+
+/** Corresponding engine selections and highlights */
+export const SYSTEM_SELECTION_COLOR = {
+  r: SKETCH_SELECTION_RGB[0] / 255,
+  g: SKETCH_SELECTION_RGB[1] / 255,
+  b: SKETCH_SELECTION_RGB[2] / 255,
+  a: 1,
+}
+
+export const SYSTEM_HIGHLIGHT_COLOR = {
+  r: SKETCH_HIGHLIGHT_RGB[0] / 255,
+  g: SKETCH_HIGHLIGHT_RGB[1] / 255,
+  b: SKETCH_HIGHLIGHT_RGB[2] / 255,
+  a: 1,
+}
 
 /** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
 export const SKETCH_FILE_VERSION = 0
@@ -147,20 +168,20 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
-  SUCCESS: 'Exported successfully',
-  FAILED: 'Export failed',
+  SUCCESS: 'Exported successfully.',
+  FAILED: 'Export failed.',
 }
 
 /** The messages that appear for "make" command toasts */
 export const MAKE_TOAST_MESSAGES = {
   START: 'Starting print...',
-  NO_MACHINES: 'No machines available',
-  NO_MACHINE_API_IP: 'No machine api ip available',
-  NO_CURRENT_MACHINE: 'No current machine available',
-  NO_MACHINE_ID: 'No machine id available',
-  NO_NAME: 'No name provided',
-  ERROR_STARTING_PRINT: 'Error while starting print',
-  SUCCESS: 'Started print successfully',
+  NO_MACHINES: 'No machines available.',
+  NO_MACHINE_API_IP: 'No machine api ip available.',
+  NO_CURRENT_MACHINE: 'No current machine available.',
+  NO_MACHINE_ID: 'No machine id available.',
+  NO_NAME: 'No name provided.',
+  ERROR_STARTING_PRINT: 'Error while starting print.',
+  SUCCESS: 'Started print successfully.',
 }
 
 /** Toast id for the app auto-updater toast */
@@ -220,6 +241,13 @@ export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
  * default units.
  */
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
+/**
+ * Number of decimal places used when converting engine millimeter values
+ * to the active length unit for selection points.
+ * Sibling to rust/kcl-lib/src/std/mod.rs#DEFAULT_TOLERANCE_MM
+ */
+export const DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES = 7
 
 /**
  * When no annotation is in the KCL file to specify the defaults

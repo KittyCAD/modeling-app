@@ -13,7 +13,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
+import { getAxisExpression } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
   resolveToCodeRef,
@@ -21,7 +21,6 @@ import {
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
-  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -90,50 +89,19 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const hasV2Edge =
-      edge?.graphSelections?.length &&
-      edge.graphSelections[0]?.entityRef?.type === 'edge'
-    const shouldUseEdgeRef =
-      hasV2Edge && Boolean(edge?.graphSelections?.[0]?.entityRef)
-
-    if (shouldUseEdgeRef) {
-      const entityRef = edge.graphSelections[0].entityRef!
-      if (entityRef.type !== 'edge') {
-        return new Error('Expected helix axis edgeRef to be an edge entityRef')
-      }
-      const payload = entityReferenceToEdgeRefPayload(entityRef)
-      const originalEdgeSelection = resolveToCodeRef(
-        edge.graphSelections[0],
-        artifactGraph
-      )
-      const edgeRefResult = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        modifiedAst,
-        artifactGraph,
-        originalEdgeSelection ?? undefined
-      )
-      if (err(edgeRefResult)) {
-        return edgeRefResult
-      }
-      // createEdgeRefObjectExpression may mutate AST (e.g. to add tag declarations).
-      // Preserve those mutations by using returned modifiedAst.
-      modifiedAst = edgeRefResult.modifiedAst
-      // `helix` overloads `axis` to accept an edgeRef payload object.
-      axisExpr.push(createLabeledArg('axis', edgeRefResult.expr))
-    } else {
-      const result = getAxisExpressionAndIndex(
-        axis,
-        edge,
-        modifiedAst,
-        wasmInstance,
-        artifactGraph
-      )
-      if (err(result)) {
-        return result
-      }
-      axisExpr.push(createLabeledArg('axis', result.generatedAxis as Expr))
+    const result = getAxisExpression(
+      axis,
+      edge,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(result)) {
+      return result
     }
+    axisExpr.push(createLabeledArg('axis', result.generatedAxis))
+    modifiedAst = result.modifiedAst
   } else {
     return new Error('Helix must have either an axis or a cylinder')
   }

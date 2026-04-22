@@ -89,7 +89,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "runtime" => Some(include_str!("../std/runtime.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
-        "sketch2" => Some(include_str!("../std/sketch2.kcl")),
+        "solver" => Some(include_str!("../std/solver.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
@@ -100,6 +100,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
         "hole" => Some(include_str!("../std/hole.kcl")),
+        "gear" => Some(include_str!("../std/gear.kcl")),
         _ => None,
     }
 }

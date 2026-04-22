@@ -17,6 +17,9 @@ rectangle(
 ): Sketch
 ```
 
+This is part of sketch v1 and is soft deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
+
 A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 
 ### Arguments

@@ -20,14 +20,13 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
-  createMemberExpression,
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
 import {
   getNodeFromPath,
   getEdgeCutMeta,
-  getSketchSegmentName,
+  getRegionTagExprFromSegmentId,
   isSketchSegmentCallName,
 } from '@src/lang/queryAst'
 import type {
@@ -49,7 +48,6 @@ import type {
   Expr,
   PathToNode,
   Program,
-  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
@@ -441,35 +439,16 @@ function modifyAstWithTagForWallFace(
   const pathToSegmentNode = segment.codeRef.pathToNode
 
   // No tag path: just retrieve the sketch block segment
-  if (segment.originalSegId && segment.originalSegId !== segment.id) {
-    const region = getNodeFromPath<VariableDeclaration>(
-      astClone,
-      segment.codeRef.pathToNode,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (
-      !err(region) &&
-      region.node.type === 'VariableDeclaration' &&
-      region.node.declaration.init.type === 'CallExpressionKw' &&
-      region.node.declaration.init.callee.name.name === 'region'
-    ) {
-      const regionName = region.node.declaration.id.name
-      const originalSegName = getSketchSegmentName(
-        astClone,
-        segment.originalSegId,
-        artifactGraph,
-        wasmInstance
-      )
-      if (originalSegName) {
-        return {
-          modifiedAst: astClone,
-          expr: createMemberExpression(
-            createMemberExpression(regionName, 'tags'),
-            originalSegName
-          ),
-        }
-      }
+  const regionTagExpr = getRegionTagExprFromSegmentId(
+    astClone,
+    segment.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (regionTagExpr) {
+    return {
+      modifiedAst: astClone,
+      expr: regionTagExpr,
     }
   }
 
@@ -512,14 +491,6 @@ export function modifyAstWithTagForCapFace(
     artifactGraph
   )
   if (err(sweepArtifact)) return sweepArtifact
-
-  if (
-    sweepArtifact.subType !== 'extrusion' &&
-    sweepArtifact.subType !== 'revolve' &&
-    sweepArtifact.subType !== 'revolveAboutEdge'
-  ) {
-    return new Error('Only extrusion and revolve caps are currently supported')
-  }
 
   const pathToSweepNode = sweepArtifact.codeRef.pathToNode
   const callExp = getNodeFromPath<CallExpressionKw>(

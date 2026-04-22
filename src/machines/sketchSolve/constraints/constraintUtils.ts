@@ -3,8 +3,9 @@ import type {
   FixedPoint,
   ApiObject,
   Expr,
+  Coincident,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
+import { isArray, roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
@@ -14,6 +15,8 @@ import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
+import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -247,6 +250,37 @@ export function buildTangentConstraintInput(
   return null
 }
 
+type EqualLengthConstraintInput =
+  | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
+  | Extract<ApiConstraint, { type: 'EqualRadius' }>
+
+export function buildEqualLengthConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+): EqualLengthConstraintInput | null {
+  if (selectedIds.length < 2) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+
+  if (selectedObjects.every(isLineSegment)) {
+    return {
+      type: 'LinesEqualLength',
+      lines: selectedIds,
+    }
+  }
+
+  if (selectedObjects.every(isArcLikeSegment)) {
+    return {
+      type: 'EqualRadius',
+      input: selectedIds,
+    }
+  }
+
+  return null
+}
+
 export function buildFixedConstraintInput(
   selectedIds: number[],
   objects: ApiObject[]
@@ -275,9 +309,14 @@ type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
   | 'VerticalDistance'
+type AxisConstraintTypes = 'Horizontal' | 'Vertical'
 
 export type ConstraintObject = ApiObject & {
   kind: { type: 'Constraint' }
+}
+
+export type AxisConstraintObject = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: AxisConstraintTypes } }
 }
 
 /**
@@ -328,6 +367,67 @@ export type AngleConstraint = ApiObject & {
 
 export type CoincidentConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
+}
+
+export function isConstraintSegmentId(
+  segment: ConstraintSegment
+): segment is number {
+  return typeof segment === 'number'
+}
+
+export const isCoincidentSegmentId = isConstraintSegmentId
+
+export function getCoincidentSegmentIds(
+  coincident: Pick<Coincident, 'segments'>
+): number[] {
+  return coincident.segments.filter(isConstraintSegmentId)
+}
+
+export function coincidentContainsSegment(
+  coincident: Pick<Coincident, 'segments'>,
+  segmentId: number
+) {
+  return getCoincidentSegmentIds(coincident).includes(segmentId)
+}
+
+type AxisConstraint = Extract<ApiConstraint, { type: AxisConstraintTypes }>
+
+export function getAxisConstraintPoints(
+  constraint: AxisConstraint
+): ConstraintSegment[] | null {
+  const direct = constraint as Partial<{ points: ConstraintSegment[] }>
+  if (isArray(direct.points)) {
+    return direct.points
+  }
+
+  const nested = constraint as Partial<{
+    Points: { points: ConstraintSegment[] }
+  }>
+  return isArray(nested.Points?.points) ? nested.Points.points : null
+}
+
+export function getAxisConstraintPointIds(
+  constraint: AxisConstraint
+): number[] {
+  return (getAxisConstraintPoints(constraint) ?? []).filter(
+    isConstraintSegmentId
+  )
+}
+
+export function getAxisConstraintLineId(constraint: AxisConstraint) {
+  const direct = constraint as Partial<{ line: number }>
+  if (typeof direct.line === 'number') {
+    return direct.line
+  }
+
+  const nested = constraint as Partial<{
+    Line: { line_id: number }
+  }>
+  return typeof nested.Line?.line_id === 'number' ? nested.Line.line_id : null
+}
+
+export function axisConstraintIncludesOrigin(constraint: AxisConstraint) {
+  return (getAxisConstraintPoints(constraint) ?? []).includes('ORIGIN')
 }
 
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
@@ -422,7 +522,24 @@ export function getSelectedTangentConstraintInput(
   const objects =
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return buildTangentConstraintInput(selectedIds, objects)
+  return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedEqualLengthConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildEqualLengthConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
 }
 
 export function getSelectedFixedConstraintInput(
@@ -433,7 +550,7 @@ export function getSelectedFixedConstraintInput(
   const objects =
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return buildFixedConstraintInput(selectedIds, objects)
+  return buildFixedConstraintInput(getObjectSelectionIds(selectedIds), objects)
 }
 
 export type SpriteLabel = Sprite & {
@@ -492,9 +609,9 @@ export function getCoincidentCluster(
       .filter(
         (obj): obj is CoincidentConstraint =>
           isConstraint(obj, 'Coincident') &&
-          obj.kind.constraint.segments.includes(currentPointId)
+          coincidentContainsSegment(obj.kind.constraint, currentPointId)
       )
-      .flatMap((obj) => obj.kind.constraint.segments)
+      .flatMap((obj) => getCoincidentSegmentIds(obj.kind.constraint))
 
     coincidentPointIds.forEach((coincidentPointId) => {
       if (

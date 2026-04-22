@@ -24,6 +24,7 @@ use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::csg::CsgAlgorithm;
 use crate::std::fillet::EdgeReference;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
@@ -34,6 +35,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     // TODO: custom profiles not ready yet
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
@@ -79,9 +82,18 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
             let mut all_refs = tags_as_refs;
             all_refs.extend(edge_refs_parsed);
-            let value =
-                inner_chamfer_with_engine_refs(solid, length, all_refs, second_length, angle, tag, exec_state, args)
-                    .await?;
+            let value = inner_chamfer_with_engine_refs(
+                solid,
+                length,
+                all_refs,
+                second_length,
+                angle,
+                csg_algorithm,
+                tag,
+                exec_state,
+                args,
+            )
+            .await?;
             Ok(KclValue::Solid { value })
         }
         (Some(edge_refs), Err(_)) => {
@@ -93,6 +105,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 angle,
                 None,
                 tag,
+                csg_algorithm,
                 exec_state,
                 args,
             )
@@ -102,7 +115,19 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         (None, Ok(tags_with_source)) => {
             super::fillet::validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-            let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
+            let value = inner_chamfer(
+                solid,
+                length,
+                tags,
+                second_length,
+                angle,
+                None,
+                tag,
+                csg_algorithm,
+                exec_state,
+                args,
+            )
+            .await?;
             Ok(KclValue::Solid { value })
         }
         (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -120,6 +145,7 @@ async fn inner_chamfer(
     angle: Option<TyF64>,
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
+    csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -222,6 +248,7 @@ async fn inner_chamfer(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::Solid3dCutEdges::builder()
+                            .use_legacy(csg_algorithm.is_legacy())
                             .edge_ids(vec![edge_id])
                             .extra_face_ids(vec![])
                             .strategy(strategy)
@@ -265,6 +292,7 @@ async fn inner_chamfer_with_edge_refs(
     angle: Option<TyF64>,
     _custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
+    csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -289,6 +317,7 @@ async fn inner_chamfer_with_edge_refs(
         edge_references,
         second_length,
         angle,
+        csg_algorithm,
         tag,
         exec_state,
         args,
@@ -303,6 +332,7 @@ async fn inner_chamfer_with_engine_refs(
     edge_references: Vec<kcmc::shared::EdgeSpecifier>,
     second_length: Option<TyF64>,
     angle: Option<TyF64>,
+    csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -363,6 +393,7 @@ async fn inner_chamfer_with_engine_refs(
                 tolerance: LengthUnit(DEFAULT_TOLERANCE),
                 strategy,
                 extra_face_ids,
+                use_legacy: csg_algorithm.is_legacy(),
             }),
         )
         .await?;

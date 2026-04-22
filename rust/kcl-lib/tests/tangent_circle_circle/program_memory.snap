@@ -690,31 +690,14 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    5.0,
-                    -0.00000000000000183697019872103
-                  ],
-                  "tag": null,
-                  "to": [
-                    5.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
                   "ccw": true,
                   "center": [
                     -0.0,
-                    -0.0
+                    -0.00000000000000183697019872103
                   ],
                   "from": [
                     5.0,
-                    0.0
+                    -0.00000000000000183697019872103
                   ],
                   "radius": 5.0,
                   "tag": {
@@ -727,7 +710,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   },
                   "to": [
                     -5.0,
-                    0.0000000000000006123233995736766
+                    -0.0000000000000012246467991473535
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -739,7 +722,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   },
                   "from": [
                     -5.0,
-                    0.0000000000000006123233995736766
+                    -0.0000000000000012246467991473535
                   ],
                   "tag": null,
                   "to": [
@@ -784,31 +767,14 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    11.000000000000004,
-                    -0.0000000000000011021821192326183
-                  ],
-                  "tag": null,
-                  "to": [
-                    11.000000000000004,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
                   "ccw": true,
                   "center": [
                     8.000000000000004,
-                    -0.0
+                    -0.0000000000000011021821192326183
                   ],
                   "from": [
                     11.000000000000004,
-                    0.0
+                    -0.0000000000000011021821192326183
                   ],
                   "radius": 3.0,
                   "tag": {
@@ -821,7 +787,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   },
                   "to": [
                     5.0000000000000036,
-                    0.00000000000000036739403974420594
+                    -0.0000000000000007347880794884124
                   ],
                   "type": "Arc",
                   "units": "mm"

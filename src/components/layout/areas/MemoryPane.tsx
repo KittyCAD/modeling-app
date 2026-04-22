@@ -26,7 +26,7 @@ export const MemoryPaneMenu = () => {
     if (globalThis && 'navigator' in globalThis) {
       navigator.clipboard
         .writeText(JSON.stringify(variables))
-        .then(() => toast.success('Program memory copied to clipboard'))
+        .then(() => toast.success('Program memory copied to clipboard.'))
         .catch((_e) =>
           trap(new Error('Failed to copy program memory to clipboard'))
         )

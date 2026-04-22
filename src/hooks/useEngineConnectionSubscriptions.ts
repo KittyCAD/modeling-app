@@ -20,7 +20,8 @@ const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const { engineCommandManager, kclManager, rustContext } = context
+  const { engineCommandManager, kclManager, rustContext, wasmInstance } =
+    context
   const stateRef = useRef(state)
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hoveredEntityIdRef = useRef<string | null>(null)
@@ -171,6 +172,11 @@ export function useEngineConnectionSubscriptions() {
       event: 'query_entity_type_with_point' as any, // TODO: Add to generated types when OpenAPI spec is updated
       callback: (engineEvent) => {
         const isSketchNoFace = stateRef.current.matches('Sketch no face')
+        const isSketchSolveMode = stateRef.current.matches('sketchSolveMode')
+
+        if (isSketchSolveMode) {
+          return
+        }
 
         // Handle sketch plane selection directly when in 'Sketch no face' state
         if (isSketchNoFace) {
@@ -213,17 +219,23 @@ export function useEngineConnectionSubscriptions() {
         }
 
         // Normal flow for other states
-        void getEventForQueryEntityTypeWithPoint(engineEvent, {
-          rustContext,
-          artifactGraph: kclManager.artifactGraph,
-          engineCommandManager,
-        })
-          .then((event) => {
-            if (event) {
-              send(event)
-            }
+        ;(async () => {
+          const event = await getEventForQueryEntityTypeWithPoint(engineEvent, {
+            engineCommandManager,
+            kclManager,
+            rustContext,
+            wasmInstance,
           })
-          .catch(reportRejection)
+          // Check state again, in case we went into sketch mode before the query returned.
+          // This is probably rare, but we do go into sketch mode on double click.
+          if (
+            stateRef.current.matches('Sketch no face') ||
+            stateRef.current.matches('sketchSolveMode')
+          ) {
+            return
+          }
+          if (event) send(event)
+        })().catch(reportRejection)
       },
     })
     return () => {
@@ -238,6 +250,7 @@ export function useEngineConnectionSubscriptions() {
     send,
     engineCommandManager,
     rustContext,
+    wasmInstance,
   ])
 
   useEffect(() => {
