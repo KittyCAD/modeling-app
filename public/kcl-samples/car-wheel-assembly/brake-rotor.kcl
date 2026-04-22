@@ -1,0 +1,120 @@
+// Brake Rotor
+// Vented rotor with a bell and rear friction disc.
+
+// Set units and version
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+bellOuterFaceOffset = 1.66281in
+frontDiscInnerFaceOffset = bellOuterFaceOffset - tDiscHalf
+rearDiscOuterFaceOffset = frontDiscInnerFaceOffset - tVent
+rotorColor = "#f0d77a"
+
+bellProfileSketch = sketch(on = -XY) {
+  line1 = line(start = [var 1.5in, var 0in], end = [var 1.5in, var -0.2in])
+  line2 = line(start = [var 1.5in, var -0.2in], end = [var 3.75in, var -0.2in])
+  line3 = line(start = [var 3.75in, var -0.2in], end = [var 3.93418in, var 1.3in])
+  arc1 = arc(start = [var 4.13343in, var 1.28781in], end = [var 3.93418in, var 1.3in], center = [var 4.03343in, var 1.28781in])
+  line4 = line(start = [var 4.13in, var 1.29in], end = [var 6.73in, var 1.3in])
+  line5 = line(start = [var 6.73in, var 1.67in], end = [var 3.73in, var 1.66in])
+  line6 = line(start = [var 3.73343in, var 1.66281in], end = [var 3.52925in, var 0in])
+  line7 = line(start = [var 3.52in, var 0.01in], end = [var 1.49in, var 0.01in])
+  line8 = line(start = [var 6.73in, var 1.3in], end = [var 6.73in, var 1.67in])
+  line9 = line(start = [var 0in, var 0in], end = [var 0in, var 2.32in], construction = true)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, arc1.end])
+  coincident([arc1.start, line4.start])
+  coincident([line4.end, line8.start])
+  coincident([line8.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.start])
+  coincident([line9.start, ORIGIN])
+  vertical(line8)
+  horizontal(line4)
+  horizontal(line5)
+  vertical([line9.end, ORIGIN])
+  horizontalDistance([line9.start, line8.end]) == rotorDiameter / 2
+  distance([line8.start, line8.end]) == tDiscHalf
+}
+
+bellRegion = region(segments = [
+  bellProfileSketch.line1,
+  bellProfileSketch.line2
+])
+hide([bellProfileSketch])
+
+lugHoleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var -1.98004in, var 0in], center = [var -2.25in, var 0in])
+  horizontalDistance([ORIGIN, circle1.center]) == -(lugSpacing / 2)
+  verticalDistance([ORIGIN, circle1.center]) == 0in
+  diameter(circle1) == lugThreadDiameter
+}
+
+lugHoleRegion = region(segments = [lugHoleSketch.circle1])
+hide([lugHoleSketch])
+
+bell = revolve(bellRegion, axis = Y)
+  |> subtract(tools = patternCircular3d(
+       extrude(
+         lugHoleRegion,
+         length = tBell * 4,
+         symmetric = true,
+         method = NEW,
+       ),
+       instances = lugCount,
+       axis = Y,
+       center = [0, 0, 0],
+     ))
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
+
+ventPlane = offsetPlane(XZ, offset = -frontDiscInnerFaceOffset - tDiscHalf)
+ventSketch = sketch(on = ventPlane) {
+  line1 = line(start = [var -0.125in, var 3.64in], end = [var 0.125in, var 3.64in])
+  line2 = line(start = [var 0.125in, var 3.64in], end = [var 0.125in, var 6in])
+  line3 = line(start = [var 0.125in, var 6in], end = [var -0.125in, var 6in])
+  line4 = line(start = [var -0.125in, var 6in], end = [var -0.125in, var 3.64in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontalDistance([ORIGIN, line1.start]) == -(wVent / 2)
+  verticalDistance([ORIGIN, line1.start]) == rotorDiameter / 2 - hFrictionSurface
+  horizontalDistance([line1.start, line1.end]) == wVent
+  verticalDistance([line2.start, line2.end]) == hFrictionSurface
+}
+
+ventRegion = region(segments = [ventSketch.line1, ventSketch.line2])
+hide([ventSketch])
+
+ventSet = patternCircular3d(
+       extrude(ventRegion, length = -tVent, method = NEW),
+       instances = nVentBosses,
+       axis = Y,
+       center = [0, 0, 0],
+     )
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
+
+rearDiscPlane = offsetPlane(XZ, offset = -frontDiscInnerFaceOffset - tDiscHalf - tVent)
+rearDiscSketch = sketch(on = rearDiscPlane) {
+  circle1 = circle(start = [var 6in, var 0in], center = [var 0in, var 0in])
+  circle2 = circle(start = [var 3.64in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  coincident([circle2.center, circle1.center])
+  diameter(circle1) == rotorDiameter
+  diameter(circle2) == rotorDiameter - (2 * hFrictionSurface)
+}
+
+rearDiscRegion = region(point = [4.5in, 0.1in], sketch = rearDiscSketch)
+rearDisc = extrude(rearDiscRegion, length = -tDiscHalf, method = NEW)
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
+hide([rearDiscSketch])
+
+rotor = [bell, ventSet, rearDisc]
