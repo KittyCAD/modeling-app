@@ -150,13 +150,13 @@ singleBinFill = extrude(singleBinFillRegion, length = height)
 hide(singleBinFillSketch)
 magPocketPlane = planeOf(singleBinFill, face = START)
 magPocketSketch = circle(
-       magPocketPlane,
-       center = [
-         -magOffset - binBaseLength - binTol,
-         magOffset + binBaseLength + binTol
-       ],
-       radius = magOuterDiam / 2,
-     )
+  magPocketPlane,
+  center = [
+    -magOffset - binBaseLength - binTol,
+    magOffset + binBaseLength + binTol
+  ],
+  radius = magOuterDiam / 2,
+)
   |> patternCircular2d(
        arcDegrees = 360deg,
        center = [
@@ -171,27 +171,27 @@ hide(magPocketSketch)
 singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
 
 binSides = patternLinear3d(
-       sides,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  sides,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 binCorners = patternLinear3d(
-       corners,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  corners,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 binFill = patternLinear3d(
-       singleBinFillWithPockets,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  singleBinFillWithPockets,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 binTopPlane = offsetPlane(XY, offset = height)

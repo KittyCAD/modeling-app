@@ -46,11 +46,11 @@ shellProfile = sketch(on = YZ) {
 region001 = region(segments = [shellProfile.line1, shellProfile.line2])
 // Extrude and fillet the shell body
 shellBody = extrude(
-       region001,
-       length = shellLength,
-       tagEnd = $capEnd001,
-       tagStart = $capStart001,
-     )
+  region001,
+  length = shellLength,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
   |> fillet(
        tags = [
          getCommonEdge(faces = [
