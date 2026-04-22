@@ -53,16 +53,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "angle": "degrees"
     }
   },
-  "bottomCenterArc": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "bottomCenterArc"
-  },
-  "centerClearanceCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "centerClearanceCircle"
-  },
   "centerHoleDiameter": {
     "type": "Number",
     "value": 3.0,
@@ -98,21 +88,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "len": "in",
       "angle": "degrees"
     }
-  },
-  "leftEndArc": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "leftEndArc"
-  },
-  "lowerLeftTransition": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "lowerLeftTransition"
-  },
-  "lowerRightTransition": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "lowerRightTransition"
   },
   "plateBody": {
     "type": "Solid",
@@ -561,6 +536,7 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -883,6 +859,7 @@ description: Variables in memory after executing countersunk-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -3216,6 +3193,7 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -3671,6 +3649,7 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -3678,16 +3657,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "units": "in",
       "sectional": false
     }
-  },
-  "rightEndArc": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "rightEndArc"
-  },
-  "topCenterArc": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "topCenterArc"
   },
   "topFace": {
     "type": "TagIdentifier",
@@ -3711,15 +3680,5 @@ description: Variables in memory after executing countersunk-plate.kcl
       "len": "in",
       "angle": "degrees"
     }
-  },
-  "upperLeftTransition": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "upperLeftTransition"
-  },
-  "upperRightTransition": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "upperRightTransition"
   }
 }

@@ -937,6 +937,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -1881,6 +1882,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -3007,6 +3009,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "mm"
               },
               "startCapId": "[uuid]",
@@ -3052,6 +3055,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -3093,16 +3097,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       }
     }
-  },
-  "arc19": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc19"
-  },
-  "arc2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc2"
   },
   "depth": {
     "type": "Number",
@@ -4039,6 +4033,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -5146,6 +5141,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -5191,6 +5187,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -6298,6 +6295,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -6343,6 +6341,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -7632,6 +7631,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",
@@ -7677,6 +7677,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -7722,6 +7723,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -7729,101 +7731,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "units": "mm",
       "sectional": false
     }
-  },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line10": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line10"
-  },
-  "line11": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line11"
-  },
-  "line12": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line12"
-  },
-  "line13": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line13"
-  },
-  "line14": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line14"
-  },
-  "line15": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line15"
-  },
-  "line16": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line16"
-  },
-  "line17": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line17"
-  },
-  "line18": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line18"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line20": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line20"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
-  "line5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line5"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
-  },
-  "line7": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line7"
-  },
-  "line8": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line8"
-  },
-  "line9": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line9"
   },
   "minClampingDistance": {
     "type": "Number",
@@ -8473,6 +8380,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -9512,6 +9420,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -9557,6 +9466,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -10596,6 +10506,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -10641,6 +10552,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -11862,6 +11774,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "mm"
                 },
                 "startCapId": "[uuid]",
@@ -11907,6 +11820,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -11952,6 +11866,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -16089,6 +16004,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -17120,6 +17036,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -18151,6 +18068,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -19182,6 +19100,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -20240,6 +20159,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",
@@ -21310,6 +21230,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -22341,6 +22262,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -23372,6 +23294,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -24403,6 +24326,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -25461,6 +25385,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",
@@ -26713,6 +26638,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "mm"
                           },
                           "startCapId": "[uuid]",
@@ -26758,6 +26684,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -27971,6 +27898,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "mm"
                           },
                           "startCapId": "[uuid]",
@@ -28016,6 +27944,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -29229,6 +29158,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "mm"
                           },
                           "startCapId": "[uuid]",
@@ -29274,6 +29204,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -30487,6 +30418,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "mm"
                           },
                           "startCapId": "[uuid]",
@@ -30532,6 +30464,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -31772,6 +31705,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
+                          "originSketchId": "[uuid]",
                           "units": "mm"
                         },
                         "startCapId": "[uuid]",
@@ -31817,6 +31751,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",

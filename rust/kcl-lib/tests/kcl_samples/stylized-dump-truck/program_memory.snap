@@ -526,6 +526,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1397,6 +1398,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -1633,6 +1635,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -2555,6 +2558,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -2803,6 +2807,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3123,6 +3128,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3248,6 +3254,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3352,6 +3359,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3672,6 +3680,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -4877,6 +4886,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -5113,6 +5123,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -6035,6 +6046,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -6280,6 +6292,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -6605,6 +6618,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -6930,6 +6944,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -7063,6 +7078,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7169,6 +7185,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7325,6 +7342,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -7420,6 +7438,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -8018,6 +8037,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -8343,6 +8363,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -8584,6 +8605,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -9446,6 +9468,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -9685,6 +9708,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -9869,6 +9893,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10121,6 +10146,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -10294,6 +10320,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -12376,6 +12403,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12501,6 +12529,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12631,6 +12660,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12756,6 +12786,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12862,6 +12893,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -12985,6 +13017,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13110,6 +13143,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13240,6 +13274,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13365,6 +13400,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -14012,6 +14048,7 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
