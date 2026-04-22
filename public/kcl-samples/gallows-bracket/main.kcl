@@ -465,7 +465,3 @@ bracketArray = patternLinear3d(
   axis = [0, 1, 0],
 )
 
-// OUTPUT START
-beam
-bracketArray
-// OUTPUT END

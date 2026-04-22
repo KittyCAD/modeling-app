@@ -22,7 +22,7 @@ tongueSetback = tongueLength * setbackFactor
 blockHalfThickness = insertThickness / 2
 grooveDepth = blockHalfThickness + tongueDepth
 
-// STEP 01: Create the top-side profile with tongues.
+// Create the top-side profile with tongues.
 tongueShape = sketch(on = XY) {
   leftCenterGuide = line(start = [var -190mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
   rightCenterGuide = line(start = [var 0mm, var 0mm], end = [var 190mm, var 0mm], construction = true)
@@ -134,7 +134,7 @@ tongueShape = sketch(on = XY) {
   verticalDistance([fall1.start, fall1.end]) == -tongueDepth
 }
 
-// STEP 02: Create the bottom-side profile with grooves.
+// Create the bottom-side profile with grooves.
 grooveShape = sketch(on = XY) {
   leftCenterGuide = line(start = [var -190mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
   rightCenterGuide = line(start = [var 0mm, var 0mm], end = [var 190mm, var 0mm], construction = true)
@@ -246,7 +246,7 @@ grooveShape = sketch(on = XY) {
   verticalDistance([fall1.start, fall1.end]) == -tongueDepth
 }
 
-// STEP 03: Extrude both profiles to form the final thermal insert block.
+// Extrude both profiles to form the final thermal insert block.
 tongueRegion = region(segments = [tongueShape.leftWall])
 grooveRegion = region(segments = [grooveShape.leftWall])
 insertShape = extrude([tongueRegion, grooveRegion], length = insertHeight)
