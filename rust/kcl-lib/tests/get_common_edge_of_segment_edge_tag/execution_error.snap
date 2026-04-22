@@ -2,9 +2,10 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing get_common_edge_of_segment_edge_tag.kcl
 ---
-KCL UndefinedValue error
+KCL Type error
 
-  × undefined value: `line1` is not defined
+  × type: Tag `line1` refers to a sketch edge, but this operation requires a
+  │ face tag
     ╭─[9:5]
   8 │      rt = region001.tags
   9 │ ╭──▶ x = getCommonEdge(faces = [
@@ -14,9 +15,10 @@ KCL UndefinedValue error
     · ╰───── tests/get_common_edge_of_segment_edge_tag/input.kcl
     · ╰───── tests/get_common_edge_of_segment_edge_tag/input.kcl
     ╰────
-  ╰─▶ KCL UndefinedValue error
+  ╰─▶ KCL Type error
       
-        × undefined value: `line1` is not defined
+        × type: Tag `line1` refers to a sketch edge, but this operation
+        │ requires a face tag
           ╭─[9:5]
         8 │     rt = region001.tags
         9 │ ╭─▶ x = getCommonEdge(faces = [
