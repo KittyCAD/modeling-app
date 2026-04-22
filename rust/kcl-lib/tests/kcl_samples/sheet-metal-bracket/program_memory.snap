@@ -67,6 +67,46 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       }
     }
   },
+  "arc12": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc12"
+  },
+  "arc14": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc14"
+  },
+  "arc16": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc16"
+  },
+  "arc18": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc18"
+  },
+  "arc2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc2"
+  },
+  "arc4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc4"
+  },
+  "arc6": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc6"
+  },
+  "arc8": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc8"
+  },
   "bendAngle": {
     "type": "Number",
     "value": 75.0,
@@ -1088,6 +1128,51 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "TagIdentifier",
     "value": "capStart001"
   },
+  "circle1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle1"
+  },
+  "circle2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle2"
+  },
+  "circle3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle3"
+  },
+  "circle4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle4"
+  },
+  "circle5": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle5"
+  },
+  "circle6": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle6"
+  },
+  "circle7": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle7"
+  },
+  "circle8": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle8"
+  },
+  "circle9": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle9"
+  },
   "componentBoltDiameter": {
     "type": "Number",
     "value": 0.1875,
@@ -1139,10 +1224,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7985,
-                "end": 7992,
+                "commentStart": 8013,
+                "end": 8020,
                 "moduleId": 0,
-                "start": 7985,
+                "start": 8013,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -1170,10 +1255,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.25000000000000305,
                 "tag": {
-                  "commentStart": 7985,
-                  "end": 7992,
+                  "commentStart": 8013,
+                  "end": 8020,
                   "moduleId": 0,
-                  "start": 7985,
+                  "start": 8013,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -1293,10 +1378,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7848,
-                "end": 7855,
+                "commentStart": 7876,
+                "end": 7883,
                 "moduleId": 0,
-                "start": 7848,
+                "start": 7876,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1324,10 +1409,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.2500000000000001,
                 "tag": {
-                  "commentStart": 7848,
-                  "end": 7855,
+                  "commentStart": 7876,
+                  "end": 7883,
                   "moduleId": 0,
-                  "start": 7848,
+                  "start": 7876,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1447,10 +1532,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8530,
-                "end": 8537,
+                "commentStart": 8558,
+                "end": 8565,
                 "moduleId": 0,
-                "start": 8530,
+                "start": 8558,
                 "type": "TagDeclarator",
                 "value": "circle6"
               },
@@ -1478,10 +1563,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.18750000000000508,
                 "tag": {
-                  "commentStart": 8530,
-                  "end": 8537,
+                  "commentStart": 8558,
+                  "end": 8565,
                   "moduleId": 0,
-                  "start": 8530,
+                  "start": 8558,
                   "type": "TagDeclarator",
                   "value": "circle6"
                 },
@@ -1601,10 +1686,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8664,
-                "end": 8671,
+                "commentStart": 8692,
+                "end": 8699,
                 "moduleId": 0,
-                "start": 8664,
+                "start": 8692,
                 "type": "TagDeclarator",
                 "value": "circle7"
               },
@@ -1632,10 +1717,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.1875000000000024,
                 "tag": {
-                  "commentStart": 8664,
-                  "end": 8671,
+                  "commentStart": 8692,
+                  "end": 8699,
                   "moduleId": 0,
-                  "start": 8664,
+                  "start": 8692,
                   "type": "TagDeclarator",
                   "value": "circle7"
                 },
@@ -1755,10 +1840,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8799,
-                "end": 8806,
+                "commentStart": 8827,
+                "end": 8834,
                 "moduleId": 0,
-                "start": 8799,
+                "start": 8827,
                 "type": "TagDeclarator",
                 "value": "circle8"
               },
@@ -1786,10 +1871,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.18750000000000838,
                 "tag": {
-                  "commentStart": 8799,
-                  "end": 8806,
+                  "commentStart": 8827,
+                  "end": 8834,
                   "moduleId": 0,
-                  "start": 8799,
+                  "start": 8827,
                   "type": "TagDeclarator",
                   "value": "circle8"
                 },
@@ -1909,10 +1994,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8396,
-                "end": 8403,
+                "commentStart": 8424,
+                "end": 8431,
                 "moduleId": 0,
-                "start": 8396,
+                "start": 8424,
                 "type": "TagDeclarator",
                 "value": "circle5"
               },
@@ -1940,10 +2025,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.1875000000000011,
                 "tag": {
-                  "commentStart": 8396,
-                  "end": 8403,
+                  "commentStart": 8424,
+                  "end": 8431,
                   "moduleId": 0,
-                  "start": 8396,
+                  "start": 8424,
                   "type": "TagDeclarator",
                   "value": "circle5"
                 },
@@ -2063,10 +2148,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8260,
-                "end": 8267,
+                "commentStart": 8288,
+                "end": 8295,
                 "moduleId": 0,
-                "start": 8260,
+                "start": 8288,
                 "type": "TagDeclarator",
                 "value": "circle4"
               },
@@ -2094,10 +2179,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.2500000000000003,
                 "tag": {
-                  "commentStart": 8260,
-                  "end": 8267,
+                  "commentStart": 8288,
+                  "end": 8295,
                   "moduleId": 0,
-                  "start": 8260,
+                  "start": 8288,
                   "type": "TagDeclarator",
                   "value": "circle4"
                 },
@@ -2217,10 +2302,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8123,
-                "end": 8130,
+                "commentStart": 8151,
+                "end": 8158,
                 "moduleId": 0,
-                "start": 8123,
+                "start": 8151,
                 "type": "TagDeclarator",
                 "value": "circle3"
               },
@@ -2248,10 +2333,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 0.2500000000000011,
                 "tag": {
-                  "commentStart": 8123,
-                  "end": 8130,
+                  "commentStart": 8151,
+                  "end": 8158,
                   "moduleId": 0,
-                  "start": 8123,
+                  "start": 8151,
                   "type": "TagDeclarator",
                   "value": "circle3"
                 },
@@ -2371,10 +2456,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9272,
-                "end": 9279,
+                "commentStart": 9300,
+                "end": 9307,
                 "moduleId": 0,
-                "start": 9272,
+                "start": 9300,
                 "type": "TagDeclarator",
                 "value": "circle9"
               },
@@ -2402,10 +2487,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "radius": 1.0196568050084256,
                 "tag": {
-                  "commentStart": 9272,
-                  "end": 9279,
+                  "commentStart": 9300,
+                  "end": 9307,
                   "moduleId": 0,
-                  "start": 9272,
+                  "start": 9300,
                   "type": "TagDeclarator",
                   "value": "circle9"
                 },
@@ -2542,6 +2627,1378 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "angle": "degrees"
     }
   },
+  "hidden001": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -4.201941454065641,
+            0.0010012789920492038
+          ],
+          "tag": {
+            "commentStart": 1284,
+            "end": 1289,
+            "moduleId": 0,
+            "start": 1284,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -2.7526569737327566,
+            -0.0021739147502548117
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.7526569737327566,
+            -0.0021739147502548117
+          ],
+          "tag": null,
+          "to": [
+            -2.752656973731729,
+            -0.00217391432824803
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -2.7520658924659043,
+            0.2506810855452608
+          ],
+          "from": [
+            -2.752656973731729,
+            -0.00217391432824803
+          ],
+          "radius": 0.2528556907370189,
+          "tag": {
+            "commentStart": 1361,
+            "end": 1365,
+            "moduleId": 0,
+            "start": 1361,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "to": [
+            -2.507757292480147,
+            0.18549436672083985
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.507757292480147,
+            0.18549436672083985
+          ],
+          "tag": null,
+          "to": [
+            -2.507757293126065,
+            0.18549436689318385
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.507757293126065,
+            0.18549436689318385
+          ],
+          "tag": {
+            "commentStart": 1513,
+            "end": 1518,
+            "moduleId": 0,
+            "start": 1513,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -1.921914888554738,
+            2.380423794931761
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            -1.8021627111939045,
+            2.348468773355253
+          ],
+          "from": [
+            -1.921914888554738,
+            2.380423794931761
+          ],
+          "radius": 0.12394235509548614,
+          "tag": {
+            "commentStart": 1634,
+            "end": 1638,
+            "moduleId": 0,
+            "start": 1634,
+            "type": "TagDeclarator",
+            "value": "arc4"
+          },
+          "to": [
+            -1.802135686047242,
+            2.4724111255043755
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.802135686047242,
+            2.4724111255043755
+          ],
+          "tag": null,
+          "to": [
+            -1.8021356860750481,
+            2.4724111278878653
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.8021356860750481,
+            2.4724111278878653
+          ],
+          "tag": {
+            "commentStart": 1785,
+            "end": 1790,
+            "moduleId": 0,
+            "start": 1785,
+            "type": "TagDeclarator",
+            "value": "line5"
+          },
+          "to": [
+            1.7993250558293703,
+            2.4724111278878356
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            1.7993473509712128,
+            2.3484820547923566
+          ],
+          "from": [
+            1.7993250558293703,
+            2.4724111278878356
+          ],
+          "radius": 0.12392907510095408,
+          "tag": {
+            "commentStart": 1905,
+            "end": 1909,
+            "moduleId": 0,
+            "start": 1905,
+            "type": "TagDeclarator",
+            "value": "arc6"
+          },
+          "to": [
+            1.9190474287961996,
+            2.380580450765832
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.9190474287961996,
+            2.380580450765832
+          ],
+          "tag": null,
+          "to": [
+            1.9190474276523084,
+            2.3805804503102332
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.9190474276523084,
+            2.3805804503102332
+          ],
+          "tag": {
+            "commentStart": 2053,
+            "end": 2058,
+            "moduleId": 0,
+            "start": 2053,
+            "type": "TagDeclarator",
+            "value": "line7"
+          },
+          "to": [
+            2.507691821210217,
+            0.18640080978424958
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            2.7487863371227332,
+            0.2510559612933362
+          ],
+          "from": [
+            2.507691821210217,
+            0.18640080978424958
+          ],
+          "radius": 0.24961340953513186,
+          "tag": {
+            "commentStart": 2174,
+            "end": 2178,
+            "moduleId": 0,
+            "start": 2174,
+            "type": "TagDeclarator",
+            "value": "arc8"
+          },
+          "to": [
+            2.7487705757632552,
+            0.0014425522558146886
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.7487705757632552,
+            0.0014425522558146886
+          ],
+          "tag": {
+            "commentStart": 2323,
+            "end": 2328,
+            "moduleId": 0,
+            "start": 2323,
+            "type": "TagDeclarator",
+            "value": "line9"
+          },
+          "to": [
+            4.198058534343744,
+            0.0014425523939884167
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            4.198058534343744,
+            0.0014425523939884167
+          ],
+          "tag": {
+            "commentStart": 2436,
+            "end": 2442,
+            "moduleId": 0,
+            "start": 2436,
+            "type": "TagDeclarator",
+            "value": "line10"
+          },
+          "to": [
+            4.19805853434379,
+            0.12025470272190972
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            4.19805853434379,
+            0.12025470272190972
+          ],
+          "tag": {
+            "commentStart": 2555,
+            "end": 2561,
+            "moduleId": 0,
+            "start": 2555,
+            "type": "TagDeclarator",
+            "value": "line11"
+          },
+          "to": [
+            2.7487705760057533,
+            0.12025470272188236
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            2.7488040493325228,
+            0.2446953030536387
+          ],
+          "from": [
+            2.7487705760057533,
+            0.12025470272188236
+          ],
+          "radius": 0.12444060483375802,
+          "tag": {
+            "commentStart": 2678,
+            "end": 2683,
+            "moduleId": 0,
+            "start": 2678,
+            "type": "TagDeclarator",
+            "value": "arc12"
+          },
+          "to": [
+            2.628621355962005,
+            0.2124217171729275
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.628621355962005,
+            0.2124217171729275
+          ],
+          "tag": null,
+          "to": [
+            2.628621356755707,
+            0.21242171749658662
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.628621356755707,
+            0.21242171749658662
+          ],
+          "tag": {
+            "commentStart": 2831,
+            "end": 2837,
+            "moduleId": 0,
+            "start": 2831,
+            "type": "TagDeclarator",
+            "value": "line13"
+          },
+          "to": [
+            2.03997696319783,
+            2.4066013580224452
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.03997696319783,
+            2.4066013580224452
+          ],
+          "tag": null,
+          "to": [
+            2.0399769627318656,
+            2.406601357897341
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            1.8014305212272579,
+            2.3425738581760474
+          ],
+          "from": [
+            2.0399769627318656,
+            2.406601357897341
+          ],
+          "radius": 0.24698972746871772,
+          "tag": {
+            "commentStart": 2955,
+            "end": 2960,
+            "moduleId": 0,
+            "start": 2955,
+            "type": "TagDeclarator",
+            "value": "arc14"
+          },
+          "to": [
+            1.8014514935480155,
+            2.589563584754367
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.8014514935480155,
+            2.589563584754367
+          ],
+          "tag": {
+            "commentStart": 3108,
+            "end": 3114,
+            "moduleId": 0,
+            "start": 3108,
+            "type": "TagDeclarator",
+            "value": "line15"
+          },
+          "to": [
+            -1.8000092483563412,
+            2.5895635845241864
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.8000092483563412,
+            2.5895635845241864
+          ],
+          "tag": null,
+          "to": [
+            -1.800009248356278,
+            2.589563584019249
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -1.7999828332991388,
+            2.3355899501109207
+          ],
+          "from": [
+            -1.800009248356278,
+            2.589563584019249
+          ],
+          "radius": 0.2539736352820048,
+          "tag": {
+            "commentStart": 3229,
+            "end": 3234,
+            "moduleId": 0,
+            "start": 3229,
+            "type": "TagDeclarator",
+            "value": "arc16"
+          },
+          "to": [
+            -2.0453741231556872,
+            2.4010553782459003
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.0453741231556872,
+            2.4010553782459003
+          ],
+          "tag": null,
+          "to": [
+            -2.0453741241013366,
+            2.401055378498158
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.0453741241013366,
+            2.401055378498158
+          ],
+          "tag": {
+            "commentStart": 3384,
+            "end": 3390,
+            "moduleId": 0,
+            "start": 3384,
+            "type": "TagDeclarator",
+            "value": "line17"
+          },
+          "to": [
+            -2.631216528672663,
+            0.20612595045951632
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            -2.7526748571630293,
+            0.23852789109109226
+          ],
+          "from": [
+            -2.631216528672663,
+            0.20612595045951632
+          ],
+          "radius": 0.12570605123209402,
+          "tag": {
+            "commentStart": 3507,
+            "end": 3512,
+            "moduleId": 0,
+            "start": 3507,
+            "type": "TagDeclarator",
+            "value": "arc18"
+          },
+          "to": [
+            -2.752653495399134,
+            0.11282184167404594
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.752653495399134,
+            0.11282184167404594
+          ],
+          "tag": null,
+          "to": [
+            -2.752653495727956,
+            0.11282184047734714
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.752653495727956,
+            0.11282184047734714
+          ],
+          "tag": {
+            "commentStart": 3663,
+            "end": 3669,
+            "moduleId": 0,
+            "start": 3663,
+            "type": "TagDeclarator",
+            "value": "line19"
+          },
+          "to": [
+            -4.20194145406594,
+            0.11282184047729064
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -4.20194145406594,
+            0.11282184047729064
+          ],
+          "tag": {
+            "commentStart": 3789,
+            "end": 3795,
+            "moduleId": 0,
+            "start": 3789,
+            "type": "TagDeclarator",
+            "value": "line20"
+          },
+          "to": [
+            -4.25,
+            0.11282184047725398
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -4.25,
+            0.11282184047725398
+          ],
+          "tag": null,
+          "to": [
+            -4.201941454065845,
+            0.11282184047727843
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -4.201941454065845,
+            0.11282184047727843
+          ],
+          "tag": {
+            "commentStart": 3914,
+            "end": 3920,
+            "moduleId": 0,
+            "start": 3914,
+            "type": "TagDeclarator",
+            "value": "line21"
+          },
+          "to": [
+            -4.201941454065746,
+            0.0010012789920429148
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -4.201941454065641,
+          0.0010012789920492038
+        ],
+        "to": [
+          -4.201941454065641,
+          0.0010012789920492038
+        ],
+        "units": "in",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "arc12": {
+          "type": "TagIdentifier",
+          "value": "arc12"
+        },
+        "arc14": {
+          "type": "TagIdentifier",
+          "value": "arc14"
+        },
+        "arc16": {
+          "type": "TagIdentifier",
+          "value": "arc16"
+        },
+        "arc18": {
+          "type": "TagIdentifier",
+          "value": "arc18"
+        },
+        "arc2": {
+          "type": "TagIdentifier",
+          "value": "arc2"
+        },
+        "arc4": {
+          "type": "TagIdentifier",
+          "value": "arc4"
+        },
+        "arc6": {
+          "type": "TagIdentifier",
+          "value": "arc6"
+        },
+        "arc8": {
+          "type": "TagIdentifier",
+          "value": "arc8"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line10": {
+          "type": "TagIdentifier",
+          "value": "line10"
+        },
+        "line11": {
+          "type": "TagIdentifier",
+          "value": "line11"
+        },
+        "line13": {
+          "type": "TagIdentifier",
+          "value": "line13"
+        },
+        "line15": {
+          "type": "TagIdentifier",
+          "value": "line15"
+        },
+        "line17": {
+          "type": "TagIdentifier",
+          "value": "line17"
+        },
+        "line19": {
+          "type": "TagIdentifier",
+          "value": "line19"
+        },
+        "line20": {
+          "type": "TagIdentifier",
+          "value": "line20"
+        },
+        "line21": {
+          "type": "TagIdentifier",
+          "value": "line21"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line5": {
+          "type": "TagIdentifier",
+          "value": "line5"
+        },
+        "line7": {
+          "type": "TagIdentifier",
+          "value": "line7"
+        },
+        "line9": {
+          "type": "TagIdentifier",
+          "value": "line9"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "in",
+      "isClosed": "implicitly"
+    }
+  },
+  "hidden002": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -3.499999999999999,
+            2.0000000000000027
+          ],
+          "from": [
+            -3.4063819542244254,
+            2.231809537131594
+          ],
+          "radius": 0.2500000000000001,
+          "tag": {
+            "commentStart": 7876,
+            "end": 7883,
+            "moduleId": 0,
+            "start": 7876,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            -3.4063819542244254,
+            2.231809537131594
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -3.4063819542244254,
+            2.231809537131594
+          ],
+          "tag": null,
+          "to": [
+            -3.7122132342343974,
+            -1.8678427330194107
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -3.499999999999999,
+            -1.999999999999997
+          ],
+          "from": [
+            -3.7122132342343974,
+            -1.8678427330194107
+          ],
+          "radius": 0.25000000000000305,
+          "tag": {
+            "commentStart": 8013,
+            "end": 8020,
+            "moduleId": 0,
+            "start": 8013,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            -3.7122132342343974,
+            -1.8678427330194107
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -3.7122132342343974,
+            -1.8678427330194107
+          ],
+          "tag": null,
+          "to": [
+            3.736680325699555,
+            -1.919486501586666
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.500000000000001,
+            -1.9999999999999973
+          ],
+          "from": [
+            3.736680325699555,
+            -1.919486501586666
+          ],
+          "radius": 0.2500000000000011,
+          "tag": {
+            "commentStart": 8151,
+            "end": 8158,
+            "moduleId": 0,
+            "start": 8151,
+            "type": "TagDeclarator",
+            "value": "circle3"
+          },
+          "to": [
+            3.736680325699555,
+            -1.919486501586666
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.736680325699555,
+            -1.919486501586666
+          ],
+          "tag": null,
+          "to": [
+            3.6435631834348774,
+            2.204669519865674
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.5000000000000013,
+            2.000000000000003
+          ],
+          "from": [
+            3.6435631834348774,
+            2.204669519865674
+          ],
+          "radius": 0.2500000000000003,
+          "tag": {
+            "commentStart": 8288,
+            "end": 8295,
+            "moduleId": 0,
+            "start": 8288,
+            "type": "TagDeclarator",
+            "value": "circle4"
+          },
+          "to": [
+            3.6435631834348774,
+            2.204669519865674
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.6435631834348774,
+            2.204669519865674
+          ],
+          "tag": null,
+          "to": [
+            1.1114115678064993,
+            1.650810187185416
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            1.0000000000000013,
+            1.5000000000000056
+          ],
+          "from": [
+            1.1114115678064993,
+            1.650810187185416
+          ],
+          "radius": 0.1875000000000011,
+          "tag": {
+            "commentStart": 8424,
+            "end": 8431,
+            "moduleId": 0,
+            "start": 8424,
+            "type": "TagDeclarator",
+            "value": "circle5"
+          },
+          "to": [
+            1.1114115678064993,
+            1.650810187185416
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.1114115678064993,
+            1.650810187185416
+          ],
+          "tag": null,
+          "to": [
+            -1.1429900160199573,
+            1.621285223001879
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.9999999999999996,
+            1.5000000000000058
+          ],
+          "from": [
+            -1.1429900160199573,
+            1.621285223001879
+          ],
+          "radius": 0.18750000000000508,
+          "tag": {
+            "commentStart": 8558,
+            "end": 8565,
+            "moduleId": 0,
+            "start": 8558,
+            "type": "TagDeclarator",
+            "value": "circle6"
+          },
+          "to": [
+            -1.1429900160199573,
+            1.621285223001879
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.1429900160199573,
+            1.621285223001879
+          ],
+          "tag": null,
+          "to": [
+            -1.1609282200927618,
+            -1.5962203615550032
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.9999999999999993,
+            -1.499999999999996
+          ],
+          "from": [
+            -1.1609282200927618,
+            -1.5962203615550032
+          ],
+          "radius": 0.1875000000000024,
+          "tag": {
+            "commentStart": 8692,
+            "end": 8699,
+            "moduleId": 0,
+            "start": 8692,
+            "type": "TagDeclarator",
+            "value": "circle7"
+          },
+          "to": [
+            -1.1609282200927618,
+            -1.5962203615550032
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.1609282200927618,
+            -1.5962203615550032
+          ],
+          "tag": null,
+          "to": [
+            1.1841922841214927,
+            -1.5350635490233184
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            1.0000000000000016,
+            -1.4999999999999947
+          ],
+          "from": [
+            1.1841922841214927,
+            -1.5350635490233184
+          ],
+          "radius": 0.18750000000000838,
+          "tag": {
+            "commentStart": 8827,
+            "end": 8834,
+            "moduleId": 0,
+            "start": 8827,
+            "type": "TagDeclarator",
+            "value": "circle8"
+          },
+          "to": [
+            1.1841922841214927,
+            -1.5350635490233184
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.1841922841214927,
+            -1.5350635490233184
+          ],
+          "tag": null,
+          "to": [
+            -0.14,
+            1.01
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0000000000000009342965992405147,
+            0.000000000000004855873795359348
+          ],
+          "from": [
+            -0.14,
+            1.01
+          ],
+          "radius": 1.0196568050084256,
+          "tag": {
+            "commentStart": 9300,
+            "end": 9307,
+            "moduleId": 0,
+            "start": 9300,
+            "type": "TagDeclarator",
+            "value": "circle9"
+          },
+          "to": [
+            -0.14,
+            1.01
+          ],
+          "type": "Circle",
+          "units": "in"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 130,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -3.4063819542244254,
+          2.231809537131594
+        ],
+        "to": [
+          -3.4063819542244254,
+          2.231809537131594
+        ],
+        "units": "in",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        },
+        "circle2": {
+          "type": "TagIdentifier",
+          "value": "circle2"
+        },
+        "circle3": {
+          "type": "TagIdentifier",
+          "value": "circle3"
+        },
+        "circle4": {
+          "type": "TagIdentifier",
+          "value": "circle4"
+        },
+        "circle5": {
+          "type": "TagIdentifier",
+          "value": "circle5"
+        },
+        "circle6": {
+          "type": "TagIdentifier",
+          "value": "circle6"
+        },
+        "circle7": {
+          "type": "TagIdentifier",
+          "value": "circle7"
+        },
+        "circle8": {
+          "type": "TagIdentifier",
+          "value": "circle8"
+        },
+        "circle9": {
+          "type": "TagIdentifier",
+          "value": "circle9"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "in",
+      "isClosed": "no"
+    }
+  },
   "interiorBendRadius": {
     "type": "Number",
     "value": 0.125,
@@ -2550,6 +4007,71 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "len": "in",
       "angle": "degrees"
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line10": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line10"
+  },
+  "line11": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line11"
+  },
+  "line13": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line13"
+  },
+  "line15": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line15"
+  },
+  "line17": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line17"
+  },
+  "line19": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line19"
+  },
+  "line20": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line20"
+  },
+  "line21": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line21"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line5": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line5"
+  },
+  "line7": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line7"
+  },
+  "line9": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line9"
   },
   "mountingBoltDiameter": {
     "type": "Number",
@@ -2609,10 +4131,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.25000000000000305,
           "tag": {
-            "commentStart": 7985,
-            "end": 7992,
+            "commentStart": 8013,
+            "end": 8020,
             "moduleId": 0,
-            "start": 7985,
+            "start": 8013,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3419,10 +4941,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.2500000000000001,
           "tag": {
-            "commentStart": 7848,
-            "end": 7855,
+            "commentStart": 7876,
+            "end": 7883,
             "moduleId": 0,
-            "start": 7848,
+            "start": 7876,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3547,10 +5069,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.18750000000000508,
           "tag": {
-            "commentStart": 8530,
-            "end": 8537,
+            "commentStart": 8558,
+            "end": 8565,
             "moduleId": 0,
-            "start": 8530,
+            "start": 8558,
             "type": "TagDeclarator",
             "value": "circle6"
           },
@@ -3675,10 +5197,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.1875000000000024,
           "tag": {
-            "commentStart": 8664,
-            "end": 8671,
+            "commentStart": 8692,
+            "end": 8699,
             "moduleId": 0,
-            "start": 8664,
+            "start": 8692,
             "type": "TagDeclarator",
             "value": "circle7"
           },
@@ -3803,10 +5325,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.18750000000000838,
           "tag": {
-            "commentStart": 8799,
-            "end": 8806,
+            "commentStart": 8827,
+            "end": 8834,
             "moduleId": 0,
-            "start": 8799,
+            "start": 8827,
             "type": "TagDeclarator",
             "value": "circle8"
           },
@@ -3931,10 +5453,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.1875000000000011,
           "tag": {
-            "commentStart": 8396,
-            "end": 8403,
+            "commentStart": 8424,
+            "end": 8431,
             "moduleId": 0,
-            "start": 8396,
+            "start": 8424,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -4059,10 +5581,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.2500000000000003,
           "tag": {
-            "commentStart": 8260,
-            "end": 8267,
+            "commentStart": 8288,
+            "end": 8295,
             "moduleId": 0,
-            "start": 8260,
+            "start": 8288,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -4187,10 +5709,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 0.2500000000000011,
           "tag": {
-            "commentStart": 8123,
-            "end": 8130,
+            "commentStart": 8151,
+            "end": 8158,
             "moduleId": 0,
-            "start": 8123,
+            "start": 8151,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -4315,10 +5837,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ],
           "radius": 1.0196568050084256,
           "tag": {
-            "commentStart": 9272,
-            "end": 9279,
+            "commentStart": 9300,
+            "end": 9307,
             "moduleId": 0,
-            "start": 9272,
+            "start": 9300,
             "type": "TagDeclarator",
             "value": "circle9"
           },
@@ -10758,10 +12280,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.2500000000000001,
                   "tag": {
-                    "commentStart": 7848,
-                    "end": 7855,
+                    "commentStart": 7876,
+                    "end": 7883,
                     "moduleId": 0,
-                    "start": 7848,
+                    "start": 7876,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10805,10 +12327,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.25000000000000305,
                   "tag": {
-                    "commentStart": 7985,
-                    "end": 7992,
+                    "commentStart": 8013,
+                    "end": 8020,
                     "moduleId": 0,
-                    "start": 7985,
+                    "start": 8013,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -10852,10 +12374,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.2500000000000011,
                   "tag": {
-                    "commentStart": 8123,
-                    "end": 8130,
+                    "commentStart": 8151,
+                    "end": 8158,
                     "moduleId": 0,
-                    "start": 8123,
+                    "start": 8151,
                     "type": "TagDeclarator",
                     "value": "circle3"
                   },
@@ -10899,10 +12421,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.2500000000000003,
                   "tag": {
-                    "commentStart": 8260,
-                    "end": 8267,
+                    "commentStart": 8288,
+                    "end": 8295,
                     "moduleId": 0,
-                    "start": 8260,
+                    "start": 8288,
                     "type": "TagDeclarator",
                     "value": "circle4"
                   },
@@ -10946,10 +12468,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.1875000000000011,
                   "tag": {
-                    "commentStart": 8396,
-                    "end": 8403,
+                    "commentStart": 8424,
+                    "end": 8431,
                     "moduleId": 0,
-                    "start": 8396,
+                    "start": 8424,
                     "type": "TagDeclarator",
                     "value": "circle5"
                   },
@@ -10993,10 +12515,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.18750000000000508,
                   "tag": {
-                    "commentStart": 8530,
-                    "end": 8537,
+                    "commentStart": 8558,
+                    "end": 8565,
                     "moduleId": 0,
-                    "start": 8530,
+                    "start": 8558,
                     "type": "TagDeclarator",
                     "value": "circle6"
                   },
@@ -11040,10 +12562,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.1875000000000024,
                   "tag": {
-                    "commentStart": 8664,
-                    "end": 8671,
+                    "commentStart": 8692,
+                    "end": 8699,
                     "moduleId": 0,
-                    "start": 8664,
+                    "start": 8692,
                     "type": "TagDeclarator",
                     "value": "circle7"
                   },
@@ -11087,10 +12609,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 0.18750000000000838,
                   "tag": {
-                    "commentStart": 8799,
-                    "end": 8806,
+                    "commentStart": 8827,
+                    "end": 8834,
                     "moduleId": 0,
-                    "start": 8799,
+                    "start": 8827,
                     "type": "TagDeclarator",
                     "value": "circle8"
                   },
@@ -11134,10 +12656,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ],
                   "radius": 1.0196568050084256,
                   "tag": {
-                    "commentStart": 9272,
-                    "end": 9279,
+                    "commentStart": 9300,
+                    "end": 9307,
                     "moduleId": 0,
-                    "start": 9272,
+                    "start": 9300,
                     "type": "TagDeclarator",
                     "value": "circle9"
                   },

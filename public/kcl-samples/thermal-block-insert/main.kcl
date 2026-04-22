@@ -1,0 +1,262 @@
+// Thermal Block Insert
+// Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency
+// Categories: Automotive, Computer Hardware
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
+
+// Define overall dimensions of the insert block
+insertLength = 400
+insertHeight = 200
+insertThickness = 50
+
+// Define tongue-and-groove profile parameters for interlocking geometry
+setbackFactor = 0.25 // spacing between tongues
+tongueTargetCount = insertLength / 80
+tongueCount = round(tongueTargetCount)
+tongueLength = insertLength / (tongueCount * (1 + setbackFactor * 2) + 1)
+tongueGap = tongueLength * setbackFactor * 2
+tongueStep = tongueLength + tongueGap
+tongueDepth = tongueLength * 0.5
+tongueSetback = tongueLength * setbackFactor
+blockHalfThickness = insertThickness / 2
+grooveDepth = blockHalfThickness + tongueDepth
+
+// Create the top-side profile with tongues.
+tongueShape = sketch(on = XY) {
+  leftCenterGuide = line(start = [var -190mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  rightCenterGuide = line(start = [var 0mm, var 0mm], end = [var 190mm, var 0mm], construction = true)
+
+  leftWall = line(start = [var -190mm, var 0mm], end = [var -190mm, var 22mm])
+  flat1 = line(start = [var -190mm, var 22mm], end = [var -145mm, var 22mm])
+  rise1 = line(start = [var -145mm, var 22mm], end = [var -155mm, var 45mm])
+  peak1 = line(start = [var -155mm, var 45mm], end = [var -110mm, var 45mm])
+  fall1 = line(start = [var -110mm, var 45mm], end = [var -120mm, var 22mm])
+  flat2 = line(start = [var -120mm, var 22mm], end = [var -75mm, var 22mm])
+  rise2 = line(start = [var -75mm, var 22mm], end = [var -85mm, var 45mm])
+  peak2 = line(start = [var -85mm, var 45mm], end = [var -40mm, var 45mm])
+  fall2 = line(start = [var -40mm, var 45mm], end = [var -50mm, var 22mm])
+  flat3 = line(start = [var -50mm, var 22mm], end = [var -5mm, var 22mm])
+  rise3 = line(start = [var -5mm, var 22mm], end = [var -15mm, var 45mm])
+  peak3 = line(start = [var -15mm, var 45mm], end = [var 30mm, var 45mm])
+  fall3 = line(start = [var 30mm, var 45mm], end = [var 20mm, var 22mm])
+  flat4 = line(start = [var 20mm, var 22mm], end = [var 65mm, var 22mm])
+  rise4 = line(start = [var 65mm, var 22mm], end = [var 55mm, var 45mm])
+  peak4 = line(start = [var 55mm, var 45mm], end = [var 100mm, var 45mm])
+  fall4 = line(start = [var 100mm, var 45mm], end = [var 90mm, var 22mm])
+  flat5 = line(start = [var 90mm, var 22mm], end = [var 135mm, var 22mm])
+  rise5 = line(start = [var 135mm, var 22mm], end = [var 125mm, var 45mm])
+  peak5 = line(start = [var 125mm, var 45mm], end = [var 170mm, var 45mm])
+  fall5 = line(start = [var 170mm, var 45mm], end = [var 160mm, var 22mm])
+  tail = line(start = [var 160mm, var 22mm], end = [var 205mm, var 22mm])
+  rightWall = line(start = [var 205mm, var 22mm], end = [var 205mm, var 0mm])
+  baseLine = line(start = [var 205mm, var 0mm], end = [var -190mm, var 0mm])
+
+  coincident([leftCenterGuide.end, ORIGIN])
+  coincident([rightCenterGuide.start, ORIGIN])
+  coincident([leftCenterGuide.start, leftWall.start])
+  coincident([rightCenterGuide.end, rightWall.end])
+
+  coincident([leftWall.end, flat1.start])
+  coincident([flat1.end, rise1.start])
+  coincident([rise1.end, peak1.start])
+  coincident([peak1.end, fall1.start])
+  coincident([fall1.end, flat2.start])
+  coincident([flat2.end, rise2.start])
+  coincident([rise2.end, peak2.start])
+  coincident([peak2.end, fall2.start])
+  coincident([fall2.end, flat3.start])
+  coincident([flat3.end, rise3.start])
+  coincident([rise3.end, peak3.start])
+  coincident([peak3.end, fall3.start])
+  coincident([fall3.end, flat4.start])
+  coincident([flat4.end, rise4.start])
+  coincident([rise4.end, peak4.start])
+  coincident([peak4.end, fall4.start])
+  coincident([fall4.end, flat5.start])
+  coincident([flat5.end, rise5.start])
+  coincident([rise5.end, peak5.start])
+  coincident([peak5.end, fall5.start])
+  coincident([fall5.end, tail.start])
+  coincident([tail.end, rightWall.start])
+  coincident([rightWall.end, baseLine.start])
+  coincident([baseLine.end, leftWall.start])
+
+  horizontal(leftCenterGuide)
+  horizontal(rightCenterGuide)
+  horizontal(flat1)
+  horizontal(peak1)
+  horizontal(flat2)
+  horizontal(peak2)
+  horizontal(flat3)
+  horizontal(peak3)
+  horizontal(flat4)
+  horizontal(peak4)
+  horizontal(flat5)
+  horizontal(peak5)
+  horizontal(tail)
+  horizontal(baseLine)
+  vertical(leftWall)
+  vertical(rightWall)
+
+  parallel([rise1, rise2])
+  parallel([rise2, rise3])
+  parallel([rise3, rise4])
+  parallel([rise4, rise5])
+  parallel([fall1, fall2])
+  parallel([fall2, fall3])
+  parallel([fall3, fall4])
+  parallel([fall4, fall5])
+
+  equalLength([leftCenterGuide, rightCenterGuide])
+  equalLength([
+    flat1,
+    peak1,
+    flat2,
+    peak2,
+    flat3,
+    peak3,
+    flat4,
+    peak4,
+    flat5,
+    peak5,
+    tail
+  ])
+  equalLength([rise1, rise2, rise3, rise4, rise5])
+  equalLength([fall1, fall2, fall3, fall4, fall5])
+
+  horizontalDistance([
+  leftCenterGuide.start,
+  leftCenterGuide.end
+]) == insertLength / 2
+  verticalDistance([leftWall.start, leftWall.end]) == blockHalfThickness
+  horizontalDistance([flat1.start, flat1.end]) == tongueLength
+  horizontalDistance([rise1.end, rise1.start]) == tongueSetback
+  verticalDistance([rise1.start, rise1.end]) == tongueDepth
+  horizontalDistance([fall1.end, fall1.start]) == tongueSetback
+  verticalDistance([fall1.start, fall1.end]) == -tongueDepth
+}
+
+// Create the bottom-side profile with grooves.
+grooveShape = sketch(on = XY) {
+  leftCenterGuide = line(start = [var -190mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  rightCenterGuide = line(start = [var 0mm, var 0mm], end = [var 190mm, var 0mm], construction = true)
+
+  leftWall = line(start = [var -190mm, var 0mm], end = [var -190mm, var -45mm])
+  flat1 = line(start = [var -190mm, var -45mm], end = [var -145mm, var -45mm])
+  rise1 = line(start = [var -145mm, var -45mm], end = [var -155mm, var -22mm])
+  peak1 = line(start = [var -155mm, var -22mm], end = [var -110mm, var -22mm])
+  fall1 = line(start = [var -110mm, var -22mm], end = [var -120mm, var -45mm])
+  flat2 = line(start = [var -120mm, var -45mm], end = [var -75mm, var -45mm])
+  rise2 = line(start = [var -75mm, var -45mm], end = [var -85mm, var -22mm])
+  peak2 = line(start = [var -85mm, var -22mm], end = [var -40mm, var -22mm])
+  fall2 = line(start = [var -40mm, var -22mm], end = [var -50mm, var -45mm])
+  flat3 = line(start = [var -50mm, var -45mm], end = [var -5mm, var -45mm])
+  rise3 = line(start = [var -5mm, var -45mm], end = [var -15mm, var -22mm])
+  peak3 = line(start = [var -15mm, var -22mm], end = [var 30mm, var -22mm])
+  fall3 = line(start = [var 30mm, var -22mm], end = [var 20mm, var -45mm])
+  flat4 = line(start = [var 20mm, var -45mm], end = [var 65mm, var -45mm])
+  rise4 = line(start = [var 65mm, var -45mm], end = [var 55mm, var -22mm])
+  peak4 = line(start = [var 55mm, var -22mm], end = [var 100mm, var -22mm])
+  fall4 = line(start = [var 100mm, var -22mm], end = [var 90mm, var -45mm])
+  flat5 = line(start = [var 90mm, var -45mm], end = [var 135mm, var -45mm])
+  rise5 = line(start = [var 135mm, var -45mm], end = [var 125mm, var -22mm])
+  peak5 = line(start = [var 125mm, var -22mm], end = [var 170mm, var -22mm])
+  fall5 = line(start = [var 170mm, var -22mm], end = [var 160mm, var -45mm])
+  tail = line(start = [var 160mm, var -45mm], end = [var 205mm, var -45mm])
+  rightWall = line(start = [var 205mm, var -45mm], end = [var 205mm, var 0mm])
+  topLine = line(start = [var 205mm, var 0mm], end = [var -190mm, var 0mm])
+
+  coincident([leftCenterGuide.end, ORIGIN])
+  coincident([rightCenterGuide.start, ORIGIN])
+  coincident([leftCenterGuide.start, leftWall.start])
+  coincident([rightCenterGuide.end, rightWall.end])
+
+  coincident([leftWall.end, flat1.start])
+  coincident([flat1.end, rise1.start])
+  coincident([rise1.end, peak1.start])
+  coincident([peak1.end, fall1.start])
+  coincident([fall1.end, flat2.start])
+  coincident([flat2.end, rise2.start])
+  coincident([rise2.end, peak2.start])
+  coincident([peak2.end, fall2.start])
+  coincident([fall2.end, flat3.start])
+  coincident([flat3.end, rise3.start])
+  coincident([rise3.end, peak3.start])
+  coincident([peak3.end, fall3.start])
+  coincident([fall3.end, flat4.start])
+  coincident([flat4.end, rise4.start])
+  coincident([rise4.end, peak4.start])
+  coincident([peak4.end, fall4.start])
+  coincident([fall4.end, flat5.start])
+  coincident([flat5.end, rise5.start])
+  coincident([rise5.end, peak5.start])
+  coincident([peak5.end, fall5.start])
+  coincident([fall5.end, tail.start])
+  coincident([tail.end, rightWall.start])
+  coincident([rightWall.end, topLine.start])
+  coincident([topLine.end, leftWall.start])
+
+  horizontal(leftCenterGuide)
+  horizontal(rightCenterGuide)
+  horizontal(flat1)
+  horizontal(peak1)
+  horizontal(flat2)
+  horizontal(peak2)
+  horizontal(flat3)
+  horizontal(peak3)
+  horizontal(flat4)
+  horizontal(peak4)
+  horizontal(flat5)
+  horizontal(peak5)
+  horizontal(tail)
+  horizontal(topLine)
+  vertical(leftWall)
+  vertical(rightWall)
+
+  parallel([rise1, rise2])
+  parallel([rise2, rise3])
+  parallel([rise3, rise4])
+  parallel([rise4, rise5])
+  parallel([fall1, fall2])
+  parallel([fall2, fall3])
+  parallel([fall3, fall4])
+  parallel([fall4, fall5])
+
+  equalLength([leftCenterGuide, rightCenterGuide])
+  equalLength([
+    flat1,
+    peak1,
+    flat2,
+    peak2,
+    flat3,
+    peak3,
+    flat4,
+    peak4,
+    flat5,
+    peak5,
+    tail
+  ])
+  equalLength([rise1, rise2, rise3, rise4, rise5])
+  equalLength([fall1, fall2, fall3, fall4, fall5])
+
+  horizontalDistance([
+  leftCenterGuide.start,
+  leftCenterGuide.end
+]) == insertLength / 2
+  verticalDistance([leftWall.start, leftWall.end]) == -grooveDepth
+  horizontalDistance([flat1.start, flat1.end]) == tongueLength
+  horizontalDistance([rise1.end, rise1.start]) == tongueSetback
+  verticalDistance([rise1.start, rise1.end]) == tongueDepth
+  horizontalDistance([fall1.end, fall1.start]) == tongueSetback
+  verticalDistance([fall1.start, fall1.end]) == -tongueDepth
+}
+
+// Extrude both profiles to form the final thermal insert block.
+tongueRegion = region(segments = [tongueShape.leftWall])
+grooveRegion = region(segments = [grooveShape.leftWall])
+insertShape = extrude([tongueRegion, grooveRegion], length = insertHeight)
+
+hiddenTongueShape = hide(tongueShape)
+hiddenGrooveShape = hide(grooveShape)
+finalInsertShape = insertShape

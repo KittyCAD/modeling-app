@@ -99,7 +99,7 @@ function createDeferredVoid(): DeferredVoid {
   return { promise, resolve }
 }
 
-function getClosestSelectionTarget(
+export function getClosestSelectionTarget(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
