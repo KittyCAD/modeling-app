@@ -1623,16 +1623,6 @@ pub enum Path {
         #[ts(type = "[number, number]")]
         control2: [f64; 2],
     },
-    /// An exact control point spline.
-    ControlPointSpline {
-        #[serde(flatten)]
-        base: BasePath,
-        /// Spline control points (absolute coordinates), including the start point.
-        #[ts(type = "Array<[number, number]>")]
-        controls: Vec<[f64; 2]>,
-        /// The spline degree.
-        degree: u32,
-    },
 }
 
 impl Path {
@@ -1651,7 +1641,6 @@ impl Path {
             Path::Ellipse { base, .. } => base.geo_meta.id,
             Path::Conic { base, .. } => base.geo_meta.id,
             Path::Bezier { base, .. } => base.geo_meta.id,
-            Path::ControlPointSpline { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1670,7 +1659,6 @@ impl Path {
             Path::Ellipse { base, .. } => base.geo_meta.id = id,
             Path::Conic { base, .. } => base.geo_meta.id = id,
             Path::Bezier { base, .. } => base.geo_meta.id = id,
-            Path::ControlPointSpline { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1689,7 +1677,6 @@ impl Path {
             Path::Ellipse { base, .. } => base.tag.clone(),
             Path::Conic { base, .. } => base.tag.clone(),
             Path::Bezier { base, .. } => base.tag.clone(),
-            Path::ControlPointSpline { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1708,7 +1695,6 @@ impl Path {
             Path::Ellipse { base, .. } => base,
             Path::Conic { base, .. } => base,
             Path::Bezier { base, .. } => base,
-            Path::ControlPointSpline { base, .. } => base,
         }
     }
 
@@ -1797,10 +1783,6 @@ impl Path {
                 // Not supported - Bezier curve length requires numerical integration.
                 None
             }
-            Self::ControlPointSpline { .. } => {
-                // Not supported - spline length requires numerical integration.
-                None
-            }
         };
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
@@ -1820,7 +1802,6 @@ impl Path {
             Path::Ellipse { base, .. } => base,
             Path::Conic { base, .. } => base,
             Path::Bezier { base, .. } => base,
-            Path::ControlPointSpline { base, .. } => base,
         }
     }
 
@@ -1874,8 +1855,7 @@ impl Path {
             | Path::Horizontal { .. }
             | Path::AngledLineTo { .. }
             | Path::Base { .. }
-            | Path::Bezier { .. }
-            | Path::ControlPointSpline { .. } => {
+            | Path::Bezier { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }

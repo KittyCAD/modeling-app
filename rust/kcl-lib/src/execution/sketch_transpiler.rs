@@ -442,8 +442,7 @@ fn transpiler_build_segment(
         | Path::Base { .. }
         | Path::Ellipse { .. }
         | Path::Conic { .. }
-        | Path::Bezier { .. }
-        | Path::ControlPointSpline { .. } => {
+        | Path::Bezier { .. } => {
             if fail_fast {
                 Err(transpiler_create_unsupported_segment_error(segment_index, path_segment))
             } else {
@@ -473,7 +472,6 @@ fn transpiler_path_type_name(path_segment: &Path) -> &'static str {
         Path::Ellipse { .. } => "Ellipse",
         Path::Conic { .. } => "Conic",
         Path::Bezier { .. } => "Bezier",
-        Path::ControlPointSpline { .. } => "ControlPointSpline",
     }
 }
 

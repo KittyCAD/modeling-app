@@ -86,4 +86,4 @@ debug = "line-tables-only"
 [patch.crates-io]
 ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "kurt-11103-spline" }
 # kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "kurt-11103-spline" }
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "kurt-11103-spline" }
