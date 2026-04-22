@@ -382,4 +382,9 @@ pub const TEST_NAMES: &[&str] = &[
     "std-hole-hole-2",
     "std-hole-drill-0",
     "std-hole-flat-0",
+    "std-gear-helical-0",
+    "std-gear-helical-1",
+    "std-gear-herringbone-0",
+    "std-gear-spur-0",
+    "std-gear-ring-0",
 ];

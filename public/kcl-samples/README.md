@@ -176,6 +176,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![socket-head-cap-screw](screenshots/socket-head-cap-screw.png)](socket-head-cap-screw/main.kcl)
 #### [sphere](sphere/main.kcl) ([screenshot](screenshots/sphere.png))
 [![sphere](screenshots/sphere.png)](sphere/main.kcl)
+#### [spinning-highrise-tower](spinning-highrise-tower/main.kcl) ([screenshot](screenshots/spinning-highrise-tower.png))
+[![spinning-highrise-tower](screenshots/spinning-highrise-tower.png)](spinning-highrise-tower/main.kcl)
 #### [split-washer-spring-version](split-washer-spring-version/main.kcl) ([screenshot](screenshots/split-washer-spring-version.png))
 [![split-washer-spring-version](screenshots/split-washer-spring-version.png)](split-washer-spring-version/main.kcl)
 #### [stylized-car](stylized-car/main.kcl) ([screenshot](screenshots/stylized-car.png))

@@ -3,7 +3,8 @@
 // Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-import plane002, axisJ2, axisJ3C, axisJ4, axisJ2ArmLength, axisJ3CArmLength, axisJ3CArmWidth, axisJ3CArmThickness from "globals.kcl"
+// Import Constants
+import * from "globals.kcl"
 
 // Create Body of J3 Robot Arm
 sketch017 = sketch(on = plane002) {
@@ -25,27 +26,6 @@ sketch018 = sketch(on = startSketchOn(extrude017, face = END)) {
 
 region002 = region(segments = [sketch018.circle1])
 extrude018 = extrude(region002, length = 0.15)
-
-// Draw Bolt Pattern on J3 Robot Arm
-sketch019 = startSketchOn(extrude018, face = END)
-  |> circle(
-       center = [
-         1.75 + (axisJ2ArmLength - 1) * cos(axisJ2),
-         8 + (axisJ2ArmLength - 1.5) * sin(axisJ2)
-       ],
-       radius = 0.2,
-     )
-  |> patternCircular2d(
-       center = [
-         1.75 + axisJ2ArmLength * cos(axisJ2),
-         8 + axisJ2ArmLength * sin(axisJ2)
-       ],
-       instances = 8,
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-
-extrude019 = extrude(sketch019, length = 0.15)
 
 // On the J3 Robot Arm Body, Create Mounting Clevis for Grabber Claw
 sketch020 = sketch(on = startSketchOn(extrude017, face = START)) {

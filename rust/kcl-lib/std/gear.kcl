@@ -1,2 +1,251 @@
 /// Define gears that users can include in their models.
 
+fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle)) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+  helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  return startSketchOn(offsetPlane(XY, offset = offsetHeight))
+    |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = helixCalc,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+         reverse = true,
+       )
+
+    // Position the end line of the sketch at the start of the next tooth
+    |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
+
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+    |> close()
+}
+
+/// A helical gear.
+///```kcl
+/// // Basic helical gear example.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+/// gearBody = gear::helical(
+///   nTeeth = 10,
+///   module = 2,
+///   pressureAngle = 20deg,
+///   helixAngle = 35deg,
+///   gearHeight = 7,
+/// )
+///```
+///```kcl
+/// // Gear with a keyhole.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+/// // Define the constants of the keyway and the bore hole
+/// keywayWidth = 2
+/// keywayDepth = keywayWidth / 2
+/// holeDiam = 7
+/// holeRadius = holeDiam / 2
+/// startAngle = asin(keywayWidth / 2 / holeRadius)
+/// keyhole = startSketchOn(XY)
+///   |> startProfile(at = [
+///        holeRadius * cos(startAngle),
+///        holeRadius * sin(startAngle)
+///      ])
+///   |> xLine(length = keywayDepth)
+///   |> yLine(length = -keywayWidth)
+///   |> xLine(length = -keywayDepth)
+///   |> arc(angleStart = -1 * startAngle + 360deg, angleEnd = 180deg, radius = holeRadius)
+///   |> arc(angleStart = 180deg, angleEnd = startAngle, radius = holeRadius)
+///   |> close()
+///
+/// // Create the gear.
+/// gearHeight = 7
+/// gearBody = gear::helical(
+///   nTeeth = 10,
+///   module = 2,
+///   pressureAngle = 20deg,
+///   helixAngle = 35deg,
+///   gearHeight,
+/// )
+/// // Create a keyhole solid, then cut it out from the gear
+/// // body to create the final gear with a keyhole.
+/// keyholeSolid = extrude(keyhole, length = gearHeight)
+/// gearWithKeyhole = subtract(gearBody, tools = keyholeSolid)
+///```
+@(experimental = true)
+export fn helical(nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  helixAngle: number(Angle),
+  gearHeight: number(Length),
+): Solid {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Compute twist angle so the tooth helix matches helixAngle over the gear height
+  twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
+
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
+    |> extrude(length = gearHeight, twistAngle, twistAngleStep = 0)
+
+  return helicalGear
+}
+
+/// A spur gear.
+///```kcl
+/// // Basic example of a spur gear.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+///
+/// gear::spur(
+///   nTeeth = 21,
+///   module = 1.5,
+///   pressureAngle = 14deg,
+///   gearHeight = 6,
+/// )
+/// ```
+@(experimental = true)
+export fn spur(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
+): Solid {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle = 0, offsetHeight = 0)
+    |> extrude(length = gearHeight)
+
+  return helicalGear
+}
+
+/// A herringbone gear.
+///```kcl
+/// // Basic herringbone gear example.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+/// myGear = gear::herringbone(
+///   nTeeth = 10,
+///   module = 2,
+///   pressureAngle = 20deg,
+///   gearHeight = 5,
+///   helixAngle = 40deg,
+/// )
+///```
+@(experimental = true)
+export fn herringbone(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
+  helixAngle: number(Angle),
+): Solid {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseRadius = baseDiameter / 2
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Draw a gear sketch on the base plane
+  gearSketch001 = gearProfile(
+    nTeeth,
+    module,
+    pressureAngle,
+    offsetHeight = 0,
+    helixAngle,
+  )
+
+  // Draw a gear sketch that has been rotated by the helix angle
+  gearSketch002 = gearProfile(
+    nTeeth,
+    module,
+    pressureAngle,
+    offsetHeight = gearHeight / 2,
+    helixAngle,
+  )
+
+  // Draw a gear sketch at the total gear height that reverses the angle direction
+  gearSketch003 = clone(gearSketch001)
+    |> translate(z = gearHeight)
+
+  // Loft each rotated gear sketch together to form a herringbone gear
+  return loft(
+    [
+      gearSketch001,
+      gearSketch002,
+      gearSketch003
+    ],
+    vDegree = 1,
+  )
+}
+
+/// A ring gear.
+///```kcl
+/// // Basic example of a ring gear.
+///
+/// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+///
+/// gear::ring(
+///   nTeeth = 40,
+///   module = 1.5,
+///   pressureAngle = 14deg,
+///   helixAngle = -25deg,
+///   gearHeight = 5,
+/// )
+/// ```
+@(experimental = true)
+export fn ring(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  helixAngle: number(Angle),
+  gearHeight: number(Length)
+): Solid {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
+  twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
+
+  return startSketchOn(XY)
+  |> circle(radius = tipDiameter / 1.85)
+  |> subtract2d(tool = helicalGear)
+  |> extrude(length = gearHeight, twistAngle = twistAngle, twistAngleStep = 0)
+
+}
