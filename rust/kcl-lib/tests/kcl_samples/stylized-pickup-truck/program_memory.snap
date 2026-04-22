@@ -527,6 +527,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1398,6 +1399,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -1634,6 +1636,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1875,6 +1878,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -2797,6 +2801,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3045,6 +3050,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3365,6 +3371,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3490,6 +3497,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3594,6 +3602,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3830,6 +3839,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -4752,6 +4762,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -4997,6 +5008,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5322,6 +5334,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5647,6 +5660,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5780,6 +5794,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5886,6 +5901,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6042,6 +6058,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -6137,6 +6154,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -6744,6 +6762,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -7078,6 +7097,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -7319,6 +7339,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -8181,6 +8202,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -8420,6 +8442,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8604,6 +8627,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8856,6 +8880,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -9029,6 +9054,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -10002,6 +10028,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -10231,6 +10258,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -12242,6 +12270,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12367,6 +12396,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12497,6 +12527,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12622,6 +12653,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12728,6 +12760,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -12851,6 +12884,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12976,6 +13010,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13106,6 +13141,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13231,6 +13267,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13878,6 +13915,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",

@@ -99,6 +99,7 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
@@ -1049,7 +1050,6 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
-                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
@@ -1074,6 +1074,10 @@ impl ExecutorContext {
                         )));
                     }
                 } else {
+                    let std_props = function_expression
+                        .name_str()
+                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
+                        .map(|name| StdFnProps::default(&name));
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
@@ -1091,7 +1095,7 @@ impl ExecutorContext {
                                 function_expression.clone(),
                                 env_ref,
                                 KclFunctionSourceParams {
-                                    is_std,
+                                    std_props,
                                     experimental,
                                     include_in_feature_tree,
                                 },

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import os
 
+import pytest
+from flaky import flaky
+
 import kcl
 from kcl import Point3d
-from flaky import flaky
-import pytest
 
 # Get the path to this script's parent directory.
 files_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "files")
@@ -20,14 +21,14 @@ engine_error_file = os.path.join(
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
-car_wheel_dir = os.path.join(
+axial_fan = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
     "..",
     "..",
     "public",
     "kcl-samples",
-    "car-wheel-assembly",
+    "axial-fan",
 )
 
 box_code = """
@@ -220,7 +221,7 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(car_wheel_dir)
+    await kcl.execute(axial_fan)
 
 
 @requires_engine
@@ -306,7 +307,7 @@ async def test_import_and_snapshots_single():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(car_wheel_dir, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(axial_fan, kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -446,7 +447,7 @@ def test_kcl_format():
 
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
-    await kcl.format_dir(car_wheel_dir)
+    await kcl.format_dir(axial_fan)
 
 
 def test_kcl_lint():
@@ -658,7 +659,9 @@ async def test_sketch_constraint_status_parse_error_returns_report():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_execution_error_returns_partial_report():
-    report = await kcl.get_sketch_constraint_status_code(execution_error_after_sketch_code)
+    report = await kcl.get_sketch_constraint_status_code(
+        execution_error_after_sketch_code
+    )
     assert report.total_sketches() == 1
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 0
