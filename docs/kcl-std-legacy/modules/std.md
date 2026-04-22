@@ -57,5 +57,6 @@ You might also want the KCL language reference or the KCL guide.
 * [`edgeId`](/docs/kcl-std-legacy/functions/std-edgeId)
 * [`faceId`](/docs/kcl-std-legacy/functions/std-faceId)
 * [`helix`](/docs/kcl-std-legacy/functions/std-helix)
+* [`newPlane`](/docs/kcl-std-legacy/functions/std-newPlane)
 * [`offsetPlane`](/docs/kcl-std-legacy/functions/std-offsetPlane)
 

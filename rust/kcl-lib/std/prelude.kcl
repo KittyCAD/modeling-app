@@ -305,6 +305,24 @@ export fn offsetPlane(
   offset: number(Length),
 ): Plane {}
 
+/// Create a new plane.
+/// ```kcl
+/// myPlane = newPlane(
+///   origin = { x = 38.1mm, y = -38.1mm, z = 76.2mm },
+///   xAxis = { x = -0.5, y = -0.5, z = 0 },
+///   yAxis = { x = 0, y = 0.5, z = 0.5 },
+/// )
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn newPlane(
+  /// The origin of the new plane.
+  origin: Point3d,
+  /// The X axis of the new plane.
+  xAxis: Point3d,
+  /// The Y axis of the new plane.
+  yAxis: Point3d,
+): Plane {}
+
 /// Clone a sketch or solid.
 ///
 /// This works essentially like a copy-paste operation. It creates a perfect replica

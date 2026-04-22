@@ -15,6 +15,7 @@ layout: manual
   * [`edgeId`](/docs/kcl-std-legacy/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std-legacy/functions/std-faceId)
   * [`helix`](/docs/kcl-std-legacy/functions/std-helix)
+  * [`newPlane`](/docs/kcl-std-legacy/functions/std-newPlane)
   * [`offsetPlane`](/docs/kcl-std-legacy/functions/std-offsetPlane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
   * [`appearance::hexString`](/docs/kcl-std-legacy/functions/std-appearance-hexString)

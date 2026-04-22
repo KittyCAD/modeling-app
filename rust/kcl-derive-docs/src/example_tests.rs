@@ -118,6 +118,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-offsetPlane-2",
     "std-offsetPlane-3",
     "std-offsetPlane-4",
+    "std-newPlane-0",
     "std-sketch-planeOf-0",
     "std-sketch-planeOf-1",
     "std-sketch-faceOf-0",

@@ -57,5 +57,6 @@ You might also want the KCL language reference or the KCL guide.
 * [`edgeId`](/docs/kcl-std-sketch-solve/functions/std-edgeId)
 * [`faceId`](/docs/kcl-std-sketch-solve/functions/std-faceId)
 * [`helix`](/docs/kcl-std-sketch-solve/functions/std-helix)
+* [`newPlane`](/docs/kcl-std-sketch-solve/functions/std-newPlane)
 * [`offsetPlane`](/docs/kcl-std-sketch-solve/functions/std-offsetPlane)
 
