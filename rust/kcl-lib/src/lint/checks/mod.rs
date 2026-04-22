@@ -2,7 +2,6 @@ mod camel_case;
 mod chained_profiles;
 mod default_plane;
 mod offset_plane;
-mod old_sketch_syntax;
 
 pub use camel_case::Z0001;
 pub use camel_case::lint_object_properties;
@@ -13,6 +12,3 @@ pub use default_plane::Z0002;
 pub use default_plane::lint_should_be_default_plane;
 pub use offset_plane::Z0003;
 pub use offset_plane::lint_should_be_offset_plane;
-pub use old_sketch_syntax::Z0005;
-pub use old_sketch_syntax::contains_start_profile;
-pub use old_sketch_syntax::lint_old_sketch_syntax;

@@ -1,18 +1,12 @@
 import type { Texture } from 'three'
 import { SRGBColorSpace, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
-import { constraintIconPaths } from '@src/components/constraintIconPaths'
+import {
+  constraintIconPaths,
+  type ConstraintIconName,
+} from '@src/components/constraintIconPaths'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
-
-export type ConstraintBadgeType =
-  | 'Coincident'
-  | 'Horizontal'
-  | 'Vertical'
-  | 'LinesEqualLength'
-  | 'Parallel'
-  | 'Perpendicular'
-  | 'Tangent'
 
 export type ConstraintBadgeState = 'default' | 'hovered' | 'selected'
 
@@ -38,7 +32,7 @@ export function getConstraintBadgeTexture({
   theme,
   sizePx = CONSTRAINT_BADGE_SIZE_PX,
 }: {
-  badgeType: ConstraintBadgeType
+  badgeType: ConstraintIconName
   badgeState: ConstraintBadgeState
   theme: Themes
   sizePx?: number
@@ -62,13 +56,15 @@ export function getConstraintBadgeTexture({
   return texture
 }
 
+// Draws the constraint texture by constructing an svg, based on the current
+// theme, constraint type, and the state (hovered/selected/default).
 function createConstraintBadgeSvgDataUrl({
   badgeType,
   badgeState,
   theme,
   sizePx,
 }: {
-  badgeType: ConstraintBadgeType
+  badgeType: ConstraintIconName
   badgeState: ConstraintBadgeState
   theme: Themes
   sizePx: number
@@ -103,28 +99,9 @@ function createConstraintBadgeSvgDataUrl({
         stroke="${borderStroke}"
         stroke-width="${borderWidth}"
       />
-      <path d="${getConstraintBadgeIconPath(badgeType)}" fill="${iconFill}" />
+      <path d="${constraintIconPaths[badgeType]}" fill="${iconFill}" />
     </svg>
   `.trim()
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-}
-
-function getConstraintBadgeIconPath(badgeType: ConstraintBadgeType) {
-  switch (badgeType) {
-    case 'Coincident':
-      return constraintIconPaths.coincident
-    case 'Horizontal':
-      return constraintIconPaths.horizontal
-    case 'Vertical':
-      return constraintIconPaths.vertical
-    case 'LinesEqualLength':
-      return constraintIconPaths.equal
-    case 'Parallel':
-      return constraintIconPaths.parallel
-    case 'Perpendicular':
-      return constraintIconPaths.perpendicular
-    case 'Tangent':
-      return constraintIconPaths.tangent
-  }
 }

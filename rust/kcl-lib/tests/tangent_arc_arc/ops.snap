@@ -98,7 +98,17 @@ description: Operations executed tangent_arc_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -198,7 +208,17 @@ description: Operations executed tangent_arc_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -232,7 +252,14 @@ description: Operations executed tangent_arc_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -249,9 +276,6 @@ description: Operations executed tangent_arc_arc.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },

@@ -209,6 +209,15 @@ class InputFormat3d:
     
     ...
 
+class KclErrorInfo:
+    r"""
+    Full KCL error details associated with an incomplete report.
+    """
+    @property
+    def phase(self) -> builtins.str: ...
+    @property
+    def text(self) -> builtins.str: ...
+
 class ObjExportOptions:
     r"""
     Options for exporting OBJ.
@@ -324,6 +333,38 @@ class RawFile:
     @property
     def name(self) -> builtins.str: ...
 
+class SketchConstraintReport:
+    r"""
+    Grouped report of all sketches by constraint status.
+    """
+    @property
+    def fully_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
+    @property
+    def under_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
+    @property
+    def over_constrained(self) -> builtins.list[SketchConstraintStatus]: ...
+    @property
+    def errors(self) -> builtins.list[SketchConstraintStatus]: ...
+    @property
+    def is_complete(self) -> builtins.bool: ...
+    @property
+    def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
+
+class SketchConstraintStatus:
+    r"""
+    Per-sketch summary of constraint freedom analysis.
+    """
+    @property
+    def name(self) -> builtins.str: ...
+    @property
+    def status(self) -> ConstraintKind: ...
+    @property
+    def free_count(self) -> builtins.int: ...
+    @property
+    def conflict_count(self) -> builtins.int: ...
+    @property
+    def total_count(self) -> builtins.int: ...
+
 class SldprtImportOptions:
     r"""
     Options for importing SolidWorks parts.
@@ -408,6 +449,15 @@ class Axis(Enum):
     r"""
     'Z' axis.
     """
+
+class ConstraintKind(Enum):
+    r"""
+    Overall constraint status of a sketch.
+    """
+    FullyConstrained = ...
+    UnderConstrained = ...
+    OverConstrained = ...
+    Error = ...
 
 class Direction(Enum):
     r"""
@@ -825,6 +875,16 @@ def format(code:builtins.str) -> builtins.str:
 async def format_dir(dir:builtins.str) -> None:
     r"""
     Format a whole directory of kcl code.
+    """
+
+async def get_sketch_constraint_status(path:builtins.str) -> SketchConstraintReport:
+    r"""
+    Execute a kcl file and return a report of sketch constraint status.
+    """
+
+async def get_sketch_constraint_status_code(code:builtins.str) -> SketchConstraintReport:
+    r"""
+    Execute kcl code and return a report of sketch constraint status.
     """
 
 async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat) -> builtins.list[builtins.int]: ...

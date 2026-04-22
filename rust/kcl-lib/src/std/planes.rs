@@ -46,7 +46,7 @@ pub(crate) async fn inner_plane_of(
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
-        exec_state.err(crate::CompilationError {
+        exec_state.err(crate::CompilationIssue {
             source_range: args.source_range,
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
             suggestion: None,
@@ -168,6 +168,7 @@ pub(crate) async fn inner_plane_of(
     #[cfg(feature = "artifact-graph")]
     {
         use crate::execution::ArtifactId;
+        use crate::front::SourceRef;
 
         let plane_object = crate::front::Object {
             id: plane_object_id,
@@ -175,7 +176,7 @@ pub(crate) async fn inner_plane_of(
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::new(plane_id),
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }
@@ -238,13 +239,15 @@ async fn make_offset_plane_in_engine(
     let plane_object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
+        use crate::front::SourceRef;
+
         let plane_object = crate::front::Object {
             id: plane_object_id,
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
             label: Default::default(),
             comments: Default::default(),
             artifact_id: plane.artifact_id,
-            source: args.source_range.into(),
+            source: SourceRef::new(args.source_range, args.node_path.clone()),
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }

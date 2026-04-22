@@ -1,6 +1,7 @@
 use indexmap::IndexMap;
 
 use crate::ExecutorContext;
+use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -31,7 +32,15 @@ async fn inner_map(
 ) -> Result<Vec<KclValue>, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(elem, &f, args.source_range, exec_state, &args.ctx).await?;
+        let new_elem = call_map_closure(
+            elem,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         new_array.push(new_elem);
     }
     Ok(new_array)
@@ -41,6 +50,7 @@ async fn call_map_closure(
     input: KclValue,
     map_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -48,6 +58,7 @@ async fn call_map_closure(
         Default::default(),
         vec![(None, Arg::new(input, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("map closure".to_owned()),
@@ -91,7 +102,16 @@ async fn inner_reduce(
 ) -> Result<KclValue, KclError> {
     let mut reduced = initial;
     for elem in array {
-        reduced = call_reduce_closure(elem, reduced, &f, args.source_range, exec_state, &args.ctx).await?;
+        reduced = call_reduce_closure(
+            elem,
+            reduced,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
     }
 
     Ok(reduced)
@@ -102,6 +122,7 @@ async fn call_reduce_closure(
     accum: KclValue,
     reduce_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -112,6 +133,7 @@ async fn call_reduce_closure(
         labeled,
         vec![(None, Arg::new(elem, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("reduce closure".to_owned()),

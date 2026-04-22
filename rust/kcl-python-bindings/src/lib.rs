@@ -40,6 +40,8 @@ use uuid::Uuid;
 use crate::bridge::bounding_box::BoundingBoxResponse;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
+use crate::bridge::sketch_constraints::KclErrorInfo;
+use crate::bridge::sketch_constraints::SketchConstraintReport;
 
 mod bridge;
 
@@ -61,19 +63,41 @@ where
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
+    pyo3::exceptions::PyException::new_err(render_miette(error, code))
+}
+
+fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
     let report = error.into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
-    pyo3::exceptions::PyException::new_err(format!("{report:?}"))
+    format!("{report:?}")
 }
 
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
+    pyo3::exceptions::PyException::new_err(render_miette_for_parse(filename, input, error))
+}
+
+fn render_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> String {
     let report = kcl_lib::Report {
         kcl_source: input.to_string(),
         error,
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);
-    pyo3::exceptions::PyException::new_err(format!("{report:?}"))
+    format!("{report:?}")
+}
+
+fn incomplete_sketch_constraint_report(phase: &str, text: String) -> SketchConstraintReport {
+    SketchConstraintReport {
+        fully_constrained: Vec::new(),
+        under_constrained: Vec::new(),
+        over_constrained: Vec::new(),
+        errors: Vec::new(),
+        is_complete: false,
+        kcl_error: Some(KclErrorInfo {
+            phase: phase.to_string(),
+            text,
+        }),
+    }
 }
 
 /// Get the path to the current file from the path given, and read the code.
@@ -203,6 +227,45 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<()> {
     let ExecutedKcl { ctx, .. } = run_kcl(input, mock).await?;
     ctx.close().await;
     Ok(())
+}
+
+async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+    let (code, path, filename) = match input {
+        KclInput::Path(input_path) => {
+            let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
+            let filename = path.display().to_string();
+            (code, Some(path), filename)
+        }
+        KclInput::Code(code) => (code, None, String::new()),
+    };
+
+    let program = match kcl_lib::Program::parse_no_errs(&code) {
+        Ok(program) => program,
+        Err(err) => {
+            let error_text = render_miette_for_parse(&filename, &code, err);
+            return Ok(incomplete_sketch_constraint_report("parse", error_text));
+        }
+    };
+
+    let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
+    let result = match ctx.run(&program, &mut state).await {
+        Ok((env_ref, _)) => {
+            let outcome = state.into_exec_outcome(env_ref, &ctx).await;
+            Ok(outcome.sketch_constraint_report().into())
+        }
+        Err(err) => {
+            let error_text = render_miette(err.clone(), &code);
+            let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
+            report.is_complete = false;
+            report.kcl_error = Some(KclErrorInfo {
+                phase: "execution".to_string(),
+                text: error_text,
+            });
+            Ok(report)
+        }
+    };
+    ctx.close().await;
+    result
 }
 
 async fn execute_and_snapshot_views_impl(
@@ -369,6 +432,20 @@ async fn mock_execute(path: String) -> PyResult<bool> {
         Ok(true)
     })
     .await
+}
+
+/// Execute a kcl file and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+}
+
+/// Execute kcl code and return a report of sketch constraint status.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -938,6 +1015,10 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
     m.add_class::<FindingFamily>()?;
+    m.add_class::<bridge::sketch_constraints::ConstraintKind>()?;
+    m.add_class::<bridge::sketch_constraints::KclErrorInfo>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintStatus>()?;
+    m.add_class::<bridge::sketch_constraints::SketchConstraintReport>()?;
 
     m.add_class::<kcmc::units::UnitAngle>()?;
     m.add_class::<kcmc::units::UnitArea>()?;
@@ -967,6 +1048,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
+    m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;

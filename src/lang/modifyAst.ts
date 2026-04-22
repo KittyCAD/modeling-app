@@ -55,7 +55,10 @@ import type {
   KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
@@ -1077,7 +1080,9 @@ export function insertRegionVariablesAndOffsetPathToNode({
   if (err(settings)) {
     return settings
   }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix('mm')
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
+    settings.defaultLengthUnit
+  )
 
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
@@ -1100,7 +1105,7 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error('Region point coordinates are invalid')
     }
 
-    const decimals = 4 // from looking at the values returned by engine, needs to be confirmed
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
     const regionExpr = createCallExpressionStdLibKw('region', null, [
       createLabeledArg(
         'point',

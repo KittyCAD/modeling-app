@@ -78,7 +78,8 @@ export const EditingConstraintInput = () => {
           sketchId,
           editingConstraintId!,
           value,
-          jsAppSettings(rustContext.settingsActor)
+          jsAppSettings(rustContext.settingsActor),
+          true
         )
         if (result) {
           sketchSolveActor?.send({
@@ -86,6 +87,7 @@ export const EditingConstraintInput = () => {
             data: {
               sourceDelta: result.kclSource,
               sceneGraphDelta: result.sceneGraphDelta,
+              checkpointId: result.checkpointId ?? null,
             },
           })
         }

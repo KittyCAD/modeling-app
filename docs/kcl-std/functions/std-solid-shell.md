@@ -265,8 +265,6 @@ shell([thing1, thing2], faces = [END], thickness = 5)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 boxProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

@@ -12,6 +12,7 @@ use serde::Serialize;
 use walkdir::WalkDir;
 
 use super::Test;
+use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
 
@@ -105,7 +106,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         }
     }
     for tests in &tests {
-        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(super::RENDERED_MODEL_NAME);
+        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(RENDERED_MODEL_NAME);
         if !screenshot_file.exists() {
             panic!("Missing screenshot for test: {}", tests.name);
         }

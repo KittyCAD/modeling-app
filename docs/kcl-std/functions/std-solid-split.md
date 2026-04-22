@@ -13,6 +13,7 @@ split(
   merge?: bool,
   keepTools?: bool,
   tools?: [Solid],
+  legacyMethod?: bool,
 ): [Solid; 1+]
 ```
 
@@ -26,6 +27,7 @@ split(
 | `merge` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether to merge the bodies into one after. Defaults to false. | No |
 | `keepTools` | [`bool`](/docs/kcl-std/types/std-types-bool) | If false, the tool bodies will be removed from the scene. If true, they'll be kept. Defaults to false. | No |
 | `tools` | [[`Solid`](/docs/kcl-std/types/std-types-Solid)] | The tools to split the target bodies along. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 
@@ -228,13 +230,13 @@ result = split([cylinder], tools = [wedge])
 // Color each part of the split cylinder differently,
 // and move the parts a bit away from each other,
 // so you can see their interiors.
-left = appearance(result[2], color = "#B2FFD6")
-  |> translate(x = -4)
+right = appearance(result[2], color = "#B2FFD6")
+  |> translate(x = 4)
 
 middle = appearance(result[1], color = "#F6AE2D")
 
-right = appearance(result[0], color = "#AA78A6")
-  |> translate(x = 4)
+left = appearance(result[0], color = "#AA78A6")
+  |> translate(x = -4)
 
 ```
 

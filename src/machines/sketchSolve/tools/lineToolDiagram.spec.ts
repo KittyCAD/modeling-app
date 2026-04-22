@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { createActor, waitFor, fromPromise } from 'xstate'
-import { machine } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import {
+  machine,
+  confirmingDimensions,
+} from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import type {
   SceneGraphDelta,
   SourceDelta,
@@ -203,7 +206,7 @@ describe('lineTool - XState', () => {
 
       actor.send({ type: 'add point', data: [10, 20] })
 
-      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
+      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
 
       const context = actor.getSnapshot().context
       expect(context.draftPointId).toBeDefined()
@@ -234,12 +237,12 @@ describe('lineTool - XState', () => {
 
       // Add first point
       actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
+      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
 
       // Add second point
       actor.send({ type: 'add point', data: [30, 40] })
 
-      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
+      await waitFor(actor, (state) => state.matches(confirmingDimensions))
 
       actor.stop()
     })
@@ -289,21 +292,21 @@ describe('lineTool - XState', () => {
 
       // Add first point
       actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
+      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
 
       // Add second point (creates first line)
       actor.send({ type: 'add point', data: [30, 40] })
-      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
+      await waitFor(actor, (state) => state.matches(confirmingDimensions))
       await waitFor(
         actor,
         (state) => state.value === 'waiting to start next draft line'
       )
       actor.send({ type: 'start next draft line', data: [50, 60] })
-      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
+      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
 
       // Add third point (should chain)
       actor.send({ type: 'add point', data: [50, 60] })
-      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
+      await waitFor(actor, (state) => state.matches(confirmingDimensions))
 
       actor.stop()
     })

@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   // Coincident: line end and point.
   l1 = line(start = [1mm, 2mm], end = [var 10mm, var 11mm])

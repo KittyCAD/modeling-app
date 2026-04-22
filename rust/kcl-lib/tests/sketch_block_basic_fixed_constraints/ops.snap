@@ -47,9 +47,6 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },

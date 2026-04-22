@@ -3,67 +3,85 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
-// Define parameters
 binLength = 42.0
 cornerRadius = 4.0
 firstStep = 0.7
 secondStep = 1.8
 thirdStep = 2.15
 
-// Number of bins in each direction
 countBinWidth = 2
 countBinLength = 3
 
-// The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep
 
-// Define a function which builds the profile of the baseplate bin
-fn face(@plane) {
-  faceSketch = startSketchOn(plane)
-    |> startProfile(at = [0, 0])
-    |> yLine(length = height)
-    |> angledLine(angle = -45, lengthY = thirdStep)
-    |> yLine(length = -secondStep)
-    |> angledLine(angle = -45, lengthY = firstStep)
-    |> close()
-  return faceSketch
+baseFacePlane = offsetPlane(YZ, offset = cornerRadius)
+baseFaceSketch = sketch(on = baseFacePlane) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.65mm])
+  line2 = line(start = [var 0mm, var 4.65mm], end = [var 2.15mm, var 2.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.15mm, var 2.5mm], end = [var 2.15mm, var 0.7mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.15mm, var 0.7mm], end = [var 2.85mm, var 0mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.85mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+  coincident([line1.start, ORIGIN])
+  guide1 = line(start = [var 0mm, var 0mm], end = [var 2.15mm, var 0mm], construction = true)
+  coincident([guide1.start, line1.start])
+  guide2 = line(start = [var 2.15mm, var 0mm], end = [var 2.15mm, var 2.5mm], construction = true)
+  coincident([guide1.end, guide2.start])
+  coincident([guide2.end, line2.end])
+  guide3 = line(start = [var 0mm, var 0mm], end = [var 2.85mm, var 0mm], construction = true)
+  coincident([guide3.start, line1.start])
+  coincident([guide3.end, line4.end])
+  guide4 = line(start = [var 2.15mm, var 0mm], end = [var 2.15mm, var 0.7mm], construction = true)
+  coincident([guide4.start, guide1.end])
+  coincident([guide4.end, line3.end])
+  vertical(line1)
+  vertical(line3)
+  horizontal(guide1)
+  vertical(guide2)
+  horizontal(guide3)
+  vertical(guide4)
+  distance([line1.start, line1.end]) == height
+  distance([guide1.start, guide1.end]) == thirdStep
+  distance([guide2.start, guide2.end]) == firstStep + secondStep
+  distance([guide3.start, guide3.end]) == thirdStep + firstStep
+  distance([guide4.start, guide4.end]) == firstStep
 }
+baseFaceRegion = region(segments = [baseFaceSketch.line1])
+singleSide = extrude(baseFaceRegion, length = binLength - (cornerRadius * 2))
 
-// Extrude a single side of the bin
-singleSide = extrude(face(offsetPlane(YZ, offset = cornerRadius)), length = binLength - (cornerRadius * 2))
-
-// Create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
   singleSide,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [binLength / 2, binLength / 2, 0],
   instances = 4,
   rotateDuplicates = true,
 )
 
-// Define an axis axis000
 axis000 = {
   direction = [0.0, 1.0],
   origin = [cornerRadius, cornerRadius]
 }
 
-// Create a single corner of the bin
-singleCorner = revolve(face(offsetPlane(YZ, offset = cornerRadius)), angle = -90, axis = axis000)
+cornerFaceRegion = region(segments = [baseFaceSketch.line1])
+singleCorner = revolve(cornerFaceRegion, angle = -90deg, axis = axis000)
+hide(baseFaceSketch)
 
-// Create the corners of the bin
 corners = patternCircular3d(
   singleCorner,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   axis = [0, 0, 1],
   center = [binLength / 2, binLength / 2, 0],
   instances = 4,
   rotateDuplicates = true,
 )
 
-// Create the baseplate by patterning sides
 basePlateSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
@@ -72,7 +90,6 @@ basePlateSides = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
-// Create the corners of the baseplate by patterning the corners
 basePlateCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],

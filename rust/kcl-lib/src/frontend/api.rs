@@ -9,6 +9,7 @@ use serde::Serialize;
 
 use crate::ExecOutcome;
 pub use crate::ExecutorSettings as Settings;
+use crate::NodePath;
 use crate::engine::PlaneName;
 use crate::execution::ArtifactId;
 use crate::pretty::NumericSuffix;
@@ -25,7 +26,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
@@ -81,6 +82,50 @@ pub struct SourceDelta {
     pub text: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct SketchCheckpointId(u64);
+
+impl SketchCheckpointId {
+    pub(crate) fn new(n: u64) -> Self {
+        Self(n)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchMutationOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct NewSketchOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub sketch_id: ObjectId,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EditSketchOutcome {
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreSketchCheckpointOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
@@ -111,7 +156,7 @@ pub struct File {
     pub text: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
 pub struct Object {
     pub id: ObjectId,
@@ -123,14 +168,14 @@ pub struct Object {
 }
 
 impl Object {
-    pub fn placeholder(id: ObjectId, range: SourceRange) -> Self {
+    pub fn placeholder(id: ObjectId, range: SourceRange, node_path: Option<NodePath>) -> Self {
         Object {
             id,
             kind: ObjectKind::Nil,
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::placeholder(),
-            source: SourceRef::Simple { range },
+            source: SourceRef::new(range, node_path),
         }
     }
 }
@@ -155,6 +200,23 @@ pub enum ObjectKind {
     Constraint {
         constraint: crate::frontend::sketch::Constraint,
     },
+}
+
+impl ObjectKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Nil => "a Nil",
+            Self::Plane(..) => "a Plane",
+            Self::Face(..) => "a Face",
+            Self::Wall(..) => "a Wall",
+            Self::Cap(..) => "a Cap",
+            Self::Sketch(..) => "a Sketch",
+            Self::Segment { .. } => "a Segment",
+            Self::Constraint { .. } => "a Constraint",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -195,17 +257,31 @@ pub enum CapKind {
     End,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
 #[serde(tag = "type")]
 pub enum SourceRef {
-    Simple { range: SourceRange },
-    BackTrace { ranges: Vec<SourceRange> },
+    Simple {
+        range: SourceRange,
+        node_path: Option<NodePath>,
+    },
+    BackTrace {
+        ranges: Vec<(SourceRange, Option<NodePath>)>,
+    },
 }
 
 impl From<SourceRange> for SourceRef {
     fn from(value: SourceRange) -> Self {
-        Self::Simple { range: value }
+        Self::Simple {
+            range: value,
+            node_path: None,
+        }
+    }
+}
+
+impl SourceRef {
+    pub fn new(range: SourceRange, node_path: Option<NodePath>) -> Self {
+        Self::Simple { range, node_path }
     }
 }
 

@@ -9,14 +9,13 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
+import { getAxisExpression } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
-  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -60,7 +59,7 @@ export function addHelix({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare labeled arguments
@@ -85,16 +84,18 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const result = getAxisExpressionAndIndex(
+    const result = getAxisExpression(
       axis,
       edge,
       modifiedAst,
-      wasmInstance
+      wasmInstance,
+      artifactGraph
     )
     if (err(result)) {
       return result
     }
-    axisExpr.push(createLabeledArg('axis', result.generatedAxis as Expr))
+    axisExpr.push(createLabeledArg('axis', result.generatedAxis))
+    modifiedAst = result.modifiedAst
   } else {
     return new Error('Helix must have either an axis or a cylinder')
   }

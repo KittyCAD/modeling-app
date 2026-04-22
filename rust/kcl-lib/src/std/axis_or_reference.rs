@@ -3,8 +3,12 @@
 use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeReference;
 
 use super::args::TyF64;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
 use crate::execution::KclValue;
 use crate::execution::Plane;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
@@ -30,6 +34,30 @@ pub enum Axis2dOrEdgeReference {
     EdgeReference(ModelingEdgeReference),
 }
 
+impl Axis2dOrEdgeReference {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
 /// A 3D axis or tagged edge.
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
@@ -40,6 +68,30 @@ pub enum Axis3dOrEdgeReference {
     Edge(EdgeReference),
     /// Edge reference with side faces, end faces, and index.
     EdgeReference(ModelingEdgeReference),
+}
+
+impl Axis3dOrEdgeReference {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+        }
+    }
 }
 
 /// A 2D axis or a raw point2d.

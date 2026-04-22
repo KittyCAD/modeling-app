@@ -13,8 +13,44 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
+import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
+
+type CommandSubmitPromise = PromiseLike<unknown>
+
+function isCommandSubmitPromise(
+  result: unknown
+): result is CommandSubmitPromise {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'then' in result &&
+    typeof result.then === 'function'
+  )
+}
+
+function handleCommandSubmitResult(commandName: string, result: unknown) {
+  if (!result) return
+
+  if (isCommandSubmitPromise(result)) {
+    Promise.resolve(result)
+      .then((resolved) => {
+        if (resolved instanceof Error) {
+          toast.error(resolved.message)
+        }
+      })
+      .catch((error: unknown) => {
+        reportRejection(error)
+        toast.error(`Failed to execute command: ${commandName}`)
+      })
+    return
+  }
+
+  if (result instanceof Error) {
+    toast.error(result.message)
+  }
+}
 
 export type CommandBarInput = {
   commands: Command[]
@@ -136,9 +172,15 @@ export const commandBarMachine = setup({
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
         }
-        selectedCommand?.onSubmit(resolvedArgs)
+        const result = selectedCommand?.onSubmit(resolvedArgs)
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       } else {
-        selectedCommand?.onSubmit({ context, event })
+        const result = selectedCommand?.onSubmit({ context, event })
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       }
     },
     'Set review validation error': assign({
@@ -409,7 +451,7 @@ export const commandBarMachine = setup({
                     )
                   } else {
                     // Default message if there is not a custom one sent
-                    toast.error(`Unable to validate ${argName}`)
+                    toast.error(`Unable to validate ${argName}.`)
                     return reject(`unable to validate ${argName}}`)
                   }
                 }

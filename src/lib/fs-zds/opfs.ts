@@ -1,6 +1,8 @@
 // The Origin Private File System. Used for browser environments.
 import type { IZooDesignStudioFS, IStat } from '@src/lib/fs-zds/interface'
+import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
 import path from 'path'
 
 // Holds onto directory metadata that is not stored by the File System API.
@@ -21,6 +23,69 @@ const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
+
+type OPFSWriteWorkerRequest = {
+  id: number
+  type: 'write-file'
+  targetPath: string
+  data: Uint8Array<ArrayBuffer>
+}
+
+type OPFSWriteWorkerResponse =
+  | { id: number; ok: true }
+  | { id: number; ok: false; error: string }
+
+const pendingWorkerWrites = new Map<
+  number,
+  {
+    resolve: () => void
+    reject: (reason?: unknown) => void
+  }
+>()
+
+let writeWorkerId = 0
+let opfsWriteWorker: Worker | null = null
+
+const getOPFSWriteWorker = () => {
+  if (opfsWriteWorker) return opfsWriteWorker
+
+  opfsWriteWorker = new OPFSWriteWorker({ name: 'opfs-write' })
+  opfsWriteWorker.onmessage = (
+    event: MessageEvent<OPFSWriteWorkerResponse>
+  ) => {
+    const pending = pendingWorkerWrites.get(event.data.id)
+    if (!pending) return
+
+    pendingWorkerWrites.delete(event.data.id)
+    if (event.data.ok) {
+      pending.resolve()
+      return
+    }
+
+    pending.reject(event.data.error)
+  }
+
+  return opfsWriteWorker
+}
+
+const writeFileViaWorker = (
+  targetPath: string,
+  data: Uint8Array<ArrayBuffer>
+): Promise<void> => {
+  const worker = getOPFSWriteWorker()
+  const id = writeWorkerId++
+  const request: OPFSWriteWorkerRequest = {
+    id,
+    type: 'write-file',
+    targetPath,
+    data,
+  }
+
+  return new Promise((resolve, reject) => {
+    pendingWorkerWrites.set(id, { resolve, reject })
+    worker.postMessage(request)
+  })
+}
 
 const walk = async (
   targetPath: string,
@@ -306,13 +371,57 @@ const writeFile = async (
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
-  const handleFile = handle.getFileHandle(parts.slice(-1)[0], {
+  const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
   })
-  const writer = await (await handleFile).createWritable()
+  const writableMethod = (
+    fileHandle as FileSystemFileHandle & {
+      createWritable?: () => Promise<{
+        write: (data: Blob) => Promise<void>
+        close: () => Promise<void>
+      }>
+    }
+  ).createWritable
 
-  await writer.write(new Blob([data], { type: 'application/octet-stream' }))
-  await writer.close()
+  if (typeof writableMethod === 'function') {
+    const writer = await writableMethod.call(fileHandle)
+    await writer.write(new Blob([data], { type: 'application/octet-stream' }))
+    await writer.close()
+  } else {
+    void reportClientError({
+      code: 'opfs_missing_create_writable',
+      dedupeKey: 'opfs_missing_create_writable',
+      errorName: 'MissingBrowserFeature',
+      message:
+        'FileSystemFileHandle.createWritable is unavailable for OPFS writes; using the worker fallback.',
+      extra: {
+        fileExtension: path.extname(targetPath),
+        hasCreateWritable: false,
+        hasWorkerFallback: true,
+      },
+    })
+
+    try {
+      await writeFileViaWorker(targetPath, data)
+    } catch (error: unknown) {
+      if (error === 'OPFS_WRITE_UNSUPPORTED') {
+        void reportClientError({
+          code: 'opfs_write_unsupported',
+          dedupeKey: 'opfs_write_unsupported',
+          errorName: 'MissingBrowserFeature',
+          message:
+            'OPFS writes are unsupported because both createWritable and worker write fallbacks are unavailable.',
+          extra: {
+            fileExtension: path.extname(targetPath),
+            hasCreateWritable: false,
+            hasWorkerFallback: false,
+          },
+        })
+      }
+
+      return Promise.reject(error)
+    }
+  }
 
   // Update parent directory's metadata, since OPFS doesn't support tracking it.
   // Yep, each writeFile is recursively called, so each writeFile is actually
@@ -417,7 +526,15 @@ const impl: IZooDesignStudioFS = {
   stat,
   mkdir,
   rm,
-  detach: async () => {},
+  detach: async () => {
+    if (!opfsWriteWorker) return
+    opfsWriteWorker.terminate()
+    opfsWriteWorker = null
+    for (const pending of pendingWorkerWrites.values()) {
+      pending.reject('OPFS worker detached')
+    }
+    pendingWorkerWrites.clear()
+  },
   attach: async () => {},
 }
 
