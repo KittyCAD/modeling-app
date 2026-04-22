@@ -1703,6 +1703,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
 ): Artifact[] {
   const result = new Set<string>()
   const stack: string[] = [artifact.id]
+  const codeRefStartByArtifactId = new Map<string, number>()
 
   const getArtifacts = (stringIds: string[]): Artifact[] => {
     const artifactsWithCodeRefs: Artifact[] = []
@@ -1712,6 +1713,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
         const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
         if (codeRefs && codeRefs[0] && codeRefs[0].range[1] > 0) {
           artifactsWithCodeRefs.push(artifact)
+          codeRefStartByArtifactId.set(id, codeRefs[0].range[0])
         }
       }
     }
@@ -1763,13 +1765,9 @@ export function findAllChildrenAndOrderByPlaceInCode(
 
   const codeRefArtifacts = getArtifacts(Array.from(result))
   let orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
-    // TODO: this is bad perf wise, we do it in getArtifacts already
-    const aCodeRefs = getCodeRefsByArtifactId(a.id, artifactGraph)
-    const bCodeRefs = getCodeRefsByArtifactId(b.id, artifactGraph)
-    if (!aCodeRefs || !bCodeRefs) {
-      return 0
-    }
-    return aCodeRefs[0].range[0] - bCodeRefs[0].range[0]
+    const aStart = codeRefStartByArtifactId.get(a.id) ?? Number.MAX_SAFE_INTEGER
+    const bStart = codeRefStartByArtifactId.get(b.id) ?? Number.MAX_SAFE_INTEGER
+    return aStart - bStart
   })
 
   // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
