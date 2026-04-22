@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import {
   getCodeRefsFromEntityReference,
@@ -11,49 +12,159 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SourceRange } from '@src/lang/wasm'
+
+const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
   const { engineCommandManager, kclManager, rustContext } = context
   const stateRef = useRef(state)
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hoveredEntityIdRef = useRef<string | null>(null)
+  const resolvedEntityIdRef = useRef<string | null>(null)
+  const pendingEntityIdRef = useRef<string | null>(null)
+  const hoverRequestTokenRef = useRef(0)
   stateRef.current = state
 
   useEffect(() => {
     if (!engineCommandManager) return
 
+    const clearHoverTimer = () => {
+      if (hoverTimerRef.current !== null) {
+        clearTimeout(hoverTimerRef.current)
+        hoverTimerRef.current = null
+      }
+    }
+
+    const clearHoverRanges = () => {
+      if (
+        !kclManager.highlightRange ||
+        (kclManager.highlightRange[0] &&
+          kclManager.highlightRange[0][0] !== 0 &&
+          kclManager.highlightRange[0][1] !== 0)
+      ) {
+        kclManager.setHighlightRange([defaultSourceRange()])
+      }
+    }
+
+    const applyHoverReference = (reference: unknown) => {
+      if (reference) {
+        const entityRef = normalizeEntityReference(reference)
+        if (!entityRef) {
+          clearHoverRanges()
+          return
+        }
+        const codeRefs = getCodeRefsFromEntityReference(
+          entityRef,
+          kclManager.artifactGraph
+        )
+        if (codeRefs && codeRefs.length > 0) {
+          const ranges = codeRefs.map(
+            (codeRef: { range: SourceRange }) => codeRef.range
+          )
+          kclManager.setHighlightRange(ranges)
+        } else {
+          clearHoverRanges()
+        }
+        return
+      }
+
+      clearHoverRanges()
+    }
+
+    const queryHoverReference = async (
+      entityId: string,
+      requestToken: number
+    ) => {
+      let res = await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'query_entity_type' as any,
+          entity_id: entityId,
+        },
+        cmd_id: uuidv4(),
+      })
+
+      if (
+        hoverRequestTokenRef.current !== requestToken ||
+        hoveredEntityIdRef.current !== entityId
+      ) {
+        return
+      }
+
+      pendingEntityIdRef.current = null
+
+      if (!res) {
+        applyHoverReference(undefined)
+        resolvedEntityIdRef.current = entityId
+        return
+      }
+
+      if (isArray(res)) {
+        res = res[0]
+      }
+
+      if (isModelingResponse(res)) {
+        const mr = res.resp.data.modeling_response as any
+        if (mr.type === 'query_entity_type') {
+          applyHoverReference(mr.data?.reference)
+          resolvedEntityIdRef.current = entityId
+          return
+        }
+      }
+
+      applyHoverReference(undefined)
+      resolvedEntityIdRef.current = entityId
+    }
+
     const unSubHover = engineCommandManager.subscribeToUnreliable({
-      // Note this is our hover logic, "highlight_query_entity" is the event that is fired when we hover over an entity
-      event: 'highlight_query_entity' as any, // TODO: Add to generated types
+      // Immediate hover now uses `highlight_set_entity` for visual feedback,
+      // then requests the heavier EntityReference payload only after the hover
+      // remains stable on the same entity for a short debounce window.
+      event: 'highlight_set_entity',
       callback: ({ data }: { data: any }) => {
-        if (data?.reference) {
-          // Map from engine format to frontend format
-          const entityRef = normalizeEntityReference(data.reference)
-          if (!entityRef) {
-            kclManager.setHighlightRange([defaultSourceRange()])
+        const entityId =
+          data?.entity_id && typeof data.entity_id === 'string'
+            ? data.entity_id
+            : null
+
+        if (!entityId) {
+          hoverRequestTokenRef.current += 1
+          hoveredEntityIdRef.current = null
+          resolvedEntityIdRef.current = null
+          pendingEntityIdRef.current = null
+          clearHoverTimer()
+          clearHoverRanges()
+          return
+        }
+
+        if (hoveredEntityIdRef.current === entityId) {
+          if (
+            resolvedEntityIdRef.current === entityId ||
+            pendingEntityIdRef.current === entityId ||
+            hoverTimerRef.current !== null
+          ) {
             return
           }
-          const codeRefs = getCodeRefsFromEntityReference(
-            entityRef,
-            kclManager.artifactGraph
-          )
-          if (codeRefs && codeRefs.length > 0) {
-            const ranges = codeRefs.map(
-              (codeRef: { range: SourceRange }) => codeRef.range
-            )
-            kclManager.setHighlightRange(ranges)
-          } else {
-            kclManager.setHighlightRange([defaultSourceRange()])
-          }
-        } else if (
-          !kclManager.highlightRange ||
-          (kclManager.highlightRange[0] &&
-            kclManager.highlightRange[0][0] !== 0 &&
-            kclManager.highlightRange[0][1] !== 0)
-        ) {
-          kclManager.setHighlightRange([defaultSourceRange()])
+        } else {
+          hoverRequestTokenRef.current += 1
+          hoveredEntityIdRef.current = entityId
+          resolvedEntityIdRef.current = null
+          pendingEntityIdRef.current = null
+          clearHoverTimer()
         }
+
+        const requestToken = hoverRequestTokenRef.current
+        hoverTimerRef.current = setTimeout(() => {
+          hoverTimerRef.current = null
+          pendingEntityIdRef.current = entityId
+          void queryHoverReference(entityId, requestToken).catch(
+            reportRejection
+          )
+        }, HOVER_ENTITY_REFERENCE_DEBOUNCE_MS)
       },
     })
     const unSubClick = engineCommandManager.subscribeTo({
@@ -116,6 +227,7 @@ export function useEngineConnectionSubscriptions() {
       },
     })
     return () => {
+      clearHoverTimer()
       unSubHover()
       unSubClick()
     }
