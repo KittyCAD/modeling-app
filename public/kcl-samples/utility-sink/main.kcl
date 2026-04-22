@@ -190,7 +190,6 @@ pillarBody = patternLinear3d(
   distance = blockWidth,
   axis = [1, 0, 0],
 )
-hide(pillarProfile)
 
 // upper belt
 upperBeltPlane = offsetPlane(XY, offset = blockHeight)
@@ -224,7 +223,6 @@ upperBeltXProfileArray = patternLinear2d(
   axis = [0, 1],
 )
 upperBeltBodyX = extrude(upperBeltXProfileArray, length = -profileThickness)
-hide(upperBeltXProfile)
 
 upperBeltLengthY = blockDepth - profileThickness
 
@@ -261,7 +259,6 @@ upperBeltYProfileArray = patternLinear2d(
   axis = [1, 0],
 )
 upperBeltBodyY = extrude(upperBeltYProfileArray, length = -profileThickness)
-hide(upperBeltYProfile)
 
 // sink
 tableTopPlane = offsetPlane(XY, offset = tableHeight)
