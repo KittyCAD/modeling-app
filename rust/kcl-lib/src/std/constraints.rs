@@ -1,12 +1,13 @@
 use anyhow::Result;
+use ezpz::CircleSide;
 use ezpz::Constraint as SolverConstraint;
+use ezpz::LineSide;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumCircularArc;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
-use ezpz::{CircleSide, LineSide};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::errors::KclError;
