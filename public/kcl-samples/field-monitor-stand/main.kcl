@@ -8,92 +8,147 @@
 // Define parameters
 plateLength = 121
 plateLengthBase = 60
-
 width = 3
-
 plateWidth = 62 + 4
-holeRadius = 4 / 2 // 2.84
+holeRadius = 4 / 2
 holeDistanceY = 52.1 + 2 * holeRadius
 holeDistanceX = 75.2 + 2 * holeRadius
-
 plateHoleDistanceY1 = plateWidth / 2 + holeDistanceY / 2
 plateHoleDistanceY2 = plateWidth / 2 - (holeDistanceY / 2)
-plateHoleDistanceX1 = plateLength - 21 - 0
+plateHoleDistanceX1 = plateLength - 21
 plateHoleDistanceX2 = plateLength - 21 - holeDistanceX
+plateAngle = 110deg
+filletRadius = 5
+holeCutDepth = 10
+holeCols = 2
+holeRows = 2
+plateHoleAxis = [
+  0mm,
+  cos(plateAngle) * 1mm,
+  sin(plateAngle) * 1mm
+]
+plateWidthAxis = [1mm, 0mm, 0mm]
 
-angle = 110deg
+gussetLength = 15
+gussetWidth = 2
+plateInnerBaseX = width * (cos(plateAngle) - 1) / sin(plateAngle)
+gussetRise = -gussetLength * tan(plateAngle)
 
 // Model the base extrusion of the part
-baseSketch = startSketchOn(YZ)
-bodyProfile = startProfile(baseSketch, at = [-plateLengthBase, 0])
-  |> xLine(length = plateLengthBase)
-  |> angledLine(angle = angle, length = plateLength, tag = $seg01)
-  |> angledLine(angle = angle + 90deg, length = width, tag = $seg02)
-  |> angledLine(angle = angle + 90deg + 90deg, endAbsoluteY = width, tag = $seg03)
-  |> angledLine(angle = 180deg, endAbsoluteX = -plateLengthBase, tag = $seg04)
-  |> line(endAbsolute = [-plateLengthBase, 0], tag = $seg05)
+bodyProfile = sketch(on = YZ) {
+  line1 = line(start = [var -60mm, var 0mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -41.38mm, var 113.7mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -41.38mm, var 113.7mm], end = [var -44.2mm, var 112.68mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -44.2mm, var 112.68mm], end = [var -4.28mm, var 3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -4.28mm, var 3mm], end = [var -60mm, var 3mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -60mm, var 3mm], end = [var -60mm, var 0mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
 
-// Model a supporting gusset on the interior
-gussetProfile = startProfile(baseSketch, at = segEnd(seg03))
-  |> xLine(length = -15)
-  |> angledLineThatIntersects(angle = 90deg, intersectTag = seg03)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+  coincident([line1.end, ORIGIN])
+  horizontal(line1)
+  horizontal(line5)
+  vertical(line6)
+  parallel([line2, line4])
+  perpendicular([line2, line3])
 
+  distance([line1.start, line1.end]) == plateLengthBase
+  distance([line2.start, line2.end]) == plateLength
+  distance([line3.start, line3.end]) == width
+  distance([line6.start, line6.end]) == width
+  angle([line1, line2]) == plateAngle
+}
+
+bodyRegion = region(segments = [bodyProfile.line1, bodyProfile.line2])
 // Extrude the body of the mount to desired width
 body = extrude(
-  bodyProfile,
+  bodyRegion,
   length = plateWidth,
   tagStart = $capStart001,
   tagEnd = $capEnd001,
 )
+hide([bodyProfile])
 
+// Model a supporting gusset on the interior
+gussetProfile = sketch(on = YZ) {
+  line1 = line(start = [var -4.28mm, var 3mm], end = [var -19.28mm, var 3mm])
+  line2 = line(start = [var -19.28mm, var 3mm], end = [var -19.28mm, var 44.21mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -19.28mm, var 44.21mm], end = [var -4.28mm, var 3mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+
+  horizontal(line1)
+  vertical(line2)
+
+  horizontalDistance([line1.start, ORIGIN]) == -plateInnerBaseX
+  verticalDistance([ORIGIN, line1.start]) == width
+  distance([line1.start, line1.end]) == gussetLength
+  distance([line2.start, line2.end]) == gussetRise
+}
+
+gussetRegion = region(segments = [
+  gussetProfile.line1,
+  gussetProfile.line2
+])
 // Extrude the gusset to desired thickness
-gusset = extrude(gussetProfile, length = 2)
+gusset = extrude(gussetRegion, length = gussetWidth)
+hide([gussetProfile])
+
+plateOuterPlane = {
+  origin = { x = 0mm, y = 0mm, z = 0mm },
+  xAxis = {
+    x = 0,
+    y = cos(plateAngle),
+    z = sin(plateAngle)
+  },
+  yAxis = { x = 1, y = 0, z = 0 }
+}
 
 // Model the mounting holes
-sketch003 = startSketchOn(body, face = seg01)
+holeProfile = sketch(on = plateOuterPlane) {
+  hole = circle(start = [var 22.8mm, var 4.95mm], center = [var 20.8mm, var 4.95mm])
 
-// Identify hole positions
-holeCenters = [
-  [
-    plateHoleDistanceX1,
-    plateHoleDistanceY1
-  ],
-  [
-    plateHoleDistanceX1,
-    plateHoleDistanceY2
-  ],
-  [
-    plateHoleDistanceX2,
-    plateHoleDistanceY1
-  ],
-  [
-    plateHoleDistanceX2,
-    plateHoleDistanceY2
-  ]
-]
-
-// Place a hole at each position
-holes = map(
-  holeCenters,
-  f = fn(@pt) {
-    return circle(sketch003, center = pt, radius = holeRadius)
-  },
-)
+  horizontalDistance([ORIGIN, hole.center]) == plateHoleDistanceX2
+  verticalDistance([ORIGIN, hole.center]) == plateHoleDistanceY2
+  horizontalDistance([hole.center, hole.start]) == holeRadius
+  verticalDistance([hole.center, hole.start]) == 0mm
+}
 
 // Extrude all holes, then subtract
-holeExtrusions = extrude(holes, length = -10, method = NEW)
-subtract = subtract(body, tools = holeExtrusions)
+holeRegion = region(segments = [holeProfile.hole])
+holeCutter = extrude(holeRegion, length = -holeCutDepth)
+hide([holeProfile])
+
+// Place a hole at each position
+holeCutterRow = patternLinear3d(
+  holeCutter,
+  instances = holeCols,
+  distance = holeDistanceX,
+  axis = plateHoleAxis,
+)
+
+holeCutters = patternLinear3d(
+  holeCutterRow,
+  instances = holeRows,
+  distance = holeDistanceY,
+  axis = plateWidthAxis,
+)
+
+bodyCut = subtract(body, tools = holeCutters, legacyMethod = true)
 
 // Fillet the exterior edges
-fillet(
-  subtract,
+bodyFinal = fillet(
+  bodyCut,
   tags = [
-    getCommonEdge(faces = [seg02, capStart001]),
-    getCommonEdge(faces = [seg02, capEnd001]),
-    getCommonEdge(faces = [seg05, capStart001]),
-    getCommonEdge(faces = [seg05, capEnd001])
+    getCommonEdge(faces = [bodyRegion.tags.line4, capStart001]),
+    getCommonEdge(faces = [bodyRegion.tags.line4, capEnd001]),
+    getCommonEdge(faces = [bodyRegion.tags.line2, capStart001]),
+    getCommonEdge(faces = [bodyRegion.tags.line2, capEnd001])
   ],
-  radius = 5,
+  radius = filletRadius,
 )

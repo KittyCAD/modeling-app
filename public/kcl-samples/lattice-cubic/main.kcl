@@ -21,12 +21,20 @@ nodeColorHexadecimal = "#ff0059"
 rodColorHexadecimal = "#00fffb"
 
 // node sphere
-nodeSketchPlane = startSketchOn(XZ)
-nodeProfile = startProfile(nodeSketchPlane, at = [0, -nodeSphereRadiusLength])
-  |> yLine(length = 2 * nodeSphereRadiusLength)
-  |> arc(interiorAbsolute = [nodeSphereRadiusLength, 0], endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-nodeSphereSolid = revolve(nodeProfile, angle = 360deg, axis = Y)
+nodeProfile = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var -5mm], end = [var 0mm, var 5mm])
+  arc2 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  coincident([line1.start, arc2.end])
+  coincident([arc2.center, ORIGIN])
+  coincident([line1, arc2.center])
+  vertical(line1)
+  distance([line1.start, line1.end]) == 2 * nodeSphereRadiusLength
+  radius(arc2) == nodeSphereRadiusLength
+}
+nodeRegion = region(segments = [nodeProfile.line1])
+nodeSphereSolid = revolve(nodeRegion, angle = 360deg, axis = Y)
+hide(nodeProfile)
 appearance(nodeSphereSolid, color = nodeColorHexadecimal)
 
 // nodes pattern
@@ -50,9 +58,17 @@ nodesPatternAlongXThenYThenZ = patternLinear3d(
 )
 
 // rods
-rodYSketchPlane = startSketchOn(XZ)
-rodYProfile = circle(rodYSketchPlane, center = [0, 0], radius = rodCylinderRadiusLength)
-rodYCylinder = extrude(rodYProfile, length = -rodExtrudeLengthY)
+rodSketchOffset = 0.001mm
+rodSketchPlane = offsetPlane(XZ, offset = rodSketchOffset)
+rodYProfile = sketch(on = rodSketchPlane) {
+  circle1 = circle(start = [var 0.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == rodCylinderRadiusLength
+}
+rodYRegion = region(segments = [rodYProfile.circle1])
+rodYCylinder = extrude(rodYRegion, length = -rodExtrudeLengthY)
+  |> translate(y = -rodSketchOffset, global = true)
+hide(rodYProfile)
 appearance([rodYCylinder], color = rodColorHexadecimal)
 
 rodsAlongYPatternAlongX = patternLinear3d(
@@ -68,10 +84,36 @@ rodsAlongYPatternAlongXThenZ = patternLinear3d(
   axis = Z,
 )
 
-rodsAlongX = clone(rodsAlongYPatternAlongXThenZ)
+rodXCylinder = clone(rodYCylinder)
   |> rotate(axis = Z, angle = 90)
   |> translate(x = rodExtrudeLengthY, global = true)
 
-rodsAlongZ = clone(rodsAlongYPatternAlongXThenZ)
+rodsAlongXPatternAlongY = patternLinear3d(
+  rodXCylinder,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Y,
+)
+rodsAlongX = patternLinear3d(
+  rodsAlongXPatternAlongY,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Z,
+)
+
+rodZCylinder = clone(rodYCylinder)
   |> rotate(axis = X, angle = 90, global = true)
   |> translate(y = rodExtrudeLengthY, global = true)
+
+rodsAlongZPatternAlongX = patternLinear3d(
+  rodZCylinder,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = X,
+)
+rodsAlongZ = patternLinear3d(
+  rodsAlongZPatternAlongX,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = [0, -1, 0],
+)

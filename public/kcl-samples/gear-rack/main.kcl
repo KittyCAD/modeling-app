@@ -3,58 +3,88 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Define parameters
 length = 100
-pitchHeight = 11.5
 width = 5
 height = 12
 minHeight = 10.875
 
 // Create the body of the rack
-rackBody = startSketchOn(XY)
-  |> startProfile(at = [-length / 2, 0])
-  |> line(end = [length, 0])
-  |> line(end = [0, minHeight])
-  |> line(end = [-length, 0])
-  |> close()
-  |> extrude(length = width)
-
-// Create a function for sketch of a single tooth
-fn tooth() {
-  toothSketch = startSketchOn(XY)
-    |> startProfile(at = [-length / 2 + 0.567672, minHeight])
-    |> tangentialArc(end = [0.157636, 0.110378])
-    |> line(end = [0.329118, 0.904244])
-    |> tangentialArc(end = [0.157636, 0.110378])
-    |> line(end = [0.186505, 0])
-    |> tangentialArc(end = [0.157636, -0.110378])
-    |> line(end = [0.329118, -0.904244])
-    |> tangentialArc(end = [0.157636, -0.110378])
-    |> close()
-    |> extrude(length = width)
-  return toothSketch
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -50mm, var 0mm], end = [var 50mm, var 0mm])
+  line2 = line(start = [var 50mm, var 0mm], end = [var 50mm, var 10.88mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 50mm, var 10.88mm], end = [var -50mm, var 10.88mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -50mm, var 10.88mm], end = [var -50mm, var 0mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+  vertical(line2)
+  vertical(line4)
+  distance([line1.start, line1.end]) == length
+  distance([line2.start, line2.end]) == minHeight
+  coincident([line1.start, line4.end])
+  verticalDistance([line4.end, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, line2.start]) == length / 2
 }
+region001 = region(segments = [sketch001.line1])
+rackBody = extrude(region001, length = width)
+hide(sketch001)
+
+// Offset repeated top features to avoid engine collisions when multiple solids share the same base plane.
+topFeaturePlane = offsetPlane(XY, offset = width)
+
+toothProfile = sketch(on = topFeaturePlane) {
+  arc1 = arc(start = [var -50mm, var 10.88mm], end = [var -49.84mm, var 10.98mm], center = [var -50mm, var 11.05mm])
+  line2 = line(start = [var -49.84mm, var 10.98mm], end = [var -49.5mm, var 11.87mm])
+  coincident([arc1.end, line2.start])
+  tangent([arc1, line2])
+  arc3 = arc(start = [var -49.35mm, var 11.98mm], end = [var -49.5mm, var 11.87mm], center = [var -49.35mm, var 11.81mm])
+  coincident([line2.end, arc3.end])
+  tangent([line2, arc3])
+  line4 = line(start = [var -49.35mm, var 11.98mm], end = [var -49.16mm, var 11.98mm])
+  coincident([arc3.start, line4.start])
+  tangent([arc3, line4])
+  arc5 = arc(start = [var -49mm, var 11.87mm], end = [var -49.16mm, var 11.98mm], center = [var -49.16mm, var 11.81mm])
+  coincident([line4.end, arc5.end])
+  tangent([line4, arc5])
+  line6 = line(start = [var -49mm, var 11.87mm], end = [var -48.66mm, var 10.98mm])
+  coincident([arc5.start, line6.start])
+  tangent([arc5, line6])
+  horizontal(line4)
+  radius(arc1) == 0.17
+  radius(arc3) == 0.17
+  radius(arc5) == 0.17
+  distance([line4.start, line4.end]) == 0.19
+  line1 = line(start = [var -50mm, var 10.88mm], end = [var -48.5mm, var 10.88mm])
+  coincident([line1.start, arc1.start])
+  horizontal(line1)
+  horizontalDistance([line1.start, line1.end]) == 1.5
+  line3 = line(start = [var -50mm, var 11.05mm], end = [var -50mm, var 10.88mm], construction = true)
+  coincident([line3.start, arc1.center])
+  coincident([line3.end, line1.start])
+  vertical(line3)
+  line5 = line(start = [var -48.5mm, var 10.88mm], end = [var -48.5mm, var 11.05mm], construction = true)
+  coincident([line5.start, line1.end])
+  vertical(line5)
+  verticalDistance([line5.start, arc5.end]) == 1.1
+  horizontalDistance([line3.end, ORIGIN]) == length / 2
+  arc2 = arc(start = [var -48.66mm, var 10.98mm], end = [var -48.5mm, var 10.88mm], center = [var -48.5mm, var 11.05mm])
+  coincident([arc2.start, line6.end])
+  tangent([line6, arc2])
+  coincident([arc2.end, line5.start])
+  coincident([arc2.center, line5.end])
+  radius(arc2) == 0.17
+  equalLength([line2, line6])
+  verticalDistance([ORIGIN, arc2.end]) == minHeight
+}
+toothRegion = region(segments = [toothProfile.line1])
+singleTooth = extrude(toothRegion, length = -width)
+hide(toothProfile)
 
 // Pattern the single tooth over the length of the rack body
-teeth = tooth()
-  |> patternLinear3d(axis = [10, 0, 0], distance = 1.570796, instances = 63)
-
-// Sketch and extrude the first end cap. This is a partial tooth
-endCapTooth = startSketchOn(XY)
-  |> startProfile(at = [-length / 2, 11.849525])
-  |> line(end = [0.314524, -0.864147])
-  |> tangentialArc(end = [0.157636, -0.110378])
-  |> line(endAbsolute = [-length / 2, minHeight])
-  |> close()
-  |> extrude(length = width)
-
-// Sketch and extrude the second end cap. This is a partial tooth
-endCapTooth2 = startSketchOn(XY)
-  |> startProfile(at = [length / 2, 11.849525])
-  |> line(end = [-0.314524, -0.864147])
-  |> tangentialArc(end = [-0.157636, -0.110378])
-  |> line(endAbsolute = [length / 2, minHeight])
-  |> close()
-  |> extrude(length = width)
+teeth = singleTooth
+  |> patternLinear3d(axis = [10, 0, 0], distance = 1.59, instances = 63)

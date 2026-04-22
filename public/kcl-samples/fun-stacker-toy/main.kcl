@@ -1,0 +1,127 @@
+// Fun-Stacker!
+// The fun stacking toy from Zoo for babies 6 months and older made using zds.
+// Categories: Maker
+
+@settings(defaultLengthUnit = in)
+
+ringradius = 1in
+numrings = 5
+postheight = ringradius * (numrings + 1) * 2
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var 12in])
+  coincident([line1.start, ORIGIN])
+  vertical(line1)
+  distance([line1.start, line1.end]) == postheight
+  line2 = line(start = [var 0in, var 0in], end = [var 3.25in, var 0in])
+  coincident([line2.start, line1.start])
+  horizontal(line2)
+  distance([line2.start, line2.end]) == 3.25inch
+  line3 = line(start = [var 0in, var 12in], end = [var 1.5in, var 12in])
+  coincident([line3.start, line1.end])
+  horizontal(line3)
+  distance([line3.start, line3.end]) == 1.5inch
+  line4 = line(start = [var 1.79in, var 11.43in], end = [var 1.78in, var 10.98in])
+  vertical(line4)
+  distance([line4.start, line4.end]) == 0.5inch
+  arc1 = arc(start = [var 1.78in, var 10.98in], end = [var 3.25in, var 0in], center = [var 43.58in, var 10.98in])
+  coincident([arc1.start, line4.end])
+  coincident([arc1.end, line2.end])
+  circle1 = circle(start = [var 4.77in, var 0.34in], center = [var 4.02in, var 1in])
+  radius(circle1) == ringradius
+  circle2 = circle(start = [var 4.52in, var 2.61in], center = [var 3.58in, var 2.95in])
+  radius(circle2) == ringradius
+  circle3 = circle(start = [var 4.23in, var 5.02in], center = [var 3.23in, var 4.92in])
+  radius(circle3) == ringradius
+  circle4 = circle(start = [var 3.98in, var 6.81in], center = [var 2.99in, var 6.91in])
+  radius(circle4) == ringradius
+  circle5 = circle(start = [var 3.76in, var 9.28in], center = [var 2.84in, var 8.9in])
+  radius(circle5) == ringradius
+  tangent([circle1, arc1])
+  tangent([line2, circle1])
+  tangent([circle2, circle1])
+  tangent([circle2, arc1])
+  tangent([circle3, circle2])
+  tangent([circle3, arc1])
+  tangent([circle4, circle3])
+  tangent([circle4, arc1])
+  tangent([circle5, circle4])
+  tangent([circle5, arc1])
+  tangent([line4, arc1])
+  arc2 = arc(start = [var 1.99in, var 11.48in], end = [var 1.47in, var 11.86in], center = [var 1.39in, var 11.48in])
+  coincident([arc2.start, line4.start])
+  coincident([line3.end, arc2.end])
+  tangent([line3, arc2])
+  tangent([line4, arc2])
+  distance([arc2.center, arc2.end]) == 0.51in
+  radius(arc1) == 49.32in
+}
+region001 = region(point = [0in, 1.5in], sketch = sketch001)
+revolve001 = revolve(region001, angle = 360deg, axis = Y)
+  |> appearance(color = "#ffffff")
+region002 = region(point = [3.95in, 1.5in], sketch = sketch001)
+revolve002 = revolve(region002, angle = 360deg, axis = Y)
+  |> appearance(color = "#ff0000")
+region003 = region(point = [3.5in, 2.5in], sketch = sketch001)
+revolve003 = revolve(region003, angle = 360deg, axis = Y)
+  |> appearance(color = "#ff7b00")
+region004 = region(point = [3.5in, 4.5in], sketch = sketch001)
+revolve004 = revolve(region004, angle = 360deg, axis = Y)
+  |> appearance(color = "#ffff00")
+region005 = region(point = [3.5in, 6.5in], sketch = sketch001)
+revolve005 = revolve(region005, angle = 360deg, axis = Y)
+  |> appearance(color = "#00ff00")
+region006 = region(point = [93.4958mm, 212.6842mm], sketch = sketch001)
+revolve006 = revolve(region006, angle = 360deg, axis = Y)
+  |> appearance(color = "#0000ff")
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -6in, var -6in], end = [var 6in, var -6in])
+  line2 = line(start = [var 6in, var -6in], end = [var 6in, var 6in])
+  line3 = line(start = [var 6in, var 6in], end = [var -6in, var 6in])
+  line4 = line(start = [var -6in, var 6in], end = [var -6in, var -6in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  distance([line2.start, line2.end]) == postheight
+  distance([line1.start, line1.end]) == postheight
+  point1 = point(at = [0in, 0in])
+  line5 = line(start = [var 0in, var 0in], end = [var -6in, var -6in], construction = true)
+  coincident([line5.start, point1])
+  coincident([line5.end, line4.end])
+  line6 = line(start = [var 0in, var 0in], end = [var 6in, var 6in], construction = true)
+  coincident([line6.start, line5.start])
+  coincident([line6.end, line3.start])
+  parallel([line6, line5])
+  equalLength([line6, line5])
+}
+region007 = region(point = [0mm, -0in], sketch = sketch002)
+extrude001 = extrude(region007, length = -1in)
+  |> appearance(color = "#ffffff")
+fillet001 = fillet(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [
+      region007.tags.line2,
+      region007.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region007.tags.line3,
+      region007.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region007.tags.line3,
+      region007.tags.line4
+    ]),
+    getCommonEdge(faces = [
+      region007.tags.line4,
+      region007.tags.line2
+    ])
+  ],
+  radius = 3in,
+)
+hide(sketch002)

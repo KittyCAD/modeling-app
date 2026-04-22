@@ -2,7 +2,7 @@
 // A small electric motor to power the fan
 
 // Set Units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import Parameters
 import * from "parameters.kcl"
@@ -11,12 +11,29 @@ import * from "parameters.kcl"
 
 
 topFacePlane = offsetPlane(XY, offset = 4)
-motorBody = startSketchOn(topFacePlane)
-  |> circle(center = [0, 0], radius = 10, tag = $seg04)
-  |> extrude(length = 17)
+sketch001 = sketch(on = topFacePlane) {
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+motorBody = extrude(
+       region001,
+       length = 17,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
   |> appearance(color = "#021b55")
-  |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
-startSketchOn(offsetPlane(XY, offset = 21))
-  |> circle(center = [0, 0], radius = 1)
-  |> extrude(length = 3.8)
+  |> fillet(
+       tags = [
+         getCommonEdge(faces = [region001.tags.circle1, capStart001]),
+         getCommonEdge(faces = [region001.tags.circle1, capEnd001])
+       ],
+       radius = 2,
+     )
+sketch002 = sketch(on = offsetPlane(XY, offset = 21)) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch002.circle1])
+extrude(region002, length = 3.8)
   |> appearance(color = "#dbc89e")
+
+hidden001 = hide(sketch001)

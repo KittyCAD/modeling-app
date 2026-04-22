@@ -3,40 +3,106 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
-// Parameters referenced in drawRectangle
+// Parameters used to construct the cube faces
 size = 100
 halfSize = size / 2
 extrudeLength = 1.0
 metalConstant = 50
 roughnessConstant = 50
 
-// Create planes for 6 sides of a cube
-bluePlane = offsetPlane(XY, offset = halfSize)
-yellowPlane = offsetPlane(XY, offset = -halfSize)
-greenPlane = offsetPlane(XZ, offset = -halfSize)
-purplePlane = offsetPlane(-XZ, offset = -halfSize)
-redPlane = offsetPlane(YZ, offset = halfSize - extrudeLength)
-tealPlane = offsetPlane(YZ, offset = -halfSize)
-
 // Sketch a rectangle centered at the origin of the profile
-fn sketchRectangle(profile, color) {
-  return profile
-    |> startProfile(at = [-halfSize, halfSize])
-    |> angledLine(angle = 0, length = size, tag = $rectangleSegmentA001)
-    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = size, tag = $rectangleSegmentB001)
-    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-    |> extrude(length = extrudeLength)
-    |> appearance(color = color, metalness = metalConstant, roughness = roughnessConstant)
+faceSketch = sketch(on = XY) {
+  originToLeft = line(start = [var 0mm, var 0mm], end = [var -50mm, var 0mm], construction = true)
+  leftDown = line(start = [var -50mm, var 0mm], end = [var -50mm, var -50mm], construction = true)
+  bottomEdge = line(start = [var -50mm, var -50mm], end = [var 50mm, var -50mm])
+  rightEdge = line(start = [var 50mm, var -50mm], end = [var 50mm, var 50mm])
+  topEdge = line(start = [var 50mm, var 50mm], end = [var -50mm, var 50mm])
+  leftEdge = line(start = [var -50mm, var 50mm], end = [var -50mm, var -50mm])
+
+  coincident([originToLeft.start, ORIGIN])
+  coincident([originToLeft.end, leftDown.start])
+  coincident([leftDown.end, bottomEdge.start])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+
+  horizontal(originToLeft)
+  vertical(leftDown)
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+
+  distance([originToLeft.start, originToLeft.end]) == halfSize
+  distance([leftDown.start, leftDown.end]) == halfSize
+  distance([bottomEdge.start, bottomEdge.end]) == size
+  distance([rightEdge.start, rightEdge.end]) == size
 }
 
-// Sketch each side of the cube
-sketchRectangle(profile = bluePlane, color = '#0000FF')
-sketchRectangle(profile = yellowPlane, color = '#FFFF00')
-sketchRectangle(profile = greenPlane, color = '#00FF00')
-sketchRectangle(profile = redPlane, color = '#FF0000')
-sketchRectangle(profile = tealPlane, color = '#00FFFF')
-sketchRectangle(profile = purplePlane, color = '#FF00FF')
+faceRegion = region(point = [0mm, 0mm], sketch = faceSketch)
+faceBody = extrude(faceRegion, length = extrudeLength)
+  |> translate(z = -extrudeLength / 2, global = true)
+hide(faceSketch)
+
+// Position and color each side of the cube
+blueBody = clone(faceBody)
+  |> translate(z = halfSize + extrudeLength / 2, global = true)
+yellowBody = clone(faceBody)
+  |> translate(z = -halfSize + extrudeLength / 2, global = true)
+greenBody = clone(faceBody)
+  |> rotate(axis = X, angle = 90deg)
+  |> translate(y = halfSize - (extrudeLength / 2), global = true)
+purpleBody = clone(faceBody)
+  |> rotate(axis = X, angle = -90deg)
+  |> translate(y = -halfSize + extrudeLength / 2, global = true)
+redBody = clone(faceBody)
+  |> rotate(axis = Y, angle = 90deg)
+  |> translate(x = halfSize - (extrudeLength / 2), global = true)
+tealBody = faceBody
+  |> rotate(axis = Y, angle = 90deg)
+  |> translate(x = -halfSize + extrudeLength / 2, global = true)
+
+blueFace = appearance(
+  blueBody,
+  color = "#0000FF",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)
+
+yellowFace = appearance(
+  yellowBody,
+  color = "#FFFF00",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)
+
+greenFace = appearance(
+  greenBody,
+  color = "#00FF00",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)
+
+redFace = appearance(
+  redBody,
+  color = "#FF0000",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)
+
+tealFace = appearance(
+  tealBody,
+  color = "#00FFFF",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)
+
+purpleFace = appearance(
+  purpleBody,
+  color = "#FF00FF",
+  metalness = metalConstant,
+  roughness = roughnessConstant,
+)

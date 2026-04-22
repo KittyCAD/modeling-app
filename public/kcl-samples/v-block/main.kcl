@@ -20,30 +20,56 @@ slotDepth = 0.375
 vBlockProfileSketch = startSketchOn(offsetPlane(YZ, offset = -vBlockLength / 2))
 
 // Define the profile of the vBlock
-vBlockProfile = startProfile(vBlockProfileSketch, at = [-vBlockWidth / 2, 0])
-  // side
-  |> yLine(length = vBlockHeight / 2 - (slotHeight / 2))
-  |> xLine(length = slotDepth)
-  |> yLine(length = slotHeight)
-  |> xLine(length = -slotDepth)
-  |> yLine(length = vBlockHeight / 2 - (slotHeight / 2))
-  // plateau
-  |> xLine(length = vBlockWidth / 2 - (vWidth / 2), tag = $seg01)
-  |> line(end = [vWidth / 2, -vDepth])
-  |> line(end = [vWidth / 2, vDepth])
-  |> xLine(length = vBlockWidth / 2 - (vWidth / 2))
-  // side
-  |> yLine(length = -vBlockHeight / 2 + slotHeight / 2)
-  |> xLine(length = -slotDepth)
-  |> yLine(length = -slotHeight)
-  |> xLine(length = slotDepth)
-  |> yLine(length = -vBlockHeight / 2 + slotHeight / 2)
-  // bottom
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+vBlockProfile = sketch(on = vBlockProfileSketch) {
+  line1 = line(start = [var -1.5in, var 0in], end = [var -1.5in, var 1in])
+  line2 = line(start = [var -1.5in, var 1in], end = [var -1.13in, var 1in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -1.13in, var 1in], end = [var -1.13in, var 1.38in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.13in, var 1.38in], end = [var -1.5in, var 1.38in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -1.5in, var 1.38in], end = [var -1.5in, var 2.38in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -1.5in, var 2.38in], end = [var -0.81in, var 2.38in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -0.81in, var 2.38in], end = [var 0in, var 1.56in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 0in, var 1.56in], end = [var 0.81in, var 2.38in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 0.81in, var 2.38in], end = [var 1.5in, var 2.38in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 1.5in, var 2.38in], end = [var 1.5in, var 1.38in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 1.5in, var 1.38in], end = [var 1.13in, var 1.38in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 1.13in, var 1.38in], end = [var 1.13in, var 1in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 1.13in, var 1in], end = [var 1.5in, var 1in])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 1.5in, var 1in], end = [var 1.5in, var 0in])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 1.5in, var 0in], end = [var -1.5in, var 0in])
+  coincident([line14.end, line15.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  horizontal(line9)
+  vertical(line10)
+  horizontal(line11)
+  vertical(line12)
+  horizontal(line13)
+  vertical(line14)
+}
 
+region001 = region(segments = [
+  vBlockProfile.line1,
+  vBlockProfile.line2
+])
 // Extrude the profile to create the v-block
-vBlock = extrude(vBlockProfile, length = vBlockLength)
+vBlock = extrude(region001, length = vBlockLength)
 
 // Side holes
 sideHoleDistance = vBlockWidth / 3
