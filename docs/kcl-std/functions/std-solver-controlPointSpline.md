@@ -40,6 +40,8 @@ The minimum input is three control points. The current degree policy is:
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 profile = sketch(on = XY) {
   spline1 = controlPointSpline(points = [
     [var 0mm, var 0mm],

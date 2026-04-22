@@ -158,6 +158,8 @@ export fn circle(
 /// control points.
 ///
 /// ```kcl,sketchSolve
+/// @settings(experimentalFeatures = allow)
+///
 /// profile = sketch(on = XY) {
 ///   spline1 = controlPointSpline(points = [
 ///     [var 0mm, var 0mm],
