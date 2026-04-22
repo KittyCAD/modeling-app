@@ -24,6 +24,7 @@ use crate::execution::ArtifactGraph;
 use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::annotations::WarningLevel;
 use crate::execution::cache::SketchModeState;
 use crate::execution::cache::clear_mem_cache;
 use crate::execution::cache::read_old_memory;
@@ -384,6 +385,20 @@ fn matches_control_point_spline_owner(owner_id: ObjectId, scene_graph: &SceneGra
             segment: Segment::ControlPointSpline(_)
         })
     )
+}
+
+fn ensure_control_point_spline_experimental_features(program: &Program) -> Result<Program, KclError> {
+    let experimental_features_allowed = program
+        .meta_settings()
+        .ok()
+        .flatten()
+        .map(|settings| settings.experimental_features == WarningLevel::Allow)
+        .unwrap_or(false);
+    if experimental_features_allowed {
+        return Ok(program.clone());
+    }
+
+    program.change_experimental_features(Some(WarningLevel::Allow))
 }
 
 impl SketchApi for FrontendState {
@@ -2262,6 +2277,9 @@ impl FrontendState {
         sketch: ObjectId,
         ctor: ControlPointSplineCtor,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let new_program = ensure_control_point_spline_experimental_features(&self.program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
         let points_ast = to_ast_point2d_array(&ctor.points)
             .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
         let mut arguments = vec![ast::LabeledArg {
@@ -2296,7 +2314,7 @@ impl FrontendState {
             ))));
         };
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = new_program.ast.clone();
         let (sketch_block_ref, _) = self
             .mutate_ast(
                 &mut new_ast,
@@ -10944,6 +10962,20 @@ sketch001 = sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_ensure_control_point_spline_experimental_features_adds_allow_setting() {
+        let initial_program = Program::parse("s = sketch(on = XY) {}\n").unwrap().0.unwrap();
+
+        let updated_program = ensure_control_point_spline_experimental_features(&initial_program).unwrap();
+        let meta_settings = updated_program.meta_settings().unwrap().unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Allow);
+        assert!(
+            source_from_ast(&updated_program.ast).contains("@settings(experimentalFeatures = allow)"),
+            "Expected experimental settings to be added to source"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
