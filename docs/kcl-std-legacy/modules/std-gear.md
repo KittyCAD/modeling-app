@@ -16,6 +16,6 @@ Define gears that users can include in their models.
 
 * [`gear::helical`](/docs/kcl-std-legacy/functions/std-gear-helical)
 * [`gear::herringbone`](/docs/kcl-std-legacy/functions/std-gear-herringbone)
-* [`gear::ringGear`](/docs/kcl-std-legacy/functions/std-gear-ringGear)
+* [`gear::ring`](/docs/kcl-std-legacy/functions/std-gear-ring)
 * [`gear::spur`](/docs/kcl-std-legacy/functions/std-gear-spur)
 

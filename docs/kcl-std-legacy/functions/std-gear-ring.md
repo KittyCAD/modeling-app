@@ -1,5 +1,5 @@
 ---
-title: "gear::ringGear"
+title: "gear::ring"
 subtitle: "Function in std::gear"
 excerpt: "A ring gear."
 layout: manual
@@ -10,7 +10,7 @@ layout: manual
 A ring gear.
 
 ```kcl
-gear::ringGear(
+gear::ring(
   nTeeth: number(_),
   module: number(Length),
   pressureAngle: number(Angle),
@@ -43,7 +43,7 @@ gear::ringGear(
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-gear::ringGear(
+gear::ring(
   nTeeth = 40,
   module = 1.5,
   pressureAngle = 14deg,
@@ -56,11 +56,11 @@ gear::ringGear(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the gear::ringGear function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-ringGear0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the gear::ring function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-ring0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-gear-ringGear0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-gear-ring0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

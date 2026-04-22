@@ -201,7 +201,7 @@ export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle): So
 ///
 /// @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 ///
-/// gear::ringGear(
+/// gear::ring(
 ///   nTeeth = 40,
 ///   module = 1.5,
 ///   pressureAngle = 14deg,
@@ -210,7 +210,7 @@ export fn herringbone(nTeeth, module, pressureAngle, gearHeight, helixAngle): So
 /// )
 /// ```
 @(experimental = true)
-export fn ringGear(
+export fn ring(
   nTeeth: number(Count),
   module: number(Length),
   pressureAngle: number(Angle),
