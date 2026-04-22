@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing get_common_edge_of_segment_edge_tag.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `line1` is not defined
+    ╭─[9:5]
+  8 │      rt = region001.tags
+  9 │ ╭──▶ x = getCommonEdge(faces = [
+ 10 │ ││     region001.tags.line1,
+ 11 │ ││     region001.tags.line2
+ 12 │ ├──▶ ])
+    · ╰───── tests/get_common_edge_of_segment_edge_tag/input.kcl
+    · ╰───── tests/get_common_edge_of_segment_edge_tag/input.kcl
+    ╰────
+  ╰─▶ KCL UndefinedValue error
+      
+        × undefined value: `line1` is not defined
+          ╭─[9:5]
+        8 │     rt = region001.tags
+        9 │ ╭─▶ x = getCommonEdge(faces = [
+       10 │ │     region001.tags.line1,
+       11 │ │     region001.tags.line2
+       12 │ ├─▶ ])
+          · ╰──── tests/get_common_edge_of_segment_edge_tag/input.kcl
+          ╰────
