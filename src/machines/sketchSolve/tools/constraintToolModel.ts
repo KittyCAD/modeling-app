@@ -96,6 +96,7 @@ export const constraintToolConfigs = {
         id: 'point-point',
         resultingConstraintType: 'Coincident',
         slots: [['point'], ['point']],
+        repeatableLastSlot: true,
         areaSelectionPolicy: 'consume-minimal',
       },
       {
@@ -150,6 +151,7 @@ export const constraintToolConfigs = {
         id: 'origin-point',
         resultingConstraintType: 'Coincident',
         slots: [['origin'], ['point']],
+        repeatableLastSlot: true,
         areaSelectionPolicy: 'consume-minimal',
       },
     ],

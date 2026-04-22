@@ -138,6 +138,29 @@ describe('constraintToolModel', () => {
     )
   })
 
+  it('recognizes grouped point coincident selections as complete', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const objects = createObjectsArray([pointA, pointB, pointC])
+
+    const pointCluster = getConstraintToolSelectionMatches(
+      'coincidentConstraintTool',
+      [1, 2, 3],
+      objects
+    )
+    expect(pointCluster.status).toBe('complete')
+    expect(pointCluster.bestMatch?.mode.id).toBe('point-point')
+
+    const originCluster = getConstraintToolSelectionMatches(
+      'coincidentConstraintTool',
+      [ORIGIN_TARGET, 1, 2],
+      objects
+    )
+    expect(originCluster.status).toBe('complete')
+    expect(originCluster.bestMatch?.mode.id).toBe('origin-point')
+  })
+
   it('keeps parallel and perpendicular line-only', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })

@@ -132,6 +132,25 @@ describe('constraintToolHelpers', () => {
     })
   })
 
+  it('prepares grouped coincident payloads from multiple point selections', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const objects = createObjectsArray([pointA, pointB, pointC])
+
+    const apply = getConstraintToolPreparedApply(
+      'coincidentConstraintTool',
+      [1, 2, 3],
+      objects,
+      applyOptions
+    )
+
+    expect(apply?.payload).toEqual({
+      type: 'Coincident',
+      segments: [1, 2, 3],
+    })
+  })
+
   it('prepares equal-length payloads from the full valid current selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
