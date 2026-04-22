@@ -90,7 +90,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000007949816695368918,
+            "x": -0.000000000007949816222218743,
             "y": 50.80000000000057,
             "z": 0.0
           },
@@ -120,7 +120,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000005175251172330144,
+            "x": -0.000000000005175251494097315,
             "y": -50.800000000000864,
             "z": 0.0
           },
@@ -135,7 +135,7 @@ description: Artifact commands i-beam.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000008653749571434339,
+          "x": -0.000000000008653749000282587,
           "y": 50.80000000000136,
           "z": 0.0
         }
@@ -165,7 +165,7 @@ description: Artifact commands i-beam.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000005175251193348458,
+          "x": -0.000000000005175251515117044,
           "y": -50.799999999999514,
           "z": 0.0
         }
@@ -227,7 +227,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.058274006606624,
+            "x": -14.058274006783828,
             "y": 43.357800000003536,
             "z": 0.0
           },
@@ -274,7 +274,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.058274006584389,
+            "x": 14.058274006761591,
             "y": 43.35780000000864,
             "z": 0.0
           },
@@ -321,7 +321,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.05598845971311,
+            "x": 14.05598845977284,
             "y": -43.357799999994995,
             "z": 0.0
           },
@@ -368,7 +368,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.060458072431022,
+            "x": -14.060458072441598,
             "y": -43.357800000016546,
             "z": 0.0
           },
@@ -383,7 +383,7 @@ description: Artifact commands i-beam.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.058274006583417,
+          "x": 14.058274006760621,
           "y": 43.357799989119826,
           "z": 0.0
         }
@@ -398,17 +398,17 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.057372804301234,
-            "y": 31.751527182734762
+            "x": 14.057372804496126,
+            "y": 31.751527182539867
           },
-          "radius": 11.606272841373277,
+          "radius": 11.606272841568169,
           "start": {
             "unit": "degrees",
-            "value": 89.99555110516405
+            "value": 89.99555110525144
           },
           "end": {
             "unit": "degrees",
-            "value": 179.9964839595853
+            "value": 179.99648395951968
           },
           "relative": false
         }
@@ -422,7 +422,7 @@ description: Artifact commands i-beam.kcl
         "path": "[uuid]",
         "to": {
           "x": 2.4510999999927945,
-          "y": -31.751190725019296,
+          "y": -31.751190725000153,
           "z": 0.0
         }
       }
@@ -436,17 +436,17 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.05670674173651,
-            "y": -31.752193230263455
+            "x": 14.056706741789354,
+            "y": -31.752193230210615
           },
-          "radius": 11.605606785042475,
+          "radius": 11.605606785095317,
           "start": {
             "unit": "degrees",
-            "value": 179.995050726725
+            "value": 179.99505072689138
           },
           "end": {
             "unit": "degrees",
-            "value": 269.99645390980237
+            "value": 269.99645390983636
           },
           "relative": false
         }
@@ -459,7 +459,7 @@ description: Artifact commands i-beam.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.060458072429668,
+          "x": -14.060458072440241,
           "y": -43.357799989223075,
           "z": 0.0
         }
@@ -477,14 +477,14 @@ description: Artifact commands i-beam.kcl
             "x": -14.058899964679712,
             "y": -31.75000001621079
           },
-          "radius": 11.6078000775842,
+          "radius": 11.607800077584201,
           "start": {
             "unit": "degrees",
-            "value": -90.00769077669933
+            "value": -90.00769077675152
           },
           "end": {
             "unit": "degrees",
-            "value": -0.005877305665328792
+            "value": -0.005877305570872582
           },
           "relative": false
         }
@@ -498,7 +498,7 @@ description: Artifact commands i-beam.kcl
         "path": "[uuid]",
         "to": {
           "x": -2.4511000063070885,
-          "y": 31.750652921830074,
+          "y": 31.750652921841343,
           "z": 0.0
         }
       }
@@ -512,17 +512,17 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.058899990565669,
+            "x": -14.058899990565665,
             "y": 31.75000000835627
           },
           "radius": 11.607800002621058,
           "start": {
             "unit": "degrees",
-            "value": 0.003222762835984542
+            "value": 0.0032227628916059706
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99691016050593
+            "value": 89.99691016138063
           },
           "relative": false
         }
@@ -536,7 +536,7 @@ description: Artifact commands i-beam.kcl
         "path": "[uuid]",
         "to": {
           "x": -2.451100000011332,
-          "y": -31.75119072500857,
+          "y": -31.751190724989428,
           "z": 0.0
         }
       }
@@ -551,7 +551,7 @@ description: Artifact commands i-beam.kcl
           "type": "line",
           "end": {
             "x": -2.4511000000107552,
-            "y": 31.750652921830316,
+            "y": 31.750652921841585,
             "z": 0.0
           },
           "relative": false
@@ -566,7 +566,7 @@ description: Artifact commands i-beam.kcl
         "path": "[uuid]",
         "to": {
           "x": 2.4510999832712845,
-          "y": -31.751190725019434,
+          "y": -31.751190725000296,
           "z": 0.0
         }
       }
@@ -581,7 +581,7 @@ description: Artifact commands i-beam.kcl
           "type": "line",
           "end": {
             "x": 2.4510999832727776,
-            "y": 31.75223941886611,
+            "y": 31.752239418684518,
             "z": 0.0
           },
           "relative": false
