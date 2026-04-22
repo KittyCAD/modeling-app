@@ -933,9 +933,10 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
-      await page.keyboard.type('  |> startProfi')
-      // expect there be a single auto complete option that we can just hit enter on
-      await expect(page.locator('.cm-completionLabel')).toBeVisible()
+      await page.keyboard.type('  |> startProfil')
+      await expect(
+        page.locator('.cm-completionLabel', { hasText: 'startProfile' })
+      ).toBeVisible()
       await page.waitForTimeout(100)
       await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
@@ -949,13 +950,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       await page.keyboard.press('Enter')
       await page.waitForTimeout(100)
-      await page.keyboard.type('  |> lin')
+      await page.keyboard.type('  |> xLin')
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then enter to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
+      // Accept the unique xLine completion with enter.
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -997,18 +996,19 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.type('sketch001 = startSketchO')
       await page.waitForTimeout(100)
 
-      // Make sure just hitting tab will take the only one left
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
+      await expect(
+        page.locator('.cm-completionLabel', { hasText: 'startSketchOn' })
+      ).toBeVisible()
       await page.waitForTimeout(500)
-      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       await page.waitForTimeout(500)
       await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
-      await page.keyboard.type('  |> startProfi')
-      // expect there be a single auto complete option that we can just hit enter on
-      await expect(page.locator('.cm-completionLabel')).toBeVisible()
+      await page.keyboard.type('  |> startProfil')
+      await expect(
+        page.locator('.cm-completionLabel', { hasText: 'startProfile' })
+      ).toBeVisible()
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
 
@@ -1021,13 +1021,10 @@ sketch001 = startSketchOn(XZ)
       await page.waitForTimeout(100)
       await page.keyboard.press('Enter')
       await page.waitForTimeout(100)
-      await page.keyboard.type('  |> lin')
+      await page.keyboard.type('  |> xLin')
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then tab to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
