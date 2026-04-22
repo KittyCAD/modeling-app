@@ -1,4 +1,11 @@
+import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
+import type { Connection } from '@src/network/connection'
 import type {
   IEventListenerTracked,
   NewTrackArgs,
@@ -8,13 +15,6 @@ import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
 } from '@src/network/utils'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { uuidv4 } from '@src/lib/utils'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { Themes } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
-import type { Connection } from '@src/network/connection'
-import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,

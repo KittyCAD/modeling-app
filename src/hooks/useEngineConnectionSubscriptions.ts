@@ -1,20 +1,20 @@
 import { useEffect, useRef } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import type { KclManager } from '@src/lang/KclManager'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import type { SourceRange } from '@src/lang/wasm'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import {
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
   normalizeEntityReference,
   selectDefaultSketchPlane,
-  selectionBodyFace,
   selectOffsetSketchPlane,
+  selectionBodyFace,
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
-import type { KclManager } from '@src/lang/KclManager'
-import type { SourceRange } from '@src/lang/wasm'
 
 const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
 
