@@ -1,0 +1,370 @@
+// Surgical Drill Guide
+// A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure
+// Categories: Medical
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+handleLength = 150
+handleWidth = 30
+stockThickness = 6
+bendRadius = stockThickness * 1.25
+bitSize01 = 2
+bitSize02 = 3.2
+bitLength = 45
+firstBitAxisY = stockThickness + bendRadius / 2 + handleLength * sqrt(3) / 6 + 0.1
+firstBitAxisOffset = bendRadius * sqrt(3) / 2 + handleLength / 6
+bitCutRadius = handleWidth / 1.9
+gripOuterRadius = handleWidth / 1.85
+
+// Model a small sheet metal bracket to represent the handle of the drill guide
+handleProfile = sketch(on = YZ) {
+  base = line(start = [var 0mm, var 0mm], end = [var 150mm, var 0mm])
+  frontFace = line(start = [var 150mm, var 0mm], end = [var 150mm, var 6mm])
+  coincident([base.end, frontFace.start])
+  topFace = line(start = [var 150mm, var 6mm], end = [var 0mm, var 6mm])
+  coincident([frontFace.end, topFace.start])
+  frontBend = arc(start = [var -6mm, var 10mm], end = [var 0mm, var 6mm], center = [var 0mm, var 14mm])
+  coincident([topFace.end, frontBend.end])
+  supportEdge = line(start = [var -6mm, var 10mm], end = [var -32mm, var 53mm])
+  coincident([frontBend.start, supportEdge.start])
+  backFace = line(start = [var -32mm, var 53mm], end = [var -37mm, var 50mm])
+  coincident([supportEdge.end, backFace.start])
+  returnEdge = line(start = [var -37mm, var 50mm], end = [var -12mm, var 7mm])
+  coincident([backFace.end, returnEdge.start])
+  heelArc = arc(start = [var -12mm, var 7mm], end = [var 0mm, var 0mm], center = [var 0mm, var 14mm])
+  coincident([returnEdge.end, heelArc.start])
+  coincident([heelArc.end, base.start])
+  arcCenterGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 14mm], construction = true)
+
+  coincident([base.start, ORIGIN])
+  coincident([arcCenterGuide.start, base.start])
+  coincident([arcCenterGuide.end, frontBend.center])
+  coincident([arcCenterGuide.end, heelArc.center])
+  horizontal(base)
+  vertical(frontFace)
+  horizontal(topFace)
+  vertical(arcCenterGuide)
+  tangent([topFace, frontBend])
+  tangent([frontBend, supportEdge])
+  tangent([base, heelArc])
+  tangent([returnEdge, heelArc])
+  equalLength([base, topFace])
+  distance([
+  arcCenterGuide.start,
+  arcCenterGuide.end
+]) == stockThickness + bendRadius
+  radius(frontBend) == bendRadius
+  horizontalDistance([base.start, base.end]) == handleLength
+  verticalDistance([frontFace.start, frontFace.end]) == stockThickness
+  horizontalDistance([supportEdge.start, supportEdge.end]) == -handleLength / 6
+  verticalDistance([supportEdge.start, supportEdge.end]) == handleLength * sqrt(3) / 6
+  horizontalDistance([backFace.start, backFace.end]) == -stockThickness * sqrt(3) / 2
+  verticalDistance([backFace.start, backFace.end]) == -stockThickness / 2
+  horizontalDistance([returnEdge.start, returnEdge.end]) == handleLength / 6
+  verticalDistance([returnEdge.start, returnEdge.end]) == -handleLength * sqrt(3) / 6
+}
+handleProfileRegion = region(point = [10mm, 3mm], sketch = handleProfile)
+hide(handleProfile)
+
+bracket = extrude(
+  handleProfileRegion,
+  length = handleWidth,
+  symmetric = true,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+
+// Create a cut in the bracket to mount the first bit
+bitCut01Sketch = sketch(on = XZ) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 53mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
+
+  circle1 = circle(start = [var 16mm, var 53mm], center = [var 0mm, var 53mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitCutRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitCut01Region = region(segments = [bitCut01Sketch.circle1])
+hide(bitCut01Sketch)
+
+bitCut01 = extrude(bitCut01Region, length = 100)
+
+// Create a cut in the bracket to mount the second bit
+bitCut02Sketch = sketch(on = offsetPlane(XY, offset = 35)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == handleLength
+
+  circle1 = circle(start = [var 16mm, var 150mm], center = [var 0mm, var 150mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitCutRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitCut02Region = region(segments = [bitCut02Sketch.circle1])
+hide(bitCut02Sketch)
+
+bitCut02 = extrude(bitCut02Region, length = -100)
+
+// Cut the bracket
+handle = subtract([bracket], tools = union([bitCut01, bitCut02]))
+
+// Model the support for the first drill bit
+bitSupport01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset - 3)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 53mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
+
+  circle1 = circle(start = [var 16mm, var 53mm], center = [var 0mm, var 53mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitCutRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitSupport01Region = region(segments = [bitSupport01Sketch.circle1])
+hide(bitSupport01Sketch)
+
+bitSupport01 = extrude(bitSupport01Region, length = -15, symmetric = true)
+
+// Model the stem for the first drill bit
+stem01Sketch = sketch(on = startSketchOn(bitSupport01, face = END)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 53mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
+
+  circle1 = circle(start = [var 2mm, var 53mm], center = [var 0mm, var 53mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitSize01
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+stem01Region = region(segments = [stem01Sketch.circle1])
+hide(stem01Sketch)
+
+stem01 = extrude(stem01Region, length = bitLength, tagEnd = $capEnd004)
+  |> chamfer(
+       length = bitSize01 / 3,
+       tags = [
+         getCommonEdge(faces = [stem01Region.tags.circle1, capEnd004])
+       ],
+     )
+
+// Negative extrude the clearance hole for the first drill bit
+bitClearance01Sketch = sketch(on = startSketchOn(stem01, face = END)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 53mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
+
+  circle1 = circle(start = [var 1mm, var 53mm], center = [var 0mm, var 53mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitSize01 / 2
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitClearance01Region = region(segments = [bitClearance01Sketch.circle1])
+hide(bitClearance01Sketch)
+
+bitClearance01 = extrude(bitClearance01Region, length = -15 - bitLength)
+
+// Model a rotating grip for the first drill bit
+grip01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset + 16)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 53mm], construction = true)
+  outerRadiusGuide = line(start = [var 0mm, var 53mm], end = [var 16mm, var 53mm], construction = true)
+  innerRadiusGuide = line(start = [var 0mm, var 53mm], end = [var 2mm, var 53mm], construction = true)
+
+  outerCircle = circle(start = [var 16mm, var 53mm], center = [var 0mm, var 53mm])
+  innerCircle = circle(start = [var 2mm, var 53mm], center = [var 0mm, var 53mm])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, outerCircle.center])
+  coincident([innerCircle.center, outerCircle.center])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+  coincident([
+    innerRadiusGuide.start,
+    innerCircle.center
+  ])
+  coincident([
+    innerRadiusGuide.end,
+    innerCircle.start
+  ])
+  vertical(centerGuide)
+  horizontal(outerRadiusGuide)
+  horizontal(innerRadiusGuide)
+  distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
+  horizontalDistance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == gripOuterRadius
+  horizontalDistance([
+  innerRadiusGuide.start,
+  innerRadiusGuide.end
+]) == bitSize01
+}
+grip01Region = region(
+  point = [
+    (gripOuterRadius + bitSize01) / 2,
+    firstBitAxisY
+  ],
+  sketch = grip01Sketch,
+)
+hide(grip01Sketch)
+
+grip01 = extrude(
+       grip01Region,
+       length = -10,
+       tagEnd = $capEnd005,
+       tagStart = $capStart003,
+     )
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [
+           grip01Region.tags.outerCircle,
+           capEnd005
+         ]),
+         getCommonEdge(faces = [
+           grip01Region.tags.outerCircle,
+           capStart003
+         ])
+       ],
+     )
+  |> appearance(color = "#af7b23")
+
+// Model the support for the second drill bit
+bitSupport02Sketch = sketch(on = offsetPlane(XY, offset = -2)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == handleLength
+
+  circle1 = circle(start = [var 16mm, var 150mm], center = [var 0mm, var 150mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitCutRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitSupport02Region = region(segments = [bitSupport02Sketch.circle1])
+hide(bitSupport02Sketch)
+
+bitSupport02 = extrude(bitSupport02Region, length = 15)
+
+// Model the stem for the second drill bit
+stem02Sketch = sketch(on = startSketchOn(bitSupport02, face = START)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == handleLength
+
+  circle1 = circle(start = [var 3mm, var 150mm], center = [var 0mm, var 150mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitSize02
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+stem02Region = region(segments = [stem02Sketch.circle1])
+hide(stem02Sketch)
+
+stem02 = extrude(stem02Region, length = bitLength, tagEnd = $capEnd003)
+  |> chamfer(
+       length = bitSize02 / 3,
+       tags = [
+         getCommonEdge(faces = [stem02Region.tags.circle1, capEnd003])
+       ],
+     )
+
+// Negative extrude the clearance hole for the second drill bit
+bitClearance02Sketch = sketch(on = startSketchOn(stem02, face = END)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  coincident([centerGuide.start, ORIGIN])
+  vertical(centerGuide)
+  distance([centerGuide.start, centerGuide.end]) == handleLength
+
+  circle1 = circle(start = [var 2mm, var 150mm], center = [var 0mm, var 150mm])
+  coincident([circle1.center, centerGuide.end])
+  horizontalDistance([circle1.center, circle1.start]) == bitSize02 / 2
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+bitClearance02Region = region(segments = [bitClearance02Sketch.circle1])
+hide(bitClearance02Sketch)
+
+bitClearance02 = extrude(bitClearance02Region, length = -15 - bitLength)
+
+// Model a rotating grip for the second drill bit
+grip02Sketch = sketch(on = offsetPlane(XY, offset = -3)) {
+  centerGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 150mm], construction = true)
+  outerRadiusGuide = line(start = [var 0mm, var 150mm], end = [var 16mm, var 150mm], construction = true)
+  innerRadiusGuide = line(start = [var 0mm, var 150mm], end = [var 3mm, var 150mm], construction = true)
+
+  outerCircle = circle(start = [var 16mm, var 150mm], center = [var 0mm, var 150mm])
+  innerCircle = circle(start = [var 3mm, var 150mm], center = [var 0mm, var 150mm])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, outerCircle.center])
+  coincident([innerCircle.center, outerCircle.center])
+  coincident([
+    outerRadiusGuide.start,
+    outerCircle.center
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+  coincident([
+    innerRadiusGuide.start,
+    innerCircle.center
+  ])
+  coincident([
+    innerRadiusGuide.end,
+    innerCircle.start
+  ])
+  vertical(centerGuide)
+  horizontal(outerRadiusGuide)
+  horizontal(innerRadiusGuide)
+  distance([centerGuide.start, centerGuide.end]) == handleLength
+  horizontalDistance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == gripOuterRadius
+  horizontalDistance([
+  innerRadiusGuide.start,
+  innerRadiusGuide.end
+]) == bitSize02
+}
+grip02Region = region(
+  point = [
+    (gripOuterRadius + bitSize02) / 2,
+    handleLength
+  ],
+  sketch = grip02Sketch,
+)
+hide(grip02Sketch)
+
+grip02 = extrude(
+       grip02Region,
+       length = -10,
+       tagStart = $capStart002,
+       tagEnd = $capEnd002,
+     )
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [
+           grip02Region.tags.outerCircle,
+           capStart002
+         ]),
+         getCommonEdge(faces = [
+           grip02Region.tags.outerCircle,
+           capEnd002
+         ])
+       ],
+     )
+  |> appearance(color = "#23af93")

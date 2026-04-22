@@ -1,0 +1,44 @@
+// Helical Planetary Gearset
+// A helical planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are helical rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.
+// Categories: Automotive, Aerospace
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Create the outer ring gear for the planetary gearset
+gear::ring(
+  nTeeth = 40,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = -25deg,
+  gearHeight = 5,
+)
+
+// Create a central sun gear using a small helical gear
+gear::helical(
+       nTeeth = 12,
+       module = 1.5,
+       pressureAngle = 14deg,
+       helixAngle = 25deg,
+       gearHeight = 5,
+     )
+  |> rotate(yaw = -4)
+
+// Create the first helical planet gear
+numPlanetGears = 4
+planetGear = gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = -25deg,
+  gearHeight = 5,
+)
+
+// Move the first planet gear into place, then copy it around the sun.
+translate(planetGear, y = (12 + 12) / 2 * 1.5 + 2)
+  |> patternCircular3d(
+       instances = numPlanetGears,
+       axis = Z,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )

@@ -166,6 +166,7 @@ description: Variables in memory after executing snowman.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -305,16 +306,6 @@ description: Variables in memory after executing snowman.kcl
         "units": null
       }
     }
-  },
-  "arc3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc3"
-  },
-  "arc5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "arc5"
   },
   "armCircleL": {
     "type": "Object",
@@ -1000,6 +991,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2011,11 +2003,6 @@ description: Variables in memory after executing snowman.kcl
       }
     ]
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
   "eyeL": {
     "type": "Solid",
     "value": {
@@ -2716,6 +2703,7 @@ description: Variables in memory after executing snowman.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -2749,6 +2737,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -2870,6 +2859,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3178,6 +3168,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3302,6 +3293,7 @@ description: Variables in memory after executing snowman.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3423,6 +3415,7 @@ description: Variables in memory after executing snowman.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3432,26 +3425,6 @@ description: Variables in memory after executing snowman.kcl
         }
       }
     ]
-  },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
   },
   "middle": {
     "type": "Solid",
@@ -3900,6 +3873,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -6891,6 +6865,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -6986,6 +6961,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -7155,6 +7131,7 @@ description: Variables in memory after executing snowman.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7188,6 +7165,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -7283,6 +7261,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -7378,6 +7357,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -7473,6 +7453,7 @@ description: Variables in memory after executing snowman.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -7589,6 +7570,7 @@ description: Variables in memory after executing snowman.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -8036,6 +8018,7 @@ description: Variables in memory after executing snowman.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -8224,6 +8207,7 @@ description: Variables in memory after executing snowman.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",
@@ -9771,6 +9755,7 @@ description: Variables in memory after executing snowman.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": null,
@@ -9966,6 +9951,7 @@ description: Variables in memory after executing snowman.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "mm"
                 },
                 "startCapId": "[uuid]",
@@ -9999,6 +9985,7 @@ description: Variables in memory after executing snowman.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": null,
