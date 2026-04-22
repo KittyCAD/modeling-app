@@ -1,0 +1,665 @@
+// Kitt
+// The beloved KittyCAD mascot in a voxelized style.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Pixel box function
+fn pixelBox(plane, offsetA, offsetB, width, height, depth) {
+  profile = sketch(on = plane) {
+    xGuide = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm], construction = true)
+    yGuide = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm], construction = true)
+    edge1 = line(start = [var 10mm, var 10mm], end = [var 10mm, var 20mm])
+    edge2 = line(start = [var 10mm, var 20mm], end = [var 20mm, var 20mm])
+    edge3 = line(start = [var 20mm, var 20mm], end = [var 20mm, var 10mm])
+    edge4 = line(start = [var 20mm, var 10mm], end = [var 10mm, var 10mm])
+
+    coincident([xGuide.start, ORIGIN])
+    coincident([xGuide.end, yGuide.start])
+    coincident([yGuide.end, edge1.start])
+    coincident([edge1.end, edge2.start])
+    coincident([edge2.end, edge3.start])
+    coincident([edge3.end, edge4.start])
+    coincident([edge4.end, edge1.start])
+
+    horizontal(xGuide)
+    vertical(yGuide)
+    vertical(edge1)
+    horizontal(edge2)
+    vertical(edge3)
+    horizontal(edge4)
+
+    horizontalDistance([xGuide.start, xGuide.end]) == offsetA
+    verticalDistance([yGuide.start, yGuide.end]) == offsetB
+    verticalDistance([edge1.start, edge1.end]) == height
+    horizontalDistance([edge2.start, edge2.end]) == width
+  }
+
+  pixelBoxBody = extrude(
+    region(segments = [profile.edge1, profile.edge2, profile.edge3, profile.edge4]),
+    length = depth,
+  )
+  hide([profile])
+  return pixelBoxBody
+}
+
+fn xyPixelBox(minX, minY, minZ, width, depth, height) {
+  profile = sketch(on = XY) {
+    xGuide = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm], construction = true)
+    yGuide = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm], construction = true)
+    edge1 = line(start = [var 10mm, var 10mm], end = [var 10mm, var 20mm])
+    edge2 = line(start = [var 10mm, var 20mm], end = [var 20mm, var 20mm])
+    edge3 = line(start = [var 20mm, var 20mm], end = [var 20mm, var 10mm])
+    edge4 = line(start = [var 20mm, var 10mm], end = [var 10mm, var 10mm])
+
+    coincident([xGuide.start, ORIGIN])
+    coincident([xGuide.end, yGuide.start])
+    coincident([yGuide.end, edge1.start])
+    coincident([edge1.end, edge2.start])
+    coincident([edge2.end, edge3.start])
+    coincident([edge3.end, edge4.start])
+    coincident([edge4.end, edge1.start])
+
+    horizontal(xGuide)
+    vertical(yGuide)
+    vertical(edge1)
+    horizontal(edge2)
+    vertical(edge3)
+    horizontal(edge4)
+
+    horizontalDistance([xGuide.start, xGuide.end]) == minX
+    verticalDistance([yGuide.start, yGuide.end]) == minY
+    verticalDistance([edge1.start, edge1.end]) == depth
+    horizontalDistance([edge2.start, edge2.end]) == width
+  }
+
+  xyPixelBoxBody = extrude(
+    region(segments = [profile.edge1, profile.edge2, profile.edge3, profile.edge4]),
+    length = height,
+  )
+    |> translate(z = minZ)
+
+  hide([profile])
+  return xyPixelBoxBody
+}
+
+// STEP 01: Kitty Body
+// 1. Kitty Body
+kitBodyElevation = 6
+kitBodyWidth = 26
+kitBodyHeight = 25
+kitBodyDepth = 18
+
+kitBody = pixelBox(
+  plane = XZ,
+  offsetA = -kitBodyWidth / 2,
+  offsetB = kitBodyElevation,
+  width = kitBodyWidth,
+  height = kitBodyHeight,
+  depth = kitBodyDepth,
+)
+
+kitBodyFrontFace = startSketchOn(kitBody, face = END)
+fn bodyRightPlane() {
+  return offsetPlane(YZ, offset = kitBodyWidth / 2)
+}
+
+// STEP 02: Kitty Head
+// 2. Kitty Head (Frame of display)
+kitHeadOffset = 1
+kitHeadHeight = 16
+kitHeadElevation = kitBodyElevation + kitBodyHeight - kitHeadOffset - kitHeadHeight
+kitHeadWidth = kitBodyWidth - (kitHeadOffset * 2)
+kitHeadDepth = 3
+
+kitHead = pixelBox(
+  plane = kitBodyFrontFace,
+  offsetA = -kitHeadWidth / 2,
+  offsetB = kitHeadElevation,
+  width = kitHeadWidth,
+  height = kitHeadHeight,
+  depth = kitHeadDepth,
+)
+
+kitHeadFrontFace = startSketchOn(kitHead, face = END)
+kitFaceElevation = kitHeadElevation + 2
+
+// STEP 03: Kitty Face
+// 3. Kitty Face
+kitFaceWidth = kitHeadWidth - 4
+kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3
+kitFaceDepth = 2
+
+kitFaceSketch = sketch(on = kitHeadFrontFace) {
+  xGuide = line(start = [var 0mm, var 0mm], end = [var -10mm, var 0mm], construction = true)
+  yGuide = line(start = [var -10mm, var 0mm], end = [var -10mm, var 16mm], construction = true)
+  line1 = line(start = [var -10mm, var 16mm], end = [var -10mm, var 17mm])
+  line2 = line(start = [var -10mm, var 17mm], end = [var -11mm, var 17mm])
+  line3 = line(start = [var -11mm, var 17mm], end = [var -11mm, var 28mm])
+  line4 = line(start = [var -11mm, var 28mm], end = [var -10mm, var 28mm])
+  line5 = line(start = [var -10mm, var 28mm], end = [var -10mm, var 29mm])
+  line6 = line(start = [var -10mm, var 29mm], end = [var 10mm, var 29mm])
+  line7 = line(start = [var 10mm, var 29mm], end = [var 10mm, var 28mm])
+  line8 = line(start = [var 10mm, var 28mm], end = [var 11mm, var 28mm])
+  line9 = line(start = [var 11mm, var 28mm], end = [var 11mm, var 17mm])
+  line10 = line(start = [var 11mm, var 17mm], end = [var 10mm, var 17mm])
+  line11 = line(start = [var 10mm, var 17mm], end = [var 10mm, var 16mm])
+  line12 = line(start = [var 10mm, var 16mm], end = [var -10mm, var 16mm])
+
+  coincident([xGuide.start, ORIGIN])
+  coincident([xGuide.end, yGuide.start])
+  coincident([yGuide.end, line1.start])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line9.start])
+  coincident([line9.end, line10.start])
+  coincident([line10.end, line11.start])
+  coincident([line11.end, line12.start])
+  coincident([line12.end, line1.start])
+
+  horizontal(xGuide)
+  vertical(yGuide)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  vertical(line7)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line12)
+
+  horizontalDistance([xGuide.start, xGuide.end]) == -kitFaceWidth / 2
+  verticalDistance([yGuide.start, yGuide.end]) == kitFaceElevation
+  verticalDistance([line1.start, line1.end]) == 1
+  horizontalDistance([line2.start, line2.end]) == -1
+  verticalDistance([line3.start, line3.end]) == kitFaceHeight
+  horizontalDistance([line4.start, line4.end]) == 1
+  verticalDistance([line5.start, line5.end]) == 1
+  horizontalDistance([line6.start, line6.end]) == kitFaceWidth
+  verticalDistance([line7.start, line7.end]) == -1
+  horizontalDistance([line8.start, line8.end]) == 1
+  verticalDistance([line9.start, line9.end]) == -kitFaceHeight
+  horizontalDistance([line10.start, line10.end]) == -1
+  verticalDistance([line11.start, line11.end]) == -1
+  horizontalDistance([line12.start, line12.end]) == -kitFaceWidth
+}
+
+kitFace = extrude(region(segments = [kitFaceSketch.line1, kitFaceSketch.line2]), length = -kitFaceDepth)
+hide([kitFaceSketch])
+
+kitFaceBackFace = startSketchOn(kitFace, face = START)
+
+// Kitty Face Features:
+// 3.1 Kitty Eyes
+
+// 3.1.1 Kitty Left Eye
+kitEyeDepth = 0.5
+kitEyeHeight = kitFaceElevation + 7
+kitEyeOffset = 7
+
+// STEP 04: Kitty Left Eye
+// 3.1.2 Kitty Right Eye
+kitLeftEye1 = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = -kitEyeOffset,
+  offsetB = kitEyeHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitLeftEye2 = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = -kitEyeOffset + 1,
+  offsetB = kitEyeHeight + 1,
+  width = 3,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitLeftEye3 = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = -kitEyeOffset + 4,
+  offsetB = kitEyeHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+
+// STEP 05: Kitty Right Eye
+kitRightEye = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = kitEyeOffset - 3,
+  offsetB = kitEyeHeight - 1,
+  width = 2,
+  height = 4,
+  depth = kitEyeDepth,
+)
+
+// STEP 06: Kitty Nose
+// 3.2 Kitty Nose
+kitNoseElevation = kitEyeHeight - 5
+
+kitNoseSketch = sketch(on = kitFaceBackFace) {
+  xGuide = line(start = [var 0mm, var 0mm], end = [var -2mm, var 0mm], construction = true)
+  yGuide = line(start = [var -2mm, var 0mm], end = [var -2mm, var 18mm], construction = true)
+  line1 = line(start = [var -2mm, var 18mm], end = [var -2mm, var 19mm])
+  line2 = line(start = [var -2mm, var 19mm], end = [var 0mm, var 19mm])
+  line3 = line(start = [var 0mm, var 19mm], end = [var 0mm, var 21mm])
+  line4 = line(start = [var 0mm, var 21mm], end = [var -1mm, var 21mm])
+  line5 = line(start = [var -1mm, var 21mm], end = [var -1mm, var 22mm])
+  line6 = line(start = [var -1mm, var 22mm], end = [var 2mm, var 22mm])
+  line7 = line(start = [var 2mm, var 22mm], end = [var 2mm, var 21mm])
+  line8 = line(start = [var 2mm, var 21mm], end = [var 1mm, var 21mm])
+  line9 = line(start = [var 1mm, var 21mm], end = [var 1mm, var 19mm])
+  line10 = line(start = [var 1mm, var 19mm], end = [var 3mm, var 19mm])
+  line11 = line(start = [var 3mm, var 19mm], end = [var 3mm, var 18mm])
+  line12 = line(start = [var 3mm, var 18mm], end = [var -2mm, var 18mm])
+
+  coincident([xGuide.start, ORIGIN])
+  coincident([xGuide.end, yGuide.start])
+  coincident([yGuide.end, line1.start])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line9.start])
+  coincident([line9.end, line10.start])
+  coincident([line10.end, line11.start])
+  coincident([line11.end, line12.start])
+  coincident([line12.end, line1.start])
+
+  horizontal(xGuide)
+  vertical(yGuide)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  vertical(line7)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line12)
+
+  horizontalDistance([xGuide.start, xGuide.end]) == -2
+  verticalDistance([yGuide.start, yGuide.end]) == kitNoseElevation
+  verticalDistance([line1.start, line1.end]) == 1
+  horizontalDistance([line2.start, line2.end]) == 2
+  verticalDistance([line3.start, line3.end]) == 2
+  horizontalDistance([line4.start, line4.end]) == -1
+  verticalDistance([line5.start, line5.end]) == 1
+  horizontalDistance([line6.start, line6.end]) == 3
+  verticalDistance([line7.start, line7.end]) == -1
+  horizontalDistance([line8.start, line8.end]) == -1
+  verticalDistance([line9.start, line9.end]) == -2
+  horizontalDistance([line10.start, line10.end]) == 2
+  verticalDistance([line11.start, line11.end]) == -1
+  horizontalDistance([line12.start, line12.end]) == -5
+}
+
+kitNose = extrude(region(segments = [kitNoseSketch.line1, kitNoseSketch.line2]), length = kitEyeDepth)
+hide([kitNoseSketch])
+
+// STEP 07: Kitty Mouth
+// 3.3 Kitty Mouth
+kitMouthOffset = 4
+kitMouthHeight = kitEyeHeight - 3
+
+kitMouthUpLeft = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = -kitMouthOffset,
+  offsetB = kitMouthHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitMouthDownLeft = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = -kitMouthOffset + 1,
+  offsetB = kitMouthHeight - 1,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitMouthUpRight = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = kitMouthOffset,
+  offsetB = kitMouthHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitMouthDownRight = pixelBox(
+  plane = kitFaceBackFace,
+  offsetA = kitMouthOffset - 1,
+  offsetB = kitMouthHeight - 1,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+
+// STEP 08: Kitty Belly
+// 4. Kitty Belly
+kitBellyElevation = kitBodyElevation + 1
+kitBellyHeight = kitHeadElevation - kitBellyElevation - 1
+
+// 4.1 Kitty VHS
+kitBellyWidth = kitHeadWidth
+kitBellyDepth = kitHeadDepth
+kitBelly = pixelBox(
+  plane = kitBodyFrontFace,
+  offsetA = -kitBellyWidth / 2,
+  offsetB = kitBellyElevation,
+  width = kitBellyWidth,
+  height = kitBellyHeight,
+  depth = kitBellyDepth,
+)
+
+kitBellyFrontFace = startSketchOn(kitBelly, face = END)
+kitVHSelevation = kitBellyElevation + 1
+kitVHSheight = 2
+
+// STEP 09: Kitty VHS
+kitVHSwidth = 8
+kitVHSdepth = 1
+kitVHS = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = -kitVHSwidth / 2,
+  offsetB = kitVHSelevation,
+  width = kitVHSwidth,
+  height = kitVHSheight,
+  depth = kitVHSdepth,
+)
+
+// STEP 10: Kitty Floppy
+// 4.2 Kitty Floppy
+kitFloppyElevation = kitBellyElevation + 1
+kitFloppyHeight = 1
+kitFloppyWidth = 5
+kitFloppyOffset = kitBellyWidth / 2 - 1
+kitFloppyDepth = 2
+
+kitFloppy1 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = -kitFloppyOffset,
+  offsetB = kitFloppyElevation,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
+kitFloppy2 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = -kitFloppyOffset,
+  offsetB = kitFloppyElevation + 2,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
+kitFloppy3 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = kitFloppyOffset,
+  offsetB = kitFloppyElevation,
+  width = -kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
+
+// STEP 11: Kitty Belly Button
+// 4.3 Kitty Belly Button
+kitBellyButtonOffset = kitHeadWidth / 2 - 3
+kitBellyButtonElevation = kitHeadElevation - 1
+kitBellyButtonWidth = 2
+kitBellyButtonHeight = 1
+kitBellyButtonDepth = kitHeadDepth + 1
+
+kitBellyButton = pixelBox(
+  plane = kitBodyFrontFace,
+  offsetA = -kitBellyButtonOffset,
+  offsetB = kitBellyButtonElevation,
+  width = kitBellyButtonWidth,
+  height = kitBellyButtonHeight,
+  depth = kitBellyButtonDepth,
+)
+
+// STEP 12: Kitty Buttons
+// 4.4 Kitty Buttons
+kitButtonWidth = 1
+kitButtonHeight = 2
+kitButtonDepth = kitFloppyDepth
+kitButtonElevation = kitFloppyElevation + 2
+
+kitButton1 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = kitFloppyOffset,
+  offsetB = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
+kitButton2 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = kitFloppyOffset - kitButtonWidth - 1,
+  offsetB = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
+kitButton3 = pixelBox(
+  plane = kitBellyFrontFace,
+  offsetA = kitFloppyOffset - (2 * (kitButtonWidth + 1)),
+  offsetB = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
+
+// 5. Kitty Legs
+kitShoeWidth = 7
+kitShoeLength = 10
+kitShoeHeight = 3
+
+fn kitLeg(offsetFront, offsetSide) {
+  kitShoeOffsetFront = kitShoeLength / 2 - (kitBodyDepth / 2) - offsetFront
+
+  kitShoe = pixelBox(
+    plane = XY,
+    offsetA = offsetSide,
+    offsetB = kitShoeOffsetFront,
+    width = kitShoeWidth,
+    height = -kitShoeLength,
+    depth = kitShoeHeight,
+  )
+
+  kitPantsOffsetSide = offsetSide + 1
+  kitPantsOffsetFront = 2 * kitShoeOffsetFront - 2
+  kitPantsWidth = kitShoeWidth - 2
+  kitPantsHeight = kitBodyElevation - kitShoeHeight
+
+  kitPants = pixelBox(
+    plane = startSketchOn(kitShoe, face = END),
+    offsetA = kitPantsOffsetSide,
+    offsetB = kitPantsOffsetFront,
+    width = kitPantsWidth,
+    height = kitPantsWidth,
+    depth = kitPantsHeight,
+  )
+
+  return kitShoe
+}
+
+kitLegOffset = 3
+
+// STEP 13: Kitty Right Leg
+kitRightLeg = kitLeg(offsetFront = 0, offsetSide = kitLegOffset)
+
+// STEP 14: Kitty Left Leg
+kitLeftLeg = kitLeg(offsetFront = 0, offsetSide = -kitLegOffset - kitShoeWidth)
+
+// 6. Kitty Ears
+kitEarWidth = 8
+kitEarDepth = 8
+kitEarHeight = 2
+kitEarOffsetFront = 4
+kitEarOffsetSide = 1
+kitRightEarOffsetSide = -(kitBodyWidth / 2 - kitEarOffsetSide)
+kitLeftEarOffsetSide = -(
+  kitBodyWidth / 2 - (kitBodyWidth - kitEarWidth - kitEarOffsetSide)
+)
+fn earTier(minX, level) {
+  return xyPixelBox(
+    minX = minX + level,
+    minY = -(kitBodyDepth - kitEarOffsetFront) + (0.01 * level),
+    minZ = kitBodyElevation + kitBodyHeight + (kitEarHeight * level),
+    width = kitEarWidth - (level * 2),
+    depth = kitEarDepth - (level * 2),
+    height = kitEarHeight,
+  )
+}
+
+// STEP 15: Kitty Right Ear
+kitRightEarBase = earTier(minX = kitRightEarOffsetSide, level = 0)
+kitRightEarLevel2 = earTier(minX = kitRightEarOffsetSide, level = 1)
+kitRightEarLevel3 = earTier(minX = kitRightEarOffsetSide, level = 2)
+kitRightEarLevel4 = earTier(minX = kitRightEarOffsetSide, level = 3)
+
+// STEP 16: Kitty Left Ear
+kitLeftEarBase = earTier(minX = kitLeftEarOffsetSide, level = 0)
+kitLeftEarLevel2 = earTier(minX = kitLeftEarOffsetSide, level = 1)
+kitLeftEarLevel3 = earTier(minX = kitLeftEarOffsetSide, level = 2)
+kitLeftEarLevel4 = earTier(minX = kitLeftEarOffsetSide, level = 3)
+
+// 7. Kitty Side
+// STEP 17: Kitty Grill
+// 7.1 Grill
+grillOffset = 4
+grillRowA = kitBodyElevation + kitBodyHeight - grillOffset
+grillRowB = grillRowA - 2
+grillRowC = grillRowA - 4
+
+grillColumnA = kitBodyDepth - grillOffset
+grillColumnB = grillColumnA - 1
+grillColumnC = grillColumnA - 2
+grillColumnD = grillColumnA - 3
+grillColumnE = grillColumnA - 4
+
+grillHoleSize = 1
+grillHoleDepth = -2
+
+grillHoleAB = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnB,
+  offsetB = grillRowA,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleAD = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnD,
+  offsetB = grillRowA,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleBA = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnA,
+  offsetB = grillRowB,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleBC = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnC,
+  offsetB = grillRowB,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleBE = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnE,
+  offsetB = grillRowB,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleCB = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnB,
+  offsetB = grillRowC,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+grillHoleCD = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -grillColumnD,
+  offsetB = grillRowC,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
+
+kitBodyWithGrill = subtract([kitBody], tools = [
+  grillHoleAB,
+  grillHoleAD,
+  grillHoleBA,
+  grillHoleBC,
+  grillHoleBE,
+  grillHoleCB,
+  grillHoleCD,
+])
+
+// STEP 18: Kitty Vent
+// 7.2 Kitty Vent
+kitVentElevation = kitBodyElevation + 1
+kitVentOffset = 1
+kitVentHoleWidth = 1
+kitVentHoleHeight = 4
+kitVentHoleDepth = grillHoleDepth
+
+kitVentA = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -kitVentOffset,
+  offsetB = kitVentElevation,
+  width = kitVentHoleWidth,
+  height = kitVentHoleHeight,
+  depth = kitVentHoleDepth,
+)
+kitVentB = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -(kitVentOffset + 2),
+  offsetB = kitVentElevation,
+  width = kitVentHoleWidth,
+  height = kitVentHoleHeight,
+  depth = kitVentHoleDepth,
+)
+kitVentC = pixelBox(
+  plane = bodyRightPlane(),
+  offsetA = -(kitVentOffset + 4),
+  offsetB = kitVentElevation,
+  width = kitVentHoleWidth,
+  height = kitVentHoleHeight,
+  depth = kitVentHoleDepth,
+)
+
+kitBodyFinal = subtract(kitBodyWithGrill, tools = [
+  kitVentA,
+  kitVentB,
+  kitVentC,
+])
