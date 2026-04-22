@@ -60,7 +60,6 @@ legProfileArray = patternLinear2d(
   axis = [0, 1],
 )
 legBody = extrude(legProfileArray, length = legHeight)
-hide(legProfile)
 // STEP 01 END
 
 // lower belt
@@ -108,7 +107,6 @@ lowerBeltXProfileArray = patternLinear2d(
   axis = [0, 1],
 )
 lowerBeltBodyX = extrude(lowerBeltXProfileArray, length = profileThickness)
-hide(lowerBeltXProfile)
 // STEP 02 END
 
 lowerBeltLengthY = blockDepth - profileThickness
@@ -146,7 +144,6 @@ lowerBeltYProfileArray = patternLinear2d(
   axis = [1, 0],
 )
 lowerBeltBodyY = extrude(lowerBeltYProfileArray, length = profileThickness)
-hide(lowerBeltYProfile)
 // STEP 03 END
 
 // pillars
