@@ -483,6 +483,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -2316,6 +2317,7 @@ description: Variables in memory after executing angle-gauge.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },

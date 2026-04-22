@@ -42,6 +42,7 @@ layout: manual
   * [`hole::drill`](/docs/kcl-std/functions/std-hole-drill)
   * [`hole::flat`](/docs/kcl-std/functions/std-hole-flat)
   * [`hole::hole`](/docs/kcl-std/functions/std-hole-hole)
+  * [`hole::holeAt`](/docs/kcl-std/functions/std-hole-holeAt)
   * [`hole::holes`](/docs/kcl-std/functions/std-hole-holes)
   * [`hole::holesLinear`](/docs/kcl-std/functions/std-hole-holesLinear)
   * [`hole::simple`](/docs/kcl-std/functions/std-hole-simple)
