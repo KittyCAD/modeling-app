@@ -11,11 +11,11 @@ A herringbone gear.
 
 ```kcl
 gear::herringbone(
-  nTeeth,
-  module,
-  pressureAngle,
-  gearHeight,
-  helixAngle,
+  nTeeth: number(_),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  gearHeight: number(Length),
+  helixAngle: number(Angle),
 ): Solid
 ```
 
@@ -25,11 +25,11 @@ gear::herringbone(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `nTeeth` |  |  | Yes |
-| `module` |  |  | Yes |
-| `pressureAngle` |  |  | Yes |
-| `gearHeight` |  |  | Yes |
-| `helixAngle` |  |  | Yes |
+| `nTeeth` | `number(_)` | A number. | Yes |
+| `module` | `number(Length)` | A number. | Yes |
+| `pressureAngle` | `number(Angle)` | A number. | Yes |
+| `gearHeight` | `number(Length)` | A number. | Yes |
+| `helixAngle` | `number(Angle)` | A number. | Yes |
 
 ### Returns
 
