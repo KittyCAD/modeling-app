@@ -1,0 +1,40 @@
+// Lug Nut
+// Solver sketch version of the lug nut profile.
+
+// Set units and version
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+customPlane = {
+  origin = {
+    x = lugSpacing / 2,
+    y = (-tBell - 0.85) * 25.4,
+    z = 0
+  },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = -1, z = 0 }
+}
+
+lugNutSketch = sketch(on = customPlane) {
+  line1 = line(start = [var 0.47in, var 0in], end = [var 0.47in, var 0.63in])
+  arc1 = arc(start = [var 0.47in, var 0.63in], end = [var 0.35in, var 0.74in], center = [var 0.35in, var 0.63in])
+  line2 = line(start = [var 0.35in, var 0.74in], end = [var 0in, var 0.74in])
+  line3 = line(start = [var 0in, var 0.74in], end = [var 0in, var 0.38in])
+  line4 = line(start = [var 0in, var 0.38in], end = [var 0.35in, var 0.38in])
+  line5 = line(start = [var 0.35in, var 0.38in], end = [var 0.47in, var 0in])
+  coincident([line1.end, arc1.start])
+  coincident([arc1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+}
+
+lugNutRegion = region(segments = [lugNutSketch.line1, lugNutSketch.arc1])
+lugNutBody = revolve(lugNutRegion, axis = Y)
+hide([lugNutSketch])
+
+lugNut = lugNutBody
+  |> appearance(color = "#ededed", metalness = 70, roughness = 30)

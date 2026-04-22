@@ -1,0 +1,55 @@
+// Tire
+// Solver sketch version of the full tire profile.
+
+// Set units and version
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+tireSketch = sketch(on = XY) {
+  line1 = line(start = [var 12.01in, var 0in], end = [var 12.01in, var 2.51in])
+  arc1 = arc(start = [var 12.01in, var 2.75in], end = [var 12.01in, var 2.51in], center = [var 12.01in, var 2.63in])
+  line2 = line(start = [var 12.01in, var 2.75in], end = [var 12.01in, var 4.02in])
+  arc2 = arc(start = [var 12.01in, var 4.02in], end = [var 11.1in, var 5.02in], center = [var 11.01in, var 4.02in])
+  arc3 = arc(start = [var 11.1in, var 5.02in], end = [var 9in, var 4.75in], center = [var 10.66in, var 0.05in])
+  line3 = line(start = [var 9in, var 4.75in], end = [var 9in, var 4.51in])
+  line4 = line(start = [var 9in, var 4.51in], end = [var 9.09in, var 4.55in])
+  arc4 = arc(start = [var 11.01in, var 4.18in], end = [var 9.09in, var 4.55in], center = [var 9.74in, var 2.72in])
+  line5 = line(start = [var 11.01in, var 4.18in], end = [var 11.01in, var 0in])
+  line6 = line(start = [var 11.01in, var 0in], end = [var 11.01in, var -4.18in])
+  arc5 = arc(start = [var 9.09in, var -4.55in], end = [var 11.01in, var -4.18in], center = [var 9.74in, var -2.72in])
+  line7 = line(start = [var 9.09in, var -4.55in], end = [var 9in, var -4.51in])
+  line8 = line(start = [var 9in, var -4.51in], end = [var 9in, var -4.75in])
+  arc6 = arc(start = [var 9in, var -4.75in], end = [var 11.1in, var -5.02in], center = [var 10.66in, var -0.05in])
+  arc7 = arc(start = [var 11.1in, var -5.02in], end = [var 12.01in, var -4.02in], center = [var 11.01in, var -4.02in])
+  line9 = line(start = [var 12.01in, var -4.02in], end = [var 12.01in, var -2.75in])
+  arc8 = arc(start = [var 12.01in, var -2.51in], end = [var 12.01in, var -2.75in], center = [var 12.01in, var -2.63in])
+  line10 = line(start = [var 12.01in, var -2.51in], end = [var 12.01in, var 0in])
+  coincident([line1.end, arc1.end])
+  coincident([arc1.start, line2.start])
+  coincident([line2.end, arc2.start])
+  coincident([arc2.end, arc3.start])
+  coincident([arc3.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, arc4.end])
+  coincident([arc4.start, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, arc5.end])
+  coincident([arc5.start, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, arc6.start])
+  coincident([arc6.end, arc7.start])
+  coincident([arc7.end, line9.start])
+  coincident([line9.end, arc8.end])
+  coincident([arc8.start, line10.start])
+  coincident([line10.end, line1.start])
+}
+
+tireRegion = region(point = [11.5in, 0.1in], sketch = tireSketch)
+tireBody = revolve(tireRegion, axis = Y)
+hide([tireSketch])
+
+carTire = tireBody
+  |> appearance(color = "#0a0a0a", roughness = 20)
+  |> translate(y = -tBell + offset, global = true)
