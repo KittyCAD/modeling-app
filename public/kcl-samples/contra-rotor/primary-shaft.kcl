@@ -1,0 +1,253 @@
+// Primary Shaft
+// Main propeller shaft with a revolved profile and patterned spline teeth.
+
+@settings(defaultLengthUnit = mm)
+
+// Spline inputs
+splineToothWidth = 30 // set to 10 after pattern 2d shipped
+splineToothHeight = 6
+shaftOuterDiameter = 105
+
+shaftProfileSketch = sketch(on = YZ) {
+  // Perimeter geometry
+  frontTopSpanLine = line(start = [var 0mm, var 0mm], end = [var 1170mm, var 0mm])
+  frontOuterDropLine = line(start = [var 1170mm, var 0mm], end = [var 1170mm, var -30mm])
+  frontChamferLine = line(start = [var 1170mm, var -30mm], end = [var 1162mm, var -38mm])
+  outerMidSpanLine = line(start = [var 1162mm, var -38mm], end = [var 1070mm, var -38mm])
+  shoulderDropLine = line(start = [var 1070mm, var -38mm], end = [var 1070mm, var -85mm])
+  rearLowerSpanLine = line(start = [var 1070mm, var -85mm], end = [var 970mm, var -85mm])
+  rearStepRiseLine = line(start = [var 970mm, var -85mm], end = [var 970mm, var -65mm])
+  rearCoreSpanLine = line(start = [var 970mm, var -65mm], end = [var 270mm, var -65mm])
+  boreStepRiseLine = line(start = [var 270mm, var -65mm], end = [var 270mm, var -52.5mm])
+  boreStepSpanLine = line(start = [var 20mm, var -52.5mm], end = [var 270mm, var -52.5mm])
+  originDropLine = line(start = [var 0mm, var 0mm], end = [var 0mm, var -25mm])
+  boreEntrySpanLine = line(start = [var 0mm, var -25mm], end = [var 20mm, var -25mm])
+  boreWallDropLine = line(start = [var 20mm, var -25mm], end = [var 20mm, var -52.5mm])
+
+  // Connectivity
+  coincident([frontTopSpanLine.start, ORIGIN])
+  coincident([
+    frontTopSpanLine.end,
+    frontOuterDropLine.start
+  ])
+  coincident([
+    frontOuterDropLine.end,
+    frontChamferLine.start
+  ])
+  coincident([
+    frontChamferLine.end,
+    outerMidSpanLine.start
+  ])
+  coincident([
+    outerMidSpanLine.end,
+    shoulderDropLine.start
+  ])
+  coincident([
+    shoulderDropLine.end,
+    rearLowerSpanLine.start
+  ])
+  coincident([
+    rearLowerSpanLine.end,
+    rearStepRiseLine.start
+  ])
+  coincident([
+    rearStepRiseLine.end,
+    rearCoreSpanLine.start
+  ])
+  coincident([
+    rearCoreSpanLine.end,
+    boreStepRiseLine.start
+  ])
+  coincident([
+    boreStepRiseLine.end,
+    boreStepSpanLine.end
+  ])
+  coincident([
+    originDropLine.start,
+    frontTopSpanLine.start
+  ])
+  coincident([
+    originDropLine.end,
+    boreEntrySpanLine.start
+  ])
+  coincident([
+    boreEntrySpanLine.end,
+    boreWallDropLine.start
+  ])
+  coincident([
+    boreWallDropLine.end,
+    boreStepSpanLine.start
+  ])
+
+  // Orientation
+  horizontal(frontTopSpanLine)
+  vertical(frontOuterDropLine)
+  horizontal(outerMidSpanLine)
+  vertical(shoulderDropLine)
+  horizontal(rearLowerSpanLine)
+  vertical(rearStepRiseLine)
+  horizontal(rearCoreSpanLine)
+  vertical(boreStepRiseLine)
+  horizontal(boreStepSpanLine)
+  vertical(originDropLine)
+  horizontal(boreEntrySpanLine)
+  vertical(boreWallDropLine)
+
+  // Driving dimensions
+  verticalDistance([
+  originDropLine.end,
+  originDropLine.start
+]) == 25
+  horizontalDistance([
+  boreEntrySpanLine.start,
+  boreEntrySpanLine.end
+]) == 20
+  verticalDistance([
+  boreWallDropLine.end,
+  originDropLine.start
+]) == shaftOuterDiameter / 2
+  horizontalDistance([
+  boreStepSpanLine.start,
+  boreStepSpanLine.end
+]) == 250
+  verticalDistance([
+  boreStepRiseLine.start,
+  originDropLine.start
+]) == 65
+  horizontalDistance([
+  rearCoreSpanLine.end,
+  rearCoreSpanLine.start
+]) == 700
+  verticalDistance([
+  rearStepRiseLine.start,
+  originDropLine.start
+]) == 85
+  horizontalDistance([
+  rearLowerSpanLine.end,
+  rearLowerSpanLine.start
+]) == 100
+  verticalDistance([
+  shoulderDropLine.start,
+  frontOuterDropLine.start
+]) == 38
+  verticalDistance([
+  frontOuterDropLine.end,
+  frontOuterDropLine.start
+]) == 30
+  angle([frontChamferLine, frontOuterDropLine]) == 45
+  horizontalDistance([
+  shoulderDropLine.start,
+  frontOuterDropLine.start
+]) == 100
+}
+shaftProfileRegion = region(segments = [shaftProfileSketch.frontTopSpanLine])
+primaryShaftBody = revolve(shaftProfileRegion, axis = X)
+hide(shaftProfileSketch)
+
+// Tooth angle and count
+splineToothAngle = (splineToothWidth / shaftOuterDiameter * 360 / PI): deg
+splineToothCount = round(180deg / splineToothAngle)
+
+toothProfileSketch = sketch(on = XZ) {
+  // Tooth geometry and construction
+  rootRadiusConstructionLine = line(start = [var 0mm, var 0mm], end = [var 0mm, var 74mm], construction = true)
+  rightFlankLine = line(start = [var 0mm, var 74mm], end = [var 12.62mm, var 88mm])
+  rootTransitionArc = arc(start = [var 0mm, var 74mm], end = [var -9.97mm, var 73.33mm], center = [var 0mm, var 0mm])
+  leftAngleConstructionLine = line(start = [var 0mm, var 0mm], end = [var -9.97mm, var 73.33mm], construction = true)
+  leftFlankLine = line(start = [var -9.97mm, var 73.33mm], end = [var -21.32mm, var 88mm])
+  topLeftSpanLine = line(start = [var -16.58mm, var 105.98mm], end = [var 0mm, var 80.92mm])
+  topRightSpanLine = line(start = [var 0mm, var 80.92mm], end = [var 13.79mm, var 88mm])
+  topCenterConstructionLine = line(start = [var 0mm, var 88mm], end = [var 0mm, var -0mm], construction = true)
+
+  // Connectivity
+  coincident([
+    rootRadiusConstructionLine.start,
+    ORIGIN
+  ])
+  coincident([
+    rootRadiusConstructionLine.end,
+    rightFlankLine.start
+  ])
+  coincident([
+    rootTransitionArc.center,
+    rootRadiusConstructionLine.start
+  ])
+  coincident([
+    rootTransitionArc.start,
+    rightFlankLine.start
+  ])
+  coincident([
+    leftAngleConstructionLine.start,
+    rootRadiusConstructionLine.start
+  ])
+  coincident([
+    leftAngleConstructionLine.end,
+    rootTransitionArc.end
+  ])
+  coincident([
+    leftFlankLine.start,
+    leftAngleConstructionLine.end
+  ])
+  coincident([
+    topLeftSpanLine.start,
+    leftFlankLine.end
+  ])
+  coincident([
+    topRightSpanLine.start,
+    topLeftSpanLine.end
+  ])
+  coincident([
+    topRightSpanLine.end,
+    rightFlankLine.end
+  ])
+  coincident([
+    topCenterConstructionLine.start,
+    topRightSpanLine.start
+  ])
+  coincident([
+    topCenterConstructionLine.end,
+    leftAngleConstructionLine.start
+  ])
+
+  // Orientation and relations
+  parallel([
+    leftFlankLine,
+    leftAngleConstructionLine
+  ])
+  angle([
+  rootRadiusConstructionLine,
+  leftAngleConstructionLine
+]) == splineToothAngle
+  parallel([
+    rightFlankLine,
+    rootRadiusConstructionLine
+  ])
+  horizontal(topLeftSpanLine)
+  horizontal(topRightSpanLine)
+  equalLength([topLeftSpanLine, topRightSpanLine])
+  vertical(topCenterConstructionLine)
+
+  // Driving dimensions
+  verticalDistance([
+  rootRadiusConstructionLine.start,
+  rootRadiusConstructionLine.end
+]) == shaftOuterDiameter / 2 - splineToothHeight
+  verticalDistance([
+  rightFlankLine.start,
+  rightFlankLine.end
+]) == 20
+}
+toothCutterRegion = region(segments = [
+  toothProfileSketch.rootRadiusConstructionLine
+])
+toothCutterBody = extrude(toothCutterRegion, length = -220)
+hide(toothProfileSketch)
+
+splineToothCutters = patternCircular3d(
+  toothCutterBody,
+  instances = splineToothCount,
+  axis = Y,
+  center = [0, 0, 0],
+)
+
+shaftWithSplineTeeth = subtract(primaryShaftBody, tools = splineToothCutters)

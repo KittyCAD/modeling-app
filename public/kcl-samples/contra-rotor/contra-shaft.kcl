@@ -1,0 +1,112 @@
+// Contra-Rotor Shaft
+// Shaft with teeth
+// Categories: Aerospace
+
+// Revolve the contra-shaft
+
+@settings(defaultLengthUnit = mm)
+
+// Spline shaft inputs
+toothWidth = 30 // todo: set to 10 after patterns ship
+toothHeight = 6
+shaftDiameter = 148
+shaftBoreDiameter = 60
+
+shaftSketch = sketch(on = YZ) {
+  line1 = line(start = [var 670mm, var 150mm], end = [var 470mm, var 150mm])
+  line2 = line(start = [var 470mm, var 150mm], end = [var 470mm, var 74mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 470mm, var 74mm], end = [var 20mm, var 74mm])
+  coincident([line2.end, line3.start])
+  line7 = line(start = [var 0mm, var 30mm], end = [var 590mm, var 30mm])
+  line9 = line(start = [var 590mm, var 50mm], end = [var 640mm, var 100mm])
+  line10 = line(start = [var 640mm, var 100mm], end = [var 670mm, var 100mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 670mm, var 100mm], end = [var 670mm, var 150mm])
+  coincident([line10.end, line11.start])
+  vertical(line2)
+  horizontal(line3)
+  horizontal(line7)
+  vertical(line11)
+  coincident([line11.end, line1.start])
+  line8 = line(start = [var 590mm, var 30mm], end = [var 590mm, var 50mm])
+  coincident([line8.start, line7.end])
+  coincident([line8.end, line9.start])
+  vertical(line8)
+  horizontal(line10)
+  horizontal(line1)
+  verticalDistance([ORIGIN, line11.start]) == 100
+  horizontalDistance([line3.end, line3.start]) == 450
+  verticalDistance([ORIGIN, line11.end]) == 150
+  verticalDistance([ORIGIN, line8.start]) == shaftBoreDiameter / 2
+  horizontalDistance([line8.start, line11.start]) == 80
+  verticalDistance([line8.start, line8.end]) == 20
+  angle([line9, line8]) == 45
+  horizontalDistance([line1.end, line1.start]) == 200mm
+  line5 = line(start = [var 0mm, var 30mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line5.start, line7.start])
+  coincident([line5.end, ORIGIN])
+  vertical(line5)
+  line4 = line(start = [var 0mm, var 30mm], end = [var 0mm, var 50mm])
+  coincident([line4.start, line5.start])
+  line6 = line(start = [var 0mm, var 50mm], end = [var 20mm, var 50mm])
+  coincident([line6.start, line4.end])
+  line12 = line(start = [var 20mm, var 50mm], end = [var 20mm, var 74mm])
+  coincident([line6.end, line12.start])
+  vertical(line4)
+  vertical(line12)
+  horizontal(line6)
+  horizontalDistance([line6.start, line6.end]) == 20
+  coincident([line12.end, line3.end])
+  verticalDistance([line5.end, line6.start]) == 50
+  verticalDistance([line5.end, line12.end]) == shaftDiameter / 2
+}
+shaftRegion = region(segments = [shaftSketch.line1])
+shaft = revolve(shaftRegion, axis = X)
+hide(shaftSketch)
+
+// Tooth angle and count
+toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+toothCount = round(180deg / toothAngleDeg)
+toothSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 74mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0mm, var 74mm], end = [var 12.62mm, var 88mm])
+  coincident([line1.end, line2.start])
+  arc1 = arc(start = [var 0mm, var 74mm], end = [var -9.97mm, var 73.33mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, line1.start])
+  coincident([arc1.start, line2.start])
+  line3 = line(start = [var 0mm, var 0mm], end = [var -9.97mm, var 73.33mm], construction = true)
+  coincident([line3.start, line1.start])
+  coincident([line3.end, arc1.end])
+  line4 = line(start = [var -9.97mm, var 73.33mm], end = [var -21.32mm, var 88mm])
+  coincident([line4.start, line3.end])
+  parallel([line4, line3])
+  verticalDistance([line1.start, line1.end]) == shaftDiameter / 2 - toothHeight
+  angle([line1, line3]) == toothAngleDeg
+  verticalDistance([line2.start, line2.end]) == 20
+  parallel([line2, line1])
+  line5 = line(start = [var -16.58mm, var 105.98mm], end = [var 0mm, var 80.92mm])
+  coincident([line5.start, line4.end])
+  line6 = line(start = [var 0mm, var 80.92mm], end = [var 13.79mm, var 88mm])
+  coincident([line6.start, line5.end])
+  coincident([line6.end, line2.end])
+  horizontal(line5)
+  horizontal(line6)
+  line7 = line(start = [var 0mm, var 88mm], end = [var 0mm, var -0mm], construction = true)
+  coincident([line7.start, line6.start])
+  coincident([line7.end, line3.start])
+  equalLength([line5, line6])
+  vertical(line7)
+}
+toothRegion = region(segments = [toothSketch.line1])
+tooth = extrude(toothRegion, length = -220)
+hide(toothSketch)
+
+teethTools = patternCircular3d(
+  tooth,
+  instances = toothCount,
+  axis = Y,
+  center = [0, 0, 0],
+)
+shaftWithTeeth = subtract(shaft, tools = teethTools)
