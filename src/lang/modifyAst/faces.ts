@@ -22,7 +22,6 @@ import {
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
-  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
