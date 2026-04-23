@@ -3499,6 +3499,20 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2682,
+            "end": 2687,
+            "moduleId": 0,
+            "start": 2682,
+            "type": "TagDeclarator",
+            "value": "arc11"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 2831,
             "end": 2837,
             "moduleId": 0,
