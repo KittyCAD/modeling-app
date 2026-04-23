@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -47,7 +47,6 @@ export const ConnectionStream = (props: {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
-  const showEngineDebugOverlay = settingsValues.app.showDebugPanel.current
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -318,6 +317,16 @@ export const ConnectionStream = (props: {
   )
   useOnPageIdle(onPageIdleParams)
 
+  useEffect(() => {
+    engineCommandManager.registerManualIdleDisconnectCallback(() =>
+      disconnectForIdle('manual-debug-button')
+    )
+
+    return () => {
+      engineCommandManager.registerManualIdleDisconnectCallback(null)
+    }
+  }, [disconnectForIdle, engineCommandManager])
+
   const onWebSocketCloseParams = useMemo(
     () => ({
       callback: () => {
@@ -516,21 +525,6 @@ export const ConnectionStream = (props: {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
-      {showEngineDebugOverlay && (
-        <div className="absolute left-2 top-2 z-20 rounded border border-dashed border-warn-60 bg-chalkboard-10/95 p-2 text-xs shadow-lg dark:bg-chalkboard-100/95">
-          <button
-            className="rounded border border-warn-60 bg-warn-10 px-2 py-1 text-left text-xs text-warn-80 dark:bg-warn-80 dark:text-chalkboard-10"
-            data-testid="simulate-idle-disconnect"
-            onMouseDown={(e) => e.stopPropagation()}
-            onMouseUp={(e) => e.stopPropagation()}
-            onClick={() => {
-              disconnectForIdle('manual-debug-button').catch(reportRejection)
-            }}
-          >
-            Simulate idle disconnect
-          </button>
-        </div>
-      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}

@@ -27,7 +27,7 @@ export const EngineCommands = () => {
   const [containsFilter, setContainsFilter] = useState('')
   const [customCmd, setCustomCmd] = useState('')
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <input
         className="text-gray-800 bg-slate-300 px-2"
         data-testid="filter-input"
@@ -70,12 +70,23 @@ export const EngineCommands = () => {
         })}
       </div>
       <button
+        className="w-fit"
         data-testid="clear-commands"
         onClick={() => clearEngineCommands()}
       >
         Clear
       </button>
-      <br />
+      <button
+        className="w-fit"
+        data-testid="simulate-idle-disconnect"
+        onClick={() => {
+          engineCommandManager
+            .requestManualIdleDisconnect()
+            .catch(reportRejection)
+        }}
+      >
+        Simulate idle disconnect
+      </button>
       <input
         className="text-gray-800 bg-slate-300 px-2"
         type="text"
@@ -85,6 +96,7 @@ export const EngineCommands = () => {
         data-testid="custom-cmd-input"
       />
       <button
+        className="w-fit"
         data-testid="custom-cmd-send-button"
         onClick={() => {
           engineCommandManager

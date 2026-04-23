@@ -128,6 +128,7 @@ export class ConnectionManager extends EventTarget {
     }
   } = {} as any
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  _manualIdleDisconnectCallback: (() => Promise<void>) | null = null
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
@@ -987,6 +988,20 @@ export class ConnectionManager extends EventTarget {
 
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
+  }
+
+  registerManualIdleDisconnectCallback(callback: (() => Promise<void>) | null) {
+    this._manualIdleDisconnectCallback = callback
+  }
+
+  requestManualIdleDisconnect() {
+    if (!this._manualIdleDisconnectCallback) {
+      return Promise.reject(
+        new Error('manual idle disconnect callback is not registered')
+      )
+    }
+
+    return this._manualIdleDisconnectCallback()
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
