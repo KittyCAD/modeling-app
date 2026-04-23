@@ -560,7 +560,7 @@ description: Artifact commands axial-fan.kcl
         "path": "[uuid]",
         "to": {
           "x": 117.16,
-          "y": 22.549451200832387,
+          "y": 22.549451200890516,
           "z": 0.0
         }
       }
@@ -582,7 +582,7 @@ description: Artifact commands axial-fan.kcl
           "type": "line",
           "end": {
             "x": 116.61,
-            "y": 2.549453713467295,
+            "y": 2.549453713522572,
             "z": 0.0
           },
           "relative": false
@@ -596,8 +596,8 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 66.000714306976,
-          "y": 22.54945120027629,
+          "x": 66.00071430689887,
+          "y": 22.54945120033442,
           "z": 0.0
         }
       }
@@ -611,17 +611,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 66.00080316941352,
-            "y": 21.54948538987338
+            "x": 66.00080316933642,
+            "y": 21.54948539000948
           },
-          "radius": 0.9999658143513137,
+          "radius": 0.9999658142733423,
           "start": {
             "unit": "degrees",
-            "value": 90.0050916166942
+            "value": 90.00509161669622
           },
           "end": {
             "unit": "degrees",
-            "value": 179.97050245424765
+            "value": 179.97050246204708
           },
           "relative": false
         }
@@ -634,8 +634,8 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 64.99939425712061,
-          "y": 3.549999814149654,
+          "x": 64.99939425715506,
+          "y": 3.549999814149653,
           "z": 0.0
         }
       }
@@ -649,17 +649,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 65.99935990052,
-            "y": 3.5494195244941293
+            "x": 65.99935990047646,
+            "y": 3.549419524471437
           },
-          "radius": 0.9999658117732048,
+          "radius": 0.9999658116952287,
           "start": {
             "unit": "degrees",
-            "value": 179.96675071324307
+            "value": 179.9667507119403
           },
           "end": {
             "unit": "degrees",
-            "value": 270.00452701510795
+            "value": 270.0045270149528
           },
           "relative": false
         }
@@ -675,7 +675,7 @@ description: Artifact commands axial-fan.kcl
           "type": "line",
           "end": {
             "x": 116.61,
-            "y": 2.549453713467296,
+            "y": 2.5494537135225728,
             "z": 0.0
           },
           "relative": false
@@ -689,8 +689,8 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 66.00071430697594,
-          "y": 22.549451200276295,
+          "x": 66.00071430689883,
+          "y": 22.549451200334424,
           "z": 0.0
         }
       }
@@ -705,7 +705,7 @@ description: Artifact commands axial-fan.kcl
           "type": "line",
           "end": {
             "x": 117.16,
-            "y": 22.549451200832387,
+            "y": 22.549451200890516,
             "z": 0.0
           },
           "relative": false
@@ -719,8 +719,8 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 65.00083749016825,
-          "y": 21.55000020154417,
+          "x": 65.00083749016905,
+          "y": 21.55000020154411,
           "z": 0.0
         }
       }
@@ -734,8 +734,8 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 64.9993942571206,
-            "y": 3.549999814149654,
+            "x": 64.99939425715503,
+            "y": 3.549999814149653,
             "z": 0.0
           },
           "relative": false

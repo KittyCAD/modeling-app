@@ -131,6 +131,22 @@ impl GlobalState {
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
+
+    pub fn mock_memory_state(&self) -> SketchModeState {
+        let mut stack = self.main.exec_state.stack.deep_clone();
+        stack.restore_env(self.main.result_env);
+
+        SketchModeState {
+            stack,
+            module_infos: self.exec_state.module_infos.clone(),
+            path_to_source_id: self.exec_state.path_to_source_id.clone(),
+            id_to_source: self.exec_state.id_to_source.clone(),
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
+            #[cfg(not(feature = "artifact-graph"))]
+            scene_objects: Default::default(),
+        }
+    }
 }
 
 /// Per-module cached state

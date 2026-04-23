@@ -1368,6 +1368,7 @@ pub(crate) async fn create_sketch(
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
+        origin_sketch_id: None,
         on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
@@ -3130,6 +3131,7 @@ async fn inner_region(
                     id: region_id,
                     original_id: region_id,
                     artifact_id: region_id.into(),
+                    origin_sketch_id: None,
                     on: segment.surface.clone(),
                     paths: vec![first_path],
                     inner_paths: vec![],
@@ -3145,6 +3147,7 @@ async fn inner_region(
             }
         }
     };
+    sketch.origin_sketch_id = Some(sketch.id);
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
