@@ -990,7 +990,9 @@ export async function setup(
           },
           project: {
             ...TEST_SETTINGS.project,
-            directory: TEST_SETTINGS.project?.directory,
+            ...(TEST_SETTINGS.project?.directory !== undefined
+              ? { directory: TEST_SETTINGS.project.directory }
+              : {}),
           },
         },
       }),
@@ -1211,10 +1213,11 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+type SettingsTomlConfiguration = {
+  settings?: Record<string, unknown>
+}
+
+export function settingsToToml(settings: SettingsTomlConfiguration) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }
