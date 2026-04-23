@@ -6,7 +6,7 @@ use tower_lsp::LanguageServer;
 
 // Create a fake kcl lsp server for testing.
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
-    let kcl_std = crate::docs::kcl_doc::walk_prelude();
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&kcl_std)?;
     let sketch_block_stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib_for_sketch_block(&kcl_std)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&kcl_std);

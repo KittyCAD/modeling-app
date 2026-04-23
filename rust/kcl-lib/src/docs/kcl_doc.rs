@@ -31,6 +31,20 @@ pub fn walk_prelude() -> ModData {
     visit_module("prelude", "", WalkForNames::All).unwrap()
 }
 
+pub fn walk_stdlib() -> ModData {
+    let mut stdlib = walk_prelude();
+
+    #[expect(clippy::single_element_loop)]
+    for module_name in ["solver"] {
+        let module = visit_module(module_name, &format!("{module_name}::"), WalkForNames::All).unwrap();
+        stdlib
+            .children
+            .insert(format!("M:{}", module.qual_name), DocData::Mod(module));
+    }
+
+    stdlib
+}
+
 #[derive(Clone, Debug)]
 enum WalkForNames<'a> {
     All,
@@ -1507,7 +1521,7 @@ mod test {
 
     #[test]
     fn smoke() {
-        let result = walk_prelude();
+        let result = walk_stdlib();
         if let DocData::Const(d) = result.find_by_name("PI").unwrap()
             && d.name == "PI"
         {
@@ -1519,6 +1533,15 @@ mod test {
             return;
         }
         panic!("didn't find PI");
+    }
+
+    #[test]
+    fn walk_stdlib_includes_solver_without_exposing_it_in_prelude() {
+        let prelude = walk_prelude();
+        assert!(prelude.find_by_name("coincident").is_none());
+
+        let stdlib = walk_stdlib();
+        assert!(matches!(stdlib.find_by_name("coincident"), Some(DocData::Fn(_))));
     }
 
     #[test]
@@ -1561,7 +1584,7 @@ mod test {
             }
         }
 
-        let data = walk_prelude();
+        let data = walk_stdlib();
 
         check_mod(&data);
         for m in data.children.values() {
@@ -1574,7 +1597,7 @@ mod test {
     #[for_each_example_test]
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_examples() {
-        let std = walk_prelude();
+        let std = walk_stdlib();
 
         let names = NAME.split('-');
         let mut mods: Vec<_> = names.collect();
