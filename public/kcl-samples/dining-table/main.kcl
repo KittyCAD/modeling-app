@@ -24,14 +24,30 @@ apronThickness = legThickness / 2
 
 
 tableTopPlane = offsetPlane(XY, offset = tableHeight)
-tableTopSketch = startSketchOn(tableTopPlane)
-tableTopProfile = startProfile(tableTopSketch, at = [0, 0])
-  |> yLine(length = tableLength)
-  |> xLine(length = tableWidth)
-  |> yLine(length = -tableLength)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+tableTopSketch = tableTopPlane
+tableTopProfile = sketch(on = tableTopSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2100mm])
+  line2 = line(start = [var 0mm, var 2100mm], end = [var 800mm, var 2100mm])
+  line3 = line(start = [var 800mm, var 2100mm], end = [var 800mm, var 0mm])
+  line4 = line(start = [var 800mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, [0, 0]])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, line2.end]) == tableWidth
+  verticalDistance([line1.start, line2.end]) == tableLength
+}
+tableTopRegion = region(segments = [
+  tableTopProfile.line1,
+  tableTopProfile.line2
+])
+tableTopExtrude = extrude(tableTopRegion, length = -tableTopThickness)
+hide(tableTopProfile)
 
 // ──────────────
 // LEGS
@@ -42,22 +58,55 @@ legHeight = tableHeight - tableTopThickness
 distanceBetweenLegAxisWidth = tableWidth - legThickness - (legOffset * 2)
 distanceBetweenLegAxisLength = tableLength - legThickness - (legOffset * 2)
 
-legSketch = startSketchOn(XY)
-legProfile = startProfile(legSketch, at = [0, 0])
-  |> yLine(length = legThickness)
-  |> xLine(length = legThickness)
-  |> yLine(length = -legThickness)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-legExtrude = extrude(legProfile, length = legHeight)
-  |> translate(x = legOffset, y = legOffset, z = 0)
+legSketch = XY
+legProfile = sketch(on = legSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 40mm])
+  line2 = line(start = [var 0mm, var 40mm], end = [var 40mm, var 40mm])
+  line3 = line(start = [var 40mm, var 40mm], end = [var 40mm, var 0mm])
+  line4 = line(start = [var 40mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, [0, 0]])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, line2.end]) == legThickness
+  verticalDistance([line1.start, line2.end]) == legThickness
+}
+legRegion = region(segments = [legProfile.line1, legProfile.line2])
+legExtrude = extrude(legRegion, length = legHeight)
+  |> translate(
+       x = legOffset,
+       y = legOffset,
+       z = 0,
+       global = true,
+     )
+hide(legProfile)
 
 leg2 = clone(legExtrude)
-  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
+  |> translate(
+       x = distanceBetweenLegAxisWidth,
+       y = 0,
+       z = 0,
+       global = true,
+     )
 leg3 = clone(legExtrude)
-  |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)
+  |> translate(
+       x = 0,
+       y = distanceBetweenLegAxisLength,
+       z = 0,
+       global = true,
+     )
 leg4 = clone(legExtrude)
-  |> translate(x = distanceBetweenLegAxisWidth, y = tableLength - legThickness - (legOffset * 2), z = 0)
+  |> translate(
+       x = distanceBetweenLegAxisWidth,
+       y = tableLength - legThickness - (legOffset * 2),
+       z = 0,
+       global = true,
+     )
 
 // ──────────────
 // APRONS
@@ -72,38 +121,82 @@ distanceFromTableTopCornerToLegAxis = legOffset + legThickness / 2
 distanceFromTableTopCornerToApronSide = distanceFromTableTopCornerToLegAxis - (apronThickness / 2)
 
 stretcherPlane = offsetPlane(XY, offset = apronTopElevation - tableTopThickness)
-stretcherSketch = startSketchOn(stretcherPlane)
+stretcherSketch = stretcherPlane
 
-longApronProfile = startProfile(stretcherSketch, at = [0, 0])
-  |> yLine(length = longApronLength)
-  |> xLine(length = apronThickness)
-  |> yLine(length = -longApronLength)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+longApronProfile = sketch(on = stretcherSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1900mm])
+  line2 = line(start = [var 0mm, var 1900mm], end = [var 20mm, var 1900mm])
+  line3 = line(start = [var 20mm, var 1900mm], end = [var 20mm, var 0mm])
+  line4 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, [0, 0]])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, line2.end]) == apronThickness
+  verticalDistance([line1.start, line2.end]) == longApronLength
+}
+longApronRegion = region(segments = [
+  longApronProfile.line1,
+  longApronProfile.line2
+])
 
 longApronProfileMoved = translate(
-  longApronProfile,
+  longApronRegion,
   x = distanceFromTableTopCornerToApronSide,
   y = distanceFromTableTopCornerToLegBackSide,
   z = 0,
+  global = true,
 )
 longApron1 = extrude(longApronProfileMoved, length = -apronHeight)
+hide(longApronProfile)
 longApron2 = clone(longApron1)
-  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
+  |> translate(
+       x = distanceBetweenLegAxisWidth,
+       y = 0,
+       z = 0,
+       global = true,
+     )
 
-shortApronProfile = startProfile(stretcherSketch, at = [0, 0])
-  |> yLine(length = apronThickness)
-  |> xLine(length = shortApronLength)
-  |> yLine(length = -apronThickness)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+shortApronProfile = sketch(on = stretcherSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
+  line2 = line(start = [var 0mm, var 20mm], end = [var 600mm, var 20mm])
+  line3 = line(start = [var 600mm, var 20mm], end = [var 600mm, var 0mm])
+  line4 = line(start = [var 600mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  coincident([line1.start, [0, 0]])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, line2.end]) == shortApronLength
+  verticalDistance([line1.start, line2.end]) == apronThickness
+}
+shortApronRegion = region(segments = [
+  shortApronProfile.line1,
+  shortApronProfile.line2
+])
 
 shortApronProfileMoved = translate(
-  shortApronProfile,
+  shortApronRegion,
   x = distanceFromTableTopCornerToLegBackSide,
   y = distanceFromTableTopCornerToApronSide,
   z = 0,
+  global = true,
 )
 shortApron1 = extrude(shortApronProfileMoved, length = -apronHeight)
+hide(shortApronProfile)
 shortApron2 = clone(shortApron1)
-  |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)
+  |> translate(
+       x = 0,
+       y = distanceBetweenLegAxisLength,
+       z = 0,
+       global = true,
+     )

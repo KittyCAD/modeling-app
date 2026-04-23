@@ -74,6 +74,29 @@ async function clickSegmentById(
   await page.mouse.click(box.x, box.y) // box size is 1x1 px so we can ignore width, height
 }
 
+async function selectSketchSolveConstraintFromDropdown(
+  page: Page,
+  constraintId:
+    | 'coincident'
+    | 'Tangent'
+    | 'Parallel'
+    | 'Perpendicular'
+    | 'equalLength'
+    | 'vertical'
+    | 'Horizontal'
+    | 'Fixed'
+) {
+  await page.getByRole('button', { name: 'constraints: open menu' }).click()
+  await expect(page.getByTestId(`dropdown-${constraintId}`)).toBeVisible()
+  await page.getByTestId(`dropdown-${constraintId}`).click()
+}
+
+async function expectNoUnsupportedSelectionToast(page: Page) {
+  await expect(
+    page.getByText('Some faces and edges are not currently selectable.')
+  ).not.toBeVisible()
+}
+
 async function dragBetweenRatios(
   page: Page,
   scene: SceneFixture,
@@ -358,14 +381,14 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       // await page.waitForTimeout(100)
 
       // Click the coincident tool
-      await page.getByTestId('coincident').click()
+      await selectSketchSolveConstraintFromDropdown(page, 'coincident')
 
       await editor.expectEditor.toContain(
         'coincident([line1.start, line2.end])'
       )
       await page.waitForTimeout(100)
     })
-    const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+    const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
       format: 'ratio',
     })
     await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
@@ -395,7 +418,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       // Click the parallel tool
       // await page.waitForTimeout(100)
-      await page.getByTestId('Parallel').click()
+      await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
 
       await editor.expectEditor.toContain('parallel([line1, line3])')
     })
@@ -1314,37 +1337,53 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       select,
       apply,
       assertChanged,
+      applyBeforeSelect = false,
+      cleanupAfterStep,
     }: {
       label: string
       select: () => Promise<void>
       apply: () => Promise<void>
       assertChanged: (code: string) => void
+      applyBeforeSelect?: boolean
+      cleanupAfterStep?: () => Promise<void>
     }) => {
       await test.step(label, async () => {
         await scene.clickNoWhere()
         const codeBefore = await editor.getCurrentCode()
         expect(normaliseCode(codeBefore)).toBe(normaliseCode(initialCode))
 
-        await select()
-        await apply()
+        if (applyBeforeSelect) {
+          await apply()
+          await select()
+        } else {
+          await select()
+          await apply()
+        }
 
         const changedCode = await waitForCodeChange(page, codeBefore)
         assertChanged(changedCode)
+        await expectNoUnsupportedSelectionToast(page)
 
         await expectBackToInitialCode(changedCode)
         await scene.clickNoWhere()
+        if (cleanupAfterStep) {
+          await cleanupAfterStep()
+        } else if (applyBeforeSelect) {
+          await page.keyboard.press('Escape')
+        }
       })
     }
 
     await applyConstraintStep({
       label: 'coincident 1',
       select: async () => {
-        await clickMidpoint('2', '3')
         await clickPoint('5')
+        await clickMidpoint('2', '3')
       },
       apply: async () => {
-        await page.getByTestId('coincident').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
       },
@@ -1357,10 +1396,27 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickPoint('8')
       },
       apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'coincident 3 points',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+        await clickPoint('11')
+      },
+      apply: async () => {
         await page.getByTestId('coincident').click()
       },
       assertChanged: (code) => {
         expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+        expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
       },
     })
 
@@ -1371,8 +1427,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('14', '15')
       },
       apply: async () => {
-        await page.getByTestId('Tangent').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Tangent')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/tangent\(/g) ?? []).length).toBe(1)
       },
@@ -1385,8 +1442,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('21', '22')
       },
       apply: async () => {
-        await page.getByTestId('Parallel').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/parallel\(/g) ?? []).length).toBe(1)
       },
@@ -1399,8 +1457,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('27', '28')
       },
       apply: async () => {
-        await page.getByTestId('Perpendicular').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Perpendicular')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/perpendicular\(/g) ?? []).length).toBe(1)
       },
@@ -1413,8 +1472,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('33', '34')
       },
       apply: async () => {
-        await page.getByTestId('equalLength').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'equalLength')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/equalLength\(/g) ?? []).length).toBe(1)
       },
@@ -1426,8 +1486,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('36', '37')
       },
       apply: async () => {
-        await page.getByTestId('vertical').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'vertical')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/vertical\(/g) ?? []).length).toBe(1)
       },
@@ -1439,8 +1500,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('39', '40')
       },
       apply: async () => {
-        await page.getByTestId('Horizontal').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Horizontal')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/horizontal\(/g) ?? []).length).toBe(1)
       },
@@ -1452,8 +1514,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickPoint('42')
       },
       apply: async () => {
-        await page.getByTestId('Fixed').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Fixed')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect(code).toMatch(/fixed\(|coincident\(/)
       },
@@ -1795,6 +1858,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
       )
@@ -1896,6 +1960,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion uses inches for region point', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
       )
@@ -1919,6 +1984,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -1981,6 +2047,7 @@ extrude001 = extrude(region001, length = 5)`
     tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.35, {

@@ -70,13 +70,40 @@ import {
 import { Group, type Object3D, Vector2, Vector3 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
+type DragSketchOutcome = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+}
+
+type DragCommitCandidate = DragSketchOutcome & {
+  segmentsToEdit: ExistingSegmentCtor[]
+}
+
 type ClosestSelectionTarget = {
   distance: number
   selectionId: SketchSolveSelectionId
   apiObject: ApiObject | null
 }
 
-function getClosestSelectionTarget(
+// This is only a settlement latch for "there is a preview solve in flight".
+// It is not used to carry a value or an error, so a reject path would not add
+// useful semantics here. `onDragEnd` only needs to wait until the preview solve
+// has finished its `finally` cleanup before finalizing the drag.
+type DeferredVoid = {
+  promise: Promise<void>
+  resolve: () => void
+}
+
+function createDeferredVoid(): DeferredVoid {
+  let resolve!: () => void
+  const promise = new Promise<void>((res) => {
+    resolve = res
+  })
+
+  return { promise, resolve }
+}
+
+export function getClosestSelectionTarget(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
@@ -359,27 +386,68 @@ function getAxisConstraintWithOrigin(
   )
 }
 
+function hasSketchSolveIssues(sceneGraphDelta?: SceneGraphDelta): boolean {
+  return (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0
+}
+
+function buildPreviewOutcomeWithPreservedGeometry({
+  baseOutcome,
+  previewResult,
+}: {
+  baseOutcome: DragSketchOutcome
+  previewResult: DragSketchOutcome
+}): DragSketchOutcome {
+  return {
+    kclSource: baseOutcome.kclSource,
+    sceneGraphDelta: {
+      ...baseOutcome.sceneGraphDelta,
+      exec_outcome: previewResult.sceneGraphDelta.exec_outcome,
+    },
+  }
+}
+
+type CreateOnDragStartCallbackArgs = {
+  // Seeds the drag anchor used to compute relative drag vectors.
+  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  // Captures the object currently being dragged at drag start.
+  setDraggedEntityId: (entityId: number | null) => void
+  // Clears any previously cached valid preview from an earlier drag session.
+  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
+  // Stores the frontend sketch outcome at drag start for preview fallback.
+  setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
+  // Stores the committed Rust checkpoint so invalid releases can restore to it.
+  setPreDragCheckpointId: (checkpointId: number | null) => void
+  // Starts a fresh drag session so stale preview responses can be ignored.
+  beginDragSession: () => void
+  // Reads the current frontend sketch outcome at the moment drag begins.
+  getCurrentSketchOutcome: () => DragSketchOutcome | null
+  // Reads the currently committed checkpoint backing undo/redo.
+  getCurrentCommittedCheckpointId: () => number | null
+  // Reads the hovered selection id so drag start can lock onto it.
+  getHoveredId: () => SketchSolveSelectionId | null
+  // Clears transient hover UI that should not remain visible during drag.
+  dismissConstraintHoverPopup: () => void
+}
+
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
- * Handles initialization of drag state.
- *
- * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
+ * Captures the drag baseline used by preview and recovery logic:
+ * - the current frontend sketch outcome
+ * - the current committed Rust checkpoint
+ * - the hovered entity being dragged
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
   setDraggedEntityId,
-  setLastPreviewSegmentsToEdit,
+  setLastGoodPreview,
+  setDragStartOutcome,
+  setPreDragCheckpointId,
+  beginDragSession,
+  getCurrentSketchOutcome,
+  getCurrentCommittedCheckpointId,
   getHoveredId,
   dismissConstraintHoverPopup,
-}: {
-  setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  setDraggedEntityId: (entityId: number | null) => void
-  setLastPreviewSegmentsToEdit: (
-    segmentsToEdit: Array<ExistingSegmentCtor> | null
-  ) => void
-  getHoveredId: () => SketchSolveSelectionId | null
-  dismissConstraintHoverPopup: () => void
-}): (arg: {
+}: CreateOnDragStartCallbackArgs): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent
@@ -387,8 +455,11 @@ export function createOnDragStartCallback({
 }) => void | Promise<void> {
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
+    beginDragSession()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
-    setLastPreviewSegmentsToEdit(null)
+    setLastGoodPreview(null)
+    setDragStartOutcome(getCurrentSketchOutcome())
+    setPreDragCheckpointId(getCurrentCommittedCheckpointId())
     const hoveredId = getHoveredId()
     setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
@@ -403,10 +474,12 @@ export function createOnDragStartCallback({
 export function createOnDragEndCallback({
   getDraggedEntityId,
   setDraggedEntityId,
+  invalidateDragSession,
   onComplete,
 }: {
   getDraggedEntityId: () => number | null
   setDraggedEntityId: (entityId: number | null) => void
+  invalidateDragSession: () => void
   onComplete: (data: {
     draggedEntityId: number | null
     intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
@@ -420,6 +493,8 @@ export function createOnDragEndCallback({
 }) => void | Promise<void> {
   return async ({ intersectionPoint, mouseEvent }) => {
     const draggedEntityId = getDraggedEntityId()
+    invalidateDragSession()
+    setDraggedEntityId(null)
     try {
       await onComplete({ draggedEntityId, intersectionPoint, mouseEvent })
     } finally {
@@ -678,12 +753,16 @@ function areSameConstraintHoverPopups(
  * @param getJsAppSettings - Function to get app settings (async)
  */
 export function createOnDragCallback({
+  getIsDragActive,
   getIsSolveInProgress,
   setIsSolveInProgress,
   getLastSuccessfulDragFromPoint,
   setLastSuccessfulDragFromPoint,
   getDraggedEntityId,
-  setLastPreviewSegmentsToEdit,
+  getActiveDragSessionId,
+  getLastGoodPreview,
+  setLastGoodPreview,
+  getDragStartOutcome,
   getContextData,
   editSegments,
   onNewSketchOutcome,
@@ -691,19 +770,24 @@ export function createOnDragCallback({
   getJsAppSettings,
   sceneInfra,
   onUpdateDragSnapping,
+  onPreviewSolveStarted,
+  onPreviewSolveSettled,
 }: {
+  getIsDragActive: () => boolean
   getIsSolveInProgress: () => boolean
   setIsSolveInProgress: (value: boolean) => void
   getLastSuccessfulDragFromPoint: () => Vector2
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   getDraggedEntityId: () => number | null
-  setLastPreviewSegmentsToEdit: (
-    segmentsToEdit: Array<ExistingSegmentCtor> | null
-  ) => void
+  getActiveDragSessionId: () => number
+  getLastGoodPreview: () => DragCommitCandidate | null
+  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
+  getDragStartOutcome: () => DragSketchOutcome | null
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
     sketchExecOutcome?: {
+      sourceDelta?: SourceDelta
       sceneGraphDelta: SceneGraphDelta
     }
   }
@@ -726,6 +810,8 @@ export function createOnDragCallback({
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
   sceneInfra: SceneInfra
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
+  onPreviewSolveStarted?: () => void
+  onPreviewSolveSettled?: () => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -733,6 +819,10 @@ export function createOnDragCallback({
   intersects: Array<unknown>
 }) => Promise<void> {
   return async ({ intersectionPoint, mouseEvent }) => {
+    if (!getIsDragActive()) {
+      return
+    }
+
     // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
       return
@@ -763,7 +853,11 @@ export function createOnDragCallback({
     }
 
     setIsSolveInProgress(true)
+    onPreviewSolveStarted?.()
     try {
+      const dragSessionId = getActiveDragSessionId()
+      const isActiveDragSession = () =>
+        getIsDragActive() && getActiveDragSessionId() === dragSessionId
       const twoD = intersectionPoint.twoD
       const snappingCandidate = !allowSnapping(mouseEvent)
         ? null
@@ -823,15 +917,15 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
-        setLastPreviewSegmentsToEdit(null)
         setIsSolveInProgress(false)
         return
       }
 
-      setLastPreviewSegmentsToEdit(segmentsToEdit)
-
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
+      if (!isActiveDragSession()) {
+        return
+      }
       // Get sketchId from context data (needed for editSegments)
       const sketchId = getContextData().sketchId
       const result = await editSegments(
@@ -840,25 +934,57 @@ export function createOnDragCallback({
         segmentsToEdit,
         settings
       ).catch((err) => {
+        if (!isActiveDragSession()) {
+          return null
+        }
         console.error('failed to edit segment', err)
         toastSketchSolveError(err)
         return null
       })
 
-      // After successful drag, update the lastSuccessfulDragFromPoint
-      // This ensures the next drag calculates from the correct starting point
-      setLastSuccessfulDragFromPoint(twoD.clone())
-
       // Notify about new sketch outcome if edit was successful
-      if (result) {
-        onNewSketchOutcome({
-          ...result,
-          writeToDisk: false,
-          suppressExecOutcomeIssues: true,
-        })
+      if (result && isActiveDragSession()) {
+        if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
+          setLastGoodPreview({
+            ...result,
+            segmentsToEdit,
+          })
+          // Only advance the drag anchor on a valid solve.
+          setLastSuccessfulDragFromPoint(twoD.clone())
+          onNewSketchOutcome({
+            ...result,
+            writeToDisk: false,
+            suppressExecOutcomeIssues: true,
+          })
+        } else {
+          const fallbackOutcome =
+            getLastGoodPreview() ??
+            getDragStartOutcome() ??
+            (contextData.sketchExecOutcome
+              ? {
+                  kclSource:
+                    contextData.sketchExecOutcome.sourceDelta ??
+                    result.kclSource,
+                  sceneGraphDelta:
+                    contextData.sketchExecOutcome.sceneGraphDelta,
+                }
+              : null)
+
+          onNewSketchOutcome({
+            ...(fallbackOutcome
+              ? buildPreviewOutcomeWithPreservedGeometry({
+                  baseOutcome: fallbackOutcome,
+                  previewResult: result,
+                })
+              : result),
+            writeToDisk: false,
+            suppressExecOutcomeIssues: true,
+          })
+        }
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
+      onPreviewSolveSettled?.()
       setIsSolveInProgress(false)
     }
   }
@@ -880,13 +1006,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
   // Closure-scoped mutex to prevent concurrent async editSegment operations.
   // Not in XState context since it's purely an implementation detail for race condition prevention.
   const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
+  const [getIsDragActive, setIsDragActive] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
-  const [getLastPreviewSegmentsToEdit, setLastPreviewSegmentsToEdit] =
-    createGetSet<Array<ExistingSegmentCtor> | null>(null)
+  const [getActiveDragSessionId, setActiveDragSessionId] =
+    createGetSet<number>(0)
+  const [getInFlightPreviewSolve, setInFlightPreviewSolve] =
+    createGetSet<DeferredVoid | null>(null)
+  const [getLastGoodPreview, setLastGoodPreview] =
+    createGetSet<DragCommitCandidate | null>(null)
+  const [getDragStartOutcome, setDragStartOutcome] =
+    createGetSet<DragSketchOutcome | null>(null)
+  const [getPreDragCheckpointId, setPreDragCheckpointId] = createGetSet<
+    number | null
+  >(null)
   const constraintHoverPopupState: {
     lastHoveredTargetId: number | null
     entries: ConstraintHoverPopupEntry[]
@@ -1031,6 +1167,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }
   }
 
+  const beginDragSession = () => {
+    setIsDragActive(true)
+    const nextDragSessionId = getActiveDragSessionId() + 1
+    setActiveDragSessionId(nextDragSessionId)
+  }
+
+  const invalidateDragSession = () => {
+    setIsDragActive(false)
+    const nextDragSessionId = getActiveDragSessionId() + 1
+    setActiveDragSessionId(nextDragSessionId)
+  }
+
+  const markPreviewSolveStarted = () => {
+    setInFlightPreviewSolve(createDeferredVoid())
+  }
+
+  const markPreviewSolveSettled = () => {
+    const pendingPreviewSolve = getInFlightPreviewSolve()
+    pendingPreviewSolve?.resolve()
+    setInFlightPreviewSolve(null)
+  }
+
   const dismissConstraintHoverPopupOnDragStart = () => {
     const snapshot = self.getSnapshot()
     const hadConstraintHoverPopup =
@@ -1076,13 +1234,32 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
-      setLastPreviewSegmentsToEdit,
+      setLastGoodPreview,
+      setDragStartOutcome,
+      setPreDragCheckpointId,
+      beginDragSession,
+      getCurrentSketchOutcome: () => {
+        const sketchExecOutcome = self.getSnapshot().context.sketchExecOutcome
+        if (
+          !sketchExecOutcome?.sceneGraphDelta ||
+          !sketchExecOutcome.sourceDelta
+        ) {
+          return null
+        }
+        return {
+          kclSource: sketchExecOutcome.sourceDelta,
+          sceneGraphDelta: sketchExecOutcome.sceneGraphDelta,
+        }
+      },
+      getCurrentCommittedCheckpointId: () =>
+        context.kclManager.currentSketchCheckpointId,
       getHoveredId: () => self.getSnapshot().context.hoveredId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
       getDraggedEntityId,
       setDraggedEntityId,
+      invalidateDragSession,
       // Send the last up-to-date state from the frontend to Rust. It doesn't know
       // about this last feedback loop yet!
       onComplete: async ({
@@ -1091,6 +1268,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         mouseEvent,
       }) => {
         try {
+          const pendingPreviewSolve = getInFlightPreviewSolve()
+          if (pendingPreviewSolve) {
+            await pendingPreviewSolve.promise
+          }
+
           clearDragSnappingState()
           sendHoveredState(null)
 
@@ -1132,8 +1314,64 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: SceneGraphDelta
             checkpointId?: number | null
           }
+          const lastGoodPreview = getLastGoodPreview()
+          const preDragCheckpointId = getPreDragCheckpointId()
+          const previewHasIssues = hasSketchSolveIssues(currentSceneGraphDelta)
+          const shouldRecoverInvalidPreview = previewHasIssues
+          let restoredPreDragOutcome: DragSketchOutcome | null = null
 
-          if (
+          const ensureRestoredBaseline = async () => {
+            if (restoredPreDragOutcome) {
+              return restoredPreDragOutcome
+            }
+
+            if (preDragCheckpointId != null) {
+              restoredPreDragOutcome =
+                await context.rustContext.restoreSketchCheckpoint(
+                  preDragCheckpointId
+                )
+            }
+
+            return restoredPreDragOutcome ?? getDragStartOutcome()
+          }
+
+          const recoverKnownGoodResult = async (reason: string) => {
+            const restored = await ensureRestoredBaseline()
+
+            if (lastGoodPreview?.segmentsToEdit.length) {
+              const recoveredCommit = await context.rustContext.editSegments(
+                0,
+                context.sketchId,
+                lastGoodPreview.segmentsToEdit,
+                settings,
+                true
+              )
+
+              if (
+                !hasSketchSolveIssues(recoveredCommit.sceneGraphDelta) &&
+                recoveredCommit.checkpointId != null
+              ) {
+                return recoveredCommit
+              }
+            }
+
+            if (restored) {
+              return {
+                kclSource: restored.kclSource,
+                sceneGraphDelta: restored.sceneGraphDelta,
+                checkpointId: preDragCheckpointId,
+              }
+            }
+
+            return context.rustContext.sketchExecuteMock(
+              SKETCH_FILE_VERSION,
+              context.sketchId
+            )
+          }
+
+          if (shouldRecoverInvalidPreview) {
+            result = await recoverKnownGoodResult('invalid preview on drag end')
+          } else if (
             snappingCandidate &&
             draggedEntityId !== null &&
             snapConstraint !== null
@@ -1162,7 +1400,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   },
                 },
               ],
-              settings
+              settings,
+              true
             )
 
             if (
@@ -1206,7 +1445,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                       type: 'Coincident',
                       segments: [draggedEntityId, 'ORIGIN'],
                     },
-                    settings
+                    settings,
+                    true
                   )
 
                   result = {
@@ -1249,12 +1489,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
               }
             }
           } else {
-            const lastPreviewSegmentsToEdit = getLastPreviewSegmentsToEdit()
-            if (lastPreviewSegmentsToEdit?.length) {
+            if (lastGoodPreview?.segmentsToEdit.length) {
               result = await context.rustContext.editSegments(
                 0,
                 context.sketchId,
-                lastPreviewSegmentsToEdit,
+                lastGoodPreview.segmentsToEdit,
                 settings,
                 true
               )
@@ -1305,6 +1544,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           }
 
+          if (hasSketchSolveIssues(result.sceneGraphDelta)) {
+            result = await recoverKnownGoodResult(
+              'invalid final drag-end result'
+            )
+          } else if (
+            result.checkpointId == null &&
+            (Boolean(lastGoodPreview?.segmentsToEdit.length) ||
+              Boolean(snapConstraint) ||
+              draggedEntityId !== null)
+          ) {
+            result = await recoverKnownGoodResult(
+              'missing checkpoint on drag end'
+            )
+          }
+
           // Send the event to update the sketch outcome
           self.send({
             type: 'update sketch outcome',
@@ -1321,12 +1575,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
     }),
     onDrag: createOnDragCallback({
+      getIsDragActive,
       getIsSolveInProgress,
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
       getDraggedEntityId,
-      setLastPreviewSegmentsToEdit,
+      getActiveDragSessionId,
+      getLastGoodPreview,
+      setLastGoodPreview,
+      getDragStartOutcome,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
@@ -1365,6 +1623,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,
       onUpdateDragSnapping: updateDragSnappingState,
+      onPreviewSolveStarted: markPreviewSolveStarted,
+      onPreviewSolveSettled: markPreviewSolveSettled,
     }),
     onMouseDownSelection: () => {
       const snapshot = self.getSnapshot()

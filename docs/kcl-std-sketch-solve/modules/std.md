@@ -21,6 +21,7 @@ You might also want the KCL language reference or the KCL guide.
 * [`appearance::appearance`](/docs/kcl-std-sketch-solve/modules/std-appearance)
 * [`array`](/docs/kcl-std-sketch-solve/modules/std-array)
 * [`gdt::gdt`](/docs/kcl-std-sketch-solve/modules/std-gdt)
+* [`gear::gear`](/docs/kcl-std-sketch-solve/modules/std-gear)
 * [`hole::hole`](/docs/kcl-std-sketch-solve/modules/std-hole)
 * [`math`](/docs/kcl-std-sketch-solve/modules/std-math)
 * [`runtime`](/docs/kcl-std-sketch-solve/modules/std-runtime)

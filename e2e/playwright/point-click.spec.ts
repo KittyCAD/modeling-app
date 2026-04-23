@@ -877,6 +877,7 @@ plane001 = offsetPlane(XY, offset = 5)
 sketch002 = sketch(on = plane001) {
   circle1 = circle(start = [var 2mm, var 2mm], center = [var 0mm, var 0mm])
 }
+hidden001 = hide(sketch002)
 region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     // TODO: replace point with segments = [sketch002.circle1] when the issue is fixed
     await context.addInitScript((initialCode) => {
@@ -2250,6 +2251,7 @@ face001 = faceOf(extrude001, face = region001.tags.line1)
 sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
+hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
     const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`

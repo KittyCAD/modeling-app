@@ -177,6 +177,26 @@ describe('KclManager diagnostics', () => {
     ])
   })
 
+  it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
+    const { kclManager } = createKclManagerTestHarness('abcdef')
+    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+
+    const baseDiagnostic = createDiagnostic(0, 2, 'base diagnostic')
+    const sketchSolveDiagnostic = createDiagnostic(
+      2,
+      4,
+      'sketch solve diagnostic'
+    )
+
+    kclManager.diagnostics = [baseDiagnostic]
+    kclManager.setSketchSolveDiagnostics([sketchSolveDiagnostic])
+    kclManager.setSketchSolveDiagnostics([])
+
+    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
+      baseDiagnostic,
+    ])
+  })
+
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
@@ -414,6 +434,80 @@ describe('KclManager diagnostics', () => {
 
     expect(kclManager.code).toBe('local newer')
     expect(modelingSendSpy).not.toHaveBeenCalled()
+  })
+
+  it('restores the pre-drag checkpoint when undoing a recovered drag commit', async () => {
+    const baselineCode = 'baseline sketch'
+    const recoveredCode = 'last good preview'
+    const preDragCheckpointId = 7
+    const recoveredCheckpointId = 11
+    const { kclManager } = createKclManagerTestHarness(baselineCode)
+    const modelingSendSpy = vi.fn()
+
+    kclManager.modelingState = {
+      matches: (value: unknown) => value === 'sketchSolveMode',
+    } as any
+    kclManager.modelingSend = modelingSendSpy
+    ;(kclManager as any).lastCommittedCode = baselineCode
+    ;(kclManager as any).lastCommittedAdditionalSpec = {
+      sketchCheckpointId: preDragCheckpointId,
+    }
+    ;(kclManager as any).lastCommittedSketchCheckpointId = preDragCheckpointId
+
+    const restoreSketchCheckpointSpy = vi
+      .spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
+      .mockResolvedValue({
+        kclSource: { text: baselineCode },
+        sceneGraphDelta: {
+          new_graph: [] as unknown as SceneGraphDelta['new_graph'],
+          new_objects: [],
+          invalidates_ids: true,
+          exec_outcome: [] as unknown as SceneGraphDelta['exec_outcome'],
+        },
+      })
+
+    kclManager.updateCodeEditor(recoveredCode, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+      shouldAddToHistory: false,
+    })
+
+    kclManager.updateCodeEditor(
+      recoveredCode,
+      {
+        shouldExecute: false,
+        shouldResetCamera: false,
+      },
+      {
+        sketchCheckpointId: recoveredCheckpointId,
+      }
+    )
+
+    expect(kclManager.code).toBe(recoveredCode)
+    expect(kclManager.currentSketchCheckpointId).toBe(recoveredCheckpointId)
+
+    kclManager.undo()
+    await flushPromises()
+
+    expect(kclManager.code).toBe(baselineCode)
+    expect(kclManager.currentSketchCheckpointId).toBe(preDragCheckpointId)
+    expect(restoreSketchCheckpointSpy).toHaveBeenCalledWith(preDragCheckpointId)
+    expect(modelingSendSpy).toHaveBeenCalledWith({
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: { text: baselineCode },
+        sceneGraphDelta: {
+          new_graph: [] as unknown as SceneGraphDelta['new_graph'],
+          new_objects: [],
+          invalidates_ids: true,
+          exec_outcome: [] as unknown as SceneGraphDelta['exec_outcome'],
+        },
+        writeToDisk: false,
+        addToHistory: false,
+        checkpointId: preDragCheckpointId,
+      },
+    })
   })
 
   it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {

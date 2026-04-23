@@ -714,6 +714,9 @@ export class KclManager extends File {
   get code(): string {
     return this.editorView.state.doc.toString()
   }
+  get currentSketchCheckpointId(): number | null {
+    return this.lastCommittedSketchCheckpointId
+  }
   get codeSignal() {
     return this._code
   }
@@ -732,6 +735,9 @@ export class KclManager extends File {
   }
   get astSignal() {
     return this._ast
+  }
+  get lastGoodAst() {
+    return this._lastAst
   }
   set ast(ast) {
     if (this._ast.value.body.length !== 0) {
@@ -898,12 +904,7 @@ export class KclManager extends File {
 
   /** In the future this could be a setting. */
   public longExecutionTimeMs = 1000 * 60 * 5
-  private _hotkeys: { [key: string]: () => void } = {
-    ['Ctrl-Shift-c']: () => this.convertToVariable(),
-    ['Alt-Shift-f']: () => {
-      void this.format().catch(reportRejection)
-    },
-  }
+  private _hotkeys: { [key: string]: () => void } = {}
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
@@ -1020,7 +1021,10 @@ export class KclManager extends File {
   }
 
   setDiagnosticsForCurrentErrors() {
-    this.setDiagnostics(this.diagnostics)
+    this.setDiagnostics([
+      ...this._diagnostics.value,
+      ...this._sketchSolveDiagnostics.value,
+    ])
   }
 
   set isExecuting(isExecuting) {
@@ -1167,7 +1171,10 @@ export class KclManager extends File {
     async ({
       newCode,
       shouldResetCamera,
-    }: { newCode: string; shouldResetCamera: boolean }) => {
+    }: {
+      newCode: string
+      shouldResetCamera: boolean
+    }) => {
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
@@ -2720,7 +2727,7 @@ export class KclManager extends File {
       key,
       run: () => {
         this._hotkeys[key]()
-        return false
+        return true
       },
       preventDefault: true,
     }))

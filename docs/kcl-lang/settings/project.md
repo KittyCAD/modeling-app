@@ -188,30 +188,6 @@ The number of snaps between minor grid lines. 1 means snapping to each minor gri
 **Default:** None
 
 
-#### text_editor
-
-Settings that affect the behavior of the KCL text editor.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### blinking_cursor
-
-Whether to make the cursor blink in the editor.
-
-
-**Default:** None
-
-##### text_wrapping
-
-Whether to wrap text in the editor or overflow with scroll.
-
-
-**Default:** None
-
-
 
 
 ## Complete Example
