@@ -91,10 +91,6 @@ pub(super) struct GlobalState {
     /// The segments that were edited that triggered this execution.
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
-    /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    /// Maps from sketch block ID to a map for that sketch.
-    /// Then the inner map is per constraint (in that sketch block) to its state.
-    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -224,6 +220,10 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -426,7 +426,7 @@ impl ExecState {
         sketch_block_id: ObjectId,
         key: &ConstraintKey,
     ) -> Option<ConstraintState> {
-        let map = self.global.constraint_state.get(&sketch_block_id)?;
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
         map.get(key).copied()
     }
 
@@ -436,7 +436,7 @@ impl ExecState {
         key: ConstraintKey,
         state: ConstraintState,
     ) {
-        let map = self.global.constraint_state.entry(sketch_block_id).or_default();
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
         map.insert(key, state);
     }
 
@@ -779,7 +779,6 @@ impl GlobalState {
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
-            constraint_state: Default::default(),
         };
 
         let root_id = ModuleId::default();
