@@ -3887,7 +3887,7 @@ sketch001 = sketch(on = YZ) {
 #[tokio::test]
 /// Control point spline trim case 2:
 /// splitting a spline should produce two splines, drop internal control-point
-/// constraints, and preserve endpoint coincident/tangent constraints on the kept sides.
+/// constraints, and preserve endpoint coincident constraints on the kept sides.
 async fn test_trim_control_point_spline_split_preserves_endpoint_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
@@ -3919,7 +3919,6 @@ sketch001 = sketch(on = YZ) {
     line3.start,
     controlPointSpline1.controls[8]
   ])
-  tangent([controlPointSpline1, line3])
 }
 "#;
 
@@ -4070,19 +4069,6 @@ sketch001 = sketch(on = YZ) {
         "Expected right split spline end to remain coincident with line3.start, got KCL:\n{}",
         result.kcl_code
     );
-    assert!(
-        objects.iter().any(|obj| {
-            matches!(
-                &obj.kind,
-                crate::frontend::api::ObjectKind::Constraint {
-                    constraint: crate::frontend::sketch::Constraint::Tangent(tangent),
-                } if tangent.input.contains(&right_split.0) && tangent.input.contains(&line3.0)
-            )
-        }),
-        "Expected tangent to migrate onto the right split spline, got KCL:\n{}",
-        result.kcl_code
-    );
-
     for (_, spline) in [left_split, right_split] {
         let internal_controls = spline
             .controls

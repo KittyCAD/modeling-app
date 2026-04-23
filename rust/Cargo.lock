@@ -1144,8 +1144,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.22"
-source = "git+https://github.com/KittyCAD/ezpz.git?branch=kurt-11103-spline#651152c015a28e213b4cdc95ae42f951418ed8b3"
+version = "0.2.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf3e22d1dd17c54fe70f81b13886fa63da3b9687bb950bb40fc43838b90db07d"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
@@ -4197,9 +4198,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.38"
+version = "0.23.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69f9466fb2c14ea04357e91413efb882e2a6d4a406e625449bc0a5d360d53a21"
+checksum = "7c2c118cb077cca2822033836dfb1b975355dfb784b5e8da48f7b6c5db74e60e"
 dependencies = [
  "once_cell",
  "ring",

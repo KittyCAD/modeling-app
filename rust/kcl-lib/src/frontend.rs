@@ -3367,6 +3367,25 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
+        for segment in &coincident.segments {
+            let ConstraintSegment::Segment(segment_id) = segment else {
+                continue;
+            };
+            let Some(segment_object) = self.scene_graph.objects.get(segment_id.0) else {
+                continue;
+            };
+            if matches!(
+                segment_object.kind,
+                ObjectKind::Segment {
+                    segment: Segment::ControlPointSpline(_)
+                }
+            ) {
+                return Err(KclError::refactor(
+                    "Coincident with a full controlPointSpline is not supported on this branch yet. Constrain a control point or spline edge instead."
+                        .to_owned(),
+                ));
+            }
+        }
         let segment_asts = coincident
             .segments
             .iter()
@@ -3560,12 +3579,12 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg0_object:?}")));
         };
         let seg0_ast = match seg0_segment {
-            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) | Segment::ControlPointSpline(_) => {
+            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) => {
                 self.segment_id_to_constraint_ast_reference(seg0_id, new_ast)?
             }
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Tangent supports only line/arc/circle/controlPointSpline segments, got: {seg0_segment:?}"
+                    "Tangent supports only line/arc/circle segments on this branch, got: {seg0_segment:?}"
                 )));
             }
         };
@@ -3579,12 +3598,12 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg1_object:?}")));
         };
         let seg1_ast = match seg1_segment {
-            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) | Segment::ControlPointSpline(_) => {
+            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) => {
                 self.segment_id_to_constraint_ast_reference(seg1_id, new_ast)?
             }
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Tangent supports only line/arc/circle/controlPointSpline segments, got: {seg1_segment:?}"
+                    "Tangent supports only line/arc/circle segments on this branch, got: {seg1_segment:?}"
                 )));
             }
         };
@@ -6984,11 +7003,10 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7012,7 +7030,6 @@ bad = missing_name
         let new_sketch = expect_sketch(new_sketch_object);
         assert_eq!(new_sketch.segments.len(), 0);
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7026,11 +7043,10 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7086,7 +7102,6 @@ bad = missing_name
 "
         );
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7099,11 +7114,10 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -7145,7 +7159,6 @@ bad = missing_name
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7257,7 +7270,8 @@ bad = missing_name
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_when_editing_its_start_point() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
@@ -7315,7 +7329,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_when_editing_its_end_point() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
@@ -7377,7 +7392,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_line_with_coincident_feedback() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   fixed([line1.start, [0, 0]])
@@ -7445,7 +7461,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_point_without_var() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   point(at = [var 1, var 2])
   point(at = [var 3, var 4])
   point(at = [var 5, var 6])
@@ -7490,6 +7507,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_point_with_var() {
         let initial_source = "\
+@settings(experimentalFeatures = allow)
 sketch(on = XY) {
   point(at = [var 1, var 2])
   point1 = point(at = [var 3, var 4])
@@ -7535,7 +7553,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_multiple_points() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   point(at = [var 1, var 2])
   point1 = point(at = [var 3, var 4])
   point(at = [var 5, var 6])
@@ -7581,7 +7600,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_coincident_constraint() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
   coincident([point1, point2])
@@ -7628,7 +7648,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_cascades_to_coincident_constraint() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   coincident([line1.end, line2.start])
@@ -7675,7 +7696,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_cascades_to_distance_constraint() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   distance([line1.end, line2.start]) == 10mm
@@ -8461,75 +8483,6 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_coincident_of_point_and_control_point_spline() {
-        let initial_source = "\
-sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 1mm])
-  controlPointSpline(points = [
-    [var 0mm, var 0mm],
-    [var 10mm, var 20mm],
-    [var 20mm, var 0mm]
-  ])
-}
-";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
-        let mut frontend = FrontendState::new();
-
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        let version = Version(0);
-
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
-        let sketch_id = sketch_object.id;
-        let sketch = expect_sketch(sketch_object);
-        let point_id = sketch
-            .segments
-            .iter()
-            .copied()
-            .find(|seg_id| {
-                matches!(
-                    &frontend.scene_graph.objects[seg_id.0].kind,
-                    ObjectKind::Segment {
-                        segment: Segment::Point(_)
-                    }
-                )
-            })
-            .expect("Expected a point segment in sketch");
-        let spline_id = sketch
-            .segments
-            .iter()
-            .copied()
-            .find(|seg_id| {
-                matches!(
-                    &frontend.scene_graph.objects[seg_id.0].kind,
-                    ObjectKind::Segment {
-                        segment: Segment::ControlPointSpline(_)
-                    }
-                )
-            })
-            .expect("Expected a control point spline segment in sketch");
-
-        let constraint = Constraint::Coincident(Coincident {
-            segments: vec![point_id.into(), spline_id.into()],
-        });
-        let (src_delta, _) = frontend
-            .add_constraint(&mock_ctx, version, sketch_id, constraint)
-            .await
-            .unwrap();
-        assert!(
-            src_delta.text.contains("coincident([point1, controlPointSpline1])"),
-            "Expected coincident constraint on point/controlPointSpline, got: {}",
-            src_delta.text
-        );
-
-        ctx.close().await;
-        mock_ctx.close().await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_invalid_coincident_arc_and_line_preserves_state() {
         // Test that attempting an invalid coincident constraint (arc and line)
         // doesn't corrupt the state, allowing subsequent operations to work.
@@ -8679,6 +8632,77 @@ sketch(on = XY) {
             } => {}
             _ => panic!("Line object should still be a line segment"),
         }
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_coincident_of_point_and_control_point_spline_is_rejected() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
+  point1 = point(at = [var 1mm, var 1mm])
+  controlPointSpline(points = [
+    [var 0mm, var 0mm],
+    [var 10mm, var 20mm],
+    [var 20mm, var 0mm]
+  ])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Point(_)
+                    }
+                )
+            })
+            .expect("Expected a point segment in sketch");
+        let spline_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::ControlPointSpline(_)
+                    }
+                )
+            })
+            .expect("Expected a control point spline segment in sketch");
+
+        let constraint = Constraint::Coincident(Coincident {
+            segments: vec![point_id.into(), spline_id.into()],
+        });
+        let err = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .expect_err("Expected point/controlPointSpline coincident to be rejected");
+        assert!(
+            err.error
+                .message()
+                .contains("full controlPointSpline is not supported"),
+            "Expected unsupported controlPointSpline coincident error, got: {err:?}"
+        );
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -9386,7 +9410,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_control_point_spline_edge_horizontal() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   controlPointSpline1 = controlPointSpline(points = [
     [var 0mm, var 0mm],
     [var 10mm, var 20mm],
@@ -9450,7 +9475,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_ui_scene_graph_hides_same_spline_coincident_constraints() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   spline1 = controlPointSpline(points = [
     [var 0mm, var 0mm],
     [var 10mm, var 20mm],
@@ -9508,7 +9534,8 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_control_point_spline_can_append_control_point() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   controlPointSpline(points = [
     [var 0mm, var 0mm],
     [var 10mm, var 20mm],
@@ -10227,9 +10254,10 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_control_point_spline_and_arc_tangent() {
+    async fn test_control_point_spline_and_arc_tangent_is_rejected() {
         let initial_source = "\
-sketch(on = XY) {
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
   controlPointSpline(points = [
     [var 0mm, var 0mm],
     [var 10mm, var 20mm],
@@ -10281,14 +10309,15 @@ sketch(on = XY) {
         let constraint = Constraint::Tangent(Tangent {
             input: vec![spline_id, arc_id],
         });
-        let (src_delta, _) = frontend
+        let err = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
-            .unwrap();
+            .expect_err("Expected controlPointSpline tangent to be rejected");
         assert!(
-            src_delta.text.contains("tangent([controlPointSpline1, arc1])"),
-            "Expected tangent constraint on controlPointSpline, got: {}",
-            src_delta.text
+            err.error
+                .message()
+                .contains("supports only line/arc/circle segments on this branch"),
+            "Expected unsupported controlPointSpline tangent error, got: {err:?}"
         );
 
         ctx.close().await;
