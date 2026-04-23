@@ -317,11 +317,11 @@ example002 = extrude(exampleSketch002, length = 5)
 
 ```kcl
 a1 = startSketchOn({
-       origin = { x = 0, y = 0, z = 0 },
-       xAxis = { x = 1, y = 0, z = 0 },
-       yAxis = { x = 0, y = 1, z = 0 },
-       zAxis = { x = 0, y = 0, z = 1 }
-     })
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+})
   |> startProfile(at = [0, 0])
   |> line(end = [100.0, 0])
   |> yLine(length = -100.0)

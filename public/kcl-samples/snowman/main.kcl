@@ -81,35 +81,48 @@ eyes = [eyeL, eyeRht]
   |> appearance(color = "#000000", roughness = 50, metalness = 0)
 
 // Nose (simple revolve approximating a carrot)
-noseSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = noseLen)
-  |> yLine(length = -0.01)
-  |> tangentialArc(angle = -85deg, radius = .5, tag = $seg01)
-  |> angledLine(angle = tangentToEnd(seg01), lengthX = noseLen * 0.9)
-  |> tangentialArc(endAbsolute = [0, -0.5])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-nose = revolve(noseSketch, axis = X)
+noseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 18mm, var 0mm])
+  line2 = line(start = [var 18mm, var 0mm], end = [var 18mm, var -0.01mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 17.54mm, var -0.51mm], end = [var 18mm, var -0.01mm], center = [var 17.5mm, var -0.01mm])
+  coincident([line2.end, arc3.end])
+  line4 = line(start = [var 17.54mm, var -0.51mm], end = [var 1.34mm, var -1.93mm])
+  coincident([arc3.start, line4.start])
+  arc5 = arc(start = [var 0mm, var -0.5mm], end = [var 1.34mm, var -1.93mm], center = [var 1.23mm, var -0.68mm])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var 0mm, var -0.5mm], end = [var 0mm, var 0mm])
+  coincident([arc5.start, line6.start])
+  horizontal(line2)
+}
+region001 = region(segments = [noseSketch.line1, noseSketch.line2])
+nose = revolve(region001, axis = X)
   |> translate(x = rHead * 0.98, y = 0, z = zHeadC)
   |> appearance(color = "#ff7f00", roughness = 40, metalness = 0)
 
 // Hat: brim (thin disk) + crown (short cylinder) merged into one solid
 hatBrimPlane = offsetPlane(XY, offset = zHeadC + rHead)
-hatBrim = startSketchOn(hatBrimPlane)
-  |> circle(center = [0, 0], radius = hatBrimR)
-  |> extrude(length = hatBrimThk)
+sketch001 = sketch(on = hatBrimPlane) {
+  circle1 = circle(start = [var 26mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch001.circle1])
+hatBrim = extrude(region002, length = hatBrimThk)
 
-hat = startSketchOn(hatBrim, face = END)
-  |> circle(center = [0, 0], radius = hatTopR)
-  |> extrude(length = hatTopH)
+sketch002 = sketch(on = startSketchOn(hatBrim, face = END)) {
+  circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [sketch002.circle1])
+hat = extrude(region003, length = hatTopH)
   |> appearance(color = "#111111", metalness = 10, roughness = 40)
 
 // Stick arms (thin cylinders), kept horizontal for robustness
 // Right arm: build along +Y using -XZ (normal is +Y)
 armSketchR = startSketchOn(-XZ)
-armCircleR = circle(armSketchR, center = [0, 0], radius = armR)
-rightArm = extrude(armCircleR, length = armLen)
+armCircleR = sketch(on = armSketchR) {
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region004 = region(segments = [armCircleR.circle1])
+rightArm = extrude(region004, length = armLen)
   |> translate(
        x = 0,
        y = rMiddle - armEmbed,
@@ -120,8 +133,11 @@ rightArm = extrude(armCircleR, length = armLen)
 
 // Left arm: build along -Y using XZ (normal is -Y)
 armSketchL = startSketchOn(XZ)
-armCircleL = circle(armSketchL, center = [0, 0], radius = armR)
-leftArm = extrude(armCircleL, length = armLen)
+armCircleL = sketch(on = armSketchL) {
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region005 = region(segments = [armCircleL.circle1])
+leftArm = extrude(region005, length = armLen)
   |> translate(
        x = 0,
        y = -(rMiddle - armEmbed),
@@ -133,9 +149,11 @@ leftArm = extrude(armCircleL, length = armLen)
 // Small print base: diameter covers max of arm span and body footprint; extrude DOWN so top is clearly visible
 armReachY = rMiddle - armEmbed + armLen
 baseR = max([rBottom, armReachY]) + baseMargin
-baseDisk = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = baseR)
-  |> extrude(length = -baseThk)
+sketch003 = sketch(on = XY) {
+  circle1 = circle(start = [var 71.8mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region006 = region(segments = [sketch003.circle1])
+baseDisk = extrude(region006, length = -baseThk)
   |> appearance(color = baseColor, roughness = 70, metalness = 0)
 
 bottomWithBase = union([bottom, baseDisk])

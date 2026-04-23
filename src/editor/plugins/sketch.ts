@@ -9,7 +9,10 @@ import {
   updateSceneGraphFromDelta,
   updateSketchSceneGraphEffect,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
+import { selectionDispatchedBySketchSolveAnnotation } from '@src/editor/plugins/sketchSelection'
+import { topLevelRange } from '@src/lang/util'
 import { EditorView } from 'codemirror'
 
 export const sketchSceneGraphCompartment = new Compartment()
@@ -17,7 +20,9 @@ export const sketchSceneGraphCompartment = new Compartment()
 /**
  * Apply this effect while undoing as well.
  */
-function sketchGraphExtension(): Extension {
+function sketchGraphExtension(
+  onSelectionChange?: (ranges: SourceRange[]) => void
+): Extension {
   const sketchSceneGraphListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
       const effect = tr.effects.find((e) => e.is(updateSketchSceneGraphEffect))
@@ -25,6 +30,22 @@ function sketchGraphExtension(): Extension {
         continue
       }
       updateSceneGraphFromDelta(effect.value)
+    }
+  })
+  const sketchSelectionListener = EditorView.updateListener.of((vu) => {
+    if (
+      onSelectionChange &&
+      vu.selectionSet &&
+      // ignore selection changes that are part of a document edit, such as undo/redo
+      !vu.docChanged &&
+      // ignore selections dispatched by sketch solve itself to avoid a second refresh
+      !vu.transactions.some((tr) =>
+        tr.annotation(selectionDispatchedBySketchSolveAnnotation)
+      )
+    ) {
+      onSelectionChange(
+        vu.state.selection.ranges.map(({ from, to }) => topLevelRange(from, to))
+      )
     }
   })
   const undoableExecution = invertedEffects.of((tr) => {
@@ -41,13 +62,17 @@ function sketchGraphExtension(): Extension {
     return found
   })
 
-  return [sketchSceneGraphListener, undoableExecution]
+  return [sketchSceneGraphListener, sketchSelectionListener, undoableExecution]
 }
 
-export function toggleSketchExtension(ev: EditorView, active: boolean) {
+export function toggleSketchExtension(
+  ev: EditorView,
+  active: boolean,
+  onSelectionChange?: (ranges: SourceRange[]) => void
+) {
   ev.dispatch({
     effects: sketchSceneGraphCompartment.reconfigure(
-      active ? sketchGraphExtension() : []
+      active ? sketchGraphExtension(onSelectionChange) : []
     ),
     annotations: Transaction.addToHistory.of(false),
   })

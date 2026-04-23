@@ -3,7 +3,9 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { join } from 'path'
 
 import {
+  parseAppSettings,
   parseProjectSettings,
+  serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -16,6 +18,8 @@ import {
   hiddenOnPlatform,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
+  replaceProjectSettingsPreservingMetadata,
+  settingsPayloadToConfiguration,
   settingsPayloadToProjectConfiguration,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
@@ -159,6 +163,33 @@ describe('testing hiddenOnPlatform', () => {
 // this regression test protects against that.
 
 describe('project settings serialization regression', () => {
+  it('preserves app-owned text editor settings through user settings wasm round-trip', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration({
+        textEditor: {
+          textWrapping: false,
+          blinkingCursor: false,
+        },
+      }),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).toContain('[settings.text_editor]')
+    expect(serializedToml).toContain('text_wrapping = false')
+    expect(serializedToml).toContain('blinking_cursor = false')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.textEditor?.textWrapping).toBe(false)
+    expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
+  })
+
   it('preserves explicit project defaults when user values differ', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -265,6 +296,97 @@ describe('project settings serialization regression', () => {
 
     expect(parsedProjectConfiguration.cloud?.['dev.zoo.dev']?.project_id).toBe(
       'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3'
+    )
+  })
+
+  it('preserves app-owned text editor settings through project settings wasm round-trip', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeProjectConfiguration(
+      settingsPayloadToProjectConfiguration({
+        textEditor: {
+          textWrapping: false,
+          blinkingCursor: true,
+        },
+      }),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).toContain('[settings.text_editor]')
+    expect(serializedToml).toContain('text_wrapping = false')
+    expect(serializedToml).toContain('blinking_cursor = true')
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      serializedToml,
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    const parsedProjectPayload = projectConfigurationToSettingsPayload(
+      parsedProjectConfiguration
+    )
+    expect(parsedProjectPayload.textEditor?.textWrapping).toBe(false)
+    expect(parsedProjectPayload.textEditor?.blinkingCursor).toBe(true)
+  })
+
+  it('drops cleared project settings while preserving project metadata', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const existingProjectConfiguration: DeepPartial<ProjectConfiguration> = {
+      settings: {
+        meta: {
+          id: 'e8f5178c-5227-4567-bb5a-f52b3caef5ea',
+        },
+        modeling: {
+          base_unit: 'cm',
+        },
+        app: {
+          named_views: {
+            '0656fb1a-9640-473e-b334-591dc70c0138': {
+              name: 'uuid1',
+              eye_offset: 1,
+              fov_y: 1,
+              ortho_scale_enabled: false,
+              ortho_scale_factor: 1,
+              pivot_position: [0, 0, 0],
+              pivot_rotation: [0, 0, 0, 1],
+              world_coord_system: 'right_handed_up_z',
+              is_ortho: false,
+              version: 1,
+            },
+          },
+        },
+      },
+      cloud: {
+        'dev.zoo.dev': {
+          project_id: 'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3',
+        },
+      },
+    }
+
+    const rewrittenProjectConfiguration =
+      replaceProjectSettingsPreservingMetadata(
+        existingProjectConfiguration,
+        settingsPayloadToProjectConfiguration({})
+      )
+    const serializedToml = serializeProjectConfiguration(
+      rewrittenProjectConfiguration,
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).not.toContain('base_unit = "cm"')
+    expect(serializedToml).not.toContain('named_views')
+    expect(serializedToml).toContain(
+      'id = "e8f5178c-5227-4567-bb5a-f52b3caef5ea"'
+    )
+    expect(serializedToml).toContain(
+      '[cloud."dev.zoo.dev"]\nproject_id = "e9632dae-19ca-49ea-bcc1-ee8e34ff9de3"'
     )
   })
 })

@@ -3,6 +3,279 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing radial-flow-centrifugal-impeller.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_24_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 23,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 40.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_47_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 46,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_53_on": {
+    "type": "Face",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "objectId": 52,
+      "value": "end",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "solid": {
+        "type": "Solid",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": [
+          {
+            "faceId": "[uuid]",
+            "id": "[uuid]",
+            "sourceRange": [],
+            "tag": {
+              "commentStart": 2659,
+              "end": 2666,
+              "moduleId": 0,
+              "start": 2659,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "type": "extrudeArc"
+          }
+        ],
+        "sketch": {
+          "creatorType": "sketch",
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                0.00000001874999197920074,
+                0.0
+              ],
+              "from": [
+                75.00000001875,
+                0.0
+              ],
+              "radius": 75.00000000000001,
+              "tag": {
+                "commentStart": 2659,
+                "end": 2666,
+                "moduleId": 0,
+                "start": 2659,
+                "type": "TagDeclarator",
+                "value": "circle1"
+              },
+              "to": [
+                75.00000001875,
+                0.0
+              ],
+              "type": "Circle",
+              "units": "mm"
+            }
+          ],
+          "on": {
+            "artifactId": "[uuid]",
+            "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 46,
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": "mm"
+            },
+            "type": "plane",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              75.00000001875,
+              0.0
+            ],
+            "to": [
+              75.00000001875,
+              0.0
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "tags": {
+            "circle1": {
+              "type": "TagIdentifier",
+              "value": "circle1"
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
+          "units": "mm"
+        },
+        "startCapId": "[uuid]",
+        "endCapId": "[uuid]",
+        "units": "mm",
+        "sectional": false
+      },
+      "units": "mm"
+    }
+  },
+  "__sketch_59_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 58,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -12.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "backPlate": {
     "type": "Solid",
     "value": {
@@ -14,7 +287,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2659,
+            "end": 2666,
+            "moduleId": 0,
+            "start": 2659,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
           "type": "extrudeArc"
         }
       ],
@@ -30,17 +310,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.0,
+              0.00000001874999197920074,
               0.0
             ],
             "from": [
-              75.0,
+              75.00000001875,
               0.0
             ],
-            "radius": 75.0,
-            "tag": null,
+            "radius": 75.00000000000001,
+            "tag": {
+              "commentStart": 2659,
+              "end": 2666,
+              "moduleId": 0,
+              "start": 2659,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "to": [
-              75.0,
+              75.00000001875,
               0.0
             ],
             "type": "Circle",
@@ -51,7 +338,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XY",
-          "objectId": 2,
+          "objectId": 46,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -80,11 +367,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "start": {
           "from": [
-            75.0,
+            75.00000001875,
             0.0
           ],
           "to": [
-            75.0,
+            75.00000001875,
             0.0
           ],
           "units": "mm",
@@ -94,8 +381,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "sourceRange": []
           }
         },
+        "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -151,28 +445,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 779,
+            "end": 784,
+            "moduleId": 0,
+            "start": 779,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 848,
+            "end": 853,
+            "moduleId": 0,
+            "start": 848,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 957,
+            "end": 962,
+            "moduleId": 0,
+            "start": 957,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1067,
+            "end": 1072,
+            "moduleId": 0,
+            "start": 1067,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         }
       ],
@@ -190,7 +512,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 779,
+              "end": 784,
+              "moduleId": 0,
+              "start": 779,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
               3.0,
               0.0
@@ -207,7 +536,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               3.0,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 848,
+              "end": 853,
+              "moduleId": 0,
+              "start": 848,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
             "to": [
               3.0,
               35.0
@@ -224,7 +560,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               3.0,
               35.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 957,
+              "end": 962,
+              "moduleId": 0,
+              "start": 957,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
             "to": [
               0.0,
               35.0
@@ -241,7 +584,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0,
               35.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1067,
+              "end": 1072,
+              "moduleId": 0,
+              "start": 1067,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
               0.0,
               0.0
@@ -295,6 +645,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": []
+          }
+        },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
           }
         },
         "artifactId": "[uuid]",
@@ -339,28 +707,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -378,7 +774,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -395,7 +798,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -412,7 +822,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -429,7 +846,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -483,6 +907,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -506,28 +948,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -545,7 +1015,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -562,7 +1039,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -579,7 +1063,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -596,7 +1087,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -650,6 +1148,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -673,28 +1189,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -712,7 +1256,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -729,7 +1280,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -746,7 +1304,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -763,7 +1328,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -817,6 +1389,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -840,28 +1430,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -879,7 +1497,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -896,7 +1521,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -913,7 +1545,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -930,7 +1569,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -984,6 +1630,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1007,28 +1671,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1046,7 +1738,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1063,7 +1762,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1080,7 +1786,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1097,7 +1810,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1151,6 +1871,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1174,28 +1912,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1213,7 +1979,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1230,7 +2003,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1247,7 +2027,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1264,7 +2051,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1318,6 +2112,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1341,28 +2153,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1380,7 +2220,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1397,7 +2244,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1414,7 +2268,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1431,7 +2292,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1485,6 +2353,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1508,28 +2394,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1547,7 +2461,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1564,7 +2485,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1581,7 +2509,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1598,7 +2533,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1652,6 +2594,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1675,28 +2635,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1714,7 +2702,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1731,7 +2726,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1748,7 +2750,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1765,7 +2774,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1819,6 +2835,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -1842,28 +2876,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -1881,7 +2943,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -1898,7 +2967,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -1915,7 +2991,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -1932,7 +3015,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -1986,6 +3076,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -2009,28 +3117,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -2048,7 +3184,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -2065,7 +3208,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -2082,7 +3232,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -2099,7 +3256,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -2153,6 +3317,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -2176,28 +3358,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 779,
+                "end": 784,
+                "moduleId": 0,
+                "start": 779,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 848,
+                "end": 853,
+                "moduleId": 0,
+                "start": 848,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 957,
+                "end": 962,
+                "moduleId": 0,
+                "start": 957,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1067,
+                "end": 1072,
+                "moduleId": 0,
+                "start": 1067,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
@@ -2215,7 +3425,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 779,
+                  "end": 784,
+                  "moduleId": 0,
+                  "start": 779,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   3.0,
                   0.0
@@ -2232,7 +3449,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 848,
+                  "end": 853,
+                  "moduleId": 0,
+                  "start": 848,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   3.0,
                   35.0
@@ -2249,7 +3473,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   3.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 957,
+                  "end": 962,
+                  "moduleId": 0,
+                  "start": 957,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.0,
                   35.0
@@ -2266,7 +3497,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0,
                   35.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1067,
+                  "end": 1072,
+                  "moduleId": 0,
+                  "start": 1067,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   0.0,
                   0.0
@@ -2320,6 +3558,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": []
+              }
+            },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
               }
             },
             "artifactId": "[uuid]",
@@ -2345,7 +3601,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3303,
+            "end": 3310,
+            "moduleId": 0,
+            "start": 3303,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
           "type": "extrudeArc"
         }
       ],
@@ -2361,17 +3624,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.0,
+              0.000000003749999755927745,
               0.0
             ],
             "from": [
-              15.0,
+              15.00000000375,
               0.0
             ],
             "radius": 15.0,
-            "tag": null,
+            "tag": {
+              "commentStart": 3303,
+              "end": 3310,
+              "moduleId": 0,
+              "start": 3303,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "to": [
-              15.0,
+              15.00000000375,
               0.0
             ],
             "type": "Circle",
@@ -2382,7 +3652,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 4,
+          "objectId": 58,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2411,11 +3681,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "start": {
           "from": [
-            15.0,
+            15.00000000375,
             0.0
           ],
           "to": [
-            15.0,
+            15.00000000375,
             0.0
           ],
           "units": "mm",
@@ -2425,8 +3695,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "sourceRange": []
           }
         },
+        "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2436,86 +3713,232 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     }
   },
   "boreCircle": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            15.0,
-            0.0
-          ],
-          "radius": 15.0,
-          "tag": null,
-          "to": [
-            15.0,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
-        "objectId": 4,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": -12.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 62,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 15.00000000375,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.000000003749999755927745,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 22.5,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -7.5,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 60,
+                    "center_object_id": 61,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 58,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -12.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          15.0,
-          0.0
-        ],
-        "to": [
-          15.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
-        }
-      },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.000000003749999755927745,
+                    0.0
+                  ],
+                  "from": [
+                    15.00000000375,
+                    0.0
+                  ],
+                  "radius": 15.0,
+                  "tag": {
+                    "commentStart": 3303,
+                    "end": 3310,
+                    "moduleId": 0,
+                    "start": 3303,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    15.00000000375,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 58,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": -12.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  15.00000000375,
+                  0.0
+                ],
+                "to": [
+                  15.00000000375,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "boreDia": {
     "type": "Number",
@@ -2532,7 +3955,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 4,
+      "objectId": 58,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2560,86 +3983,232 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     }
   },
   "diskCircle": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            75.0,
-            0.0
-          ],
-          "radius": 75.0,
-          "tag": null,
-          "to": [
-            75.0,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XY",
-        "objectId": 2,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 50,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 75.00000001875,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.00000001874999197920074,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 112.5,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -37.5,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 48,
+                    "center_object_id": 49,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XY",
+                  "objectId": 46,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          75.0,
-          0.0
-        ],
-        "to": [
-          75.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
-        }
-      },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.00000001874999197920074,
+                    0.0
+                  ],
+                  "from": [
+                    75.00000001875,
+                    0.0
+                  ],
+                  "radius": 75.00000000000001,
+                  "tag": {
+                    "commentStart": 2659,
+                    "end": 2666,
+                    "moduleId": 0,
+                    "start": 2659,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    75.00000001875,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 46,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  75.00000001875,
+                  0.0
+                ],
+                "to": [
+                  75.00000001875,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "diskSketch": {
     "type": "Plane",
@@ -2647,7 +4216,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "XY",
-      "objectId": 2,
+      "objectId": 46,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2685,7 +4254,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2975,
+            "end": 2982,
+            "moduleId": 0,
+            "start": 2975,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
           "type": "extrudeArc"
         }
       ],
@@ -2701,17 +4277,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.0,
+              0.000000005000000307354519,
               0.0
             ],
             "from": [
-              20.0,
+              20.000000005,
               0.0
             ],
             "radius": 20.0,
-            "tag": null,
+            "tag": {
+              "commentStart": 2975,
+              "end": 2982,
+              "moduleId": 0,
+              "start": 2975,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "to": [
-              20.0,
+              20.000000005,
               0.0
             ],
             "type": "Circle",
@@ -2722,7 +4305,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "objectId": 3,
+          "objectId": 52,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2745,7 +4328,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
-                "tag": null,
+                "tag": {
+                  "commentStart": 2659,
+                  "end": 2666,
+                  "moduleId": 0,
+                  "start": 2659,
+                  "type": "TagDeclarator",
+                  "value": "circle1"
+                },
                 "type": "extrudeArc"
               }
             ],
@@ -2761,17 +4351,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   },
                   "ccw": true,
                   "center": [
-                    0.0,
+                    0.00000001874999197920074,
                     0.0
                   ],
                   "from": [
-                    75.0,
+                    75.00000001875,
                     0.0
                   ],
-                  "radius": 75.0,
-                  "tag": null,
+                  "radius": 75.00000000000001,
+                  "tag": {
+                    "commentStart": 2659,
+                    "end": 2666,
+                    "moduleId": 0,
+                    "start": 2659,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
                   "to": [
-                    75.0,
+                    75.00000001875,
                     0.0
                   ],
                   "type": "Circle",
@@ -2782,7 +4379,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "XY",
-                "objectId": 2,
+                "objectId": 46,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2811,11 +4408,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "start": {
                 "from": [
-                  75.0,
+                  75.00000001875,
                   0.0
                 ],
                 "to": [
-                  75.0,
+                  75.00000001875,
                   0.0
                 ],
                 "units": "mm",
@@ -2825,8 +4422,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "sourceRange": []
                 }
               },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -2838,11 +4442,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "start": {
           "from": [
-            20.0,
+            20.000000005,
             0.0
           ],
           "to": [
-            20.0,
+            20.000000005,
             0.0
           ],
           "units": "mm",
@@ -2852,8 +4456,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "sourceRange": []
           }
         },
+        "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -2863,173 +4474,448 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     }
   },
   "hubCircle": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            20.0,
-            0.0
-          ],
-          "radius": 20.0,
-          "tag": null,
-          "to": [
-            20.0,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 3,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "solid": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 56,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 20.000000005,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.000000005000000307354519,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -10.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 54,
+                    "center_object_id": 55,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "type": "face",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
+                  "objectId": 52,
+                  "value": "end",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "solid": {
+                    "type": "Solid",
+                    "id": "[uuid]",
+                    "artifactId": "[uuid]",
+                    "value": [
+                      {
+                        "faceId": "[uuid]",
+                        "id": "[uuid]",
+                        "sourceRange": [],
+                        "tag": {
+                          "commentStart": 2659,
+                          "end": 2666,
+                          "moduleId": 0,
+                          "start": 2659,
+                          "type": "TagDeclarator",
+                          "value": "circle1"
+                        },
+                        "type": "extrudeArc"
+                      }
+                    ],
+                    "sketch": {
+                      "creatorType": "sketch",
+                      "type": "Sketch",
+                      "id": "[uuid]",
+                      "paths": [
+                        {
+                          "__geoMeta": {
+                            "id": "[uuid]",
+                            "sourceRange": []
+                          },
+                          "ccw": true,
+                          "center": [
+                            0.00000001874999197920074,
+                            0.0
+                          ],
+                          "from": [
+                            75.00000001875,
+                            0.0
+                          ],
+                          "radius": 75.00000000000001,
+                          "tag": {
+                            "commentStart": 2659,
+                            "end": 2666,
+                            "moduleId": 0,
+                            "start": 2659,
+                            "type": "TagDeclarator",
+                            "value": "circle1"
+                          },
+                          "to": [
+                            75.00000001875,
+                            0.0
+                          ],
+                          "type": "Circle",
+                          "units": "mm"
+                        }
+                      ],
+                      "on": {
+                        "artifactId": "[uuid]",
+                        "id": "[uuid]",
+                        "kind": "XY",
+                        "objectId": 46,
+                        "origin": {
+                          "x": 0.0,
+                          "y": 0.0,
+                          "z": 0.0,
+                          "units": "mm"
+                        },
+                        "type": "plane",
+                        "xAxis": {
+                          "x": 1.0,
+                          "y": 0.0,
+                          "z": 0.0,
+                          "units": null
+                        },
+                        "yAxis": {
+                          "x": 0.0,
+                          "y": 1.0,
+                          "z": 0.0,
+                          "units": null
+                        },
+                        "zAxis": {
+                          "x": 0.0,
+                          "y": 0.0,
+                          "z": 1.0,
+                          "units": null
+                        }
+                      },
+                      "start": {
+                        "from": [
+                          75.00000001875,
+                          0.0
+                        ],
+                        "to": [
+                          75.00000001875,
+                          0.0
+                        ],
+                        "units": "mm",
+                        "tag": null,
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        }
+                      },
+                      "tags": {
+                        "circle1": {
+                          "type": "TagIdentifier",
+                          "value": "circle1"
+                        }
+                      },
+                      "artifactId": "[uuid]",
+                      "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
+                      "units": "mm"
+                    },
+                    "startCapId": "[uuid]",
+                    "endCapId": "[uuid]",
+                    "units": "mm",
+                    "sectional": false
+                  },
+                  "units": "mm"
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
             }
-          ],
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
           "sketch": {
-            "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.000000005000000307354519,
+                    0.0
+                  ],
+                  "from": [
+                    20.000000005,
+                    0.0
+                  ],
+                  "radius": 20.0,
+                  "tag": {
+                    "commentStart": 2975,
+                    "end": 2982,
+                    "moduleId": 0,
+                    "start": 2975,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    20.000000005,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "objectId": 52,
+                "value": "end",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "solid": {
+                  "type": "Solid",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
+                  "value": [
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": {
+                        "commentStart": 2659,
+                        "end": 2666,
+                        "moduleId": 0,
+                        "start": 2659,
+                        "type": "TagDeclarator",
+                        "value": "circle1"
+                      },
+                      "type": "extrudeArc"
+                    }
+                  ],
+                  "sketch": {
+                    "creatorType": "sketch",
+                    "type": "Sketch",
+                    "id": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          0.00000001874999197920074,
+                          0.0
+                        ],
+                        "from": [
+                          75.00000001875,
+                          0.0
+                        ],
+                        "radius": 75.00000000000001,
+                        "tag": {
+                          "commentStart": 2659,
+                          "end": 2666,
+                          "moduleId": 0,
+                          "start": 2659,
+                          "type": "TagDeclarator",
+                          "value": "circle1"
+                        },
+                        "to": [
+                          75.00000001875,
+                          0.0
+                        ],
+                        "type": "Circle",
+                        "units": "mm"
+                      }
+                    ],
+                    "on": {
+                      "artifactId": "[uuid]",
+                      "id": "[uuid]",
+                      "kind": "XY",
+                      "objectId": 46,
+                      "origin": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "units": "mm"
+                      },
+                      "type": "plane",
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "units": null
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.0,
+                        "units": null
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0,
+                        "units": null
+                      }
+                    },
+                    "start": {
+                      "from": [
+                        75.00000001875,
+                        0.0
+                      ],
+                      "to": [
+                        75.00000001875,
+                        0.0
+                      ],
+                      "units": "mm",
+                      "tag": null,
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      }
+                    },
+                    "tags": {
+                      "circle1": {
+                        "type": "TagIdentifier",
+                        "value": "circle1"
+                      }
+                    },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
+                    "units": "mm"
+                  },
+                  "startCapId": "[uuid]",
+                  "endCapId": "[uuid]",
+                  "units": "mm",
+                  "sectional": false
+                },
+                "units": "mm"
+              },
+              "start": {
+                "from": [
+                  20.000000005,
+                  0.0
+                ],
+                "to": [
+                  20.000000005,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  0.0,
-                  0.0
-                ],
-                "from": [
-                  75.0,
-                  0.0
-                ],
-                "radius": 75.0,
-                "tag": null,
-                "to": [
-                  75.0,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": "mm"
-              }
-            ],
-            "on": {
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
               "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XY",
-              "objectId": 2,
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                75.0,
-                0.0
-              ],
-              "to": [
-                75.0,
-                0.0
-              ],
+              "originalId": "[uuid]",
               "units": "mm",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "mm",
-          "sectional": false
+              "isClosed": "no"
+            }
+          }
         },
-        "units": "mm"
-      },
-      "start": {
-        "from": [
-          20.0,
-          0.0
-        ],
-        "to": [
-          20.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
-        }
-      },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "hubHeight": {
     "type": "Number",
@@ -3054,7 +4940,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 3,
+      "objectId": 52,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -3077,7 +4963,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [],
-            "tag": null,
+            "tag": {
+              "commentStart": 2659,
+              "end": 2666,
+              "moduleId": 0,
+              "start": 2659,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "type": "extrudeArc"
           }
         ],
@@ -3093,17 +4986,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "ccw": true,
               "center": [
-                0.0,
+                0.00000001874999197920074,
                 0.0
               ],
               "from": [
-                75.0,
+                75.00000001875,
                 0.0
               ],
-              "radius": 75.0,
-              "tag": null,
+              "radius": 75.00000000000001,
+              "tag": {
+                "commentStart": 2659,
+                "end": 2666,
+                "moduleId": 0,
+                "start": 2659,
+                "type": "TagDeclarator",
+                "value": "circle1"
+              },
               "to": [
-                75.0,
+                75.00000001875,
                 0.0
               ],
               "type": "Circle",
@@ -3114,7 +5014,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "XY",
-            "objectId": 2,
+            "objectId": 46,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -3143,11 +5043,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           },
           "start": {
             "from": [
-              75.0,
+              75.00000001875,
               0.0
             ],
             "to": [
-              75.0,
+              75.00000001875,
               0.0
             ],
             "units": "mm",
@@ -3157,8 +5057,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "sourceRange": []
             }
           },
+          "tags": {
+            "circle1": {
+              "type": "TagIdentifier",
+              "value": "circle1"
+            }
+          },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -3180,7 +5087,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2975,
+            "end": 2982,
+            "moduleId": 0,
+            "start": 2975,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
           "type": "extrudeArc"
         }
       ],
@@ -3196,17 +5110,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.0,
+              0.000000005000000307354519,
               0.0
             ],
             "from": [
-              20.0,
+              20.000000005,
               0.0
             ],
             "radius": 20.0,
-            "tag": null,
+            "tag": {
+              "commentStart": 2975,
+              "end": 2982,
+              "moduleId": 0,
+              "start": 2975,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "to": [
-              20.0,
+              20.000000005,
               0.0
             ],
             "type": "Circle",
@@ -3217,7 +5138,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "objectId": 3,
+          "objectId": 52,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3240,7 +5161,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
-                "tag": null,
+                "tag": {
+                  "commentStart": 2659,
+                  "end": 2666,
+                  "moduleId": 0,
+                  "start": 2659,
+                  "type": "TagDeclarator",
+                  "value": "circle1"
+                },
                 "type": "extrudeArc"
               }
             ],
@@ -3256,17 +5184,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   },
                   "ccw": true,
                   "center": [
-                    0.0,
+                    0.00000001874999197920074,
                     0.0
                   ],
                   "from": [
-                    75.0,
+                    75.00000001875,
                     0.0
                   ],
-                  "radius": 75.0,
-                  "tag": null,
+                  "radius": 75.00000000000001,
+                  "tag": {
+                    "commentStart": 2659,
+                    "end": 2666,
+                    "moduleId": 0,
+                    "start": 2659,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
                   "to": [
-                    75.0,
+                    75.00000001875,
                     0.0
                   ],
                   "type": "Circle",
@@ -3277,7 +5212,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "XY",
-                "objectId": 2,
+                "objectId": 46,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3306,11 +5241,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "start": {
                 "from": [
-                  75.0,
+                  75.00000001875,
                   0.0
                 ],
                 "to": [
-                  75.0,
+                  75.00000001875,
                   0.0
                 ],
                 "units": "mm",
@@ -3320,8 +5255,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "sourceRange": []
                 }
               },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -3333,11 +5275,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "start": {
           "from": [
-            20.0,
+            20.000000005,
             0.0
           ],
           "to": [
-            20.0,
+            20.000000005,
             0.0
           ],
           "units": "mm",
@@ -3347,8 +5289,15 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "sourceRange": []
           }
         },
+        "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -3358,131 +5307,670 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     }
   },
   "leadRect": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            3.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            3.0,
-            35.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.0,
-            35.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            35.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            35.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XY",
-        "objectId": 0,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 4,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XY",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          0.0,
-          0.0
-        ],
-        "to": [
-          0.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 7,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XY",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 11,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 9,
+                    "end_object_id": 10,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XY",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 15,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 13,
+                    "end_object_id": 14,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "XY",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 779,
+                    "end": 784,
+                    "moduleId": 0,
+                    "start": 779,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    3.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 848,
+                    "end": 853,
+                    "moduleId": 0,
+                    "start": 848,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    3.0,
+                    35.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.0,
+                    35.0
+                  ],
+                  "tag": {
+                    "commentStart": 957,
+                    "end": 962,
+                    "moduleId": 0,
+                    "start": 957,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    0.0,
+                    35.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    35.0
+                  ],
+                  "tag": {
+                    "commentStart": 1067,
+                    "end": 1072,
+                    "moduleId": 0,
+                    "start": 1067,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "leadSketch": {
     "type": "Plane",
@@ -3517,6 +6005,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       }
     }
   },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line4"
+  },
   "od": {
     "type": "Number",
     "value": 150.0,
@@ -3537,28 +6045,56 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 779,
+            "end": 784,
+            "moduleId": 0,
+            "start": 779,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 848,
+            "end": 853,
+            "moduleId": 0,
+            "start": 848,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 957,
+            "end": 962,
+            "moduleId": 0,
+            "start": 957,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1067,
+            "end": 1072,
+            "moduleId": 0,
+            "start": 1067,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         }
       ],
@@ -3576,7 +6112,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 779,
+              "end": 784,
+              "moduleId": 0,
+              "start": 779,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
               3.0,
               0.0
@@ -3593,7 +6136,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               3.0,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 848,
+              "end": 853,
+              "moduleId": 0,
+              "start": 848,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
             "to": [
               3.0,
               35.0
@@ -3610,7 +6160,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               3.0,
               35.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 957,
+              "end": 962,
+              "moduleId": 0,
+              "start": 957,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
             "to": [
               0.0,
               35.0
@@ -3627,7 +6184,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0,
               35.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1067,
+              "end": 1072,
+              "moduleId": 0,
+              "start": 1067,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
               0.0,
               0.0
@@ -3683,6 +6247,24 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "sourceRange": []
           }
         },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": "mm"
@@ -3691,6 +6273,402 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
+    }
+  },
+  "region001": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.00000001874999197920074,
+            0.0
+          ],
+          "from": [
+            75.00000001875,
+            0.0
+          ],
+          "radius": 75.00000000000001,
+          "tag": {
+            "commentStart": 2659,
+            "end": 2666,
+            "moduleId": 0,
+            "start": 2659,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            75.00000001875,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 46,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          75.00000001875,
+          0.0
+        ],
+        "to": [
+          75.00000001875,
+          0.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
+    }
+  },
+  "region002": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.000000005000000307354519,
+            0.0
+          ],
+          "from": [
+            20.000000005,
+            0.0
+          ],
+          "radius": 20.0,
+          "tag": {
+            "commentStart": 2975,
+            "end": 2982,
+            "moduleId": 0,
+            "start": 2975,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            20.000000005,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "type": "face",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "objectId": 52,
+        "value": "end",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "solid": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 2659,
+                "end": 2666,
+                "moduleId": 0,
+                "start": 2659,
+                "type": "TagDeclarator",
+                "value": "circle1"
+              },
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "creatorType": "sketch",
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  0.00000001874999197920074,
+                  0.0
+                ],
+                "from": [
+                  75.00000001875,
+                  0.0
+                ],
+                "radius": 75.00000000000001,
+                "tag": {
+                  "commentStart": 2659,
+                  "end": 2666,
+                  "moduleId": 0,
+                  "start": 2659,
+                  "type": "TagDeclarator",
+                  "value": "circle1"
+                },
+                "to": [
+                  75.00000001875,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": "mm"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 46,
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                75.00000001875,
+                0.0
+              ],
+              "to": [
+                75.00000001875,
+                0.0
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "tags": {
+              "circle1": {
+                "type": "TagIdentifier",
+                "value": "circle1"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
+            "units": "mm"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "mm",
+          "sectional": false
+        },
+        "units": "mm"
+      },
+      "start": {
+        "from": [
+          20.000000005,
+          0.0
+        ],
+        "to": [
+          20.000000005,
+          0.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
+    }
+  },
+  "region003": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.000000003749999755927745,
+            0.0
+          ],
+          "from": [
+            15.00000000375,
+            0.0
+          ],
+          "radius": 15.0,
+          "tag": {
+            "commentStart": 3303,
+            "end": 3310,
+            "moduleId": 0,
+            "start": 3303,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            15.00000000375,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 58,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -12.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          15.00000000375,
+          0.0
+        ],
+        "to": [
+          15.00000000375,
+          0.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
     }
   },
   "rootR": {
@@ -3717,7 +6695,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 1,
+      "objectId": 23,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -3745,131 +6723,670 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     }
   },
   "trailRect": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            3.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            3.0,
-            35.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.0,
-            35.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            35.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            35.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
-        "objectId": 1,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 40.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 27,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 25,
+                    "end_object_id": 26,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 23,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          0.0,
-          0.0
-        ],
-        "to": [
-          0.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 30,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 28,
+                    "end_object_id": 29,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 23,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 34,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 32,
+                    "end_object_id": 33,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 23,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 38,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 35.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 36,
+                    "end_object_id": 37,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 23,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 1613,
+                    "end": 1618,
+                    "moduleId": 0,
+                    "start": 1613,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    3.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 1682,
+                    "end": 1687,
+                    "moduleId": 0,
+                    "start": 1682,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    3.0,
+                    35.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.0,
+                    35.0
+                  ],
+                  "tag": {
+                    "commentStart": 1791,
+                    "end": 1796,
+                    "moduleId": 0,
+                    "start": 1791,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    0.0,
+                    35.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    35.0
+                  ],
+                  "tag": {
+                    "commentStart": 1901,
+                    "end": 1906,
+                    "moduleId": 0,
+                    "start": 1901,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 23,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 40.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "trailSketch": {
     "type": "Plane",
@@ -3877,7 +7394,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 1,
+      "objectId": 23,
       "origin": {
         "x": 0.0,
         "y": 0.0,

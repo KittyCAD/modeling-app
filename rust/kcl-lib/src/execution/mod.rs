@@ -350,6 +350,105 @@ pub struct SketchConstraintReport {
     pub errors: Vec<SketchConstraintStatus>,
 }
 
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+    use crate::front::ObjectKind;
+    use crate::front::Segment;
+
+    // Closure to look up a point's freedom by ObjectId.
+    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+        let obj = scene_objects.get(id.0)?;
+        if let ObjectKind::Segment {
+            segment: Segment::Point(p),
+        } = &obj.kind
+        {
+            Some(p.freedom())
+        } else {
+            None
+        }
+    };
+
+    let mut fully_constrained = Vec::new();
+    let mut under_constrained = Vec::new();
+    let mut over_constrained = Vec::new();
+    let mut errors = Vec::new();
+
+    for obj in scene_objects {
+        let ObjectKind::Sketch(sketch) = &obj.kind else {
+            continue;
+        };
+
+        let mut free_count: usize = 0;
+        let mut conflict_count: usize = 0;
+        let mut error_count: usize = 0;
+        let mut total_count: usize = 0;
+
+        for &seg_id in &sketch.segments {
+            let Some(seg_obj) = scene_objects.get(seg_id.0) else {
+                continue;
+            };
+            let ObjectKind::Segment { segment } = &seg_obj.kind else {
+                continue;
+            };
+            // Skip owned points — their freedom is already captured by
+            // the parent geometry (Line/Arc/Circle) that looks them up.
+            if let Segment::Point(p) = segment
+                && p.owner.is_some()
+            {
+                continue;
+            }
+            let freedom = segment
+                .freedom(lookup)
+                .map(SegmentFreedom::from)
+                .unwrap_or(SegmentFreedom::Error);
+            total_count += 1;
+            match freedom {
+                SegmentFreedom::Free => free_count += 1,
+                SegmentFreedom::Conflict => conflict_count += 1,
+                SegmentFreedom::Error => error_count += 1,
+                SegmentFreedom::Fixed => {}
+            }
+        }
+
+        // Note: a sketch with no countable segments (total_count == 0)
+        // is reported as FullyConstrained. This is vacuously true — there
+        // are no free or conflicting segments, so it satisfies the
+        // definition. Callers can check total_count == 0 to distinguish
+        // this from a genuinely constrained sketch.
+        let status = if error_count > 0 {
+            ConstraintKind::Error
+        } else if conflict_count > 0 {
+            ConstraintKind::OverConstrained
+        } else if free_count > 0 {
+            ConstraintKind::UnderConstrained
+        } else {
+            ConstraintKind::FullyConstrained
+        };
+
+        let entry = SketchConstraintStatus {
+            name: obj.label.clone(),
+            status,
+            free_count,
+            conflict_count,
+            total_count,
+        };
+
+        match status {
+            ConstraintKind::FullyConstrained => fully_constrained.push(entry),
+            ConstraintKind::UnderConstrained => under_constrained.push(entry),
+            ConstraintKind::OverConstrained => over_constrained.push(entry),
+            ConstraintKind::Error => errors.push(entry),
+        }
+    }
+
+    SketchConstraintReport {
+        fully_constrained,
+        under_constrained,
+        over_constrained,
+        errors,
+    }
+}
+
 impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
         #[cfg(feature = "artifact-graph")]
@@ -382,101 +481,7 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        use crate::front::ObjectKind;
-        use crate::front::Segment;
-
-        // Closure to look up a point's freedom by ObjectId.
-        let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
-            let obj = self.scene_objects.get(id.0)?;
-            if let ObjectKind::Segment {
-                segment: Segment::Point(p),
-            } = &obj.kind
-            {
-                Some(p.freedom())
-            } else {
-                None
-            }
-        };
-
-        let mut fully_constrained = Vec::new();
-        let mut under_constrained = Vec::new();
-        let mut over_constrained = Vec::new();
-        let mut errors = Vec::new();
-
-        for obj in &self.scene_objects {
-            let ObjectKind::Sketch(sketch) = &obj.kind else {
-                continue;
-            };
-
-            let mut free_count: usize = 0;
-            let mut conflict_count: usize = 0;
-            let mut error_count: usize = 0;
-            let mut total_count: usize = 0;
-
-            for &seg_id in &sketch.segments {
-                let Some(seg_obj) = self.scene_objects.get(seg_id.0) else {
-                    continue;
-                };
-                let ObjectKind::Segment { segment } = &seg_obj.kind else {
-                    continue;
-                };
-                // Skip owned points — their freedom is already captured by
-                // the parent geometry (Line/Arc/Circle) that looks them up.
-                if let Segment::Point(p) = segment
-                    && p.owner.is_some()
-                {
-                    continue;
-                }
-                let freedom = segment
-                    .freedom(lookup)
-                    .map(SegmentFreedom::from)
-                    .unwrap_or(SegmentFreedom::Error);
-                total_count += 1;
-                match freedom {
-                    SegmentFreedom::Free => free_count += 1,
-                    SegmentFreedom::Conflict => conflict_count += 1,
-                    SegmentFreedom::Error => error_count += 1,
-                    SegmentFreedom::Fixed => {}
-                }
-            }
-
-            // Note: a sketch with no countable segments (total_count == 0)
-            // is reported as FullyConstrained. This is vacuously true — there
-            // are no free or conflicting segments, so it satisfies the
-            // definition. Callers can check total_count == 0 to distinguish
-            // this from a genuinely constrained sketch.
-            let status = if error_count > 0 {
-                ConstraintKind::Error
-            } else if conflict_count > 0 {
-                ConstraintKind::OverConstrained
-            } else if free_count > 0 {
-                ConstraintKind::UnderConstrained
-            } else {
-                ConstraintKind::FullyConstrained
-            };
-
-            let entry = SketchConstraintStatus {
-                name: obj.label.clone(),
-                status,
-                free_count,
-                conflict_count,
-                total_count,
-            };
-
-            match status {
-                ConstraintKind::FullyConstrained => fully_constrained.push(entry),
-                ConstraintKind::UnderConstrained => under_constrained.push(entry),
-                ConstraintKind::OverConstrained => over_constrained.push(entry),
-                ConstraintKind::Error => errors.push(entry),
-            }
-        }
-
-        SketchConstraintReport {
-            fully_constrained,
-            under_constrained,
-            over_constrained,
-            errors,
-        }
+        sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 }
 
@@ -793,14 +798,15 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
-            highlight_edges: settings.modeling.highlight_edges.into(),
-            enable_ssao: settings.modeling.enable_ssao.into(),
-            show_grid: settings.modeling.show_scale_grid,
+            highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling_settings.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling_settings.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.modeling.fixed_size_grid,
+            fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
         }
     }
 }
@@ -814,9 +820,9 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            highlight_edges: modeling.highlight_edges.into(),
-            enable_ssao: modeling.enable_ssao.into(),
-            show_grid: modeling.show_scale_grid,
+            highlight_edges: modeling.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
@@ -1264,6 +1270,7 @@ impl ExecutorContext {
 
                             if !clear_scene {
                                 // Return early we don't need to clear the scene.
+                                cache::write_old_memory(cached_state.mock_memory_state()).await;
                                 return Ok(cached_state.into_exec_outcome(self).await);
                             }
 
@@ -1296,11 +1303,13 @@ impl ExecutorContext {
                             ))
                             .await;
 
+                            cache::write_old_memory(cached_state.mock_memory_state()).await;
                             return Ok(cached_state.into_exec_outcome(self).await);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
+                        cache::write_old_memory(cached_state.mock_memory_state()).await;
                         return Ok(cached_state.into_exec_outcome(self).await);
                     }
                 };
@@ -3310,6 +3319,44 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
 
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn run_with_caching_no_action_refreshes_mock_memory() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let program = crate::Program::parse_no_errs(
+            r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+"#,
+        )
+        .unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let baseline_memory = cache::read_old_memory().await.unwrap();
+        assert!(
+            !baseline_memory.scene_objects.is_empty(),
+            "expected engine execution to persist full-scene mock memory"
+        );
+
+        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
+        assert_eq!(cache::read_old_memory().await.unwrap().scene_objects.len(), 0);
+
+        ctx.run_with_caching(program).await.unwrap();
+        let refreshed_memory = cache::read_old_memory().await.unwrap();
+        assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
+        assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
+        assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
+
+        cache::bust_cache().await;
         clear_mem_cache().await;
         ctx.close().await;
     }
