@@ -79,11 +79,11 @@ pegRegion = region(segments = [pegSeedSketch.pegCircle])
 pegSeed = extrude(pegRegion, length = bumpHeight, method = NEW)
 hide(pegSeedSketch)
 pegPattern = patternLinear3d(
-       pegSeed,
-       axis = [1, 0, 0],
-       instances = wbumps,
-       distance = pitch,
-     )
+  pegSeed,
+  axis = [1, 0, 0],
+  instances = wbumps,
+  distance = pitch,
+)
   |> patternLinear3d(axis = [0, 1, 0], instances = lbumps, distance = pitch)
 
 // Create the tubes on the bottom of the base
@@ -110,9 +110,9 @@ tubeRegion = region(segments = [tubeSeedSketch.tubeCircle])
 tubeSeed = extrude(tubeRegion, length = bumpHeight, method = NEW)
 hide(tubeSeedSketch)
 tubePattern = patternLinear3d(
-       tubeSeed,
-       axis = [1, 0, 0],
-       instances = wbumps - 1,
-       distance = pitch,
-     )
+  tubeSeed,
+  axis = [1, 0, 0],
+  instances = wbumps - 1,
+  distance = pitch,
+)
   |> patternLinear3d(axis = [0, 1, 0], instances = lbumps - 1, distance = pitch)

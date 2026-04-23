@@ -182,14 +182,14 @@ rearRightCutout = cutOutVoid
      )
 
 fenderWithCutouts = subtract(
-       fenderBody,
-       tools = [
-         frontLeftCutout,
-         rearLeftCutout,
-         frontRightCutout,
-         rearRightCutout
-       ],
-     )
+  fenderBody,
+  tools = [
+    frontLeftCutout,
+    rearLeftCutout,
+    frontRightCutout,
+    rearRightCutout
+  ],
+)
   |> appearance(%, color = "#e3e3e3")
 
 // Chassis

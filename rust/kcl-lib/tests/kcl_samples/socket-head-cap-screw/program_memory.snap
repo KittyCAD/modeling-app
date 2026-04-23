@@ -183,6 +183,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -357,6 +358,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -588,6 +590,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "in"
             },
             "startCapId": "[uuid]",
@@ -637,6 +640,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": null,
@@ -785,6 +789,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -950,6 +955,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -957,11 +963,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capStart001"
-  },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
   },
   "headSketch": {
     "type": "Object",
@@ -1580,6 +1581,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "in"
             },
             "startCapId": "[uuid]",
@@ -1649,6 +1651,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -1955,6 +1958,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -2024,6 +2028,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -2256,6 +2261,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -2517,6 +2523,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -2778,6 +2785,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -3039,6 +3047,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -3300,6 +3309,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -3561,6 +3571,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -3897,6 +3908,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",
@@ -3975,36 +3987,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       }
     },
     "constrainable": false
-  },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
-  "line5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line5"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
   },
   "stemProfile": {
     "type": "Sketch",
@@ -4190,6 +4172,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -4239,6 +4222,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -4471,6 +4455,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -4693,6 +4678,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",

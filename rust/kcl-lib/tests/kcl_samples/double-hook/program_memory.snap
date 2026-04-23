@@ -207,6 +207,7 @@ description: Variables in memory after executing double-hook.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1984,11 +1985,6 @@ description: Variables in memory after executing double-hook.kcl
       "type": "Length"
     }
   },
-  "sectionCircle": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "sectionCircle"
-  },
   "sectionDiameter": {
     "type": "Number",
     "value": 5.0,
@@ -2090,6 +2086,7 @@ description: Variables in memory after executing double-hook.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
