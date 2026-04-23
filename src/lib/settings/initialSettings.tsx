@@ -136,7 +136,9 @@ const COLOR_INPUT_DEBOUNCE_MS = 500
 
 export function createSettings() {
   const settings = {
-    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
+    // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
+    // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
+    // settingsUtils serializes them through the opaque TOML passthrough.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -647,7 +649,12 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the KCL text editor.
+     * App-owned editor settings.
+     *
+     * These are intentionally defined only in TypeScript and round-trip through
+     * the settings TOML as an opaque `text_editor` section. That keeps the Rust
+     * schema focused on CLI/KCL concerns and makes this group easier to move
+     * behind a bundled editor/plugin later.
      */
     textEditor: {
       /**

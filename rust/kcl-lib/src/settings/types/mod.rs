@@ -52,10 +52,6 @@ pub struct Settings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub modeling: Option<ModelingSettings>,
-    /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[validate(nested)]
-    pub text_editor: Option<TextEditorSettings>,
     /// Settings that affect the behavior of project management.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
@@ -65,6 +61,8 @@ pub struct Settings {
     #[validate(nested)]
     pub command_bar: Option<CommandBarSettings>,
     /// Other fields that weren't recognized by our schema.
+    /// App-owned extension settings can live here without Rust understanding
+    /// their inner structure.
     #[serde(flatten)]
     pub other: std::collections::HashMap<String, serde_json::Value>,
 }
@@ -396,38 +394,6 @@ pub enum GizmoType {
     Axis,
 }
 
-/// Settings that affect the behavior of the KCL text editor.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct TextEditorSettings {
-    /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text_wrapping: Option<DefaultTrue>,
-    /// Whether to make the cursor blink in the editor.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub blinking_cursor: Option<DefaultTrue>,
-    /// Other fields that weren't recognized by our schema.
-    #[serde(flatten)]
-    pub other: std::collections::HashMap<String, serde_json::Value>,
-}
-
-/// Same as TextEditorSettings but applies to a per-project basis.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectTextEditorSettings {
-    /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text_wrapping: Option<bool>,
-    /// Whether to make the cursor blink in the editor.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub blinking_cursor: Option<bool>,
-    /// Other fields that weren't recognized by our schema.
-    #[serde(flatten)]
-    pub other: std::collections::HashMap<String, serde_json::Value>,
-}
-
 /// Settings that affect the behavior of project management.
 #[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
@@ -579,9 +545,9 @@ mod tests {
     use super::ProjectNameTemplate;
     use super::ProjectSettings;
     use super::Settings;
-    use super::TextEditorSettings;
     use super::UnitLength;
     use super::default_backface_color;
+    use serde_json::json;
 
     #[test]
     fn test_settings_empty_file_parses() {
@@ -634,12 +600,12 @@ camera_projection = "perspective"
 mouse_controls = "zoo"
 enable_ssao = false
 
-[settings.text_editor]
-text_wrapping = true
-
 [settings.project]
 directory = ""
 default_project_name = "untitled"
+
+[settings.text_editor]
+text_wrapping = true
 "#;
 
         let expected = Configuration {
@@ -666,12 +632,13 @@ default_project_name = "untitled"
                     directory: Some("".into()),
                     other: Default::default(),
                 }),
-                text_editor: Some(TextEditorSettings {
-                    text_wrapping: Some(true.into()),
-                    ..Default::default()
-                }),
                 command_bar: None,
-                other: Default::default(),
+                other: std::collections::HashMap::from([(
+                    "text_editor".to_owned(),
+                    json!({
+                        "text_wrapping": true,
+                    }),
+                )]),
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();

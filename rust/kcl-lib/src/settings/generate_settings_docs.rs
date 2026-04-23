@@ -36,10 +36,6 @@ color = 240.0
 [settings.modeling]
 # Use millimeters as the default measurement unit
 base_unit = "mm"
-
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
 "#;
 
 const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/project.md";

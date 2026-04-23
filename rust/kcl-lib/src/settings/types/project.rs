@@ -11,7 +11,6 @@ use validator::Validate;
 use crate::settings::types::DefaultTrue;
 use crate::settings::types::OnboardingStatus;
 use crate::settings::types::ProjectCommandBarSettings;
-use crate::settings::types::ProjectTextEditorSettings;
 use crate::settings::types::is_default;
 
 /// Project specific settings for the app.
@@ -65,14 +64,15 @@ pub struct PerProjectSettings {
     #[serde(default)]
     #[validate(nested)]
     pub modeling: ProjectModelingSettings,
-    /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default)]
-    #[validate(nested)]
-    pub text_editor: ProjectTextEditorSettings,
     /// Settings that affect the behavior of the command bar.
     #[serde(default)]
     #[validate(nested)]
     pub command_bar: ProjectCommandBarSettings,
+    /// Other fields that weren't recognized by our schema.
+    /// App-owned extension settings can live here without Rust understanding
+    /// their inner structure.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub other: IndexMap<String, serde_json::Value>,
 }
 
 /// Information about the project.
@@ -221,8 +221,8 @@ mod tests {
     use super::ProjectConfiguration;
     use super::ProjectMetaSettings;
     use super::ProjectModelingSettings;
-    use super::ProjectTextEditorSettings;
     use crate::settings::types::UnitLength;
+    use serde_json::json;
 
     #[test]
     fn test_project_settings_empty_file_parses() {
@@ -240,8 +240,6 @@ mod tests {
 [settings.app]
 
 [settings.modeling]
-
-[settings.text_editor]
 
 [settings.command_bar]
 "#
@@ -354,15 +352,17 @@ mod tests {
                     snaps_per_minor: None,
                     fixed_size_grid: None,
                 },
-                text_editor: ProjectTextEditorSettings {
-                    text_wrapping: Some(false),
-                    blinking_cursor: Some(false),
-                    other: Default::default(),
-                },
                 command_bar: ProjectCommandBarSettings {
                     include_settings: Some(false),
                     other: Default::default(),
                 },
+                other: IndexMap::from([(
+                    "text_editor".to_owned(),
+                    json!({
+                        "text_wrapping": false,
+                        "blinking_cursor": false,
+                    }),
+                )]),
             },
             cloud: ProjectCloudSettings::default(),
         };
@@ -399,12 +399,12 @@ version = 1.0
 [settings.modeling]
 base_unit = "yd"
 
-[settings.text_editor]
-text_wrapping = false
-blinking_cursor = false
-
 [settings.command_bar]
 include_settings = false
+
+[settings.text_editor]
+blinking_cursor = false
+text_wrapping = false
 "#;
 
         assert_eq!(serialized, old_project_file)
