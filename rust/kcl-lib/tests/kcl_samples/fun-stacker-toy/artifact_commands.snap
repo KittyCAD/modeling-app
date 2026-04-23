@@ -68,8 +68,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000003594108454561482,
-          "y": -0.0000000000007821567564933809,
+          "x": -0.0000000000035947015091229496,
+          "y": -0.0000000000007821447461775816,
           "z": 0.0
         }
       }
@@ -90,7 +90,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000013283199115157991,
+            "x": -0.000000000013283645349234815,
             "y": 304.79999999999706,
             "z": 0.0
           },
@@ -105,8 +105,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000002500873754002229,
-          "y": 0.0000000000005907454193516756,
+          "x": 0.000000000002499540824397522,
+          "y": 0.0000000000005907904138505019,
           "z": 0.0
         }
       }
@@ -121,7 +121,7 @@ description: Artifact commands fun-stacker-toy.kcl
           "type": "line",
           "end": {
             "x": 82.5500000000086,
-            "y": 0.0000000000019587478414849126,
+            "y": 0.000000000001958828538550557,
             "z": 0.0
           },
           "relative": false
@@ -135,7 +135,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000022972289766488528,
+          "x": -0.00000000002297258918008082,
           "y": 304.7999999999949,
           "z": 0.0
         }
@@ -150,7 +150,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.09999999996733,
+            "x": 38.09999999996734,
             "y": 304.79999999998944,
             "z": 0.0
           },
@@ -165,8 +165,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 51.052055063451405,
-          "y": 291.8448773399364,
+          "x": 51.052055040826126,
+          "y": 291.8448773390141,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 51.0520550634423,
-            "y": 279.14487733993536,
+            "x": 51.05205504081701,
+            "y": 279.1448773390131,
             "z": 0.0
           },
           "relative": false
@@ -197,245 +197,245 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1303.7800550556221,
-            "y": 279.1497709254993
+            "x": 1303.780055032995,
+            "y": 279.14977102447983
           },
-          "radius": 1252.7280000017379,
+          "radius": 1252.7280000017365,
           "start": {
             "unit": "degrees",
-            "value": -179.99977618301858
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -167.12448691136038
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 121.65655402851719,
-          "y": 8.196271820239748,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 102.96988132529987,
-            "y": 25.400000000002024
-          },
-          "radius": 25.40000000000618,
-          "start": {
-            "unit": "radians",
-            "value": -0.744102958021686
-          },
-          "end": {
-            "unit": "radians",
-            "value": 5.5390823491579
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 116.93414719390171,
-          "y": 65.51626533908761,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 93.49785231426107,
-            "y": 75.30912407985534
-          },
-          "radius": 25.400000000041363,
-          "start": {
-            "unit": "radians",
-            "value": -0.39579908622722393
-          },
-          "end": {
-            "unit": "radians",
-            "value": 5.887386220952362
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 111.39198712091736,
-          "y": 127.89951258379757,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 86.09926957946882,
-            "y": 125.56746640747758
-          },
-          "radius": 25.399999999999753,
-          "start": {
-            "unit": "radians",
-            "value": 0.09194232424944913
-          },
-          "end": {
-            "unit": "radians",
-            "value": 6.375127631429035
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 105.92587527848308,
-          "y": 172.45749085568286,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 80.78680831666432,
-            "y": 176.0889247725637
-          },
-          "radius": 25.40000000006849,
-          "start": {
-            "unit": "radians",
-            "value": -0.1434614341004766
-          },
-          "end": {
-            "unit": "radians",
-            "value": 6.1397238730791095
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 100.45310230367217,
-          "y": 237.80982875468487,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 77.56956979412823,
-            "y": 226.7869461964119
-          },
-          "radius": 25.40000000017389,
-          "start": {
-            "unit": "radians",
-            "value": 0.44889664224878567
-          },
-          "end": {
-            "unit": "radians",
-            "value": 6.7320819494283715
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 51.052055046693226,
-          "y": 291.844877339938,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.09805509324985,
-            "y": 291.8460000865708
-          },
-          "radius": 12.95400000209862,
-          "start": {
-            "unit": "degrees",
-            "value": -0.0049659289480649136
+            "value": -179.99977617844934
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99139764194217
+            "value": -167.12448690671653
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 121.65655395005528,
+          "y": 8.196271736871008,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 102.9698813235907,
+            "y": 25.400000000002027
+          },
+          "radius": 25.400000000006173,
+          "start": {
+            "unit": "radians",
+            "value": -0.7441029624830875
+          },
+          "end": {
+            "unit": "radians",
+            "value": 5.5390823446964985
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 116.93414720030711,
+          "y": 65.51626536757237,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 93.49785230843787,
+            "y": 75.30912407907451
+          },
+          "radius": 25.400000000041327,
+          "start": {
+            "unit": "radians",
+            "value": -0.3957990849784951
+          },
+          "end": {
+            "unit": "radians",
+            "value": 5.8873862222010915
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 111.39198711110404,
+          "y": 127.89951258075479,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 86.09926956950319,
+            "y": 125.56746640608688
+          },
+          "radius": 25.39999999999974,
+          "start": {
+            "unit": "radians",
+            "value": 0.09194232418413022
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.375127631363717
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 105.92587526396652,
+          "y": 172.45749085117947,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 80.78680830253424,
+            "y": 176.08892477073505
+          },
+          "radius": 25.40000000006839,
+          "start": {
+            "unit": "radians",
+            "value": -0.1434614342068753
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.139723872972711
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 100.45310194324722,
+          "y": 237.8098294628237,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 77.56956977581903,
+            "y": 226.78694619431798
+          },
+          "radius": 25.4000000001737,
+          "start": {
+            "unit": "radians",
+            "value": 0.4488966732856384
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.7320819804652245
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 51.05205502406785,
+          "y": 291.84487733901574,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 38.0980550706251,
+            "y": 291.8460000865763
+          },
+          "radius": 12.954000002098063,
+          "start": {
+            "unit": "degrees",
+            "value": -0.004965933051504537
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 89.99139754187252
           },
           "relative": false
         }

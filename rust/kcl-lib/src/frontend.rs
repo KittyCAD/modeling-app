@@ -10048,6 +10048,70 @@ sketch2 = sketch(on = XY) {
         mock_ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_exit_sketch_without_changes_allows_entering_next_sketch() {
+        clear_mem_cache().await;
+
+        let source = r#"sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -1.96mm, var 2.77mm], center = [var -2.69mm, var 3.44mm])
+}
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4.68mm, var 0mm])
+  line2 = line(start = [var 4.68mm, var 0mm], end = [var 4.68mm, var 2.96mm])
+  line3 = line(start = [var 4.68mm, var 2.96mm], end = [var 0mm, var 2.96mm])
+  line4 = line(start = [var 0mm, var 2.96mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+"#;
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_objects = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .filter(|object| matches!(object.kind, ObjectKind::Sketch(_)))
+            .collect::<Vec<_>>();
+        assert_eq!(sketch_objects.len(), 2, "{:#?}", frontend.scene_graph.objects);
+
+        let sketch1_id = sketch_objects[0].id;
+        let sketch2_id = sketch_objects[1].id;
+
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch1_id)
+            .await
+            .unwrap();
+        frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch2_id));
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
     // Regression tests: operations on source code with extra whitespace/newlines.
     // These test that NodePath-based lookups work correctly when source ranges
     // are shifted by extra whitespace that wouldn't be present after formatting.

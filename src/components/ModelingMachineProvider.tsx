@@ -447,6 +447,34 @@ export const ModelingMachineProvider = ({
     [modelingState, commandBarState, modelingSend]
   )
 
+  useHotkeys(
+    'meta+esc',
+    (event) => {
+      if (!commandBarState.matches('Closed')) return
+
+      if (
+        modelingState.matches({ Sketch: 'SketchIdle' }) ||
+        modelingState.matches('Sketch no face')
+      ) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        modelingSend({ type: 'Cancel' })
+        return
+      }
+
+      if (modelingState.matches('sketchSolveMode')) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        modelingSend({ type: 'Exit sketch' })
+      }
+    },
+    {
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+    [modelingState, commandBarState, modelingSend]
+  )
+
   useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,

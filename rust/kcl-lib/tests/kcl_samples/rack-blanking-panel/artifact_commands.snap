@@ -69,7 +69,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "path": "[uuid]",
         "to": {
           "x": -8.466666666666637,
-          "y": 0.000000000005561502937145413,
+          "y": 0.000000000005561502026541656,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.6783498697793613,
-            "y": 0.000000000006250872075785985,
+            "x": -2.6783498715955236,
+            "y": 0.000000000006250871183969261,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.6786256402084896,
-            "y": 2.8458854565631664
+            "x": -2.67862564202374,
+            "y": 2.8458854600970107
           },
-          "radius": 2.845885469918193,
+          "radius": 2.845885473452037,
           "start": {
             "unit": "degrees",
-            "value": -89.99444795586636
+            "value": -89.99444795589162
           },
           "end": {
             "unit": "degrees",
-            "value": -19.741271085091885
+            "value": -19.741271175148864
           },
           "relative": false
         }
@@ -130,8 +130,8 @@ description: Artifact commands rack-blanking-panel.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000003814056518108706,
-          "y": 1.884621252350313,
+          "x": -0.00000000000038140540361351615,
+          "y": 1.8846212504802784,
           "z": 0.0
         }
       }
@@ -145,8 +145,8 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000009462349352277984,
-            "y": 41.772245254792416,
+            "x": -0.0000000000009462345737484046,
+            "y": 41.77224525292886,
             "z": 0.0
           },
           "relative": false
@@ -162,17 +162,17 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.678039789195498,
-            "y": 41.771960193715685
+            "x": -2.67803979104702,
+            "y": 41.77196019186415
           },
-          "radius": 2.678039804366062,
+          "radius": 2.678039806217583,
           "start": {
             "unit": "degrees",
-            "value": 0.00609878785393072
+            "value": 0.006098787592336793
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99843735028301
+            "value": 89.99843734969053
           },
           "relative": false
         }
@@ -221,7 +221,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.6779667569513954,
+            "x": -2.677966758775174,
             "y": 42.93108000000107,
             "z": 0.0
           },
@@ -238,17 +238,17 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.6780817772209784,
+            "x": -2.678081779039984,
             "y": 42.16908000776607
           },
-          "radius": 0.7620000009158783,
+          "radius": 0.7620000009158775,
           "start": {
             "unit": "degrees",
-            "value": 89.99135147503587
+            "value": 89.99135147539477
           },
           "end": {
             "unit": "degrees",
-            "value": -0.010499486722601103
+            "value": -0.010499486281988246
           },
           "relative": false
         }
@@ -263,8 +263,8 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.9160817841382645,
-            "y": 2.2813163639176057,
+            "x": -1.9160817859572687,
+            "y": 2.2813163639169853,
             "z": 0.0
           },
           "relative": false
@@ -280,17 +280,17 @@ description: Artifact commands rack-blanking-panel.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.678081781086657,
+            "x": -2.678081782905662,
             "y": 2.2809199969045086
           },
-          "radius": 0.7620001000368435,
+          "radius": 0.7620001000368438,
           "start": {
             "unit": "degrees",
-            "value": 0.02980335305952784
+            "value": 0.029803353012879688
           },
           "end": {
             "unit": "degrees",
-            "value": -90.02015780811432
+            "value": -90.02015780790065
           },
           "relative": false
         }
@@ -303,7 +303,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.678349869774996,
+          "x": -2.6783498715911587,
           "y": 1.5189200000152319,
           "z": 0.0
         }
@@ -336,7 +336,7 @@ description: Artifact commands rack-blanking-panel.kcl
           "type": "line",
           "end": {
             "x": -8.466666666665544,
-            "y": 0.000000000007100868806907534,
+            "y": 0.0000000000071008675390677266,
             "z": 0.0
           },
           "relative": false

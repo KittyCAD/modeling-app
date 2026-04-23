@@ -181,13 +181,13 @@ pub struct FunctionSource {
     pub deprecated: bool,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
-    pub is_std: bool,
+    pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
 }
 
 pub struct KclFunctionSourceParams {
-    pub is_std: bool,
+    pub std_props: Option<StdFnProps>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
 }
@@ -196,7 +196,7 @@ impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
         ast: Box<Node<FunctionExpression>>,
-        _props: StdFnProps,
+        props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
@@ -208,7 +208,7 @@ impl FunctionSource {
             deprecated: attrs.deprecated,
             experimental: attrs.experimental,
             include_in_feature_tree: attrs.include_in_feature_tree,
-            is_std: true,
+            std_props: Some(props),
             body: FunctionBody::Rust(func),
             ast,
         }
@@ -216,7 +216,7 @@ impl FunctionSource {
 
     pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
         let KclFunctionSourceParams {
-            is_std,
+            std_props,
             experimental,
             include_in_feature_tree,
         } = params;
@@ -228,7 +228,7 @@ impl FunctionSource {
             deprecated: false,
             experimental,
             include_in_feature_tree,
-            is_std,
+            std_props,
             body: FunctionBody::Kcl(memory),
             ast,
         }
@@ -258,6 +258,10 @@ impl FunctionSource {
         }
 
         (input_arg, named_args)
+    }
+
+    pub(crate) fn is_std(&self) -> bool {
+        self.std_props.is_some()
     }
 }
 

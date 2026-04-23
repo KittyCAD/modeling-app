@@ -240,6 +240,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -375,6 +376,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -496,6 +498,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -617,6 +620,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -738,6 +742,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -859,6 +864,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -980,6 +986,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1101,6 +1108,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1201,6 +1209,7 @@ description: Variables in memory after executing bone-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -1938,14 +1947,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              142.89894612863878,
-              0.0002208654036692792
+              142.8989461285995,
+              0.000220865421638905
             ],
             "from": [
-              23.191225952417458,
-              8.370509403530415
+              23.19122595237832,
+              8.370509403550031
             ],
-            "radius": 120.00000000000001,
+            "radius": 119.99999999999999,
             "tag": {
               "commentStart": 566,
               "end": 570,
@@ -1955,8 +1964,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc1"
             },
             "to": [
-              22.898946128842027,
-              0.00000000000006455841178483468
+              22.898946128802763,
+              0.00000000000012850731221335232
             ],
             "type": "Arc",
             "units": "mm"
@@ -1968,12 +1977,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.692691736990263,
-              12.70148236284794
+              20.692691736933597,
+              12.701482362857444
             ],
             "from": [
-              23.191225952417458,
-              8.370509403530415
+              23.19122595237832,
+              8.370509403550031
             ],
             "radius": 5.0,
             "tag": {
@@ -1985,8 +1994,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc2"
             },
             "to": [
-              23.628764516778183,
-              16.74863897357953
+              23.628764516690808,
+              16.748638973611314
             ],
             "type": "Arc",
             "units": "mm"
@@ -1998,12 +2007,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.62876450760254,
-              16.750122940074526
+              143.62876450751517,
+              16.75012294005776
             ],
             "from": [
-              23.628764516778183,
-              16.74863897357953
+              23.628764516690808,
+              16.748638973611314
             ],
             "radius": 120.00000000000001,
             "tag": {
@@ -2015,8 +2024,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc3"
             },
             "to": [
-              23.920994883185173,
-              25.11970426457463
+              23.92099488311318,
+              25.119704264777795
             ],
             "type": "Arc",
             "units": "mm"
@@ -2028,14 +2037,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.418011262191417,
-              29.448107318015584
+              21.418011263455615,
+              29.44810731899143
             ],
             "from": [
-              23.920994883185173,
-              25.11970426457463
+              23.92099488311318,
+              25.119704264777795
             ],
-            "radius": 5.0,
+            "radius": 5.000000000000002,
             "tag": {
               "commentStart": 989,
               "end": 993,
@@ -2045,8 +2054,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc4"
             },
             "to": [
-              24.359704431617573,
-              33.491180567036864
+              24.35970443516442,
+              33.491180566351886
             ],
             "type": "Arc",
             "units": "mm"
@@ -2058,14 +2067,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.35970442747998,
-              33.49018406057919
+              144.3597044310268,
+              33.49018406206224
             ],
             "from": [
-              24.359704431617573,
-              33.491180567036864
+              24.35970443516442,
+              33.491180566351886
             ],
-            "radius": 120.00000000000001,
+            "radius": 119.99999999999999,
             "tag": {
               "commentStart": 1148,
               "end": 1152,
@@ -2075,8 +2084,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc5"
             },
             "to": [
-              24.651875613947055,
-              41.85891877676531
+              24.651875617254078,
+              41.85891877481778
             ],
             "type": "Arc",
             "units": "mm"
@@ -2088,14 +2097,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.160225140465602,
-              46.19385567573026
+              22.160225131595226,
+              46.193855666783364
             ],
             "from": [
-              24.651875613947055,
-              41.85891877676531
+              24.651875617254078,
+              41.85891877481778
             ],
-            "radius": 5.000000000000825,
+            "radius": 5.0000000000008225,
             "tag": {
               "commentStart": 1304,
               "end": 1308,
@@ -2105,8 +2114,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc6"
             },
             "to": [
-              25.0989853368462,
-              50.23906129574234
+              25.09898530824055,
+              50.239061301132715
             ],
             "type": "Arc",
             "units": "mm"
@@ -2118,12 +2127,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.09898533317718,
-              50.24017819111911
+              195.09898530457033,
+              50.240178377892434
             ],
             "from": [
-              25.0989853368462,
-              50.23906129574234
+              25.09898530824055,
+              50.239061301132715
             ],
             "radius": 169.99999999999997,
             "tag": {
@@ -2135,8 +2144,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc7"
             },
             "to": [
-              26.030258671215876,
-              68.00997461378545
+              26.030258617072974,
+              68.00997455759892
             ],
             "type": "Arc",
             "units": "mm"
@@ -2148,14 +2157,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.86085069792392,
-              64.77352667153247
+              56.86085065387256,
+              64.77352671147847
             ],
             "from": [
-              26.030258671215876,
-              68.00997461378545
+              26.030258617072974,
+              68.00997455759892
             ],
-            "radius": 31.000000000003666,
+            "radius": 31.000000000003674,
             "tag": {
               "commentStart": 1616,
               "end": 1620,
@@ -2165,8 +2174,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc8"
             },
             "to": [
-              41.77954421456687,
-              91.85773230424911
+              41.779544120992036,
+              91.85773231661895
             ],
             "type": "Arc",
             "units": "mm"
@@ -2178,14 +2187,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.427156492183858,
-              117.6309541958011
+              27.427156391313616,
+              117.63095420410833
             ],
             "from": [
-              41.77954421456687,
-              91.85773230424911
+              41.779544120992036,
+              91.85773231661895
             ],
-            "radius": 29.5000000000811,
+            "radius": 29.500000000081112,
             "tag": {
               "commentStart": 1773,
               "end": 1777,
@@ -2195,8 +2204,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc9"
             },
             "to": [
-              56.92201041926286,
-              117.07996252158311
+              56.92201031827425,
+              117.07996252355389
             ],
             "type": "Arc",
             "units": "mm"
@@ -2207,8 +2216,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              56.92201041926286,
-              117.07996252158311
+              56.92201031827425,
+              117.07996252355389
             ],
             "tag": {
               "commentStart": 1934,
@@ -2219,8 +2228,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line10"
             },
             "to": [
-              57.348846467699005,
-              139.8294222387674
+              57.348846468384146,
+              139.8294222452517
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2232,14 +2241,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.15285555482421,
-              139.79567529524041
+              59.15285555682781,
+              139.79567529377346
             ],
             "from": [
-              57.348846467699005,
-              139.8294222387674
+              57.348846468384146,
+              139.8294222452517
             ],
-            "radius": 1.8043247054307374,
+            "radius": 1.8043247068976838,
             "tag": {
               "commentStart": 2061,
               "end": 2066,
@@ -2249,8 +2258,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc11"
             },
             "to": [
-              60.939574835429966,
-              140.04711486042328
+              60.93957483886968,
+              140.04711485927814
             ],
             "type": "Arc",
             "units": "mm"
@@ -2261,8 +2270,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              60.939574835429966,
-              140.04711486042328
+              60.93957483886968,
+              140.04711485927814
             ],
             "tag": {
               "commentStart": 2222,
@@ -2273,8 +2282,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line12"
             },
             "to": [
-              64.46677327512953,
-              114.98970137534143
+              64.4667732788738,
+              114.98970137930519
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2287,13 +2296,13 @@ description: Variables in memory after executing bone-plate.kcl
             "ccw": false,
             "center": [
               35.10000000000017,
-              112.18923223478517
+              112.18923227801278
             ],
             "from": [
-              64.46677327512953,
-              114.98970137534143
+              64.4667732788738,
+              114.98970137930519
             ],
-            "radius": 29.50000000000101,
+            "radius": 29.500000000001013,
             "tag": {
               "commentStart": 2352,
               "end": 2357,
@@ -2303,8 +2312,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc13"
             },
             "to": [
-              48.30806153160582,
-              85.81126585036921
+              48.30806154236759,
+              85.81126589898548
             ],
             "type": "Arc",
             "units": "mm"
@@ -2316,14 +2325,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              59.429269846951854,
-              63.59934828858738
+              59.42926986880461,
+              63.59934831319127
             ],
             "from": [
-              48.30806153160582,
-              85.81126585036921
+              48.30806154236759,
+              85.81126589898548
             ],
-            "radius": 24.840502333179856,
+            "radius": 24.840502359616764,
             "tag": {
               "commentStart": 2512,
               "end": 2517,
@@ -2333,8 +2342,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc14"
             },
             "to": [
-              34.94135158724582,
-              67.7697697865501
+              34.94135157846726,
+              67.7697697887603
             ],
             "type": "Arc",
             "units": "mm"
@@ -2345,8 +2354,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              34.94135158724582,
-              67.7697697865501
+              34.94135157846726,
+              67.7697697887603
             ],
             "tag": {
               "commentStart": 2673,
@@ -2381,8 +2390,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line16"
             },
             "to": [
-              22.898946128842045,
-              0.00000000000003888057953874472
+              22.89894612880278,
+              0.000000000000039332382700186517
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2421,12 +2430,12 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "start": {
           "from": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
           "to": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
           "units": "mm",
           "tag": null,
@@ -2503,6 +2512,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2524,14 +2534,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            142.89894612863878,
-            0.0002208654036692792
+            142.8989461285995,
+            0.000220865421638905
           ],
           "from": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
-          "radius": 120.00000000000001,
+          "radius": 119.99999999999999,
           "tag": {
             "commentStart": 566,
             "end": 570,
@@ -2541,8 +2551,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc1"
           },
           "to": [
-            22.898946128842027,
-            0.00000000000006455841178483468
+            22.898946128802763,
+            0.00000000000012850731221335232
           ],
           "type": "Arc",
           "units": "mm"
@@ -2554,12 +2564,12 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            20.692691736990263,
-            12.70148236284794
+            20.692691736933597,
+            12.701482362857444
           ],
           "from": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
           "radius": 5.0,
           "tag": {
@@ -2571,8 +2581,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc2"
           },
           "to": [
-            23.628764516778183,
-            16.74863897357953
+            23.628764516690808,
+            16.748638973611314
           ],
           "type": "Arc",
           "units": "mm"
@@ -2584,12 +2594,12 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": false,
           "center": [
-            143.62876450760254,
-            16.750122940074526
+            143.62876450751517,
+            16.75012294005776
           ],
           "from": [
-            23.628764516778183,
-            16.74863897357953
+            23.628764516690808,
+            16.748638973611314
           ],
           "radius": 120.00000000000001,
           "tag": {
@@ -2601,8 +2611,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc3"
           },
           "to": [
-            23.920994883185173,
-            25.11970426457463
+            23.92099488311318,
+            25.119704264777795
           ],
           "type": "Arc",
           "units": "mm"
@@ -2614,14 +2624,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            21.418011262191417,
-            29.448107318015584
+            21.418011263455615,
+            29.44810731899143
           ],
           "from": [
-            23.920994883185173,
-            25.11970426457463
+            23.92099488311318,
+            25.119704264777795
           ],
-          "radius": 5.0,
+          "radius": 5.000000000000002,
           "tag": {
             "commentStart": 989,
             "end": 993,
@@ -2631,8 +2641,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc4"
           },
           "to": [
-            24.359704431617573,
-            33.491180567036864
+            24.35970443516442,
+            33.491180566351886
           ],
           "type": "Arc",
           "units": "mm"
@@ -2644,14 +2654,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": false,
           "center": [
-            144.35970442747998,
-            33.49018406057919
+            144.3597044310268,
+            33.49018406206224
           ],
           "from": [
-            24.359704431617573,
-            33.491180567036864
+            24.35970443516442,
+            33.491180566351886
           ],
-          "radius": 120.00000000000001,
+          "radius": 119.99999999999999,
           "tag": {
             "commentStart": 1148,
             "end": 1152,
@@ -2661,8 +2671,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc5"
           },
           "to": [
-            24.651875613947055,
-            41.85891877676531
+            24.651875617254078,
+            41.85891877481778
           ],
           "type": "Arc",
           "units": "mm"
@@ -2674,14 +2684,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            22.160225140465602,
-            46.19385567573026
+            22.160225131595226,
+            46.193855666783364
           ],
           "from": [
-            24.651875613947055,
-            41.85891877676531
+            24.651875617254078,
+            41.85891877481778
           ],
-          "radius": 5.000000000000825,
+          "radius": 5.0000000000008225,
           "tag": {
             "commentStart": 1304,
             "end": 1308,
@@ -2691,8 +2701,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc6"
           },
           "to": [
-            25.0989853368462,
-            50.23906129574234
+            25.09898530824055,
+            50.239061301132715
           ],
           "type": "Arc",
           "units": "mm"
@@ -2704,12 +2714,12 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": false,
           "center": [
-            195.09898533317718,
-            50.24017819111911
+            195.09898530457033,
+            50.240178377892434
           ],
           "from": [
-            25.0989853368462,
-            50.23906129574234
+            25.09898530824055,
+            50.239061301132715
           ],
           "radius": 169.99999999999997,
           "tag": {
@@ -2721,8 +2731,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc7"
           },
           "to": [
-            26.030258671215876,
-            68.00997461378545
+            26.030258617072974,
+            68.00997455759892
           ],
           "type": "Arc",
           "units": "mm"
@@ -2734,14 +2744,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": false,
           "center": [
-            56.86085069792392,
-            64.77352667153247
+            56.86085065387256,
+            64.77352671147847
           ],
           "from": [
-            26.030258671215876,
-            68.00997461378545
+            26.030258617072974,
+            68.00997455759892
           ],
-          "radius": 31.000000000003666,
+          "radius": 31.000000000003674,
           "tag": {
             "commentStart": 1616,
             "end": 1620,
@@ -2751,8 +2761,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc8"
           },
           "to": [
-            41.77954421456687,
-            91.85773230424911
+            41.779544120992036,
+            91.85773231661895
           ],
           "type": "Arc",
           "units": "mm"
@@ -2764,14 +2774,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            27.427156492183858,
-            117.6309541958011
+            27.427156391313616,
+            117.63095420410833
           ],
           "from": [
-            41.77954421456687,
-            91.85773230424911
+            41.779544120992036,
+            91.85773231661895
           ],
-          "radius": 29.5000000000811,
+          "radius": 29.500000000081112,
           "tag": {
             "commentStart": 1773,
             "end": 1777,
@@ -2781,8 +2791,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc9"
           },
           "to": [
-            56.92201041926286,
-            117.07996252158311
+            56.92201031827425,
+            117.07996252355389
           ],
           "type": "Arc",
           "units": "mm"
@@ -2793,8 +2803,8 @@ description: Variables in memory after executing bone-plate.kcl
             "sourceRange": []
           },
           "from": [
-            56.92201041926286,
-            117.07996252158311
+            56.92201031827425,
+            117.07996252355389
           ],
           "tag": {
             "commentStart": 1934,
@@ -2805,8 +2815,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "line10"
           },
           "to": [
-            57.348846467699005,
-            139.8294222387674
+            57.348846468384146,
+            139.8294222452517
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2818,14 +2828,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": false,
           "center": [
-            59.15285555482421,
-            139.79567529524041
+            59.15285555682781,
+            139.79567529377346
           ],
           "from": [
-            57.348846467699005,
-            139.8294222387674
+            57.348846468384146,
+            139.8294222452517
           ],
-          "radius": 1.8043247054307374,
+          "radius": 1.8043247068976838,
           "tag": {
             "commentStart": 2061,
             "end": 2066,
@@ -2835,8 +2845,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc11"
           },
           "to": [
-            60.939574835429966,
-            140.04711486042328
+            60.93957483886968,
+            140.04711485927814
           ],
           "type": "Arc",
           "units": "mm"
@@ -2847,8 +2857,8 @@ description: Variables in memory after executing bone-plate.kcl
             "sourceRange": []
           },
           "from": [
-            60.939574835429966,
-            140.04711486042328
+            60.93957483886968,
+            140.04711485927814
           ],
           "tag": {
             "commentStart": 2222,
@@ -2859,8 +2869,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "line12"
           },
           "to": [
-            64.46677327512953,
-            114.98970137534143
+            64.4667732788738,
+            114.98970137930519
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2873,13 +2883,13 @@ description: Variables in memory after executing bone-plate.kcl
           "ccw": false,
           "center": [
             35.10000000000017,
-            112.18923223478517
+            112.18923227801278
           ],
           "from": [
-            64.46677327512953,
-            114.98970137534143
+            64.4667732788738,
+            114.98970137930519
           ],
-          "radius": 29.50000000000101,
+          "radius": 29.500000000001013,
           "tag": {
             "commentStart": 2352,
             "end": 2357,
@@ -2889,8 +2899,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc13"
           },
           "to": [
-            48.30806153160582,
-            85.81126585036921
+            48.30806154236759,
+            85.81126589898548
           ],
           "type": "Arc",
           "units": "mm"
@@ -2902,14 +2912,14 @@ description: Variables in memory after executing bone-plate.kcl
           },
           "ccw": true,
           "center": [
-            59.429269846951854,
-            63.59934828858738
+            59.42926986880461,
+            63.59934831319127
           ],
           "from": [
-            48.30806153160582,
-            85.81126585036921
+            48.30806154236759,
+            85.81126589898548
           ],
-          "radius": 24.840502333179856,
+          "radius": 24.840502359616764,
           "tag": {
             "commentStart": 2512,
             "end": 2517,
@@ -2919,8 +2929,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "arc14"
           },
           "to": [
-            34.94135158724582,
-            67.7697697865501
+            34.94135157846726,
+            67.7697697887603
           ],
           "type": "Arc",
           "units": "mm"
@@ -2931,8 +2941,8 @@ description: Variables in memory after executing bone-plate.kcl
             "sourceRange": []
           },
           "from": [
-            34.94135158724582,
-            67.7697697865501
+            34.94135157846726,
+            67.7697697887603
           ],
           "tag": {
             "commentStart": 2673,
@@ -2967,8 +2977,8 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "line16"
           },
           "to": [
-            22.898946128842045,
-            0.00000000000003888057953874472
+            22.89894612880278,
+            0.000000000000039332382700186517
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3007,12 +3017,12 @@ description: Variables in memory after executing bone-plate.kcl
       },
       "start": {
         "from": [
-          23.191225952417458,
-          8.370509403530415
+          23.19122595237832,
+          8.370509403550031
         ],
         "to": [
-          23.191225952417458,
-          8.370509403530415
+          23.19122595237832,
+          8.370509403550031
         ],
         "units": "mm",
         "tag": null,
@@ -3089,6 +3099,7 @@ description: Variables in memory after executing bone-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -3107,7 +3118,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 23.191225952417458,
+                        "n": 23.19122595237832,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3115,7 +3126,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 8.370509403530415,
+                        "n": 8.370509403550031,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3125,7 +3136,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 22.898946128842045,
+                        "n": 22.89894612880278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3133,7 +3144,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000038880579538702167,
+                        "n": 0.000000000000039332382700143704,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3143,7 +3154,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 142.89894612863878,
+                        "n": 142.8989461285995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3151,7 +3162,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00022086540368442236,
+                        "n": 0.0002208654216322168,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3259,7 +3270,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 60.939574835768724,
+                        "n": 60.939574839208426,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3267,7 +3278,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 140.0471148603376,
+                        "n": 140.04711485919245,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3277,7 +3288,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 57.34884646853541,
+                        "n": 57.348846469220554,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3285,7 +3296,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 139.82942223875173,
+                        "n": 139.82942224523603,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3295,7 +3306,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 59.152855555660615,
+                        "n": 59.15285555766422,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3303,7 +3314,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 139.79567529522475,
+                        "n": 139.7956752937578,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3411,7 +3422,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 48.30806153161467,
+                        "n": 48.308061542376436,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3419,7 +3430,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 85.81126585035153,
+                        "n": 85.81126589896782,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3429,7 +3440,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 64.46677327512953,
+                        "n": 64.4667732788738,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3437,7 +3448,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 114.98970137534143,
+                        "n": 114.98970137930519,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3455,7 +3466,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 112.18923223478517,
+                        "n": 112.18923227801278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3563,7 +3574,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 48.30806153247147,
+                        "n": 48.30806154323326,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3571,7 +3582,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 85.81126584864036,
+                        "n": 85.81126589725658,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3581,7 +3592,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 34.9413515881608,
+                        "n": 34.94135157938225,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3589,7 +3600,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 67.76976978481284,
+                        "n": 67.76976978702301,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3599,7 +3610,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 59.4292698478175,
+                        "n": 59.42926986967028,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3607,7 +3618,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 63.59934828685853,
+                        "n": 63.59934831146237,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3715,7 +3726,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 23.191225952417458,
+                        "n": 23.19122595237832,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3723,7 +3734,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 8.370509403530415,
+                        "n": 8.370509403550031,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3733,7 +3744,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 23.628764516778183,
+                        "n": 23.628764516690808,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3741,7 +3752,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 16.74863897357953,
+                        "n": 16.748638973611314,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3751,7 +3762,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 20.692691736990263,
+                        "n": 20.692691736933597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3759,7 +3770,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 12.70148236284794,
+                        "n": 12.701482362857444,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3867,7 +3878,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 23.920994883185173,
+                        "n": 23.920994883113178,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3875,7 +3886,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 25.11970426457464,
+                        "n": 25.11970426477788,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3885,7 +3896,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 23.628764516778183,
+                        "n": 23.628764516690808,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3893,7 +3904,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 16.74863897357953,
+                        "n": 16.748638973611314,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3903,7 +3914,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 143.62876450760254,
+                        "n": 143.62876450751517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3911,7 +3922,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 16.75012294007452,
+                        "n": 16.750122940057814,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4019,7 +4030,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 23.920994883185173,
+                        "n": 23.920994883113178,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4027,7 +4038,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 25.11970426457464,
+                        "n": 25.11970426477788,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4037,7 +4048,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 24.359704431617576,
+                        "n": 24.359704435164414,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4045,7 +4056,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 33.49118056703688,
+                        "n": 33.491180566351964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4055,7 +4066,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 21.418011262191417,
+                        "n": 21.41801126345561,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4063,7 +4074,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 29.448107318015595,
+                        "n": 29.448107318991514,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4171,7 +4182,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 24.65187561394706,
+                        "n": 24.65187561725408,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4179,7 +4190,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 41.85891877676543,
+                        "n": 41.85891877481787,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4189,7 +4200,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 24.359704431617576,
+                        "n": 24.359704435164414,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4197,7 +4208,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 33.49118056703688,
+                        "n": 33.491180566351964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4207,7 +4218,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 144.35970442747998,
+                        "n": 144.3597044310268,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4215,7 +4226,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 33.49018406057923,
+                        "n": 33.49018406206236,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4323,7 +4334,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 24.65187561394706,
+                        "n": 24.65187561725408,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4331,7 +4342,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 41.85891877676543,
+                        "n": 41.85891877481787,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4341,7 +4352,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 25.098985336847427,
+                        "n": 25.098985308241776,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4349,7 +4360,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 50.23906129574414,
+                        "n": 50.23906130113449,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4359,7 +4370,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 22.160225140465606,
+                        "n": 22.16022513159523,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4367,7 +4378,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 46.19385567573038,
+                        "n": 46.193855666783456,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4475,7 +4486,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 26.030258671217126,
+                        "n": 26.030258617074203,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4483,7 +4494,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 68.00997461378738,
+                        "n": 68.00997455760066,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4493,7 +4504,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 25.098985336847438,
+                        "n": 25.098985308241783,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4501,7 +4512,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 50.23906129574414,
+                        "n": 50.23906130113449,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4511,7 +4522,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 195.09898533317843,
+                        "n": 195.09898530457158,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4519,7 +4530,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 50.24017819112102,
+                        "n": 50.240178377894175,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4627,7 +4638,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 41.77954421454156,
+                        "n": 41.7795441209667,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4635,7 +4646,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 91.85773230429879,
+                        "n": 91.85773231666842,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4645,7 +4656,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 26.030258671217155,
+                        "n": 26.03025861707423,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4653,7 +4664,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 68.00997461378738,
+                        "n": 68.00997455760064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4663,7 +4674,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 56.8608506979252,
+                        "n": 56.86085065387382,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4671,7 +4682,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 64.7735266715344,
+                        "n": 64.77352671148019,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4779,7 +4790,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 41.77954421331773,
+                        "n": 41.779544119742994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4787,7 +4798,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 91.85773230649656,
+                        "n": 91.85773231886596,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4797,7 +4808,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 56.92201041793874,
+                        "n": 56.922010316950235,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4805,7 +4816,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 117.07996252383197,
+                        "n": 117.0799625258023,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4815,7 +4826,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 27.42715649093472,
+                        "n": 27.427156390064578,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4823,7 +4834,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 117.63095419804854,
+                        "n": 117.63095420635534,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4931,7 +4942,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000024502308311579305,
+                        "n": 0.000000000000024499617846379612,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4939,7 +4950,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000008178675127888121,
+                        "n": -0.00000000000008178702263571877,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4957,7 +4968,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000008178675148555942,
+                        "n": -0.00000000000008178702284239614,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5052,7 +5063,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 56.922010417938736,
+                        "n": 56.92201031695023,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5060,7 +5071,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 117.07996252383197,
+                        "n": 117.07996252580232,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5070,7 +5081,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 57.348846467699005,
+                        "n": 57.348846468384146,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5078,7 +5089,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 139.8294222387674,
+                        "n": 139.8294222452517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5172,7 +5183,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 60.93957483619241,
+                        "n": 60.93957483963211,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5180,7 +5191,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 140.04711486039722,
+                        "n": 140.0471148592521,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5190,7 +5201,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 64.46677327512953,
+                        "n": 64.4667732788738,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5198,7 +5209,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 114.98970137534143,
+                        "n": 114.98970137930519,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5292,7 +5303,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 34.941351588160785,
+                        "n": 34.94135157938224,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5300,7 +5311,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 67.76976978481285,
+                        "n": 67.76976978702301,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5430,7 +5441,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 22.898946128842045,
+                        "n": 22.89894612880278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5438,7 +5449,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000003888057953874472,
+                        "n": 0.000000000000039332382700186517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5532,7 +5543,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000024502308303232772,
+                        "n": 0.00000000000002449961783806117,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5540,7 +5551,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000008178675096886388,
+                        "n": -0.00000000000008178702232570274,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5550,7 +5561,7 @@ description: Variables in memory after executing bone-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000049004616589772476,
+                        "n": 0.00000000000004899923565948547,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5653,7 +5664,7 @@ description: Variables in memory after executing bone-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000007350692485961911,
+                        "n": 0.00000000000007349885346427289,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5800,7 +5811,7 @@ description: Variables in memory after executing bone-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000008178675158889853,
+                        "n": -0.00000000000008178702294573482,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5899,14 +5910,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    142.89894612863878,
-                    0.0002208654036692792
+                    142.8989461285995,
+                    0.000220865421638905
                   ],
                   "from": [
-                    23.191225952417458,
-                    8.370509403530415
+                    23.19122595237832,
+                    8.370509403550031
                   ],
-                  "radius": 120.00000000000001,
+                  "radius": 119.99999999999999,
                   "tag": {
                     "commentStart": 566,
                     "end": 570,
@@ -5916,8 +5927,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    22.898946128842027,
-                    0.00000000000006455841178483468
+                    22.898946128802763,
+                    0.00000000000012850731221335232
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5928,13 +5939,13 @@ description: Variables in memory after executing bone-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    22.898946128842027,
-                    0.00000000000006455841178483468
+                    22.898946128802763,
+                    0.00000000000012850731221335232
                   ],
                   "tag": null,
                   "to": [
-                    23.191225952417458,
-                    8.370509403530415
+                    23.19122595237832,
+                    8.370509403550031
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5946,12 +5957,12 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    20.692691736990263,
-                    12.70148236284794
+                    20.692691736933597,
+                    12.701482362857444
                   ],
                   "from": [
-                    23.191225952417458,
-                    8.370509403530415
+                    23.19122595237832,
+                    8.370509403550031
                   ],
                   "radius": 5.0,
                   "tag": {
@@ -5963,8 +5974,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    23.628764516778183,
-                    16.74863897357953
+                    23.628764516690808,
+                    16.748638973611314
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5976,12 +5987,12 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    143.62876450760254,
-                    16.750122940074526
+                    143.62876450751517,
+                    16.75012294005776
                   ],
                   "from": [
-                    23.628764516778183,
-                    16.74863897357953
+                    23.628764516690808,
+                    16.748638973611314
                   ],
                   "radius": 120.00000000000001,
                   "tag": {
@@ -5993,8 +6004,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    23.920994883185173,
-                    25.11970426457463
+                    23.92099488311318,
+                    25.119704264777795
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6006,14 +6017,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    21.418011262191417,
-                    29.448107318015584
+                    21.418011263455615,
+                    29.44810731899143
                   ],
                   "from": [
-                    23.920994883185173,
-                    25.11970426457463
+                    23.92099488311318,
+                    25.119704264777795
                   ],
-                  "radius": 5.0,
+                  "radius": 5.000000000000002,
                   "tag": {
                     "commentStart": 989,
                     "end": 993,
@@ -6023,8 +6034,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    24.359704431617573,
-                    33.491180567036864
+                    24.35970443516442,
+                    33.491180566351886
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6036,14 +6047,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    144.35970442747998,
-                    33.49018406057919
+                    144.3597044310268,
+                    33.49018406206224
                   ],
                   "from": [
-                    24.359704431617573,
-                    33.491180567036864
+                    24.35970443516442,
+                    33.491180566351886
                   ],
-                  "radius": 120.00000000000001,
+                  "radius": 119.99999999999999,
                   "tag": {
                     "commentStart": 1148,
                     "end": 1152,
@@ -6053,8 +6064,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    24.651875613947055,
-                    41.85891877676531
+                    24.651875617254078,
+                    41.85891877481778
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6066,14 +6077,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    22.160225140465602,
-                    46.19385567573026
+                    22.160225131595226,
+                    46.193855666783364
                   ],
                   "from": [
-                    24.651875613947055,
-                    41.85891877676531
+                    24.651875617254078,
+                    41.85891877481778
                   ],
-                  "radius": 5.000000000000825,
+                  "radius": 5.0000000000008225,
                   "tag": {
                     "commentStart": 1304,
                     "end": 1308,
@@ -6083,8 +6094,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    25.0989853368462,
-                    50.23906129574234
+                    25.09898530824055,
+                    50.239061301132715
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6096,12 +6107,12 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    195.09898533317718,
-                    50.24017819111911
+                    195.09898530457033,
+                    50.240178377892434
                   ],
                   "from": [
-                    25.0989853368462,
-                    50.23906129574234
+                    25.09898530824055,
+                    50.239061301132715
                   ],
                   "radius": 169.99999999999997,
                   "tag": {
@@ -6113,8 +6124,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc7"
                   },
                   "to": [
-                    26.030258671215876,
-                    68.00997461378545
+                    26.030258617072974,
+                    68.00997455759892
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6126,14 +6137,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    56.86085069792392,
-                    64.77352667153247
+                    56.86085065387256,
+                    64.77352671147847
                   ],
                   "from": [
-                    26.030258671215876,
-                    68.00997461378545
+                    26.030258617072974,
+                    68.00997455759892
                   ],
-                  "radius": 31.000000000003666,
+                  "radius": 31.000000000003674,
                   "tag": {
                     "commentStart": 1616,
                     "end": 1620,
@@ -6143,8 +6154,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc8"
                   },
                   "to": [
-                    41.77954421456687,
-                    91.85773230424911
+                    41.779544120992036,
+                    91.85773231661895
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6156,14 +6167,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    27.427156492183858,
-                    117.6309541958011
+                    27.427156391313616,
+                    117.63095420410833
                   ],
                   "from": [
-                    41.77954421456687,
-                    91.85773230424911
+                    41.779544120992036,
+                    91.85773231661895
                   ],
-                  "radius": 29.5000000000811,
+                  "radius": 29.500000000081112,
                   "tag": {
                     "commentStart": 1773,
                     "end": 1777,
@@ -6173,8 +6184,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc9"
                   },
                   "to": [
-                    56.92201041926286,
-                    117.07996252158311
+                    56.92201031827425,
+                    117.07996252355389
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6185,8 +6196,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    56.92201041926286,
-                    117.07996252158311
+                    56.92201031827425,
+                    117.07996252355389
                   ],
                   "tag": {
                     "commentStart": 1934,
@@ -6197,8 +6208,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "line10"
                   },
                   "to": [
-                    57.348846467699005,
-                    139.8294222387674
+                    57.348846468384146,
+                    139.8294222452517
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6210,14 +6221,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    59.15285555482421,
-                    139.79567529524041
+                    59.15285555682781,
+                    139.79567529377346
                   ],
                   "from": [
-                    57.348846467699005,
-                    139.8294222387674
+                    57.348846468384146,
+                    139.8294222452517
                   ],
-                  "radius": 1.8043247054307374,
+                  "radius": 1.8043247068976838,
                   "tag": {
                     "commentStart": 2061,
                     "end": 2066,
@@ -6227,8 +6238,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc11"
                   },
                   "to": [
-                    60.939574835429966,
-                    140.04711486042328
+                    60.93957483886968,
+                    140.04711485927814
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6239,8 +6250,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    60.939574835429966,
-                    140.04711486042328
+                    60.93957483886968,
+                    140.04711485927814
                   ],
                   "tag": {
                     "commentStart": 2222,
@@ -6251,8 +6262,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "line12"
                   },
                   "to": [
-                    64.46677327512953,
-                    114.98970137534143
+                    64.4667732788738,
+                    114.98970137930519
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6265,13 +6276,13 @@ description: Variables in memory after executing bone-plate.kcl
                   "ccw": false,
                   "center": [
                     35.10000000000017,
-                    112.18923223478517
+                    112.18923227801278
                   ],
                   "from": [
-                    64.46677327512953,
-                    114.98970137534143
+                    64.4667732788738,
+                    114.98970137930519
                   ],
-                  "radius": 29.50000000000101,
+                  "radius": 29.500000000001013,
                   "tag": {
                     "commentStart": 2352,
                     "end": 2357,
@@ -6281,8 +6292,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc13"
                   },
                   "to": [
-                    48.30806153160582,
-                    85.81126585036921
+                    48.30806154236759,
+                    85.81126589898548
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6294,14 +6305,14 @@ description: Variables in memory after executing bone-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    59.429269846951854,
-                    63.59934828858738
+                    59.42926986880461,
+                    63.59934831319127
                   ],
                   "from": [
-                    48.30806153160582,
-                    85.81126585036921
+                    48.30806154236759,
+                    85.81126589898548
                   ],
-                  "radius": 24.840502333179856,
+                  "radius": 24.840502359616764,
                   "tag": {
                     "commentStart": 2512,
                     "end": 2517,
@@ -6311,8 +6322,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "arc14"
                   },
                   "to": [
-                    34.94135158724582,
-                    67.7697697865501
+                    34.94135157846726,
+                    67.7697697887603
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6323,8 +6334,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    34.94135158724582,
-                    67.7697697865501
+                    34.94135157846726,
+                    67.7697697887603
                   ],
                   "tag": {
                     "commentStart": 2673,
@@ -6359,8 +6370,8 @@ description: Variables in memory after executing bone-plate.kcl
                     "value": "line16"
                   },
                   "to": [
-                    22.898946128842045,
-                    0.00000000000003888057953874472
+                    22.89894612880278,
+                    0.000000000000039332382700186517
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6399,12 +6410,12 @@ description: Variables in memory after executing bone-plate.kcl
               },
               "start": {
                 "from": [
-                  23.191225952417458,
-                  8.370509403530415
+                  23.19122595237832,
+                  8.370509403550031
                 ],
                 "to": [
-                  23.191225952417458,
-                  8.370509403530415
+                  23.19122595237832,
+                  8.370509403550031
                 ],
                 "units": "mm",
                 "tag": null,
@@ -6735,14 +6746,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              142.89894612863878,
-              0.0002208654036692792
+              142.8989461285995,
+              0.000220865421638905
             ],
             "from": [
-              23.191225952417458,
-              8.370509403530415
+              23.19122595237832,
+              8.370509403550031
             ],
-            "radius": 120.00000000000001,
+            "radius": 119.99999999999999,
             "tag": {
               "commentStart": 566,
               "end": 570,
@@ -6752,8 +6763,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc1"
             },
             "to": [
-              22.898946128842027,
-              0.00000000000006455841178483468
+              22.898946128802763,
+              0.00000000000012850731221335232
             ],
             "type": "Arc",
             "units": "mm"
@@ -6765,12 +6776,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.692691736990263,
-              12.70148236284794
+              20.692691736933597,
+              12.701482362857444
             ],
             "from": [
-              23.191225952417458,
-              8.370509403530415
+              23.19122595237832,
+              8.370509403550031
             ],
             "radius": 5.0,
             "tag": {
@@ -6782,8 +6793,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc2"
             },
             "to": [
-              23.628764516778183,
-              16.74863897357953
+              23.628764516690808,
+              16.748638973611314
             ],
             "type": "Arc",
             "units": "mm"
@@ -6795,12 +6806,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.62876450760254,
-              16.750122940074526
+              143.62876450751517,
+              16.75012294005776
             ],
             "from": [
-              23.628764516778183,
-              16.74863897357953
+              23.628764516690808,
+              16.748638973611314
             ],
             "radius": 120.00000000000001,
             "tag": {
@@ -6812,8 +6823,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc3"
             },
             "to": [
-              23.920994883185173,
-              25.11970426457463
+              23.92099488311318,
+              25.119704264777795
             ],
             "type": "Arc",
             "units": "mm"
@@ -6825,14 +6836,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.418011262191417,
-              29.448107318015584
+              21.418011263455615,
+              29.44810731899143
             ],
             "from": [
-              23.920994883185173,
-              25.11970426457463
+              23.92099488311318,
+              25.119704264777795
             ],
-            "radius": 5.0,
+            "radius": 5.000000000000002,
             "tag": {
               "commentStart": 989,
               "end": 993,
@@ -6842,8 +6853,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc4"
             },
             "to": [
-              24.359704431617573,
-              33.491180567036864
+              24.35970443516442,
+              33.491180566351886
             ],
             "type": "Arc",
             "units": "mm"
@@ -6855,14 +6866,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.35970442747998,
-              33.49018406057919
+              144.3597044310268,
+              33.49018406206224
             ],
             "from": [
-              24.359704431617573,
-              33.491180567036864
+              24.35970443516442,
+              33.491180566351886
             ],
-            "radius": 120.00000000000001,
+            "radius": 119.99999999999999,
             "tag": {
               "commentStart": 1148,
               "end": 1152,
@@ -6872,8 +6883,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc5"
             },
             "to": [
-              24.651875613947055,
-              41.85891877676531
+              24.651875617254078,
+              41.85891877481778
             ],
             "type": "Arc",
             "units": "mm"
@@ -6885,14 +6896,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.160225140465602,
-              46.19385567573026
+              22.160225131595226,
+              46.193855666783364
             ],
             "from": [
-              24.651875613947055,
-              41.85891877676531
+              24.651875617254078,
+              41.85891877481778
             ],
-            "radius": 5.000000000000825,
+            "radius": 5.0000000000008225,
             "tag": {
               "commentStart": 1304,
               "end": 1308,
@@ -6902,8 +6913,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc6"
             },
             "to": [
-              25.0989853368462,
-              50.23906129574234
+              25.09898530824055,
+              50.239061301132715
             ],
             "type": "Arc",
             "units": "mm"
@@ -6915,12 +6926,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.09898533317718,
-              50.24017819111911
+              195.09898530457033,
+              50.240178377892434
             ],
             "from": [
-              25.0989853368462,
-              50.23906129574234
+              25.09898530824055,
+              50.239061301132715
             ],
             "radius": 169.99999999999997,
             "tag": {
@@ -6932,8 +6943,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc7"
             },
             "to": [
-              26.030258671215876,
-              68.00997461378545
+              26.030258617072974,
+              68.00997455759892
             ],
             "type": "Arc",
             "units": "mm"
@@ -6945,14 +6956,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.86085069792392,
-              64.77352667153247
+              56.86085065387256,
+              64.77352671147847
             ],
             "from": [
-              26.030258671215876,
-              68.00997461378545
+              26.030258617072974,
+              68.00997455759892
             ],
-            "radius": 31.000000000003666,
+            "radius": 31.000000000003674,
             "tag": {
               "commentStart": 1616,
               "end": 1620,
@@ -6962,8 +6973,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc8"
             },
             "to": [
-              41.77954421456687,
-              91.85773230424911
+              41.779544120992036,
+              91.85773231661895
             ],
             "type": "Arc",
             "units": "mm"
@@ -6975,14 +6986,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.427156492183858,
-              117.6309541958011
+              27.427156391313616,
+              117.63095420410833
             ],
             "from": [
-              41.77954421456687,
-              91.85773230424911
+              41.779544120992036,
+              91.85773231661895
             ],
-            "radius": 29.5000000000811,
+            "radius": 29.500000000081112,
             "tag": {
               "commentStart": 1773,
               "end": 1777,
@@ -6992,8 +7003,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc9"
             },
             "to": [
-              56.92201041926286,
-              117.07996252158311
+              56.92201031827425,
+              117.07996252355389
             ],
             "type": "Arc",
             "units": "mm"
@@ -7004,8 +7015,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              56.92201041926286,
-              117.07996252158311
+              56.92201031827425,
+              117.07996252355389
             ],
             "tag": {
               "commentStart": 1934,
@@ -7016,8 +7027,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line10"
             },
             "to": [
-              57.348846467699005,
-              139.8294222387674
+              57.348846468384146,
+              139.8294222452517
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -7029,14 +7040,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.15285555482421,
-              139.79567529524041
+              59.15285555682781,
+              139.79567529377346
             ],
             "from": [
-              57.348846467699005,
-              139.8294222387674
+              57.348846468384146,
+              139.8294222452517
             ],
-            "radius": 1.8043247054307374,
+            "radius": 1.8043247068976838,
             "tag": {
               "commentStart": 2061,
               "end": 2066,
@@ -7046,8 +7057,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc11"
             },
             "to": [
-              60.939574835429966,
-              140.04711486042328
+              60.93957483886968,
+              140.04711485927814
             ],
             "type": "Arc",
             "units": "mm"
@@ -7058,8 +7069,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              60.939574835429966,
-              140.04711486042328
+              60.93957483886968,
+              140.04711485927814
             ],
             "tag": {
               "commentStart": 2222,
@@ -7070,8 +7081,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line12"
             },
             "to": [
-              64.46677327512953,
-              114.98970137534143
+              64.4667732788738,
+              114.98970137930519
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -7084,13 +7095,13 @@ description: Variables in memory after executing bone-plate.kcl
             "ccw": false,
             "center": [
               35.10000000000017,
-              112.18923223478517
+              112.18923227801278
             ],
             "from": [
-              64.46677327512953,
-              114.98970137534143
+              64.4667732788738,
+              114.98970137930519
             ],
-            "radius": 29.50000000000101,
+            "radius": 29.500000000001013,
             "tag": {
               "commentStart": 2352,
               "end": 2357,
@@ -7100,8 +7111,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc13"
             },
             "to": [
-              48.30806153160582,
-              85.81126585036921
+              48.30806154236759,
+              85.81126589898548
             ],
             "type": "Arc",
             "units": "mm"
@@ -7113,14 +7124,14 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              59.429269846951854,
-              63.59934828858738
+              59.42926986880461,
+              63.59934831319127
             ],
             "from": [
-              48.30806153160582,
-              85.81126585036921
+              48.30806154236759,
+              85.81126589898548
             ],
-            "radius": 24.840502333179856,
+            "radius": 24.840502359616764,
             "tag": {
               "commentStart": 2512,
               "end": 2517,
@@ -7130,8 +7141,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "arc14"
             },
             "to": [
-              34.94135158724582,
-              67.7697697865501
+              34.94135157846726,
+              67.7697697887603
             ],
             "type": "Arc",
             "units": "mm"
@@ -7142,8 +7153,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              34.94135158724582,
-              67.7697697865501
+              34.94135157846726,
+              67.7697697887603
             ],
             "tag": {
               "commentStart": 2673,
@@ -7178,8 +7189,8 @@ description: Variables in memory after executing bone-plate.kcl
               "value": "line16"
             },
             "to": [
-              22.898946128842045,
-              0.00000000000003888057953874472
+              22.89894612880278,
+              0.000000000000039332382700186517
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -7218,12 +7229,12 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "start": {
           "from": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
           "to": [
-            23.191225952417458,
-            8.370509403530415
+            23.19122595237832,
+            8.370509403550031
           ],
           "units": "mm",
           "tag": null,
@@ -7300,6 +7311,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

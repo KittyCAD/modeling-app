@@ -351,11 +351,11 @@ profile001 = startProfile(sketch001, at = [-5, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg01,
-       length = 2,
-       method = MERGE,
-       hideSeams = false,
-     )
+  seg01,
+  length = 2,
+  method = MERGE,
+  hideSeams = false,
+)
   // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
   |> appearance(color = "#ff0000")
 
@@ -369,11 +369,11 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg02,
-       length = 2,
-       method = NEW,
-       hideSeams = false,
-     )
+  seg02,
+  length = 2,
+  method = NEW,
+  hideSeams = false,
+)
   // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
   |> appearance(color = "#00ff00")
 
@@ -387,11 +387,11 @@ profile003 = startProfile(sketch003, at = [1, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg03,
-       length = 2,
-       method = MERGE,
-       hideSeams = true,
-     )
+  seg03,
+  length = 2,
+  method = MERGE,
+  hideSeams = true,
+)
   |> appearance(color = "#0000ff")
 
 ```
@@ -422,11 +422,11 @@ cube = extrude(profile001, length = 1)
 
 // Extrude a red box from one of the triangle's side faces.
 box = extrude(
-       c,
-       length = 4,
-       hideSeams = false,
-       method = NEW,
-     )
+  c,
+  length = 4,
+  hideSeams = false,
+  method = NEW,
+)
   |> appearance(color = "#ff0000")
 
 ```
