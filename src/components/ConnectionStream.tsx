@@ -47,6 +47,7 @@ export const ConnectionStream = (props: {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  const showEngineDebugOverlay = settingsValues.app.showDebugPanel.current
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -283,14 +284,37 @@ export const ConnectionStream = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
+  const disconnectForIdle = useCallback(
+    async (reason: 'idle-timer' | 'manual-debug-button') => {
+      if (engineCommandManager.started) {
+        try {
+          await sceneInfra.camControls.saveRemoteCameraState()
+        } catch (e) {
+          console.warn('unable to save old camera state on idle', e)
+          sceneInfra.camControls.clearOldCameraState()
+        }
+      }
+
+      console.log(sceneInfra.camControls.oldCameraState)
+      console.warn(`${reason}: tearing down connection through idle path.`)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'disconnectForIdle',
+        metadata: { reason },
+      })
+
+      isIdle.current = true
+      engineCommandManager.tearDown()
+    },
+    [engineCommandManager, sceneInfra.camControls]
+  )
+
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      idleCallback: () => {
-        isIdle.current = true
-      },
+      idleCallback: () => disconnectForIdle('idle-timer'),
     }),
-    [onPageIdleStartCb]
+    [disconnectForIdle, onPageIdleStartCb]
   )
   useOnPageIdle(onPageIdleParams)
 
@@ -492,6 +516,21 @@ export const ConnectionStream = (props: {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
+      {showEngineDebugOverlay && (
+        <div className="absolute left-2 top-2 z-20 rounded border border-dashed border-warn-60 bg-chalkboard-10/95 p-2 text-xs shadow-lg dark:bg-chalkboard-100/95">
+          <button
+            className="rounded border border-warn-60 bg-warn-10 px-2 py-1 text-left text-xs text-warn-80 dark:bg-warn-80 dark:text-chalkboard-10"
+            data-testid="simulate-idle-disconnect"
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onClick={() => {
+              disconnectForIdle('manual-debug-button').catch(reportRejection)
+            }}
+          >
+            Simulate idle disconnect
+          </button>
+        </div>
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
