@@ -2876,7 +2876,7 @@ where
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                let mut geometry_was_modified = false;
 
                 // Execute operations via callback
                 match execute_operations(strategy, current_scene_graph_delta.clone()).await {
@@ -2884,6 +2884,7 @@ where
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         current_scene_graph_delta = scene_graph_delta;
+                        geometry_was_modified = trim_plan_modifies_geometry(&plan);
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -3034,6 +3035,13 @@ pub(crate) async fn execute_trim_flow(
     result
 }
 
+fn normalize_scene_graph_delta_for_internal_trim(
+    frontend: &crate::frontend::FrontendState,
+    scene_graph_delta: &mut crate::frontend::api::SceneGraphDelta,
+) {
+    scene_graph_delta.new_graph = frontend.scene_graph().clone();
+}
+
 /// Execute the trim loop with a context struct that provides access to FrontendState.
 /// This is a convenience wrapper that inlines the loop to avoid borrow checker issues with closures.
 /// The core loop logic is duplicated here, but this allows direct access to frontend and ctx.
@@ -3143,7 +3151,8 @@ pub async fn execute_trim_loop_with_context(
                             )
                             .await
                             {
-                                Ok((source_delta, scene_graph_delta)) => {
+                                Ok((source_delta, mut scene_graph_delta)) => {
+                                    normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                                     invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                                     last_result = Some((source_delta, scene_graph_delta.clone()));
                                     current_scene_graph_delta = scene_graph_delta;
@@ -3205,7 +3214,7 @@ pub async fn execute_trim_loop_with_context(
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                let mut geometry_was_modified = false;
 
                 // Execute operations
                 match execute_trim_operations_simple(
@@ -3218,10 +3227,12 @@ pub async fn execute_trim_loop_with_context(
                 )
                 .await
                 {
-                    Ok((source_delta, scene_graph_delta)) => {
+                    Ok((source_delta, mut scene_graph_delta)) => {
+                        normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         current_scene_graph_delta = scene_graph_delta;
+                        geometry_was_modified = trim_plan_modifies_geometry(&plan);
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -6257,7 +6268,8 @@ pub(crate) async fn execute_trim_operations_simple(
         };
 
         match operation_result {
-            Ok((source_delta, scene_graph_delta)) => {
+            Ok((source_delta, mut scene_graph_delta)) => {
+                normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                 // Track invalidates_ids from each operation result
                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                 last_result = Some((source_delta, scene_graph_delta.clone()));

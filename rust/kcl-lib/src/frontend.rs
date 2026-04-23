@@ -314,22 +314,38 @@ impl FrontendState {
     }
 
     fn scene_graph_for_ui(&self) -> SceneGraph {
-        let mut scene_graph = self.scene_graph.clone();
-        let hidden_constraint_ids = scene_graph
+        let has_control_point_splines = self.scene_graph.objects.iter().any(|object| {
+            matches!(
+                object.kind,
+                ObjectKind::Segment {
+                    segment: Segment::ControlPointSpline(_)
+                }
+            )
+        });
+
+        if !has_control_point_splines {
+            return self.scene_graph.clone();
+        }
+
+        let hidden_constraint_ids = self
+            .scene_graph
             .objects
             .iter()
             .filter_map(|object| match &object.kind {
                 ObjectKind::Constraint {
                     constraint: Constraint::Coincident(coincident),
-                } if coincident_is_internal_to_same_control_point_spline(coincident, &scene_graph) => Some(object.id),
+                } if coincident_is_internal_to_same_control_point_spline(coincident, &self.scene_graph) => {
+                    Some(object.id)
+                }
                 _ => None,
             })
             .collect::<HashSet<_>>();
 
         if hidden_constraint_ids.is_empty() {
-            return scene_graph;
+            return self.scene_graph.clone();
         }
 
+        let mut scene_graph = self.scene_graph.clone();
         for object in &mut scene_graph.objects {
             match &mut object.kind {
                 ObjectKind::Constraint { .. } if hidden_constraint_ids.contains(&object.id) => {
@@ -349,15 +365,20 @@ impl FrontendState {
 }
 
 fn coincident_is_internal_to_same_control_point_spline(coincident: &Coincident, scene_graph: &SceneGraph) -> bool {
-    let mut owner_ids = Vec::new();
+    let mut first_owner_id = None;
     for segment_id in coincident.segment_ids() {
         let Some(owner_id) = owning_control_point_spline_id(segment_id, scene_graph) else {
             return false;
         };
-        owner_ids.push(owner_id);
+
+        match first_owner_id {
+            Some(first_owner_id) if first_owner_id != owner_id => return false,
+            Some(_) => {}
+            None => first_owner_id = Some(owner_id),
+        }
     }
 
-    !owner_ids.is_empty() && owner_ids.iter().all(|owner_id| *owner_id == owner_ids[0])
+    first_owner_id.is_some()
 }
 
 fn owning_control_point_spline_id(segment_id: ObjectId, scene_graph: &SceneGraph) -> Option<ObjectId> {
