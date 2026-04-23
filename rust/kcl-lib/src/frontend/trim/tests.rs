@@ -1026,6 +1026,7 @@ mod sync {
         let symmetric = Constraint::Symmetric(crate::frontend::sketch::Symmetric {
             input: vec![ObjectId(1), ObjectId(2)],
             axis: ObjectId(77),
+            constrain_arc_end_points: false,
         });
 
         let Some(Constraint::Coincident(rewritten_coincident)) = rewrite_constraint_with_map(&coincident, &rewrite_map)
@@ -1057,6 +1058,7 @@ mod sync {
         };
         assert_eq!(rewritten_symmetric.input, vec![ObjectId(101), ObjectId(202)]);
         assert_eq!(rewritten_symmetric.axis, ObjectId(77));
+        assert!(!rewritten_symmetric.constrain_arc_end_points);
     }
 
     #[test]

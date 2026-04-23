@@ -393,6 +393,7 @@ fn rewrite_constraint_with_map(
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
             axis: rewrite_object_id(symmetric.axis, rewrite_map),
+            constrain_arc_end_points: symmetric.constrain_arc_end_points,
         })),
         Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
             lines: parallel

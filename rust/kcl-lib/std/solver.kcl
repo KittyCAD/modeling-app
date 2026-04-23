@@ -431,12 +431,17 @@ export fn tangent(
   @input: [Segment; 2],
 ) {}
 
-/// Constrain two points, lines, or arcs to be symmetric across an axis line.
+/// Constrain two points, lines, arcs, or circles to be symmetric across an axis line.
 ///
 /// Supported homogeneous input pairs:
 /// - `Point` / `Point`
 /// - `Line` / `Line`
 /// - `CircularArc` / `CircularArc`
+/// - `Circle` / `Circle`
+///
+/// By default, `CircularArc` symmetry constrains the arc centers, starts, and ends.
+/// Set `constrainArcEndPoints = false` to mirror only the underlying circles instead,
+/// leaving the arc end points free except for staying on those circles.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -450,10 +455,12 @@ export fn tangent(
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn symmetric(
-  /// Exactly two points, lines, or arcs of the same kind.
+  /// Exactly two points, lines, arcs, or circles of the same kind.
   @input: [Segment; 2],
   /// The line to mirror across.
   axis: Segment,
+  /// When `false`, arc symmetry constrains only the underlying circles, not mirrored arc endpoints.
+  constrainArcEndPoints?: bool,
 ) {}
 
 /// Constrain a point to be fixed to a position.

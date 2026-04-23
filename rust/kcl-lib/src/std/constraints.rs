@@ -3061,10 +3061,18 @@ struct SymmetricArcVars {
 }
 
 #[derive(Debug, Clone, Copy)]
+struct SymmetricCircleVars {
+    center: [SketchVarId; 2],
+    start: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
 enum SymmetricInput {
     Point(SymmetricPointVars),
     Line(SymmetricLineVars),
     Arc(SymmetricArcVars),
+    Circle(SymmetricCircleVars),
 }
 
 impl SymmetricInput {
@@ -3073,6 +3081,7 @@ impl SymmetricInput {
             SymmetricInput::Point(_) => "points",
             SymmetricInput::Line(_) => "lines",
             SymmetricInput::Arc(_) => "arcs",
+            SymmetricInput::Circle(_) => "circles",
         }
     }
 
@@ -3082,6 +3091,7 @@ impl SymmetricInput {
             SymmetricInput::Point(point) => point.object_id,
             SymmetricInput::Line(line) => line.object_id,
             SymmetricInput::Arc(arc) => arc.object_id,
+            SymmetricInput::Circle(circle) => circle.object_id,
         }
     }
 }
@@ -3090,7 +3100,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
     let KclValue::Segment { value: segment } = segment_value else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "symmetric() arguments must be point, line, or arc segments, but found {}",
+                "symmetric() arguments must be point, line, arc, or circle segments, but found {}",
                 segment_value.human_friendly_type()
             ),
             vec![range],
@@ -3157,13 +3167,25 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
                 object_id: unsolved.object_id,
             }))
         }
-        other => Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "symmetric() supports only point, line, and arc segments, you provided {}",
-                other.human_friendly_kind_with_article()
-            ),
-            vec![range],
-        ))),
+        UnsolvedSegmentKind::Circle { center, start, .. } => {
+            let (
+                UnsolvedExpr::Unknown(center_x),
+                UnsolvedExpr::Unknown(center_y),
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+            ) = (&center[0], &center[1], &start[0], &start[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "circle center/start coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Circle(SymmetricCircleVars {
+                center: [*center_x, *center_y],
+                start: [*start_x, *start_y],
+                object_id: unsolved.object_id,
+            }))
+        }
     }
 }
 
@@ -3213,6 +3235,13 @@ fn extract_symmetric_axis_line(
 }
 
 pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    #[derive(Debug, Clone, Copy)]
+    struct SymmetricCircularVars {
+        center: [SketchVarId; 2],
+        start: [SketchVarId; 2],
+        end: Option<[SketchVarId; 2]>,
+    }
+
     let input: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "input",
         &RuntimeType::Array(
@@ -3228,6 +3257,9 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ))
     })?;
     let axis: KclValue = args.get_kw_arg("axis", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let constrain_arc_end_points = args
+        .get_kw_arg_opt("constrainArcEndPoints", &RuntimeType::bool(), exec_state)?
+        .unwrap_or(true);
     let range = args.source_range;
 
     let input0 = extract_symmetric_input(&item0, range)?;
@@ -3236,43 +3268,88 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 
     let solver_axis = DatumLineSegment::new(datum_point(axis_line.start, range)?, datum_point(axis_line.end, range)?);
 
-    let solver_constraints = match (input0, input1) {
-        (SymmetricInput::Point(point0), SymmetricInput::Point(point1)) => {
+    let (mut solver_constraints, circular_inputs) = match (input0, input1) {
+        (SymmetricInput::Point(point0), SymmetricInput::Point(point1)) => (
             vec![SolverConstraint::Symmetric(
                 solver_axis,
                 datum_point(point0.coords, range)?,
                 datum_point(point1.coords, range)?,
-            )]
-        }
-        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => vec![
-            SolverConstraint::Symmetric(
-                solver_axis,
-                datum_point(line0.start, range)?,
-                datum_point(line1.start, range)?,
-            ),
-            SolverConstraint::Symmetric(
-                solver_axis,
-                datum_point(line0.end, range)?,
-                datum_point(line1.end, range)?,
-            ),
-        ],
-        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) => vec![
-            SolverConstraint::Symmetric(
+            )],
+            None,
+        ),
+        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => (
+            vec![
+                SolverConstraint::Symmetric(
+                    solver_axis,
+                    datum_point(line0.start, range)?,
+                    datum_point(line1.start, range)?,
+                ),
+                SolverConstraint::Symmetric(
+                    solver_axis,
+                    datum_point(line0.end, range)?,
+                    datum_point(line1.end, range)?,
+                ),
+            ],
+            None,
+        ),
+        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) if constrain_arc_end_points => (
+            vec![
+                SolverConstraint::Symmetric(
+                    solver_axis,
+                    datum_point(arc0.center, range)?,
+                    datum_point(arc1.center, range)?,
+                ),
+                SolverConstraint::Symmetric(
+                    solver_axis,
+                    datum_point(arc0.start, range)?,
+                    datum_point(arc1.start, range)?,
+                ),
+                SolverConstraint::Symmetric(
+                    solver_axis,
+                    datum_point(arc0.end, range)?,
+                    datum_point(arc1.end, range)?,
+                ),
+            ],
+            None,
+        ),
+        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) => (
+            vec![SolverConstraint::Symmetric(
                 solver_axis,
                 datum_point(arc0.center, range)?,
                 datum_point(arc1.center, range)?,
-            ),
-            SolverConstraint::Symmetric(
+            )],
+            Some([
+                SymmetricCircularVars {
+                    center: arc0.center,
+                    start: arc0.start,
+                    end: Some(arc0.end),
+                },
+                SymmetricCircularVars {
+                    center: arc1.center,
+                    start: arc1.start,
+                    end: Some(arc1.end),
+                },
+            ]),
+        ),
+        (SymmetricInput::Circle(circle0), SymmetricInput::Circle(circle1)) => (
+            vec![SolverConstraint::Symmetric(
                 solver_axis,
-                datum_point(arc0.start, range)?,
-                datum_point(arc1.start, range)?,
-            ),
-            SolverConstraint::Symmetric(
-                solver_axis,
-                datum_point(arc0.end, range)?,
-                datum_point(arc1.end, range)?,
-            ),
-        ],
+                datum_point(circle0.center, range)?,
+                datum_point(circle1.center, range)?,
+            )],
+            Some([
+                SymmetricCircularVars {
+                    center: circle0.center,
+                    start: circle0.start,
+                    end: None,
+                },
+                SymmetricCircularVars {
+                    center: circle1.center,
+                    start: circle1.start,
+                    end: None,
+                },
+            ]),
+        ),
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -3284,6 +3361,47 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
             )));
         }
     };
+
+    if let Some([circular0, circular1]) = circular_inputs {
+        let sketch_var_ty = solver_numeric_type(exec_state);
+        let sketch_vars = {
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "symmetric() can only be used inside a sketch block".to_owned(),
+                    vec![range],
+                )));
+            };
+            sketch_state.sketch_vars.clone()
+        };
+        let radius_initial_value = radius_guess(&sketch_vars, circular0.center, circular0.start, exec_state, range)?;
+
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() can only be used inside a sketch block".to_owned(),
+                vec![range],
+            )));
+        };
+        let radius_id = sketch_state.next_sketch_var_id();
+        sketch_state.sketch_vars.push(KclValue::SketchVar {
+            value: Box::new(crate::execution::SketchVar {
+                id: radius_id,
+                initial_value: radius_initial_value,
+                ty: sketch_var_ty,
+                meta: vec![],
+            }),
+        });
+        let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
+
+        for circular in [circular0, circular1] {
+            let center = datum_point(circular.center, range)?;
+            let start = datum_point(circular.start, range)?;
+            solver_constraints.push(SolverConstraint::DistanceVar(start, center, radius));
+            if let Some(end) = circular.end {
+                let end = datum_point(end, range)?;
+                solver_constraints.push(SolverConstraint::DistanceVar(end, center, radius));
+            }
+        }
+    }
 
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
@@ -3300,6 +3418,7 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         let constraint = crate::front::Constraint::Symmetric(Symmetric {
             input: vec![input0.object_id(), input1.object_id()],
             axis: axis_line.object_id,
+            constrain_arc_end_points,
         });
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);

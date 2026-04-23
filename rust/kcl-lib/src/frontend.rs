@@ -141,6 +141,7 @@ const HORIZONTAL_FN: &str = "horizontal";
 const RADIUS_FN: &str = "radius";
 const SYMMETRIC_FN: &str = "symmetric";
 const SYMMETRIC_AXIS_PARAM: &str = "axis";
+const SYMMETRIC_CONSTRAIN_ARC_END_POINTS_PARAM: &str = "constrainArcEndPoints";
 const TANGENT_FN: &str = "tangent";
 const VERTICAL_FN: &str = "vertical";
 
@@ -3177,7 +3178,11 @@ impl FrontendState {
         let input1_ast = self.symmetric_input_id_to_ast_reference(input1_id, new_ast)?;
         let axis_ast = self.symmetric_axis_id_to_ast_reference(symmetric.axis, new_ast)?;
 
-        let symmetric_ast = create_symmetric_ast(vec![input0_ast, input1_ast], axis_ast);
+        let symmetric_ast = create_symmetric_ast(
+            vec![input0_ast, input1_ast],
+            axis_ast,
+            symmetric.constrain_arc_end_points,
+        );
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
@@ -3623,10 +3628,7 @@ impl FrontendState {
             Segment::Point(_) => self.point_id_to_ast_reference(segment_id, new_ast),
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
-            _ => Err(KclError::refactor(format!(
-                "Symmetric supports only point/line/arc inputs, got {}",
-                segment.human_friendly_kind_with_article()
-            ))),
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None),
         }
     }
 
@@ -5675,20 +5677,35 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 }
 
 /// Create an AST node for symmetric([input1, input2], axis = line)
-pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
+pub(crate) fn create_symmetric_ast(
+    input_exprs: Vec<ast::Expr>,
+    axis_expr: ast::Expr,
+    constrain_arc_end_points: bool,
+) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
+    let mut arguments = vec![ast::LabeledArg {
+        label: Some(ast::Identifier::new(SYMMETRIC_AXIS_PARAM)),
+        arg: axis_expr,
+    }];
+    if !constrain_arc_end_points {
+        arguments.push(ast::LabeledArg {
+            label: Some(ast::Identifier::new(SYMMETRIC_CONSTRAIN_ARC_END_POINTS_PARAM)),
+            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Bool(false),
+                raw: "false".to_string(),
+                digest: None,
+            }))),
+        });
+    }
 
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
         unlabeled: Some(array_expr),
-        arguments: vec![ast::LabeledArg {
-            label: Some(ast::Identifier::new(SYMMETRIC_AXIS_PARAM)),
-            arg: axis_expr,
-        }],
+        arguments,
         digest: None,
         non_code_meta: Default::default(),
     })))
@@ -9560,6 +9577,7 @@ sketch(on = XY) {
         let constraint = Constraint::Symmetric(Symmetric {
             input: vec![line1_id, line2_id],
             axis: axis_id,
+            constrain_arc_end_points: true,
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)
@@ -9579,6 +9597,63 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             12,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_segments_symmetric_legacy_arc_mode() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
+  arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
+  line(start = [var 0, var -10], end = [var 0, var 10])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arc1_id = *sketch.segments.get(3).unwrap();
+        let arc2_id = *sketch.segments.get(7).unwrap();
+        let axis_id = *sketch.segments.get(10).unwrap();
+
+        let constraint = Constraint::Symmetric(Symmetric {
+            input: vec![arc1_id, arc2_id],
+            axis: axis_id,
+            constrain_arc_end_points: false,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  arc1 = arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
+  arc2 = arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
+  line1 = line(start = [var 0, var -10], end = [var 0, var 10])
+  symmetric([arc1, arc2], axis = line1, constrainArcEndPoints = false)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            14,
             "{:#?}",
             scene_delta.new_graph.objects
         );
