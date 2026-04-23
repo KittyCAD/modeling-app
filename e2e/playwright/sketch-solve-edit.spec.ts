@@ -388,7 +388,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
       await page.waitForTimeout(100)
     })
-    const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+    const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
       format: 'ratio',
     })
     await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {

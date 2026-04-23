@@ -149,7 +149,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -161,7 +161,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
           },
           commandName: 'Extrude',
         })
@@ -174,7 +174,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -186,7 +186,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -1089,7 +1089,7 @@ sketch002 = startSketchOn(plane001)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 profiles' },
+        headerArguments: { Profiles: '2 edges' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1202,7 +1202,7 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1215,7 +1215,7 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1225,7 +1225,7 @@ profile001 = ${circleCode}`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '1 helix',
         },
         stage: 'review',
@@ -2425,7 +2425,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2438,7 +2438,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2454,7 +2454,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2466,7 +2466,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
