@@ -36,6 +36,8 @@ function sketchGraphExtension(
     if (
       onSelectionChange &&
       vu.selectionSet &&
+      // ignore selection changes that are part of a document edit, such as undo/redo
+      !vu.docChanged &&
       // ignore selections dispatched by sketch solve itself to avoid a second refresh
       !vu.transactions.some((tr) =>
         tr.annotation(selectionDispatchedBySketchSolveAnnotation)
