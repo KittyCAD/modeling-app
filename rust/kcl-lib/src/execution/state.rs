@@ -1,6 +1,5 @@
 #[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -93,11 +92,11 @@ pub(super) struct GlobalState {
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    pub constraint_state: HashMap<ConstraintStateKey, ConstraintState>,
+    pub constraint_state: IndexMap<ConstraintKey, ConstraintState>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub(crate) enum ConstraintStateKey {
+pub(crate) enum ConstraintKey {
     LineCircle([usize; 10]),
     CircleCircle([usize; 12]),
 }
@@ -420,11 +419,11 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
-    pub(crate) fn get_constraint_state(&self, key: &ConstraintStateKey) -> Option<ConstraintState> {
+    pub(crate) fn get_constraint_state(&self, key: &ConstraintKey) -> Option<ConstraintState> {
         self.global.constraint_state.get(key).copied()
     }
 
-    pub(crate) fn set_constraint_state(&mut self, key: ConstraintStateKey, state: ConstraintState) {
+    pub(crate) fn set_constraint_state(&mut self, key: ConstraintKey, state: ConstraintState) {
         self.global.constraint_state.insert(key, state);
     }
 

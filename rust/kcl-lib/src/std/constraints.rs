@@ -19,8 +19,8 @@ use crate::execution::Artifact;
 use crate::execution::CodeRef;
 use crate::execution::ConstrainablePoint2d;
 use crate::execution::ConstrainablePoint2dOrOrigin;
+use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
-use crate::execution::ConstraintStateKey;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::SegmentRepr;
@@ -103,14 +103,13 @@ struct ArcVars {
     end: Option<[SketchVarId; 2]>,
 }
 
-fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintStateKey {
-    let mut key = [SketchVarId::INVALID.0; 10];
-    key[0..4].copy_from_slice(&flatten_line_vars(line));
-    key[4..10].copy_from_slice(&flatten_arc_vars(arc));
-    ConstraintStateKey::LineCircle(key)
+fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintKey {
+    let [a0, a1, a2, a3] = flatten_line_vars(line);
+    let [b0, b1, b2, b3, b4, b5] = flatten_arc_vars(arc);
+    ConstraintKey::LineCircle([a0, a1, a2, a3, b0, b1, b2, b3, b4, b5])
 }
 
-fn make_arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintStateKey {
+fn make_arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintKey {
     let flat_a = flatten_arc_vars(arc_a);
     let flat_b = flatten_arc_vars(arc_b);
     let (lhs, rhs) = if flat_a <= flat_b {
@@ -118,27 +117,25 @@ fn make_arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintStateK
     } else {
         (flat_b, flat_a)
     };
-    let mut key = [SketchVarId::INVALID.0; 12];
-    key[0..6].copy_from_slice(&lhs);
-    key[6..12].copy_from_slice(&rhs);
-    ConstraintStateKey::CircleCircle(key)
+    let [a0, a1, a2, a3, a4, a5] = lhs;
+    let [b0, b1, b2, b3, b4, b5] = rhs;
+    ConstraintKey::CircleCircle([a0, a1, a2, a3, a4, a5, b0, b1, b2, b3, b4, b5])
 }
 
 fn flatten_line_vars(line: LineVars) -> [usize; 4] {
-    let mut flat = [SketchVarId::INVALID.0; 4];
-    flat[0..2].copy_from_slice(&line.start.map(|id| id.0));
-    flat[2..4].copy_from_slice(&line.end.map(|id| id.0));
-    flat
+    [line.start[0].0, line.start[1].0, line.end[0].0, line.end[1].0]
 }
 
 fn flatten_arc_vars(arc: ArcVars) -> [usize; 6] {
-    let mut flat = [SketchVarId::INVALID.0; 6];
-    flat[0..2].copy_from_slice(&arc.center.map(|id| id.0));
-    flat[2..4].copy_from_slice(&arc.start.map(|id| id.0));
-    if let Some(end) = arc.end {
-        flat[4..6].copy_from_slice(&end.map(|id| id.0));
-    }
-    flat
+    let end = arc.end.unwrap_or([SketchVarId::INVALID; 2]);
+    [
+        arc.center[0].0,
+        arc.center[1].0,
+        arc.start[0].0,
+        arc.start[1].0,
+        end[0].0,
+        end[1].0,
+    ]
 }
 
 fn infer_line_tangent_side(
