@@ -208,6 +208,7 @@ import type {
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -618,11 +619,19 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'equip tool'
-      data: { tool: EquipTool }
+      data: { tool: EquipTool | ConstraintToolName }
       keepSelection?: boolean
     }
   | {
       type:
+        | 'coincident'
+        | 'Fixed'
+        | 'Tangent'
+        | 'EqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
@@ -633,7 +642,7 @@ export type ModelingMachineEvent =
   | UpdateSketchOutcomeEvent
   | {
       type: 'sketch solve tool changed'
-      data: { tool: EquipTool | null }
+      data: { tool: EquipTool | ConstraintToolName | null }
     }
   | { type: 'delete selected' }
 
@@ -7139,6 +7148,30 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             'unequip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            coincident: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Fixed: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Tangent: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Parallel: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Perpendicular: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            EqualLength: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Vertical: {
+              actions: ['forward event to sketch solve if active'],
+            },
+            Horizontal: {
               actions: ['forward event to sketch solve if active'],
             },
             Dimension: {

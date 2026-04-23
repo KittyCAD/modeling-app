@@ -345,7 +345,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1228,7 +1227,6 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -1501,7 +1499,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1767,7 +1764,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2067,7 +2063,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3221,7 +3216,6 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -3458,7 +3452,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3758,7 +3751,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -4000,7 +3992,6 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

@@ -422,7 +422,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -1908,7 +1907,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2192,7 +2190,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2476,7 +2473,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2760,7 +2756,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3044,7 +3039,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3328,7 +3322,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3612,7 +3605,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3896,7 +3888,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4180,7 +4171,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4464,7 +4454,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4748,7 +4737,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -5032,7 +5020,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -5316,7 +5303,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -5600,7 +5586,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -5884,7 +5869,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6168,7 +6152,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6452,7 +6435,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6736,7 +6718,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7020,7 +7001,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7304,7 +7284,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7588,7 +7567,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7872,7 +7850,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -8156,7 +8133,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -8440,7 +8416,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -8879,7 +8854,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -9313,7 +9287,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -9747,7 +9720,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -10181,7 +10153,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -10615,7 +10586,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -11049,7 +11019,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -11356,7 +11325,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -11640,7 +11608,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -11924,7 +11891,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -12208,7 +12174,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -12492,7 +12457,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -12776,7 +12740,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -13060,7 +13023,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -13344,7 +13306,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -13628,7 +13589,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -13912,7 +13872,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -14196,7 +14155,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -14480,7 +14438,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -14764,7 +14721,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -15048,7 +15004,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -15332,7 +15287,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -15616,7 +15570,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -15900,7 +15853,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -16184,7 +16136,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -16468,7 +16419,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -16752,7 +16702,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -17036,7 +16985,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -17320,7 +17268,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -17604,7 +17551,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -17888,7 +17834,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -17929,10 +17874,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7065,
-            "end": 7070,
+            "commentStart": 7175,
+            "end": 7180,
             "moduleId": 0,
-            "start": 7065,
+            "start": 7175,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -17943,10 +17888,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7141,
-            "end": 7145,
+            "commentStart": 7251,
+            "end": 7255,
             "moduleId": 0,
-            "start": 7141,
+            "start": 7251,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -17957,10 +17902,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7292,
-            "end": 7297,
+            "commentStart": 7402,
+            "end": 7407,
             "moduleId": 0,
-            "start": 7292,
+            "start": 7402,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -17971,10 +17916,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7413,
-            "end": 7417,
+            "commentStart": 7523,
+            "end": 7527,
             "moduleId": 0,
-            "start": 7413,
+            "start": 7523,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -17985,10 +17930,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7572,
-            "end": 7577,
+            "commentStart": 7682,
+            "end": 7687,
             "moduleId": 0,
-            "start": 7572,
+            "start": 7682,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -17999,10 +17944,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7694,
-            "end": 7698,
+            "commentStart": 7804,
+            "end": 7808,
             "moduleId": 0,
-            "start": 7694,
+            "start": 7804,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -18013,10 +17958,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7848,
-            "end": 7853,
+            "commentStart": 7958,
+            "end": 7963,
             "moduleId": 0,
-            "start": 7848,
+            "start": 7958,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -18027,10 +17972,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7963,
-            "end": 7967,
+            "commentStart": 8073,
+            "end": 8077,
             "moduleId": 0,
-            "start": 7963,
+            "start": 8073,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -18052,10 +17997,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7065,
-              "end": 7070,
+              "commentStart": 7175,
+              "end": 7180,
               "moduleId": 0,
-              "start": 7065,
+              "start": 7175,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -18082,10 +18027,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7141,
-              "end": 7145,
+              "commentStart": 7251,
+              "end": 7255,
               "moduleId": 0,
-              "start": 7141,
+              "start": 7251,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -18106,10 +18051,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.75
             ],
             "tag": {
-              "commentStart": 7292,
-              "end": 7297,
+              "commentStart": 7402,
+              "end": 7407,
               "moduleId": 0,
-              "start": 7292,
+              "start": 7402,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -18136,10 +18081,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7413,
-              "end": 7417,
+              "commentStart": 7523,
+              "end": 7527,
               "moduleId": 0,
-              "start": 7413,
+              "start": 7523,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -18160,10 +18105,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 7572,
-              "end": 7577,
+              "commentStart": 7682,
+              "end": 7687,
               "moduleId": 0,
-              "start": 7572,
+              "start": 7682,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -18190,10 +18135,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7694,
-              "end": 7698,
+              "commentStart": 7804,
+              "end": 7808,
               "moduleId": 0,
-              "start": 7694,
+              "start": 7804,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -18214,10 +18159,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               122.25
             ],
             "tag": {
-              "commentStart": 7848,
-              "end": 7853,
+              "commentStart": 7958,
+              "end": 7963,
               "moduleId": 0,
-              "start": 7848,
+              "start": 7958,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -18244,10 +18189,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7963,
-              "end": 7967,
+              "commentStart": 8073,
+              "end": 8077,
               "moduleId": 0,
-              "start": 7963,
+              "start": 8073,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -18342,7 +18287,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -18418,10 +18362,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7065,
-            "end": 7070,
+            "commentStart": 7175,
+            "end": 7180,
             "moduleId": 0,
-            "start": 7065,
+            "start": 7175,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -18448,10 +18392,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7141,
-            "end": 7145,
+            "commentStart": 7251,
+            "end": 7255,
             "moduleId": 0,
-            "start": 7141,
+            "start": 7251,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -18472,10 +18416,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             3.75
           ],
           "tag": {
-            "commentStart": 7292,
-            "end": 7297,
+            "commentStart": 7402,
+            "end": 7407,
             "moduleId": 0,
-            "start": 7292,
+            "start": 7402,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -18502,10 +18446,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7413,
-            "end": 7417,
+            "commentStart": 7523,
+            "end": 7527,
             "moduleId": 0,
-            "start": 7413,
+            "start": 7523,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -18526,10 +18470,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             126.0
           ],
           "tag": {
-            "commentStart": 7572,
-            "end": 7577,
+            "commentStart": 7682,
+            "end": 7687,
             "moduleId": 0,
-            "start": 7572,
+            "start": 7682,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -18556,10 +18500,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7694,
-            "end": 7698,
+            "commentStart": 7804,
+            "end": 7808,
             "moduleId": 0,
-            "start": 7694,
+            "start": 7804,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -18580,10 +18524,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             122.25
           ],
           "tag": {
-            "commentStart": 7848,
-            "end": 7853,
+            "commentStart": 7958,
+            "end": 7963,
             "moduleId": 0,
-            "start": 7848,
+            "start": 7958,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -18610,10 +18554,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7963,
-            "end": 7967,
+            "commentStart": 8073,
+            "end": 8077,
             "moduleId": 0,
-            "start": 7963,
+            "start": 8073,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -18708,7 +18652,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -20073,10 +20016,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7065,
-                    "end": 7070,
+                    "commentStart": 7175,
+                    "end": 7180,
                     "moduleId": 0,
-                    "start": 7065,
+                    "start": 7175,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -20103,10 +20046,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7141,
-                    "end": 7145,
+                    "commentStart": 7251,
+                    "end": 7255,
                     "moduleId": 0,
-                    "start": 7141,
+                    "start": 7251,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -20127,10 +20070,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     3.75
                   ],
                   "tag": {
-                    "commentStart": 7292,
-                    "end": 7297,
+                    "commentStart": 7402,
+                    "end": 7407,
                     "moduleId": 0,
-                    "start": 7292,
+                    "start": 7402,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -20157,10 +20100,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7413,
-                    "end": 7417,
+                    "commentStart": 7523,
+                    "end": 7527,
                     "moduleId": 0,
-                    "start": 7413,
+                    "start": 7523,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -20181,10 +20124,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     126.0
                   ],
                   "tag": {
-                    "commentStart": 7572,
-                    "end": 7577,
+                    "commentStart": 7682,
+                    "end": 7687,
                     "moduleId": 0,
-                    "start": 7572,
+                    "start": 7682,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -20211,10 +20154,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7694,
-                    "end": 7698,
+                    "commentStart": 7804,
+                    "end": 7808,
                     "moduleId": 0,
-                    "start": 7694,
+                    "start": 7804,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -20235,10 +20178,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     122.25
                   ],
                   "tag": {
-                    "commentStart": 7848,
-                    "end": 7853,
+                    "commentStart": 7958,
+                    "end": 7963,
                     "moduleId": 0,
-                    "start": 7848,
+                    "start": 7958,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -20265,10 +20208,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7963,
-                    "end": 7967,
+                    "commentStart": 8073,
+                    "end": 8077,
                     "moduleId": 0,
-                    "start": 7963,
+                    "start": 8073,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -20580,7 +20523,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -20871,7 +20813,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -21155,7 +21096,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -21439,7 +21379,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -21723,7 +21662,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -22874,7 +22812,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23158,7 +23095,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23442,7 +23378,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23726,7 +23661,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -24162,7 +24096,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -24477,7 +24410,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -26558,7 +26490,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -26842,7 +26773,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -27126,7 +27056,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

@@ -342,7 +342,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1286,7 +1285,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -2748,7 +2746,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -2922,7 +2919,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3216,7 +3212,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3458,7 +3453,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3700,7 +3694,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3942,7 +3935,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4184,7 +4176,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4426,7 +4417,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4670,7 +4660,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5645,7 +5634,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -5885,7 +5873,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6127,7 +6114,6 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",

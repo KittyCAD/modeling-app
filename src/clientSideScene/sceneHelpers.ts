@@ -11,8 +11,9 @@ export function disposeGroupChildren(rootGroup: Group): void {
   // Recursively traverse and dispose of child objects
   for (let i = rootGroup.children.length - 1; i >= 0; i--) {
     const child = rootGroup.children[i]
-    rootGroup.remove(child)
     disposeObject(child)
+    // After disposing resources, remove the child from the group
+    rootGroup.remove(child)
   }
 }
 

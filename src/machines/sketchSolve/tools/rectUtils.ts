@@ -1,5 +1,6 @@
 import type RustContext from '@src/lib/rustContext'
 import type {
+  ApiConstraint,
   SceneGraphDelta,
   SourceDelta,
   SegmentCtor,
@@ -893,9 +894,7 @@ async function addSingleLineConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    type === 'Horizontal'
-      ? { type: 'Horizontal', line }
-      : { type: 'Vertical', line },
+    { type, line } as ApiConstraint,
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)
