@@ -21,10 +21,6 @@ color = 240.0
 # Use millimeters as the default measurement unit
 base_unit = "mm"
 
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
-
 ```
 
 ## Available Settings
@@ -250,30 +246,6 @@ The directory to save and load projects from.
 **Default:** None
 
 
-#### text_editor
-
-Settings that affect the behavior of the KCL text editor.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### blinking_cursor
-
-Whether to make the cursor blink in the editor.
-
-
-**Default:** None
-
-##### text_wrapping
-
-Whether to wrap text in the editor or overflow with scroll.
-
-
-**Default:** None
-
-
 
 
 ## Complete Example
@@ -290,9 +262,5 @@ color = 240.0
 [settings.modeling]
 # Use millimeters as the default measurement unit
 base_unit = "mm"
-
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
 
 ```

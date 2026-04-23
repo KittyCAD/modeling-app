@@ -2,6 +2,7 @@ import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
 import {
@@ -37,6 +38,7 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { isArray } from '@src/lib/utils'
 
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
@@ -137,6 +139,56 @@ function compactRecord<T extends Record<string, unknown>>(
   return Object.keys(compacted).length > 0 ? compacted : undefined
 }
 
+type TomlJsonObject = { [key: string]: JsonValue }
+
+// App-owned settings sections are serialized through Rust as opaque TOML
+// subtrees so the app can evolve them without changing the CLI/KCL schema.
+// `text_editor` is the first migrated section and is a good template for
+// future plugin-owned settings bundles.
+const APP_OWNED_TEXT_EDITOR_SECTION_KEY = 'text_editor'
+
+function asTomlJsonObject(value: unknown): TomlJsonObject | undefined {
+  if (!value || typeof value !== 'object' || isArray(value)) {
+    return undefined
+  }
+
+  return value as TomlJsonObject
+}
+
+function getUnknownSettingsSection(
+  settings: unknown,
+  key: string
+): TomlJsonObject | undefined {
+  const settingsObject = asTomlJsonObject(settings)
+  return asTomlJsonObject(settingsObject?.[key])
+}
+
+function textEditorSectionToSettingsPayload(
+  section: TomlJsonObject | undefined
+): DeepPartial<SaveSettingsPayload>['textEditor'] {
+  return {
+    textWrapping:
+      typeof section?.text_wrapping === 'boolean'
+        ? section.text_wrapping
+        : undefined,
+    blinkingCursor:
+      typeof section?.blinking_cursor === 'boolean'
+        ? section.blinking_cursor
+        : undefined,
+  }
+}
+
+function settingsPayloadTextEditorToTomlSection(
+  configuration: DeepPartial<SaveSettingsPayload>
+): TomlJsonObject | undefined {
+  return compactRecord({
+    text_wrapping: toUndefinedIfNull(configuration?.textEditor?.textWrapping),
+    blinking_cursor: toUndefinedIfNull(
+      configuration?.textEditor?.blinkingCursor
+    ),
+  }) as TomlJsonObject | undefined
+}
+
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
@@ -145,6 +197,13 @@ function compactRecord<T extends Record<string, unknown>>(
 export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>
 ): DeepPartial<SaveSettingsPayload> {
+  const textEditor = textEditorSectionToSettingsPayload(
+    getUnknownSettingsSection(
+      configuration?.settings,
+      APP_OWNED_TEXT_EDITOR_SECTION_KEY
+    )
+  )
+
   return {
     app: {
       theme: configuration?.settings?.app?.appearance?.theme
@@ -219,14 +278,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.modeling?.snaps_per_minor
       ),
     },
-    textEditor: {
-      textWrapping: toUndefinedIfNull(
-        configuration?.settings?.text_editor?.text_wrapping
-      ),
-      blinkingCursor: toUndefinedIfNull(
-        configuration?.settings?.text_editor?.blinking_cursor
-      ),
-    },
+    textEditor,
     projects: {
       defaultProjectName: toUndefinedIfNull(
         configuration?.settings?.project?.default_project_name
@@ -291,12 +343,7 @@ export function settingsPayloadToConfiguration(
     snaps_per_minor: toUndefinedIfNull(configuration?.modeling?.snapsPerMinor),
   })
 
-  const textEditor = compactRecord({
-    text_wrapping: toUndefinedIfNull(configuration?.textEditor?.textWrapping),
-    blinking_cursor: toUndefinedIfNull(
-      configuration?.textEditor?.blinkingCursor
-    ),
-  })
+  const textEditor = settingsPayloadTextEditorToTomlSection(configuration)
 
   const project = compactRecord({
     directory: toUndefinedIfNull(configuration?.app?.projectDirectory),
@@ -314,9 +361,13 @@ export function settingsPayloadToConfiguration(
   const settings = compactRecord({
     app,
     modeling,
-    text_editor: textEditor,
     project,
     command_bar: commandBar,
+    ...(textEditor
+      ? {
+          [APP_OWNED_TEXT_EDITOR_SECTION_KEY]: textEditor,
+        }
+      : {}),
   })
 
   return {
@@ -364,6 +415,13 @@ function deepPartialNamedViewsToNamedViews(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
+  const textEditor = textEditorSectionToSettingsPayload(
+    getUnknownSettingsSection(
+      configuration?.settings,
+      APP_OWNED_TEXT_EDITOR_SECTION_KEY
+    )
+  )
+
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
@@ -403,12 +461,7 @@ export function projectConfigurationToSettingsPayload(
         configuration?.settings?.modeling?.snaps_per_minor
       ),
     },
-    textEditor: {
-      textWrapping:
-        configuration?.settings?.text_editor?.text_wrapping ?? undefined,
-      blinkingCursor:
-        configuration?.settings?.text_editor?.blinking_cursor ?? undefined,
-    },
+    textEditor,
     commandBar: {
       includeSettings:
         configuration?.settings?.command_bar?.include_settings ?? undefined,
@@ -446,10 +499,7 @@ export function settingsPayloadToProjectConfiguration(
     snaps_per_minor: configuration?.modeling?.snapsPerMinor,
   })
 
-  const textEditor = compactRecord({
-    text_wrapping: configuration?.textEditor?.textWrapping,
-    blinking_cursor: configuration?.textEditor?.blinkingCursor,
-  })
+  const textEditor = settingsPayloadTextEditorToTomlSection(configuration)
 
   const commandBar = compactRecord({
     include_settings: configuration?.commandBar?.includeSettings,
@@ -459,8 +509,12 @@ export function settingsPayloadToProjectConfiguration(
     meta,
     app,
     modeling,
-    text_editor: textEditor,
     command_bar: commandBar,
+    ...(textEditor
+      ? {
+          [APP_OWNED_TEXT_EDITOR_SECTION_KEY]: textEditor,
+        }
+      : {}),
   })
 
   return {
@@ -472,33 +526,34 @@ export function mergeProjectConfiguration(
   existingConfiguration: DeepPartial<ProjectConfiguration>,
   updatedConfiguration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<ProjectConfiguration> {
+  const existingSettings =
+    asTomlJsonObject(existingConfiguration.settings) ?? {}
+  const updatedSettings = asTomlJsonObject(updatedConfiguration.settings) ?? {}
+  const settings = {
+    ...existingSettings,
+    ...updatedSettings,
+    meta: {
+      ...existingConfiguration.settings?.meta,
+      ...updatedConfiguration.settings?.meta,
+    },
+    app: {
+      ...existingConfiguration.settings?.app,
+      ...updatedConfiguration.settings?.app,
+    },
+    modeling: {
+      ...existingConfiguration.settings?.modeling,
+      ...updatedConfiguration.settings?.modeling,
+    },
+    command_bar: {
+      ...existingConfiguration.settings?.command_bar,
+      ...updatedConfiguration.settings?.command_bar,
+    },
+  } as DeepPartial<ProjectConfiguration>['settings']
+
   return {
     ...existingConfiguration,
     ...updatedConfiguration,
-    settings: {
-      ...existingConfiguration.settings,
-      ...updatedConfiguration.settings,
-      meta: {
-        ...existingConfiguration.settings?.meta,
-        ...updatedConfiguration.settings?.meta,
-      },
-      app: {
-        ...existingConfiguration.settings?.app,
-        ...updatedConfiguration.settings?.app,
-      },
-      modeling: {
-        ...existingConfiguration.settings?.modeling,
-        ...updatedConfiguration.settings?.modeling,
-      },
-      text_editor: {
-        ...existingConfiguration.settings?.text_editor,
-        ...updatedConfiguration.settings?.text_editor,
-      },
-      command_bar: {
-        ...existingConfiguration.settings?.command_bar,
-        ...updatedConfiguration.settings?.command_bar,
-      },
-    },
+    settings,
   }
 }
 
@@ -506,18 +561,19 @@ export function replaceProjectSettingsPreservingMetadata(
   existingConfiguration: DeepPartial<ProjectConfiguration>,
   updatedConfiguration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<ProjectConfiguration> {
+  const updatedSettings = asTomlJsonObject(updatedConfiguration.settings)
   const meta = compactRecord({
     ...existingConfiguration.settings?.meta,
     ...updatedConfiguration.settings?.meta,
   })
 
   const settings = compactRecord({
+    ...updatedSettings,
     meta,
     app: updatedConfiguration.settings?.app,
     modeling: updatedConfiguration.settings?.modeling,
-    text_editor: updatedConfiguration.settings?.text_editor,
     command_bar: updatedConfiguration.settings?.command_bar,
-  })
+  }) as DeepPartial<ProjectConfiguration>['settings'] | undefined
 
   return {
     ...existingConfiguration,
