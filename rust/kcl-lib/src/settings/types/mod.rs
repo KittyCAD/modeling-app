@@ -284,28 +284,6 @@ impl From<bool> for DefaultTrue {
     }
 }
 
-/// The types of controls for how to navigate the 3D view.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum MouseControlType {
-    #[default]
-    #[display("zoo")]
-    #[serde(rename = "zoo")]
-    Zoo,
-    #[display("onshape")]
-    #[serde(rename = "onshape")]
-    OnShape,
-    TrackpadFriendly,
-    Solidworks,
-    Nx,
-    Creo,
-    #[display("autocad")]
-    #[serde(rename = "autocad")]
-    AutoCad,
-}
-
 /// The types of camera projection for the 3D view.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
@@ -332,85 +310,6 @@ pub enum CameraOrbitType {
     /// Orbit using a trackball camera movement.
     #[display("trackball")]
     Trackball,
-}
-
-/// Which type of orientation gizmo to use.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum GizmoType {
-    /// 3D cube gizmo
-    #[default]
-    Cube,
-    /// 3-axis gizmo
-    Axis,
-}
-
-/// The types of onboarding status.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum OnboardingStatus {
-    /// The unset state.
-    #[serde(rename = "")]
-    #[display("")]
-    Unset,
-    /// The user has completed onboarding.
-    Completed,
-    /// The user has not completed onboarding.
-    #[default]
-    Incomplete,
-    /// The user has dismissed onboarding.
-    Dismissed,
-
-    // Desktop Routes
-    #[serde(rename = "/desktop")]
-    #[display("/desktop")]
-    DesktopWelcome,
-    #[serde(rename = "/desktop/scene")]
-    #[display("/desktop/scene")]
-    DesktopScene,
-    #[serde(rename = "/desktop/toolbar")]
-    #[display("/desktop/toolbar")]
-    DesktopToolbar,
-    #[serde(rename = "/desktop/text-to-cad")]
-    #[display("/desktop/text-to-cad")]
-    DesktopTextToCadWelcome,
-    #[serde(rename = "/desktop/text-to-cad-prompt")]
-    #[display("/desktop/text-to-cad-prompt")]
-    DesktopTextToCadPrompt,
-    #[serde(rename = "/desktop/feature-tree-pane")]
-    #[display("/desktop/feature-tree-pane")]
-    DesktopFeatureTreePane,
-    #[serde(rename = "/desktop/code-pane")]
-    #[display("/desktop/code-pane")]
-    DesktopCodePane,
-    #[serde(rename = "/desktop/project-pane")]
-    #[display("/desktop/project-pane")]
-    DesktopProjectFilesPane,
-    #[serde(rename = "/desktop/other-panes")]
-    #[display("/desktop/other-panes")]
-    DesktopOtherPanes,
-    #[serde(rename = "/desktop/prompt-to-edit")]
-    #[display("/desktop/prompt-to-edit")]
-    DesktopPromptToEditWelcome,
-    #[serde(rename = "/desktop/prompt-to-edit-prompt")]
-    #[display("/desktop/prompt-to-edit-prompt")]
-    DesktopPromptToEditPrompt,
-    #[serde(rename = "/desktop/prompt-to-edit-result")]
-    #[display("/desktop/prompt-to-edit-result")]
-    DesktopPromptToEditResult,
-    #[serde(rename = "/desktop/imports")]
-    #[display("/desktop/imports")]
-    DesktopImports,
-    #[serde(rename = "/desktop/exports")]
-    #[display("/desktop/exports")]
-    DesktopExports,
-    #[serde(rename = "/desktop/conclusion")]
-    #[display("/desktop/conclusion")]
-    DesktopConclusion,
 }
 
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {
