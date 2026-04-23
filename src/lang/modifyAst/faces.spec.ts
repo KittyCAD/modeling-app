@@ -955,6 +955,87 @@ hole002 = hole::hole(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a simple hole call on the last cap of a chained solid with an existing hole', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 5, tag = $seg04)
+  |> xLine(length = 5, tag = $seg02)
+  |> yLine(length = -5, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
+  |> close()
+extrude001 = extrude(profile001, length = 2)
+sketch002 = startSketchOn(extrude001, face = END)
+profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)
+extrude002 = extrude(profile002, length = 1)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 2.5)
+fillet002 = fillet(extrude001, tags = getCommonEdge(faces = [seg03, seg04]), radius = 2.5)
+chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg03, seg01]), length = 1)
+hole001 = hole::hole(
+  extrude002,
+  face = END,
+  cutAt = [2, 2],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::simple(),
+)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const endCap = [...artifactGraph.values()]
+        .filter(
+          (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+        )
+        .at(-1)
+      if (!endCap) {
+        throw new Error('Could not find expected end cap selection')
+      }
+      const face = createSelectionFromArtifacts([endCap], artifactGraph)
+
+      const cutAt = (await stringToKclExpression(
+        '[3, 3]',
+        rustContextInThisFile,
+        { allowArrays: true }
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `hole002 = hole::hole(
+  hole001,
+  face = capEnd001,
+  cutAt = [3, 3],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::simple(),
+)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a counterbore hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
