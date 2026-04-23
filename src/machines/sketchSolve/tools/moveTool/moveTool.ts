@@ -25,7 +25,9 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
+  isControlPointSplineSegment,
   isConstraint,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -85,10 +87,6 @@ type ClosestSelectionTarget = {
   apiObject: ApiObject | null
 }
 
-// This is only a settlement latch for "there is a preview solve in flight".
-// It is not used to carry a value or an error, so a reject path would not add
-// useful semantics here. `onDragEnd` only needs to wait until the preview solve
-// has finished its `finally` cleanup before finalizing the drag.
 type DeferredVoid = {
   promise: Promise<void>
   resolve: () => void
@@ -103,7 +101,7 @@ function createDeferredVoid(): DeferredVoid {
   return { promise, resolve }
 }
 
-export function getClosestSelectionTarget(
+function getClosestSelectionTarget(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
@@ -194,6 +192,10 @@ function buildSegmentCtorWithDrag({
     return null
   }
 
+  if (isOwnedLineSegment(obj)) {
+    return null
+  }
+
   if (baseCtor.type === 'Point') {
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
@@ -261,6 +263,14 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       construction: baseCtor.construction,
     }
+  } else if (baseCtor.type === 'ControlPointSpline') {
+    return {
+      type: 'ControlPointSpline',
+      points: baseCtor.points.map((point) =>
+        applyVectorToPoint2D(point, dragVec)
+      ),
+      construction: baseCtor.construction,
+    }
   }
 
   return baseCtor
@@ -308,11 +318,23 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedPointIds = new Set<number>(coincidentPointIds)
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
     if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
+
+  const ownerId = draggedObject.kind.segment.owner
+  if (ownerId !== null) {
+    const ownerObject = sceneGraphDelta.new_graph.objects[ownerId]
+    if (isControlPointSplineSegment(ownerObject)) {
+      ownerObject.kind.segment.controls.forEach((controlId) => {
+        excludedPointIds.add(controlId)
+      })
+      excludedSegmentIds.add(ownerObject.id)
     }
   }
 
@@ -326,13 +348,26 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (candidate.target.type === 'point') {
-          return !coincidentPointIds.includes(candidate.target.id)
+          return !excludedPointIds.has(candidate.target.id)
         }
 
         const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          (isPointSegment(snapTargetSegment) ||
+            isOwnedLineSegment(snapTargetSegment)) &&
+          snapTargetSegment.kind.segment.owner != null
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
         return (
-          snapTargetSegmentId === null ||
-          !excludedSegmentIds.has(snapTargetSegmentId)
+          !excludedSegmentIds.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIds.has(snapTargetOwnerId))
         )
       }
     ) ?? null
@@ -406,35 +441,11 @@ function buildPreviewOutcomeWithPreservedGeometry({
   }
 }
 
-type CreateOnDragStartCallbackArgs = {
-  // Seeds the drag anchor used to compute relative drag vectors.
-  setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  // Captures the object currently being dragged at drag start.
-  setDraggedEntityId: (entityId: number | null) => void
-  // Clears any previously cached valid preview from an earlier drag session.
-  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
-  // Stores the frontend sketch outcome at drag start for preview fallback.
-  setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
-  // Stores the committed Rust checkpoint so invalid releases can restore to it.
-  setPreDragCheckpointId: (checkpointId: number | null) => void
-  // Starts a fresh drag session so stale preview responses can be ignored.
-  beginDragSession: () => void
-  // Reads the current frontend sketch outcome at the moment drag begins.
-  getCurrentSketchOutcome: () => DragSketchOutcome | null
-  // Reads the currently committed checkpoint backing undo/redo.
-  getCurrentCommittedCheckpointId: () => number | null
-  // Reads the hovered selection id so drag start can lock onto it.
-  getHoveredId: () => SketchSolveSelectionId | null
-  // Clears transient hover UI that should not remain visible during drag.
-  dismissConstraintHoverPopup: () => void
-}
-
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
- * Captures the drag baseline used by preview and recovery logic:
- * - the current frontend sketch outcome
- * - the current committed Rust checkpoint
- * - the hovered entity being dragged
+ * Handles initialization of drag state.
+ *
+ * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
@@ -447,7 +458,18 @@ export function createOnDragStartCallback({
   getCurrentCommittedCheckpointId,
   getHoveredId,
   dismissConstraintHoverPopup,
-}: CreateOnDragStartCallbackArgs): (arg: {
+}: {
+  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  setDraggedEntityId: (entityId: number | null) => void
+  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
+  setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
+  setPreDragCheckpointId: (checkpointId: number | null) => void
+  beginDragSession: () => void
+  getCurrentSketchOutcome: () => DragSketchOutcome | null
+  getCurrentCommittedCheckpointId: () => number | null
+  getHoveredId: () => SketchSolveSelectionId | null
+  dismissConstraintHoverPopup: () => void
+}): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent

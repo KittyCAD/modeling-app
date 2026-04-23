@@ -37,6 +37,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
 use crate::front::ObjectId;
@@ -810,13 +811,6 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
-    /// If this sketch represents a region created from `region()`, the origin
-    /// sketch ID is the ID of the sketch block it was created from. None,
-    /// otherwise. This field corresponds to the `origin_path_id` of the `Path`
-    /// artifact.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
-    pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
@@ -2142,6 +2136,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<UnsolvedPoint2dExpr>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 impl UnsolvedSegmentKind {
@@ -2153,6 +2155,7 @@ impl UnsolvedSegmentKind {
             Self::Line { .. } => "a Line",
             Self::Arc { .. } => "an Arc",
             Self::Circle { .. } => "a Circle",
+            Self::ControlPointSpline { .. } => "a Control Point Spline",
         }
     }
 }
@@ -2185,6 +2188,7 @@ impl Segment {
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+            SegmentKind::ControlPointSpline { construction, .. } => *construction,
         }
     }
 }
@@ -2237,6 +2241,16 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    ControlPointSpline {
+        controls: Vec<[TyF64; 2]>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        control_freedoms: Vec<Option<Freedom>>,
+        degree: u32,
         construction: bool,
     },
 }

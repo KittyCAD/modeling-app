@@ -183,13 +183,13 @@ boreHoles = startSketchOn(XZ)
 crankBore = circle(boreHoles, center = polar(angle = crankPos, length = stroke / 2), radius = crankRadius)
   |> extrude(length = 54, symmetric = true)
 wristPinHole = circle(
-  boreHoles,
-  center = [
-    0,
-    stroke / 2 * sin(crankPos) + sqrt(rodLength ^ 2 - ((stroke / 2 * cos(crankPos)) ^ 2))
-  ],
-  radius = pistonHeight / 10,
-)
+       boreHoles,
+       center = [
+         0,
+         stroke / 2 * sin(crankPos) + sqrt(rodLength ^ 2 - ((stroke / 2 * cos(crankPos)) ^ 2))
+       ],
+       radius = pistonHeight / 10,
+     )
   |> extrude(length = 54, symmetric = true)
 
 // Subtract out the bore holes

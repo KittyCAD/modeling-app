@@ -68,8 +68,8 @@ description: Artifact commands bone-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.19122595237832,
-          "y": 8.370509403550031,
+          "x": 23.191225952417458,
+          "y": 8.370509403530415,
           "z": 0.0
         }
       }
@@ -90,17 +90,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 142.8989461285995,
-            "y": 0.000220865421638905
+            "x": 142.89894612863878,
+            "y": 0.0002208654036692792
           },
-          "radius": 119.99999999999999,
+          "radius": 120.00000000000001,
           "start": {
             "unit": "degrees",
-            "value": 176.00023372070646
+            "value": 176.00023372070726
           },
           "end": {
             "unit": "degrees",
-            "value": 180.0001054554708
+            "value": 180.00010545546223
           },
           "relative": false
         }
@@ -113,8 +113,8 @@ description: Artifact commands bone-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.19122595237832,
-          "y": 8.370509403550031,
+          "x": 23.191225952417458,
+          "y": 8.370509403530415,
           "z": 0.0
         }
       }
@@ -128,17 +128,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 20.692691736933597,
-            "y": 12.701482362857444
+            "x": 20.692691736990263,
+            "y": 12.70148236284794
           },
           "radius": 5.0,
           "start": {
             "unit": "degrees",
-            "value": -60.01939321058574
+            "value": -60.01939321081763
           },
           "end": {
             "unit": "degrees",
-            "value": 54.040407209838584
+            "value": 54.04040720940382
           },
           "relative": false
         }
@@ -153,17 +153,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 143.62876450751517,
-            "y": 16.75012294005776
+            "x": 143.62876450760254,
+            "y": 16.750122940074526
           },
           "radius": 120.00000000000001,
           "start": {
             "unit": "degrees",
-            "value": -179.99929145821397
+            "value": -179.9992914581908
           },
           "end": {
             "unit": "degrees",
-            "value": -183.99942778537616
+            "value": -183.99942778527088
           },
           "relative": false
         }
@@ -178,17 +178,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 21.418011263455615,
-            "y": 29.44810731899143
+            "x": 21.418011262191417,
+            "y": 29.448107318015584
           },
-          "radius": 5.000000000000002,
+          "radius": 5.0,
           "start": {
             "unit": "degrees",
-            "value": -59.96051320354825
+            "value": -59.96051318586088
           },
           "end": {
             "unit": "degrees",
-            "value": 53.9607989188809
+            "value": 53.96079895122908
           },
           "relative": false
         }
@@ -203,17 +203,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 144.3597044310268,
-            "y": 33.49018406206224
+            "x": 144.35970442747998,
+            "y": 33.49018406057919
           },
-          "radius": 119.99999999999999,
+          "radius": 120.00000000000001,
           "start": {
             "unit": "degrees",
-            "value": 179.99952420424947
+            "value": 179.99952420321432
           },
           "end": {
             "unit": "degrees",
-            "value": 176.00097742876
+            "value": 176.00097742711802
           },
           "relative": false
         }
@@ -228,17 +228,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 22.160225131595226,
-            "y": 46.193855666783364
+            "x": 22.160225140465602,
+            "y": 46.19385567573026
           },
-          "radius": 5.0000000000008225,
+          "radius": 5.000000000000825,
           "start": {
             "unit": "degrees",
-            "value": -60.11041852422877
+            "value": -60.11041868518004
           },
           "end": {
             "unit": "degrees",
-            "value": 54.002352439373844
+            "value": 54.00235215984594
           },
           "relative": false
         }
@@ -253,17 +253,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 195.09898530457033,
-            "y": 50.240178377892434
+            "x": 195.09898533317718,
+            "y": 50.24017819111911
           },
           "radius": 169.99999999999997,
           "start": {
             "unit": "degrees",
-            "value": -179.99962350715455
+            "value": -179.99962356828678
           },
           "end": {
             "unit": "degrees",
-            "value": -185.99998557146895
+            "value": -185.99998565380574
           },
           "relative": false
         }
@@ -278,17 +278,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 56.86085065387256,
-            "y": 64.77352671147847
+            "x": 56.86085069792392,
+            "y": 64.77352667153247
           },
-          "radius": 31.000000000003674,
+          "radius": 31.000000000003666,
           "start": {
             "unit": "degrees",
-            "value": 174.0073119784549
+            "value": 174.0073117998016
           },
           "end": {
             "unit": "degrees",
-            "value": 119.11038587491329
+            "value": 119.11038577014796
           },
           "relative": false
         }
@@ -303,17 +303,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 27.427156391313616,
-            "y": 117.63095420410833
+            "x": 27.427156492183858,
+            "y": 117.6309541958011
           },
-          "radius": 29.500000000081112,
+          "radius": 29.5000000000811,
           "start": {
             "unit": "degrees",
-            "value": -60.88778714028948
+            "value": -60.88778715650771
           },
           "end": {
             "unit": "degrees",
-            "value": -1.070214700504677
+            "value": -1.0702146881956611
           },
           "relative": false
         }
@@ -328,8 +328,8 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 57.348846468384146,
-            "y": 139.8294222452517,
+            "x": 57.348846467699005,
+            "y": 139.8294222387674,
             "z": 0.0
           },
           "relative": false
@@ -345,17 +345,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 59.15285555682781,
-            "y": 139.79567529377346
+            "x": 59.15285555482421,
+            "y": 139.79567529524041
           },
-          "radius": 1.8043247068976838,
+          "radius": 1.8043247054307374,
           "start": {
             "unit": "degrees",
-            "value": 178.92831338334904
+            "value": 178.9283136350116
           },
           "end": {
             "unit": "degrees",
-            "value": 8.010457135605305
+            "value": 8.01045713184069
           },
           "relative": false
         }
@@ -370,8 +370,8 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 64.4667732788738,
-            "y": 114.98970137930519,
+            "x": 64.46677327512953,
+            "y": 114.98970137534143,
             "z": 0.0
           },
           "relative": false
@@ -388,16 +388,16 @@ description: Artifact commands bone-plate.kcl
           "type": "arc",
           "center": {
             "x": 35.10000000000017,
-            "y": 112.18923227801278
+            "y": 112.18923223478517
           },
-          "radius": 29.500000000001013,
+          "radius": 29.50000000000101,
           "start": {
             "unit": "degrees",
-            "value": 5.447357432647436
+            "value": 5.447357509252825
           },
           "end": {
             "unit": "degrees",
-            "value": -63.40180622783642
+            "value": -63.401806251212136
           },
           "relative": false
         }
@@ -412,17 +412,17 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 59.42926986880461,
-            "y": 63.59934831319127
+            "x": 59.429269846951854,
+            "y": 63.59934828858738
           },
-          "radius": 24.840502359616764,
+          "radius": 24.840502333179856,
           "start": {
             "unit": "degrees",
-            "value": 116.59651154756459
+            "value": 116.59651154948615
           },
           "end": {
             "unit": "degrees",
-            "value": 170.33495627962745
+            "value": 170.3349562168468
           },
           "relative": false
         }
@@ -454,8 +454,8 @@ description: Artifact commands bone-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.89894612880278,
-            "y": 0.000000000000039332382700186517,
+            "x": 22.898946128842045,
+            "y": 0.00000000000003888057953874472,
             "z": 0.0
           },
           "relative": false

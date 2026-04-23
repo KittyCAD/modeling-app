@@ -91,7 +91,7 @@ description: Artifact commands engine-valve.kcl
           "type": "line",
           "end": {
             "x": -2.999999999999771,
-            "y": 14.999999865683069,
+            "y": 14.999999865680554,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands engine-valve.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -15.488197624933699,
-            "y": 14.992140143685473
+            "x": -15.48819762751865,
+            "y": 14.992140149064285
           },
-          "radius": 12.488200098278185,
+          "radius": 12.48820010085975,
           "start": {
             "unit": "degrees",
-            "value": 0.03606035495862614
+            "value": 0.03606033026167238
           },
           "end": {
             "unit": "degrees",
-            "value": -73.80008054095836
+            "value": -73.80008052962467
           },
           "relative": false
         }
@@ -132,17 +132,17 @@ description: Artifact commands engine-valve.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.778324637402692,
-            "y": -1.2202833083753557
+            "x": -10.778324636091808,
+            "y": -1.2202833048430186
           },
-          "radius": 4.394500453088866,
+          "radius": 4.394500453367317,
           "start": {
             "unit": "degrees",
-            "value": 106.1968303751656
+            "value": 106.19683038501871
           },
           "end": {
             "unit": "degrees",
-            "value": 163.87796141292932
+            "value": 163.87796146191894
           },
           "relative": false
         }
@@ -158,7 +158,7 @@ description: Artifact commands engine-valve.kcl
           "type": "line",
           "end": {
             "x": -10.499865566733625,
-            "y": -0.00000000000006582249207860946,
+            "y": -0.00000000000006582215046163516,
             "z": 0.0
           },
           "relative": false
@@ -199,7 +199,7 @@ description: Artifact commands engine-valve.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000000018303513291491597,
+            "x": 0.00000000000018303539336270248,
             "y": 29.999999999999986,
             "z": 0.0
           },
@@ -216,7 +216,7 @@ description: Artifact commands engine-valve.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000000018303513406160973,
+            "x": 0.0000000000001830353945094756,
             "y": 79.99999999999997,
             "z": 0.0
           },

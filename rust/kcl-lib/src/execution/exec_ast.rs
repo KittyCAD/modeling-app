@@ -63,6 +63,7 @@ use crate::execution::state::SketchBlockState;
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::LineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -99,7 +100,6 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
-use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
@@ -1050,6 +1050,7 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
@@ -1074,10 +1075,6 @@ impl ExecutorContext {
                         )));
                     }
                 } else {
-                    let std_props = function_expression
-                        .name_str()
-                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
-                        .map(|name| StdFnProps::default(&name));
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
@@ -1095,7 +1092,7 @@ impl ExecutorContext {
                                 function_expression.clone(),
                                 env_ref,
                                 KclFunctionSourceParams {
-                                    std_props,
+                                    is_std,
                                     experimental,
                                     include_in_feature_tree,
                                 },
@@ -2217,6 +2214,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2319,6 +2323,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
                     },
                 },
                 "end" => match &segment.repr {
@@ -2386,6 +2397,13 @@ impl Node<MemberExpression> {
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
                                 vec![self.into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
                             ),
                             None,
                         )),
@@ -2464,6 +2482,13 @@ impl Node<MemberExpression> {
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
                                 vec![self.into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
                             ),
                             None,
                         )),
@@ -2592,6 +2617,208 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                "controls" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: controls
+                                .iter()
+                                .zip(control_object_ids.iter())
+                                .zip(ctor.points.iter())
+                                .map(|((position, object_id), ctor_point)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Unsolved {
+                                            segment: Box::new(UnsolvedSegment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: UnsolvedSegmentKind::Point {
+                                                    position: position.clone(),
+                                                    ctor: Box::new(PointCtor {
+                                                        position: ctor_point.clone(),
+                                                    }),
+                                                },
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_freedoms,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: controls
+                                .iter()
+                                .zip(control_object_ids.iter())
+                                .zip(control_freedoms.iter())
+                                .zip(ctor.points.iter())
+                                .map(|(((position, object_id), freedom), ctor_point)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Solved {
+                                            segment: Box::new(Segment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: SegmentKind::Point {
+                                                    position: position.clone(),
+                                                    ctor: Box::new(PointCtor {
+                                                        position: ctor_point.clone(),
+                                                    }),
+                                                    freedom: *freedom,
+                                                },
+                                                surface: segment.surface.clone(),
+                                                sketch_id: segment.sketch_id,
+                                                sketch: segment.sketch.clone(),
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                "edges" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_polygon_edge_object_ids,
+                            construction,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: control_polygon_edge_object_ids
+                                .iter()
+                                .enumerate()
+                                .map(|(index, object_id)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Unsolved {
+                                            segment: Box::new(UnsolvedSegment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: UnsolvedSegmentKind::Line {
+                                                    start: controls[index].clone(),
+                                                    end: controls[index + 1].clone(),
+                                                    ctor: Box::new(LineCtor {
+                                                        start: ctor.points[index].clone(),
+                                                        end: ctor.points[index + 1].clone(),
+                                                        construction: Some(*construction),
+                                                    }),
+                                                    start_object_id: control_object_ids[index],
+                                                    end_object_id: control_object_ids[index + 1],
+                                                    construction: *construction,
+                                                },
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_polygon_edge_object_ids,
+                            control_freedoms,
+                            construction,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: control_polygon_edge_object_ids
+                                .iter()
+                                .enumerate()
+                                .map(|(index, object_id)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Solved {
+                                            segment: Box::new(Segment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: SegmentKind::Line {
+                                                    start: controls[index].clone(),
+                                                    end: controls[index + 1].clone(),
+                                                    ctor: Box::new(LineCtor {
+                                                        start: ctor.points[index].clone(),
+                                                        end: ctor.points[index + 1].clone(),
+                                                        construction: Some(*construction),
+                                                    }),
+                                                    start_object_id: control_object_ids[index],
+                                                    end_object_id: control_object_ids[index + 1],
+                                                    start_freedom: control_freedoms[index],
+                                                    end_freedom: control_freedoms[index + 1],
+                                                    construction: *construction,
+                                                },
+                                                surface: segment.surface.clone(),
+                                                sketch_id: segment.sketch_id,
+                                                sketch: segment.sketch.clone(),
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
                         }
                         .continue_()),
                         _ => Err(KclError::new_undefined_value(

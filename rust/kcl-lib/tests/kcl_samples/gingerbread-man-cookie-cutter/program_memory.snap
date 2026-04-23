@@ -2565,7 +2565,6 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -3154,7 +3153,6 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

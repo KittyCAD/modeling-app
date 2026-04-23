@@ -1701,19 +1701,17 @@ export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
   artifactGraph: ArtifactGraph
 ): Artifact[] {
-  const result = new Set<string>()
+  const result: string[] = []
   const stack: string[] = [artifact.id]
-  const codeRefStartByArtifactId = new Map<string, number>()
 
   const getArtifacts = (stringIds: string[]): Artifact[] => {
     const artifactsWithCodeRefs: Artifact[] = []
     for (const id of stringIds) {
       const artifact = artifactGraph.get(id)
       if (artifact) {
-        const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
-        if (codeRefs && codeRefs[0] && codeRefs[0].range[1] > 0) {
+        const codeRef = getFaceCodeRef(artifact)
+        if (codeRef && codeRef.range[1] > 0) {
           artifactsWithCodeRefs.push(artifact)
-          codeRefStartByArtifactId.set(id, codeRefs[0].range[0])
         }
       }
     }
@@ -1728,24 +1726,30 @@ export function findAllChildrenAndOrderByPlaceInCode(
       if (childrenIdOrIds.length) {
         stack.push(...childrenIdOrIds)
       }
+      result.push(resultId)
     } else {
       if (childrenIdOrIds) {
         stack.push(childrenIdOrIds)
       }
+      result.push(resultId)
     }
   }
 
   while (stack.length > 0) {
     const currentId = stack.pop()!
-    if (result.has(currentId)) continue
     const current = artifactGraph.get(currentId)
     if (current?.type === 'path') {
       pushToSomething(currentId, current.sweepId)
       pushToSomething(currentId, current.segIds)
-      pushToSomething(currentId, current.compositeSolidId)
     } else if (current?.type === 'sweep') {
       pushToSomething(currentId, current.surfaceIds)
-      pushToSomething(currentId, current.pathId)
+      const path = artifactGraph.get(current.pathId)
+      if (path && path.type === 'path') {
+        const compositeSolidId = path.compositeSolidId
+        if (compositeSolidId) {
+          pushToSomething(compositeSolidId, undefined)
+        }
+      }
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
@@ -1758,20 +1762,23 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.compositeSolidId)
+      // No need to go up-graph here for composite solids, it's the end of the line
+      result.push(currentId)
     }
-    result.add(currentId)
   }
 
-  const codeRefArtifacts = getArtifacts(Array.from(result))
+  const resultSet = new Set(result)
+  const codeRefArtifacts = getArtifacts(Array.from(resultSet))
   let orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
-    const aStart = codeRefStartByArtifactId.get(a.id) ?? Number.MAX_SAFE_INTEGER
-    const bStart = codeRefStartByArtifactId.get(b.id) ?? Number.MAX_SAFE_INTEGER
-    return aStart - bStart
+    const aCodeRef = getFaceCodeRef(a)
+    const bCodeRef = getFaceCodeRef(b)
+    if (!aCodeRef || !bCodeRef) {
+      return 0
+    }
+    return aCodeRef.range[0] - bCodeRef.range[0]
   })
 
   // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
-  // Update this logic to work with the `consumed` property instead
   let firstSweep = true
   const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
     if (artifact.type === 'sweep' && firstSweep) {

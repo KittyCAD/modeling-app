@@ -36,6 +36,11 @@ description: Variables in memory after executing sphere.kcl
       }
     }
   },
+  "arc2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc2"
+  },
   "diameter": {
     "type": "Number",
     "value": 10.0,
@@ -44,6 +49,11 @@ description: Variables in memory after executing sphere.kcl
       "len": "mm",
       "angle": "degrees"
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
   },
   "profile": {
     "type": "Object",
@@ -573,7 +583,6 @@ description: Variables in memory after executing sphere.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -751,7 +760,6 @@ description: Variables in memory after executing sphere.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,

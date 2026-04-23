@@ -211,7 +211,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -462,7 +461,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "mm"
         },
         "startCapId": "[uuid]",
@@ -472,6 +470,26 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       },
       "units": "mm"
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line4"
   },
   "prism": {
     "type": "Solid",
@@ -664,7 +682,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1046,7 +1063,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "originSketchId": "[uuid]",
               "units": "mm"
             },
             "startCapId": "[uuid]",
@@ -1092,7 +1108,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -1411,7 +1426,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1457,7 +1471,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -1750,7 +1763,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
-                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -2056,7 +2068,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
-                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -2362,7 +2373,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
-                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -2668,7 +2678,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
-                      "originSketchId": "[uuid]",
                       "units": "mm"
                     },
                     "startCapId": "[uuid]",
@@ -3001,7 +3010,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "originSketchId": "[uuid]",
                     "units": "mm"
                   },
                   "startCapId": "[uuid]",
@@ -3717,7 +3725,6 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   }

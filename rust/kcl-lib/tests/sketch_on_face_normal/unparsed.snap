@@ -12,9 +12,9 @@ sketch001 = startSketchOn(XY)
 cube001 = extrude(sketch001, length = 10)
 
 sketch002 = startSketchOn(
-  cube001,
-  normalToFace = a,
-  alignAxis = -Y,
-  normalOffset = 5,
-)
+       cube001,
+       normalToFace = a,
+       alignAxis = -Y,
+       normalOffset = 5,
+     )
   |> circle(center = [0, 0], diameter = 1)

@@ -169,7 +169,7 @@ description: Artifact commands bench.kcl
         "path": "[uuid]",
         "to": {
           "x": -16.599999969431963,
-          "y": 5.679999979926837,
+          "y": 5.679999979926835,
           "z": 0.0
         }
       }
@@ -184,7 +184,7 @@ description: Artifact commands bench.kcl
           "type": "arc",
           "center": {
             "x": 7.80491269792136,
-            "y": -10.352474492187905
+            "y": -10.352474492187907
           },
           "radius": 29.20000000000263,
           "start": {
@@ -193,7 +193,7 @@ description: Artifact commands bench.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 153.73327358673697
+            "value": 153.73327358673694
           },
           "relative": false
         }
@@ -374,13 +374,13 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 38.6838243485747,
-            "y": 10.243014905921513
+            "x": 38.68382434857471,
+            "y": 10.24301490592152
           },
           "radius": 18.149999999971566,
           "start": {
             "unit": "degrees",
-            "value": 153.434742932355
+            "value": 153.43474293235502
           },
           "end": {
             "unit": "degrees",

@@ -67,6 +67,26 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       }
     }
   },
+  "arc1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc1"
+  },
+  "arc2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc2"
+  },
+  "arc3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc3"
+  },
+  "arc4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc4"
+  },
   "baseExtrusion": {
     "type": "Solid",
     "value": {
@@ -255,7 +275,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "from": [
               -0.33333333333333215,
-              0.00000000000021895677269849042
+              0.00000000000021895680854903202
             ],
             "tag": {
               "commentStart": 563,
@@ -266,8 +286,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line1"
             },
             "to": [
-              -0.10544684533840645,
-              0.0000000000002460972907074512
+              -0.105446845266904,
+              0.0000000000002460973258183459
             ],
             "type": "ToPoint",
             "units": "in"
@@ -279,14 +299,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": true,
             "center": [
-              -0.10545770244187953,
-              0.11204273464948862
+              -0.10545770237041298,
+              0.11204273451036088
             ],
             "from": [
-              -0.10544684533840645,
-              0.0000000000002460972907074512
+              -0.105446845266904,
+              0.0000000000002460973258183459
             ],
-            "radius": 0.11204273517527706,
+            "radius": 0.11204273503614932,
             "tag": {
               "commentStart": 646,
               "end": 650,
@@ -296,8 +316,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc1"
             },
             "to": [
-              -0.0000000006180102124497822,
-              0.0741976870000915
+              -0.0000000006180100181607528,
+              0.07419768707371485
             ],
             "type": "Arc",
             "units": "in"
@@ -308,8 +328,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000015015960772185677,
-              0.07419768702678262
+              -0.000000000000015015970543735066,
+              0.07419768710040603
             ],
             "tag": {
               "commentStart": 822,
@@ -320,8 +340,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line2"
             },
             "to": [
-              -0.00000000000003725332967513404,
-              1.6445765847609788
+              -0.000000000000037253343906606236,
+              1.6445765848343472
             ],
             "type": "ToPoint",
             "units": "in"
@@ -333,14 +353,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": true,
             "center": [
-              -0.10543463744279606,
-              1.6445653618844156
+              -0.1054346373699015,
+              1.6445653619573104
             ],
             "from": [
-              -0.00000000000003725332967513404,
-              1.6445765847609788
+              -0.000000000000037253343906606236,
+              1.6445765848343472
             ],
-            "radius": 0.10543463804006233,
+            "radius": 0.1054346379671678,
             "tag": {
               "commentStart": 935,
               "end": 939,
@@ -350,8 +370,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc2"
             },
             "to": [
-              -0.10543176188248182,
-              1.749999999885265
+              -0.10543176181067951,
+              1.7499999998852651
             ],
             "type": "Arc",
             "units": "in"
@@ -362,8 +382,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.10543176188248182,
-              1.749999999885265
+              -0.10543176181067951,
+              1.7499999998852651
             ],
             "tag": {
               "commentStart": 1111,
@@ -422,7 +442,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line5"
             },
             "to": [
-              -0.10543176215650292,
+              -0.10543176208470062,
               1.6902000000000421
             ],
             "type": "ToPoint",
@@ -435,14 +455,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": false,
             "center": [
-              -0.1054362905133852,
+              -0.10543629044177082,
               1.6602000003057509
             ],
             "from": [
-              -0.10543176215650292,
+              -0.10543176208470062,
               1.6902000000000421
             ],
-            "radius": 0.030000000036058173,
+            "radius": 0.0300000000360582,
             "tag": {
               "commentStart": 1472,
               "end": 1476,
@@ -452,8 +472,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc3"
             },
             "to": [
-              -0.0754362909810388,
-              1.6601945027876133
+              -0.07543629090942441,
+              1.6601945027873826
             ],
             "type": "Arc",
             "units": "in"
@@ -464,8 +484,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0754362909810388,
-              1.6601945027876133
+              -0.07543629090942441,
+              1.6601945027873826
             ],
             "tag": {
               "commentStart": 1650,
@@ -476,8 +496,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line6"
             },
             "to": [
-              -0.07543629078571924,
-              0.08981560487862147
+              -0.0754362907141049,
+              0.0898156048786459
             ],
             "type": "ToPoint",
             "units": "in"
@@ -489,14 +509,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": false,
             "center": [
-              -0.10543629066557725,
+              -0.10543629059396288,
               0.08979999987813027
             ],
             "from": [
-              -0.07543629078571924,
-              0.08981560487862147
+              -0.0754362907141049,
+              0.0898156048786459
             ],
-            "radius": 0.03000000393845842,
+            "radius": 0.030000003938458406,
             "tag": {
               "commentStart": 1773,
               "end": 1777,
@@ -506,8 +526,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc4"
             },
             "to": [
-              -0.10544684527028066,
-              0.05979999779633301
+              -0.10544684519877817,
+              0.05979999779633306
             ],
             "type": "Arc",
             "units": "in"
@@ -518,7 +538,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.1054468453382346,
+              -0.10544684526673213,
               0.05980000000059968
             ],
             "tag": {
@@ -555,7 +575,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "to": [
               -0.3333333333332892,
-              0.0000000000002795617141365247
+              0.00000000000027956176405147774
             ],
             "type": "ToPoint",
             "units": "in"
@@ -595,11 +615,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "start": {
           "from": [
             -0.33333333333333215,
-            0.00000000000021895677269849042
+            0.00000000000021895680854903202
           ],
           "to": [
             -0.33333333333333215,
-            0.00000000000021895677269849042
+            0.00000000000021895680854903202
           ],
           "units": "in",
           "tag": null,
@@ -660,7 +680,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -684,7 +703,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.10544684533844295,
+                        "n": -0.1054468452669405,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -692,7 +711,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000024875832791060586,
+                        "n": 0.0000000002487583254914169,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -702,7 +721,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000004682382994472028,
+                        "n": 0.00000000000000468237736005493,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -710,7 +729,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.07419768702680692,
+                        "n": 0.07419768710043033,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -720,7 +739,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.10545770244191603,
+                        "n": -0.10545770237044946,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -728,7 +747,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.11204273489800086,
+                        "n": 0.11204273475887311,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -836,7 +855,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.00000000027394447464639824,
+                        "n": -0.0000000002739445071930949,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -844,7 +863,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 1.64457658476094,
+                        "n": 1.6445765848343081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -854,7 +873,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.10543176215638236,
+                        "n": -0.10543176208458008,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -872,7 +891,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.10543463771670329,
+                        "n": -0.10543463764380874,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -880,7 +899,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 1.6445653618843767,
+                        "n": 1.6445653619572713,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -988,7 +1007,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.07543629096714001,
+                        "n": -0.0754362908955257,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -996,7 +1015,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 1.6601945026129,
+                        "n": 1.6601945026126692,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1006,7 +1025,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.105431762156533,
+                        "n": -0.10543176208473069,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1024,7 +1043,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.10543629051341527,
+                        "n": -0.10543629044180089,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1140,7 +1159,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.10544684533818517,
+                        "n": -0.1054468452666827,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1148,7 +1167,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.059800000082395104,
+                        "n": 0.05980000008239512,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1158,7 +1177,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.07543629085442806,
+                        "n": -0.07543629078281373,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1166,7 +1185,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.0898156048785659,
+                        "n": 0.0898156048785903,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1176,7 +1195,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.10543629073428606,
+                        "n": -0.10543629066267171,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1184,7 +1203,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.08979999987807469,
+                        "n": 0.08979999987807467,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1300,7 +1319,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000021895677269849042,
+                        "n": 0.00000000000021895680854903202,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1310,7 +1329,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.10544684533840645,
+                        "n": -0.105446845266904,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1318,7 +1337,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000002460972907074512,
+                        "n": 0.0000000000002460973258183459,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1420,7 +1439,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000014597118195879176,
+                        "n": 0.00000000000014597120585915284,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1430,7 +1449,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000011705959773423541,
+                        "n": 0.0000000000000011705946226949633,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1438,7 +1457,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000007298559105929494,
+                        "n": 0.0000000000000729856030094755,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1533,7 +1552,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000000234119161873153,
+                        "n": 0.0000000000000023411888374942684,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1541,7 +1560,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000007298559113919401,
+                        "n": 0.00000000000007298560308937457,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1551,7 +1570,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000035117872866813197,
+                        "n": 0.0000000000000035117830788541605,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1559,7 +1578,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.07419768702682282,
+                        "n": 0.07419768710044623,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1654,7 +1673,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000015015960772185677,
+                        "n": -0.000000000000015015970543735066,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1662,7 +1681,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.07419768702678262,
+                        "n": 0.07419768710040603,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1672,7 +1691,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000003725332967513404,
+                        "n": -0.000000000000037253343906606236,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1680,7 +1699,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 1.6445765847609788,
+                        "n": 1.6445765848343472,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1774,7 +1793,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.1054317621564025,
+                        "n": -0.1054317620846002,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2032,7 +2051,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.10543176215650292,
+                        "n": -0.10543176208470062,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2134,7 +2153,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.07543629078567429,
+                        "n": -0.07543629071405994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2142,7 +2161,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 1.660194502612858,
+                        "n": 1.6601945026126272,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2152,7 +2171,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.07543629078571924,
+                        "n": -0.0754362907141049,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2160,7 +2179,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.08981560487862147,
+                        "n": 0.0898156048786459,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2254,7 +2273,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.1054468453382346,
+                        "n": -0.10544684526673213,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2400,7 +2419,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000002795617141365247,
+                        "n": 0.00000000000027956176405147774,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2502,7 +2521,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000026920889513190537,
+                        "n": 0.00000000000026920895019048133,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2619,7 +2638,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "from": [
                     -0.33333333333333215,
-                    0.00000000000021895677269849042
+                    0.00000000000021895680854903202
                   ],
                   "tag": {
                     "commentStart": 563,
@@ -2630,8 +2649,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.10544684533840645,
-                    0.0000000000002460972907074512
+                    -0.105446845266904,
+                    0.0000000000002460973258183459
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2643,14 +2662,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.10545770244187953,
-                    0.11204273464948862
+                    -0.10545770237041298,
+                    0.11204273451036088
                   ],
                   "from": [
-                    -0.10544684533840645,
-                    0.0000000000002460972907074512
+                    -0.105446845266904,
+                    0.0000000000002460973258183459
                   ],
-                  "radius": 0.11204273517527706,
+                  "radius": 0.11204273503614932,
                   "tag": {
                     "commentStart": 646,
                     "end": 650,
@@ -2660,8 +2679,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    -0.0000000006180102124497822,
-                    0.0741976870000915
+                    -0.0000000006180100181607528,
+                    0.07419768707371485
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2672,13 +2691,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000006180102124497822,
-                    0.0741976870000915
+                    -0.0000000006180100181607528,
+                    0.07419768707371485
                   ],
                   "tag": null,
                   "to": [
-                    -0.000000000000015015960772185677,
-                    0.07419768702678262
+                    -0.000000000000015015970543735066,
+                    0.07419768710040603
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2689,8 +2708,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000015015960772185677,
-                    0.07419768702678262
+                    -0.000000000000015015970543735066,
+                    0.07419768710040603
                   ],
                   "tag": {
                     "commentStart": 822,
@@ -2701,8 +2720,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -0.00000000000003725332967513404,
-                    1.6445765847609788
+                    -0.000000000000037253343906606236,
+                    1.6445765848343472
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2714,14 +2733,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.10543463744279606,
-                    1.6445653618844156
+                    -0.1054346373699015,
+                    1.6445653619573104
                   ],
                   "from": [
-                    -0.00000000000003725332967513404,
-                    1.6445765847609788
+                    -0.000000000000037253343906606236,
+                    1.6445765848343472
                   ],
-                  "radius": 0.10543463804006233,
+                  "radius": 0.1054346379671678,
                   "tag": {
                     "commentStart": 935,
                     "end": 939,
@@ -2731,8 +2750,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -0.10543176188248182,
-                    1.749999999885265
+                    -0.10543176181067951,
+                    1.7499999998852651
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2743,8 +2762,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.10543176188248182,
-                    1.749999999885265
+                    -0.10543176181067951,
+                    1.7499999998852651
                   ],
                   "tag": {
                     "commentStart": 1111,
@@ -2803,7 +2822,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -0.10543176215650292,
+                    -0.10543176208470062,
                     1.6902000000000421
                   ],
                   "type": "ToPoint",
@@ -2816,14 +2835,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.1054362905133852,
+                    -0.10543629044177082,
                     1.6602000003057509
                   ],
                   "from": [
-                    -0.10543176215650292,
+                    -0.10543176208470062,
                     1.6902000000000421
                   ],
-                  "radius": 0.030000000036058173,
+                  "radius": 0.0300000000360582,
                   "tag": {
                     "commentStart": 1472,
                     "end": 1476,
@@ -2833,8 +2852,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -0.0754362909810388,
-                    1.6601945027876133
+                    -0.07543629090942441,
+                    1.6601945027873826
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2845,8 +2864,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0754362909810388,
-                    1.6601945027876133
+                    -0.07543629090942441,
+                    1.6601945027873826
                   ],
                   "tag": {
                     "commentStart": 1650,
@@ -2857,8 +2876,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.07543629078571924,
-                    0.08981560487862147
+                    -0.0754362907141049,
+                    0.0898156048786459
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2870,14 +2889,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.10543629066557725,
+                    -0.10543629059396288,
                     0.08979999987813027
                   ],
                   "from": [
-                    -0.07543629078571924,
-                    0.08981560487862147
+                    -0.0754362907141049,
+                    0.0898156048786459
                   ],
-                  "radius": 0.03000000393845842,
+                  "radius": 0.030000003938458406,
                   "tag": {
                     "commentStart": 1773,
                     "end": 1777,
@@ -2887,8 +2906,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -0.10544684527028066,
-                    0.05979999779633301
+                    -0.10544684519877817,
+                    0.05979999779633306
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2899,12 +2918,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.10544684527028066,
-                    0.05979999779633301
+                    -0.10544684519877817,
+                    0.05979999779633306
                   ],
                   "tag": null,
                   "to": [
-                    -0.1054468453382346,
+                    -0.10544684526673213,
                     0.05980000000059968
                   ],
                   "type": "ToPoint",
@@ -2916,7 +2935,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.1054468453382346,
+                    -0.10544684526673213,
                     0.05980000000059968
                   ],
                   "tag": {
@@ -2953,7 +2972,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   },
                   "to": [
                     -0.3333333333332892,
-                    0.0000000000002795617141365247
+                    0.00000000000027956176405147774
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2993,11 +3012,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "start": {
                 "from": [
                   -0.33333333333333215,
-                  0.00000000000021895677269849042
+                  0.00000000000021895680854903202
                 ],
                 "to": [
                   -0.33333333333333215,
-                  0.00000000000021895677269849042
+                  0.00000000000021895680854903202
                 ],
                 "units": "in",
                 "tag": null,
@@ -3076,6 +3095,16 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "len": "in",
       "angle": "degrees"
     }
+  },
+  "circle1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle1"
+  },
+  "circle2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "circle2"
   },
   "extrudeHoles": {
     "type": "HomArray",
@@ -3197,7 +3226,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3323,7 +3351,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3449,7 +3476,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3575,7 +3601,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -4684,7 +4709,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "from": [
               -0.33333333333333215,
-              0.00000000000021895677269849042
+              0.00000000000021895680854903202
             ],
             "tag": {
               "commentStart": 563,
@@ -4695,8 +4720,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line1"
             },
             "to": [
-              -0.10544684533840645,
-              0.0000000000002460972907074512
+              -0.105446845266904,
+              0.0000000000002460973258183459
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4708,14 +4733,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": true,
             "center": [
-              -0.10545770244187953,
-              0.11204273464948862
+              -0.10545770237041298,
+              0.11204273451036088
             ],
             "from": [
-              -0.10544684533840645,
-              0.0000000000002460972907074512
+              -0.105446845266904,
+              0.0000000000002460973258183459
             ],
-            "radius": 0.11204273517527706,
+            "radius": 0.11204273503614932,
             "tag": {
               "commentStart": 646,
               "end": 650,
@@ -4725,8 +4750,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc1"
             },
             "to": [
-              -0.0000000006180102124497822,
-              0.0741976870000915
+              -0.0000000006180100181607528,
+              0.07419768707371485
             ],
             "type": "Arc",
             "units": "in"
@@ -4737,8 +4762,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000015015960772185677,
-              0.07419768702678262
+              -0.000000000000015015970543735066,
+              0.07419768710040603
             ],
             "tag": {
               "commentStart": 822,
@@ -4749,8 +4774,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line2"
             },
             "to": [
-              -0.00000000000003725332967513404,
-              1.6445765847609788
+              -0.000000000000037253343906606236,
+              1.6445765848343472
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4762,14 +4787,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": true,
             "center": [
-              -0.10543463744279606,
-              1.6445653618844156
+              -0.1054346373699015,
+              1.6445653619573104
             ],
             "from": [
-              -0.00000000000003725332967513404,
-              1.6445765847609788
+              -0.000000000000037253343906606236,
+              1.6445765848343472
             ],
-            "radius": 0.10543463804006233,
+            "radius": 0.1054346379671678,
             "tag": {
               "commentStart": 935,
               "end": 939,
@@ -4779,8 +4804,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc2"
             },
             "to": [
-              -0.10543176188248182,
-              1.749999999885265
+              -0.10543176181067951,
+              1.7499999998852651
             ],
             "type": "Arc",
             "units": "in"
@@ -4791,8 +4816,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.10543176188248182,
-              1.749999999885265
+              -0.10543176181067951,
+              1.7499999998852651
             ],
             "tag": {
               "commentStart": 1111,
@@ -4851,7 +4876,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line5"
             },
             "to": [
-              -0.10543176215650292,
+              -0.10543176208470062,
               1.6902000000000421
             ],
             "type": "ToPoint",
@@ -4864,14 +4889,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": false,
             "center": [
-              -0.1054362905133852,
+              -0.10543629044177082,
               1.6602000003057509
             ],
             "from": [
-              -0.10543176215650292,
+              -0.10543176208470062,
               1.6902000000000421
             ],
-            "radius": 0.030000000036058173,
+            "radius": 0.0300000000360582,
             "tag": {
               "commentStart": 1472,
               "end": 1476,
@@ -4881,8 +4906,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc3"
             },
             "to": [
-              -0.0754362909810388,
-              1.6601945027876133
+              -0.07543629090942441,
+              1.6601945027873826
             ],
             "type": "Arc",
             "units": "in"
@@ -4893,8 +4918,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0754362909810388,
-              1.6601945027876133
+              -0.07543629090942441,
+              1.6601945027873826
             ],
             "tag": {
               "commentStart": 1650,
@@ -4905,8 +4930,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "line6"
             },
             "to": [
-              -0.07543629078571924,
-              0.08981560487862147
+              -0.0754362907141049,
+              0.0898156048786459
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4918,14 +4943,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "ccw": false,
             "center": [
-              -0.10543629066557725,
+              -0.10543629059396288,
               0.08979999987813027
             ],
             "from": [
-              -0.07543629078571924,
-              0.08981560487862147
+              -0.0754362907141049,
+              0.0898156048786459
             ],
-            "radius": 0.03000000393845842,
+            "radius": 0.030000003938458406,
             "tag": {
               "commentStart": 1773,
               "end": 1777,
@@ -4935,8 +4960,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "value": "arc4"
             },
             "to": [
-              -0.10544684527028066,
-              0.05979999779633301
+              -0.10544684519877817,
+              0.05979999779633306
             ],
             "type": "Arc",
             "units": "in"
@@ -4947,7 +4972,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "sourceRange": []
             },
             "from": [
-              -0.1054468453382346,
+              -0.10544684526673213,
               0.05980000000059968
             ],
             "tag": {
@@ -4984,7 +5009,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "to": [
               -0.3333333333332892,
-              0.0000000000002795617141365247
+              0.00000000000027956176405147774
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5024,11 +5049,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "start": {
           "from": [
             -0.33333333333333215,
-            0.00000000000021895677269849042
+            0.00000000000021895680854903202
           ],
           "to": [
             -0.33333333333333215,
-            0.00000000000021895677269849042
+            0.00000000000021895680854903202
           ],
           "units": "in",
           "tag": null,
@@ -5089,7 +5114,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -5097,6 +5121,46 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "units": "in",
       "sectional": false
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line4"
+  },
+  "line5": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line5"
+  },
+  "line6": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line6"
+  },
+  "line7": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line7"
+  },
+  "line8": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line8"
   },
   "region001": {
     "type": "Sketch",
@@ -5194,7 +5258,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -5294,7 +5357,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -5311,7 +5373,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "from": [
             -0.33333333333333215,
-            0.00000000000021895677269849042
+            0.00000000000021895680854903202
           ],
           "tag": {
             "commentStart": 563,
@@ -5322,8 +5384,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line1"
           },
           "to": [
-            -0.10544684533840645,
-            0.0000000000002460972907074512
+            -0.105446845266904,
+            0.0000000000002460973258183459
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5335,14 +5397,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "ccw": true,
           "center": [
-            -0.10545770244187953,
-            0.11204273464948862
+            -0.10545770237041298,
+            0.11204273451036088
           ],
           "from": [
-            -0.10544684533840645,
-            0.0000000000002460972907074512
+            -0.105446845266904,
+            0.0000000000002460973258183459
           ],
-          "radius": 0.11204273517527706,
+          "radius": 0.11204273503614932,
           "tag": {
             "commentStart": 646,
             "end": 650,
@@ -5352,8 +5414,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "arc1"
           },
           "to": [
-            -0.0000000006180102124497822,
-            0.0741976870000915
+            -0.0000000006180100181607528,
+            0.07419768707371485
           ],
           "type": "Arc",
           "units": "in"
@@ -5364,8 +5426,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000015015960772185677,
-            0.07419768702678262
+            -0.000000000000015015970543735066,
+            0.07419768710040603
           ],
           "tag": {
             "commentStart": 822,
@@ -5376,8 +5438,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line2"
           },
           "to": [
-            -0.00000000000003725332967513404,
-            1.6445765847609788
+            -0.000000000000037253343906606236,
+            1.6445765848343472
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5389,14 +5451,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "ccw": true,
           "center": [
-            -0.10543463744279606,
-            1.6445653618844156
+            -0.1054346373699015,
+            1.6445653619573104
           ],
           "from": [
-            -0.00000000000003725332967513404,
-            1.6445765847609788
+            -0.000000000000037253343906606236,
+            1.6445765848343472
           ],
-          "radius": 0.10543463804006233,
+          "radius": 0.1054346379671678,
           "tag": {
             "commentStart": 935,
             "end": 939,
@@ -5406,8 +5468,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "arc2"
           },
           "to": [
-            -0.10543176188248182,
-            1.749999999885265
+            -0.10543176181067951,
+            1.7499999998852651
           ],
           "type": "Arc",
           "units": "in"
@@ -5418,8 +5480,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "sourceRange": []
           },
           "from": [
-            -0.10543176188248182,
-            1.749999999885265
+            -0.10543176181067951,
+            1.7499999998852651
           ],
           "tag": {
             "commentStart": 1111,
@@ -5478,7 +5540,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line5"
           },
           "to": [
-            -0.10543176215650292,
+            -0.10543176208470062,
             1.6902000000000421
           ],
           "type": "ToPoint",
@@ -5491,14 +5553,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "ccw": false,
           "center": [
-            -0.1054362905133852,
+            -0.10543629044177082,
             1.6602000003057509
           ],
           "from": [
-            -0.10543176215650292,
+            -0.10543176208470062,
             1.6902000000000421
           ],
-          "radius": 0.030000000036058173,
+          "radius": 0.0300000000360582,
           "tag": {
             "commentStart": 1472,
             "end": 1476,
@@ -5508,8 +5570,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "arc3"
           },
           "to": [
-            -0.0754362909810388,
-            1.6601945027876133
+            -0.07543629090942441,
+            1.6601945027873826
           ],
           "type": "Arc",
           "units": "in"
@@ -5520,8 +5582,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0754362909810388,
-            1.6601945027876133
+            -0.07543629090942441,
+            1.6601945027873826
           ],
           "tag": {
             "commentStart": 1650,
@@ -5532,8 +5594,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line6"
           },
           "to": [
-            -0.07543629078571924,
-            0.08981560487862147
+            -0.0754362907141049,
+            0.0898156048786459
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5545,14 +5607,14 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "ccw": false,
           "center": [
-            -0.10543629066557725,
+            -0.10543629059396288,
             0.08979999987813027
           ],
           "from": [
-            -0.07543629078571924,
-            0.08981560487862147
+            -0.0754362907141049,
+            0.0898156048786459
           ],
-          "radius": 0.03000000393845842,
+          "radius": 0.030000003938458406,
           "tag": {
             "commentStart": 1773,
             "end": 1777,
@@ -5562,8 +5624,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "arc4"
           },
           "to": [
-            -0.10544684527028066,
-            0.05979999779633301
+            -0.10544684519877817,
+            0.05979999779633306
           ],
           "type": "Arc",
           "units": "in"
@@ -5574,7 +5636,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "sourceRange": []
           },
           "from": [
-            -0.1054468453382346,
+            -0.10544684526673213,
             0.05980000000059968
           ],
           "tag": {
@@ -5611,7 +5673,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           "to": [
             -0.3333333333332892,
-            0.0000000000002795617141365247
+            0.00000000000027956176405147774
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5651,11 +5713,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "start": {
         "from": [
           -0.33333333333333215,
-          0.00000000000021895677269849042
+          0.00000000000021895680854903202
         ],
         "to": [
           -0.33333333333333215,
-          0.00000000000021895677269849042
+          0.00000000000021895680854903202
         ],
         "units": "in",
         "tag": null,
@@ -5716,7 +5778,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "in"
     }
   },

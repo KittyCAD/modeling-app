@@ -18,7 +18,6 @@ Definitions of standard holes that could be drilled or cut into solids.
 * [`hole::drill`](/docs/kcl-std-sketch-solve/functions/std-hole-drill)
 * [`hole::flat`](/docs/kcl-std-sketch-solve/functions/std-hole-flat)
 * [`hole::hole`](/docs/kcl-std-sketch-solve/functions/std-hole-hole)
-* [`hole::holeAt`](/docs/kcl-std-sketch-solve/functions/std-hole-holeAt)
 * [`hole::holes`](/docs/kcl-std-sketch-solve/functions/std-hole-holes)
 * [`hole::holesLinear`](/docs/kcl-std-sketch-solve/functions/std-hole-holesLinear)
 * [`hole::simple`](/docs/kcl-std-sketch-solve/functions/std-hole-simple)

@@ -46,6 +46,7 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
+  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -68,10 +69,10 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -108,13 +109,17 @@ export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'unequip tool' }
-  | {
-      type: 'equip tool'
-      data: { tool: EquipTool }
-      keepSelection?: boolean
-    }
+  | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
       type:
+        | 'coincident'
+        | 'Fixed'
+        | 'Tangent'
+        | 'EqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
@@ -183,6 +188,18 @@ export type UpdateSketchOutcomeEvent = {
   }
 }
 
+type ToolActorRef =
+  | ActorRefFrom<typeof dimensionTool>
+  | ActorRefFrom<typeof rectTool>
+  | ActorRefFrom<typeof pointTool>
+  | ActorRefFrom<typeof lineTool>
+  | ActorRefFrom<typeof splineTool>
+  | ActorRefFrom<typeof trimTool>
+  | ActorRefFrom<typeof centerArcTool>
+  | ActorRefFrom<typeof circleTool>
+  | ActorRefFrom<typeof tangentialArcTool>
+  | ActorRefFrom<typeof threePointArcTool>
+
 export const equipTools = Object.freeze({
   trimTool,
   // both use the same tool, opened with a different flag
@@ -192,14 +209,12 @@ export const equipTools = Object.freeze({
   dimensionTool,
   pointTool,
   lineTool,
+  splineTool,
   centerArcTool,
   circleTool,
   tangentialArcTool,
   threePointArcTool,
-  ...constraintToolMachines,
 })
-
-type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -351,6 +366,22 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       construction: obj.kind.segment.construction,
     }
+  } else if (isControlPointSplineSegment(obj)) {
+    const points = obj.kind.segment.controls
+      .map((pointId) => getLinkedPoint({ objects, pointId }))
+      .filter((point) => point !== null)
+    if (points.length !== obj.kind.segment.controls.length) {
+      console.error(
+        'Failed to find linked points for ControlPointSpline segment',
+        obj
+      )
+      return null
+    }
+    return {
+      type: 'ControlPointSpline',
+      points,
+      construction: obj.kind.segment.construction,
+    }
   }
   return null
 }
@@ -360,6 +391,7 @@ export function buildSegmentCtorFromObject(
  * Determines the correct segment update method based on the input type.
  */
 export function updateSegmentGroup({
+  apiObject,
   group,
   input,
   state,
@@ -368,6 +400,7 @@ export function updateSegmentGroup({
   hasSolveErrors,
   objects,
 }: {
+  apiObject: ApiObject
   group: Group
   input: SegmentCtor
   state: SegmentRenderState
@@ -388,6 +421,7 @@ export function updateSegmentGroup({
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -398,6 +432,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -408,6 +443,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -418,6 +454,18 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Circle') {
     segmentUtilsMap.CircleSegment.update({
+      apiObject,
+      input,
+      theme,
+      scale,
+      group,
+      state,
+      hasSolveErrors,
+      freedom: freedomResult,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    segmentUtilsMap.ControlPointSplineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -434,10 +482,12 @@ export function updateSegmentGroup({
  * Determines the correct segment init method based on the input type.
  */
 function initSegmentGroup({
+  apiObject,
   input,
   id,
   objects,
 }: {
+  apiObject: ApiObject
   input: SegmentCtor
   id: number
   objects: ApiObject[]
@@ -448,24 +498,35 @@ function initSegmentGroup({
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
+      apiObject,
+      input,
+      id,
+      isConstruction,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    group = segmentUtilsMap.ControlPointSplineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
@@ -606,6 +667,7 @@ export function updateSceneGraphFromDelta({
         return
       }
       const newGroup = initSegmentGroup({
+        apiObject: obj,
         input: ctor,
         id: obj.id,
         objects,
@@ -628,6 +690,7 @@ export function updateSceneGraphFromDelta({
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
       input: ctor,
       state,
@@ -865,6 +928,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         return
       }
       updateSegmentGroup({
+        apiObject: obj,
         group,
         input: ctor,
         state: getSegmentRenderState(
@@ -1024,6 +1088,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
       input: ctor,
       state: getSegmentRenderState(
@@ -1396,9 +1461,6 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
-      initialSelectionIds: context.selectedIds,
-      initialObjects:
-        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
@@ -1436,8 +1498,6 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
-  initialSelectionIds?: SketchSolveSelectionId[]
-  initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 

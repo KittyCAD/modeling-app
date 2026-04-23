@@ -273,10 +273,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7731,
-            "end": 7736,
+            "commentStart": 7771,
+            "end": 7776,
             "moduleId": 0,
-            "start": 7731,
+            "start": 7771,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -287,10 +287,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7810,
-            "end": 7815,
+            "commentStart": 7850,
+            "end": 7855,
             "moduleId": 0,
-            "start": 7810,
+            "start": 7850,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -301,10 +301,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7888,
-            "end": 7893,
+            "commentStart": 7928,
+            "end": 7933,
             "moduleId": 0,
-            "start": 7888,
+            "start": 7928,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -315,10 +315,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7965,
-            "end": 7970,
+            "commentStart": 8005,
+            "end": 8010,
             "moduleId": 0,
-            "start": 7965,
+            "start": 8005,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -340,10 +340,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7731,
-              "end": 7736,
+              "commentStart": 7771,
+              "end": 7776,
               "moduleId": 0,
-              "start": 7731,
+              "start": 7771,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -364,10 +364,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7810,
-              "end": 7815,
+              "commentStart": 7850,
+              "end": 7855,
               "moduleId": 0,
-              "start": 7810,
+              "start": 7850,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -388,10 +388,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7888,
-              "end": 7893,
+              "commentStart": 7928,
+              "end": 7933,
               "moduleId": 0,
-              "start": 7888,
+              "start": 7928,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -412,10 +412,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7965,
-              "end": 7970,
+              "commentStart": 8005,
+              "end": 8010,
               "moduleId": 0,
-              "start": 7965,
+              "start": 8005,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -494,7 +494,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1032,10 +1031,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7731,
-                    "end": 7736,
+                    "commentStart": 7771,
+                    "end": 7776,
                     "moduleId": 0,
-                    "start": 7731,
+                    "start": 7771,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1056,10 +1055,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7810,
-                    "end": 7815,
+                    "commentStart": 7850,
+                    "end": 7855,
                     "moduleId": 0,
-                    "start": 7810,
+                    "start": 7850,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1080,10 +1079,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7888,
-                    "end": 7893,
+                    "commentStart": 7928,
+                    "end": 7933,
                     "moduleId": 0,
-                    "start": 7888,
+                    "start": 7928,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1104,10 +1103,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7965,
-                    "end": 7970,
+                    "commentStart": 8005,
+                    "end": 8010,
                     "moduleId": 0,
-                    "start": 7965,
+                    "start": 8005,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1212,10 +1211,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7731,
-            "end": 7736,
+            "commentStart": 7771,
+            "end": 7776,
             "moduleId": 0,
-            "start": 7731,
+            "start": 7771,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1236,10 +1235,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7810,
-            "end": 7815,
+            "commentStart": 7850,
+            "end": 7855,
             "moduleId": 0,
-            "start": 7810,
+            "start": 7850,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1260,10 +1259,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7888,
-            "end": 7893,
+            "commentStart": 7928,
+            "end": 7933,
             "moduleId": 0,
-            "start": 7888,
+            "start": 7928,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1284,10 +1283,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7965,
-            "end": 7970,
+            "commentStart": 8005,
+            "end": 8010,
             "moduleId": 0,
-            "start": 7965,
+            "start": 8005,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1366,7 +1365,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -1382,10 +1380,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6578,
-            "end": 6583,
+            "commentStart": 6618,
+            "end": 6623,
             "moduleId": 0,
-            "start": 6578,
+            "start": 6618,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1396,10 +1394,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6643,
-            "end": 6648,
+            "commentStart": 6683,
+            "end": 6688,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6683,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1410,10 +1408,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6708,
-            "end": 6713,
+            "commentStart": 6748,
+            "end": 6753,
             "moduleId": 0,
-            "start": 6708,
+            "start": 6748,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1424,10 +1422,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6773,
-            "end": 6778,
+            "commentStart": 6813,
+            "end": 6818,
             "moduleId": 0,
-            "start": 6773,
+            "start": 6813,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1449,10 +1447,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               0.7499999963999998
             ],
             "tag": {
-              "commentStart": 6578,
-              "end": 6583,
+              "commentStart": 6618,
+              "end": 6623,
               "moduleId": 0,
-              "start": 6578,
+              "start": 6618,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1473,10 +1471,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               0.7499999941499996
             ],
             "tag": {
-              "commentStart": 6643,
-              "end": 6648,
+              "commentStart": 6683,
+              "end": 6688,
               "moduleId": 0,
-              "start": 6643,
+              "start": 6683,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1497,10 +1495,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6708,
-              "end": 6713,
+              "commentStart": 6748,
+              "end": 6753,
               "moduleId": 0,
-              "start": 6708,
+              "start": 6748,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1521,10 +1519,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               1.1499999957999998
             ],
             "tag": {
-              "commentStart": 6773,
-              "end": 6778,
+              "commentStart": 6813,
+              "end": 6818,
               "moduleId": 0,
-              "start": 6773,
+              "start": 6813,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1603,7 +1601,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -2141,10 +2138,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     0.7499999963999998
                   ],
                   "tag": {
-                    "commentStart": 6578,
-                    "end": 6583,
+                    "commentStart": 6618,
+                    "end": 6623,
                     "moduleId": 0,
-                    "start": 6578,
+                    "start": 6618,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2182,10 +2179,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     0.7499999941499996
                   ],
                   "tag": {
-                    "commentStart": 6643,
-                    "end": 6648,
+                    "commentStart": 6683,
+                    "end": 6688,
                     "moduleId": 0,
-                    "start": 6643,
+                    "start": 6683,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2223,10 +2220,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6708,
-                    "end": 6713,
+                    "commentStart": 6748,
+                    "end": 6753,
                     "moduleId": 0,
-                    "start": 6708,
+                    "start": 6748,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2264,10 +2261,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.1499999957999998
                   ],
                   "tag": {
-                    "commentStart": 6773,
-                    "end": 6778,
+                    "commentStart": 6813,
+                    "end": 6818,
                     "moduleId": 0,
-                    "start": 6773,
+                    "start": 6813,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2372,10 +2369,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             0.7499999963999998
           ],
           "tag": {
-            "commentStart": 6578,
-            "end": 6583,
+            "commentStart": 6618,
+            "end": 6623,
             "moduleId": 0,
-            "start": 6578,
+            "start": 6618,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2396,10 +2393,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             0.7499999941499996
           ],
           "tag": {
-            "commentStart": 6643,
-            "end": 6648,
+            "commentStart": 6683,
+            "end": 6688,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6683,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2420,10 +2417,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6708,
-            "end": 6713,
+            "commentStart": 6748,
+            "end": 6753,
             "moduleId": 0,
-            "start": 6708,
+            "start": 6748,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2444,10 +2441,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             1.1499999957999998
           ],
           "tag": {
-            "commentStart": 6773,
-            "end": 6778,
+            "commentStart": 6813,
+            "end": 6818,
             "moduleId": 0,
-            "start": 6773,
+            "start": 6813,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2526,7 +2523,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -2775,7 +2771,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3096,7 +3091,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3117,10 +3111,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10295,
-            "end": 10302,
+            "commentStart": 10335,
+            "end": 10342,
             "moduleId": 0,
-            "start": 10295,
+            "start": 10335,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3148,10 +3142,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 10295,
-              "end": 10302,
+              "commentStart": 10335,
+              "end": 10342,
               "moduleId": 0,
-              "start": 10295,
+              "start": 10335,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3222,7 +3216,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -3253,10 +3246,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 10295,
-            "end": 10302,
+            "commentStart": 10335,
+            "end": 10342,
             "moduleId": 0,
-            "start": 10295,
+            "start": 10335,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3327,7 +3320,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -3564,7 +3556,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -4487,7 +4478,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -4733,7 +4723,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5059,7 +5048,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5385,7 +5373,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -5418,10 +5405,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12466,
-                "end": 12473,
+                "commentStart": 12506,
+                "end": 12513,
                 "moduleId": 0,
-                "start": 12466,
+                "start": 12506,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5449,10 +5436,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 12466,
-                  "end": 12473,
+                  "commentStart": 12506,
+                  "end": 12513,
                   "moduleId": 0,
-                  "start": 12466,
+                  "start": 12506,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5519,7 +5506,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5556,10 +5542,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 12466,
-                  "end": 12473,
+                  "commentStart": 12506,
+                  "end": 12513,
                   "moduleId": 0,
-                  "start": 12466,
+                  "start": 12506,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5626,7 +5612,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5713,10 +5698,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 12466,
-                "end": 12473,
+                "commentStart": 12506,
+                "end": 12513,
                 "moduleId": 0,
-                "start": 12466,
+                "start": 12506,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5783,7 +5768,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -5809,10 +5793,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 12466,
-                "end": 12473,
+                "commentStart": 12506,
+                "end": 12513,
                 "moduleId": 0,
-                "start": 12466,
+                "start": 12506,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5879,7 +5863,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -6042,10 +6025,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   ],
                   "radius": 0.1599999993650001,
                   "tag": {
-                    "commentStart": 12466,
-                    "end": 12473,
+                    "commentStart": 12506,
+                    "end": 12513,
                     "moduleId": 0,
-                    "start": 12466,
+                    "start": 12506,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -6487,7 +6470,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -6822,7 +6804,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -6843,10 +6824,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9037,
-            "end": 9042,
+            "commentStart": 9077,
+            "end": 9082,
             "moduleId": 0,
-            "start": 9037,
+            "start": 9077,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6857,10 +6838,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9116,
-            "end": 9121,
+            "commentStart": 9156,
+            "end": 9161,
             "moduleId": 0,
-            "start": 9116,
+            "start": 9156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6871,10 +6852,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9194,
-            "end": 9199,
+            "commentStart": 9234,
+            "end": 9239,
             "moduleId": 0,
-            "start": 9194,
+            "start": 9234,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6885,10 +6866,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9271,
-            "end": 9276,
+            "commentStart": 9311,
+            "end": 9316,
             "moduleId": 0,
-            "start": 9271,
+            "start": 9311,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6910,10 +6891,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 9037,
-              "end": 9042,
+              "commentStart": 9077,
+              "end": 9082,
               "moduleId": 0,
-              "start": 9037,
+              "start": 9077,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6934,10 +6915,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9116,
-              "end": 9121,
+              "commentStart": 9156,
+              "end": 9161,
               "moduleId": 0,
-              "start": 9116,
+              "start": 9156,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6958,10 +6939,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9194,
-              "end": 9199,
+              "commentStart": 9234,
+              "end": 9239,
               "moduleId": 0,
-              "start": 9194,
+              "start": 9234,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6982,10 +6963,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 9271,
-              "end": 9276,
+              "commentStart": 9311,
+              "end": 9316,
               "moduleId": 0,
-              "start": 9271,
+              "start": 9311,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7064,7 +7045,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -7593,10 +7573,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 9037,
-                    "end": 9042,
+                    "commentStart": 9077,
+                    "end": 9082,
                     "moduleId": 0,
-                    "start": 9037,
+                    "start": 9077,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7617,10 +7597,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9116,
-                    "end": 9121,
+                    "commentStart": 9156,
+                    "end": 9161,
                     "moduleId": 0,
-                    "start": 9116,
+                    "start": 9156,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7641,10 +7621,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9194,
-                    "end": 9199,
+                    "commentStart": 9234,
+                    "end": 9239,
                     "moduleId": 0,
-                    "start": 9194,
+                    "start": 9234,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7665,10 +7645,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 9271,
-                    "end": 9276,
+                    "commentStart": 9311,
+                    "end": 9316,
                     "moduleId": 0,
-                    "start": 9271,
+                    "start": 9311,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7773,10 +7753,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 9037,
-            "end": 9042,
+            "commentStart": 9077,
+            "end": 9082,
             "moduleId": 0,
-            "start": 9037,
+            "start": 9077,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7797,10 +7777,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9116,
-            "end": 9121,
+            "commentStart": 9156,
+            "end": 9161,
             "moduleId": 0,
-            "start": 9116,
+            "start": 9156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7821,10 +7801,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9194,
-            "end": 9199,
+            "commentStart": 9234,
+            "end": 9239,
             "moduleId": 0,
-            "start": 9194,
+            "start": 9234,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7845,10 +7825,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 9271,
-            "end": 9276,
+            "commentStart": 9311,
+            "end": 9316,
             "moduleId": 0,
-            "start": 9271,
+            "start": 9311,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7927,7 +7907,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -7946,10 +7925,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 13340,
-                "end": 13345,
+                "commentStart": 13380,
+                "end": 13385,
                 "moduleId": 0,
-                "start": 13340,
+                "start": 13380,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -7960,10 +7939,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 13405,
-                "end": 13410,
+                "commentStart": 13445,
+                "end": 13450,
                 "moduleId": 0,
-                "start": 13405,
+                "start": 13445,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -7974,10 +7953,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 13470,
-                "end": 13475,
+                "commentStart": 13510,
+                "end": 13515,
                 "moduleId": 0,
-                "start": 13470,
+                "start": 13510,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -7988,10 +7967,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 13535,
-                "end": 13540,
+                "commentStart": 13575,
+                "end": 13580,
                 "moduleId": 0,
-                "start": 13535,
+                "start": 13575,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -8013,10 +7992,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   0.8299999963999998
                 ],
                 "tag": {
-                  "commentStart": 13340,
-                  "end": 13345,
+                  "commentStart": 13380,
+                  "end": 13385,
                   "moduleId": 0,
-                  "start": 13340,
+                  "start": 13380,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -8037,10 +8016,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   0.8299999939099996
                 ],
                 "tag": {
-                  "commentStart": 13405,
-                  "end": 13410,
+                  "commentStart": 13445,
+                  "end": 13450,
                   "moduleId": 0,
-                  "start": 13405,
+                  "start": 13445,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -8061,10 +8040,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 13470,
-                  "end": 13475,
+                  "commentStart": 13510,
+                  "end": 13515,
                   "moduleId": 0,
-                  "start": 13470,
+                  "start": 13510,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -8085,10 +8064,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 13535,
-                  "end": 13540,
+                  "commentStart": 13575,
+                  "end": 13580,
                   "moduleId": 0,
-                  "start": 13535,
+                  "start": 13575,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -8167,7 +8146,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8198,10 +8176,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   0.8299999963999998
                 ],
                 "tag": {
-                  "commentStart": 13340,
-                  "end": 13345,
+                  "commentStart": 13380,
+                  "end": 13385,
                   "moduleId": 0,
-                  "start": 13340,
+                  "start": 13380,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -8222,10 +8200,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   0.8299999939099996
                 ],
                 "tag": {
-                  "commentStart": 13405,
-                  "end": 13410,
+                  "commentStart": 13445,
+                  "end": 13450,
                   "moduleId": 0,
-                  "start": 13405,
+                  "start": 13445,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -8246,10 +8224,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 13470,
-                  "end": 13475,
+                  "commentStart": 13510,
+                  "end": 13515,
                   "moduleId": 0,
-                  "start": 13470,
+                  "start": 13510,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -8270,10 +8248,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 13535,
-                  "end": 13540,
+                  "commentStart": 13575,
+                  "end": 13580,
                   "moduleId": 0,
-                  "start": 13535,
+                  "start": 13575,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -8352,7 +8330,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8451,10 +8428,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 0.8299999963999998
               ],
               "tag": {
-                "commentStart": 13340,
-                "end": 13345,
+                "commentStart": 13380,
+                "end": 13385,
                 "moduleId": 0,
-                "start": 13340,
+                "start": 13380,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8475,10 +8452,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 0.8299999939099996
               ],
               "tag": {
-                "commentStart": 13405,
-                "end": 13410,
+                "commentStart": 13445,
+                "end": 13450,
                 "moduleId": 0,
-                "start": 13405,
+                "start": 13445,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8499,10 +8476,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 13470,
-                "end": 13475,
+                "commentStart": 13510,
+                "end": 13515,
                 "moduleId": 0,
-                "start": 13470,
+                "start": 13510,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8523,10 +8500,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 13535,
-                "end": 13540,
+                "commentStart": 13575,
+                "end": 13580,
                 "moduleId": 0,
-                "start": 13535,
+                "start": 13575,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -8605,7 +8582,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "m"
         }
       },
@@ -8625,10 +8601,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 0.8299999963999998
               ],
               "tag": {
-                "commentStart": 13340,
-                "end": 13345,
+                "commentStart": 13380,
+                "end": 13385,
                 "moduleId": 0,
-                "start": 13340,
+                "start": 13380,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8649,10 +8625,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 0.8299999939099996
               ],
               "tag": {
-                "commentStart": 13405,
-                "end": 13410,
+                "commentStart": 13445,
+                "end": 13450,
                 "moduleId": 0,
-                "start": 13405,
+                "start": 13445,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8673,10 +8649,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 13470,
-                "end": 13475,
+                "commentStart": 13510,
+                "end": 13515,
                 "moduleId": 0,
-                "start": 13470,
+                "start": 13510,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8697,10 +8673,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 13535,
-                "end": 13540,
+                "commentStart": 13575,
+                "end": 13580,
                 "moduleId": 0,
-                "start": 13535,
+                "start": 13575,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -8779,7 +8755,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
           "units": "m"
         }
       }
@@ -9296,10 +9271,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     0.8299999963999998
                   ],
                   "tag": {
-                    "commentStart": 13340,
-                    "end": 13345,
+                    "commentStart": 13380,
+                    "end": 13385,
                     "moduleId": 0,
-                    "start": 13340,
+                    "start": 13380,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -9337,10 +9312,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     0.8299999939099996
                   ],
                   "tag": {
-                    "commentStart": 13405,
-                    "end": 13410,
+                    "commentStart": 13445,
+                    "end": 13450,
                     "moduleId": 0,
-                    "start": 13405,
+                    "start": 13445,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -9378,10 +9353,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.0699999957699997
                   ],
                   "tag": {
-                    "commentStart": 13470,
-                    "end": 13475,
+                    "commentStart": 13510,
+                    "end": 13515,
                     "moduleId": 0,
-                    "start": 13470,
+                    "start": 13510,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -9419,10 +9394,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     1.0699999961199997
                   ],
                   "tag": {
-                    "commentStart": 13535,
-                    "end": 13540,
+                    "commentStart": 13575,
+                    "end": 13580,
                     "moduleId": 0,
-                    "start": 13535,
+                    "start": 13575,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -10757,10 +10732,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10210,
-                "end": 10217,
+                "commentStart": 10250,
+                "end": 10257,
                 "moduleId": 0,
-                "start": 10210,
+                "start": 10250,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10788,10 +10763,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 10210,
-                  "end": 10217,
+                  "commentStart": 10250,
+                  "end": 10257,
                   "moduleId": 0,
-                  "start": 10210,
+                  "start": 10250,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10862,7 +10837,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10883,10 +10857,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10295,
-                "end": 10302,
+                "commentStart": 10335,
+                "end": 10342,
                 "moduleId": 0,
-                "start": 10295,
+                "start": 10335,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -10914,10 +10888,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10295,
-                  "end": 10302,
+                  "commentStart": 10335,
+                  "end": 10342,
                   "moduleId": 0,
-                  "start": 10295,
+                  "start": 10335,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -10988,7 +10962,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11014,10 +10987,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10210,
-                "end": 10217,
+                "commentStart": 10250,
+                "end": 10257,
                 "moduleId": 0,
-                "start": 10210,
+                "start": 10250,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11045,10 +11018,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 10210,
-                  "end": 10217,
+                  "commentStart": 10250,
+                  "end": 10257,
                   "moduleId": 0,
-                  "start": 10210,
+                  "start": 10250,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11119,7 +11092,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11140,10 +11112,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10295,
-                "end": 10302,
+                "commentStart": 10335,
+                "end": 10342,
                 "moduleId": 0,
-                "start": 10295,
+                "start": 10335,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11171,10 +11143,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10295,
-                  "end": 10302,
+                  "commentStart": 10335,
+                  "end": 10342,
                   "moduleId": 0,
-                  "start": 10295,
+                  "start": 10335,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11245,7 +11217,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11278,10 +11249,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           ],
           "radius": 0.34999999997,
           "tag": {
-            "commentStart": 10210,
-            "end": 10217,
+            "commentStart": 10250,
+            "end": 10257,
             "moduleId": 0,
-            "start": 10210,
+            "start": 10250,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11352,7 +11323,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -11371,10 +11341,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10210,
-                "end": 10217,
+                "commentStart": 10250,
+                "end": 10257,
                 "moduleId": 0,
-                "start": 10210,
+                "start": 10250,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11402,10 +11372,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 10210,
-                  "end": 10217,
+                  "commentStart": 10250,
+                  "end": 10257,
                   "moduleId": 0,
-                  "start": 10210,
+                  "start": 10250,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11476,7 +11446,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11497,10 +11466,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10295,
-                "end": 10302,
+                "commentStart": 10335,
+                "end": 10342,
                 "moduleId": 0,
-                "start": 10295,
+                "start": 10335,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11528,10 +11497,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10295,
-                  "end": 10302,
+                  "commentStart": 10335,
+                  "end": 10342,
                   "moduleId": 0,
-                  "start": 10295,
+                  "start": 10335,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11602,7 +11571,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11628,10 +11596,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10210,
-                "end": 10217,
+                "commentStart": 10250,
+                "end": 10257,
                 "moduleId": 0,
-                "start": 10210,
+                "start": 10250,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11659,10 +11627,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 10210,
-                  "end": 10217,
+                  "commentStart": 10250,
+                  "end": 10257,
                   "moduleId": 0,
-                  "start": 10210,
+                  "start": 10250,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11733,7 +11701,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11754,10 +11721,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10295,
-                "end": 10302,
+                "commentStart": 10335,
+                "end": 10342,
                 "moduleId": 0,
-                "start": 10295,
+                "start": 10335,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11785,10 +11752,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10295,
-                  "end": 10302,
+                  "commentStart": 10335,
+                  "end": 10342,
                   "moduleId": 0,
-                  "start": 10295,
+                  "start": 10335,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11859,7 +11826,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12259,10 +12225,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   ],
                   "radius": 0.34999999997,
                   "tag": {
-                    "commentStart": 10210,
-                    "end": 10217,
+                    "commentStart": 10250,
+                    "end": 10257,
                     "moduleId": 0,
-                    "start": 10210,
+                    "start": 10250,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -12306,10 +12272,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   ],
                   "radius": 0.175000000005,
                   "tag": {
-                    "commentStart": 10295,
-                    "end": 10302,
+                    "commentStart": 10335,
+                    "end": 10342,
                     "moduleId": 0,
-                    "start": 10295,
+                    "start": 10335,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -12402,10 +12368,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10210,
-            "end": 10217,
+            "commentStart": 10250,
+            "end": 10257,
             "moduleId": 0,
-            "start": 10210,
+            "start": 10250,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12433,10 +12399,10 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             ],
             "radius": 0.34999999997,
             "tag": {
-              "commentStart": 10210,
-              "end": 10217,
+              "commentStart": 10250,
+              "end": 10257,
               "moduleId": 0,
-              "start": 10210,
+              "start": 10250,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -12507,7 +12473,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
