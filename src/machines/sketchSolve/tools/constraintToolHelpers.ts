@@ -6,6 +6,7 @@ import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import {
   buildEqualLengthConstraintInput,
   buildFixedConstraintInput,
+  buildSymmetricConstraintInput,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -30,6 +31,7 @@ type HorizontalVerticalPayload =
 
 export type ConstraintToolPayload =
   | Extract<ApiConstraint, { type: 'Coincident' }>
+  | Extract<ApiConstraint, { type: 'Symmetric' }>
   | Extract<ApiConstraint, { type: 'Tangent' }>
   | Extract<ApiConstraint, { type: 'Parallel' }>
   | Extract<ApiConstraint, { type: 'Perpendicular' }>
@@ -218,6 +220,16 @@ function buildConstraintToolPayloads(
           input: tangentPair,
         },
       ]
+    }
+    case 'symmetricConstraintTool': {
+      const symmetricInput = buildSymmetricConstraintInput(objectSelectionIds, [
+        ...objects,
+      ])
+      if (!symmetricInput) {
+        return null
+      }
+
+      return [symmetricInput]
     }
     case 'parallelConstraintTool': {
       const [anchorLineId, ...otherLineIds] = objectSelectionIds

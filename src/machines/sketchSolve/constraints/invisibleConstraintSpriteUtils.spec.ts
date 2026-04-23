@@ -56,6 +56,17 @@ describe('invisibleConstraintSpriteUtils', () => {
 
     expect(
       isInvisibleConstraintObject(
+        createConstraintApiObject(12, {
+          type: 'Symmetric',
+          input: [1, 2],
+          axis: 3,
+          constrain_arc_end_points: true,
+        })
+      )
+    ).toBe(true)
+
+    expect(
+      isInvisibleConstraintObject(
         createConstraintApiObject(11, {
           type: 'Angle',
           lines: [1, 2],
@@ -335,6 +346,109 @@ describe('invisibleConstraintSpriteUtils', () => {
     )
 
     expect(segmentIds).toEqual([10, 11])
+  })
+
+  it('includes the axis line when highlighting a symmetric constraint', () => {
+    const axisStart = createPointApiObject({ id: 1, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 2, x: 0, y: 10 })
+    const leftStart = createPointApiObject({ id: 3, x: -10, y: 0 })
+    const leftEnd = createPointApiObject({ id: 4, x: -10, y: 5 })
+    const rightStart = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const rightEnd = createPointApiObject({ id: 6, x: 10, y: 5 })
+    const axis = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const left = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const right = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const symmetric = createConstraintApiObject(20, {
+      type: 'Symmetric',
+      input: [11, 12],
+      axis: 10,
+      constrain_arc_end_points: true,
+    })
+    const objects = createObjectsArray([
+      axisStart,
+      axisEnd,
+      leftStart,
+      leftEnd,
+      rightStart,
+      rightEnd,
+      axis,
+      left,
+      right,
+      symmetric,
+    ])
+
+    expect(
+      findSegmentsForInvisibleConstraint(
+        symmetric as InvisibleConstraintObject,
+        objects
+      )
+    ).toEqual([11, 12, 10])
+
+    expect(findInvisibleConstraintsForSegment(axis, objects)).toEqual([20])
+    expect(findInvisibleConstraintsForSegment(left, objects)).toEqual([20])
+  })
+
+  it('finds symmetric constraints related to hovered symmetric points', () => {
+    const pointA = createPointApiObject({ id: 1, x: -5, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 5, y: 0 })
+    const axisStart = createPointApiObject({ id: 3, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 4, x: 0, y: 10 })
+    const axis = createLineApiObject({ id: 10, start: 3, end: 4 })
+    const symmetric = createConstraintApiObject(20, {
+      type: 'Symmetric',
+      input: [1, 2],
+      axis: 10,
+      constrain_arc_end_points: true,
+    })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      axisStart,
+      axisEnd,
+      axis,
+      symmetric,
+    ])
+
+    expect(findInvisibleConstraintsForSegment(pointA, objects)).toEqual([20])
+  })
+
+  it('anchors a symmetric constraint using both mirrored input and axis geometry', () => {
+    const axisStart = createPointApiObject({ id: 1, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 2, x: 0, y: 10 })
+    const leftStart = createPointApiObject({ id: 3, x: -10, y: 0 })
+    const leftEnd = createPointApiObject({ id: 4, x: -10, y: 10 })
+    const rightStart = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const rightEnd = createPointApiObject({ id: 6, x: 10, y: 10 })
+    const axis = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const left = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const right = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const symmetric = createConstraintApiObject(20, {
+      type: 'Symmetric',
+      input: [11, 12],
+      axis: 10,
+      constrain_arc_end_points: true,
+    })
+    const objects = createObjectsArray([
+      axisStart,
+      axisEnd,
+      leftStart,
+      leftEnd,
+      rightStart,
+      rightEnd,
+      axis,
+      left,
+      right,
+      symmetric,
+    ])
+
+    const anchor = getInvisibleConstraintAnchor(
+      symmetric as InvisibleConstraintObject,
+      objects
+    )
+
+    expect(anchor?.x).toBeCloseTo(0)
+    expect(anchor?.y).toBeCloseTo(10 / 3)
+    expect(anchor?.z).toBe(0)
   })
 
   it('includes owner line and arc segments when highlighting a coincident constraint', () => {

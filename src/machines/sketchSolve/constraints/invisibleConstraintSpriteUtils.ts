@@ -34,6 +34,7 @@ export type InvisibleConstraint = Extract<
       | 'Parallel'
       | 'Perpendicular'
       | 'Tangent'
+      | 'Symmetric'
   }
 >
 
@@ -63,6 +64,7 @@ export function isInvisibleConstraintObject(
     case 'Parallel':
     case 'Perpendicular':
     case 'Tangent':
+    case 'Symmetric':
       return true
     default:
       return false
@@ -108,6 +110,12 @@ export function getInvisibleConstraintAnchor(
     case 'EqualRadius':
       return averageVectors(
         constraint.input
+          .map((objectId) => getObjectAnchor(objectId, objects))
+          .filter(isVector3)
+      )
+    case 'Symmetric':
+      return averageVectors(
+        [...constraint.input, constraint.axis]
           .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
@@ -203,6 +211,11 @@ export function findSegmentsForInvisibleConstraint(
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
+      case 'Symmetric':
+        return [
+          ...constraint.kind.constraint.input,
+          constraint.kind.constraint.axis,
+        ]
     }
   })()
 
@@ -271,6 +284,13 @@ export function isConstrainingSegment(
         isArcLikeSegment(segment) &&
         constraint.kind.constraint.input.includes(segment.id)
       )
+    case 'Symmetric':
+      return (
+        ((isLineSegment(segment) || isArcLikeSegment(segment)) &&
+          constraint.kind.constraint.input.includes(segment.id)) ||
+        (isLineSegment(segment) &&
+          constraint.kind.constraint.axis === segment.id)
+      )
     case 'Tangent':
       return (
         (isLineSegment(segment) || isArcLikeSegment(segment)) &&
@@ -291,6 +311,10 @@ function isConstrainingPointCluster(
     case 'Horizontal':
     case 'Vertical':
       return getAxisConstraintPointIds(constraint.kind.constraint).some((id) =>
+        pointIds.includes(id)
+      )
+    case 'Symmetric':
+      return constraint.kind.constraint.input.some((id) =>
         pointIds.includes(id)
       )
     default:

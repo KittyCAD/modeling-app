@@ -355,6 +355,14 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
       'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
   }),
   createSketchSolveConstraintDropdownItem({
+    id: 'Symmetric',
+    toolName: 'symmetricConstraintTool',
+    icon: 'symmetric',
+    title: 'Symmetric',
+    description:
+      'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
+  }),
+  createSketchSolveConstraintDropdownItem({
     id: 'Parallel',
     toolName: 'parallelConstraintTool',
     icon: 'parallel',
@@ -1958,7 +1966,7 @@ export function buildToolbarConfig(
           array: sketchSolveConstraintItems,
           display: 'recent',
           visibleItemCount: 3,
-          defaultVisibleItemIds: ['coincident', 'Tangent', 'Parallel'],
+          defaultVisibleItemIds: ['coincident', 'Tangent', 'Symmetric'],
         },
         {
           id: 'Dimension',

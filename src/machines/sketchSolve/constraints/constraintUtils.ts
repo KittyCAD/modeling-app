@@ -241,6 +241,78 @@ export function buildTangentConstraintInput(
   return null
 }
 
+type SymmetricConstraintInput = Extract<ApiConstraint, { type: 'Symmetric' }>
+
+function buildDefaultSymmetricConstraintInput({
+  input,
+  axis,
+}: {
+  input: [number, number]
+  axis: number
+}): SymmetricConstraintInput {
+  return {
+    type: 'Symmetric',
+    input,
+    axis,
+    constrain_arc_end_points: true,
+  }
+}
+
+export function buildSymmetricConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+) {
+  if (selectedIds.length !== 3) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (selectedPoints.length === 2 && selectedLines.length === 1) {
+    return buildDefaultSymmetricConstraintInput({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  if (selectedArcLikes.length === 2 && selectedLines.length === 1) {
+    return buildDefaultSymmetricConstraintInput({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  if (selectedLines.length === 3) {
+    const orderedLines = selectedObjects.filter(isLineSegment)
+    const [axisLine, inputLine0, inputLine1] = orderedLines
+    if (!axisLine || !inputLine0 || !inputLine1) {
+      return null
+    }
+
+    // Policy decision for the ambiguous "three straight segments" case:
+    // treat the first-selected line as the symmetry axis.
+    //
+    // If the team wants different behavior later, this is the single place to
+    // swap in a heuristic such as:
+    // - preferring a construction line
+    // - picking the line spatially between the other two
+    // - preferring the most recently clicked segment instead
+    return buildDefaultSymmetricConstraintInput({
+      input: [inputLine0.id, inputLine1.id],
+      axis: axisLine.id,
+    })
+  }
+
+  return null
+}
+
 type EqualLengthConstraintInput =
   | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
   | Extract<ApiConstraint, { type: 'EqualRadius' }>
@@ -514,6 +586,20 @@ export function getSelectedTangentConstraintInput(
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
   return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedSymmetricConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildSymmetricConstraintInput(
     getObjectSelectionIds(selectedIds),
     objects
   )

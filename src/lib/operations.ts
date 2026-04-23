@@ -2059,7 +2059,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   symmetric: {
     label: 'Symmetric Constraint',
-    icon: 'symmetry',
+    icon: 'symmetric',
   },
   tangent: {
     label: 'Tangent Constraint',

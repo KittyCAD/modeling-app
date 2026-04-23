@@ -1923,21 +1923,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  symmetry: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="symmetry"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.5 5H12.1611V6H10.5V7.66699H9.5V6H4.5V14H9.5V12.333H10.5V14H12.1611V15H10.5V17H9.5V15H3.5V5H9.5V3H10.5V5ZM16.5 15H14.0889V14H15.5V11.4287H16.5V15ZM10.5 11H9.5V9H10.5V11ZM16.5 8.57129H15.5V6H14.0889V5H16.5V8.57129Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
+  symmetric: createConstraintIcon('Symmetric'),
   tangent: createConstraintIcon('Tangent'),
   text: (
     <svg
