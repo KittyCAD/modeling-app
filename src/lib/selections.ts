@@ -921,7 +921,14 @@ function getBestCandidates(
     return []
   }
 
-  // Segments take precedence (could also use sketchBlockConstraint)
+  const overlappingRegions = entries.filter(
+    (entry) =>
+      entry.artifact.type === 'path' && entry.artifact.subType === 'region'
+  )
+  if (overlappingRegions.length) {
+    return overlappingRegions
+  }
+
   const overlappingSegments = entries.filter(
     (entry) => entry.artifact.type === 'segment'
   )
@@ -951,11 +958,7 @@ function getBestCandidates(
     }
 
     // Other valid artifact types
-    if (
-      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
-        entry.artifact.type
-      )
-    ) {
+    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
       return [entry]
     }
   }
