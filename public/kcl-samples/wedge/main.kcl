@@ -13,10 +13,16 @@ height = 10
 sketch = startSketchOn(XY)
 
 // create the profile at the top of the wedge
-profile = startProfile(sketch, at = [0, height])
-  |> yLine(length = -height)
-  |> xLine(length = length)
-  |> close()
+profile = sketch(on = sketch) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 10mm, var 0mm], end = [var 0mm, var 10mm])
+  coincident([line2.end, line3.start])
+  vertical(line1)
+  horizontal(line2)
+}
 
+region001 = region(segments = [profile.line1, profile.line2])
 // extrude the profile to create the wedge
-wedge = extrude(profile, length = width)
+wedge = extrude(region001, length = width)

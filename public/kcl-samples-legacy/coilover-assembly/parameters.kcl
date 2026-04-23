@@ -1,0 +1,38 @@
+// Coilover assembly parameters
+// Key dimensional parameters for all parts in the coilover assembly. These are imported into the kcl part files. Key parameters include retainer plate, eye mount, spring and piston rod dimensions.
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Coilover Bottom (coilover-bottom.kcl)
+export retainerPlateDia = 70
+export retainerPlateLength = 6.3
+export baseSeatingDia = 55
+export baseSeatingLength = 5
+export lowerMountDia = 38
+export damperBodyLength = 51
+export lowerMountLength = 92
+export eyeEndMountOuterDia = 25
+export eyeEndMountLength = eyeEndMountOuterDia / 2 + 30
+export eyeEndMountHoleDia = 12.5
+export eyeEndMountThickness = 12.7
+export eyeEndMountFillet = 5
+export damperBodyDia = lowerMountDia
+export pistonShaftHoleDia = 10
+export lengthBelowRetainerPlate = baseSeatingLength + lowerMountLength + eyeEndMountLength
+export lowerMountOverallLength = lengthBelowRetainerPlate + retainerPlateLength
+export pointOffset = 20 // Used to help build profile for subtraction
+
+
+// Coilover Spring (spring.kcl)
+export springRadius = 22
+export springLength = 200
+export springRevolutions = 8
+export coilThickness = 6
+
+// Coilover Top (coilover-top.kcl)
+export pistonRodStopDia = 25
+export pistonRodStopLength = 32.5
+export upperMountPlateDia = 70
+export upperMountPlateThickness = 22.5
+export pistonShaftDia = pistonShaftHoleDia - 0.1 // reduced shaft dia from the hole to provide some clearance

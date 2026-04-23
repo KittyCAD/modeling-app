@@ -33,6 +33,15 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands gingerbread-man.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": -0.00000000000000000000014409586594994403,
+          "y": 0.0000000000000000014406249173259627,
           "z": 0.0
         }
       }
@@ -81,166 +90,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -88.0,
-            "y": -112.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -82.0,
-            "y": 59.0,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 93.0,
-            "y": 110.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 156.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -110.0,
-            "y": -83.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -45.0,
-            "y": 65.0,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 124.0,
-            "y": 95.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 49.0,
-            "y": 22.0,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 23.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -114.0,
-            "y": 421.0,
-            "z": 0.0
-          },
-          "end": {
-            "x": 0.0,
-            "y": 549.0,
+            "x": -87.99932870719708,
+            "y": -112.0005283126162,
             "z": 0.0
           },
           "relative": false
@@ -251,19 +102,24 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_mirror",
-        "ids": [
-          "[uuid]"
-        ],
-        "axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "point": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -127.75276137595901,
+            "y": -80.7680122895937
+          },
+          "radius": 50.55497469169721,
+          "start": {
+            "unit": "degrees",
+            "value": -38.15515558607679
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -213.31588062394235
+          },
+          "relative": false
         }
       }
     },
@@ -271,8 +127,374 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -77.0,
+            "y": 57.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -77.0,
+            "y": 213.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -187.00007631383218,
+            "y": 130.0001009847176,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -210.82971203084693,
+            "y": 161.579584208389
+          },
+          "radius": 39.561538128335826,
+          "start": {
+            "unit": "degrees",
+            "value": -52.96207582572321
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -237.64763230947725
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -108.00032764246315,
+            "y": 290.0004297140514,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -36.889545584908106,
+            "y": 197.1802021128508
+          },
+          "radius": 116.92877309189458,
+          "start": {
+            "unit": "degrees",
+            "value": 127.45619449482876
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 100.89989370357264
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -59.00003071571594,
+            "y": 334.9997388499762,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.6003205192521293,
+            "y": 433.7011844992821
+          },
+          "radius": 115.30037831938989,
+          "start": {
+            "unit": "degrees",
+            "value": -121.12545887599961
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -269.7016836543425
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.6003181701845042,
+            "y": 433.7011845389942
+          },
+          "radius": 115.30037826744768,
+          "start": {
+            "unit": "degrees",
+            "value": 89.70168482153707
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -58.874541063843026
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 59.00003314156479,
+            "y": 311.999470782166,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 36.88954522998842,
+            "y": 197.18020227177
+          },
+          "radius": 116.9287736057741,
+          "start": {
+            "unit": "degrees",
+            "value": 79.1001049572898
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 52.543805320294716
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 232.00006750902895,
+            "y": 195.0001069784685,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 210.82971205337378,
+            "y": 161.57958409652502
+          },
+          "radius": 39.561538137707636,
+          "start": {
+            "unit": "degrees",
+            "value": 57.647632668737614
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -127.03792444787815
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 77.0,
+            "y": 213.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 77.0,
+            "y": 57.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 169.99928985956646,
+            "y": -53.00046688185346,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 127.75276230944749,
+            "y": -80.76801161635359
+          },
+          "radius": 50.55497631910657,
+          "start": {
+            "unit": "degrees",
+            "value": 33.315878820933236
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -141.84484668171973
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.00000000000000000000014409597418276522,
+            "y": 0.000000000000000001439350644178686,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 0.0,
+          "y": 180.0
+        }
       }
     },
     {
@@ -352,6 +574,15 @@ description: Artifact commands gingerbread-man.kcl
         "metalness": 0.0,
         "roughness": 0.01,
         "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -452,16 +683,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 380.83,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -2.9989082226741317,
+            "y": 436.2700243010523
+          },
+          "radius": 51.84648098439818,
+          "start": {
+            "unit": "degrees",
+            "value": -137.13462333972393
           },
           "end": {
-            "x": 38.45,
-            "y": 399.54,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -40.32276686475175
           },
           "relative": false
         }
@@ -474,33 +708,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 14.11,
-            "y": -7.860000000000014,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 43.771345688219654,
+            "y": 395.129052726433
           },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 362.12,
-            "z": 0.0
+          "radius": 10.491710672656609,
+          "start": {
+            "unit": "degrees",
+            "value": 133.6499739367912
           },
           "end": {
-            "x": -54.93,
-            "y": 391.2,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -23.949688547878765
           },
           "relative": false
         }
@@ -513,93 +733,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 13.93,
-            "y": 9.800000000000011,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -1.270512130032337,
+            "y": 417.95000359929975
           },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -37.56,
-          "y": 405.86,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 389.05,
-            "z": 0.0
+          "radius": 60.973647062499964,
+          "start": {
+            "unit": "degrees",
+            "value": -26.367344003015024
           },
           "end": {
-            "x": 32.65,
-            "y": 404.69,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -154.4475441774651
           },
           "relative": false
         }
@@ -612,13 +758,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 24.25,
-            "y": -15.449999999999989,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -48.338074403824415,
+            "y": 395.831178370471
           },
-          "angle_snap_increment": null
+          "radius": 8.975748046483366,
+          "start": {
+            "unit": "degrees",
+            "value": -152.23454984308117
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -324.83974942669306
+          },
+          "relative": false
         }
       }
     },
@@ -626,60 +780,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -117.68,
-            "y": 2.240000000000009,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 23.22,
-            "y": 14.379999999999995,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -748,6 +854,308 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 1.0,
+                "y": -401.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": -1.0,
+                "y": 401.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -37.56,
+          "y": 405.86,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -1.7292173934241006,
+            "y": 443.67998505136967
+          },
+          "radius": 52.09794863030143,
+          "start": {
+            "unit": "degrees",
+            "value": -133.452898626649
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -48.73583226535641
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 43.634608435763134,
+            "y": 395.07339219183626
+          },
+          "radius": 14.501772194501685,
+          "start": {
+            "unit": "degrees",
+            "value": 139.35629138458847
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -23.721356703204133
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -1.5687600359649494,
+            "y": 414.92997693179154
+          },
+          "radius": 63.87411739823445,
+          "start": {
+            "unit": "degrees",
+            "value": -23.71609585899239
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -158.4322900527989
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -46.33890714744928,
+            "y": 393.90067290693986
+          },
+          "radius": 14.835589480109649,
+          "start": {
+            "unit": "degrees",
+            "value": -170.49109121817264
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -306.2810385292971
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 10.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -759,6 +1167,15 @@ description: Artifact commands gingerbread-man.kcl
         "metalness": 0.0,
         "roughness": 0.01,
         "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -827,12 +1244,12 @@ description: Artifact commands gingerbread-man.kcl
           },
           "radius": 15.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -842,8 +1259,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -978,6 +1399,15 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1031,12 +1461,12 @@ description: Artifact commands gingerbread-man.kcl
           },
           "radius": 30.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -1046,8 +1476,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1182,6 +1616,15 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1208,8 +1651,8 @@ description: Artifact commands gingerbread-man.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -73.02,
-          "y": 483.5,
+          "x": -37.900000000000006,
+          "y": 503.47,
           "z": 0.0
         }
       }
@@ -1228,16 +1671,57 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -60.21,
-            "y": 500.64,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -45.81874318592303,
+            "y": 476.53030375082625
+          },
+          "radius": 28.079418221222998,
+          "start": {
+            "unit": "degrees",
+            "value": 73.61965417982246
           },
           "end": {
-            "x": -37.9,
-            "y": 503.47,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 165.62770127668423
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -37.899999999981546,
+          "y": 503.4700000000628,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -36.27183423348939,
+            "y": 509.00929817236283
+          },
+          "radius": 5.773625204741269,
+          "start": {
+            "unit": "degrees",
+            "value": -106.37964306558513
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 76.35151521126815
           },
           "relative": false
         }
@@ -1250,13 +1734,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 2.990000000000002,
-            "y": 11.149999999999977,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -45.026320016149995,
+            "y": 472.9618614518508
           },
-          "angle_snap_increment": null
+          "radius": 42.868890606001,
+          "start": {
+            "unit": "degrees",
+            "value": 76.34970073528932
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 163.69116929748304
+          },
+          "relative": false
         }
       }
     },
@@ -1267,13 +1759,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -51.260000000000005,
-            "y": -29.620000000000005,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -79.7247815479131,
+            "y": 483.1105454885071
           },
-          "angle_snap_increment": null
+          "radius": 6.716726887597461,
+          "start": {
+            "unit": "degrees",
+            "value": 163.66119118324914
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 363.32592139686454
+          },
+          "relative": false
         }
       }
     },
@@ -1281,17 +1781,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 13.150000000000006,
-            "y": -1.5,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1407,6 +1902,15 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1453,16 +1957,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -40.65,
-            "y": 88.2,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -39.39026116784798,
+            "y": 111.05002542601007
+          },
+          "radius": 23.194612059718228,
+          "start": {
+            "unit": "degrees",
+            "value": -150.56113854694286
           },
           "end": {
-            "x": -22.49,
-            "y": 96.09,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -40.523375773658884
           },
           "relative": false
         }
@@ -1475,16 +1982,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 104.78,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -1.8233712966612892,
+            "y": 76.969963205884
+          },
+          "radius": 27.545986789836167,
+          "start": {
+            "unit": "degrees",
+            "value": 136.36287516209597
           },
           "end": {
-            "x": 17.76,
-            "y": 96.49,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 44.89171777283413
           },
           "relative": false
         }
@@ -1497,16 +2007,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 41.83,
-            "y": 83.47,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 38.29789337422582,
+            "y": 105.83997761113953
+          },
+          "radius": 22.661278228336453,
+          "start": {
+            "unit": "degrees",
+            "value": -155.4126481963836
           },
           "end": {
-            "x": 58.8,
-            "y": 96.09,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -23.37198520769889
           },
           "relative": false
         }
@@ -1519,13 +2032,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 10.659999999999997,
-            "y": -3.9399999999999977,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 63.86321460579165,
+            "y": 93.66851003312895
           },
-          "angle_snap_increment": null
+          "radius": 5.728338066715063,
+          "start": {
+            "unit": "degrees",
+            "value": 146.2588456399134
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -15.994755014359447
+          },
+          "relative": false
         }
       }
     },
@@ -1536,13 +2057,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -27.629999999999995,
-            "y": -20.13000000000001,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 43.11863003426074,
+            "y": 99.19900295471412
           },
-          "angle_snap_increment": null
+          "radius": 27.196698002410898,
+          "start": {
+            "unit": "degrees",
+            "value": -15.152529432084036
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -92.7155077689526
+          },
+          "relative": false
         }
       }
     },
@@ -1553,13 +2082,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -31.169999999999998,
-            "y": 17.370000000000005,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 43.78360068544597,
+            "y": 112.19835725522825
           },
-          "angle_snap_increment": null
+          "radius": 40.21298844032053,
+          "start": {
+            "unit": "degrees",
+            "value": -92.78440580187855
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -145.46092930627216
+          },
+          "relative": false
         }
       }
     },
@@ -1570,13 +2107,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -25.259999999999998,
-            "y": -1.980000000000004,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -1.4005184761436578,
+            "y": 81.09935264844938
           },
-          "angle_snap_increment": null
+          "radius": 14.639110084170527,
+          "start": {
+            "unit": "degrees",
+            "value": 34.53724259091008
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 154.4645089176992
+          },
+          "relative": false
         }
       }
     },
@@ -1587,13 +2132,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -29.199999999999996,
-            "y": -9.469999999999999,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -33.6616878072561,
+            "y": 96.5594568272402
           },
-          "angle_snap_increment": null
+          "radius": 21.135170553795206,
+          "start": {
+            "unit": "degrees",
+            "value": -25.652362452813506
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -118.71958504004532
+          },
+          "relative": false
         }
       }
     },
@@ -1604,13 +2157,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -23.290000000000006,
-            "y": 22.89,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -15.286769155184981,
+            "y": 129.68686165783114
           },
-          "angle_snap_increment": null
+          "radius": 59.01720892594473,
+          "start": {
+            "unit": "degrees",
+            "value": -118.90985127485115
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -149.3585412327641
+          },
+          "relative": false
         }
       }
     },
@@ -1621,13 +2182,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 7.5,
-            "y": -1.1799999999999926,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -62.850348883437334,
+            "y": 103.24999784370895
           },
-          "angle_snap_increment": null
+          "radius": 4.856939295236132,
+          "start": {
+            "unit": "degrees",
+            "value": -131.42059141952726
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -407.83434289943875
+          },
+          "relative": false
         }
       }
     },
@@ -1635,8 +2204,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -1731,6 +2304,15 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1777,16 +2359,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -220.25,
-            "y": 171.97,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -209.07306675817946,
+            "y": 183.37302404261675
+          },
+          "radius": 15.968201621692716,
+          "start": {
+            "unit": "degrees",
+            "value": 174.58473481998433
           },
           "end": {
-            "x": -207.34,
-            "y": 167.5,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 276.2310344113213
           },
           "relative": false
         }
@@ -1799,16 +2384,19 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": -191.45,
-            "y": 160.79,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -205.29887434958658,
+            "y": 150.16850350127413
+          },
+          "radius": 17.4504270579923,
+          "start": {
+            "unit": "degrees",
+            "value": 96.71680878525433
           },
           "end": {
-            "x": -189.21,
-            "y": 143.41,
-            "z": 0.0
+            "unit": "degrees",
+            "value": -22.785965251614485
           },
           "relative": false
         }
@@ -1821,13 +2409,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -7.199999999999989,
-            "y": 1.740000000000009,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -192.6691128200397,
+            "y": 144.86196841939025
           },
-          "angle_snap_increment": null
+          "radius": 3.7511502165923662,
+          "start": {
+            "unit": "degrees",
+            "value": -22.770303375190505
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -184.3838510648333
+          },
+          "relative": false
         }
       }
     },
@@ -1838,13 +2434,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -11.920000000000016,
-            "y": 13.159999999999997,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -208.60263982619514,
+            "y": 146.0827912577224
           },
-          "angle_snap_increment": null
+          "radius": 12.229077923162068,
+          "start": {
+            "unit": "degrees",
+            "value": -4.380684449524487
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 88.72264117208465
+          },
+          "relative": false
         }
       }
     },
@@ -1855,13 +2459,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -24.589999999999975,
-            "y": 27.069999999999993,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -207.76033046053763,
+            "y": 183.5303638798373
           },
-          "angle_snap_increment": null
+          "radius": 25.227966891520026,
+          "start": {
+            "unit": "degrees",
+            "value": -91.2939576140736
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -184.20458713994242
+          },
+          "relative": false
         }
       }
     },
@@ -1872,13 +2484,21 @@ description: Artifact commands gingerbread-man.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 7.949999999999989,
-            "y": -0.5,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -228.94772518707444,
+            "y": 185.08985692832823
           },
-          "angle_snap_increment": null
+          "radius": 3.983257160863128,
+          "start": {
+            "unit": "degrees",
+            "value": 175.82241963331623
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -3.0200123168426707
+          },
+          "relative": false
         }
       }
     },
@@ -1886,8 +2506,12 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": true
       }
     },
     {
@@ -1988,6 +2612,15 @@ description: Artifact commands gingerbread-man.kcl
         "num_repetitions": 1,
         "arc_degrees": 360.0,
         "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

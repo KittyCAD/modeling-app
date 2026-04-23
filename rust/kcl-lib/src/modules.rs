@@ -100,6 +100,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
         "hole" => Some(include_str!("../std/hole.kcl")),
+        "gear" => Some(include_str!("../std/gear.kcl")),
         _ => None,
     }
 }
@@ -247,6 +248,16 @@ impl ModulePath {
             })
         } else {
             Ok(ModulePath::Std { value: path[1].clone() })
+        }
+    }
+
+    /// If we have std path, return the fully qualified name of the given item
+    /// in the module.
+    pub(crate) fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
+        match self {
+            ModulePath::Main => None,
+            ModulePath::Local { .. } => None,
+            ModulePath::Std { .. } => Some(format!("{self}::{local_item_name}")),
         }
     }
 }

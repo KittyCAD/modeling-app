@@ -5,27 +5,43 @@
 @settings(defaultLengthUnit = mm)
 
 // Define parameters
-origin2D = [0, 0]
 thickness = 100
 wallThickness = 10
+scaleFactor = 1.2
 
 // create a sketch for the body of the gingerbread man
-sketch = startSketchOn(XY)
+bodyHalf = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
+  arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -170mm, var -53mm], end = [var -77mm, var 57mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var -77mm, var 57mm], end = [var -77mm, var 213mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -77mm, var 213mm], end = [var -187mm, var 130mm])
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var -232mm, var 195mm], end = [var -187mm, var 130mm], center = [var -210.83mm, var 161.58mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -232mm, var 195mm], end = [var -108mm, var 290mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -59mm, var 312mm], end = [var -108mm, var 290mm], center = [var -36.89mm, var 197.18mm])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -59mm, var 312mm], end = [var -59mm, var 335mm])
+  coincident([arc8.start, line9.start])
+  arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
+  coincident([line9.end, arc10.end])
+  vertical(line4)
+  vertical(line9)
+}
+
+bodyProfile = bodyHalf
+  |> mirror2d(axis = Y)
+  |> scale(x = scaleFactor, y = scaleFactor, z = 1)
+
+bodyRegion = region(point = [0mm, 260mm], sketch = bodyProfile)
 
 // create the body
-cutter = startProfile(sketch, at = origin2D)
-  |> line(end = [-88, -112])
-  |> tangentialArc(endAbsolute = [-170, -53])
-  |> line(end = [93, 110])
-  |> yLine(length = 156)
-  |> line(end = [-110, -83])
-  |> tangentialArc(endAbsolute = [-232, 195])
-  |> line(end = [124, 95])
-  |> tangentialArc(endAbsolute = [-59, 312])
-  |> yLine(length = 23)
-  |> arc(interiorAbsolute = [-114, 421], endAbsolute = [0, 549])
-  |> mirror2d(axis = Y)
-  |> close()
-  |> scale(x = 1.2, y = 1.2, z = 1)
-  |> extrude(length = thickness)
+cutter = extrude(bodyRegion, length = thickness)
   |> shell(thickness = wallThickness, faces = [START, END])
+
+hide([bodyHalf, bodyProfile])
