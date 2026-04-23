@@ -7,6 +7,7 @@ import {
   buildEqualLengthConstraintInput,
   buildFixedConstraintInput,
   buildSymmetricConstraintInput,
+  buildSymmetricConstraintInputWithExplicitAxis,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -123,6 +124,50 @@ function getSelectionObjectIds(
   selectionIds: readonly SketchSolveSelectionId[]
 ) {
   return selectionIds.filter(isNumberSelection)
+}
+
+function buildExplicitSymmetricPreparedApply(
+  currentSelectionIds: readonly SketchSolveSelectionId[],
+  clickedSelectionId: SketchSolveSelectionId,
+  objects: readonly ApiObject[]
+): ConstraintToolPreparedApply | null {
+  if (!isNumberSelection(clickedSelectionId)) {
+    return null
+  }
+
+  const selectionIds = uniqueSelectionIds([
+    ...currentSelectionIds,
+    clickedSelectionId,
+  ])
+  const objectSelectionIds = getSelectionObjectIds(selectionIds)
+  const payload = buildSymmetricConstraintInputWithExplicitAxis({
+    selectedIds: objectSelectionIds,
+    axisId: clickedSelectionId,
+    objects: [...objects],
+  })
+
+  if (!payload) {
+    return null
+  }
+
+  const selectionResult = getConstraintToolSelectionMatches(
+    'symmetricConstraintTool',
+    selectionIds,
+    objects
+  )
+  const match = selectionResult.bestMatch
+  if (!match) {
+    return null
+  }
+
+  return {
+    toolName: 'symmetricConstraintTool',
+    mode: match.mode,
+    selectionIds,
+    resultingConstraintType: match.mode.resultingConstraintType,
+    payloads: [payload],
+    payload,
+  }
 }
 
 function collectSelectionsForMode(
@@ -429,6 +474,21 @@ export function resolveConstraintToolClickAction(
     }
   }
 
+  if (toolName === 'symmetricConstraintTool') {
+    const explicitApply = buildExplicitSymmetricPreparedApply(
+      currentSelectionIds,
+      clickedSelectionId,
+      objects
+    )
+    if (explicitApply) {
+      return {
+        type: 'apply',
+        nextSelectionIds: [],
+        apply: explicitApply,
+      }
+    }
+  }
+
   return resolveConstraintToolSelectionAction(
     toolName,
     currentSelectionIds,
@@ -478,6 +538,20 @@ export function resolveConstraintToolSelectionAction(
       uniqueCurrentSelectionIds
     )
   ) {
+    if (toolName === 'symmetricConstraintTool') {
+      if (
+        (normalizedCombinedSelection.status === 'complete' ||
+          normalizedCombinedSelection.status === 'partial') &&
+        normalizedCombinedSelection.match
+      ) {
+        return {
+          type: 'select',
+          nextSelectionIds: normalizedCombinedSelectionIds,
+          match: normalizedCombinedSelection.match,
+        }
+      }
+    }
+
     const preparedApply = getConstraintToolPreparedApply(
       toolName,
       normalizedCombinedSelectionIds,

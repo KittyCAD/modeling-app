@@ -1924,6 +1924,7 @@ const CustomIconMap = Object.freeze({
     </svg>
   ),
   symmetric: createConstraintIcon('Symmetric'),
+  symmetry: createConstraintIcon('Symmetric'),
   tangent: createConstraintIcon('Tangent'),
   text: (
     <svg

@@ -439,9 +439,8 @@ export fn tangent(
 /// - `CircularArc` / `CircularArc`
 /// - `Circle` / `Circle`
 ///
-/// By default, `CircularArc` symmetry constrains the arc centers, starts, and ends.
-/// Set `constrainArcEndPoints = false` to mirror only the underlying circles instead,
-/// leaving the arc end points free except for staying on those circles.
+/// For circular geometry, symmetry constrains the underlying circles:
+/// mirrored centers plus a shared radius/diameter. Arc end points are not mirrored.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -459,8 +458,6 @@ export fn symmetric(
   @input: [Segment; 2],
   /// The line to mirror across.
   axis: Segment,
-  /// When `false`, arc symmetry constrains only the underlying circles, not mirrored arc endpoints.
-  constrainArcEndPoints?: bool,
 ) {}
 
 /// Constrain a point to be fixed to a position.

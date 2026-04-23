@@ -843,6 +843,10 @@ export const sketchSolveMachine = setup({
                 return false
               }
 
+              if (event.data.tool === 'symmetricConstraintTool') {
+                return false
+              }
+
               return (
                 getPreparedApplyForConstraintTool(context, event.data.tool) !==
                 null

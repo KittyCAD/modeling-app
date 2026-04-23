@@ -10,6 +10,7 @@ import {
   buildAngleConstraintInput,
   buildFixedConstraintInput,
   buildSymmetricConstraintInput,
+  buildSymmetricConstraintInputWithExplicitAxis,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -177,7 +178,6 @@ describe('buildSymmetricConstraintInput', () => {
       type: 'Symmetric',
       input: [1, 2],
       axis: 10,
-      constrain_arc_end_points: true,
     })
   })
 
@@ -209,11 +209,10 @@ describe('buildSymmetricConstraintInput', () => {
       type: 'Symmetric',
       input: [10, 11],
       axis: 12,
-      constrain_arc_end_points: true,
     })
   })
 
-  it('uses the first selected line as the axis when three lines are selected', () => {
+  it('requires an explicit axis when three lines are selected', () => {
     const p1 = createPointApiObject({ id: 1, x: 0, y: -10 })
     const p2 = createPointApiObject({ id: 2, x: 0, y: 10 })
     const p3 = createPointApiObject({ id: 3, x: -10, y: 0 })
@@ -235,11 +234,17 @@ describe('buildSymmetricConstraintInput', () => {
       right,
     ])
 
-    expect(buildSymmetricConstraintInput([10, 11, 12], objects)).toEqual({
+    expect(buildSymmetricConstraintInput([10, 11, 12], objects)).toBeNull()
+    expect(
+      buildSymmetricConstraintInputWithExplicitAxis({
+        selectedIds: [10, 11, 12],
+        axisId: 10,
+        objects,
+      })
+    ).toEqual({
       type: 'Symmetric',
       input: [11, 12],
       axis: 10,
-      constrain_arc_end_points: true,
     })
   })
 })

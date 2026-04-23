@@ -357,7 +357,7 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
   createSketchSolveConstraintDropdownItem({
     id: 'Symmetric',
     toolName: 'symmetricConstraintTool',
-    icon: 'symmetric',
+    icon: 'symmetry',
     title: 'Symmetric',
     description:
       'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',

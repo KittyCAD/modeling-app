@@ -2558,6 +2558,83 @@ fn radius_guess(
     Ok(libm::hypot(dx, dy))
 }
 
+fn reflect_point_across_line(point: [f64; 2], axis_start: [f64; 2], axis_end: [f64; 2]) -> [f64; 2] {
+    let [px, py] = point;
+    let [ax, ay] = axis_start;
+    let [bx, by] = axis_end;
+    let dx = bx - ax;
+    let dy = by - ay;
+    let axis_len_sq = dx * dx + dy * dy;
+    if axis_len_sq <= f64::EPSILON {
+        return point;
+    }
+
+    let point_from_axis = [px - ax, py - ay];
+    let projection_scale = (point_from_axis[0] * dx + point_from_axis[1] * dy) / axis_len_sq;
+    let projected = [ax + projection_scale * dx, ay + projection_scale * dy];
+
+    [2.0 * projected[0] - px, 2.0 * projected[1] - py]
+}
+
+fn symmetric_hidden_point_guess(
+    sketch_vars: &[KclValue],
+    point: [SketchVarId; 2],
+    axis: SymmetricLineVars,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let point = [
+        sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?,
+    ];
+    let axis_start = [
+        sketch_var_initial_value(sketch_vars, axis.start[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, axis.start[1], exec_state, range)?,
+    ];
+    let axis_end = [
+        sketch_var_initial_value(sketch_vars, axis.end[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, axis.end[1], exec_state, range)?,
+    ];
+
+    Ok(reflect_point_across_line(point, axis_start, axis_end))
+}
+
+fn create_hidden_point(
+    exec_state: &mut ExecState,
+    initial_position: [f64; 2],
+    range: crate::SourceRange,
+) -> Result<[SketchVarId; 2], KclError> {
+    let sketch_var_ty = solver_numeric_type(exec_state);
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+
+    let x_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: x_id,
+            initial_value: initial_position[0],
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    let y_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: y_id,
+            initial_value: initial_position[1],
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    Ok([x_id, y_id])
+}
+
 pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     #[derive(Debug, Clone, Copy)]
     struct RadiusInputVars {
@@ -3257,9 +3334,6 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ))
     })?;
     let axis: KclValue = args.get_kw_arg("axis", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
-    let constrain_arc_end_points = args
-        .get_kw_arg_opt("constrainArcEndPoints", &RuntimeType::bool(), exec_state)?
-        .unwrap_or(true);
     let range = args.source_range;
 
     let input0 = extract_symmetric_input(&item0, range)?;
@@ -3277,41 +3351,44 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
             )],
             None,
         ),
-        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => (
-            vec![
-                SolverConstraint::Symmetric(
-                    solver_axis,
-                    datum_point(line0.start, range)?,
-                    datum_point(line1.start, range)?,
-                ),
-                SolverConstraint::Symmetric(
-                    solver_axis,
-                    datum_point(line0.end, range)?,
-                    datum_point(line1.end, range)?,
-                ),
-            ],
-            None,
-        ),
-        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) if constrain_arc_end_points => (
-            vec![
-                SolverConstraint::Symmetric(
-                    solver_axis,
-                    datum_point(arc0.center, range)?,
-                    datum_point(arc1.center, range)?,
-                ),
-                SolverConstraint::Symmetric(
-                    solver_axis,
-                    datum_point(arc0.start, range)?,
-                    datum_point(arc1.start, range)?,
-                ),
-                SolverConstraint::Symmetric(
-                    solver_axis,
-                    datum_point(arc0.end, range)?,
-                    datum_point(arc1.end, range)?,
-                ),
-            ],
-            None,
-        ),
+        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => {
+            let sketch_vars = {
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "symmetric() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.sketch_vars.clone()
+            };
+            let mirrored_start = symmetric_hidden_point_guess(&sketch_vars, line0.start, axis_line, exec_state, range)?;
+            let mirrored_end = symmetric_hidden_point_guess(&sketch_vars, line0.end, axis_line, exec_state, range)?;
+            let hidden_start = create_hidden_point(exec_state, mirrored_start, range)?;
+            let hidden_end = create_hidden_point(exec_state, mirrored_end, range)?;
+            let mirrored_support_line =
+                DatumLineSegment::new(datum_point(hidden_start, range)?, datum_point(hidden_end, range)?);
+            let solver_line1 = DatumLineSegment::new(datum_point(line1.start, range)?, datum_point(line1.end, range)?);
+
+            (
+                vec![
+                    SolverConstraint::Symmetric(
+                        solver_axis,
+                        datum_point(line0.start, range)?,
+                        datum_point(hidden_start, range)?,
+                    ),
+                    SolverConstraint::Symmetric(
+                        solver_axis,
+                        datum_point(line0.end, range)?,
+                        datum_point(hidden_end, range)?,
+                    ),
+                    SolverConstraint::LinesAtAngle(mirrored_support_line, solver_line1, AngleKind::Parallel),
+                    // Keep the second segment on the mirrored support line without
+                    // forcing its endpoints to be pairwise mirrored.
+                    SolverConstraint::PointLineDistance(datum_point(line1.start, range)?, mirrored_support_line, 0.0),
+                ],
+                None,
+            )
+        }
         (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) => (
             vec![SolverConstraint::Symmetric(
                 solver_axis,
@@ -3418,7 +3495,6 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         let constraint = crate::front::Constraint::Symmetric(Symmetric {
             input: vec![input0.object_id(), input1.object_id()],
             axis: axis_line.object_id,
-            constrain_arc_end_points,
         });
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);

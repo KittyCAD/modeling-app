@@ -141,7 +141,6 @@ const HORIZONTAL_FN: &str = "horizontal";
 const RADIUS_FN: &str = "radius";
 const SYMMETRIC_FN: &str = "symmetric";
 const SYMMETRIC_AXIS_PARAM: &str = "axis";
-const SYMMETRIC_CONSTRAIN_ARC_END_POINTS_PARAM: &str = "constrainArcEndPoints";
 const TANGENT_FN: &str = "tangent";
 const VERTICAL_FN: &str = "vertical";
 
@@ -3178,11 +3177,7 @@ impl FrontendState {
         let input1_ast = self.symmetric_input_id_to_ast_reference(input1_id, new_ast)?;
         let axis_ast = self.symmetric_axis_id_to_ast_reference(symmetric.axis, new_ast)?;
 
-        let symmetric_ast = create_symmetric_ast(
-            vec![input0_ast, input1_ast],
-            axis_ast,
-            symmetric.constrain_arc_end_points,
-        );
+        let symmetric_ast = create_symmetric_ast(vec![input0_ast, input1_ast], axis_ast);
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
@@ -5677,30 +5672,16 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 }
 
 /// Create an AST node for symmetric([input1, input2], axis = line)
-pub(crate) fn create_symmetric_ast(
-    input_exprs: Vec<ast::Expr>,
-    axis_expr: ast::Expr,
-    constrain_arc_end_points: bool,
-) -> ast::Expr {
+pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
-    let mut arguments = vec![ast::LabeledArg {
+    let arguments = vec![ast::LabeledArg {
         label: Some(ast::Identifier::new(SYMMETRIC_AXIS_PARAM)),
         arg: axis_expr,
     }];
-    if !constrain_arc_end_points {
-        arguments.push(ast::LabeledArg {
-            label: Some(ast::Identifier::new(SYMMETRIC_CONSTRAIN_ARC_END_POINTS_PARAM)),
-            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Bool(false),
-                raw: "false".to_string(),
-                digest: None,
-            }))),
-        });
-    }
 
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
@@ -9577,7 +9558,6 @@ sketch(on = XY) {
         let constraint = Constraint::Symmetric(Symmetric {
             input: vec![line1_id, line2_id],
             axis: axis_id,
-            constrain_arc_end_points: true,
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)
@@ -9605,7 +9585,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_segments_symmetric_legacy_arc_mode() {
+    async fn test_segments_symmetric_arcs() {
         let initial_source = "\
 sketch(on = XY) {
   arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
@@ -9634,7 +9614,6 @@ sketch(on = XY) {
         let constraint = Constraint::Symmetric(Symmetric {
             input: vec![arc1_id, arc2_id],
             axis: axis_id,
-            constrain_arc_end_points: false,
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)
@@ -9647,7 +9626,7 @@ sketch(on = XY) {
   arc1 = arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
   arc2 = arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
   line1 = line(start = [var 0, var -10], end = [var 0, var 10])
-  symmetric([arc1, arc2], axis = line1, constrainArcEndPoints = false)
+  symmetric([arc1, arc2], axis = line1)
 }
 "
         );

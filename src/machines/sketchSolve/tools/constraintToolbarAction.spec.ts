@@ -80,7 +80,7 @@ describe('constraintToolbarAction', () => {
     expect(addConstraintMock).not.toHaveBeenCalled()
   })
 
-  it('applies symmetric immediately when the current selection already identifies an axis line', async () => {
+  it('equips symmetric instead of auto-applying so the axis can be confirmed explicitly', async () => {
     const centerA = createPointApiObject({ id: 1 })
     const startA = createPointApiObject({ id: 2 })
     const endA = createPointApiObject({ id: 3 })
@@ -107,23 +107,6 @@ describe('constraintToolbarAction', () => {
     const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
     const equipConstraintTool = vi.fn()
 
-    addConstraintMock.mockResolvedValue({
-      kclSource: { text: 'symmetric' },
-      sceneGraphDelta: createSceneGraphDelta([
-        centerA,
-        startA,
-        endA,
-        centerB,
-        startB,
-        axisStart,
-        axisEnd,
-        arc,
-        circle,
-        axis,
-      ]),
-      checkpointId: 2,
-    })
-
     const result = await applyOrEquipConstraintToolFromToolbar({
       toolName: 'symmetricConstraintTool',
       selectedIds: [10, 12, 11],
@@ -136,21 +119,10 @@ describe('constraintToolbarAction', () => {
     })
 
     expect(result).toMatchObject({
-      type: 'applied',
+      type: 'equipped',
       toolName: 'symmetricConstraintTool',
     })
-    expect(addConstraintMock).toHaveBeenCalledWith(
-      0,
-      0,
-      {
-        type: 'Symmetric',
-        input: [10, 11],
-        axis: 12,
-        constrain_arc_end_points: true,
-      },
-      {},
-      true
-    )
-    expect(equipConstraintTool).not.toHaveBeenCalled()
+    expect(addConstraintMock).not.toHaveBeenCalled()
+    expect(equipConstraintTool).toHaveBeenCalledWith('symmetricConstraintTool')
   })
 })

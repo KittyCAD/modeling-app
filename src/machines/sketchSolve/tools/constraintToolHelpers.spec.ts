@@ -312,6 +312,41 @@ describe('constraintToolHelpers', () => {
     }
   })
 
+  it('keeps symmetric line triples selected until the user explicitly clicks the axis', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+
+    const areaSelection = resolveConstraintToolSelectionAction(
+      'symmetricConstraintTool',
+      [],
+      [10, 11, 12],
+      objects,
+      applyOptions
+    )
+    expect(areaSelection).toMatchObject({
+      type: 'select',
+      nextSelectionIds: [10, 11, 12],
+    })
+  })
+
   it('prepares one payload per additional line for parallel area selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
@@ -565,7 +600,7 @@ describe('constraintToolHelpers', () => {
     })
   })
 
-  it('builds symmetric payloads and uses the first selected line as the axis for line triples', () => {
+  it('builds symmetric payloads for explicit point/axis input and requires an explicit axis click for line triples', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
     const pointC = createPointApiObject({ id: 3 })
@@ -597,7 +632,6 @@ describe('constraintToolHelpers', () => {
       type: 'Symmetric',
       input: [1, 2],
       axis: 10,
-      constrain_arc_end_points: true,
     })
 
     const lineApply = getConstraintToolPreparedApply(
@@ -606,11 +640,22 @@ describe('constraintToolHelpers', () => {
       objects,
       applyOptions
     )
-    expect(lineApply?.payload).toEqual({
-      type: 'Symmetric',
-      input: [11, 12],
-      axis: 10,
-      constrain_arc_end_points: true,
-    })
+    expect(lineApply).toBeNull()
+
+    const explicitAxisClick = resolveConstraintToolClickAction(
+      'symmetricConstraintTool',
+      [10, 11, 12],
+      10,
+      objects,
+      applyOptions
+    )
+    expect(explicitAxisClick.type).toBe('apply')
+    if (explicitAxisClick.type === 'apply') {
+      expect(explicitAxisClick.apply.payload).toEqual({
+        type: 'Symmetric',
+        input: [11, 12],
+        axis: 10,
+      })
+    }
   })
 })

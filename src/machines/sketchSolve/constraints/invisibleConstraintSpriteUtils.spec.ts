@@ -60,7 +60,6 @@ describe('invisibleConstraintSpriteUtils', () => {
           type: 'Symmetric',
           input: [1, 2],
           axis: 3,
-          constrain_arc_end_points: true,
         })
       )
     ).toBe(true)
@@ -362,7 +361,6 @@ describe('invisibleConstraintSpriteUtils', () => {
       type: 'Symmetric',
       input: [11, 12],
       axis: 10,
-      constrain_arc_end_points: true,
     })
     const objects = createObjectsArray([
       axisStart,
@@ -398,7 +396,6 @@ describe('invisibleConstraintSpriteUtils', () => {
       type: 'Symmetric',
       input: [1, 2],
       axis: 10,
-      constrain_arc_end_points: true,
     })
     const objects = createObjectsArray([
       pointA,
@@ -426,7 +423,6 @@ describe('invisibleConstraintSpriteUtils', () => {
       type: 'Symmetric',
       input: [11, 12],
       axis: 10,
-      constrain_arc_end_points: true,
     })
     const objects = createObjectsArray([
       axisStart,

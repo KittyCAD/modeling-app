@@ -243,7 +243,7 @@ export function buildTangentConstraintInput(
 
 type SymmetricConstraintInput = Extract<ApiConstraint, { type: 'Symmetric' }>
 
-function buildDefaultSymmetricConstraintInput({
+function buildSymmetricConstraintInputFromPair({
   input,
   axis,
 }: {
@@ -254,7 +254,6 @@ function buildDefaultSymmetricConstraintInput({
     type: 'Symmetric',
     input,
     axis,
-    constrain_arc_end_points: true,
   }
 }
 
@@ -276,38 +275,117 @@ export function buildSymmetricConstraintInput(
   const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
 
   if (selectedPoints.length === 2 && selectedLines.length === 1) {
-    return buildDefaultSymmetricConstraintInput({
+    return buildSymmetricConstraintInputFromPair({
       input: [selectedPoints[0].id, selectedPoints[1].id],
       axis: selectedLines[0].id,
     })
   }
 
   if (selectedArcLikes.length === 2 && selectedLines.length === 1) {
-    return buildDefaultSymmetricConstraintInput({
+    return buildSymmetricConstraintInputFromPair({
       input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
       axis: selectedLines[0].id,
     })
   }
 
-  if (selectedLines.length === 3) {
-    const orderedLines = selectedObjects.filter(isLineSegment)
-    const [axisLine, inputLine0, inputLine1] = orderedLines
-    if (!axisLine || !inputLine0 || !inputLine1) {
-      return null
-    }
+  return null
+}
 
-    // Policy decision for the ambiguous "three straight segments" case:
-    // treat the first-selected line as the symmetry axis.
-    //
-    // If the team wants different behavior later, this is the single place to
-    // swap in a heuristic such as:
-    // - preferring a construction line
-    // - picking the line spatially between the other two
-    // - preferring the most recently clicked segment instead
-    return buildDefaultSymmetricConstraintInput({
-      input: [inputLine0.id, inputLine1.id],
-      axis: axisLine.id,
+export function buildSymmetricConstraintInputWithExplicitAxis({
+  selectedIds,
+  axisId,
+  objects,
+}: {
+  selectedIds: number[]
+  axisId: number
+  objects: ApiObject[]
+}) {
+  const axis = objects[axisId]
+  if (!isLineSegment(axis)) {
+    return null
+  }
+
+  const selectedWithoutAxis = selectedIds
+    .filter((id) => id !== axisId)
+    .map((id) => objects[id])
+
+  if (
+    selectedWithoutAxis.length !== 2 ||
+    selectedWithoutAxis.some((object) => !object)
+  ) {
+    return null
+  }
+
+  const selectedPoints = selectedWithoutAxis.filter(isPointSegment)
+  if (selectedPoints.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: axisId,
     })
+  }
+
+  const selectedArcLikes = selectedWithoutAxis.filter(isArcLikeSegment)
+  if (selectedArcLikes.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: axisId,
+    })
+  }
+
+  const selectedLines = selectedWithoutAxis.filter(isLineSegment)
+  if (selectedLines.length === 2) {
+    // Current Symmetric tool policy: never infer the axis from a three-line
+    // candidate set. The line the user explicitly clicks is the axis.
+    //
+    // If the team later wants to auto-pick an axis heuristically instead,
+    // this is the single policy point to replace with logic such as:
+    // - preferring a construction line
+    // - picking the spatially middle line
+    // - using first- or last-selected line ordering
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedLines[0].id, selectedLines[1].id],
+      axis: axisId,
+    })
+  }
+
+  return null
+}
+
+export type SymmetricToolSelectionStep = 'select-pair' | 'select-axis'
+
+export function getSymmetricToolSelectionStep(
+  selectedIds: number[],
+  objects: ApiObject[]
+): SymmetricToolSelectionStep | null {
+  if (selectedIds.length <= 1) {
+    return 'select-pair'
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (
+    selectedIds.length === 2 &&
+    (selectedPoints.length === 2 ||
+      selectedArcLikes.length === 2 ||
+      selectedLines.length === 2)
+  ) {
+    return 'select-axis'
+  }
+
+  if (
+    selectedIds.length === 3 &&
+    ((selectedPoints.length === 2 && selectedLines.length === 1) ||
+      (selectedArcLikes.length === 2 && selectedLines.length === 1) ||
+      selectedLines.length === 3)
+  ) {
+    return 'select-axis'
   }
 
   return null

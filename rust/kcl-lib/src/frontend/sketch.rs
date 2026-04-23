@@ -589,12 +589,6 @@ pub struct Perpendicular {
 pub struct Symmetric {
     pub input: Vec<ObjectId>,
     pub axis: ObjectId,
-    #[serde(default = "default_symmetric_constrain_arc_end_points")]
-    pub constrain_arc_end_points: bool,
-}
-
-fn default_symmetric_constrain_arc_end_points() -> bool {
-    true
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
