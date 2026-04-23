@@ -80,8 +80,6 @@ export function addShell({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Because of START and END untagged caps, we can't rely on last child here
-  // Haven't found a case where it would be needed anyway
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
@@ -89,7 +87,8 @@ export function addShell({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup: false,
+      lastChildLookup: true,
+      artifactTypeFilter: ['sweep', 'compositeSolid'],
     }
   )
   if (err(result)) {
@@ -162,8 +161,7 @@ export function addDeleteFace({
     wasmInstance,
     mNodeToEdit,
     {
-      // Just like shell we need to keep this to false at least for now
-      lastChildLookup: false,
+      lastChildLookup: true,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
     }
   )
