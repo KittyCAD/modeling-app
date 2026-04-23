@@ -61,6 +61,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -68,6 +69,24 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
+}
+
+const WAITING_FOR_ENGINE_RECONNECT_TOAST_ID = 'wait-for-engine-reconnect'
+const WAITING_FOR_ENGINE_RECONNECT_MESSAGE =
+  'Waiting for engine reconnection before entering sketch.'
+
+function canEnterSketchWithEngine(engineCommandManager: ConnectionManager) {
+  return (
+    engineCommandManager.started &&
+    engineCommandManager.connection?.websocket?.readyState === WebSocket.OPEN &&
+    engineCommandManager.connection.mediaStream !== undefined
+  )
+}
+
+function showEngineReconnectToast() {
+  toast.error(WAITING_FOR_ENGINE_RECONNECT_MESSAGE, {
+    id: WAITING_FOR_ENGINE_RECONNECT_TOAST_ID,
+  })
 }
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
@@ -583,6 +602,9 @@ const OperationItem = ({
   useSignals()
   const { layout } = useApp()
   const { kclManager, commandBarActor } = systemDeps
+  const engineInteractionsDisabled = useReliesOnEngine(
+    kclManager.isExecutingSignal.value ?? false
+  )
   const useSketchSolveMode =
     modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
@@ -653,6 +675,13 @@ const OperationItem = ({
 
   const enterEditFlow = useCallback(() => {
     if (
+      engineInteractionsDisabled ||
+      !canEnterSketchWithEngine(engineCommandManager)
+    ) {
+      showEngineReconnectToast()
+      return
+    }
+    if (
       item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
       item.type === 'SketchSolve'
@@ -674,6 +703,8 @@ const OperationItem = ({
   }, [
     item,
     commandBarActor,
+    engineInteractionsDisabled,
+    engineCommandManager,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
     systemDeps.rustContext,
@@ -768,6 +799,13 @@ const OperationItem = ({
   }
 
   function startSketchOnOffsetPlane() {
+    if (
+      engineInteractionsDisabled ||
+      !canEnterSketchWithEngine(engineCommandManager)
+    ) {
+      showEngineReconnectToast()
+      return
+    }
     if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
         item,
@@ -831,7 +869,10 @@ const OperationItem = ({
               : []),
             ...(isOffsetPlane(item)
               ? [
-                  <ContextMenuItem onClick={startSketchOnOffsetPlane}>
+                  <ContextMenuItem
+                    onClick={startSketchOnOffsetPlane}
+                    disabled={engineInteractionsDisabled}
+                  >
                     Start Sketch
                   </ContextMenuItem>,
                 ]
@@ -888,9 +929,10 @@ const OperationItem = ({
               ? [
                   <ContextMenuItem
                     disabled={
-                      item.type !== 'VariableDeclaration' &&
-                      item.type !== 'SketchSolve' &&
-                      stdLibMap[item.name]?.prepareToEdit === undefined
+                      engineInteractionsDisabled ||
+                      (item.type !== 'VariableDeclaration' &&
+                        item.type !== 'SketchSolve' &&
+                        stdLibMap[item.name]?.prepareToEdit === undefined)
                     }
                     onClick={enterEditFlow}
                     hotkey="Double click"
@@ -1076,6 +1118,9 @@ const OperationItem = ({
 const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
+  const engineInteractionsDisabled = useReliesOnEngine(
+    kclManager.isExecutingSignal.value ?? false
+  )
   const sketchNoFace = modelingState.matches('Sketch no face')
 
   const onClickPlane = useCallback(
@@ -1112,6 +1157,13 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
 
   const startSketchOnDefaultPlane = useCallback(
     (planeId: string) => {
+      if (
+        engineInteractionsDisabled ||
+        !canEnterSketchWithEngine(kclManager.engineCommandManager)
+      ) {
+        showEngineReconnectToast()
+        return
+      }
       sceneInfra.modelingSend({
         type: 'Enter sketch',
         data: { forceNewSketch: true },
@@ -1123,7 +1175,12 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
         kclManager
       )
     },
-    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
+    [
+      engineInteractionsDisabled,
+      modelingState.context.store.useSketchSolveMode,
+      sceneInfra,
+      kclManager,
+    ]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
@@ -1166,6 +1223,7 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           menuItems={[
             <ContextMenuItem
               onClick={() => startSketchOnDefaultPlane(plane.id)}
+              disabled={engineInteractionsDisabled}
             >
               Start Sketch
             </ContextMenuItem>,

@@ -1510,6 +1510,42 @@ sketch001 = sketch(on = YZ) {
           'Unable to enter sketch while KCL has parse errors.'
         )
       })
+
+      it('blocks sketch entry while the engine is disconnected', async () => {
+        toastErrorSpy.mockClear()
+        const {
+          instance,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        } = await buildTheWorldAndNoEngineConnection()
+
+        const animateSpy = vi.spyOn(kclManager.sceneInfra, 'animate')
+
+        const context = generateModelingMachineDefaultContext({
+          kclManager,
+          rustContext,
+          wasmInstance: instance,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        })
+        context.store.defaultUnit = { current: 'mm' } as any
+        context.projectRef = { current: {} as any }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+
+        expect(actor.getSnapshot().value).toEqual({ idle: 'hidePlanes' })
+        expect(animateSpy).not.toHaveBeenCalled()
+        expect(toastErrorSpy).toHaveBeenCalledWith(
+          'Waiting for engine reconnection before entering sketch.',
+          { id: 'sketch-entry-reconnect-required' }
+        )
+      })
     })
 
     it('restores camera orbit controls when sketch exit errors', async () => {

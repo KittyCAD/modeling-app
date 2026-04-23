@@ -218,6 +218,18 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+
+const SKETCH_ENTRY_RECONNECT_TOAST_ID = 'sketch-entry-reconnect-required'
+const SKETCH_ENTRY_RECONNECT_MESSAGE =
+  'Waiting for engine reconnection before entering sketch.'
+
+function canEnterSketchWithEngine(engineCommandManager: ConnectionManager) {
+  return (
+    engineCommandManager.started &&
+    engineCommandManager.connection?.websocket?.readyState === WebSocket.OPEN &&
+    engineCommandManager.connection.mediaStream !== undefined
+  )
+}
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
 
@@ -652,6 +664,18 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineInput,
   },
   guards: {
+    'Engine is ready for sketch entry': ({ context }) => {
+      return (
+        !context.kclManager.isExecutingSignal.value &&
+        canEnterSketchWithEngine(context.engineCommandManager)
+      )
+    },
+    'Engine is not ready for sketch entry': ({ context }) => {
+      return (
+        context.kclManager.isExecutingSignal.value ||
+        !canEnterSketchWithEngine(context.engineCommandManager)
+      )
+    },
     'should use sketch solve mode': ({ context }) => {
       return context.store.useSketchSolveMode?.current === true
     },
@@ -966,6 +990,11 @@ export const modelingMachine = setup({
       sceneEntitiesManager.tearDownSketch({ removeAxis: false })
       sceneEntitiesManager.removeSketchGrid()
       sceneEntitiesManager.resetOverlays()
+    },
+    'toast sketch reconnect required': () => {
+      toast.error(SKETCH_ENTRY_RECONNECT_MESSAGE, {
+        id: SKETCH_ENTRY_RECONNECT_TOAST_ID,
+      })
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
@@ -5552,15 +5581,26 @@ export const modelingMachine = setup({
   states: {
     idle: {
       on: {
-        'Edit sketch solve': {
-          target: 'animating to existing sketch solve',
-          actions: [
-            ({ context }) => {
-              context.kclManager.sceneInfra.animate()
-            },
-          ],
-        },
+        'Edit sketch solve': [
+          {
+            guard: 'Engine is not ready for sketch entry',
+            actions: ['toast sketch reconnect required'],
+          },
+          {
+            guard: 'Engine is ready for sketch entry',
+            target: 'animating to existing sketch solve',
+            actions: [
+              ({ context }) => {
+                context.kclManager.sceneInfra.animate()
+              },
+            ],
+          },
+        ],
         'Enter sketch': [
+          {
+            guard: 'Engine is not ready for sketch entry',
+            actions: ['toast sketch reconnect required'],
+          },
           {
             target: 'animating to existing sketch solve',
             actions: [
