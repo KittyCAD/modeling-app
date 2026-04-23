@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in)
 
 // Sketch the side profile of the hammer head
 sketch001 = sketch(on = XZ) {

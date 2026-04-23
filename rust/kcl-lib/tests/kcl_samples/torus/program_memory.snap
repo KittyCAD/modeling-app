@@ -36,11 +36,6 @@ description: Variables in memory after executing torus.kcl
       }
     }
   },
-  "circle1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "circle1"
-  },
   "crossSectionDiameter": {
     "type": "Number",
     "value": 10.0,
@@ -370,6 +365,7 @@ description: Variables in memory after executing torus.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -519,6 +515,7 @@ description: Variables in memory after executing torus.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,

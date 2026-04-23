@@ -1,0 +1,364 @@
+// Hub
+// A wheel hub is the part that connects the wheel to the suspension
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define Parameters
+hubSpacing = 3in
+hubBore = 2.5in
+rotorBore = 3
+lugCount = 5
+lugSpacing = 114.3mm
+lugDiameter = 24mm
+lugThreadDiameter = lugDiameter / 1.75
+lugLength = 5 / 8
+
+baseArcRadius = lugSpacing / 7
+rearHubOuterRadius = lugSpacing / 1.6
+lugCircleRadius = lugSpacing / 2
+upperSlopeLength = rearHubOuterRadius * 1.35
+arcEndRise = baseArcRadius * sin(60deg)
+rightArcEndX = rearHubOuterRadius - (baseArcRadius / 2)
+upperSlopeEndX = rightArcEndX - (upperSlopeLength * cos(30deg))
+upperSlopeEndY = arcEndRise + upperSlopeLength * sin(30deg)
+leftArcCenterX = upperSlopeEndX - (baseArcRadius / 2)
+leftWallX = upperSlopeEndX - (1.5 * baseArcRadius)
+leftWallHalfHeight = upperSlopeEndY - arcEndRise
+
+// Solver reconstruction of the rear hub extrusion
+rearHubProfile = sketch(on = XZ) {
+  rightArc = arc(start = [var 2.49in, var -0.56in], end = [var 2.49in, var 0.56in], center = [var 2.17in, var 0in])
+  upperSlope = line(start = [var 2.49in, var 0.56in], end = [var -0.8in, var 2.46in])
+  upperLeftArc = arc(start = [var -0.8in, var 2.46in], end = [var -1.76in, var 1.9in], center = [var -1.12in, var 1.9in])
+  leftWall = line(start = [var -1.76in, var 1.9in], end = [var -1.76in, var -1.9in])
+  lowerLeftArc = arc(start = [var -1.76in, var -1.9in], end = [var -0.8in, var -2.46in], center = [var -1.12in, var -1.9in])
+  lowerSlope = line(start = [var -0.8in, var -2.46in], end = [var 2.49in, var -0.56in])
+  coincident([rightArc.end, upperSlope.start])
+
+  coincident([upperSlope.end, upperLeftArc.start])
+  coincident([upperLeftArc.end, leftWall.start])
+  coincident([leftWall.end, lowerLeftArc.start])
+  coincident([lowerLeftArc.end, lowerSlope.start])
+  coincident([lowerSlope.end, rightArc.start])
+
+  vertical(leftWall)
+
+  radius(rightArc) == baseArcRadius
+  radius(upperLeftArc) == baseArcRadius
+  radius(lowerLeftArc) == baseArcRadius
+
+  horizontalDistance([ORIGIN, rightArc.center]) == rearHubOuterRadius - baseArcRadius
+  verticalDistance([ORIGIN, rightArc.center]) == 0in
+  horizontalDistance([ORIGIN, rightArc.end]) == rightArcEndX
+  verticalDistance([ORIGIN, rightArc.end]) == arcEndRise
+  horizontalDistance([ORIGIN, rightArc.start]) == rightArcEndX
+  verticalDistance([ORIGIN, rightArc.start]) == -arcEndRise
+
+  horizontalDistance([ORIGIN, upperSlope.end]) == upperSlopeEndX
+  verticalDistance([ORIGIN, upperSlope.end]) == upperSlopeEndY
+
+  horizontalDistance([ORIGIN, upperLeftArc.center]) == leftArcCenterX
+  verticalDistance([ORIGIN, upperLeftArc.center]) == leftWallHalfHeight
+
+  horizontalDistance([ORIGIN, leftWall.start]) == leftWallX
+  verticalDistance([ORIGIN, leftWall.start]) == leftWallHalfHeight
+  horizontalDistance([ORIGIN, leftWall.end]) == leftWallX
+  verticalDistance([ORIGIN, leftWall.end]) == -leftWallHalfHeight
+
+  horizontalDistance([ORIGIN, lowerLeftArc.center]) == leftArcCenterX
+  verticalDistance([ORIGIN, lowerLeftArc.center]) == -leftWallHalfHeight
+  horizontalDistance([ORIGIN, lowerSlope.start]) == upperSlopeEndX
+  verticalDistance([ORIGIN, lowerSlope.start]) == -upperSlopeEndY
+}
+
+rearHubRegion = region(segments = [
+  rearHubProfile.rightArc,
+  rearHubProfile.upperSlope
+])
+rearHubBlank = extrude(rearHubRegion, length = hubSpacing * 5 / 4)
+hide(rearHubProfile)
+
+hubBoreProfile = sketch(on = XZ) {
+  radiusGuide = line(start = [var 0in, var 0in], end = [var 1.25in, var 0in], construction = true)
+  circle1 = circle(start = [var 1.25in, var 0in], center = [var 0in, var 0in])
+
+  coincident([radiusGuide.start, ORIGIN])
+  coincident([circle1.center, radiusGuide.start])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(radiusGuide)
+  distance([radiusGuide.start, radiusGuide.end]) == hubBore / 2
+  radius(circle1) == hubBore / 2
+}
+
+hubBoreRegion = region(segments = [hubBoreProfile.circle1])
+hubBoreCutter = extrude(hubBoreRegion, length = hubSpacing * 5 / 4)
+hide(hubBoreProfile)
+
+lugHoleProfile = sketch(on = XZ) {
+  centerGuide = line(start = [var 0in, var 0in], end = [var 2.25in, var 0in], construction = true)
+  radiusGuide = line(start = [var 2.25in, var 0in], end = [var 2.52in, var 0in], construction = true)
+  circle1 = circle(start = [var 2.52in, var 0in], center = [var 2.25in, var 0in])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, circle1.center])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(centerGuide)
+  horizontal(radiusGuide)
+  distance([centerGuide.start, centerGuide.end]) == lugCircleRadius
+  distance([radiusGuide.start, radiusGuide.end]) == lugThreadDiameter / 2
+  radius(circle1) == lugThreadDiameter / 2
+}
+
+lugHoleRegion = region(segments = [lugHoleProfile.circle1])
+lugHoleCutter = extrude(lugHoleRegion, length = hubSpacing * 5 / 4)
+lugHoleCutters = patternCircular3d(
+  lugHoleCutter,
+  instances = 3,
+  axis = Y,
+  center = [0, 0, 0],
+)
+hide(lugHoleProfile)
+
+rearHubBase = subtract([rearHubBlank], tools = [hubBoreCutter, lugHoleCutters])
+
+// Solver reconstruction of the revolved trim cut
+trimProfile = sketch(on = XY) {
+  startHeightGuide = line(start = [var 0in, var 0in], end = [var 0in, var -0.75in], construction = true)
+  startOffsetGuide = line(start = [var 0in, var -0.75in], end = [var 1.5in, var -0.75in], construction = true)
+
+  line1 = line(start = [var 1.5in, var -0.75in], end = [var 2.98in, var -0.49in])
+  line2 = line(start = [var 2.98in, var -0.49in], end = [var 2.98in, var -4.99in])
+  line3 = line(start = [var 2.98in, var -4.99in], end = [var 1.5in, var -4.99in])
+  line4 = line(start = [var 1.5in, var -4.99in], end = [var 1.5in, var -0.75in])
+
+  coincident([startHeightGuide.start, ORIGIN])
+  coincident([
+    startHeightGuide.end,
+    startOffsetGuide.start
+  ])
+  coincident([startOffsetGuide.end, line1.start])
+
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  vertical(startHeightGuide)
+  horizontal(startOffsetGuide)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  verticalDistance([
+  startHeightGuide.start,
+  startHeightGuide.end
+]) == -hubSpacing / 4
+  horizontalDistance([
+  startOffsetGuide.start,
+  startOffsetGuide.end
+]) == rotorBore / 2
+  distance([line1.start, line1.end]) == lugSpacing / 3
+  angle([startOffsetGuide, line1]) == 10deg
+  distance([line2.start, line2.end]) == hubSpacing * 1.5
+}
+
+trimRegion = region(segments = [trimProfile.line1, trimProfile.line2])
+revolveTrim = revolve(trimRegion, axis = Y)
+rearHubBody = subtract([rearHubBase], tools = [revolveTrim])
+hide(trimProfile)
+
+flangePlane = offsetPlane(XZ, offset = hubSpacing * 3 / 4)
+flangeOuterRadius = lugSpacing / 1.5
+flangeBoreRadius = rotorBore / 2
+
+// Solver reconstruction of the mounting flange
+mountingFlangeProfile = sketch(on = flangePlane) {
+  outerRadiusGuide = line(start = [var 0in, var 0in], end = [var 3in, var 0in], construction = true)
+  centerBoreRadiusGuide = line(start = [var 0in, var 0in], end = [var 1.5in, var 0in], construction = true)
+  outerCircle = circle(start = [var 3in, var 0in], center = [var 0in, var 0in])
+  centerBoreCircle = circle(start = [var 1.5in, var 0in], center = [var 0in, var 0in])
+
+  coincident([outerRadiusGuide.start, ORIGIN])
+  coincident([
+    outerCircle.center,
+    outerRadiusGuide.start
+  ])
+  coincident([
+    outerRadiusGuide.end,
+    outerCircle.start
+  ])
+
+  coincident([centerBoreRadiusGuide.start, ORIGIN])
+  coincident([
+    centerBoreCircle.center,
+    centerBoreRadiusGuide.start
+  ])
+  coincident([
+    centerBoreRadiusGuide.end,
+    centerBoreCircle.start
+  ])
+
+  horizontal(outerRadiusGuide)
+  horizontal(centerBoreRadiusGuide)
+  distance([
+  outerRadiusGuide.start,
+  outerRadiusGuide.end
+]) == flangeOuterRadius
+  distance([
+  centerBoreRadiusGuide.start,
+  centerBoreRadiusGuide.end
+]) == flangeBoreRadius
+  radius(outerCircle) == flangeOuterRadius
+  radius(centerBoreCircle) == flangeBoreRadius
+}
+
+mountingFlangeRegion = region(point = [2.1in, 0in], sketch = mountingFlangeProfile)
+mountingFlangeBlank = extrude(
+  mountingFlangeRegion,
+  length = hubSpacing / 4,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+hide(mountingFlangeProfile)
+
+flangeHoleProfile = sketch(on = flangePlane) {
+  centerGuide = line(start = [var 0in, var 0in], end = [var 2.25in, var 0in], construction = true)
+  radiusGuide = line(start = [var 2.25in, var 0in], end = [var 2.52in, var 0in], construction = true)
+  circle1 = circle(start = [var 2.52in, var 0in], center = [var 2.25in, var 0in])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, circle1.center])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(centerGuide)
+  horizontal(radiusGuide)
+  distance([centerGuide.start, centerGuide.end]) == lugCircleRadius
+  distance([radiusGuide.start, radiusGuide.end]) == lugThreadDiameter / 2
+  radius(circle1) == lugThreadDiameter / 2
+}
+
+flangeHoleRegion = region(segments = [flangeHoleProfile.circle1])
+flangeHoleCutter = extrude(flangeHoleRegion, length = hubSpacing / 4)
+flangeHoleCutters = patternCircular3d(
+  flangeHoleCutter,
+  instances = lugCount * 2,
+  axis = Y,
+  center = [0, 0, 0],
+)
+hide(flangeHoleProfile)
+
+// Solver reconstruction of the flange chamfers
+chamfer001 = chamfer(
+  mountingFlangeBlank,
+  tags = getCommonEdge(faces = [
+    mountingFlangeRegion.tags.outerCircle,
+    capStart001
+  ]),
+  length = lugSpacing / 30,
+)
+chamfer002 = chamfer(
+  chamfer001,
+  tags = getCommonEdge(faces = [
+    mountingFlangeRegion.tags.outerCircle,
+    capEnd001
+  ]),
+  length = lugSpacing / 20,
+)
+mountingFlange = subtract([chamfer002], tools = [flangeHoleCutters])
+
+// Solver reconstruction of the welded lug bolts
+boltHeadProfile = sketch(on = startSketchOn(mountingFlange, face = START)) {
+  centerGuide = line(start = [var 0in, var 0in], end = [var -2.25in, var 0in], construction = true)
+  boltHeadCircle = circle(start = [var -1.82in, var 0in], center = [var -2.25in, var 0in], construction = true)
+
+  line1 = line(start = [var -2.68in, var 0in], end = [var -2.47in, var 0.37in])
+  line2 = line(start = [var -2.47in, var 0.37in], end = [var -2.03in, var 0.37in])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var -2.03in, var 0.37in], end = [var -1.82in, var 0in])
+  coincident([line2.end, line3.start])
+
+  line4 = line(start = [var -1.82in, var 0in], end = [var -2.03in, var -0.37in])
+  coincident([line3.end, line4.start])
+
+  line5 = line(start = [var -2.03in, var -0.37in], end = [var -2.47in, var -0.37in])
+  coincident([line4.end, line5.start])
+
+  line6 = line(start = [var -2.47in, var -0.37in], end = [var -2.68in, var 0in])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, boltHeadCircle.center])
+
+  coincident([line1.start, boltHeadCircle])
+  coincident([line2.start, boltHeadCircle])
+  coincident([line3.start, boltHeadCircle])
+  coincident([line4.start, boltHeadCircle])
+  coincident([line5.start, boltHeadCircle])
+  coincident([line6.start, boltHeadCircle])
+
+  horizontal(centerGuide)
+  horizontal(line2)
+  horizontal(line5)
+
+  equalLength([
+    line1,
+    line2,
+    line3,
+    line4,
+    line5,
+    line6
+  ])
+
+  boltHeadRadiusGuide = line(start = [var -2.25in, var 0in], end = [var -1.82in, var 0in], construction = true)
+  coincident([
+    boltHeadRadiusGuide.start,
+    boltHeadCircle.center
+  ])
+  coincident([boltHeadRadiusGuide.end, line4.start])
+  coincident([
+    boltHeadCircle.start,
+    boltHeadRadiusGuide.end
+  ])
+
+  horizontal(boltHeadRadiusGuide)
+  horizontalDistance([centerGuide.start, centerGuide.end]) == -lugSpacing / 2
+  horizontalDistance([
+  boltHeadRadiusGuide.start,
+  boltHeadRadiusGuide.end
+]) == lugThreadDiameter / 1.25
+}
+
+boltHeadRegion = region(point = [-lugSpacing / 2, 0], sketch = boltHeadProfile)
+boltHead = extrude(boltHeadRegion, length = hubSpacing / 8, method = NEW)
+  |> appearance(color = "#121212")
+hide(boltHeadProfile)
+
+boltStemProfile = sketch(on = startSketchOn(boltHead, face = START)) {
+  centerGuide = line(start = [var 0in, var 0in], end = [var 2.25in, var 0in], construction = true)
+  radiusGuide = line(start = [var 2.25in, var 0in], end = [var 2.52in, var 0in], construction = true)
+  circle1 = circle(start = [var 2.52in, var 0in], center = [var 2.25in, var 0in])
+
+  coincident([centerGuide.start, ORIGIN])
+  coincident([centerGuide.end, circle1.center])
+  coincident([radiusGuide.start, circle1.center])
+  coincident([radiusGuide.end, circle1.start])
+
+  horizontal(centerGuide)
+  horizontal(radiusGuide)
+  horizontalDistance([centerGuide.start, centerGuide.end]) == lugSpacing / 2
+  distance([radiusGuide.start, radiusGuide.end]) == lugThreadDiameter / 2
+  radius(circle1) == lugThreadDiameter / 2
+}
+
+boltStemRegion = region(segments = [boltStemProfile.circle1])
+boltStem = extrude(boltStemRegion, length = hubSpacing / 4 + lugLength)
+  |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])
+hide(boltStemProfile)
