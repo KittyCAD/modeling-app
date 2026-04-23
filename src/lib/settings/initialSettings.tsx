@@ -661,6 +661,7 @@ export function createSettings() {
        * Whether to wrap text in the editor or overflow with scroll
        */
       textWrapping: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll.',
@@ -673,6 +674,7 @@ export function createSettings() {
        * Whether to make the cursor blink in the editor
        */
       blinkingCursor: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor.',
         validate: (v) => typeof v === 'boolean',
