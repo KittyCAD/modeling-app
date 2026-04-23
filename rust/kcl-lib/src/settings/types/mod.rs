@@ -12,8 +12,6 @@ use serde::Deserializer;
 use serde::Serialize;
 use validator::Validate;
 
-const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
-
 /// User specific settings for the app.
 /// These live in `user.toml` in the app's configuration directory.
 /// Updating the settings in the app will update this file automatically.
@@ -52,14 +50,6 @@ pub struct Settings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub modeling: Option<ModelingSettings>,
-    /// Settings that affect the behavior of project management.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[validate(nested)]
-    pub project: Option<ProjectSettings>,
-    /// Settings that affect the behavior of the command bar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[validate(nested)]
-    pub command_bar: Option<CommandBarSettings>,
     /// Other fields that weren't recognized by our schema.
     /// App-owned extension settings can live here without Rust understanding
     /// their inner structure.
@@ -76,9 +66,6 @@ pub struct AppSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub appearance: Option<AppearanceSettings>,
-    /// The onboarding status of the app.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub onboarding_status: Option<OnboardingStatus>,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,
@@ -87,16 +74,6 @@ pub struct AppSettings {
         skip_serializing_if = "Option::is_none"
     )]
     stream_idle_mode: Option<u32>,
-    /// Allow orbiting in sketch mode.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub allow_orbit_in_sketch_mode: Option<bool>,
-    /// Whether to show the debug panel, which lets you see various states
-    /// of the app to aid in development.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub show_debug_panel: Option<bool>,
-    /// Whether to enable Machine API discovery and printing controls on desktop.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub machine_api: Option<bool>,
     /// Other fields that weren't recognized by our schema.
     #[serde(flatten)]
     pub other: std::collections::HashMap<String, serde_json::Value>,
@@ -253,18 +230,6 @@ pub struct ModelingSettings {
     /// The methodology the camera should use to orbit around the model.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub camera_orbit: Option<CameraOrbitType>,
-    /// The controls for how to navigate the 3D view.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mouse_controls: Option<MouseControlType>,
-    /// Which type of orientation gizmo to use.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub gizmo_type: Option<GizmoType>,
-    /// Toggle touch controls for 3D view navigation
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub enable_touch_controls: Option<DefaultTrue>,
-    /// Default to the experimental solver-based sketch mode for all new sketches.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_sketch_solve_mode: Option<bool>,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight_edges: Option<DefaultTrue>,
@@ -282,18 +247,6 @@ pub struct ModelingSettings {
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<DefaultTrue>,
-    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<bool>,
-    /// The space between major grid lines, specified in the current unit.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub major_grid_spacing: Option<f64>,
-    /// The number of minor grid lines per major grid line.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub minor_grids_per_major: Option<f64>,
-    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snaps_per_minor: Option<f64>,
     /// Other fields that weren't recognized by our schema.
     #[serde(flatten)]
     pub other: std::collections::HashMap<String, serde_json::Value>,
@@ -394,71 +347,6 @@ pub enum GizmoType {
     Axis,
 }
 
-/// Settings that affect the behavior of project management.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectSettings {
-    /// The directory to save and load projects from.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub directory: Option<std::path::PathBuf>,
-    /// The default project name to use when creating a new project.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub default_project_name: Option<ProjectNameTemplate>,
-    /// Other fields that weren't recognized by our schema.
-    #[serde(flatten)]
-    pub other: std::collections::HashMap<String, serde_json::Value>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
-#[ts(export)]
-#[serde(transparent)]
-pub struct ProjectNameTemplate(pub String);
-
-impl Default for ProjectNameTemplate {
-    fn default() -> Self {
-        Self(DEFAULT_PROJECT_NAME_TEMPLATE.to_string())
-    }
-}
-
-impl From<ProjectNameTemplate> for String {
-    fn from(project_name: ProjectNameTemplate) -> Self {
-        project_name.0
-    }
-}
-
-impl From<String> for ProjectNameTemplate {
-    fn from(s: String) -> Self {
-        Self(s)
-    }
-}
-
-/// Settings that affect the behavior of the command bar.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct CommandBarSettings {
-    /// Whether to include settings in the command bar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub include_settings: Option<DefaultTrue>,
-    /// Other fields that weren't recognized by our schema.
-    #[serde(flatten)]
-    pub other: std::collections::HashMap<String, serde_json::Value>,
-}
-
-/// Same as CommandBarSettings but applies to a per-project basis.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectCommandBarSettings {
-    /// Whether to include settings in the command bar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub include_settings: Option<bool>,
-    /// Other fields that weren't recognized by our schema.
-    #[serde(flatten)]
-    pub other: std::collections::HashMap<String, serde_json::Value>,
-}
-
 /// The types of onboarding status.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
@@ -538,13 +426,8 @@ mod tests {
     use super::AppTheme;
     use super::AppearanceSettings;
     use super::CameraProjectionType;
-    use super::CommandBarSettings;
     use super::Configuration;
     use super::ModelingSettings;
-    use super::MouseControlType;
-    use super::OnboardingStatus;
-    use super::ProjectNameTemplate;
-    use super::ProjectSettings;
     use super::Settings;
     use super::UnitLength;
     use super::default_backface_color;
@@ -589,6 +472,9 @@ mod tests {
     fn test_settings_parse_basic() {
         let settings_file = r#"[settings.app]
 onboarding_status = "dismissed"
+allow_orbit_in_sketch_mode = true
+show_debug_panel = true
+machine_api = true
 foo = "bar"
 
 [settings.app.appearance]
@@ -598,11 +484,21 @@ theme = "dark"
 base_unit = "in"
 camera_projection = "perspective"
 mouse_controls = "zoo"
+gizmo_type = "axis"
+enable_touch_controls = false
+use_sketch_solve_mode = true
 enable_ssao = false
+snap_to_grid = true
+major_grid_spacing = 2.5
+minor_grids_per_major = 5
+snaps_per_minor = 3
 
 [settings.project]
 directory = ""
 default_project_name = "untitled"
+
+[settings.command_bar]
+include_settings = false
 
 [settings.text_editor]
 text_wrapping = true
@@ -611,51 +507,87 @@ text_wrapping = true
         let expected = Configuration {
             settings: Settings {
                 app: Some(AppSettings {
-                    onboarding_status: Some(OnboardingStatus::Dismissed),
                     appearance: Some(AppearanceSettings {
                         theme: Some(AppTheme::Dark),
                         other: Default::default(),
                     }),
-                    other: std::collections::HashMap::from([("foo".to_owned(), "bar".into())]),
+                    other: std::collections::HashMap::from([
+                        ("allow_orbit_in_sketch_mode".to_owned(), true.into()),
+                        ("foo".to_owned(), "bar".into()),
+                        ("machine_api".to_owned(), true.into()),
+                        ("onboarding_status".to_owned(), "dismissed".into()),
+                        ("show_debug_panel".to_owned(), true.into()),
+                    ]),
                     ..Default::default()
                 }),
                 modeling: Some(ModelingSettings {
                     enable_ssao: Some(false.into()),
                     base_unit: Some(From::from(UnitLength::Inches)),
-                    mouse_controls: Some(MouseControlType::Zoo),
                     camera_projection: Some(CameraProjectionType::Perspective),
                     fixed_size_grid: None,
+                    other: std::collections::HashMap::from([
+                        ("enable_touch_controls".to_owned(), false.into()),
+                        ("gizmo_type".to_owned(), "axis".into()),
+                        ("major_grid_spacing".to_owned(), json!(2.5)),
+                        ("minor_grids_per_major".to_owned(), json!(5)),
+                        ("mouse_controls".to_owned(), "zoo".into()),
+                        ("snap_to_grid".to_owned(), true.into()),
+                        ("snaps_per_minor".to_owned(), json!(3)),
+                        ("use_sketch_solve_mode".to_owned(), true.into()),
+                    ]),
                     ..Default::default()
                 }),
-                project: Some(ProjectSettings {
-                    default_project_name: Some(ProjectNameTemplate("untitled".to_string())),
-                    directory: Some("".into()),
-                    other: Default::default(),
-                }),
-                command_bar: None,
-                other: std::collections::HashMap::from([(
-                    "text_editor".to_owned(),
-                    json!({
-                        "text_wrapping": true,
-                    }),
-                )]),
+                other: std::collections::HashMap::from([
+                    (
+                        "command_bar".to_owned(),
+                        json!({
+                            "include_settings": false,
+                        }),
+                    ),
+                    (
+                        "project".to_owned(),
+                        json!({
+                            "default_project_name": "untitled",
+                            "directory": "",
+                        }),
+                    ),
+                    (
+                        "text_editor".to_owned(),
+                        json!({
+                            "text_wrapping": true,
+                        }),
+                    ),
+                ]),
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(parsed, expected);
 
-        let expected_unwrap = CommandBarSettings {
-            include_settings: None,
-            other: Default::default(),
-        };
-        let actual_unwrap = expected.clone().settings.command_bar.unwrap_or_default();
-        assert_eq!(actual_unwrap, expected_unwrap);
-        let actual_unwrap = actual_unwrap.include_settings.unwrap_or_default();
-        assert_eq!(actual_unwrap.0, true);
-
-        // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(serialized, settings_file);
+        assert!(serialized.contains("[settings.app]"));
+        assert!(serialized.contains("onboarding_status = \"dismissed\""));
+        assert!(serialized.contains("allow_orbit_in_sketch_mode = true"));
+        assert!(serialized.contains("show_debug_panel = true"));
+        assert!(serialized.contains("machine_api = true"));
+        assert!(serialized.contains("foo = \"bar\""));
+        assert!(serialized.contains("[settings.modeling]"));
+        assert!(serialized.contains("mouse_controls = \"zoo\""));
+        assert!(serialized.contains("gizmo_type = \"axis\""));
+        assert!(serialized.contains("enable_touch_controls = false"));
+        assert!(serialized.contains("use_sketch_solve_mode = true"));
+        assert!(serialized.contains("snap_to_grid = true"));
+        assert!(serialized.contains("major_grid_spacing = 2.5"));
+        assert!(serialized.contains("minor_grids_per_major = 5"));
+        assert!(serialized.contains("snaps_per_minor = 3"));
+        assert!(serialized.contains("[settings.project]"));
+        assert!(serialized.contains("directory = \"\""));
+        assert!(serialized.contains("default_project_name = \"untitled\""));
+        assert!(serialized.contains("[settings.command_bar]"));
+        assert!(serialized.contains("include_settings = false"));
+        assert!(serialized.contains("[settings.text_editor]"));
+        assert!(serialized.contains("text_wrapping = true"));
+        let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
+        assert_eq!(reparsed, expected);
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
