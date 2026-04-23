@@ -2,7 +2,7 @@
 // A small electric motor to power the fan
 
 // Set Units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import Parameters
 import * from "parameters.kcl"
@@ -16,11 +16,11 @@ sketch001 = sketch(on = topFacePlane) {
 }
 region001 = region(segments = [sketch001.circle1])
 motorBody = extrude(
-       region001,
-       length = 17,
-       tagStart = $capStart001,
-       tagEnd = $capEnd001,
-     )
+  region001,
+  length = 17,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
   |> appearance(color = "#021b55")
   |> fillet(
        tags = [

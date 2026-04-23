@@ -9378,14 +9378,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -209.07306676062558,
-            183.37302404428343
+            -209.07306675817946,
+            183.37302404261675
           ],
           "from": [
             -224.97,
             184.88
           ],
-          "radius": 15.968201619100228,
+          "radius": 15.968201621692716,
           "tag": {
             "commentStart": 14348,
             "end": 14352,
@@ -9395,8 +9395,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc1"
           },
           "to": [
-            -207.33991289580604,
-            167.49915745075631
+            -207.33991289538017,
+            167.49915744626117
           ],
           "type": "Arc",
           "units": "mm"
@@ -9408,14 +9408,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": false,
           "center": [
-            -205.29887434178545,
-            150.16850348663186
+            -205.29887434958658,
+            150.16850350127413
           ],
           "from": [
-            -207.33991289580604,
-            167.49915745075631
+            -207.33991289538017,
+            167.49915744626117
           ],
-          "radius": 17.450427077960615,
+          "radius": 17.4504270579923,
           "tag": {
             "commentStart": 14623,
             "end": 14627,
@@ -9425,8 +9425,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc2"
           },
           "to": [
-            -189.2103126715779,
-            143.41013174580925
+            -189.21031270216517,
+            143.4101317577674
           ],
           "type": "Arc",
           "units": "mm"
@@ -9438,14 +9438,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": false,
           "center": [
-            -192.6691127286301,
-            144.86196839242632
+            -192.6691128200397,
+            144.86196841939025
           ],
           "from": [
-            -189.2103126715779,
-            143.41013174580925
+            -189.21031270216517,
+            143.4101317577674
           ],
-          "radius": 3.7511501547025015,
+          "radius": 3.7511502165923662,
           "tag": {
             "commentStart": 14785,
             "end": 14789,
@@ -9455,8 +9455,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc3"
           },
           "to": [
-            -196.40928827458873,
-            145.14869887308302
+            -196.40928843164147,
+            145.14869885345723
           ],
           "type": "Arc",
           "units": "mm"
@@ -9468,14 +9468,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -208.60263964911397,
-            146.0827914452513
+            -208.60263982619514,
+            146.0827912577224
           ],
           "from": [
-            -196.40928827458873,
-            145.14869887308302
+            -196.40928843164147,
+            145.14869885345723
           ],
-          "radius": 12.22907791601707,
+          "radius": 12.229077923162068,
           "tag": {
             "commentStart": 14951,
             "end": 14955,
@@ -9485,8 +9485,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc4"
           },
           "to": [
-            -208.33002590903558,
-            158.30883039598007
+            -208.33002591287794,
+            158.30883021173508
           ],
           "type": "Arc",
           "units": "mm"
@@ -9498,14 +9498,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": false,
           "center": [
-            -207.760330524438,
-            183.53036395554886
+            -207.76033046053763,
+            183.5303638798373
           ],
           "from": [
-            -208.33002590903558,
-            158.30883039598007
+            -208.33002591287794,
+            158.30883021173508
           ],
-          "radius": 25.22796678148453,
+          "radius": 25.227966891520026,
           "tag": {
             "commentStart": 15118,
             "end": 15122,
@@ -9515,8 +9515,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc5"
           },
           "to": [
-            -232.9203990268805,
-            185.38002902795714
+            -232.9203990675465,
+            185.38002903067866
           ],
           "type": "Arc",
           "units": "mm"
@@ -9528,14 +9528,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": false,
           "center": [
-            -228.94772516673578,
-            185.08985692704348
+            -228.94772518707444,
+            185.08985692832823
           ],
           "from": [
-            -232.9203990268805,
-            185.38002902795714
+            -232.9203990675465,
+            185.38002903067866
           ],
-          "radius": 3.983257140485122,
+          "radius": 3.983257160863128,
           "tag": {
             "commentStart": 15282,
             "end": 15286,
@@ -9545,8 +9545,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc6"
           },
           "to": [
-            -224.96999999807682,
-            184.87999999996498
+            -224.96999999807693,
+            184.879999999965
           ],
           "type": "Arc",
           "units": "mm"
@@ -9664,7 +9664,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -207.33991289580604,
+                        "n": -207.33991289538017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9672,7 +9672,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 167.49915745075631,
+                        "n": 167.49915744626117,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9682,7 +9682,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -209.07306676062558,
+                        "n": -209.07306675817946,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9690,7 +9690,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 183.37302404428343,
+                        "n": 183.37302404261675,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9798,7 +9798,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -189.21031267157792,
+                        "n": -189.21031270216517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9806,7 +9806,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 143.41013174580925,
+                        "n": 143.4101317577674,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9816,7 +9816,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -207.33991289580604,
+                        "n": -207.33991289538017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9824,7 +9824,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 167.49915745075631,
+                        "n": 167.49915744626117,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9834,7 +9834,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -205.29887434178545,
+                        "n": -205.29887434958658,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9842,7 +9842,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 150.16850348663186,
+                        "n": 150.16850350127413,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9950,7 +9950,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -196.40928827554492,
+                        "n": -196.4092884325976,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9958,7 +9958,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 145.14869887315632,
+                        "n": 145.14869885353053,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9968,7 +9968,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -189.21031267157792,
+                        "n": -189.21031270216517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9976,7 +9976,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 143.41013174580925,
+                        "n": 143.4101317577674,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9986,7 +9986,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -192.66911272863013,
+                        "n": -192.6691128200397,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9994,7 +9994,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 144.86196839242632,
+                        "n": 144.86196841939025,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10102,7 +10102,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -196.40928827650941,
+                        "n": -196.40928843356207,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10110,7 +10110,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 145.14869887323024,
+                        "n": 145.14869885360446,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10120,7 +10120,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -208.33002591095877,
+                        "n": -208.33002591480104,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10128,7 +10128,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 158.30883039601508,
+                        "n": 158.3088302117701,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10138,7 +10138,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -208.60263965103465,
+                        "n": -208.60263982811574,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10146,7 +10146,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 146.08279144539853,
+                        "n": 146.08279125786962,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10254,7 +10254,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -232.92039902880367,
+                        "n": -232.9203990694696,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10262,7 +10262,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 185.38002902799215,
+                        "n": 185.38002903071364,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10272,7 +10272,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -208.33002591095877,
+                        "n": -208.33002591480104,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10280,7 +10280,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 158.30883039601508,
+                        "n": 158.30883021177007,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10290,7 +10290,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -207.76033052636117,
+                        "n": -207.76033046246073,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10298,7 +10298,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 183.53036395558388,
+                        "n": 183.53036387987228,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10424,7 +10424,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -232.92039902880367,
+                        "n": -232.9203990694696,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10432,7 +10432,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 185.38002902799215,
+                        "n": 185.38002903071364,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10442,7 +10442,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -228.94772516865896,
+                        "n": -228.94772518899754,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10450,7 +10450,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 185.0898569270785,
+                        "n": 185.08985692836322,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10576,7 +10576,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000010796112921900827,
+                        "n": -0.0000000000000010792545185657467,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10679,7 +10679,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000003598704313235873,
+                        "n": -0.00000000000000035975150678181354,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10687,7 +10687,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000026711001418891372,
+                        "n": 0.000000000000000026710376083443403,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10697,7 +10697,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000007197408622020048,
+                        "n": -0.0000000000000007195030131187036,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10804,14 +10804,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -209.07306676062558,
-                    183.37302404428343
+                    -209.07306675817946,
+                    183.37302404261675
                   ],
                   "from": [
                     -224.97,
                     184.88
                   ],
-                  "radius": 15.968201619100228,
+                  "radius": 15.968201621692716,
                   "tag": {
                     "commentStart": 14348,
                     "end": 14352,
@@ -10821,8 +10821,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    -207.33991289580604,
-                    167.49915745075631
+                    -207.33991289538017,
+                    167.49915744626117
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -10834,14 +10834,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -205.29887434178545,
-                    150.16850348663186
+                    -205.29887434958658,
+                    150.16850350127413
                   ],
                   "from": [
-                    -207.33991289580604,
-                    167.49915745075631
+                    -207.33991289538017,
+                    167.49915744626117
                   ],
-                  "radius": 17.450427077960615,
+                  "radius": 17.4504270579923,
                   "tag": {
                     "commentStart": 14623,
                     "end": 14627,
@@ -10851,8 +10851,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -189.2103126715779,
-                    143.41013174580925
+                    -189.21031270216517,
+                    143.4101317577674
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -10864,14 +10864,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -192.6691127286301,
-                    144.86196839242632
+                    -192.6691128200397,
+                    144.86196841939025
                   ],
                   "from": [
-                    -189.2103126715779,
-                    143.41013174580925
+                    -189.21031270216517,
+                    143.4101317577674
                   ],
-                  "radius": 3.7511501547025015,
+                  "radius": 3.7511502165923662,
                   "tag": {
                     "commentStart": 14785,
                     "end": 14789,
@@ -10881,8 +10881,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -196.40928827458873,
-                    145.14869887308302
+                    -196.40928843164147,
+                    145.14869885345723
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -10894,14 +10894,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -208.60263964911397,
-                    146.0827914452513
+                    -208.60263982619514,
+                    146.0827912577224
                   ],
                   "from": [
-                    -196.40928827458873,
-                    145.14869887308302
+                    -196.40928843164147,
+                    145.14869885345723
                   ],
-                  "radius": 12.22907791601707,
+                  "radius": 12.229077923162068,
                   "tag": {
                     "commentStart": 14951,
                     "end": 14955,
@@ -10911,8 +10911,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -208.33002590903558,
-                    158.30883039598007
+                    -208.33002591287794,
+                    158.30883021173508
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -10924,14 +10924,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -207.760330524438,
-                    183.53036395554886
+                    -207.76033046053763,
+                    183.5303638798373
                   ],
                   "from": [
-                    -208.33002590903558,
-                    158.30883039598007
+                    -208.33002591287794,
+                    158.30883021173508
                   ],
-                  "radius": 25.22796678148453,
+                  "radius": 25.227966891520026,
                   "tag": {
                     "commentStart": 15118,
                     "end": 15122,
@@ -10941,8 +10941,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    -232.9203990268805,
-                    185.38002902795714
+                    -232.9203990675465,
+                    185.38002903067866
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -10954,14 +10954,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -228.94772516673578,
-                    185.08985692704348
+                    -228.94772518707444,
+                    185.08985692832823
                   ],
                   "from": [
-                    -232.9203990268805,
-                    185.38002902795714
+                    -232.9203990675465,
+                    185.38002903067866
                   ],
-                  "radius": 3.983257140485122,
+                  "radius": 3.983257160863128,
                   "tag": {
                     "commentStart": 15282,
                     "end": 15286,
@@ -10971,8 +10971,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    -224.96999999807682,
-                    184.87999999996498
+                    -224.96999999807693,
+                    184.879999999965
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -11170,14 +11170,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -209.07306676062558,
-                  183.37302404428343
+                  -209.07306675817946,
+                  183.37302404261675
                 ],
                 "from": [
                   -224.97,
                   184.88
                 ],
-                "radius": 15.968201619100228,
+                "radius": 15.968201621692716,
                 "tag": {
                   "commentStart": 14348,
                   "end": 14352,
@@ -11187,8 +11187,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -207.33991289580604,
-                  167.49915745075631
+                  -207.33991289538017,
+                  167.49915744626117
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11200,14 +11200,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -205.29887434178545,
-                  150.16850348663186
+                  -205.29887434958658,
+                  150.16850350127413
                 ],
                 "from": [
-                  -207.33991289580604,
-                  167.49915745075631
+                  -207.33991289538017,
+                  167.49915744626117
                 ],
-                "radius": 17.450427077960615,
+                "radius": 17.4504270579923,
                 "tag": {
                   "commentStart": 14623,
                   "end": 14627,
@@ -11217,8 +11217,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -189.2103126715779,
-                  143.41013174580925
+                  -189.21031270216517,
+                  143.4101317577674
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11230,14 +11230,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -192.6691127286301,
-                  144.86196839242632
+                  -192.6691128200397,
+                  144.86196841939025
                 ],
                 "from": [
-                  -189.2103126715779,
-                  143.41013174580925
+                  -189.21031270216517,
+                  143.4101317577674
                 ],
-                "radius": 3.7511501547025015,
+                "radius": 3.7511502165923662,
                 "tag": {
                   "commentStart": 14785,
                   "end": 14789,
@@ -11247,8 +11247,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  -196.40928827458873,
-                  145.14869887308302
+                  -196.40928843164147,
+                  145.14869885345723
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11260,14 +11260,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -208.60263964911397,
-                  146.0827914452513
+                  -208.60263982619514,
+                  146.0827912577224
                 ],
                 "from": [
-                  -196.40928827458873,
-                  145.14869887308302
+                  -196.40928843164147,
+                  145.14869885345723
                 ],
-                "radius": 12.22907791601707,
+                "radius": 12.229077923162068,
                 "tag": {
                   "commentStart": 14951,
                   "end": 14955,
@@ -11277,8 +11277,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc4"
                 },
                 "to": [
-                  -208.33002590903558,
-                  158.30883039598007
+                  -208.33002591287794,
+                  158.30883021173508
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11290,14 +11290,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -207.760330524438,
-                  183.53036395554886
+                  -207.76033046053763,
+                  183.5303638798373
                 ],
                 "from": [
-                  -208.33002590903558,
-                  158.30883039598007
+                  -208.33002591287794,
+                  158.30883021173508
                 ],
-                "radius": 25.22796678148453,
+                "radius": 25.227966891520026,
                 "tag": {
                   "commentStart": 15118,
                   "end": 15122,
@@ -11307,8 +11307,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc5"
                 },
                 "to": [
-                  -232.9203990268805,
-                  185.38002902795714
+                  -232.9203990675465,
+                  185.38002903067866
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11320,14 +11320,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -228.94772516673578,
-                  185.08985692704348
+                  -228.94772518707444,
+                  185.08985692832823
                 ],
                 "from": [
-                  -232.9203990268805,
-                  185.38002902795714
+                  -232.9203990675465,
+                  185.38002903067866
                 ],
-                "radius": 3.983257140485122,
+                "radius": 3.983257160863128,
                 "tag": {
                   "commentStart": 15282,
                   "end": 15286,
@@ -11337,8 +11337,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc6"
                 },
                 "to": [
-                  -224.96999999807682,
-                  184.87999999996498
+                  -224.96999999807693,
+                  184.879999999965
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11532,14 +11532,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -209.07306676062558,
-                  183.37302404428343
+                  -209.07306675817946,
+                  183.37302404261675
                 ],
                 "from": [
                   -224.97,
                   184.88
                 ],
-                "radius": 15.968201619100228,
+                "radius": 15.968201621692716,
                 "tag": {
                   "commentStart": 14348,
                   "end": 14352,
@@ -11549,8 +11549,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -207.33991289580604,
-                  167.49915745075631
+                  -207.33991289538017,
+                  167.49915744626117
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11562,14 +11562,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -205.29887434178545,
-                  150.16850348663186
+                  -205.29887434958658,
+                  150.16850350127413
                 ],
                 "from": [
-                  -207.33991289580604,
-                  167.49915745075631
+                  -207.33991289538017,
+                  167.49915744626117
                 ],
-                "radius": 17.450427077960615,
+                "radius": 17.4504270579923,
                 "tag": {
                   "commentStart": 14623,
                   "end": 14627,
@@ -11579,8 +11579,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -189.2103126715779,
-                  143.41013174580925
+                  -189.21031270216517,
+                  143.4101317577674
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11592,14 +11592,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -192.6691127286301,
-                  144.86196839242632
+                  -192.6691128200397,
+                  144.86196841939025
                 ],
                 "from": [
-                  -189.2103126715779,
-                  143.41013174580925
+                  -189.21031270216517,
+                  143.4101317577674
                 ],
-                "radius": 3.7511501547025015,
+                "radius": 3.7511502165923662,
                 "tag": {
                   "commentStart": 14785,
                   "end": 14789,
@@ -11609,8 +11609,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  -196.40928827458873,
-                  145.14869887308302
+                  -196.40928843164147,
+                  145.14869885345723
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11622,14 +11622,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -208.60263964911397,
-                  146.0827914452513
+                  -208.60263982619514,
+                  146.0827912577224
                 ],
                 "from": [
-                  -196.40928827458873,
-                  145.14869887308302
+                  -196.40928843164147,
+                  145.14869885345723
                 ],
-                "radius": 12.22907791601707,
+                "radius": 12.229077923162068,
                 "tag": {
                   "commentStart": 14951,
                   "end": 14955,
@@ -11639,8 +11639,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc4"
                 },
                 "to": [
-                  -208.33002590903558,
-                  158.30883039598007
+                  -208.33002591287794,
+                  158.30883021173508
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11652,14 +11652,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -207.760330524438,
-                  183.53036395554886
+                  -207.76033046053763,
+                  183.5303638798373
                 ],
                 "from": [
-                  -208.33002590903558,
-                  158.30883039598007
+                  -208.33002591287794,
+                  158.30883021173508
                 ],
-                "radius": 25.22796678148453,
+                "radius": 25.227966891520026,
                 "tag": {
                   "commentStart": 15118,
                   "end": 15122,
@@ -11669,8 +11669,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc5"
                 },
                 "to": [
-                  -232.9203990268805,
-                  185.38002902795714
+                  -232.9203990675465,
+                  185.38002903067866
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11682,14 +11682,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -228.94772516673578,
-                  185.08985692704348
+                  -228.94772518707444,
+                  185.08985692832823
                 ],
                 "from": [
-                  -232.9203990268805,
-                  185.38002902795714
+                  -232.9203990675465,
+                  185.38002903067866
                 ],
-                "radius": 3.983257140485122,
+                "radius": 3.983257160863128,
                 "tag": {
                   "commentStart": 15282,
                   "end": 15286,
@@ -11699,8 +11699,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc6"
                 },
                 "to": [
-                  -224.96999999807682,
-                  184.87999999996498
+                  -224.96999999807693,
+                  184.879999999965
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11922,14 +11922,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -45.81874318582377,
-                  476.5303037507973
+                  -45.81874318592303,
+                  476.53030375082625
                 ],
                 "from": [
                   -37.900000000000006,
                   503.47
                 ],
-                "radius": 28.079418221222763,
+                "radius": 28.079418221222998,
                 "tag": {
                   "commentStart": 10002,
                   "end": 10006,
@@ -11939,8 +11939,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -73.01936783317385,
-                  483.50022099824787
+                  -73.01936783328179,
+                  483.5002209982439
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11952,14 +11952,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -36.27183423366965,
-                  509.009298174952
+                  -36.27183423348939,
+                  509.00929817236283
                 ],
                 "from": [
                   -37.899999999981546,
                   503.4700000000628
                 ],
-                "radius": 5.773625207174513,
+                "radius": 5.773625204741269,
                 "tag": {
                   "commentStart": 10297,
                   "end": 10301,
@@ -11969,8 +11969,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -34.909463527759506,
-                  514.6198858529585
+                  -34.90946352834561,
+                  514.6198858480515
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -11982,14 +11982,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -45.02632001433354,
-                  472.9618614557241
+                  -45.026320016149995,
+                  472.9618614518508
                 ],
                 "from": [
-                  -34.909463527759506,
-                  514.6198858529585
+                  -34.90946352834561,
+                  514.6198858480515
                 ],
-                "radius": 42.868890606715205,
+                "radius": 42.868890606001,
                 "tag": {
                   "commentStart": 10461,
                   "end": 10465,
@@ -11999,8 +11999,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  -86.1702531824175,
-                  485.0000733375094
+                  -86.17025318216767,
+                  485.00007333815483
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12012,14 +12012,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -79.72478154788894,
-                  483.11054548849563
+                  -79.7247815479131,
+                  483.1105454885071
                 ],
                 "from": [
-                  -86.1702531824175,
-                  485.0000733375094
+                  -86.17025318216767,
+                  485.00007333815483
                 ],
-                "radius": 6.716726887682032,
+                "radius": 6.716726887597461,
                 "tag": {
                   "commentStart": 10902,
                   "end": 10906,
@@ -12029,8 +12029,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc5"
                 },
                 "to": [
-                  -73.01936783345607,
-                  483.50022099710054
+                  -73.01936783356405,
+                  483.50022099709645
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12188,14 +12188,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -45.81874318582377,
-                  476.5303037507973
+                  -45.81874318592303,
+                  476.53030375082625
                 ],
                 "from": [
                   -37.900000000000006,
                   503.47
                 ],
-                "radius": 28.079418221222763,
+                "radius": 28.079418221222998,
                 "tag": {
                   "commentStart": 10002,
                   "end": 10006,
@@ -12205,8 +12205,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -73.01936783317385,
-                  483.50022099824787
+                  -73.01936783328179,
+                  483.5002209982439
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12218,14 +12218,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -36.27183423366965,
-                  509.009298174952
+                  -36.27183423348939,
+                  509.00929817236283
                 ],
                 "from": [
                   -37.899999999981546,
                   503.4700000000628
                 ],
-                "radius": 5.773625207174513,
+                "radius": 5.773625204741269,
                 "tag": {
                   "commentStart": 10297,
                   "end": 10301,
@@ -12235,8 +12235,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -34.909463527759506,
-                  514.6198858529585
+                  -34.90946352834561,
+                  514.6198858480515
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12248,14 +12248,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -45.02632001433354,
-                  472.9618614557241
+                  -45.026320016149995,
+                  472.9618614518508
                 ],
                 "from": [
-                  -34.909463527759506,
-                  514.6198858529585
+                  -34.90946352834561,
+                  514.6198858480515
                 ],
-                "radius": 42.868890606715205,
+                "radius": 42.868890606001,
                 "tag": {
                   "commentStart": 10461,
                   "end": 10465,
@@ -12265,8 +12265,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  -86.1702531824175,
-                  485.0000733375094
+                  -86.17025318216767,
+                  485.00007333815483
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12278,14 +12278,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -79.72478154788894,
-                  483.11054548849563
+                  -79.7247815479131,
+                  483.1105454885071
                 ],
                 "from": [
-                  -86.1702531824175,
-                  485.0000733375094
+                  -86.17025318216767,
+                  485.00007333815483
                 ],
-                "radius": 6.716726887682032,
+                "radius": 6.716726887597461,
                 "tag": {
                   "commentStart": 10902,
                   "end": 10906,
@@ -12295,8 +12295,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "value": "arc5"
                 },
                 "to": [
-                  -73.01936783345607,
-                  483.50022099710054
+                  -73.01936783356405,
+                  483.50022099709645
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -12393,14 +12393,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -45.81874318582377,
-            476.5303037507973
+            -45.81874318592303,
+            476.53030375082625
           ],
           "from": [
             -37.900000000000006,
             503.47
           ],
-          "radius": 28.079418221222763,
+          "radius": 28.079418221222998,
           "tag": {
             "commentStart": 10002,
             "end": 10006,
@@ -12410,8 +12410,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc1"
           },
           "to": [
-            -73.01936783317385,
-            483.50022099824787
+            -73.01936783328179,
+            483.5002209982439
           ],
           "type": "Arc",
           "units": "mm"
@@ -12423,14 +12423,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -36.27183423366965,
-            509.009298174952
+            -36.27183423348939,
+            509.00929817236283
           ],
           "from": [
             -37.899999999981546,
             503.4700000000628
           ],
-          "radius": 5.773625207174513,
+          "radius": 5.773625204741269,
           "tag": {
             "commentStart": 10297,
             "end": 10301,
@@ -12440,8 +12440,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc2"
           },
           "to": [
-            -34.909463527759506,
-            514.6198858529585
+            -34.90946352834561,
+            514.6198858480515
           ],
           "type": "Arc",
           "units": "mm"
@@ -12453,14 +12453,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -45.02632001433354,
-            472.9618614557241
+            -45.026320016149995,
+            472.9618614518508
           ],
           "from": [
-            -34.909463527759506,
-            514.6198858529585
+            -34.90946352834561,
+            514.6198858480515
           ],
-          "radius": 42.868890606715205,
+          "radius": 42.868890606001,
           "tag": {
             "commentStart": 10461,
             "end": 10465,
@@ -12470,8 +12470,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc3"
           },
           "to": [
-            -86.1702531824175,
-            485.0000733375094
+            -86.17025318216767,
+            485.00007333815483
           ],
           "type": "Arc",
           "units": "mm"
@@ -12483,14 +12483,14 @@ description: Variables in memory after executing gingerbread-man.kcl
           },
           "ccw": true,
           "center": [
-            -79.72478154788894,
-            483.11054548849563
+            -79.7247815479131,
+            483.1105454885071
           ],
           "from": [
-            -86.1702531824175,
-            485.0000733375094
+            -86.17025318216767,
+            485.00007333815483
           ],
-          "radius": 6.716726887682032,
+          "radius": 6.716726887597461,
           "tag": {
             "commentStart": 10902,
             "end": 10906,
@@ -12500,8 +12500,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "value": "arc5"
           },
           "to": [
-            -73.01936783345607,
-            483.50022099710054
+            -73.01936783356405,
+            483.50022099709645
           ],
           "type": "Arc",
           "units": "mm"
@@ -12611,7 +12611,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -73.0193678331738,
+                        "n": -73.01936783328175,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12619,7 +12619,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 483.50022099824787,
+                        "n": 483.5002209982439,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12629,7 +12629,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -45.81874318582376,
+                        "n": -45.81874318592303,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12637,7 +12637,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 476.5303037507973,
+                        "n": 476.53030375082625,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12763,7 +12763,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -34.90946352770891,
+                        "n": -34.90946352829499,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12771,7 +12771,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 514.6198858531669,
+                        "n": 514.61988584826,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12781,7 +12781,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -36.27183423366965,
+                        "n": -36.27183423348939,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12789,7 +12789,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 509.009298174952,
+                        "n": 509.00929817236283,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12897,7 +12897,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -34.909463527480675,
+                        "n": -34.90946352806676,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12905,7 +12905,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 514.6198858541069,
+                        "n": 514.6198858491999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12915,7 +12915,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -86.17025318213523,
+                        "n": -86.17025318188536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12923,7 +12923,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 485.0000733386567,
+                        "n": 485.0000733393023,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12933,7 +12933,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -45.02632001405471,
+                        "n": -45.02632001587113,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12941,7 +12941,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 472.96186145687244,
+                        "n": 472.96186145299924,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13049,7 +13049,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -86.17025318213523,
+                        "n": -86.17025318188536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13057,7 +13057,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 485.0000733386567,
+                        "n": 485.0000733393023,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13067,7 +13067,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -73.0193678331738,
+                        "n": -73.01936783328175,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13075,7 +13075,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 483.50022099824787,
+                        "n": 483.5002209982439,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13085,7 +13085,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "center": [
                       {
-                        "n": -79.72478154760667,
+                        "n": -79.72478154763078,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13093,7 +13093,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": 483.11054548964296,
+                        "n": 483.11054548965456,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13219,7 +13219,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000020100015158894593,
+                        "n": -0.0000000000000020109070811746864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13322,7 +13322,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000006700005101227903,
+                        "n": -0.0000000000000006703023652184713,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13330,7 +13330,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000013647488390670098,
+                        "n": -0.0000000000000013650928987555129,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13340,7 +13340,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000013400010166258529,
+                        "n": -0.0000000000000013406047268167605,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13447,14 +13447,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -45.81874318582377,
-                    476.5303037507973
+                    -45.81874318592303,
+                    476.53030375082625
                   ],
                   "from": [
                     -37.900000000000006,
                     503.47
                   ],
-                  "radius": 28.079418221222763,
+                  "radius": 28.079418221222998,
                   "tag": {
                     "commentStart": 10002,
                     "end": 10006,
@@ -13464,8 +13464,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    -73.01936783317385,
-                    483.50022099824787
+                    -73.01936783328179,
+                    483.5002209982439
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -13476,8 +13476,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -73.01936783317385,
-                    483.50022099824787
+                    -73.01936783328179,
+                    483.5002209982439
                   ],
                   "tag": null,
                   "to": [
@@ -13494,14 +13494,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -36.27183423366965,
-                    509.009298174952
+                    -36.27183423348939,
+                    509.00929817236283
                   ],
                   "from": [
                     -37.899999999981546,
                     503.4700000000628
                   ],
-                  "radius": 5.773625207174513,
+                  "radius": 5.773625204741269,
                   "tag": {
                     "commentStart": 10297,
                     "end": 10301,
@@ -13511,8 +13511,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -34.909463527759506,
-                    514.6198858529585
+                    -34.90946352834561,
+                    514.6198858480515
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -13524,14 +13524,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -45.02632001433354,
-                    472.9618614557241
+                    -45.026320016149995,
+                    472.9618614518508
                   ],
                   "from": [
-                    -34.909463527759506,
-                    514.6198858529585
+                    -34.90946352834561,
+                    514.6198858480515
                   ],
-                  "radius": 42.868890606715205,
+                  "radius": 42.868890606001,
                   "tag": {
                     "commentStart": 10461,
                     "end": 10465,
@@ -13541,8 +13541,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -86.1702531824175,
-                    485.0000733375094
+                    -86.17025318216767,
+                    485.00007333815483
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -13554,14 +13554,14 @@ description: Variables in memory after executing gingerbread-man.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -79.72478154788894,
-                    483.11054548849563
+                    -79.7247815479131,
+                    483.1105454885071
                   ],
                   "from": [
-                    -86.1702531824175,
-                    485.0000733375094
+                    -86.17025318216767,
+                    485.00007333815483
                   ],
-                  "radius": 6.716726887682032,
+                  "radius": 6.716726887597461,
                   "tag": {
                     "commentStart": 10902,
                     "end": 10906,
@@ -13571,8 +13571,8 @@ description: Variables in memory after executing gingerbread-man.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    -73.01936783345607,
-                    483.50022099710054
+                    -73.01936783356405,
+                    483.50022099709645
                   ],
                   "type": "Arc",
                   "units": "mm"

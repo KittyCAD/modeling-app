@@ -443,8 +443,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -4.201941454065641,
-              0.0010012789920492038
+              -4.201941454342064,
+              0.001001278767232966
             ],
             "tag": {
               "commentStart": 1284,
@@ -455,8 +455,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line1"
             },
             "to": [
-              -2.7526569737327566,
-              -0.0021739147502548117
+              -2.752656973825964,
+              -0.002173914450708136
             ],
             "type": "ToPoint",
             "units": "in"
@@ -468,14 +468,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              -2.7520658924659043,
-              0.2506810855452608
+              -2.752065892655839,
+              0.25068108563032004
             ],
             "from": [
-              -2.752656973731729,
-              -0.00217391432824803
+              -2.752656973824936,
+              -0.002173914028701372
             ],
-            "radius": 0.2528556907370189,
+            "radius": 0.252855690522306,
             "tag": {
               "commentStart": 1361,
               "end": 1365,
@@ -485,8 +485,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc2"
             },
             "to": [
-              -2.507757292480147,
-              0.18549436672083985
+              -2.5077572928752137,
+              0.1854943668699593
             ],
             "type": "Arc",
             "units": "in"
@@ -497,8 +497,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.507757293126065,
-              0.18549436689318385
+              -2.5077572935211316,
+              0.18549436704230324
             ],
             "tag": {
               "commentStart": 1513,
@@ -509,8 +509,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line3"
             },
             "to": [
-              -1.921914888554738,
-              2.380423794931761
+              -1.9219148889933138,
+              2.38042379534574
             ],
             "type": "ToPoint",
             "units": "in"
@@ -522,14 +522,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              -1.8021627111939045,
-              2.348468773355253
+              -1.802162712124804,
+              2.3484687739053203
             ],
             "from": [
-              -1.921914888554738,
-              2.380423794931761
+              -1.9219148889933138,
+              2.38042379534574
             ],
-            "radius": 0.12394235509548614,
+            "radius": 0.12394235458472018,
             "tag": {
               "commentStart": 1634,
               "end": 1638,
@@ -539,8 +539,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc4"
             },
             "to": [
-              -1.802135686047242,
-              2.4724111255043755
+              -1.8021356869690395,
+              2.4724111255436747
             ],
             "type": "Arc",
             "units": "in"
@@ -551,8 +551,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -1.8021356860750481,
-              2.4724111278878653
+              -1.802135686996846,
+              2.4724111279271663
             ],
             "tag": {
               "commentStart": 1785,
@@ -563,8 +563,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line5"
             },
             "to": [
-              1.7993250558293703,
-              2.4724111278878356
+              1.7993250557378855,
+              2.4724111279271366
             ],
             "type": "ToPoint",
             "units": "in"
@@ -576,14 +576,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              1.7993473509712128,
-              2.3484820547923566
+              1.799347350879427,
+              2.348482054939722
             ],
             "from": [
-              1.7993250558293703,
-              2.4724111278878356
+              1.7993250557378855,
+              2.4724111279271366
             ],
-            "radius": 0.12392907510095408,
+            "radius": 0.1239290749928898,
             "tag": {
               "commentStart": 1905,
               "end": 1909,
@@ -593,8 +593,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc6"
             },
             "to": [
-              1.9190474287961996,
-              2.380580450765832
+              1.919047428601328,
+              2.3805804508803945
             ],
             "type": "Arc",
             "units": "in"
@@ -605,8 +605,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              1.9190474276523084,
-              2.3805804503102332
+              1.9190474274574363,
+              2.3805804504247963
             ],
             "tag": {
               "commentStart": 2053,
@@ -617,8 +617,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line7"
             },
             "to": [
-              2.507691821210217,
-              0.18640080978424958
+              2.5076918209919588,
+              0.18640080963920558
             ],
             "type": "ToPoint",
             "units": "in"
@@ -630,14 +630,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              2.7487863371227332,
-              0.2510559612933362
+              2.748786336664527,
+              0.2510559610745585
             ],
             "from": [
-              2.507691821210217,
-              0.18640080978424958
+              2.5076918209919588,
+              0.18640080963920558
             ],
-            "radius": 0.24961340953513186,
+            "radius": 0.24961340928427425,
             "tag": {
               "commentStart": 2174,
               "end": 2178,
@@ -647,8 +647,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc8"
             },
             "to": [
-              2.7487705757632552,
-              0.0014425522558146886
+              2.7487705753047518,
+              0.0014425522878946662
             ],
             "type": "Arc",
             "units": "in"
@@ -659,8 +659,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              2.7487705757632552,
-              0.0014425522558146886
+              2.7487705753047518,
+              0.0014425522878946662
             ],
             "tag": {
               "commentStart": 2323,
@@ -671,8 +671,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line9"
             },
             "to": [
-              4.198058534343744,
-              0.0014425523939884167
+              4.198058534067307,
+              0.0014425524260687074
             ],
             "type": "ToPoint",
             "units": "in"
@@ -683,8 +683,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.198058534343744,
-              0.0014425523939884167
+              4.198058534067307,
+              0.0014425524260687074
             ],
             "tag": {
               "commentStart": 2436,
@@ -695,8 +695,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line10"
             },
             "to": [
-              4.19805853434379,
-              0.12025470272190972
+              4.1980585340673535,
+              0.12025470284991435
             ],
             "type": "ToPoint",
             "units": "in"
@@ -707,8 +707,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.19805853434379,
-              0.12025470272190972
+              4.1980585340673535,
+              0.12025470284991435
             ],
             "tag": {
               "commentStart": 2555,
@@ -719,8 +719,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line11"
             },
             "to": [
-              2.7487705760057533,
-              0.12025470272188236
+              2.74877057554725,
+              0.12025470284988699
             ],
             "type": "ToPoint",
             "units": "in"
@@ -732,14 +732,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              2.7488040493325228,
-              0.2446953030536387
+              2.748804048870614,
+              0.24469530258662828
             ],
             "from": [
-              2.7487705760057533,
-              0.12025470272188236
+              2.74877057554725,
+              0.12025470284988699
             ],
-            "radius": 0.12444060483375802,
+            "radius": 0.12444060423874208,
             "tag": {
               "commentStart": 2678,
               "end": 2683,
@@ -749,8 +749,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc12"
             },
             "to": [
-              2.628621355962005,
-              0.2124217171729275
+              2.628621356073381,
+              0.2124217168653431
             ],
             "type": "Arc",
             "units": "in"
@@ -761,8 +761,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              2.628621356755707,
-              0.21242171749658662
+              2.628621356867082,
+              0.212421717189002
             ],
             "tag": {
               "commentStart": 2831,
@@ -773,8 +773,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line13"
             },
             "to": [
-              2.03997696319783,
-              2.4066013580224452
+              2.0399769633325913,
+              2.4066013579744685
             ],
             "type": "ToPoint",
             "units": "in"
@@ -786,14 +786,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              1.8014305212272579,
-              2.3425738581760474
+              1.8014305216002022,
+              2.3425738582032234
             ],
             "from": [
-              2.0399769627318656,
-              2.406601357897341
+              2.0399769628666267,
+              2.4066013578493637
             ],
-            "radius": 0.24698972746871772,
+            "radius": 0.24698972721919463,
             "tag": {
               "commentStart": 2955,
               "end": 2960,
@@ -803,8 +803,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc14"
             },
             "to": [
-              1.8014514935480155,
-              2.589563584754367
+              1.8014514939215047,
+              2.58956358453202
             ],
             "type": "Arc",
             "units": "in"
@@ -815,8 +815,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              1.8014514935480155,
-              2.589563584754367
+              1.8014514939215047,
+              2.58956358453202
             ],
             "tag": {
               "commentStart": 3108,
@@ -827,8 +827,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line15"
             },
             "to": [
-              -1.8000092483563412,
-              2.5895635845241864
+              -1.8000092488131652,
+              2.5895635843018394
             ],
             "type": "ToPoint",
             "units": "in"
@@ -840,14 +840,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              -1.7999828332991388,
-              2.3355899501109207
+              -1.7999828337552077,
+              2.3355899501607587
             ],
             "from": [
-              -1.800009248356278,
-              2.589563584019249
+              -1.8000092488131019,
+              2.589563583796902
             ],
-            "radius": 0.2539736352820048,
+            "radius": 0.25397363500981995,
             "tag": {
               "commentStart": 3229,
               "end": 3234,
@@ -857,8 +857,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc16"
             },
             "to": [
-              -2.0453741231556872,
-              2.4010553782459003
+              -2.0453741233515355,
+              2.4010553782152093
             ],
             "type": "Arc",
             "units": "in"
@@ -869,8 +869,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0453741241013366,
-              2.401055378498158
+              -2.045374124297185,
+              2.401055378467467
             ],
             "tag": {
               "commentStart": 3384,
@@ -881,8 +881,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line17"
             },
             "to": [
-              -2.631216528672663,
-              0.20612595045951632
+              -2.631216528825002,
+              0.20612595016396537
             ],
             "type": "ToPoint",
             "units": "in"
@@ -894,14 +894,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              -2.7526748571630293,
-              0.23852789109109226
+              -2.752674857253165,
+              0.2385278907733394
             ],
             "from": [
-              -2.631216528672663,
-              0.20612595045951632
+              -2.631216528825002,
+              0.20612595016396537
             ],
-            "radius": 0.12570605123209402,
+            "radius": 0.12570605116627048,
             "tag": {
               "commentStart": 3507,
               "end": 3512,
@@ -911,8 +911,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc18"
             },
             "to": [
-              -2.752653495399134,
-              0.11282184167404594
+              -2.752653495493491,
+              0.11282184142211593
             ],
             "type": "Arc",
             "units": "in"
@@ -923,8 +923,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.752653495727956,
-              0.11282184047734714
+              -2.752653495822312,
+              0.11282184022541762
             ],
             "tag": {
               "commentStart": 3663,
@@ -935,8 +935,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line19"
             },
             "to": [
-              -4.20194145406594,
-              0.11282184047729064
+              -4.201941454342363,
+              0.11282184022536113
             ],
             "type": "ToPoint",
             "units": "in"
@@ -947,8 +947,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -4.20194145406594,
-              0.11282184047729064
+              -4.201941454342363,
+              0.11282184022536113
             ],
             "tag": {
               "commentStart": 3789,
@@ -960,7 +960,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "to": [
               -4.25,
-              0.11282184047725398
+              0.11282184022532447
             ],
             "type": "ToPoint",
             "units": "in"
@@ -999,12 +999,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "start": {
           "from": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "to": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "units": "in",
           "tag": null,
@@ -2639,8 +2639,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "tag": {
             "commentStart": 1284,
@@ -2651,8 +2651,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line1"
           },
           "to": [
-            -2.7526569737327566,
-            -0.0021739147502548117
+            -2.752656973825964,
+            -0.002173914450708136
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2663,13 +2663,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.7526569737327566,
-            -0.0021739147502548117
+            -2.752656973825964,
+            -0.002173914450708136
           ],
           "tag": null,
           "to": [
-            -2.752656973731729,
-            -0.00217391432824803
+            -2.752656973824936,
+            -0.002173914028701372
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2681,14 +2681,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            -2.7520658924659043,
-            0.2506810855452608
+            -2.752065892655839,
+            0.25068108563032004
           ],
           "from": [
-            -2.752656973731729,
-            -0.00217391432824803
+            -2.752656973824936,
+            -0.002173914028701372
           ],
-          "radius": 0.2528556907370189,
+          "radius": 0.252855690522306,
           "tag": {
             "commentStart": 1361,
             "end": 1365,
@@ -2698,8 +2698,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc2"
           },
           "to": [
-            -2.507757292480147,
-            0.18549436672083985
+            -2.5077572928752137,
+            0.1854943668699593
           ],
           "type": "Arc",
           "units": "in"
@@ -2710,13 +2710,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.507757292480147,
-            0.18549436672083985
+            -2.5077572928752137,
+            0.1854943668699593
           ],
           "tag": null,
           "to": [
-            -2.507757293126065,
-            0.18549436689318385
+            -2.5077572935211316,
+            0.18549436704230324
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2727,8 +2727,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.507757293126065,
-            0.18549436689318385
+            -2.5077572935211316,
+            0.18549436704230324
           ],
           "tag": {
             "commentStart": 1513,
@@ -2739,8 +2739,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line3"
           },
           "to": [
-            -1.921914888554738,
-            2.380423794931761
+            -1.9219148889933138,
+            2.38042379534574
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2752,14 +2752,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            -1.8021627111939045,
-            2.348468773355253
+            -1.802162712124804,
+            2.3484687739053203
           ],
           "from": [
-            -1.921914888554738,
-            2.380423794931761
+            -1.9219148889933138,
+            2.38042379534574
           ],
-          "radius": 0.12394235509548614,
+          "radius": 0.12394235458472018,
           "tag": {
             "commentStart": 1634,
             "end": 1638,
@@ -2769,8 +2769,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc4"
           },
           "to": [
-            -1.802135686047242,
-            2.4724111255043755
+            -1.8021356869690395,
+            2.4724111255436747
           ],
           "type": "Arc",
           "units": "in"
@@ -2781,13 +2781,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -1.802135686047242,
-            2.4724111255043755
+            -1.8021356869690395,
+            2.4724111255436747
           ],
           "tag": null,
           "to": [
-            -1.8021356860750481,
-            2.4724111278878653
+            -1.802135686996846,
+            2.4724111279271663
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2798,8 +2798,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -1.8021356860750481,
-            2.4724111278878653
+            -1.802135686996846,
+            2.4724111279271663
           ],
           "tag": {
             "commentStart": 1785,
@@ -2810,8 +2810,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line5"
           },
           "to": [
-            1.7993250558293703,
-            2.4724111278878356
+            1.7993250557378855,
+            2.4724111279271366
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2823,14 +2823,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            1.7993473509712128,
-            2.3484820547923566
+            1.799347350879427,
+            2.348482054939722
           ],
           "from": [
-            1.7993250558293703,
-            2.4724111278878356
+            1.7993250557378855,
+            2.4724111279271366
           ],
-          "radius": 0.12392907510095408,
+          "radius": 0.1239290749928898,
           "tag": {
             "commentStart": 1905,
             "end": 1909,
@@ -2840,8 +2840,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc6"
           },
           "to": [
-            1.9190474287961996,
-            2.380580450765832
+            1.919047428601328,
+            2.3805804508803945
           ],
           "type": "Arc",
           "units": "in"
@@ -2852,13 +2852,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            1.9190474287961996,
-            2.380580450765832
+            1.919047428601328,
+            2.3805804508803945
           ],
           "tag": null,
           "to": [
-            1.9190474276523084,
-            2.3805804503102332
+            1.9190474274574363,
+            2.3805804504247963
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2869,8 +2869,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            1.9190474276523084,
-            2.3805804503102332
+            1.9190474274574363,
+            2.3805804504247963
           ],
           "tag": {
             "commentStart": 2053,
@@ -2881,8 +2881,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line7"
           },
           "to": [
-            2.507691821210217,
-            0.18640080978424958
+            2.5076918209919588,
+            0.18640080963920558
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2894,14 +2894,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            2.7487863371227332,
-            0.2510559612933362
+            2.748786336664527,
+            0.2510559610745585
           ],
           "from": [
-            2.507691821210217,
-            0.18640080978424958
+            2.5076918209919588,
+            0.18640080963920558
           ],
-          "radius": 0.24961340953513186,
+          "radius": 0.24961340928427425,
           "tag": {
             "commentStart": 2174,
             "end": 2178,
@@ -2911,8 +2911,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc8"
           },
           "to": [
-            2.7487705757632552,
-            0.0014425522558146886
+            2.7487705753047518,
+            0.0014425522878946662
           ],
           "type": "Arc",
           "units": "in"
@@ -2923,8 +2923,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.7487705757632552,
-            0.0014425522558146886
+            2.7487705753047518,
+            0.0014425522878946662
           ],
           "tag": {
             "commentStart": 2323,
@@ -2935,8 +2935,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line9"
           },
           "to": [
-            4.198058534343744,
-            0.0014425523939884167
+            4.198058534067307,
+            0.0014425524260687074
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2947,8 +2947,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            4.198058534343744,
-            0.0014425523939884167
+            4.198058534067307,
+            0.0014425524260687074
           ],
           "tag": {
             "commentStart": 2436,
@@ -2959,8 +2959,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line10"
           },
           "to": [
-            4.19805853434379,
-            0.12025470272190972
+            4.1980585340673535,
+            0.12025470284991435
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2971,8 +2971,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            4.19805853434379,
-            0.12025470272190972
+            4.1980585340673535,
+            0.12025470284991435
           ],
           "tag": {
             "commentStart": 2555,
@@ -2983,8 +2983,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line11"
           },
           "to": [
-            2.7487705760057533,
-            0.12025470272188236
+            2.74877057554725,
+            0.12025470284988699
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2996,14 +2996,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            2.7488040493325228,
-            0.2446953030536387
+            2.748804048870614,
+            0.24469530258662828
           ],
           "from": [
-            2.7487705760057533,
-            0.12025470272188236
+            2.74877057554725,
+            0.12025470284988699
           ],
-          "radius": 0.12444060483375802,
+          "radius": 0.12444060423874208,
           "tag": {
             "commentStart": 2678,
             "end": 2683,
@@ -3013,8 +3013,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc12"
           },
           "to": [
-            2.628621355962005,
-            0.2124217171729275
+            2.628621356073381,
+            0.2124217168653431
           ],
           "type": "Arc",
           "units": "in"
@@ -3025,13 +3025,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.628621355962005,
-            0.2124217171729275
+            2.628621356073381,
+            0.2124217168653431
           ],
           "tag": null,
           "to": [
-            2.628621356755707,
-            0.21242171749658662
+            2.628621356867082,
+            0.212421717189002
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3042,8 +3042,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.628621356755707,
-            0.21242171749658662
+            2.628621356867082,
+            0.212421717189002
           ],
           "tag": {
             "commentStart": 2831,
@@ -3054,8 +3054,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line13"
           },
           "to": [
-            2.03997696319783,
-            2.4066013580224452
+            2.0399769633325913,
+            2.4066013579744685
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3066,13 +3066,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.03997696319783,
-            2.4066013580224452
+            2.0399769633325913,
+            2.4066013579744685
           ],
           "tag": null,
           "to": [
-            2.0399769627318656,
-            2.406601357897341
+            2.0399769628666267,
+            2.4066013578493637
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3084,14 +3084,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            1.8014305212272579,
-            2.3425738581760474
+            1.8014305216002022,
+            2.3425738582032234
           ],
           "from": [
-            2.0399769627318656,
-            2.406601357897341
+            2.0399769628666267,
+            2.4066013578493637
           ],
-          "radius": 0.24698972746871772,
+          "radius": 0.24698972721919463,
           "tag": {
             "commentStart": 2955,
             "end": 2960,
@@ -3101,8 +3101,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc14"
           },
           "to": [
-            1.8014514935480155,
-            2.589563584754367
+            1.8014514939215047,
+            2.58956358453202
           ],
           "type": "Arc",
           "units": "in"
@@ -3113,8 +3113,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            1.8014514935480155,
-            2.589563584754367
+            1.8014514939215047,
+            2.58956358453202
           ],
           "tag": {
             "commentStart": 3108,
@@ -3125,8 +3125,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line15"
           },
           "to": [
-            -1.8000092483563412,
-            2.5895635845241864
+            -1.8000092488131652,
+            2.5895635843018394
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3137,13 +3137,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -1.8000092483563412,
-            2.5895635845241864
+            -1.8000092488131652,
+            2.5895635843018394
           ],
           "tag": null,
           "to": [
-            -1.800009248356278,
-            2.589563584019249
+            -1.8000092488131019,
+            2.589563583796902
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3155,14 +3155,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            -1.7999828332991388,
-            2.3355899501109207
+            -1.7999828337552077,
+            2.3355899501607587
           ],
           "from": [
-            -1.800009248356278,
-            2.589563584019249
+            -1.8000092488131019,
+            2.589563583796902
           ],
-          "radius": 0.2539736352820048,
+          "radius": 0.25397363500981995,
           "tag": {
             "commentStart": 3229,
             "end": 3234,
@@ -3172,8 +3172,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc16"
           },
           "to": [
-            -2.0453741231556872,
-            2.4010553782459003
+            -2.0453741233515355,
+            2.4010553782152093
           ],
           "type": "Arc",
           "units": "in"
@@ -3184,13 +3184,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.0453741231556872,
-            2.4010553782459003
+            -2.0453741233515355,
+            2.4010553782152093
           ],
           "tag": null,
           "to": [
-            -2.0453741241013366,
-            2.401055378498158
+            -2.045374124297185,
+            2.401055378467467
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3201,8 +3201,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.0453741241013366,
-            2.401055378498158
+            -2.045374124297185,
+            2.401055378467467
           ],
           "tag": {
             "commentStart": 3384,
@@ -3213,8 +3213,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line17"
           },
           "to": [
-            -2.631216528672663,
-            0.20612595045951632
+            -2.631216528825002,
+            0.20612595016396537
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3226,14 +3226,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            -2.7526748571630293,
-            0.23852789109109226
+            -2.752674857253165,
+            0.2385278907733394
           ],
           "from": [
-            -2.631216528672663,
-            0.20612595045951632
+            -2.631216528825002,
+            0.20612595016396537
           ],
-          "radius": 0.12570605123209402,
+          "radius": 0.12570605116627048,
           "tag": {
             "commentStart": 3507,
             "end": 3512,
@@ -3243,8 +3243,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc18"
           },
           "to": [
-            -2.752653495399134,
-            0.11282184167404594
+            -2.752653495493491,
+            0.11282184142211593
           ],
           "type": "Arc",
           "units": "in"
@@ -3255,13 +3255,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.752653495399134,
-            0.11282184167404594
+            -2.752653495493491,
+            0.11282184142211593
           ],
           "tag": null,
           "to": [
-            -2.752653495727956,
-            0.11282184047734714
+            -2.752653495822312,
+            0.11282184022541762
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3272,8 +3272,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.752653495727956,
-            0.11282184047734714
+            -2.752653495822312,
+            0.11282184022541762
           ],
           "tag": {
             "commentStart": 3663,
@@ -3284,8 +3284,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line19"
           },
           "to": [
-            -4.20194145406594,
-            0.11282184047729064
+            -4.201941454342363,
+            0.11282184022536113
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3296,8 +3296,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -4.20194145406594,
-            0.11282184047729064
+            -4.201941454342363,
+            0.11282184022536113
           ],
           "tag": {
             "commentStart": 3789,
@@ -3309,7 +3309,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "to": [
             -4.25,
-            0.11282184047725398
+            0.11282184022532447
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3321,12 +3321,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "from": [
             -4.25,
-            0.11282184047725398
+            0.11282184022532447
           ],
           "tag": null,
           "to": [
-            -4.201941454065845,
-            0.11282184047727843
+            -4.201941454342268,
+            0.11282184022534891
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3337,8 +3337,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -4.201941454065845,
-            0.11282184047727843
+            -4.201941454342268,
+            0.11282184022534891
           ],
           "tag": {
             "commentStart": 3914,
@@ -3349,8 +3349,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line21"
           },
           "to": [
-            -4.201941454065746,
-            0.0010012789920429148
+            -4.201941454342169,
+            0.001001278767226677
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3389,12 +3389,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       },
       "start": {
         "from": [
-          -4.201941454065641,
-          0.0010012789920492038
+          -4.201941454342064,
+          0.001001278767232966
         ],
         "to": [
-          -4.201941454065641,
-          0.0010012789920492038
+          -4.201941454342064,
+          0.001001278767232966
         ],
         "units": "in",
         "tag": null,
@@ -4249,8 +4249,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "tag": {
             "commentStart": 1284,
@@ -4261,8 +4261,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line1"
           },
           "to": [
-            -2.7526569737327566,
-            -0.0021739147502548117
+            -2.752656973825964,
+            -0.002173914450708136
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4274,14 +4274,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            -2.7520658924659043,
-            0.2506810855452608
+            -2.752065892655839,
+            0.25068108563032004
           ],
           "from": [
-            -2.752656973731729,
-            -0.00217391432824803
+            -2.752656973824936,
+            -0.002173914028701372
           ],
-          "radius": 0.2528556907370189,
+          "radius": 0.252855690522306,
           "tag": {
             "commentStart": 1361,
             "end": 1365,
@@ -4291,8 +4291,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc2"
           },
           "to": [
-            -2.507757292480147,
-            0.18549436672083985
+            -2.5077572928752137,
+            0.1854943668699593
           ],
           "type": "Arc",
           "units": "in"
@@ -4303,8 +4303,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.507757293126065,
-            0.18549436689318385
+            -2.5077572935211316,
+            0.18549436704230324
           ],
           "tag": {
             "commentStart": 1513,
@@ -4315,8 +4315,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line3"
           },
           "to": [
-            -1.921914888554738,
-            2.380423794931761
+            -1.9219148889933138,
+            2.38042379534574
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4328,14 +4328,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            -1.8021627111939045,
-            2.348468773355253
+            -1.802162712124804,
+            2.3484687739053203
           ],
           "from": [
-            -1.921914888554738,
-            2.380423794931761
+            -1.9219148889933138,
+            2.38042379534574
           ],
-          "radius": 0.12394235509548614,
+          "radius": 0.12394235458472018,
           "tag": {
             "commentStart": 1634,
             "end": 1638,
@@ -4345,8 +4345,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc4"
           },
           "to": [
-            -1.802135686047242,
-            2.4724111255043755
+            -1.8021356869690395,
+            2.4724111255436747
           ],
           "type": "Arc",
           "units": "in"
@@ -4357,8 +4357,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -1.8021356860750481,
-            2.4724111278878653
+            -1.802135686996846,
+            2.4724111279271663
           ],
           "tag": {
             "commentStart": 1785,
@@ -4369,8 +4369,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line5"
           },
           "to": [
-            1.7993250558293703,
-            2.4724111278878356
+            1.7993250557378855,
+            2.4724111279271366
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4382,14 +4382,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            1.7993473509712128,
-            2.3484820547923566
+            1.799347350879427,
+            2.348482054939722
           ],
           "from": [
-            1.7993250558293703,
-            2.4724111278878356
+            1.7993250557378855,
+            2.4724111279271366
           ],
-          "radius": 0.12392907510095408,
+          "radius": 0.1239290749928898,
           "tag": {
             "commentStart": 1905,
             "end": 1909,
@@ -4399,8 +4399,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc6"
           },
           "to": [
-            1.9190474287961996,
-            2.380580450765832
+            1.919047428601328,
+            2.3805804508803945
           ],
           "type": "Arc",
           "units": "in"
@@ -4411,8 +4411,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            1.9190474276523084,
-            2.3805804503102332
+            1.9190474274574363,
+            2.3805804504247963
           ],
           "tag": {
             "commentStart": 2053,
@@ -4423,8 +4423,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line7"
           },
           "to": [
-            2.507691821210217,
-            0.18640080978424958
+            2.5076918209919588,
+            0.18640080963920558
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4436,14 +4436,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            2.7487863371227332,
-            0.2510559612933362
+            2.748786336664527,
+            0.2510559610745585
           ],
           "from": [
-            2.507691821210217,
-            0.18640080978424958
+            2.5076918209919588,
+            0.18640080963920558
           ],
-          "radius": 0.24961340953513186,
+          "radius": 0.24961340928427425,
           "tag": {
             "commentStart": 2174,
             "end": 2178,
@@ -4453,8 +4453,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc8"
           },
           "to": [
-            2.7487705757632552,
-            0.0014425522558146886
+            2.7487705753047518,
+            0.0014425522878946662
           ],
           "type": "Arc",
           "units": "in"
@@ -4465,8 +4465,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.7487705757632552,
-            0.0014425522558146886
+            2.7487705753047518,
+            0.0014425522878946662
           ],
           "tag": {
             "commentStart": 2323,
@@ -4477,8 +4477,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line9"
           },
           "to": [
-            4.198058534343744,
-            0.0014425523939884167
+            4.198058534067307,
+            0.0014425524260687074
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4489,8 +4489,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            4.198058534343744,
-            0.0014425523939884167
+            4.198058534067307,
+            0.0014425524260687074
           ],
           "tag": {
             "commentStart": 2436,
@@ -4501,8 +4501,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line10"
           },
           "to": [
-            4.19805853434379,
-            0.12025470272190972
+            4.1980585340673535,
+            0.12025470284991435
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4513,8 +4513,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            4.19805853434379,
-            0.12025470272190972
+            4.1980585340673535,
+            0.12025470284991435
           ],
           "tag": {
             "commentStart": 2555,
@@ -4525,8 +4525,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line11"
           },
           "to": [
-            2.7487705760057533,
-            0.12025470272188236
+            2.74877057554725,
+            0.12025470284988699
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4538,14 +4538,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            2.7488040493325228,
-            0.2446953030536387
+            2.748804048870614,
+            0.24469530258662828
           ],
           "from": [
-            2.7487705760057533,
-            0.12025470272188236
+            2.74877057554725,
+            0.12025470284988699
           ],
-          "radius": 0.12444060483375802,
+          "radius": 0.12444060423874208,
           "tag": {
             "commentStart": 2678,
             "end": 2683,
@@ -4555,8 +4555,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc12"
           },
           "to": [
-            2.628621355962005,
-            0.2124217171729275
+            2.628621356073381,
+            0.2124217168653431
           ],
           "type": "Arc",
           "units": "in"
@@ -4567,8 +4567,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            2.628621356755707,
-            0.21242171749658662
+            2.628621356867082,
+            0.212421717189002
           ],
           "tag": {
             "commentStart": 2831,
@@ -4579,8 +4579,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line13"
           },
           "to": [
-            2.03997696319783,
-            2.4066013580224452
+            2.0399769633325913,
+            2.4066013579744685
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4592,14 +4592,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            1.8014305212272579,
-            2.3425738581760474
+            1.8014305216002022,
+            2.3425738582032234
           ],
           "from": [
-            2.0399769627318656,
-            2.406601357897341
+            2.0399769628666267,
+            2.4066013578493637
           ],
-          "radius": 0.24698972746871772,
+          "radius": 0.24698972721919463,
           "tag": {
             "commentStart": 2955,
             "end": 2960,
@@ -4609,8 +4609,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc14"
           },
           "to": [
-            1.8014514935480155,
-            2.589563584754367
+            1.8014514939215047,
+            2.58956358453202
           ],
           "type": "Arc",
           "units": "in"
@@ -4621,8 +4621,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            1.8014514935480155,
-            2.589563584754367
+            1.8014514939215047,
+            2.58956358453202
           ],
           "tag": {
             "commentStart": 3108,
@@ -4633,8 +4633,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line15"
           },
           "to": [
-            -1.8000092483563412,
-            2.5895635845241864
+            -1.8000092488131652,
+            2.5895635843018394
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4646,14 +4646,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": true,
           "center": [
-            -1.7999828332991388,
-            2.3355899501109207
+            -1.7999828337552077,
+            2.3355899501607587
           ],
           "from": [
-            -1.800009248356278,
-            2.589563584019249
+            -1.8000092488131019,
+            2.589563583796902
           ],
-          "radius": 0.2539736352820048,
+          "radius": 0.25397363500981995,
           "tag": {
             "commentStart": 3229,
             "end": 3234,
@@ -4663,8 +4663,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc16"
           },
           "to": [
-            -2.0453741231556872,
-            2.4010553782459003
+            -2.0453741233515355,
+            2.4010553782152093
           ],
           "type": "Arc",
           "units": "in"
@@ -4675,8 +4675,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.0453741241013366,
-            2.401055378498158
+            -2.045374124297185,
+            2.401055378467467
           ],
           "tag": {
             "commentStart": 3384,
@@ -4687,8 +4687,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line17"
           },
           "to": [
-            -2.631216528672663,
-            0.20612595045951632
+            -2.631216528825002,
+            0.20612595016396537
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4700,14 +4700,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "ccw": false,
           "center": [
-            -2.7526748571630293,
-            0.23852789109109226
+            -2.752674857253165,
+            0.2385278907733394
           ],
           "from": [
-            -2.631216528672663,
-            0.20612595045951632
+            -2.631216528825002,
+            0.20612595016396537
           ],
-          "radius": 0.12570605123209402,
+          "radius": 0.12570605116627048,
           "tag": {
             "commentStart": 3507,
             "end": 3512,
@@ -4717,8 +4717,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "arc18"
           },
           "to": [
-            -2.752653495399134,
-            0.11282184167404594
+            -2.752653495493491,
+            0.11282184142211593
           ],
           "type": "Arc",
           "units": "in"
@@ -4729,8 +4729,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -2.752653495727956,
-            0.11282184047734714
+            -2.752653495822312,
+            0.11282184022541762
           ],
           "tag": {
             "commentStart": 3663,
@@ -4741,8 +4741,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line19"
           },
           "to": [
-            -4.20194145406594,
-            0.11282184047729064
+            -4.201941454342363,
+            0.11282184022536113
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4753,8 +4753,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            -4.20194145406594,
-            0.11282184047729064
+            -4.201941454342363,
+            0.11282184022536113
           ],
           "tag": {
             "commentStart": 3789,
@@ -4766,7 +4766,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           "to": [
             -4.25,
-            0.11282184047725398
+            0.11282184022532447
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4805,12 +4805,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       },
       "start": {
         "from": [
-          -4.201941454065641,
-          0.0010012789920492038
+          -4.201941454342064,
+          0.001001278767232966
         ],
         "to": [
-          -4.201941454065641,
-          0.0010012789920492038
+          -4.201941454342064,
+          0.001001278767232966
         ],
         "units": "in",
         "tag": null,
@@ -5958,7 +5958,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.628621356937549,
+                        "n": 2.628621357048924,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5966,7 +5966,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.2124217175454663,
+                        "n": 0.21242171723788167,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5976,7 +5976,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.7487705760058017,
+                        "n": 2.748770575547298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5984,7 +5984,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.12025470283246378,
+                        "n": 0.12025470296046842,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5994,7 +5994,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.748804049332571,
+                        "n": 2.7488040488706624,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6002,7 +6002,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.2446953031642201,
+                        "n": 0.2446953026972097,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6110,7 +6110,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.0399769627318656,
+                        "n": 2.0399769628666267,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6118,7 +6118,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.406601357897341,
+                        "n": 2.4066013578493637,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6128,7 +6128,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.801451493547968,
+                        "n": 1.8014514939214572,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6136,7 +6136,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.5895635841953335,
+                        "n": 2.5895635839729865,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6146,7 +6146,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.8014305212272579,
+                        "n": 1.8014305216002022,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6154,7 +6154,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.3425738581760474,
+                        "n": 2.3425738582032234,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6262,7 +6262,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.800009248356278,
+                        "n": -1.8000092488131019,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6270,7 +6270,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.589563584019249,
+                        "n": 2.589563583796902,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6280,7 +6280,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.045374123703472,
+                        "n": -2.0453741238993204,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6288,7 +6288,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.401055378392038,
+                        "n": 2.401055378361347,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6298,7 +6298,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.7999828332991388,
+                        "n": -1.7999828337552077,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6306,7 +6306,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.3355899501109207,
+                        "n": 2.3355899501607587,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6414,7 +6414,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -2.7526534957280426,
+                        "n": -2.752653495822399,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6422,7 +6422,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.11282184076742455,
+                        "n": 0.11282184051549503,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6432,7 +6432,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.6312165290017404,
+                        "n": -2.631216529154079,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6440,7 +6440,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.20612595054728922,
+                        "n": 0.20612595025173827,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6450,7 +6450,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": -2.7526748574921065,
+                        "n": -2.7526748575822424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6458,7 +6458,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.23852789117886516,
+                        "n": 0.2385278908611123,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6566,7 +6566,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -2.752656973731729,
+                        "n": -2.752656973824936,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6574,7 +6574,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.00217391432824803,
+                        "n": -0.002173914028701372,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6584,7 +6584,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.5077572932470718,
+                        "n": -2.507757293642138,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6592,7 +6592,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.1854943669254717,
+                        "n": 0.185494367074591,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6602,7 +6602,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": -2.7520658924659043,
+                        "n": -2.752065892655839,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6610,7 +6610,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.2506810855452608,
+                        "n": 0.25068108563032004,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6718,7 +6718,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.8021356860751219,
+                        "n": -1.8021356869969194,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6726,7 +6726,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.472411127677556,
+                        "n": 2.4724111277168577,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6736,7 +6736,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.92191488858309,
+                        "n": -1.921914889021666,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6744,7 +6744,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.380423794939327,
+                        "n": 2.3804237953533063,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6754,7 +6754,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.8021627112222565,
+                        "n": -1.8021627121531563,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6762,7 +6762,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.3484687733628196,
+                        "n": 2.3484687739128867,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6870,7 +6870,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.9190474274469969,
+                        "n": 1.919047427252125,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6878,7 +6878,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.380580450255189,
+                        "n": 2.380580450369752,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6888,7 +6888,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.799325055829426,
+                        "n": 1.7993250557379412,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6896,7 +6896,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.4724111277390053,
+                        "n": 2.4724111277783067,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6906,7 +6906,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.7993473509712685,
+                        "n": 1.7993473508794828,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6914,7 +6914,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.3484820546435263,
+                        "n": 2.348482054790892,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7022,7 +7022,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.507691821452611,
+                        "n": 2.507691821234353,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7030,7 +7030,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.18640080984924062,
+                        "n": 0.18640080970419662,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7040,7 +7040,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.748770576005658,
+                        "n": 2.7487705755471548,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7048,7 +7048,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0014425524583147236,
+                        "n": 0.0014425524903949939,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7058,7 +7058,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.7487863373651273,
+                        "n": 2.748786336906921,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7066,7 +7066,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.25105596135832714,
+                        "n": 0.25105596113954953,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7174,7 +7174,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.201941454065641,
+                        "n": -4.201941454342064,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7182,7 +7182,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0010012789920492038,
+                        "n": 0.001001278767232966,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7192,7 +7192,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.7526569737327566,
+                        "n": -2.752656973825964,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7200,7 +7200,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.0021739147502548117,
+                        "n": -0.002173914450708136,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7294,7 +7294,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.198058534343761,
+                        "n": 4.198058534067325,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7302,7 +7302,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0014425523939762958,
+                        "n": 0.0014425524260565864,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7312,7 +7312,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.19805853434379,
+                        "n": 4.1980585340673535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7320,7 +7320,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.12025470272190972,
+                        "n": 0.12025470284991435,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7414,7 +7414,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.198058534343823,
+                        "n": 4.198058534067387,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7422,7 +7422,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.12025470272189892,
+                        "n": 0.12025470284990356,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7432,7 +7432,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.7487705760057533,
+                        "n": 2.74877057554725,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7440,7 +7440,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.12025470272188236,
+                        "n": 0.12025470284988699,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7534,7 +7534,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.628621356755707,
+                        "n": 2.628621356867082,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7542,7 +7542,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.21242171749658662,
+                        "n": 0.212421717189002,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7552,7 +7552,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.03997696319783,
+                        "n": 2.0399769633325913,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7560,7 +7560,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.4066013580224452,
+                        "n": 2.4066013579744685,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7654,7 +7654,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.8014514935480168,
+                        "n": 1.801451493921506,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7662,7 +7662,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.5895635845242677,
+                        "n": 2.5895635843019207,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7672,7 +7672,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.8000092483563412,
+                        "n": -1.8000092488131652,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7680,7 +7680,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.5895635845241864,
+                        "n": 2.5895635843018394,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7774,7 +7774,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.0453741241013366,
+                        "n": -2.045374124297185,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7782,7 +7782,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.401055378498158,
+                        "n": 2.401055378467467,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7792,7 +7792,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.631216528672663,
+                        "n": -2.631216528825002,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7800,7 +7800,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.20612595045951632,
+                        "n": 0.20612595016396537,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7894,7 +7894,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.752653495727956,
+                        "n": -2.752653495822312,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7902,7 +7902,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.11282184047734714,
+                        "n": 0.11282184022541762,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7912,7 +7912,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.20194145406594,
+                        "n": -4.201941454342363,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7920,7 +7920,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.11282184047729064,
+                        "n": 0.11282184022536113,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8014,7 +8014,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.2019414540656435,
+                        "n": -4.201941454342067,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8022,7 +8022,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.001001278992042915,
+                        "n": 0.0010012787672266771,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8032,7 +8032,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.198058534343754,
+                        "n": 4.198058534067318,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8040,7 +8040,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0014425523939702353,
+                        "n": 0.0014425524260505262,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8135,7 +8135,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.201941454065945,
+                        "n": -4.201941454342369,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8143,7 +8143,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.1128218404772662,
+                        "n": 0.11282184022533669,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8161,7 +8161,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.11282184047725398,
+                        "n": 0.11282184022532447,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8255,7 +8255,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.201941454065845,
+                        "n": -4.201941454342268,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8263,7 +8263,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.11282184047727843,
+                        "n": 0.11282184022534891,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8273,7 +8273,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.201941454065746,
+                        "n": -4.201941454342169,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8281,7 +8281,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0010012789920429148,
+                        "n": 0.001001278767226677,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8375,7 +8375,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.507757293126065,
+                        "n": -2.5077572935211316,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8383,7 +8383,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.18549436689318385,
+                        "n": 0.18549436704230324,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8393,7 +8393,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.921914888554738,
+                        "n": -1.9219148889933138,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8401,7 +8401,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.380423794931761,
+                        "n": 2.38042379534574,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8495,7 +8495,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.8021356860750481,
+                        "n": -1.802135686996846,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8503,7 +8503,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.4724111278878653,
+                        "n": 2.4724111279271663,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8513,7 +8513,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.7993250558293703,
+                        "n": 1.7993250557378855,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8521,7 +8521,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.4724111278878356,
+                        "n": 2.4724111279271366,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8615,7 +8615,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.9190474276523084,
+                        "n": 1.9190474274574363,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8623,7 +8623,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 2.3805804503102332,
+                        "n": 2.3805804504247963,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8633,7 +8633,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.507691821210217,
+                        "n": 2.5076918209919588,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8641,7 +8641,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.18640080978424958,
+                        "n": 0.18640080963920558,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8735,7 +8735,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.7487705760056604,
+                        "n": 2.7487705755471574,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8743,7 +8743,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0014425523940079328,
+                        "n": 0.0014425524260882235,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8753,7 +8753,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.198058534343744,
+                        "n": 4.198058534067307,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8761,7 +8761,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.0014425523939884167,
+                        "n": 0.0014425524260687074,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8858,8 +8858,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.201941454065641,
-                    0.0010012789920492038
+                    -4.201941454342064,
+                    0.001001278767232966
                   ],
                   "tag": {
                     "commentStart": 1284,
@@ -8870,8 +8870,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -2.7526569737327566,
-                    -0.0021739147502548117
+                    -2.752656973825964,
+                    -0.002173914450708136
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8882,13 +8882,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.7526569737327566,
-                    -0.0021739147502548117
+                    -2.752656973825964,
+                    -0.002173914450708136
                   ],
                   "tag": null,
                   "to": [
-                    -2.752656973731729,
-                    -0.00217391432824803
+                    -2.752656973824936,
+                    -0.002173914028701372
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8900,14 +8900,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -2.7520658924659043,
-                    0.2506810855452608
+                    -2.752065892655839,
+                    0.25068108563032004
                   ],
                   "from": [
-                    -2.752656973731729,
-                    -0.00217391432824803
+                    -2.752656973824936,
+                    -0.002173914028701372
                   ],
-                  "radius": 0.2528556907370189,
+                  "radius": 0.252855690522306,
                   "tag": {
                     "commentStart": 1361,
                     "end": 1365,
@@ -8917,8 +8917,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -2.507757292480147,
-                    0.18549436672083985
+                    -2.5077572928752137,
+                    0.1854943668699593
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -8929,13 +8929,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.507757292480147,
-                    0.18549436672083985
+                    -2.5077572928752137,
+                    0.1854943668699593
                   ],
                   "tag": null,
                   "to": [
-                    -2.507757293126065,
-                    0.18549436689318385
+                    -2.5077572935211316,
+                    0.18549436704230324
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8946,8 +8946,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.507757293126065,
-                    0.18549436689318385
+                    -2.5077572935211316,
+                    0.18549436704230324
                   ],
                   "tag": {
                     "commentStart": 1513,
@@ -8958,8 +8958,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.921914888554738,
-                    2.380423794931761
+                    -1.9219148889933138,
+                    2.38042379534574
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8971,14 +8971,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -1.8021627111939045,
-                    2.348468773355253
+                    -1.802162712124804,
+                    2.3484687739053203
                   ],
                   "from": [
-                    -1.921914888554738,
-                    2.380423794931761
+                    -1.9219148889933138,
+                    2.38042379534574
                   ],
-                  "radius": 0.12394235509548614,
+                  "radius": 0.12394235458472018,
                   "tag": {
                     "commentStart": 1634,
                     "end": 1638,
@@ -8988,8 +8988,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -1.802135686047242,
-                    2.4724111255043755
+                    -1.8021356869690395,
+                    2.4724111255436747
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9000,13 +9000,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.802135686047242,
-                    2.4724111255043755
+                    -1.8021356869690395,
+                    2.4724111255436747
                   ],
                   "tag": null,
                   "to": [
-                    -1.8021356860750481,
-                    2.4724111278878653
+                    -1.802135686996846,
+                    2.4724111279271663
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9017,8 +9017,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.8021356860750481,
-                    2.4724111278878653
+                    -1.802135686996846,
+                    2.4724111279271663
                   ],
                   "tag": {
                     "commentStart": 1785,
@@ -9029,8 +9029,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line5"
                   },
                   "to": [
-                    1.7993250558293703,
-                    2.4724111278878356
+                    1.7993250557378855,
+                    2.4724111279271366
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9042,14 +9042,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": false,
                   "center": [
-                    1.7993473509712128,
-                    2.3484820547923566
+                    1.799347350879427,
+                    2.348482054939722
                   ],
                   "from": [
-                    1.7993250558293703,
-                    2.4724111278878356
+                    1.7993250557378855,
+                    2.4724111279271366
                   ],
-                  "radius": 0.12392907510095408,
+                  "radius": 0.1239290749928898,
                   "tag": {
                     "commentStart": 1905,
                     "end": 1909,
@@ -9059,8 +9059,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    1.9190474287961996,
-                    2.380580450765832
+                    1.919047428601328,
+                    2.3805804508803945
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9071,13 +9071,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.9190474287961996,
-                    2.380580450765832
+                    1.919047428601328,
+                    2.3805804508803945
                   ],
                   "tag": null,
                   "to": [
-                    1.9190474276523084,
-                    2.3805804503102332
+                    1.9190474274574363,
+                    2.3805804504247963
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9088,8 +9088,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.9190474276523084,
-                    2.3805804503102332
+                    1.9190474274574363,
+                    2.3805804504247963
                   ],
                   "tag": {
                     "commentStart": 2053,
@@ -9100,8 +9100,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line7"
                   },
                   "to": [
-                    2.507691821210217,
-                    0.18640080978424958
+                    2.5076918209919588,
+                    0.18640080963920558
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9113,14 +9113,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": true,
                   "center": [
-                    2.7487863371227332,
-                    0.2510559612933362
+                    2.748786336664527,
+                    0.2510559610745585
                   ],
                   "from": [
-                    2.507691821210217,
-                    0.18640080978424958
+                    2.5076918209919588,
+                    0.18640080963920558
                   ],
-                  "radius": 0.24961340953513186,
+                  "radius": 0.24961340928427425,
                   "tag": {
                     "commentStart": 2174,
                     "end": 2178,
@@ -9130,8 +9130,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc8"
                   },
                   "to": [
-                    2.7487705757632552,
-                    0.0014425522558146886
+                    2.7487705753047518,
+                    0.0014425522878946662
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9142,8 +9142,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.7487705757632552,
-                    0.0014425522558146886
+                    2.7487705753047518,
+                    0.0014425522878946662
                   ],
                   "tag": {
                     "commentStart": 2323,
@@ -9154,8 +9154,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line9"
                   },
                   "to": [
-                    4.198058534343744,
-                    0.0014425523939884167
+                    4.198058534067307,
+                    0.0014425524260687074
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9166,8 +9166,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.198058534343744,
-                    0.0014425523939884167
+                    4.198058534067307,
+                    0.0014425524260687074
                   ],
                   "tag": {
                     "commentStart": 2436,
@@ -9178,8 +9178,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line10"
                   },
                   "to": [
-                    4.19805853434379,
-                    0.12025470272190972
+                    4.1980585340673535,
+                    0.12025470284991435
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9190,8 +9190,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.19805853434379,
-                    0.12025470272190972
+                    4.1980585340673535,
+                    0.12025470284991435
                   ],
                   "tag": {
                     "commentStart": 2555,
@@ -9202,8 +9202,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line11"
                   },
                   "to": [
-                    2.7487705760057533,
-                    0.12025470272188236
+                    2.74877057554725,
+                    0.12025470284988699
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9215,14 +9215,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": false,
                   "center": [
-                    2.7488040493325228,
-                    0.2446953030536387
+                    2.748804048870614,
+                    0.24469530258662828
                   ],
                   "from": [
-                    2.7487705760057533,
-                    0.12025470272188236
+                    2.74877057554725,
+                    0.12025470284988699
                   ],
-                  "radius": 0.12444060483375802,
+                  "radius": 0.12444060423874208,
                   "tag": {
                     "commentStart": 2678,
                     "end": 2683,
@@ -9232,8 +9232,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc12"
                   },
                   "to": [
-                    2.628621355962005,
-                    0.2124217171729275
+                    2.628621356073381,
+                    0.2124217168653431
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9244,13 +9244,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.628621355962005,
-                    0.2124217171729275
+                    2.628621356073381,
+                    0.2124217168653431
                   ],
                   "tag": null,
                   "to": [
-                    2.628621356755707,
-                    0.21242171749658662
+                    2.628621356867082,
+                    0.212421717189002
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9261,8 +9261,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.628621356755707,
-                    0.21242171749658662
+                    2.628621356867082,
+                    0.212421717189002
                   ],
                   "tag": {
                     "commentStart": 2831,
@@ -9273,8 +9273,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line13"
                   },
                   "to": [
-                    2.03997696319783,
-                    2.4066013580224452
+                    2.0399769633325913,
+                    2.4066013579744685
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9285,13 +9285,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.03997696319783,
-                    2.4066013580224452
+                    2.0399769633325913,
+                    2.4066013579744685
                   ],
                   "tag": null,
                   "to": [
-                    2.0399769627318656,
-                    2.406601357897341
+                    2.0399769628666267,
+                    2.4066013578493637
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9303,14 +9303,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.8014305212272579,
-                    2.3425738581760474
+                    1.8014305216002022,
+                    2.3425738582032234
                   ],
                   "from": [
-                    2.0399769627318656,
-                    2.406601357897341
+                    2.0399769628666267,
+                    2.4066013578493637
                   ],
-                  "radius": 0.24698972746871772,
+                  "radius": 0.24698972721919463,
                   "tag": {
                     "commentStart": 2955,
                     "end": 2960,
@@ -9320,8 +9320,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc14"
                   },
                   "to": [
-                    1.8014514935480155,
-                    2.589563584754367
+                    1.8014514939215047,
+                    2.58956358453202
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9332,8 +9332,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8014514935480155,
-                    2.589563584754367
+                    1.8014514939215047,
+                    2.58956358453202
                   ],
                   "tag": {
                     "commentStart": 3108,
@@ -9344,8 +9344,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line15"
                   },
                   "to": [
-                    -1.8000092483563412,
-                    2.5895635845241864
+                    -1.8000092488131652,
+                    2.5895635843018394
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9356,13 +9356,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.8000092483563412,
-                    2.5895635845241864
+                    -1.8000092488131652,
+                    2.5895635843018394
                   ],
                   "tag": null,
                   "to": [
-                    -1.800009248356278,
-                    2.589563584019249
+                    -1.8000092488131019,
+                    2.589563583796902
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9374,14 +9374,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -1.7999828332991388,
-                    2.3355899501109207
+                    -1.7999828337552077,
+                    2.3355899501607587
                   ],
                   "from": [
-                    -1.800009248356278,
-                    2.589563584019249
+                    -1.8000092488131019,
+                    2.589563583796902
                   ],
-                  "radius": 0.2539736352820048,
+                  "radius": 0.25397363500981995,
                   "tag": {
                     "commentStart": 3229,
                     "end": 3234,
@@ -9391,8 +9391,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc16"
                   },
                   "to": [
-                    -2.0453741231556872,
-                    2.4010553782459003
+                    -2.0453741233515355,
+                    2.4010553782152093
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9403,13 +9403,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.0453741231556872,
-                    2.4010553782459003
+                    -2.0453741233515355,
+                    2.4010553782152093
                   ],
                   "tag": null,
                   "to": [
-                    -2.0453741241013366,
-                    2.401055378498158
+                    -2.045374124297185,
+                    2.401055378467467
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9420,8 +9420,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.0453741241013366,
-                    2.401055378498158
+                    -2.045374124297185,
+                    2.401055378467467
                   ],
                   "tag": {
                     "commentStart": 3384,
@@ -9432,8 +9432,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line17"
                   },
                   "to": [
-                    -2.631216528672663,
-                    0.20612595045951632
+                    -2.631216528825002,
+                    0.20612595016396537
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9445,14 +9445,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -2.7526748571630293,
-                    0.23852789109109226
+                    -2.752674857253165,
+                    0.2385278907733394
                   ],
                   "from": [
-                    -2.631216528672663,
-                    0.20612595045951632
+                    -2.631216528825002,
+                    0.20612595016396537
                   ],
-                  "radius": 0.12570605123209402,
+                  "radius": 0.12570605116627048,
                   "tag": {
                     "commentStart": 3507,
                     "end": 3512,
@@ -9462,8 +9462,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "arc18"
                   },
                   "to": [
-                    -2.752653495399134,
-                    0.11282184167404594
+                    -2.752653495493491,
+                    0.11282184142211593
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9474,13 +9474,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.752653495399134,
-                    0.11282184167404594
+                    -2.752653495493491,
+                    0.11282184142211593
                   ],
                   "tag": null,
                   "to": [
-                    -2.752653495727956,
-                    0.11282184047734714
+                    -2.752653495822312,
+                    0.11282184022541762
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9491,8 +9491,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.752653495727956,
-                    0.11282184047734714
+                    -2.752653495822312,
+                    0.11282184022541762
                   ],
                   "tag": {
                     "commentStart": 3663,
@@ -9503,8 +9503,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line19"
                   },
                   "to": [
-                    -4.20194145406594,
-                    0.11282184047729064
+                    -4.201941454342363,
+                    0.11282184022536113
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9515,8 +9515,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.20194145406594,
-                    0.11282184047729064
+                    -4.201941454342363,
+                    0.11282184022536113
                   ],
                   "tag": {
                     "commentStart": 3789,
@@ -9528,7 +9528,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "to": [
                     -4.25,
-                    0.11282184047725398
+                    0.11282184022532447
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9540,12 +9540,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "from": [
                     -4.25,
-                    0.11282184047725398
+                    0.11282184022532447
                   ],
                   "tag": null,
                   "to": [
-                    -4.201941454065845,
-                    0.11282184047727843
+                    -4.201941454342268,
+                    0.11282184022534891
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9556,8 +9556,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.201941454065845,
-                    0.11282184047727843
+                    -4.201941454342268,
+                    0.11282184022534891
                   ],
                   "tag": {
                     "commentStart": 3914,
@@ -9568,8 +9568,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "value": "line21"
                   },
                   "to": [
-                    -4.201941454065746,
-                    0.0010012789920429148
+                    -4.201941454342169,
+                    0.001001278767226677
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9608,12 +9608,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               },
               "start": {
                 "from": [
-                  -4.201941454065641,
-                  0.0010012789920492038
+                  -4.201941454342064,
+                  0.001001278767232966
                 ],
                 "to": [
-                  -4.201941454065641,
-                  0.0010012789920492038
+                  -4.201941454342064,
+                  0.001001278767232966
                 ],
                 "units": "in",
                 "tag": null,
@@ -13095,8 +13095,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -4.201941454065641,
-              0.0010012789920492038
+              -4.201941454342064,
+              0.001001278767232966
             ],
             "tag": {
               "commentStart": 1284,
@@ -13107,8 +13107,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line1"
             },
             "to": [
-              -2.7526569737327566,
-              -0.0021739147502548117
+              -2.752656973825964,
+              -0.002173914450708136
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13120,14 +13120,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              -2.7520658924659043,
-              0.2506810855452608
+              -2.752065892655839,
+              0.25068108563032004
             ],
             "from": [
-              -2.752656973731729,
-              -0.00217391432824803
+              -2.752656973824936,
+              -0.002173914028701372
             ],
-            "radius": 0.2528556907370189,
+            "radius": 0.252855690522306,
             "tag": {
               "commentStart": 1361,
               "end": 1365,
@@ -13137,8 +13137,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc2"
             },
             "to": [
-              -2.507757292480147,
-              0.18549436672083985
+              -2.5077572928752137,
+              0.1854943668699593
             ],
             "type": "Arc",
             "units": "in"
@@ -13149,8 +13149,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.507757293126065,
-              0.18549436689318385
+              -2.5077572935211316,
+              0.18549436704230324
             ],
             "tag": {
               "commentStart": 1513,
@@ -13161,8 +13161,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line3"
             },
             "to": [
-              -1.921914888554738,
-              2.380423794931761
+              -1.9219148889933138,
+              2.38042379534574
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13174,14 +13174,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              -1.8021627111939045,
-              2.348468773355253
+              -1.802162712124804,
+              2.3484687739053203
             ],
             "from": [
-              -1.921914888554738,
-              2.380423794931761
+              -1.9219148889933138,
+              2.38042379534574
             ],
-            "radius": 0.12394235509548614,
+            "radius": 0.12394235458472018,
             "tag": {
               "commentStart": 1634,
               "end": 1638,
@@ -13191,8 +13191,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc4"
             },
             "to": [
-              -1.802135686047242,
-              2.4724111255043755
+              -1.8021356869690395,
+              2.4724111255436747
             ],
             "type": "Arc",
             "units": "in"
@@ -13203,8 +13203,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -1.8021356860750481,
-              2.4724111278878653
+              -1.802135686996846,
+              2.4724111279271663
             ],
             "tag": {
               "commentStart": 1785,
@@ -13215,8 +13215,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line5"
             },
             "to": [
-              1.7993250558293703,
-              2.4724111278878356
+              1.7993250557378855,
+              2.4724111279271366
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13228,14 +13228,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              1.7993473509712128,
-              2.3484820547923566
+              1.799347350879427,
+              2.348482054939722
             ],
             "from": [
-              1.7993250558293703,
-              2.4724111278878356
+              1.7993250557378855,
+              2.4724111279271366
             ],
-            "radius": 0.12392907510095408,
+            "radius": 0.1239290749928898,
             "tag": {
               "commentStart": 1905,
               "end": 1909,
@@ -13245,8 +13245,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc6"
             },
             "to": [
-              1.9190474287961996,
-              2.380580450765832
+              1.919047428601328,
+              2.3805804508803945
             ],
             "type": "Arc",
             "units": "in"
@@ -13257,8 +13257,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              1.9190474276523084,
-              2.3805804503102332
+              1.9190474274574363,
+              2.3805804504247963
             ],
             "tag": {
               "commentStart": 2053,
@@ -13269,8 +13269,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line7"
             },
             "to": [
-              2.507691821210217,
-              0.18640080978424958
+              2.5076918209919588,
+              0.18640080963920558
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13282,14 +13282,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              2.7487863371227332,
-              0.2510559612933362
+              2.748786336664527,
+              0.2510559610745585
             ],
             "from": [
-              2.507691821210217,
-              0.18640080978424958
+              2.5076918209919588,
+              0.18640080963920558
             ],
-            "radius": 0.24961340953513186,
+            "radius": 0.24961340928427425,
             "tag": {
               "commentStart": 2174,
               "end": 2178,
@@ -13299,8 +13299,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc8"
             },
             "to": [
-              2.7487705757632552,
-              0.0014425522558146886
+              2.7487705753047518,
+              0.0014425522878946662
             ],
             "type": "Arc",
             "units": "in"
@@ -13311,8 +13311,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              2.7487705757632552,
-              0.0014425522558146886
+              2.7487705753047518,
+              0.0014425522878946662
             ],
             "tag": {
               "commentStart": 2323,
@@ -13323,8 +13323,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line9"
             },
             "to": [
-              4.198058534343744,
-              0.0014425523939884167
+              4.198058534067307,
+              0.0014425524260687074
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13335,8 +13335,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.198058534343744,
-              0.0014425523939884167
+              4.198058534067307,
+              0.0014425524260687074
             ],
             "tag": {
               "commentStart": 2436,
@@ -13347,8 +13347,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line10"
             },
             "to": [
-              4.19805853434379,
-              0.12025470272190972
+              4.1980585340673535,
+              0.12025470284991435
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13359,8 +13359,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.19805853434379,
-              0.12025470272190972
+              4.1980585340673535,
+              0.12025470284991435
             ],
             "tag": {
               "commentStart": 2555,
@@ -13371,8 +13371,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line11"
             },
             "to": [
-              2.7487705760057533,
-              0.12025470272188236
+              2.74877057554725,
+              0.12025470284988699
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13384,14 +13384,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              2.7488040493325228,
-              0.2446953030536387
+              2.748804048870614,
+              0.24469530258662828
             ],
             "from": [
-              2.7487705760057533,
-              0.12025470272188236
+              2.74877057554725,
+              0.12025470284988699
             ],
-            "radius": 0.12444060483375802,
+            "radius": 0.12444060423874208,
             "tag": {
               "commentStart": 2678,
               "end": 2683,
@@ -13401,8 +13401,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc12"
             },
             "to": [
-              2.628621355962005,
-              0.2124217171729275
+              2.628621356073381,
+              0.2124217168653431
             ],
             "type": "Arc",
             "units": "in"
@@ -13413,8 +13413,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              2.628621356755707,
-              0.21242171749658662
+              2.628621356867082,
+              0.212421717189002
             ],
             "tag": {
               "commentStart": 2831,
@@ -13425,8 +13425,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line13"
             },
             "to": [
-              2.03997696319783,
-              2.4066013580224452
+              2.0399769633325913,
+              2.4066013579744685
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13438,14 +13438,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              1.8014305212272579,
-              2.3425738581760474
+              1.8014305216002022,
+              2.3425738582032234
             ],
             "from": [
-              2.0399769627318656,
-              2.406601357897341
+              2.0399769628666267,
+              2.4066013578493637
             ],
-            "radius": 0.24698972746871772,
+            "radius": 0.24698972721919463,
             "tag": {
               "commentStart": 2955,
               "end": 2960,
@@ -13455,8 +13455,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc14"
             },
             "to": [
-              1.8014514935480155,
-              2.589563584754367
+              1.8014514939215047,
+              2.58956358453202
             ],
             "type": "Arc",
             "units": "in"
@@ -13467,8 +13467,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              1.8014514935480155,
-              2.589563584754367
+              1.8014514939215047,
+              2.58956358453202
             ],
             "tag": {
               "commentStart": 3108,
@@ -13479,8 +13479,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line15"
             },
             "to": [
-              -1.8000092483563412,
-              2.5895635845241864
+              -1.8000092488131652,
+              2.5895635843018394
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13492,14 +13492,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": true,
             "center": [
-              -1.7999828332991388,
-              2.3355899501109207
+              -1.7999828337552077,
+              2.3355899501607587
             ],
             "from": [
-              -1.800009248356278,
-              2.589563584019249
+              -1.8000092488131019,
+              2.589563583796902
             ],
-            "radius": 0.2539736352820048,
+            "radius": 0.25397363500981995,
             "tag": {
               "commentStart": 3229,
               "end": 3234,
@@ -13509,8 +13509,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc16"
             },
             "to": [
-              -2.0453741231556872,
-              2.4010553782459003
+              -2.0453741233515355,
+              2.4010553782152093
             ],
             "type": "Arc",
             "units": "in"
@@ -13521,8 +13521,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0453741241013366,
-              2.401055378498158
+              -2.045374124297185,
+              2.401055378467467
             ],
             "tag": {
               "commentStart": 3384,
@@ -13533,8 +13533,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line17"
             },
             "to": [
-              -2.631216528672663,
-              0.20612595045951632
+              -2.631216528825002,
+              0.20612595016396537
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13546,14 +13546,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "ccw": false,
             "center": [
-              -2.7526748571630293,
-              0.23852789109109226
+              -2.752674857253165,
+              0.2385278907733394
             ],
             "from": [
-              -2.631216528672663,
-              0.20612595045951632
+              -2.631216528825002,
+              0.20612595016396537
             ],
-            "radius": 0.12570605123209402,
+            "radius": 0.12570605116627048,
             "tag": {
               "commentStart": 3507,
               "end": 3512,
@@ -13563,8 +13563,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "arc18"
             },
             "to": [
-              -2.752653495399134,
-              0.11282184167404594
+              -2.752653495493491,
+              0.11282184142211593
             ],
             "type": "Arc",
             "units": "in"
@@ -13575,8 +13575,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -2.752653495727956,
-              0.11282184047734714
+              -2.752653495822312,
+              0.11282184022541762
             ],
             "tag": {
               "commentStart": 3663,
@@ -13587,8 +13587,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "value": "line19"
             },
             "to": [
-              -4.20194145406594,
-              0.11282184047729064
+              -4.201941454342363,
+              0.11282184022536113
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13599,8 +13599,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -4.20194145406594,
-              0.11282184047729064
+              -4.201941454342363,
+              0.11282184022536113
             ],
             "tag": {
               "commentStart": 3789,
@@ -13612,7 +13612,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "to": [
               -4.25,
-              0.11282184047725398
+              0.11282184022532447
             ],
             "type": "ToPoint",
             "units": "in"
@@ -13651,12 +13651,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "start": {
           "from": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "to": [
-            -4.201941454065641,
-            0.0010012789920492038
+            -4.201941454342064,
+            0.001001278767232966
           ],
           "units": "in",
           "tag": null,

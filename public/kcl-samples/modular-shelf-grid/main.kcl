@@ -118,11 +118,11 @@ hiddenFirstShelfProfile = hide(firstShelfProfile)
 // Repeats the basic shelf module (side panels + two shelves)
 // in both horizontal and vertical directions to form a full grid.
 modularShelfArray = patternLinear3d(
-       [sidePanels, shelves],
-       instances = columnCount,
-       distance = unitWidth,
-       axis = [1, 0, 0],
-     )
+  [sidePanels, shelves],
+  instances = columnCount,
+  distance = unitWidth,
+  axis = [1, 0, 0],
+)
   |> patternLinear3d(
        %,
        instances = rowCount,
