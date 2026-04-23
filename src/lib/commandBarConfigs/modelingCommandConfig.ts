@@ -74,6 +74,7 @@ import {
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addHelicalGear,
+  addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
@@ -315,6 +316,16 @@ export type ModelingCommandSchema = {
     pressureAngle: KclCommandValue
     helixAngle: KclCommandValue
     gearHeight: KclCommandValue
+  }
+  'Herringbone Gear': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL gear::herringbone arguments
+    nTeeth: KclCommandValue
+    module: KclCommandValue
+    pressureAngle: KclCommandValue
+    gearHeight: KclCommandValue
+    helixAngle: KclCommandValue
   }
   'Spur Gear': {
     // Enables editing workflow
@@ -1636,6 +1647,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: true,
         defaultValue: '7',
+      },
+    },
+  },
+  'Herringbone Gear': {
+    description: 'Create a herringbone gear.',
+    icon: 'gear',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHerringboneGear({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Herringbone Gear']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      nTeeth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '10',
+      },
+      module: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '2',
+      },
+      pressureAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '20deg',
+      },
+      gearHeight: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '5',
+      },
+      helixAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '40deg',
       },
     },
   },

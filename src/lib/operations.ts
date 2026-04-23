@@ -911,6 +911,52 @@ const prepareToEditHelicalGear: PrepareToEditCallback = async ({
 }
 
 /**
+ * Gather up the argument values for the Herringbone Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHerringboneGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Herringbone Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, gearHeight, helixAngle] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+
+  const argDefaultValues: ModelingCommandSchema['Herringbone Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    gearHeight,
+    helixAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the Spur Gear command
  * to be used in the command bar edit flow.
  */
@@ -2007,6 +2053,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Helical Gear',
     icon: 'gear',
     prepareToEdit: prepareToEditHelicalGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::herringbone': {
+    label: 'Herringbone Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditHerringboneGear,
     supportsAppearance: true,
     supportsTransform: true,
   },

@@ -5333,6 +5333,155 @@ hole001 = hole::hole(
     })
   })
 
+  test('Herringbone gear point-and-click with edit and delete', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
+
+    const fillCurrentKclArg = async (value: string) => {
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+      await cmdBar.progressCmdBar()
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    await test.step('Create herringbone gear via toolbar group', async () => {
+      await selectGearCommand('gear-herringbone')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Herringbone Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '10',
+        headerArguments: {
+          NTeeth: '',
+          Module: '',
+          PressureAngle: '',
+          GearHeight: '',
+          HelixAngle: '',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await fillCurrentKclArg('11')
+      await fillCurrentKclArg('2.3')
+      await fillCurrentKclArg('24deg')
+      await fillCurrentKclArg('6')
+      await fillCurrentKclArg('35deg')
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Herringbone Gear',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '35deg',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
+  nTeeth = 11,
+  module = 2.3,
+  pressureAngle = 24deg,
+  gearHeight = 6,
+  helixAngle = 35deg,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Edit herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Herringbone Gear',
+        currentArgKey: 'helixAngle',
+        currentArgValue: '35deg',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '35deg',
+        },
+        highlightedHeaderArg: 'helixAngle',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('20deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Herringbone Gear',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '20deg',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
+  nTeeth = 11,
+  module = 2.3,
+  pressureAngle = 24deg,
+  gearHeight = 6,
+  helixAngle = 20deg,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::herringbone(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
   test('Ring gear point-and-click with edit and delete', async ({
     context,
     page,

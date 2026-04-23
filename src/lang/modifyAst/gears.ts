@@ -90,6 +90,70 @@ export function addHelicalGear({
   }
 }
 
+export function addHerringboneGear({
+  ast,
+  nTeeth,
+  module,
+  pressureAngle,
+  gearHeight,
+  helixAngle,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  nTeeth: KclCommandValue
+  module: KclCommandValue
+  pressureAngle: KclCommandValue
+  gearHeight: KclCommandValue
+  helixAngle: KclCommandValue
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  const call = createCallExpressionStdLibKw(
+    'herringbone',
+    null,
+    [
+      createLabeledArg('nTeeth', valueOrVariable(nTeeth)),
+      createLabeledArg('module', valueOrVariable(module)),
+      createLabeledArg('pressureAngle', valueOrVariable(pressureAngle)),
+      createLabeledArg('gearHeight', valueOrVariable(gearHeight)),
+      createLabeledArg('helixAngle', valueOrVariable(helixAngle)),
+    ],
+    undefined,
+    [createIdentifier('gear')]
+  )
+
+  insertKclVariableIfNeeded(nTeeth, modifiedAst, mNodeToEdit)
+  insertKclVariableIfNeeded(module, modifiedAst, mNodeToEdit)
+  insertKclVariableIfNeeded(pressureAngle, modifiedAst, mNodeToEdit)
+  insertKclVariableIfNeeded(gearHeight, modifiedAst, mNodeToEdit)
+  insertKclVariableIfNeeded(helixAngle, modifiedAst, mNodeToEdit)
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.GEAR,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function addSpurGear({
   ast,
   nTeeth,

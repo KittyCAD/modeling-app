@@ -934,6 +934,24 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gear-herringbone',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Herringbone Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Herringbone Gear',
+              description: 'Create a herringbone gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
               id: 'gear-ring',
               onClick: () =>
                 commands.send({

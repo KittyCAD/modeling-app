@@ -1,6 +1,7 @@
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addHelicalGear,
+  addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
@@ -117,6 +118,71 @@ gear001 = gear::helical(
   pressureAngle = 22deg,
   helixAngle = 30deg,
   gearHeight = 9,
+)`)
+    })
+  })
+
+  describe('Testing addHerringboneGear', () => {
+    it('should add a standalone herringbone gear call', async () => {
+      const { ast } = await getAstAndArtifactGraph(
+        settings,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addHerringboneGear({
+        ast,
+        nTeeth: await toKclValue('10'),
+        module: await toKclValue('2'),
+        pressureAngle: await toKclValue('20deg'),
+        gearHeight: await toKclValue('5'),
+        helixAngle: await toKclValue('40deg'),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`gear001 = gear::herringbone(
+  nTeeth = 10,
+  module = 2,
+  pressureAngle = 20deg,
+  gearHeight = 5,
+  helixAngle = 40deg,
+)`)
+    })
+
+    it('should edit a standalone herringbone gear call', async () => {
+      const code = `${settings}
+gear001 = gear::herringbone(
+  nTeeth = 10,
+  module = 2,
+  pressureAngle = 20deg,
+  gearHeight = 5,
+  helixAngle = 40deg,
+)`
+      const { ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addHerringboneGear({
+        ast,
+        nTeeth: await toKclValue('12'),
+        module: await toKclValue('2.5'),
+        pressureAngle: await toKclValue('22deg'),
+        gearHeight: await toKclValue('7'),
+        helixAngle: await toKclValue('45deg'),
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`gear001 = gear::herringbone(
+  nTeeth = 12,
+  module = 2.5,
+  pressureAngle = 22deg,
+  gearHeight = 7,
+  helixAngle = 45deg,
 )`)
     })
   })
