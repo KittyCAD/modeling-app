@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   SceneGraphDelta,
   SegmentCtor,
@@ -112,6 +113,12 @@ async function runSketchSolveToolbarAction(
   }
 }
 
+function isPointSelectionOrOrigin(
+  selection: ApiObject | typeof ORIGIN_TARGET | undefined
+): boolean {
+  return selection === ORIGIN_TARGET || isPointSegment(selection)
+}
+
 function getSelectionPointCoords(
   selection: ApiObject | typeof ORIGIN_TARGET | undefined
 ) {
@@ -200,6 +207,60 @@ async function addAxisDistanceConstraint(
     jsAppSettings(context.kclManager.systemDeps.settings),
     true
   )
+  sendToolbarConstraintOutcome(self, result, keepSelection)
+}
+
+function getAxisConstraintInputs(
+  context: SketchSolveContext,
+  type: 'Horizontal' | 'Vertical'
+): ApiConstraint[] {
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  const selections = context.selectedIds
+    .map((id) => (id === ORIGIN_TARGET ? ORIGIN_TARGET : objects?.[id]))
+    .filter(Boolean)
+
+  if (
+    context.selectedIds.length > 1 &&
+    selections.every((selection) => isPointSelectionOrOrigin(selection))
+  ) {
+    return [
+      {
+        type,
+        points: context.selectedIds.map(
+          (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
+        ),
+      } as ApiConstraint,
+    ]
+  }
+
+  return getObjectSelectionIds(context.selectedIds)
+    .filter((id) => isLineSegment(objects?.[id]))
+    .map(
+      (line): ApiConstraint =>
+        ({
+          type,
+          line,
+        }) as ApiConstraint
+    )
+}
+
+async function addAxisConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self'],
+  type: 'Horizontal' | 'Vertical',
+  keepSelection = false
+) {
+  let result
+  for (const constraint of getAxisConstraintInputs(context, type)) {
+    // TODO this is not how these constraints should operate long term, as they should be equipable tools
+    result = await context.rustContext.addConstraint(
+      0,
+      context.sketchId,
+      constraint,
+      jsAppSettings(context.kclManager.systemDeps.settings),
+      true
+    )
+  }
   sendToolbarConstraintOutcome(self, result, keepSelection)
 }
 

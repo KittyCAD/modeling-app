@@ -118,6 +118,8 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'Dimension'
+        | 'Horizontal'
+        | 'Vertical'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
