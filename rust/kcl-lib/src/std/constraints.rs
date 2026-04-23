@@ -2863,6 +2863,13 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
 }
 
 pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let Some(Some(sketch_id)) = exec_state.sketch_block().map(|sb| sb.sketch_id) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "tangent() cannot be used outside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+
     #[derive(Debug, Clone, Copy)]
     enum TangentInput {
         Line(LineVars),
@@ -3013,12 +3020,15 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
             let tangency_key = make_line_arc_tangency_key(line, circular);
-            let tangency_side = match exec_state.get_constraint_state(&tangency_key) {
+            let tangency_side = match exec_state.get_constraint_state(sketch_id, &tangency_key) {
                 Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
                 _ => {
                     let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
-                    exec_state
-                        .set_constraint_state(tangency_key, ConstraintState::Tangency(TangencyMode::LineCircle(side)));
+                    exec_state.set_constraint_state(
+                        sketch_id,
+                        tangency_key,
+                        ConstraintState::Tangency(TangencyMode::LineCircle(side)),
+                    );
                     side
                 }
             };
@@ -3066,11 +3076,12 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
         TangentCase::CircularCircular(circular0, circular1) => {
             let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
-            let tangency_side = match exec_state.get_constraint_state(&tangency_key) {
+            let tangency_side = match exec_state.get_constraint_state(sketch_id, &tangency_key) {
                 Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
                 _ => {
                     let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
                     exec_state.set_constraint_state(
+                        sketch_id,
                         tangency_key,
                         ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
                     );

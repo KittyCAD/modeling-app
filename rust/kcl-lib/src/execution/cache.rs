@@ -18,6 +18,7 @@ use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
 use crate::execution::state::{self as exec_state};
 use crate::front::Object;
+use crate::front::ObjectId;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
@@ -173,7 +174,7 @@ pub(crate) struct SketchModeState {
     /// Map from module ID to source file contents.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    pub constraint_state: IndexMap<ConstraintKey, ConstraintState>,
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub scene_objects: Vec<Object>,

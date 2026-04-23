@@ -92,7 +92,9 @@ pub(super) struct GlobalState {
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
-    pub constraint_state: IndexMap<ConstraintKey, ConstraintState>,
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -419,12 +421,23 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
-    pub(crate) fn get_constraint_state(&self, key: &ConstraintKey) -> Option<ConstraintState> {
-        self.global.constraint_state.get(key).copied()
+    pub(crate) fn get_constraint_state(
+        &self,
+        sketch_block_id: ObjectId,
+        key: &ConstraintKey,
+    ) -> Option<ConstraintState> {
+        let map = self.global.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
     }
 
-    pub(crate) fn set_constraint_state(&mut self, key: ConstraintKey, state: ConstraintState) {
-        self.global.constraint_state.insert(key, state);
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.global.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -496,6 +509,10 @@ impl ExecState {
 
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
         self.mod_local.sketch_block.as_mut()
+    }
+
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
