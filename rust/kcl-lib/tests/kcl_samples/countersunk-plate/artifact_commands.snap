@@ -68,8 +68,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.771150914984016,
-          "y": 43.452885893427876,
+          "x": 23.771150915407105,
+          "y": 43.45288589319644,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 72.64347655331424,
-            "y": 16.712251095055766,
+            "x": 72.64347655381555,
+            "y": 16.712251094781486,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.50000000177963,
-            "y": 0.0000000032430545138240063
+            "x": 63.50000000177962,
+            "y": 0.000000003243043233958076
           },
-          "radius": 19.05000000011177,
+          "radius": 19.050000000111773,
           "start": {
             "unit": "degrees",
-            "value": 61.31639257643312
+            "value": 61.31639257471441
           },
           "end": {
             "unit": "degrees",
-            "value": -61.31639258427173
+            "value": -61.31639258255456
           },
           "relative": false
         }
@@ -132,8 +132,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.771150915882405,
-            "y": -43.45288589293372,
+            "x": 23.771150915341142,
+            "y": -43.452885893229826,
             "z": 0.0
           },
           "relative": false
@@ -147,8 +147,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -23.771150897777712,
-          "y": -43.452885861220146,
+          "x": -23.771150897844468,
+          "y": -43.45288586118355,
           "z": 0.0
         }
       }
@@ -162,17 +162,17 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
-            "y": 0.000000000002667688292490311
+            "x": 0.0000000000000028199664825478975,
+            "y": 0.0000000000026733282254554066
           },
-          "radius": 49.530000047177225,
+          "radius": 49.53000004717716,
           "start": {
             "unit": "degrees",
-            "value": -118.68111771985086
+            "value": -118.68111771993892
           },
           "end": {
             "unit": "degrees",
-            "value": -61.31888227938299
+            "value": -61.31888228009669
           },
           "relative": false
         }
@@ -185,8 +185,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -23.77115091530137,
-          "y": -43.45288589325164,
+          "x": -23.771150915368136,
+          "y": -43.45288589321506,
           "z": 0.0
         }
       }
@@ -200,8 +200,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -72.64347655542981,
-            "y": -16.7122510938956,
+            "x": -72.6434765525969,
+            "y": -16.712251095445577,
             "z": 0.0
           },
           "relative": false
@@ -217,17 +217,17 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -63.5000000017796,
-            "y": -0.0000000032403586258666902
+            "x": -63.50000000177963,
+            "y": -0.0000000032403896454979985
           },
-          "radius": 19.050000000111766,
+          "radius": 19.050000000111773,
           "start": {
             "unit": "degrees",
-            "value": -118.68360743081996
+            "value": -118.68360742110757
           },
           "end": {
             "unit": "degrees",
-            "value": -241.31639257979938
+            "value": -241.3163925806051
           },
           "relative": false
         }
@@ -242,8 +242,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -23.77115091550405,
-            "y": 43.45288589314338,
+            "x": -23.77115091527096,
+            "y": 43.4528858932709,
             "z": 0.0
           },
           "relative": false
@@ -257,8 +257,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.771150897460338,
-          "y": 43.452885861396354,
+          "x": 23.771150897883444,
+          "y": 43.452885861164944,
           "z": 0.0
         }
       }
@@ -275,14 +275,14 @@ description: Artifact commands countersunk-plate.kcl
             "x": 0.0000000000000028199664825478975,
             "y": -0.0
           },
-          "radius": 49.53000004717715,
+          "radius": 49.5300000471772,
           "start": {
             "unit": "degrees",
-            "value": 61.31888228056759
+            "value": 61.318882280009724
           },
           "end": {
             "unit": "degrees",
-            "value": 118.68111772011814
+            "value": 118.68111771981079
           },
           "relative": false
         }
@@ -295,8 +295,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 32.28053204385113,
-          "y": -20.23801499569313,
+          "x": 32.28053204385114,
+          "y": -20.238014995693128,
           "z": 0.0
         }
       }
@@ -310,13 +310,13 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.000000000000000004246447095286306,
-            "y": 0.000000000000000014247536946376865
+            "x": -0.0000000000000000008366369034678428,
+            "y": -0.0000000000000000007569379607986819
           },
           "radius": 38.099999999999994,
           "start": {
             "unit": "radians",
-            "value": -0.5599944503577594
+            "value": -0.5599944503577593
           },
           "end": {
             "unit": "radians",

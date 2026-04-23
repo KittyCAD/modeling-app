@@ -73,6 +73,7 @@ import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineToo
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -109,17 +110,13 @@ export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'unequip tool' }
-  | { type: 'equip tool'; data: { tool: EquipTool } }
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
+      keepSelection?: boolean
+    }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
@@ -188,18 +185,6 @@ export type UpdateSketchOutcomeEvent = {
   }
 }
 
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof rectTool>
-  | ActorRefFrom<typeof pointTool>
-  | ActorRefFrom<typeof lineTool>
-  | ActorRefFrom<typeof splineTool>
-  | ActorRefFrom<typeof trimTool>
-  | ActorRefFrom<typeof centerArcTool>
-  | ActorRefFrom<typeof circleTool>
-  | ActorRefFrom<typeof tangentialArcTool>
-  | ActorRefFrom<typeof threePointArcTool>
-
 export const equipTools = Object.freeze({
   trimTool,
   // both use the same tool, opened with a different flag
@@ -214,7 +199,10 @@ export const equipTools = Object.freeze({
   circleTool,
   tangentialArcTool,
   threePointArcTool,
+  ...constraintToolMachines,
 })
+
+type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -1461,6 +1449,9 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      initialSelectionIds: context.selectedIds,
+      initialObjects:
+        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
@@ -1498,6 +1489,8 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds?: SketchSolveSelectionId[]
+  initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 

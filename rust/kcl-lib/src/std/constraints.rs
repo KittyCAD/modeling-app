@@ -3009,43 +3009,6 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
     }
 
-    fn point_initial_position(
-        sketch_vars: &[KclValue],
-        point: [SketchVarId; 2],
-        exec_state: &mut ExecState,
-        range: crate::SourceRange,
-    ) -> Result<[f64; 2], KclError> {
-        Ok([
-            sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?,
-            sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?,
-        ])
-    }
-
-    fn canonicalize_line_for_tangent(
-        sketch_vars: &[KclValue],
-        line: ConstrainableLineVars,
-        arc_center: [SketchVarId; 2],
-        exec_state: &mut ExecState,
-        range: crate::SourceRange,
-    ) -> Result<ConstrainableLineVars, KclError> {
-        let [sx, sy] = point_initial_position(sketch_vars, line.start, exec_state, range)?;
-        let [ex, ey] = point_initial_position(sketch_vars, line.end, exec_state, range)?;
-        let [cx, cy] = point_initial_position(sketch_vars, arc_center, exec_state, range)?;
-
-        // Canonicalize the line orientation so LineTangentToCircle sees the arc
-        // center on its non-negative side regardless of how the user ordered the
-        // line endpoints in KCL.
-        let signed_side = (ex - sx) * (cy - sy) - (ey - sy) * (cx - sx);
-        if signed_side < -1e-9 {
-            Ok(ConstrainableLineVars {
-                start: line.end,
-                end: line.start,
-            })
-        } else {
-            Ok(line)
-        }
-    }
-
     let input: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "input",
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
@@ -3098,9 +3061,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     // Hidden radius vars. Empty metadata keeps them out of source write-back.
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
-            let canonical_line = canonicalize_line_for_tangent(&sketch_vars, line, circular.center, exec_state, range)?;
-            let line_p0 = datum_point(canonical_line.start, range)?;
-            let line_p1 = datum_point(canonical_line.end, range)?;
+            let line_p0 = datum_point(line.start, range)?;
+            let line_p1 = datum_point(line.end, range)?;
             let line_datum = DatumLineSegment::new(line_p0, line_p1);
 
             let center = datum_point(circular.center, range)?;
@@ -3128,9 +3090,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             // Tangency decomposition for Line/circular segment:
             // 1) Introduce a hidden radius variable r for the segment's underlying circle.
             // 2) Keep the segment's defining points on that circle with DistanceVar(point, center, r).
-            // 3) Canonicalize the solver line orientation so endpoint order
-            //    doesn't change the tangent branch.
-            // 4) Apply the native LineTangentToCircle solver constraint.
+            // 3) Apply the native LineTangentToCircle solver constraint.
             sketch_state
                 .solver_constraints
                 .push(SolverConstraint::DistanceVar(circular_start, center, radius));
