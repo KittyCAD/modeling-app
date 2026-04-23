@@ -1,0 +1,263 @@
+// Tube manifold
+// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters
+// Categories: Automotive, Aerospace
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+bodyDiameter = 5.8
+portDiameter = 2.8
+portCount = 4
+portSpacing = 5
+portHeight = 6
+wallThickness = 0.2
+beadDepth = 1
+beadRadius = 0.2
+
+// Model the interior hole of the manifold ports
+portBoreSketch = sketch(on = XY) {
+  portRadiusGuide = line(start = [var 0in, var 0in], end = [var 1.2in, var 0in], construction = true)
+  portBore = circle(start = [var 1.2in, var 0in], center = [var 0in, var 0in])
+
+  coincident([portRadiusGuide.start, ORIGIN])
+  coincident([portBore.center, portRadiusGuide.start])
+  coincident([portRadiusGuide.end, portBore.start])
+
+  horizontal(portRadiusGuide)
+  distance([
+  portRadiusGuide.start,
+  portRadiusGuide.end
+]) == portDiameter / 2 - wallThickness
+}
+
+portBoreRegion = region(segments = [portBoreSketch.portBore])
+hollowPort = extrude(portBoreRegion, length = portHeight)
+hide(portBoreSketch)
+
+// Create the main body of the manifold and revolve
+bodyProfile = sketch(on = XY) {
+  frontAxisGuide = line(start = [var 0in, var 0in], end = [var 6in, var 0in], construction = true)
+  endCapGuide = line(start = [var 0in, var 0in], end = [var -20in, var 0in], construction = true)
+  frontInnerRadiusGuide = line(start = [var 6in, var 0in], end = [var 6in, var 2.7in], construction = true)
+  beadSpanGuide = line(start = [var 5in, var 2.9in], end = [var 4.6in, var 2.9in], construction = true)
+  beadRadiusGuide = line(start = [var 4.8in, var 2.9in], end = [var 5in, var 2.9in], construction = true)
+  outerTopRadiusGuide = line(start = [var -20in, var 0in], end = [var -20in, var 2.9in], construction = true)
+  outerSideRadiusGuide = line(start = [var -20in, var 0in], end = [var -22.9in, var 0in], construction = true)
+  innerTopRadiusGuide = line(start = [var -20in, var 0in], end = [var -20in, var 2.7in], construction = true)
+  innerSideRadiusGuide = line(start = [var -20in, var 0in], end = [var -22.7in, var 0in], construction = true)
+
+  frontWall = line(start = [var 6in, var 2.7in], end = [var 6in, var 2.9in])
+  frontOuterRun = line(start = [var 6in, var 2.9in], end = [var 5in, var 2.9in])
+  beadArc = arc(start = [var 5in, var 2.9in], end = [var 4.6in, var 2.9in], center = [var 4.8in, var 2.9in])
+  mainOuterRun = line(start = [var 4.6in, var 2.9in], end = [var -20in, var 2.9in])
+  outerEndArc = arc(start = [var -20in, var 2.9in], end = [var -22.9in, var 0in], center = [var -20in, var 0in])
+  wallRun = line(start = [var -22.9in, var 0in], end = [var -22.7in, var 0in])
+  innerEndArc = arc(start = [var -20in, var 2.7in], end = [var -22.7in, var 0in], center = [var -20in, var 0in])
+  mainInnerRun = line(start = [var -20in, var 2.7in], end = [var 6in, var 2.7in])
+
+  coincident([frontAxisGuide.start, ORIGIN])
+  coincident([endCapGuide.start, ORIGIN])
+  coincident([
+    frontInnerRadiusGuide.start,
+    frontAxisGuide.end
+  ])
+  coincident([beadSpanGuide.start, beadArc.start])
+  coincident([beadSpanGuide.end, beadArc.end])
+  coincident([beadRadiusGuide.start, beadArc.center])
+  coincident([beadRadiusGuide.end, beadArc.start])
+  coincident([
+    outerTopRadiusGuide.start,
+    outerEndArc.center
+  ])
+  coincident([
+    outerTopRadiusGuide.end,
+    outerEndArc.start
+  ])
+  coincident([
+    outerSideRadiusGuide.start,
+    outerEndArc.center
+  ])
+  coincident([
+    outerSideRadiusGuide.end,
+    outerEndArc.end
+  ])
+  coincident([
+    innerTopRadiusGuide.start,
+    innerEndArc.center
+  ])
+  coincident([
+    innerTopRadiusGuide.end,
+    innerEndArc.start
+  ])
+  coincident([
+    innerSideRadiusGuide.start,
+    innerEndArc.center
+  ])
+  coincident([
+    innerSideRadiusGuide.end,
+    innerEndArc.end
+  ])
+
+  coincident([
+    frontWall.start,
+    frontInnerRadiusGuide.end
+  ])
+  coincident([frontWall.end, frontOuterRun.start])
+  coincident([frontOuterRun.end, beadArc.start])
+  coincident([beadArc.end, mainOuterRun.start])
+  coincident([mainOuterRun.end, outerEndArc.start])
+  coincident([outerEndArc.end, wallRun.start])
+  coincident([wallRun.end, innerEndArc.end])
+  coincident([innerEndArc.start, mainInnerRun.start])
+  coincident([mainInnerRun.end, frontWall.start])
+  coincident([outerEndArc.center, endCapGuide.end])
+  coincident([innerEndArc.center, endCapGuide.end])
+
+  horizontal(frontAxisGuide)
+  horizontal(endCapGuide)
+  vertical(frontInnerRadiusGuide)
+  vertical(frontWall)
+  horizontal(beadSpanGuide)
+  horizontal(beadRadiusGuide)
+  vertical(outerTopRadiusGuide)
+  horizontal(outerSideRadiusGuide)
+  vertical(innerTopRadiusGuide)
+  horizontal(innerSideRadiusGuide)
+  horizontal(frontOuterRun)
+  horizontal(mainOuterRun)
+  horizontal(wallRun)
+  horizontal(mainInnerRun)
+
+  distance([
+  frontAxisGuide.start,
+  frontAxisGuide.end
+]) == portHeight
+  distance([endCapGuide.start, endCapGuide.end]) == portCount * portSpacing
+  distance([
+  frontInnerRadiusGuide.start,
+  frontInnerRadiusGuide.end
+]) == bodyDiameter / 2 - wallThickness
+  distance([frontWall.start, frontWall.end]) == wallThickness
+  distance([frontOuterRun.start, frontOuterRun.end]) == beadDepth
+  distance([beadSpanGuide.start, beadSpanGuide.end]) == beadRadius * 2
+  distance([
+  beadRadiusGuide.start,
+  beadRadiusGuide.end
+]) == beadRadius
+  distance([
+  outerTopRadiusGuide.start,
+  outerTopRadiusGuide.end
+]) == bodyDiameter / 2
+  distance([
+  outerSideRadiusGuide.start,
+  outerSideRadiusGuide.end
+]) == bodyDiameter / 2
+  distance([
+  innerTopRadiusGuide.start,
+  innerTopRadiusGuide.end
+]) == bodyDiameter / 2 - wallThickness
+  distance([
+  innerSideRadiusGuide.start,
+  innerSideRadiusGuide.end
+]) == bodyDiameter / 2 - wallThickness
+}
+
+bodyRegion = region(
+  point = [
+    0in,
+    bodyDiameter / 2 - (wallThickness / 2)
+  ],
+  sketch = bodyProfile,
+)
+bodyBlank = revolve(bodyRegion, axis = X)
+hide(bodyProfile)
+
+// Subtract an instance of the hollow port feature at each port location
+bodyBorePattern = clone(hollowPort)
+  |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0])
+body = subtract([bodyBlank], tools = [bodyBorePattern])
+
+// Trim the bottom of the ports so that they fit against the curved main body
+bodyCutSketch = sketch(on = YZ) {
+  bodyCutRadiusGuide = line(start = [var 0in, var 0in], end = [var 2.9in, var 0in], construction = true)
+  bodyCutCircle = circle(start = [var 2.9in, var 0in], center = [var 0in, var 0in])
+
+  coincident([bodyCutRadiusGuide.start, ORIGIN])
+  coincident([
+    bodyCutCircle.center,
+    bodyCutRadiusGuide.start
+  ])
+  coincident([
+    bodyCutRadiusGuide.end,
+    bodyCutCircle.start
+  ])
+
+  horizontal(bodyCutRadiusGuide)
+  distance([
+  bodyCutRadiusGuide.start,
+  bodyCutRadiusGuide.end
+]) == bodyDiameter / 2
+}
+
+bodyCutRegion = region(segments = [bodyCutSketch.bodyCutCircle])
+bodyCut = extrude(bodyCutRegion, length = -portCount * portSpacing, bidirectionalLength = 5)
+hide(bodyCutSketch)
+
+// Model a revolved port at each location
+portProfile = sketch(on = YZ) {
+  beadSpanGuide = line(start = [var 1.4in, var 4.6in], end = [var 1.4in, var 5in], construction = true)
+  beadRadiusGuide = line(start = [var 1.4in, var 4.8in], end = [var 1.4in, var 5in], construction = true)
+
+  topCap = line(start = [var 0in, var 6in], end = [var 1.4in, var 6in])
+  upperWall = line(start = [var 1.4in, var 6in], end = [var 1.4in, var 5in])
+  beadArc = arc(start = [var 1.4in, var 4.6in], end = [var 1.4in, var 5in], center = [var 1.4in, var 4.8in])
+  lowerWall = line(start = [var 1.4in, var 4.6in], end = [var 1.4in, var 0in])
+  baseLine = line(start = [var 1.4in, var 0in], end = [var 0in, var 0in])
+  centerAxis = line(start = [var 0in, var 0in], end = [var 0in, var 6in])
+
+  coincident([centerAxis.start, ORIGIN])
+  coincident([baseLine.end, centerAxis.start])
+  coincident([centerAxis.end, topCap.start])
+  coincident([topCap.end, upperWall.start])
+  coincident([upperWall.end, beadArc.end])
+  coincident([beadArc.start, lowerWall.start])
+  coincident([lowerWall.end, baseLine.start])
+
+  coincident([beadSpanGuide.start, beadArc.start])
+  coincident([beadSpanGuide.end, beadArc.end])
+  coincident([beadRadiusGuide.start, beadArc.center])
+  coincident([beadRadiusGuide.end, beadArc.end])
+
+  horizontal(topCap)
+  vertical(upperWall)
+  vertical(lowerWall)
+  horizontal(baseLine)
+  vertical(centerAxis)
+  vertical(beadSpanGuide)
+  vertical(beadRadiusGuide)
+
+  distance([centerAxis.start, centerAxis.end]) == portHeight
+  distance([topCap.start, topCap.end]) == portDiameter / 2
+  equalLength([topCap, baseLine])
+  distance([upperWall.start, upperWall.end]) == beadDepth
+  distance([beadSpanGuide.start, beadSpanGuide.end]) == beadRadius * 2
+  distance([
+  beadRadiusGuide.start,
+  beadRadiusGuide.end
+]) == beadRadius
+}
+
+portRegion = region(point = [portDiameter / 4, portHeight / 2], sketch = portProfile)
+portBlank = revolve(portRegion, axis = Y)
+hide(portProfile)
+
+// Trim the port against the curved main body
+portTrimmed = subtract([portBlank], tools = [bodyCut])
+
+// Hollow the trimmed port with the shared inner bore
+portShell = subtract([portTrimmed], tools = [hollowPort])
+
+// Pattern the finished port across the manifold
+ports = portShell
+  |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0])

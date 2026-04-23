@@ -10,6 +10,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
 import {
   filterOperations,
   getOperationCalculatedDisplay,
@@ -25,8 +26,7 @@ import {
   stdLibMap,
   onUnhide,
 } from '@src/lib/operations'
-import { stripQuotes } from '@src/lib/utils'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -199,7 +199,7 @@ export const FeatureTreePaneContents = memo(() => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1 flex flex-col gap-2"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         {kclManager.isExecuting ? (
           <Loading className="h-full" isDummy={true}>
@@ -211,7 +211,7 @@ export const FeatureTreePaneContents = memo(() => {
               <DefaultPlanes systemDeps={systemDeps} />
             )}
             {hasParseErrors && (
-              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none">
+              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
                 <p className="font-medium">
                   KCL parse errors are blocking the current feature tree.
                 </p>
@@ -594,11 +594,13 @@ const OperationItem = ({
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isSelected = useMemo(() => {
-    const selected =
-      sourceRange &&
-      kclManager.editorState.selection.main.from >= sourceRange[0] &&
-      kclManager.editorState.selection.main.to <= sourceRange[1]
-    return selected
+    if (!sourceRange) {
+      return false
+    }
+
+    return kclManager.editorState.selection.ranges.some(({ from, to }) => {
+      return isOverlap(sourceRange, topLevelRange(from, to))
+    })
   }, [kclManager.editorState.selection, sourceRange])
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)

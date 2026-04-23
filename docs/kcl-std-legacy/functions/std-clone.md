@@ -238,15 +238,15 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 clonedMountingPlate = clone(mountingPlate)
 
 fillet(
-       clonedMountingPlate,
-       radius = filletRadius,
-       tags = [
-         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
-         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
-         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
-         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
-       ],
-     )
+  clonedMountingPlate,
+  radius = filletRadius,
+  tags = [
+    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
+    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
+    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
+    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
+  ],
+)
   |> translate(x = 0, y = 50, z = 0)
 
 ```
